@@ -1,7 +1,7 @@
 // Sauvegarde de partie — la partie survit au rafraîchissement, signée par
 // le contenu. Deux fenêtres jsdom simulent le rechargement en se passant
 // le localStorage via beforeParse.
-const H = require("./harnais").creerHarnais(__dirname);
+const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, canal, carnet, niveau1, verrouiller, casesObligatoires,
         lienVice, noterLien, caseParLeve, pidAvecDeclenche } = H;
 const boot = graine => H.boot({graine, url:"http://localhost/"});

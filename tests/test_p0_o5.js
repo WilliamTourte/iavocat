@@ -1,6 +1,6 @@
 // P0 (attention finie) + O5 (index du dossier) — contenu embarqué.
 // Aucune pièce, case ou valeur n'est nommée : tout est dérivé du contenu.
-const H = require("./harnais").creerHarnais(__dirname);
+const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, boot, carnet, niveau1, lienVice, liensNeutres, noterLien,
         noterBruit, caseParLeve, verrouiller, numeroFin } = H;
 const actives=w=>w.S.notes.filter(n=>!n.supprimee&&!n.remonte).length;

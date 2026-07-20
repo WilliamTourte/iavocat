@@ -1,7 +1,7 @@
 // Fumée de l'atelier v3 — jsdom. Rien du contenu n'est nommé : les cibles
 // (pièce décisive, case du vice, champs, dimensions) sont dérivées de la
 // forme du CONTENU, pour survivre à un changement complet d'affaire.
-const H = require("./harnais").creerHarnais(__dirname);
+const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, surContenu:SC } = H;
 const bootAtelier = opts => H.bootAtelier(opts);
 const bootJeu = contenu => H.boot({contenu});

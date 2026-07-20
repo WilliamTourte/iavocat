@@ -2,7 +2,7 @@
 // la sélection de paire, la modale de pièce, les répliques de l'avocat
 // (faux, rep de lien, escalade partagée, deja) et le grain fin de la
 // répétition de plaidoirie. Contenu embarqué, sauf mention.
-const H = require("./harnais").creerHarnais(__dirname);
+const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, embarque, noterPaire, canal, carnet, niveau1, verrouiller,
         lienVice, lienFaux, liensNeutres, noterLien, pairesBruit,
         pidAvecDeclenche, champsDe, numeroFin } = H;
