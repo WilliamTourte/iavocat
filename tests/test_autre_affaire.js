@@ -3,7 +3,7 @@
 // de forme différente aussi — 3 remises, 3 cases obligatoires, un vice qui
 // relie un document de la remise 1 à une règle transmise à la remise 3.
 // Si cette suite passe, le moteur et le harnais sont indépendants du cas.
-const H = require("./harnais").creerHarnais(__dirname);
+const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, canal, carnet, niveau1, verrouiller, lienVice,
         caseParLeve, noterLien, numeroFin, terminer } = H;
 

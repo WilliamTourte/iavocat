@@ -1,0 +1,13 @@
+{
+  "name": "iavocat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IAvocat — atelier d'écriture et moteur de jeu d'enquête (tranche verticale : l'affaire ADN)",
+  "scripts": {
+    "test": "node tests/test_p0_o5.js && node tests/test_declencheurs.js && node tests/test_autre_affaire.js && node tests/test_parcours.js && node tests/test_sauvegarde.js && node tests/smoke_atelier.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  },
+  "license": "SEE LICENSE IN LICENSE"
+}

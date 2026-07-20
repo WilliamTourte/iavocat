@@ -2,7 +2,7 @@
 // remises généralisées, piece.declenche, case.apres/leve/prive/apparait_si,
 // deux marches du vice, Manuels par type, dims par pièce.
 // Les mutations elles-mêmes sont dérivées du contenu (rien n'est nommé).
-const H = require("./harnais").creerHarnais(__dirname);
+const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, embarque, canal, carnet, niveau1, verrouiller,
         lienVice, noterLien, caseParLeve, casesObligatoires,
         pidAvecDeclenche, pidRegle, numeroFin } = H;

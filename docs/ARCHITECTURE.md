@@ -4,6 +4,16 @@
 
 ---
 
+## 0. Disposition du dépôt
+
+```
+app/     index.html, atelier_v3.html, content.js — les trois artefacts du §1, toujours voisins
+docs/    ce fichier, conception_jeu_ia.md
+tests/   harnais.js + les six suites (§5)
+```
+
+`content.js` doit rester à côté de `index.html` (le jeu le charge en `<script src="content.js">`) : les deux vivent dans `app/`, comme `atelier_v3.html`. Rien d'autre n'a changé — `npm test` sait où chercher.
+
 ## 1. Les trois artefacts
 
 ```
