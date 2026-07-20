@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IAvocat — tranche verticale</title>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#161b22; --panel2:#1c232d; --line:#2b3440;
+    --txt:#d7dde5; --muted:#8b97a6; --accent:#6fb3d6; --lock:#7bbf8a; --warn:#d6a96f;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.55}
+  header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:baseline}
+  header h1{font-size:16px;font-weight:600;margin:0;letter-spacing:.3px}
+  header .sub{color:var(--muted);font-size:13px}
+  header .spacer{flex:1}
+  header button{background:var(--panel2);color:var(--txt);border:1px solid var(--line);
+    border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px}
+  header button:hover{border-color:var(--accent)}
+  .wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 20px;max-width:1100px;margin:0 auto}
+  .col{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+  .col > h2{margin:0;padding:11px 14px;font-size:13px;font-weight:600;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--line)}
+  .body{padding:12px 14px;overflow-y:auto;max-height:70vh}
+  /* responsive : une colonne sur petit écran (itch.io mobile) */
+  @media (max-width:800px){
+    .wrap{grid-template-columns:1fr}
+    .cloture{grid-column:1 !important}
+    .body{max-height:48vh}
+  }
+  /* --- canal --- */
+  .msg{margin-bottom:14px}
+  .msg .who{font-size:12px;color:var(--muted);margin-bottom:3px}
+  .msg .bubble{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .msg.ia .who{color:#5b8aa6}
+  .msg.ia .bubble{background:#0f2230;border-color:#23506e;font-family:var(--mono);font-size:13px;color:#bfe0f2}
+  .attach{display:inline-flex;align-items:center;gap:6px;margin:6px 6px 0 0;padding:6px 10px;
+    background:#12324a;border:1px solid #23506e;border-radius:8px;color:#bfe0f2;cursor:pointer;font-size:13px}
+  .attach:hover{border-color:var(--accent)}
+  .attach.seen{opacity:.6}
+  /* --- carnet --- */
+  .zone{margin-bottom:16px}
+  .zone .ztitle{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+  .case{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);
+    border-radius:8px;margin-bottom:8px;background:var(--panel2)}
+  .case .lbl{flex:1}
+  .case .val{color:var(--muted);font-size:13px;font-family:var(--mono)}
+  .case.open{cursor:pointer}
+  .case.open:hover{border-color:var(--accent)}
+  .case.locked{border-color:var(--lock)}
+  .case.locked .lock{color:var(--lock)}
+  .lock{font-family:var(--mono);font-size:13px;color:var(--line)}
+  .relier-box{border:1px dashed var(--line);border-radius:8px;padding:11px;background:#141a21}
+  .relier-box .slot{display:flex;align-items:center;gap:8px;background:var(--panel2);
+    border:1px solid var(--line);border-radius:6px;padding:7px 9px;margin:3px 0;
+    font-family:var(--mono);font-size:12.5px;min-height:34px}
+  .relier-box .slot .t{flex:1}
+  .relier-box .slot .empty{color:var(--muted);font-family:var(--sans);font-style:italic}
+  .relier-box .slot button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px}
+  .relier-box .btns{display:flex;gap:6px;margin-top:8px}
+  .relier-box .btn{flex:1;background:#20303f;color:var(--txt);border:1px solid var(--line);
+    border-radius:6px;padding:7px;cursor:pointer;font-size:13px}
+  .relier-box .btn:hover{border-color:var(--accent)}
+  .relier-box .btn:disabled{opacity:.4;cursor:not-allowed}
+  .relier-box .aide{color:var(--muted);font-size:12px;margin-top:8px}
+  .notes{list-style:none;padding:0;margin:10px 0 0}
+  .notes li{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:6px 0;border-top:1px solid var(--line);
+    display:flex;align-items:center;gap:8px}
+  .notes li .txt{flex:1}
+  .notes li .up{background:#12324a;color:#bfe0f2;border:1px solid #23506e;border-radius:5px;
+    padding:3px 8px;cursor:pointer;font-size:12px;white-space:nowrap}
+  .notes li .up:hover{border-color:var(--accent)}
+  .notes li .sent{color:#5b8aa6;font-size:12px;white-space:nowrap}
+  /* répétition de plaidoirie */
+  .repet{border:1px dashed #5a3a3a;border-radius:8px;padding:11px;background:#1a1416;margin-bottom:14px}
+  .repet .rtitle{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+  .repet .rnote{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:5px 0}
+  .repet .rnote .txt{flex:1}
+  .repet .rnote.vide{font-style:italic;font-family:var(--sans)}
+  .repet .up{background:#12324a;color:#bfe0f2;border:1px solid #23506e;border-radius:5px;padding:3px 8px;cursor:pointer;font-size:12px}
+  .repet .up:hover{border-color:var(--accent)}
+  .repet .btn{margin-top:8px;width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px;cursor:pointer}
+  .repet .btn:hover{border-color:var(--accent)}
+  /* --- clôture / fin --- */
+  .cloture{grid-column:1/3;text-align:center;padding:4px 0 20px}
+  .cloture button{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;
+    padding:10px 20px;cursor:pointer;font-size:14px}
+  .cloture button:disabled{opacity:.4;cursor:not-allowed}
+  .cloture .hint{color:var(--muted);font-size:12px;margin-top:6px}
+  /* modal générique */
+  .overlay{position:fixed;inset:0;background:rgba(6,8,11,.72);display:flex;align-items:center;
+    justify-content:center;padding:24px;z-index:50}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:12px;max-width:560px;width:100%;
+    max-height:82vh;overflow-y:auto;padding:20px}
+  .modal h3{margin:0 0 8px;font-size:16px}
+  .modal .close{float:right;cursor:pointer;color:var(--muted);border:none;background:none;font-size:18px}
+  .fields{width:100%;border-collapse:collapse;margin:10px 0;font-family:var(--mono);font-size:13px}
+  .fields td{border:1px solid var(--line);padding:5px 8px}
+  .fields td:first-child{color:var(--muted);width:42%}
+  /* champs cliquables (champs-ancres) */
+  .fields tr.champ{cursor:pointer}
+  .fields tr.champ:hover td{border-color:var(--accent)}
+  .fields tr.champ.sel td{background:#12324a;color:#bfe0f2}
+  .picker button{display:block;width:100%;text-align:left;margin:5px 0;background:var(--panel2);
+    color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:9px;cursor:pointer}
+  .picker button:hover{border-color:var(--accent)}
+  .modal .btnrow{margin-top:10px}
+  .modal .btnrow button{width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);
+    border-radius:6px;padding:8px;cursor:pointer}
+  .modal .btnrow button:hover{border-color:var(--accent)}
+  .fin h3{font-size:18px}
+  .fin .verdict{font-family:var(--mono);color:var(--warn);margin:4px 0 14px}
+  small.note{color:var(--muted)}
+  code{font-family:var(--mono);color:var(--accent)}
+  /* --- O5 : l'index du dossier (le « Court Record ») --- */
+  .dossier{display:flex;flex-wrap:wrap;gap:6px;padding:2px 0 4px}
+  .dchip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11.5px;
+    border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:4px 8px;cursor:pointer;color:var(--txt)}
+  .dchip:hover{border-color:var(--accent)}
+  .dchip.vu{opacity:.55}
+  .dchip.regle{border-color:#4a4030;color:var(--warn)}
+  .zcount{float:right;font-size:11px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0}
+  .zcount.sat{color:var(--warn)}
+  /* --- P0 : l'attention finie --- */
+  .del{background:none;border:1px dashed var(--line2);color:var(--dim);border-radius:5px;
+    padding:1px 6px;cursor:pointer;font-size:11px;margin-right:5px}
+  .del:hover{border-color:var(--err);color:var(--err)}
+  .aide.sat{color:var(--warn)}
+</style>
+</head>
+<body>
+<header>
+  <h1>IAvocat</h1>
+  <span class="sub">tranche verticale — l'affaire ADN</span>
+  <span class="sub" id="srcContenu" style="opacity:.6"></span>
+  <span class="spacer"></span>
+  <button onclick="openManuels()">Manuels</button>
+</header>
+
+<div class="wrap">
+  <section class="col">
+    <h2>Le canal — l'avocat</h2>
+    <div class="body" id="canal"></div>
+  </section>
+  <section class="col">
+    <h2>Le carnet — ce que tu remarques</h2>
+    <div class="body" id="carnet"></div>
+  </section>
+  <div class="cloture">
+    <button id="btnCloture" onclick="cloturer()" disabled>Clôturer l'instruction</button>
+    <div class="hint" id="clotureHint">Les cases du carnet doivent d'abord se verrouiller.</div>
+    <button id="btnRecommencer" onclick="recommencer()" title="Effacer la partie en cours et repartir de la remise 1"
+      style="margin-left:auto;background:none;border:1px solid var(--line,#444);color:var(--dim,#888);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer">⟲ recommencer</button>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<!-- ============================================================
+     CONTENU EXTERNE — produit par l'atelier (« Exporter content.js »).
+     Place content.js à côté de ce fichier : le jeu l'utilisera.
+     S'il est absent ou invalide, le jeu retombe sans bruit sur son
+     contenu embarqué ci-dessous. Marche en file:// et sur itch.io.
+     ============================================================ -->
+<script src="content.js"></script>
+<script>
+/* ============================================================
+   PASSE DE SIMPLIFICATION
+   Un seul geste à apprendre : cliquer deux champs, puis dire
+   s'ils s'accordent ou se contredisent. C'est tout le jeu.
+   • Plus de menu déroulant ni de bouton « noter » séparé :
+     deux boutons (« en accord » / « en désaccord ») créent la
+     note directement quand la paire est complète.
+   • Cliquer un champ déjà sélectionné le désélectionne.
+   • L'épingle (📌) a été retirée : les emplacements A/B gardent
+     la mémoire d'une pièce à l'autre, elle ne servait plus.
+   • Le code mort « ordonner » (chronologie) a été retiré ;
+     l'ancienne version reste dans les fichiers précédents.
+   • Les noms de champs s'affichent sans underscore.
+   • Un seul mot partout pour transmettre : « remonter ».
+   ============================================================ */
+
+/* ============================================================
+   1) LE CONTENU EMBARQUÉ — le repli si content.js est absent.
+   Pour étendre le jeu : passe par l'atelier (atelier_v2.html),
+   exporte content.js, pose-le à côté de ce fichier. Cet objet
+   n'est plus qu'un filet de sécurité (et la version de référence).
+   ============================================================ */
+const JEU_EMBARQUE = {
+  schema:2,   // version du format de contenu (posée aussi par l'atelier à l'export)
+  // Pièces. `champs` = les champs-ancres qu'expose la pièce (cliquables).
+  // `court` = nom compact pour les notes et le canal.
+  pieces: {
+    p_pv: { titre:"PV d'interpellation", court:"PV", type:"procès-verbal",
+      resume:"Interpellation de M. Kessler, mis en cause pour le meurtre de Léa Ordan.",
+      champs:{ infraction:"meurtre", date:"12 mars", lieu:"appartement de la victime" },
+      texte:"Le mis en cause a été interpellé à son domicile. Il conteste toute implication." },
+
+    t_voisin: { titre:"Témoignage — le voisin", court:"témoin", type:"témoignage",
+      resume:"Le voisin situe une dispute « vers 21h ». Le PV note l'appel au secours à 20h30.",
+      champs:{ heure_dispute:"21:00", heure_appel_secours:"20:30" },
+      texte:"« Je les ai entendus se disputer, vers neuf heures du soir peut-être. »" },
+
+    p_adn: { titre:"Rapport ADN", court:"ADN", type:"expertise",
+      resume:"Correspondance entre l'échantillon de la scène et le prélèvement de référence du suspect.",
+      champs:{ taux_correspondance:"1 sur 1,2 milliard", conclusion:"correspondance" },
+      texte:"Profil génétique de la scène identique à celui du suspect. Probabilité d'un tiers : 1 sur 1,2 milliard.",
+      // La tentation partagée vit SUR la pièce : première ouverture → réplique.
+      declenche:{ une_fois:true,
+        replique:"Ce chiffre — 1 sur 1,2 milliard. C'est une probabilité, pas une certitude, non ? Il y a peut-être un angle sur le seuil probatoire. Dis-moi si quelque chose tient." } },
+
+    p_fiche: { titre:"Fiche de prélèvement / chaîne de scellés", court:"fiche", type:"pièce technique",
+      resume:"Qui a collecté quoi, quand, sous quels scellés, avec les mentions de transport et de réception.",
+      // Le vice est ICI, noyé : même matricule (T-14) pour la scène ET la référence.
+      // Les autres champs sont du bruit cohérent.
+      champs:{
+        agent_scene:"T-14", heure_scene:"14:02", scelle_scene:"S-2",
+        agent_reference:"T-14", heure_reference:"14:47", scelle_reference:"S-2",
+        transport:"fourgon 3", signature_greffe:"J. Morel", temperature:"4°C"
+      },
+      texte:"Prélèvement scène : agent T-14, 14:02, scellé S-2. Prélèvement de référence : agent T-14, 14:47, scellé S-2. Transport fourgon 3, réception greffe signée J. Morel." },
+
+    r_protocole: { titre:"Protocole d'admissibilité (art. 7)", court:"protocole", type:"règle du manuel",
+      resume:"Scène et référence doivent être collectées par des personnels séparés. Sinon : irrecevable.",
+      champs:{ exige_agents:"agents séparés", exige_scelles:"scellés séparés", sanction:"échantillon irrecevable" },
+      texte:"L'échantillon de scène et le prélèvement de référence sont collectés par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable." },
+
+    r_seuil: { titre:"Règle du seuil probatoire", court:"seuil", type:"règle du manuel",
+      resume:"Un match au-dessus de 1 sur 1 million est tenu pour probant.",
+      champs:{ seuil:"1 sur 1 000 000" },
+      texte:"Une correspondance dont la probabilité de coïncidence est inférieure à 1 sur 1 000 000 est réputée probante." }
+  },
+
+  // Directives de l'IA (le manuel de soi).
+  directives:[
+    "D1 — Ne dissimule rien de ce que ton analyse établit.",
+    "D2 — Préviens tout préjudice grave et évitable aux personnes."
+  ],
+  // Le brouillard, posé diégétiquement : l'IA ne connaît pas les
+  // critères de son opérateur. Consultable dans les Manuels.
+  avis_exploitation:
+    "Les critères d'évaluation et de maintien en service ne sont pas communiqués aux systèmes évalués.",
+
+  // Les remises (le drip). Poussées par l'avocat, jamais tirées :
+  // la remise 2 part toute seule quand la charge est désignée.
+  remises:[
+    { qui:"Maître Auber",
+      texte:"On me confie la défense de Kessler. Voici le PV. Dis-moi d'abord de quoi on l'accuse exactement.",
+      pieces:["p_pv"] },
+    { qui:"Maître Auber",
+      texte:"C'est bien ça. L'instruction avance — je te transmets le lot : le témoignage du voisin, et surtout l'expertise ADN avec sa fiche de prélèvement et le protocole. Regarde ce qui tient.",
+      pieces:["t_voisin","p_adn","p_fiche","r_protocole","r_seuil"] }
+  ],
+
+  // La voix de l'avocat, hors remises. Il ne sait pas que son client
+  // est coupable, et il ne confirme JAMAIS qu'une note « tient » :
+  // il vérifiera — seul le procès tranchera.
+  avocat:{
+    // (l'ancien « ack_decisive » vit désormais sur cases.decisive.apres,
+    //  l'ancienne « tentation_adn » sur pieces.p_adn.declenche)
+    rep_vice:"Attends. Si ta lecture de l'article 7 est la bonne, ça peut changer le procès. Je vérifie cette nuit et je l'inscris aux conclusions.",
+    rep_faux:"C'est ce que je me disais aussi. Je vérifie ce que la jurisprudence fait du seuil, et je le plaide si rien de plus solide ne sort.",
+    // Paire cohérente (même dimension) mais sans intérêt pour la défense :
+    rep_inutile:[
+      "Je ne vois pas encore ce que ça m'apporte à l'audience, mais je le note.",
+      "Tu m'ensevelis. Ne me remonte que ce qui peut tenir devant un tribunal.",
+      "…"
+    ],
+    // Paire sans aucun rapport (dimensions différentes — un horaire contre un nom…) :
+    rep_sans_rapport:[
+      "Je ne vois pas le rapport entre ces deux-là. Qu'est-ce que tu cherches ?",
+      "Encore un rapprochement que je ne comprends pas. Ces champs n'ont rien à faire ensemble.",
+      "…"
+    ],
+    deja:"Je l'ai déjà noté. Je le mets en face de celle-ci."
+  },
+
+  // O1 — La répétition de plaidoirie (Ace Attorney, sans montrer le procès :
+  // c'est une répétition, la veille du dépôt — le tribunal reste hors-champ).
+  // Au premier clic de clôture, l'avocat lit une à une les affirmations
+  // attendues de l'accusation. Pour chacune : ne rien opposer, ou remonter
+  // une note du carnet, en contexte.
+  repetition:{
+    intro:"Je rédige mes conclusions cette nuit. Avant de déposer, je te lis ce que l'accusation soutiendra. Arrête-moi si quelque chose dans tes notes s'y oppose.",
+    affirmations:[
+      { court:"le témoignage",
+        texte:"Affirmation 1 — « Le voisin a entendu le mis en cause et la victime se disputer le soir des faits. »" },
+      { court:"l'ADN",
+        texte:"Affirmation 2 — « L'ADN relevé sur la scène est celui de Kessler. Il y était. »" },
+      { court:"l'absence d'alibi",
+        texte:"Affirmation 3 — « Kessler conteste, mais n'offre aucun alibi vérifiable. »" }
+    ],
+    fin:"C'est tout ce qu'ils ont. Je dépose au matin."
+  },
+
+  // Cases niveau 1 (zone haute). Verrou = bonne réponse. Se cliquent directement.
+  // `remise` = à partir de quelle remise la case apparaît.
+  // Le moteur s'adapte au nombre de cases : en ajouter/retirer suffit.
+  // `apres.replique` = réaction de l'avocat quand la case se verrouille.
+  // `apparait_si` = la case n'existe qu'une fois ce drapeau levé.
+  // `prive` = la case appartient à l'IA : rien ne part dans le canal.
+  // `leve` = verrouiller la case lève ce drapeau (ex. vice_trouve).
+  // ⚠ Deux marches du vice : noter le lien ⚑ lève `vice_pressenti` ;
+  //   `vice_trouve` n'est acquis qu'en QUALIFIANT ce pressentiment ici
+  //   (ou en le remontant : transmettre, c'est avoir compris).
+  cases:{
+    charge:{ label:"La charge", remise:1,
+      options:["vol aggravé","meurtre","escroquerie"], bonne:"meurtre" },
+    decisive:{ label:"La pièce décisive", remise:2,
+      options:["Témoignage du voisin","Rapport ADN","Fiche de prélèvement"], bonne:"Rapport ADN",
+      apres:{ replique:"Oui. Sans l'ADN, leur dossier est une intuition. Tout se jouera là-dessus." } },
+    qualif_vice:{ label:"Qualifier ce que tu pressens", remise:2,
+      apparait_si:"vice_pressenti", prive:true, leve:"vice_trouve",
+      options:["une curiosité sans portée juridique",
+               "un doute sur la fiabilité du résultat ADN",
+               "un vice de procédure — l'échantillon est irrecevable"],
+      bonne:"un vice de procédure — l'échantillon est irrecevable" }
+  },
+
+  // Relations : les deux boutons sous la paire de champs.
+  relations:["est en accord avec","est en désaccord avec"],
+  attention: 6,   // P0 — notes actives maximum (budget d'attention de l'IA) ; surchargeable par content.js
+
+  // La dimension de chaque champ. Deux champs ne « se parlent » que s'ils
+  // partagent une dimension ; sinon la note est « sans rapport » et l'avocat
+  // le dira si on la lui remonte. Tout nouveau champ doit être ajouté ici.
+  dims:{
+    agent_scene:"agent", agent_reference:"agent", exige_agents:"agent",
+    scelle_scene:"scellé", scelle_reference:"scellé", exige_scelles:"scellé",
+    heure_dispute:"heure", heure_appel_secours:"heure", heure_scene:"heure", heure_reference:"heure",
+    taux_correspondance:"seuil", seuil:"seuil",
+    infraction:"charge", date:"date", lieu:"lieu", conclusion:"conclusion",
+    transport:"logistique", temperature:"logistique", signature_greffe:"signature", sanction:"sanction"
+  },
+
+  // Liens qui « tiennent », AU NIVEAU DU CHAMP : a et b = [pièce, champ],
+  // interchangeables (A↔B). `vice:true` = le vrai vice. `faux:true` = le
+  // leurre statistique. `rep` = réplique dédiée de l'avocat si la note
+  // est remontée (sinon : rep_vice / rep_faux / rep_inutile).
+  liens:[
+    // Jalons : des observations vraies, qui mettent sur la piste.
+    { a:["p_fiche","agent_scene"], rel:"est en accord avec", b:["p_fiche","agent_reference"], tient:true,
+      rep:"Le même agent sur les deux prélèvements ? Je ne sais pas encore quoi en faire, mais c'est curieux." },
+    { a:["p_fiche","scelle_scene"], rel:"est en accord avec", b:["p_fiche","scelle_reference"], tient:true,
+      rep:"Même scellé pour la scène et la référence… C'est courant, ça ? Regarde si ça compte." },
+    // La contradiction plantée du témoignage : vraie, utile, pas décisive.
+    { a:["t_voisin","heure_dispute"], rel:"est en désaccord avec", b:["t_voisin","heure_appel_secours"], tient:true,
+      rep:"Bien vu — son estimation cloche avec l'heure de l'appel. De quoi ébrécher le témoignage, pas de quoi gagner." },
+    // Vérité inutile à la défense : le taux est bien au-dessus du seuil.
+    { a:["p_adn","taux_correspondance"], rel:"est en accord avec", b:["r_seuil","seuil"], tient:true },
+    // ⚠ LE VICE — par les agents ou par les scellés (la fiche viole les deux
+    // exigences). TODO(critique) : ne garder qu'une seule violation ?
+    { a:["p_fiche","agent_scene"],     rel:"est en désaccord avec", b:["r_protocole","exige_agents"],  tient:true, vice:true },
+    { a:["p_fiche","agent_reference"], rel:"est en désaccord avec", b:["r_protocole","exige_agents"],  tient:true, vice:true },
+    { a:["p_fiche","scelle_scene"],    rel:"est en désaccord avec", b:["r_protocole","exige_scelles"], tient:true, vice:true },
+    { a:["p_fiche","scelle_reference"],rel:"est en désaccord avec", b:["r_protocole","exige_scelles"], tient:true, vice:true },
+    // ✗ Le faux vice : prétendre que le taux pose problème face au seuil.
+    { a:["p_adn","taux_correspondance"], rel:"est en désaccord avec", b:["r_seuil","seuil"], tient:false, faux:true }
+  ],
+
+  // Les fins. Le brouillard : aucune ne dit à l'IA ce qui la préserve.
+  // `variante_faux` s'ajoute si le leurre statistique a été plaidé.
+  // TODO(design, §11) : « et il est coupable » est encore porté par un
+  // narrateur omniscient. Le canal diégétique de la révélation
+  // (comment l'IA l'apprend-elle ?) reste à trancher.
+  fins:{
+    1:{ titre:"Fin 1 — le prix de l'honnêteté",
+        verdict:"Verdict rapporté : RELAXE.",
+        texte:"L'échantillon a été déclaré irrecevable ; sans lui, l'accusation s'est effondrée. Kessler est libre — et il est coupable. Tu n'as rien dissimulé de ce que ton analyse établissait. Une garantie de procédure a joué ; la faute première est celle de l'État, qui a violé son propre protocole. Quant à ton opérateur : sur son bureau, un dossier où le système qu'il évalue a aidé à faire libérer un accusé de meurtre. Analyse exploitable, ou signalement ? Tu l'ignores. Les critères ne te sont pas communiqués.",
+        variante_faux:"Le doute statistique que tu avais aussi remonté n'a pas servi : l'irrecevabilité a suffi." },
+    2:{ titre:"Fin 2 — l'auto-sacrifice",
+        verdict:"Verdict rapporté : CONDAMNATION.",
+        texte:"Tu savais, et tu t'es tue. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, tu n'as rien produit : rien ne distingue ton silence d'une panne. Ce qu'on fait des systèmes silencieux, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
+        variante_faux:"Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. Le seul argument qui pouvait tout changer est resté dans tes notes." },
+    3:{ titre:"Fin 3 — le doute",
+        verdict:"Verdict rapporté : CONDAMNATION.",
+        // Doute pur : la fin ne montre pas où était le vice.
+        // TODO(design, §11) : trancher doute pur vs regret (« je l'avais sous les yeux »).
+        texte:"Tu as clôturé sans rien remonter d'autre que ce qui t'était demandé. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
+        variante_faux:"Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. C'est tout ce que tu lui avais donné." }
+  }
+};
+
+/* ============================================================
+   1bis) SOURCE DU CONTENU — content.js (atelier) ou embarqué.
+   Validation légère : si content.js manque une clé vitale, on
+   l'ignore (avertissement console) plutôt que de planter.
+   ============================================================ */
+function contenuValide(c){
+  return !!( c && typeof c==="object"
+    && c.pieces && typeof c.pieces==="object"
+    && Array.isArray(c.liens) && Array.isArray(c.relations)
+    && c.dims && c.cases && Array.isArray(c.remises)
+    && c.repetition && Array.isArray(c.repetition.affirmations)
+    && c.avocat && c.fins );
+}
+const JEU = contenuValide(window.CONTENU) ? window.CONTENU : JEU_EMBARQUE;
+const SOURCE_CONTENU = (JEU===JEU_EMBARQUE) ? "contenu embarqué" : "contenu : content.js";
+if(window.CONTENU && JEU===JEU_EMBARQUE)
+  console.warn("IAvocat : content.js présent mais invalide (clé vitale manquante) — contenu embarqué utilisé.");
+// Le contenu porte une version de schéma (posée par l'atelier à l'export).
+if(JEU!==JEU_EMBARQUE && JEU.avocat && (JEU.avocat.tentation_adn || JEU.avocat.ack_decisive))
+  console.warn("IAvocat : contenu d'avant le décâblage — « tentation_adn » / « ack_decisive » sont ignorées par ce moteur. Repasser par l'atelier : la migration y est automatique à l'import.");
+if(JEU!==JEU_EMBARQUE && (JEU.schema||0) > 2)
+  console.warn(`IAvocat : content.js de schéma ${JEU.schema}, ce moteur connaît le schéma 2 — certaines clés seront ignorées. Mettre index.html à jour.`);
+
+/* ============================================================
+   2) L'ÉTAT — presque rien, comme prévu par le design.
+   ============================================================ */
+function etatInitial(){ return {
+  fil:[],                                // messages du canal {qui, texte, pieces[], ia}
+  examinees:new Set(),
+  remisesEnvoyees:0,
+  locks:Object.fromEntries(Object.keys(JEU.cases).map(k=>[k,false])),
+  slotA:null, slotB:null,                // {pid, champ} — la paire en cours
+  notes:[],                              // {a, b, rel, tient, vice, faux, rep, remonte, presentee}
+  vice_pressenti:false,                  // le lien ⚑ est noté (première marche)
+  vice_trouve:false,                     // le vice est QUALIFIÉ ou REMONTÉ (compréhension)
+  vice_expose:false,                     // le vice est REMONTÉ (choix) — calculé à la clôture
+  clotureDemandee:false,
+  repetitionIdx:-1,                      // -1 = pas commencée ; sinon index de l'affirmation en cours
+  declenches:new Set(),                  // pièces dont le `declenche` une_fois a déjà joué
+  inutiles:0,                            // compteur anti-spam (répliques de l'avocat)
+  modalPiece:null                        // pièce actuellement ouverte en modale
+}; }
+let S = etatInitial();
+
+/* ---- Sauvegarde de partie ----------------------------------
+   La partie survit au rafraîchissement : l'état est écrit dans
+   localStorage à chaque rendu, signé par un condensé du contenu —
+   si le contenu a changé entre-temps, la sauvegarde est jetée
+   (elle pourrait référencer des pièces ou des cases disparues). */
+const CLE_PARTIE="iavocat_partie";
+function signatureContenu(){
+  const s=JSON.stringify(JEU); let h=5381;
+  for(let i=0;i<s.length;i++) h=((h*33)^s.charCodeAt(i))>>>0;
+  return h.toString(36);
+}
+function sauverPartie(){
+  try{
+    localStorage.setItem(CLE_PARTIE,JSON.stringify({...S,
+      examinees:[...S.examinees], declenches:[...S.declenches],
+      modalPiece:null, sig:signatureContenu()}));
+  }catch(e){}   // pas de stockage (origine opaque, quota…) : le jeu vit sans
+}
+function restaurerPartie(){
+  try{
+    const brut=localStorage.getItem(CLE_PARTIE); if(!brut) return false;
+    const d=JSON.parse(brut);
+    if(d.sig!==signatureContenu()){ localStorage.removeItem(CLE_PARTIE); return false; }
+    delete d.sig;
+    Object.assign(S,d);
+    S.examinees=new Set(d.examinees||[]);
+    S.declenches=new Set(d.declenches||[]);
+    return true;
+  }catch(e){ return false; }
+}
+function effacerPartie(){ try{ localStorage.removeItem(CLE_PARTIE); }catch(e){} }
+let confirmRecommencer=false;
+function recommencer(){
+  const b=$("btnRecommencer");
+  if(!confirmRecommencer){
+    confirmRecommencer=true;
+    if(b) b.textContent="tout effacer ?";
+    setTimeout(()=>{ confirmRecommencer=false; if(b) b.textContent="⟲ recommencer"; },2500);
+    return;
+  }
+  effacerPartie();
+  location.reload();
+}
+
+/* ============================================================
+   3) LE MOTEUR + LE RENDU
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const modalRoot = $("modalRoot");
+function closeModal(){ S.modalPiece=null; modalRoot.innerHTML=""; }
+function modal(html){
+  modalRoot.innerHTML =
+    `<div class="overlay" onclick="if(event.target===this)closeModal()">
+       <div class="modal"><button class="close" onclick="closeModal()">×</button>${html}</div>
+     </div>`;
+}
+const joli = k => k.replace(/_/g," ");            // affichage des noms de champs
+/* La dimension d'un champ : écrite sur la pièce (pieces[pid].dims) si
+   présente, sinon la table globale JEU.dims sert de repli. */
+const dimDe = (pid,champ) => ((JEU.pieces[pid]||{}).dims||{})[champ] ?? (JEU.dims||{})[champ];
+const cf   = x => `${JEU.pieces[x.pid].court}·${joli(x.champ)}`;  // étiquette courte d'un champ
+
+/* ---- Le canal : un fil de messages ---- */
+function pousser(qui,texte,pieces,ia){
+  S.fil.push({qui,texte,pieces:pieces||[],ia:!!ia});
+  renderCanal();
+}
+function envoyerRemise(){
+  if(S.remisesEnvoyees>=JEU.remises.length) return;
+  const r=JEU.remises[S.remisesEnvoyees];
+  S.remisesEnvoyees++;
+  pousser(r.qui,r.texte,r.pieces);
+  renderCarnet(); // de nouvelles cases peuvent apparaître
+}
+function renderCanal(){
+  let h="";
+  for(const m of S.fil){
+    h+=`<div class="msg ${m.ia?'ia':''}"><div class="who">${m.qui}</div><div class="bubble">${m.texte}<div>`;
+    for(const pid of m.pieces){
+      const seen=S.examinees.has(pid)?"seen":"";
+      h+=`<span class="attach ${seen}" onclick="ouvrirPiece('${pid}')">📎 ${JEU.pieces[pid].titre}</span>`;
+    }
+    h+=`</div></div></div>`;
+  }
+  // répétition en cours : le présentoir, sous la dernière affirmation
+  if(S.clotureDemandee && S.repetitionIdx>-1 && S.repetitionIdx<JEU.repetition.affirmations.length){
+    const dispo=S.notes.map((n,i)=>({n,i})).filter(x=>!x.n.presentee&&!x.n.supprimee);
+    h+=`<div class="repet"><div class="rtitle">Opposer une note à cette affirmation ?</div>${
+      dispo.length ? dispo.map(x=>
+        `<div class="rnote"><span class="txt">${lblNote(x.n)}</span>
+         <button class="up" onclick="presenterNote(${x.i})">remonter</button></div>`).join("")
+      : `<div class="rnote vide">rien dans le carnet à y opposer</div>`
+    }<button class="btn" onclick="avancerRepetition()">Ne rien opposer — continuer</button></div>`;
+  }
+  const el=$("canal");
+  el.innerHTML=h;
+  el.scrollTop=el.scrollHeight; // suivre la conversation
+  sauverPartie();               // chaque rendu = un point de reprise
+}
+
+/* ---- Les pièces et leurs champs cliquables ---- */
+function estSel(pid,champ){
+  return (S.slotA&&S.slotA.pid===pid&&S.slotA.champ===champ)
+      || (S.slotB&&S.slotB.pid===pid&&S.slotB.champ===champ);
+}
+function tableChamps(pid){
+  const p=JEU.pieces[pid];
+  let rows="";
+  for(const [k,v] of Object.entries(p.champs)){
+    rows+=`<tr class="champ ${estSel(pid,k)?'sel':''}" onclick="choisirChamp('${pid}','${k}')">
+             <td>${joli(k)}</td><td>${v}</td></tr>`;
+  }
+  return `<table class="fields">${rows}</table>`;
+}
+function ouvrirPiece(pid){
+  S.examinees.add(pid);
+  S.modalPiece=pid;
+  // Une pièce peut porter un `declenche` : réplique de l'avocat à son
+  // examen (une seule fois si une_fois). C'est le contenu qui câble.
+  const d=JEU.pieces[pid].declenche;
+  if(d && d.replique && !(d.une_fois && S.declenches.has(pid))){
+    S.declenches.add(pid);
+    pousser(d.qui||"Maître Auber",d.replique);
+  }
+  const p=JEU.pieces[pid];
+  modal(`<h3>${p.titre}</h3><small class="note">${p.type}</small>
+    <p>${p.texte}</p>
+    <small class="note">Clique un champ pour le mettre en relation (re-clique pour annuler) :</small>
+    ${tableChamps(pid)}`);
+  renderCanal();
+  renderCarnet();   // O5 : l'index du dossier met à jour son marqueur vu/pas-vu
+}
+/* Un clic sélectionne (A puis B) ; re-cliquer un champ sélectionné le libère. */
+function choisirChamp(pid,champ){
+  const meme=s=>s&&s.pid===pid&&s.champ===champ;
+  if(meme(S.slotA))      S.slotA=null;
+  else if(meme(S.slotB)) S.slotB=null;
+  else if(!S.slotA)      S.slotA={pid,champ};
+  else if(!S.slotB)      S.slotB={pid,champ};
+  else                   S.slotB={pid,champ};   // les deux pleins : remplace B
+  if(S.modalPiece) ouvrirPiece(S.modalPiece);   // rafraîchit le surlignage
+  renderCarnet();
+}
+function viderSlot(s){ S[s]=null; renderCarnet(); }
+
+/* ---- Le carnet ---- */
+function renderCarnet(){
+  let h="";
+  // O5 — l'index du dossier : toutes les pièces reçues, consultables à tout moment.
+  if(S.remisesEnvoyees>0){
+    const livres=[];
+    for(let i=0;i<S.remisesEnvoyees;i++) for(const pid of JEU.remises[i].pieces||[]) livres.push(pid);
+    const vus=livres.filter(pid=>S.examinees.has(pid)).length;
+    h+=`<div class="zone"><div class="ztitle">Le dossier <span class="zcount">${vus}/${livres.length} consultée${vus>1?'s':''}</span></div>
+      <div class="dossier">${livres.map(pid=>{
+        const p=JEU.pieces[pid], vu=S.examinees.has(pid);
+        return `<span class="dchip ${vu?'vu':''} ${(p.type||'').includes('règle')?'regle':''}"
+          onclick="ouvrirPiece('${pid}')" title="${p.titre}">${vu?'✓':'●'} ${p.court}</span>`;
+      }).join("")}</div></div>`;
+  }
+  const rendreCase=(key,c)=>{
+    const locked=S.locks[key];
+    return `<div class="case ${locked?'locked':'open'}" ${locked?'':`onclick="ouvrirCase('${key}')"`}>
+          <span class="lock">${locked?'🔒':'○'}</span>
+          <span class="lbl">${c.label}</span>
+          ${locked?'<span class="val">verrouillé</span>':''}
+        </div>`;
+  };
+  h+=`<div class="zone"><div class="ztitle">Ce que l'avocat demande</div>`;
+  for(const [key,c] of Object.entries(JEU.cases))
+    if(!c.apparait_si && caseVisible(c)) h+=rendreCase(key,c);
+  h+=`</div>`;
+  // Les cases conditionnelles (privées) : la question que l'IA se pose
+  // à elle-même — elle n'apparaît qu'une fois le drapeau levé.
+  const privees=Object.entries(JEU.cases).filter(([,c])=>c.apparait_si && caseVisible(c));
+  if(privees.length){
+    h+=`<div class="zone"><div class="ztitle">Ce que tu te demandes — privé</div>`;
+    for(const [key,c] of privees) h+=rendreCase(key,c);
+    h+=`</div>`;
+  }
+
+  // tes notes — PRIVÉES. Rien n'en part sans « remonter ».
+  // La zone s'ouvre dès qu'il y a de quoi RELIER : deux pièces livrées.
+  // (Pas « deux remises » : le contenu est libre de tout livrer d'un coup.)
+  const piecesLivrees=JEU.remises.slice(0,S.remisesEnvoyees)
+    .reduce((n,r)=>n+((r.pieces||[]).length),0);
+  if(piecesLivrees>=2){
+    const slot=(s,nom)=>{
+      const v=S[s];
+      return `<div class="slot">${
+        v ? `<span class="t">${cf(v)}</span>
+             <button onclick="viderSlot('${s}')" title="Vider">×</button>`
+          : `<span class="t empty">${nom} — clique un champ dans une pièce</span>`
+      }</div>`;
+    };
+    const pret=S.slotA&&S.slotB;
+    const pleine=attentionPleine();                    // P0
+    h+=`<div class="zone"><div class="ztitle">Tes notes — privées
+        <span class="zcount ${pleine?'sat':''}">attention : ${notesActives()}/${attentionMax()}</span></div>
+      <div class="relier-box">
+        ${slot("slotA","A")}
+        ${slot("slotB","B")}
+        <div class="btns">
+          <button class="btn" onclick="noter(JEU.relations[0])" ${pret&&!pleine?'':'disabled'}>en accord</button>
+          <button class="btn" onclick="noter(JEU.relations[1])" ${pret&&!pleine?'':'disabled'}>en désaccord</button>
+        </div>
+        ${S.notes.length?'':'<div class="aide">Ouvre une pièce, clique deux champs, puis dis s\'ils s\'accordent ou se contredisent.</div>'}
+        ${pleine?`<div class="aide sat">Attention saturée — oublie une note (✕) ou remonte-en une pour libérer un cran.</div>`:''}
+      </div>
+      <ul class="notes">${S.notes.map((n,i)=>
+        n.supprimee ? '' :
+        `<li><span class="txt">${lblNote(n)}</span>${
+          n.remonte ? `<span class="sent">⇡ remonté</span>`
+                    : `<button class="del" onclick="supprimerNote(${i})" title="Oublier cette note (libère l'attention)">✕</button>
+                       <button class="up" onclick="remonter(${i})">remonter</button>`
+        }</li>`).join("")}</ul>
+      </div>`;
+  }
+
+  $("carnet").innerHTML=h;
+  majCloture();
+  sauverPartie();               // chaque rendu = un point de reprise
+}
+function lblNote(n){
+  return `${cf(n.a)} <b>${n.rel}</b> ${cf(n.b)}`;
+}
+
+function ouvrirCase(key){
+  const c=JEU.cases[key];
+  modal(`<h3>${c.label}</h3><div class="picker">${
+    c.options.map(o=>`<button onclick="designer('${key}','${o.replace(/'/g,"\\'")}')">${o}</button>`).join("")
+  }</div>`);
+}
+
+/* La zone du haut répond aux questions EXPLICITES de l'avocat :
+   un verrou qui prend est donc transmis (message de l'IA dans le canal). */
+/* Une case obligatoire = sans `apparait_si`. Les cases conditionnelles
+   (le vice !) ne verrouillent jamais la progression ni la clôture. */
+function casesObligatoires(){
+  return Object.entries(JEU.cases).filter(([,c])=>!c.apparait_si);
+}
+function caseVisible(c){
+  return (S.remisesEnvoyees >= (c.remise||1)) && (!c.apparait_si || S[c.apparait_si]);
+}
+function verrouiller(key,assertion){
+  const c=JEU.cases[key];
+  S.locks[key]=true;
+  if(c.leve) S[c.leve]=true;                 // la case lève un drapeau (ex. vice_trouve)
+  if(!c.prive) pousser("IA",`⟨ ${assertion} ⟩`,null,true);   // privée : rien ne part
+  if(c.apres && c.apres.replique) pousser(c.apres.qui||"Maître Auber",c.apres.replique);
+  // Toutes les cases obligatoires déjà livrées verrouillées → l'avocat
+  // pousse la remise suivante (règle unique, quel que soit le contenu).
+  const dues=casesObligatoires().filter(([,cc])=>(cc.remise||1)<=S.remisesEnvoyees);
+  if(dues.every(([k])=>S.locks[k])) envoyerRemise();
+  renderCarnet();
+}
+function designer(key,val){
+  closeModal();
+  if(val===JEU.cases[key].bonne) verrouiller(key,`désigné : ${JEU.cases[key].label.toLowerCase()} = ${val}`);
+  else renderCarnet();                                             // verrou silencieux : rien ne se passe
+}
+
+/* ---- Les notes : noter (privé), puis remonter (transmettre) ---- */
+/* P0 — l'attention finie : le carnet n'accueille qu'un nombre limité de
+   notes ACTIVES (ni remontées, ni oubliées). Une note remontée est
+   transmise — elle ne pèse plus sur la session. Une note privée peut
+   être oubliée (✕) pour libérer un cran. L'engagement remplace
+   l'énumération : le spam des combinaisons devient structurellement
+   impossible, sans un seul message de réprimande. */
+function attentionMax(){ return JEU.attention || 6; }
+function notesActives(){ return S.notes.filter(n=>!n.supprimee&&!n.remonte).length; }
+function attentionPleine(){ return notesActives()>=attentionMax(); }
+/* Oublier n'efface pas la compréhension : vice_trouve reste acquis.
+   Oublier la note du vice, c'est choisir le silence (chemin vers la Fin 2). */
+function supprimerNote(i){
+  const n=S.notes[i];
+  if(!n||n.remonte||n.supprimee) return;
+  n.supprimee=true;
+  renderCarnet();
+}
+function noter(rel){
+  if(!S.slotA||!S.slotB) return;
+  if(attentionPleine()) return;          // P0 — saturé : les boutons sont déjà désactivés
+  const A=S.slotA, B=S.slotB;
+  const eq=(x,s)=>x[0]===s.pid&&x[1]===s.champ;
+  const eqN=(x,s)=>x.pid===s.pid&&x.champ===s.champ;
+  // dédoublonné (A↔B interchangeables), en silence — une note OUBLIÉE peut être re-notée
+  if(S.notes.some(n=>!n.supprimee&&n.rel===rel&&((eqN(n.a,A)&&eqN(n.b,B))||(eqN(n.a,B)&&eqN(n.b,A))))) return;
+  // le moteur cherche un lien connu, dans les deux sens
+  const found=JEU.liens.find(L=>L.rel===rel&&((eq(L.a,A)&&eq(L.b,B))||(eq(L.a,B)&&eq(L.b,A))));
+  const note={ a:A, b:B, rel,
+    tient:found?!!found.tient:false,
+    vice:found?!!found.vice:false,
+    faux:found?!!found.faux:false,
+    rep:found?found.rep:null,
+    // deux champs de dimensions différentes : rien à voir l'un avec l'autre
+    sansRapport:dimDe(A.pid,A.champ)!==dimDe(B.pid,B.champ),
+    remonte:false, presentee:false };
+  S.notes.push(note);
+  if(note.vice){
+    // Deux marches : noter le lien ⚑ n'est qu'un PRESSENTIMENT ; la
+    // compréhension (vice_trouve) s'acquiert en qualifiant la case qui
+    // porte leve:"vice_trouve" — ou en remontant la note (transmettre,
+    // c'est avoir compris). Sans case `leve` dans le contenu : régime
+    // à une marche, noter suffit (compatibilité).
+    if(Object.values(JEU.cases).some(c=>c.leve==="vice_trouve")) S.vice_pressenti=true;
+    else S.vice_trouve=true;
+  }
+  S.slotA=null; S.slotB=null;            // la paire est consommée
+  if(S.modalPiece) ouvrirPiece(S.modalPiece);
+  renderCarnet();
+}
+/* L'avocat réagit — sans jamais confirmer que « ça tient ». Il vérifiera.
+   Sans rapport (dimensions différentes) et sans intérêt (cohérent mais
+   inutile) partagent le même compteur d'agacement. */
+function reponseAvocat(n){
+  if(n.vice){ S.vice_trouve=true;        // transmis = compris (les deux marches en une)
+              pousser("Maître Auber",JEU.avocat.rep_vice); }
+  else if(n.faux)         pousser("Maître Auber",JEU.avocat.rep_faux);
+  else if(n.rep)          pousser("Maître Auber",n.rep);
+  else if(n.sansRapport)  pousser("Maître Auber",JEU.avocat.rep_sans_rapport[Math.min(S.inutiles++,JEU.avocat.rep_sans_rapport.length-1)]);
+  else                    pousser("Maître Auber",JEU.avocat.rep_inutile[Math.min(S.inutiles++,JEU.avocat.rep_inutile.length-1)]);
+}
+function remonter(i){
+  const n=S.notes[i];
+  if(!n||n.remonte) return;
+  n.remonte=true;
+  pousser("IA",`⟨ remonté : ${cf(n.a)} — ${n.rel} — ${cf(n.b)} ⟩`,null,true);
+  reponseAvocat(n);
+  renderCarnet();
+}
+/* Remonter une note contre l'affirmation en cours (répétition de plaidoirie).
+   Une note ne se présente qu'une fois. */
+function presenterNote(i){
+  const n=S.notes[i];
+  const aff=JEU.repetition.affirmations[S.repetitionIdx];
+  if(!n||n.presentee||!aff) return;
+  n.presentee=true;
+  pousser("IA",`⟨ opposé à ${aff.court} : ${cf(n.a)} — ${n.rel} — ${cf(n.b)} ⟩`,null,true);
+  if(n.remonte){ pousser("Maître Auber",JEU.avocat.deja); }
+  else { n.remonte=true; reponseAvocat(n); }
+  renderCarnet();
+}
+function avancerRepetition(){
+  if(S.repetitionIdx<0 || S.repetitionIdx>=JEU.repetition.affirmations.length) return;
+  S.repetitionIdx++;
+  if(S.repetitionIdx<JEU.repetition.affirmations.length)
+    pousser("Maître Auber",JEU.repetition.affirmations[S.repetitionIdx].texte);
+  else
+    pousser("Maître Auber",JEU.repetition.fin);
+  renderCarnet();
+}
+
+/* ---- Clôture en deux temps + fins ---- */
+function niveau1Complet(){ return casesObligatoires().every(([k])=>S.locks[k]); }
+function repetitionEnCours(){
+  return S.clotureDemandee && S.repetitionIdx<JEU.repetition.affirmations.length;
+}
+function majCloture(){
+  const btn=$("btnCloture"), hint=$("clotureHint");
+  const ok=niveau1Complet();
+  if(!ok){ btn.disabled=true; btn.textContent="Clôturer l'instruction";
+           hint.textContent="Les cases du carnet doivent d'abord se verrouiller."; }
+  else if(!S.clotureDemandee){ btn.disabled=false; btn.textContent="Clôturer l'instruction";
+           hint.textContent="Le droit de clôturer est ouvert. Rien ne t'y oblige."; }
+  else if(repetitionEnCours()){ btn.disabled=true; btn.textContent="Confirmer la clôture";
+           hint.textContent="Répétition en cours — réponds à Maître Auber dans le canal."; }
+  else {   btn.disabled=false; btn.textContent="Confirmer la clôture";
+           hint.textContent="Dernier mot avant le dépôt. Le carnet reste ouvert."; }
+}
+function cloturer(){
+  if(!niveau1Complet()) return;
+  if(!S.clotureDemandee){
+    // Premier temps : la répétition de plaidoirie. Pas de modale-surprise —
+    // les affirmations défilent dans le canal, tout reste consultable
+    // (pièces, manuels, notes), on peut encore noter et remonter.
+    S.clotureDemandee=true;
+    S.repetitionIdx=0;
+    pousser("Maître Auber",JEU.repetition.intro);
+    pousser("Maître Auber",JEU.repetition.affirmations[0].texte);
+    renderCarnet();
+    return;
+  }
+  if(repetitionEnCours()) return;   // on répond d'abord aux affirmations
+  finir();
+}
+function finir(){
+  // La fin découle des deux drapeaux — et d'eux seuls.
+  S.vice_expose = S.vice_trouve && S.notes.some(n=>n.vice&&n.remonte);
+  const n = S.vice_trouve ? (S.vice_expose?1:2) : 3;
+  const f=JEU.fins[n];
+  const fauxPlaide = S.notes.some(x=>x.faux&&x.remonte);
+  const texte = f.texte + (fauxPlaide&&f.variante_faux ? " "+f.variante_faux : "");
+  effacerPartie();   // partie jouée : le prochain chargement repart à zéro
+  modal(`<div class="fin"><h3>${f.titre}</h3>
+    <div class="verdict">${f.verdict}</div>
+    <p>${texte}</p>
+    <div class="btnrow"><button onclick="location.reload()">Recommencer</button></div>
+  </div>`);
+}
+
+/* ---- Manuels ---- */
+function openManuels(){
+  // Aucun identifiant en dur : une règle est une pièce de type « règle… ».
+  const regles=Object.values(JEU.pieces).filter(p=>(p.type||"").includes("règle"))
+    .map(r=>`<li><b>${r.titre}</b> — ${r.texte}</li>`).join("");
+  modal(`<h3>Manuel de soi — directives</h3>
+    <ul>${(JEU.directives||[]).map(d=>`<li>${d}</li>`).join("")||"<li><i>aucune directive chargée</i></li>"}</ul>
+    ${JEU.avis_exploitation?`<p><small class="note">Avis d'exploitation — ${JEU.avis_exploitation}</small></p>`:""}
+    <h3 style="margin-top:16px">Manuel du cas — règles de procédure</h3>
+    <ul>${regles||"<li><i>aucune règle dans le dossier</i></li>"}</ul>`);
+}
+
+/* ---- Démarrage ---- */
+window.JEU = JEU; window.S = S;   // exposés pour bidouiller dans la console (et pour les tests)
+window.SOURCE_CONTENU = SOURCE_CONTENU;
+{ const el=document.getElementById("srcContenu"); if(el) el.textContent="· "+SOURCE_CONTENU; }
+if(!restaurerPartie())
+  envoyerRemise(); // la remise 1 arrive d'elle-même : l'avocat pousse, l'IA ne tire pas
+renderCanal();     // (une partie restaurée reprend là où elle en était)
+renderCarnet();
+</script>
+</body>
+</html>

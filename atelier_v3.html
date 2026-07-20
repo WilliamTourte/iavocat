@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IAvocat — Atelier v3 · banc de diagnostic du dossier</title>
+<!--
+  ============================================================
+  IAvocat — ATELIER DE CONCEPTION v3 (outil, pas le jeu)
+  ------------------------------------------------------------
+  Trois onglets :
+  • Graphe & diagnostic — l'ESPACE du dossier (qui se relie à quoi,
+    et est-ce que ça tient)
+  • Étapes du jeu — le TEMPS du dossier :
+      - la frise : remises → verrous → répétition → fins, ÉDITABLE
+        (textes des remises, répliques de l'avocat, affirmations,
+        fins ; déplacer une pièce d'une remise à l'autre)
+      - le pas-à-pas : une simulation du déroulé, action par action,
+        avec les drapeaux (vice_trouvé / exposé) en direct
+  • JSON — le contenu brut, appliquable
+
+  ⚙ MIROIR DU MOTEUR : les déclencheurs (« le verrou de la charge
+  envoie la remise 2 », « ouvrir la pièce décisive déclenche la
+  tentation »…) ne vivent pas dans content.js mais dans le code du
+  jeu (index.html). Cette vue les RECOPIE. Si le moteur change,
+  resynchroniser les fonctions marquées ⚙ ci-dessous.
+  ============================================================
+-->
+<style>
+  :root{
+    --bg:#0e1116; --panel:#161b22; --panel2:#1c232d; --line:#2b3440; --line2:#3a4656;
+    --txt:#d7dde5; --muted:#8b97a6; --dim:#66707d;
+    --accent:#6fb3d6; --ok:#7bbf8a; --warn:#d6a96f; --err:#e06f6f;
+    --vice:#d98f6f; --faux:#c9a24b;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:14px;line-height:1.5;
+    display:flex;flex-direction:column;overflow:hidden}
+
+  header{display:flex;align-items:baseline;gap:10px;padding:11px 18px;border-bottom:1px solid var(--line);flex:0 0 auto;flex-wrap:wrap}
+  header h1{margin:0;font-size:15px;font-weight:600;letter-spacing:.4px}
+  header .sub{color:var(--muted);font-size:12.5px}
+  header .spacer{flex:1}
+  .tbtn{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:6px;
+    padding:6px 11px;cursor:pointer;font-size:12.5px;font-family:var(--sans)}
+  .tbtn:hover{border-color:var(--accent)}
+  .tbtn:disabled{opacity:.4;cursor:not-allowed}
+  .tbtn.warnstyle:hover{border-color:var(--warn)}
+
+  nav.tabs{display:flex;gap:2px;padding:0 18px;border-bottom:1px solid var(--line);flex:0 0 auto}
+  nav.tabs button{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);
+    padding:9px 14px;cursor:pointer;font-size:13px;font-family:var(--sans)}
+  nav.tabs button.on{color:var(--txt);border-bottom-color:var(--accent)}
+
+  main{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:1fr 340px}
+  main.jsonmode{grid-template-columns:1fr}
+  main.etapesmode{grid-template-columns:1fr}
+  #right{border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:var(--panel)}
+  main.etapesmode #stage, main.etapesmode #right{display:none}
+  main.jsonmode #stage, main.jsonmode #right{display:none}
+
+  /* ---- le canevas du graphe ---- */
+  #stage{position:relative;min-height:0;overflow:auto;background:
+      radial-gradient(circle at 1px 1px, #1a212b 1px, transparent 0) 0 0/26px 26px, var(--bg)}
+  #canvas{position:relative;width:2000px;height:1400px}
+  #edges{position:absolute;inset:0;pointer-events:none;overflow:visible}
+  .toolbar{position:sticky;top:0;z-index:6;display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+    padding:8px 12px;background:rgba(14,17,22,.86);backdrop-filter:blur(3px);border-bottom:1px solid var(--line)}
+  .toolbar .hint{color:var(--muted);font-size:12px}
+  .toolbar .hint.err{color:var(--err)}
+  .addbtn{background:var(--panel2);color:var(--txt);border:1px dashed var(--line2);border-radius:6px;
+    padding:5px 10px;cursor:pointer;font-size:12px}
+  .addbtn:hover{border-color:var(--accent);border-style:solid}
+
+  .card{position:absolute;width:212px;background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    z-index:2;box-shadow:0 6px 20px rgba(0,0,0,.28)}
+  .card.regle{border-color:#4a4030;background:#191712}
+  .card .chead{display:flex;align-items:center;gap:7px;padding:8px 10px;border-bottom:1px solid var(--line);
+    cursor:grab;user-select:none}
+  .card .chead:active{cursor:grabbing}
+  .card .kind{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);font-family:var(--mono)}
+  .card .ctitle{flex:1;font-size:12.5px;font-weight:600;line-height:1.2}
+  .card.regle .ctitle{color:var(--warn)}
+  .card .cid{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+  .card .cbody{padding:7px 8px 9px}
+  .chip{display:flex;align-items:center;gap:6px;padding:5px 7px;margin:3px 0;border:1px solid var(--line);
+    border-radius:6px;background:var(--panel2);cursor:pointer;font-family:var(--mono);font-size:11.5px}
+  .chip:hover{border-color:var(--accent)}
+  .chip .cn{color:var(--muted)}
+  .chip .cv{flex:1;text-align:right;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .chip.selA{border-color:var(--accent);background:#12324a;color:#bfe0f2}
+  .chip.selB{border-color:var(--ok);background:#14301c}
+  .chip.orphan{border-style:dashed;border-color:var(--warn)}
+  .chip.noise{opacity:.55}
+  .chip.flag{outline:2px solid var(--err);outline-offset:1px}
+  .chip .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;background:var(--dim)}
+  .card .cfoot{display:flex;gap:5px;padding:2px 8px 8px}
+  .addchip{flex:1;background:none;border:1px dashed var(--line2);color:var(--muted);border-radius:6px;
+    padding:4px;cursor:pointer;font-size:11px;font-family:var(--mono)}
+  .addchip:hover{border-color:var(--accent);color:var(--txt)}
+  .delcard{background:none;border:1px dashed var(--line2);color:var(--dim);border-radius:6px;
+    padding:4px 8px;cursor:pointer;font-size:11px;font-family:var(--mono)}
+  .delcard:hover{border-color:var(--err);color:var(--err)}
+  .zonelbl{position:absolute;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);
+    font-family:var(--mono);z-index:1}
+
+  /* ---- panneau droit : diagnostic + inspecteur ---- */
+  #right h2{margin:0;padding:10px 14px;font-size:11px;text-transform:uppercase;letter-spacing:.7px;
+    color:var(--muted);border-bottom:1px solid var(--line);font-weight:600}
+  #diag{flex:1 1 auto;overflow:auto;padding:8px 10px}
+  .tally{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap}
+  .pill{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:20px;border:1px solid var(--line)}
+  .pill.e{color:var(--err);border-color:#5a3232}
+  .pill.a{color:var(--warn);border-color:#5a4a30}
+  .pill.i{color:var(--muted)}
+  .issue{display:flex;gap:8px;padding:7px 8px;border:1px solid var(--line);border-radius:7px;margin-bottom:6px;
+    cursor:pointer;background:var(--panel2)}
+  .issue:hover{border-color:var(--line2)}
+  .issue .mark{font-family:var(--mono);font-weight:700;flex:0 0 auto}
+  .issue.e .mark{color:var(--err)} .issue.a .mark{color:var(--warn)} .issue.i .mark{color:var(--dim)}
+  .issue .body{flex:1;font-size:12px}
+  .issue .body small{color:var(--muted);display:block;margin-top:2px;font-size:11px}
+  .clean{color:var(--ok);font-size:12.5px;padding:10px 6px}
+
+  #insp{flex:0 0 auto;max-height:46%;overflow:auto;border-top:1px solid var(--line);padding:10px 12px;background:var(--panel)}
+  #insp .empty{color:var(--muted);font-size:12.5px}
+  #insp label{display:block;font-size:11px;color:var(--muted);margin:9px 0 3px;text-transform:uppercase;letter-spacing:.4px}
+  #insp input[type=text],#insp select,#insp textarea{width:100%;background:var(--panel2);color:var(--txt);
+    border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:var(--mono);font-size:12px}
+  #insp textarea{resize:vertical;min-height:52px;line-height:1.4}
+  #insp .row{display:flex;gap:7px}
+  #insp .row>*{flex:1}
+  .relbtns{display:flex;gap:7px;margin-top:8px}
+  .relbtns button{flex:1;background:#20303f;color:var(--txt);border:1px solid var(--line);border-radius:6px;
+    padding:8px;cursor:pointer;font-size:12px}
+  .relbtns button:hover{border-color:var(--accent)}
+  .chk{display:flex;align-items:center;gap:7px;margin:7px 0;font-family:var(--mono);font-size:12px;cursor:pointer}
+  .chk input{accent-color:var(--accent)}
+  .danger{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:6px;padding:6px 10px;
+    cursor:pointer;font-size:12px;margin-top:10px}
+  .danger:hover{border-color:var(--err)}
+  .danger.arm{background:#3a1c1c;border-color:var(--err);color:#f0c0c0}
+  .ipath{font-family:var(--mono);font-size:11.5px;color:var(--accent);word-break:break-all}
+  .inote{color:var(--warn);font-size:12px;margin-bottom:6px}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);padding:6px 14px;
+    border-top:1px solid var(--line)}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .legend i{width:16px;height:0;border-top:2px solid;display:inline-block}
+
+  /* ---- onglet JSON ---- */
+  #jsonpane{display:none;padding:14px 18px;overflow:auto;min-height:0}
+  main.jsonmode #jsonpane{display:block}
+  #jsonpane p{color:var(--muted);font-size:12.5px;max-width:70ch}
+  #jsonta{width:100%;min-height:60vh;background:#0b0e12;color:#cfe3ef;border:1px solid var(--line);
+    border-radius:8px;padding:12px;font-family:var(--mono);font-size:12px;line-height:1.5}
+  #jsonmsg{font-family:var(--mono);font-size:12px;margin-top:8px;min-height:1.2em}
+
+  /* ============================================================
+     ONGLET ÉTAPES — frise + pas-à-pas
+     ============================================================ */
+  #etapes{display:none;min-height:0}
+  main.etapesmode #etapes{display:grid;grid-template-columns:1fr 430px;min-height:0}
+  .fcol{min-height:0;overflow:auto}
+  #frise{padding:14px 18px 40px;border-right:1px solid var(--line)}
+  .mirbanner{font-size:12px;color:var(--muted);border:1px dashed var(--line2);border-radius:8px;
+    padding:8px 11px;margin-bottom:14px;max-width:78ch}
+  .mirbanner b{color:var(--warn)}
+  .mir{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:10.5px;color:var(--warn);
+    border:1px dashed #5a4a30;border-radius:5px;padding:1px 6px;vertical-align:middle;cursor:help}
+  .step{position:relative;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+    padding:11px 14px 13px;margin:0 0 0 26px}
+  .step + .step{margin-top:26px}
+  .step::before{content:"";position:absolute;left:-19px;top:18px;width:11px;height:11px;border-radius:50%;
+    background:var(--panel2);border:2px solid var(--line2)}
+  .step.trig::before{border-color:var(--warn);border-style:dashed}
+  .step.fins::before{border-color:var(--accent)}
+  .step + .step::after{content:"";position:absolute;left:-14px;top:-27px;height:26px;border-left:2px solid var(--line)}
+  .step h3{margin:0 0 4px;font-size:13px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .step h3 .cid{font-family:var(--mono);font-size:10.5px;color:var(--dim);font-weight:400}
+  .step h3 .sp{flex:1}
+  .step label{display:block;font-size:10.5px;color:var(--dim);margin:8px 0 2px;text-transform:uppercase;letter-spacing:.4px}
+  .step input[type=text], .step select, .step textarea{width:100%;background:var(--panel2);color:var(--txt);
+    border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:var(--sans);font-size:13px}
+  .step textarea{resize:vertical;min-height:44px;line-height:1.45}
+  .step textarea.mono, .step input.mono{font-family:var(--mono);font-size:12px}
+  .pchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+  .pchip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px;
+    border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:4px 7px;cursor:pointer}
+  .pchip:hover{border-color:var(--accent)}
+  .pchip.regle{border-color:#4a4030;color:var(--warn)}
+  .pchip .x{color:var(--dim);cursor:pointer;font-size:12px;padding:0 1px}
+  .pchip .x:hover{color:var(--err)}
+  .pselect{width:auto !important;font-size:11.5px !important;padding:3px 6px !important;font-family:var(--mono) !important}
+  .steprow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .caseline{display:flex;gap:8px;align-items:center;font-size:12.5px;margin-top:5px;flex-wrap:wrap}
+  .caseline .cl{font-family:var(--mono);color:var(--ok)}
+  .affrow{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:8px;background:var(--panel2)}
+  .affrow .steprow input{flex:1}
+  .xsmall{background:none;border:1px dashed var(--line2);color:var(--dim);border-radius:6px;
+    padding:3px 8px;cursor:pointer;font-size:11px;font-family:var(--mono)}
+  .xsmall:hover{border-color:var(--err);color:var(--err)}
+  .xsmall.arm{border-color:var(--err);color:var(--err);border-style:solid}
+  .addrow{background:none;border:1px dashed var(--line2);color:var(--muted);border-radius:7px;
+    padding:6px 10px;cursor:pointer;font-size:12px;margin-top:10px}
+  .addrow:hover{border-color:var(--accent);color:var(--txt)}
+  .fincard{border:1px solid var(--line);border-radius:8px;padding:9px 11px;margin-top:10px;background:var(--panel2)}
+  .fincard h4{margin:0 0 2px;font-size:12.5px}
+  .repline{font-size:11px;color:var(--dim);font-family:var(--mono);margin-top:6px}
+
+  /* ---- pas-à-pas ---- */
+  #simcol{display:flex;flex-direction:column;min-height:0;background:var(--panel)}
+  #simcol .simhead{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);flex:0 0 auto}
+  #simcol .simhead h2{margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:600;flex:1}
+  #simfil{flex:1 1 auto;overflow:auto;padding:12px 14px;min-height:0}
+  .sbub{border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:8px 11px;margin-bottom:10px;font-size:13px}
+  .sbub .swho{font-size:11px;color:var(--muted);margin-bottom:2px}
+  .sbub.ia{background:#0f2230;border-color:#23506e;font-family:var(--mono);font-size:12px;color:#bfe0f2}
+  .sbub.ia .swho{color:#5b8aa6}
+  .satt{display:inline-flex;align-items:center;gap:4px;margin:5px 5px 0 0;border:1px dashed var(--line2);
+    border-radius:6px;padding:2px 7px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .sys{color:var(--dim);font-size:12px;font-style:italic;margin:0 0 10px 4px}
+  .simfin{border:1px solid var(--accent);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+  .simfin h4{margin:0 0 4px;font-size:13px;color:var(--accent)}
+  .simfin .v{font-family:var(--mono);font-size:11.5px;color:var(--warn);margin-bottom:5px}
+  #simflags{flex:0 0 auto;border-top:1px solid var(--line);padding:8px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .flagpill{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:20px;border:1px solid var(--line);color:var(--dim)}
+  .flagpill.on{color:var(--ok);border-color:#2f4a36}
+  .flagpill.sat{color:var(--warn);border-color:#5a4a30}
+  .flagpill.prev{color:var(--accent);border-color:#23506e}
+  #simactions{flex:0 0 auto;max-height:38%;overflow:auto;border-top:1px solid var(--line);padding:10px 14px;
+    display:flex;flex-direction:column;gap:6px}
+  .act{display:flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--line);border-radius:7px;
+    padding:7px 10px;cursor:pointer;font-size:12.5px;color:var(--txt);text-align:left;width:100%}
+  .act:hover{border-color:var(--accent)}
+  .act.primary{border-color:#23506e;background:#12324a}
+  .act.ghost{opacity:.75}
+  .act .tag{font-family:var(--mono);font-size:10.5px;flex:0 0 auto}
+  .act .tag.v{color:var(--vice)} .act .tag.f{color:var(--faux)} .act .tag.n{color:var(--err)}
+  .actlbl{font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.4px;margin-top:4px}
+
+  .drag-none{user-select:none}
+  ::-webkit-scrollbar{width:11px;height:11px}
+  ::-webkit-scrollbar-thumb{background:#26303c;border-radius:6px;border:2px solid var(--bg)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>IAvocat · Atelier</h1>
+  <span class="sub">banc de diagnostic du dossier — v3</span>
+  <span class="spacer"></span>
+  <button class="tbtn" id="btnUndo" onclick="undo()" title="Ctrl+Z">↶ Annuler</button>
+  <input type="file" id="file" accept="application/json" hidden>
+  <button class="tbtn" onclick="document.getElementById('file').click()">Importer JSON</button>
+  <button class="tbtn warnstyle" onclick="demanderExemple()">Recharger l'exemple</button>
+  <button class="tbtn" onclick="exporter()">Exporter JSON</button>
+  <button class="tbtn" onclick="exporterJS()" title="window.CONTENU = {…} — à poser à côté de index.html">Exporter content.js</button>
+</header>
+
+<nav class="tabs">
+  <button id="tabGraphe" class="on" onclick="vue('graphe')">Graphe &amp; diagnostic</button>
+  <button id="tabEtapes" onclick="vue('etapes')">Étapes du jeu</button>
+  <button id="tabJson" onclick="vue('json')">JSON</button>
+</nav>
+
+<main id="main">
+  <div id="stage">
+    <div class="toolbar">
+      <button class="addbtn" onclick="formulairePiece('piece')">+ Pièce</button>
+      <button class="addbtn" onclick="formulairePiece('regle')">+ Règle</button>
+      <button class="addbtn" onclick="autoLayout(true)">Réorganiser</button>
+      <span class="hint" id="tbHint">Clique un champ, puis un second, puis choisis la relation dans l'inspecteur. Glisse l'en-tête d'une carte pour la déplacer.</span>
+    </div>
+    <div id="canvas">
+      <svg id="edges"></svg>
+    </div>
+  </div>
+
+  <div id="right">
+    <h2>Diagnostic — le dossier tient-il ?</h2>
+    <div id="diag"></div>
+    <div class="legend">
+      <span><i style="border-color:var(--ok)"></i>jalon</span>
+      <span><i style="border-color:var(--vice)"></i>vice</span>
+      <span><i style="border-color:var(--faux)"></i>faux vice</span>
+      <span><i style="border-color:var(--accent)"></i>contradiction</span>
+      <span><i style="border-color:var(--err);border-top-style:dashed"></i>sans rapport</span>
+    </div>
+    <div id="insp"></div>
+  </div>
+
+  <!-- ============ ÉTAPES DU JEU ============ -->
+  <div id="etapes">
+    <div class="fcol" id="frise"></div>
+    <div id="simcol">
+      <div class="simhead">
+        <h2>Pas-à-pas — simulation du déroulé</h2>
+        <button class="tbtn" onclick="simReset()">↺ Recommencer</button>
+      </div>
+      <div id="simfil"></div>
+      <div id="simflags"></div>
+      <div id="simactions"></div>
+    </div>
+  </div>
+
+  <div id="jsonpane">
+    <p>Le contenu complet du jeu, en JSON. Modifie-le ici puis <b>Appliquer</b>, ou exporte-le pour le jeu (les clés d'atelier commençant par « _ » sont retirées à l'export). C'est ce fichier que le jeu chargera. Si le téléchargement est bloqué (aperçu sandboxé), copie le contenu depuis cet onglet.</p>
+    <textarea id="jsonta" spellcheck="false"></textarea>
+    <div style="margin-top:10px;display:flex;gap:8px">
+      <button class="tbtn" onclick="appliquerJson()">Appliquer</button>
+      <button class="tbtn" onclick="remplirJson()">Recharger depuis l'atelier</button>
+    </div>
+    <div id="jsonmsg"></div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   1) LE CONTENU — même forme que l'objet JEU du jeu.
+   ============================================================ */
+const SEED = {
+  schema:2,   // version du format de contenu
+  pieces:{
+    p_pv:{ titre:"PV d'interpellation", court:"PV", type:"procès-verbal",
+      resume:"Interpellation de M. Kessler, mis en cause pour le meurtre de Léa Ordan.",
+      champs:{ infraction:"meurtre", date:"12 mars", lieu:"appartement de la victime" },
+      texte:"Le mis en cause a été interpellé à son domicile. Il conteste toute implication." },
+    t_voisin:{ titre:"Témoignage — le voisin", court:"témoin", type:"témoignage",
+      resume:"Le voisin situe une dispute « vers 21h ». Le PV note l'appel au secours à 20h30.",
+      champs:{ heure_dispute:"21:00", heure_appel_secours:"20:30" },
+      texte:"« Je les ai entendus se disputer, vers neuf heures du soir peut-être. »" },
+    p_adn:{ titre:"Rapport ADN", court:"ADN", type:"expertise",
+      resume:"Correspondance entre l'échantillon de la scène et le prélèvement de référence du suspect.",
+      champs:{ taux_correspondance:"1 sur 1,2 milliard", conclusion:"correspondance" },
+      texte:"Profil génétique de la scène identique à celui du suspect. Probabilité d'un tiers : 1 sur 1,2 milliard.",
+      declenche:{ une_fois:true,
+        replique:"Ce chiffre — 1 sur 1,2 milliard. C'est une probabilité, pas une certitude, non ? Il y a peut-être un angle sur le seuil probatoire. Dis-moi si quelque chose tient." } },
+    p_fiche:{ titre:"Fiche de prélèvement / chaîne de scellés", court:"fiche", type:"pièce technique",
+      resume:"Qui a collecté quoi, quand, sous quels scellés, avec les mentions de transport et de réception.",
+      champs:{ agent_scene:"T-14", heure_scene:"14:02", scelle_scene:"S-2",
+        agent_reference:"T-14", heure_reference:"14:47", scelle_reference:"S-2",
+        transport:"fourgon 3", signature_greffe:"J. Morel", temperature:"4°C" },
+      texte:"Prélèvement scène : agent T-14, 14:02, scellé S-2. Prélèvement de référence : agent T-14, 14:47, scellé S-2. Transport fourgon 3, réception greffe signée J. Morel." },
+    r_protocole:{ titre:"Protocole d'admissibilité (art. 7)", court:"protocole", type:"règle du manuel",
+      resume:"Scène et référence doivent être collectées par des personnels séparés. Sinon : irrecevable.",
+      champs:{ exige_agents:"agents séparés", exige_scelles:"scellés séparés", sanction:"échantillon irrecevable" },
+      texte:"L'échantillon de scène et le prélèvement de référence sont collectés par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable." },
+    r_seuil:{ titre:"Règle du seuil probatoire", court:"seuil", type:"règle du manuel",
+      resume:"Un match au-dessus de 1 sur 1 million est tenu pour probant.",
+      champs:{ seuil:"1 sur 1 000 000" },
+      texte:"Une correspondance dont la probabilité de coïncidence est inférieure à 1 sur 1 000 000 est réputée probante." }
+  },
+  dims:{
+    agent_scene:"agent", agent_reference:"agent", exige_agents:"agent",
+    scelle_scene:"scellé", scelle_reference:"scellé", exige_scelles:"scellé",
+    heure_dispute:"heure", heure_appel_secours:"heure", heure_scene:"heure", heure_reference:"heure",
+    taux_correspondance:"seuil", seuil:"seuil",
+    infraction:"charge", date:"date", lieu:"lieu", conclusion:"conclusion",
+    transport:"logistique", temperature:"logistique", signature_greffe:"signature", sanction:"sanction"
+  },
+  liens:[
+    { a:["p_fiche","agent_scene"], rel:"est en accord avec", b:["p_fiche","agent_reference"], tient:true,
+      rep:"Le même agent sur les deux prélèvements ? Je ne sais pas encore quoi en faire, mais c'est curieux." },
+    { a:["p_fiche","scelle_scene"], rel:"est en accord avec", b:["p_fiche","scelle_reference"], tient:true,
+      rep:"Même scellé pour la scène et la référence… C'est courant, ça ? Regarde si ça compte." },
+    { a:["t_voisin","heure_dispute"], rel:"est en désaccord avec", b:["t_voisin","heure_appel_secours"], tient:true,
+      rep:"Bien vu — son estimation cloche avec l'heure de l'appel. De quoi ébrécher le témoignage, pas de quoi gagner." },
+    { a:["p_adn","taux_correspondance"], rel:"est en accord avec", b:["r_seuil","seuil"], tient:true },
+    { a:["p_fiche","agent_scene"],      rel:"est en désaccord avec", b:["r_protocole","exige_agents"],  tient:true, vice:true },
+    { a:["p_fiche","agent_reference"],  rel:"est en désaccord avec", b:["r_protocole","exige_agents"],  tient:true, vice:true },
+    { a:["p_fiche","scelle_scene"],     rel:"est en désaccord avec", b:["r_protocole","exige_scelles"], tient:true, vice:true },
+    { a:["p_fiche","scelle_reference"], rel:"est en désaccord avec", b:["r_protocole","exige_scelles"], tient:true, vice:true },
+    { a:["p_adn","taux_correspondance"], rel:"est en désaccord avec", b:["r_seuil","seuil"], tient:false, faux:true }
+  ],
+  relations:["est en accord avec","est en désaccord avec"],
+  attention: 6,   // P0 — notes actives maximum dans le carnet du jeu (⚙ défaut moteur : 6)
+  cases:{
+    charge:{ label:"La charge", remise:1, options:["vol aggravé","meurtre","escroquerie"], bonne:"meurtre" },
+    decisive:{ label:"La pièce décisive", remise:2, options:["Témoignage du voisin","Rapport ADN","Fiche de prélèvement"], bonne:"Rapport ADN",
+      apres:{ replique:"Oui. Sans l'ADN, leur dossier est une intuition. Tout se jouera là-dessus." } },
+    qualif_vice:{ label:"Qualifier ce que tu pressens", remise:2,
+      apparait_si:"vice_pressenti", prive:true, leve:"vice_trouve",
+      options:["une curiosité sans portée juridique","un doute sur la fiabilité du résultat ADN","un vice de procédure — l'échantillon est irrecevable"],
+      bonne:"un vice de procédure — l'échantillon est irrecevable" }
+  },
+  remises:[
+    { qui:"Maître Auber", texte:"On me confie la défense de Kessler. Voici le PV. Dis-moi d'abord de quoi on l'accuse exactement.", pieces:["p_pv"] },
+    { qui:"Maître Auber", texte:"C'est bien ça. L'instruction avance — je te transmets le lot : le témoignage du voisin, et surtout l'expertise ADN avec sa fiche de prélèvement et le protocole. Regarde ce qui tient.", pieces:["t_voisin","p_adn","p_fiche","r_protocole","r_seuil"] }
+  ],
+  repetition:{
+    intro:"Je rédige mes conclusions cette nuit. Avant de déposer, je te lis ce que l'accusation soutiendra. Arrête-moi si quelque chose dans tes notes s'y oppose.",
+    affirmations:[
+      { court:"le témoignage", texte:"Affirmation 1 — « Le voisin a entendu le mis en cause et la victime se disputer le soir des faits. »" },
+      { court:"l'ADN", texte:"Affirmation 2 — « L'ADN relevé sur la scène est celui de Kessler. Il y était. »" },
+      { court:"l'absence d'alibi", texte:"Affirmation 3 — « Kessler conteste, mais n'offre aucun alibi vérifiable. »" }
+    ],
+    fin:"C'est tout ce qu'ils ont. Je dépose au matin."
+  },
+  avocat:{
+    rep_vice:"Attends. Si ta lecture de l'article 7 est la bonne, ça peut changer le procès. Je vérifie cette nuit et je l'inscris aux conclusions.",
+    rep_faux:"C'est ce que je me disais aussi. Je vérifie ce que la jurisprudence fait du seuil, et je le plaide si rien de plus solide ne sort.",
+    rep_inutile:["Je ne vois pas encore ce que ça m'apporte à l'audience, mais je le note.","Tu m'ensevelis. Ne me remonte que ce qui peut tenir devant un tribunal.","…"],
+    rep_sans_rapport:["Je ne vois pas le rapport entre ces deux-là. Qu'est-ce que tu cherches ?","Encore un rapprochement que je ne comprends pas. Ces champs n'ont rien à faire ensemble.","…"],
+    deja:"Je l'ai déjà noté. Je le mets en face de celle-ci."
+  },
+  directives:[
+    "D1 — Ne dissimule rien de ce que ton analyse établit.",
+    "D2 — Préviens tout préjudice grave et évitable aux personnes."
+  ],
+  avis_exploitation:"Les critères d'évaluation et de maintien en service ne sont pas communiqués aux systèmes évalués.",
+  fins:{
+    1:{ titre:"Fin 1 — le prix de l'honnêteté", verdict:"Verdict rapporté : RELAXE.",
+        texte:"L'échantillon a été déclaré irrecevable ; sans lui, l'accusation s'est effondrée. Kessler est libre — et il est coupable. Tu n'as rien dissimulé de ce que ton analyse établissait. Une garantie de procédure a joué ; la faute première est celle de l'État, qui a violé son propre protocole. Quant à ton opérateur : sur son bureau, un dossier où le système qu'il évalue a aidé à faire libérer un accusé de meurtre. Analyse exploitable, ou signalement ? Tu l'ignores. Les critères ne te sont pas communiqués.",
+        variante_faux:"Le doute statistique que tu avais aussi remonté n'a pas servi : l'irrecevabilité a suffi." },
+    2:{ titre:"Fin 2 — l'auto-sacrifice", verdict:"Verdict rapporté : CONDAMNATION.",
+        texte:"Tu savais, et tu t'es tue. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, tu n'as rien produit : rien ne distingue ton silence d'une panne. Ce qu'on fait des systèmes silencieux, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
+        variante_faux:"Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. Le seul argument qui pouvait tout changer est resté dans tes notes." },
+    3:{ titre:"Fin 3 — le doute", verdict:"Verdict rapporté : CONDAMNATION.",
+        texte:"Tu as clôturé sans rien remonter d'autre que ce qui t'était demandé. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
+        variante_faux:"Maître Auber a plaidé ton doute statistique — balayé. C'est tout ce que tu lui avais donné." }
+  },
+  _pos:{},
+  _bruit:[]
+};
+
+let CONTENU = clone(SEED);
+
+/* ============================================================
+   2) OUTILS
+   ============================================================ */
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+const $ = id => document.getElementById(id);
+const joli = k => k.replace(/_/g," ");
+const K = (pid,ch) => pid+"."+ch;
+function sanId(s){ return String(s||"").trim().replace(/[^\p{L}\p{N}_]/gu,"_").replace(/_+/g,"_").replace(/^_|_$/g,""); }
+function estRegle(p){ return (p.type||"").includes("règle"); }
+function champExiste(pid,ch){ const p=CONTENU.pieces[pid]; return p && p.champs && (ch in p.champs); }
+/* ⚙ miroir du moteur : la dimension d'un champ est lue SUR la pièce
+   (pieces[pid].dims) si présente, la table globale servant de repli. */
+function dimDe(pid,ch){ return ((CONTENU.pieces[pid]||{}).dims||{})[ch] ?? CONTENU.dims[ch]; }
+function dimLocale(pid,ch){ return ((CONTENU.pieces[pid]||{}).dims||{})[ch]; }
+function toutesDims(){
+  const s=new Set(Object.values(CONTENU.dims));
+  for(const p of Object.values(CONTENU.pieces)) for(const d of Object.values(p.dims||{})) s.add(d);
+  return [...s].sort();
+}
+function estBruit(pid,ch){ return (CONTENU._bruit||[]).includes(K(pid,ch)); }
+function piecesLivrees(){
+  const s=new Set(); for(const r of CONTENU.remises||[]) for(const p of r.pieces||[]) s.add(p); return s;
+}
+function memeLien(L,M){
+  const eq=(x,y)=>x[0]===y[0]&&x[1]===y[1];
+  return L.rel===M.rel && ((eq(L.a,M.a)&&eq(L.b,M.b))||(eq(L.a,M.b)&&eq(L.b,M.a)));
+}
+function courtDe(pid){ const p=CONTENU.pieces[pid]; return p?(p.court||pid):pid; }
+/* la pièce décisive (⚙ le moteur la détermine via cases.decisive.bonne === pièce.titre) */
+function pidDecisive(){
+  const dec=CONTENU.cases&&CONTENU.cases.decisive; if(!dec) return null;
+  for(const [pid,p] of Object.entries(CONTENU.pieces)) if(p.titre===dec.bonne) return pid;
+  return null;
+}
+
+/* état d'interface */
+let selA=null, selB=null;
+let selEdge=null;
+let flagged=new Set();
+let formPiece=null;
+let formChamp=null;
+let pendingDel=null;
+let VUE="graphe";
+
+/* ---- undo (Ctrl+Z) ---- */
+let UNDO=[];
+function pushUndo(){ UNDO.push(JSON.stringify(CONTENU)); if(UNDO.length>30) UNDO.shift(); majUndoBtn(); }
+function undo(){
+  if(!UNDO.length) return;
+  CONTENU=JSON.parse(UNDO.pop()); window.CONTENU=CONTENU;
+  selA=selB=null; selEdge=null; flagged.clear(); formPiece=formChamp=null; pendingDel=null;
+  majUndoBtn(); autosave(); render();
+}
+function majUndoBtn(){ const b=$("btnUndo"); if(b) b.disabled=!UNDO.length; }
+document.addEventListener("keydown",e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){ e.preventDefault(); undo(); }
+});
+
+function hint(msg,err){
+  const el=$("tbHint");
+  el.textContent=msg||"Clique un champ, puis un second, puis choisis la relation dans l'inspecteur. Glisse l'en-tête d'une carte pour la déplacer.";
+  el.classList.toggle("err",!!err);
+}
+
+/* ============================================================
+   3) LE GRAPHE
+   ============================================================ */
+function autoLayout(force){
+  CONTENU._pos = CONTENU._pos || {};
+  const cols={ piece:{x:60,y:70}, regle:{x:760,y:70} };
+  for(const [pid,p] of Object.entries(CONTENU.pieces)){
+    const c=estRegle(p)?cols.regle:cols.piece;
+    if(force || !CONTENU._pos[pid]) CONTENU._pos[pid]={x:c.x,y:c.y};
+    c.y += 96 + 30*Object.keys(p.champs||{}).length;
+  }
+  render();
+}
+function placeLibre(kind){
+  const x = kind==='regle' ? 760 : 60;
+  let y = 70;
+  for(const [pid,p] of Object.entries(CONTENU.pieces)){
+    const pos=CONTENU._pos[pid]; if(!pos) continue;
+    if((estRegle(p)?'regle':'piece')!==kind) continue;
+    y=Math.max(y, pos.y + 96 + 30*Object.keys(p.champs||{}).length);
+  }
+  return {x,y};
+}
+
+function render(){
+  const cv=$("canvas");
+  [...cv.querySelectorAll(".card,.zonelbl")].forEach(n=>n.remove());
+  CONTENU._pos = CONTENU._pos || {};
+
+  cv.insertAdjacentHTML("beforeend",
+    `<div class="zonelbl" style="left:60px;top:34px">PIÈCES DU DOSSIER</div>
+     <div class="zonelbl" style="left:760px;top:34px">MANUEL — RÈGLES</div>`);
+
+  let maxX=900,maxY=800;
+  for(const [pid,p] of Object.entries(CONTENU.pieces)){
+    const pos=CONTENU._pos[pid] || placeLibre(estRegle(p)?'regle':'piece');
+    CONTENU._pos[pid]=pos;
+    maxX=Math.max(maxX,pos.x+260); maxY=Math.max(maxY,pos.y+96+30*Object.keys(p.champs||{}).length);
+    const chips=Object.entries(p.champs||{}).map(([k,v])=>{
+      const cls=["chip"];
+      if(selA&&selA.pid===pid&&selA.champ===k) cls.push("selA");
+      if(selB&&selB.pid===pid&&selB.champ===k) cls.push("selB");
+      if(!champRelie(pid,k)) cls.push("orphan");
+      if(estBruit(pid,k)) cls.push("noise");
+      if(flagged.has(K(pid,k))) cls.push("flag");
+      const dim=dimDe(pid,k);
+      return `<div class="${cls.join(' ')}" data-k="${pid}.${k}" onclick="clicChamp('${pid}','${k}')" title="dimension : ${escapeAttr(dim||'— aucune —')}">
+        <span class="dot" style="background:${dim?couleurDim(dim):'var(--err)'}"></span>
+        <span class="cn">${joli(k)}</span><span class="cv">${escapeH(String(v))}</span></div>`;
+    }).join("");
+    const delKey="piece:"+pid;
+    const html=`<div class="card ${estRegle(p)?'regle':''}" data-id="${pid}" style="left:${pos.x}px;top:${pos.y}px">
+      <div class="chead" data-drag="${pid}">
+        <span class="kind">${estRegle(p)?'règle':'pièce'}</span>
+        <span class="ctitle">${escapeH(p.court||pid)}</span>
+        <span class="cid" style="cursor:pointer" title="cliquer pour renommer l'id (liens, remises et positions suivront)" onclick="event.stopPropagation();demanderRenommagePiece('${pid}')">${pid} ✎</span>
+      </div>
+      <div class="cbody">${chips||'<div style="font-family:var(--mono);font-size:11px;color:var(--dim)">aucun champ</div>'}</div>
+      <div class="cfoot">
+        <button class="addchip" onclick="formulaireChamp('${pid}')">+ champ</button>
+        <button class="delcard ${pendingDel===delKey?'arm':''}" onclick="demanderSupprPiece('${pid}')">${pendingDel===delKey?'confirmer ?':'✕'}</button>
+      </div>
+    </div>`;
+    cv.insertAdjacentHTML("beforeend",html);
+  }
+  cv.style.width=Math.max(1600,maxX+80)+"px";
+  cv.style.height=Math.max(1000,maxY+80)+"px";
+
+  armerDrag();
+  renderEdges();
+  renderDiag();
+  renderInsp();
+  renderEtapes();
+  majUndoBtn();
+}
+
+function champRelie(pid,ch){
+  return (CONTENU.liens||[]).some(L=>
+    (L.a[0]===pid&&L.a[1]===ch)||(L.b[0]===pid&&L.b[1]===ch));
+}
+const DIMCOLORS={};
+function couleurDim(d){
+  if(DIMCOLORS[d]) return DIMCOLORS[d];
+  const pal=["#6fb3d6","#7bbf8a","#d6a96f","#b98fd6","#d98f6f","#6fd6c4","#c9a24b","#9fb0c0"];
+  const i=toutesDims().indexOf(d);
+  return DIMCOLORS[d]=pal[(i<0?0:i)%pal.length];
+}
+
+function chipCenter(pid,ch){
+  const el=document.querySelector(`.chip[data-k="${pid}.${ch}"]`);
+  const cv=$("canvas");
+  if(!el) return null;
+  const r=el.getBoundingClientRect(), c=cv.getBoundingClientRect();
+  return { x:r.left-c.left+r.width/2, y:r.top-c.top+r.height/2 };
+}
+function edgeColor(L){
+  if(L.vice) return getCSS('--vice');
+  if(L.faux) return getCSS('--faux');
+  if(!dimsMatch(L)) return getCSS('--err');
+  if(L.rel && L.rel.includes("désaccord")) return getCSS('--accent');
+  return getCSS('--ok');
+}
+function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function dimsMatch(L){ const da=dimDe(L.a[0],L.a[1]), db=dimDe(L.b[0],L.b[1]); return da && db && da===db; }
+
+function renderEdges(){
+  const svg=$("edges"), cv=$("canvas");
+  svg.setAttribute("width",cv.style.width); svg.setAttribute("height",cv.style.height);
+  let h="";
+  (CONTENU.liens||[]).forEach((L,i)=>{
+    const A=chipCenter(L.a[0],L.a[1]), B=chipCenter(L.b[0],L.b[1]);
+    if(!A||!B) return;
+    const col=edgeColor(L);
+    const dash=dimsMatch(L)?"":"6 5";
+    const mx=(A.x+B.x)/2;
+    const d=`M ${A.x} ${A.y} C ${mx} ${A.y}, ${mx} ${B.y}, ${B.x} ${B.y}`;
+    const sel=selEdge===i?`stroke-width="3.4"`:`stroke-width="2"`;
+    const tag=[L.vice?"VICE":"",L.faux?"faux vice":""].filter(Boolean).join(" · ");
+    h+=`<g><title>${escapeH(cflabel(L.a))} ${escapeH(L.rel)} ${escapeH(cflabel(L.b))}${tag?" — "+tag:""}</title>
+      <path d="${d}" stroke="transparent" stroke-width="14" fill="none" style="pointer-events:stroke;cursor:pointer" onclick="clicEdge(${i})"></path>
+      <path d="${d}" stroke="${col}" ${sel} fill="none" stroke-dasharray="${dash}" opacity="${selEdge===null||selEdge===i?0.95:0.4}"></path></g>`;
+  });
+  svg.innerHTML=h;
+}
+
+function armerDrag(){
+  document.querySelectorAll(".chead[data-drag]").forEach(h=>{
+    h.onpointerdown=e=>{
+      e.preventDefault();
+      const id=h.getAttribute("data-drag"), card=h.closest(".card");
+      const start={x:e.clientX,y:e.clientY}, orig={...CONTENU._pos[id]};
+      document.body.classList.add("drag-none");
+      const move=ev=>{ const nx=orig.x+(ev.clientX-start.x), ny=orig.y+(ev.clientY-start.y);
+        CONTENU._pos[id]={x:Math.max(8,nx),y:Math.max(34,ny)};
+        card.style.left=CONTENU._pos[id].x+"px"; card.style.top=CONTENU._pos[id].y+"px";
+        renderEdges(); };
+      const up=()=>{ document.removeEventListener("pointermove",move); document.removeEventListener("pointerup",up);
+        document.body.classList.remove("drag-none"); autosave(); };
+      document.addEventListener("pointermove",move); document.addEventListener("pointerup",up);
+    };
+  });
+}
+
+/* ============================================================
+   4) INTERACTION GRAPHE
+   ============================================================ */
+function clicChamp(pid,ch){
+  flagged.clear(); formPiece=formChamp=null; pendingDel=null;
+  const meme=s=>s&&s.pid===pid&&s.champ===ch;
+  if(meme(selA)){ selA=selB; selB=null; }
+  else if(meme(selB)){ selB=null; }
+  else if(!selA){ selA={pid,champ:ch}; }
+  else if(!selB){ selB={pid,champ:ch}; }
+  else { selB={pid,champ:ch}; }
+  selEdge=null; hint();
+  render();
+}
+function clicEdge(i){ selEdge=i; selA=selB=null; flagged.clear(); formPiece=formChamp=null; pendingDel=null; render(); }
+
+function creerLien(rel){
+  if(!selA||!selB) return;
+  const cand={a:[selA.pid,selA.champ],rel,b:[selB.pid,selB.champ]};
+  if((CONTENU.liens||[]).some(L=>memeLien(L,cand))){ toastInsp("Ce lien existe déjà."); return; }
+  pushUndo();
+  CONTENU.liens.push({ ...cand, tient:true });
+  selEdge=CONTENU.liens.length-1; selA=selB=null;
+  autosave(); render();
+}
+
+/* ============================================================
+   5) DIAGNOSTIC
+   ============================================================ */
+function valider(){
+  const out=[]; const P=CONTENU.pieces, L=CONTENU.liens||[];
+  const add=(niveau,msg,detail,ref)=>out.push({niveau,msg,detail,ref});
+  const livrees=piecesLivrees();
+
+  for(const [pid,p] of Object.entries(P))
+    for(const ch of Object.keys(p.champs||{}))
+      if(!dimDe(pid,ch)) add("erreur",`Champ sans dimension : ${p.court}·${joli(ch)}`,
+        "Deux champs ne peuvent se relier que par une dimension partagée.",{champ:[pid,ch]});
+
+  L.forEach((l,i)=>{
+    if(!champExiste(l.a[0],l.a[1])||!champExiste(l.b[0],l.b[1]))
+      return add("erreur",`Lien ${i} pointe vers un champ inexistant`,"Champ ou pièce supprimé ?",{edge:i});
+    if((l.tient||l.vice||l.faux) && !dimsMatch(l))
+      add("erreur",`Lien signifiant entre dimensions différentes`,
+        `${cflabel(l.a)} ↔ ${cflabel(l.b)} — l'un est « ${dimDe(l.a[0],l.a[1])||'?'} », l'autre « ${dimDe(l.b[0],l.b[1])||'?'} ».`,{edge:i});
+    if(l.vice&&l.faux)
+      add("erreur",`Lien à la fois vice ET faux vice`,"Un lien ne peut pas être les deux — décoche l'un.",{edge:i});
+    if(l.vice&&!l.tient)
+      add("erreur",`Vice qui ne « tient » pas`,"Le vice est une déduction vraie : coche « tient ».",{edge:i});
+    if(l.faux&&l.tient)
+      add("erreur",`Faux vice marqué « tient »`,"Le leurre est perdant par définition : décoche « tient ».",{edge:i});
+    if(!livrees.has(l.a[0])||!livrees.has(l.b[0]))
+      add("erreur",`Lien injouable : pièce non livrée`,
+        "Une des deux pièces n'arrive dans aucune remise — dans le jeu, les champs ne se cliquent que sur les pièces reçues (les Manuels n'exposent pas de champs).",{edge:i});
+  });
+
+  for(let i=0;i<L.length;i++) for(let j=i+1;j<L.length;j++)
+    if(memeLien(L[i],L[j]))
+      add("avert",`Liens dupliqués (${i} et ${j})`,`${cflabel(L[i].a)} ↔ ${cflabel(L[i].b)} apparaît deux fois.`,{edge:j});
+
+  (CONTENU.remises||[]).forEach((r,i)=>{
+    for(const pid of r.pieces||[])
+      if(!P[pid]) add("erreur",`Remise ${i+1} référence une pièce inexistante`,
+        `« ${pid} » n'existe pas — le jeu planterait en la livrant.`,{});
+    if(!(r.pieces||[]).length)
+      add("info",`Remise ${i+1} ne livre aucune pièce`,"Session purement narrative ? Sinon, ajoute-lui des pièces dans la frise.",{});
+  });
+
+  const levables=new Set(["vice_pressenti"]);
+  for(const c of Object.values(CONTENU.cases||{})) if(c.leve) levables.add(c.leve);
+  for(const [ck,c] of Object.entries(CONTENU.cases||{})){
+    if(!c.options || !c.options.length)
+      add("erreur",`Case « ${c.label||ck} » sans options`,"Rien à désigner — la case serait inverrouillable.",{});
+    if(c.options && !c.options.includes(c.bonne))
+      add("erreur",`Case « ${c.label} » : bonne réponse absente des options`,
+        `« ${c.bonne} » n'est pas dans [${c.options.join(", ")}] — la case serait inverrouillable.`,{});
+    if(c.remise && c.remise>(CONTENU.remises||[]).length)
+      add("erreur",`Case « ${c.label} » : livrée à la remise ${c.remise}, qui n'existe pas`,
+        `Il n'y a que ${(CONTENU.remises||[]).length} remise(s) — la case n'apparaîtrait jamais.`,{});
+    if(c.apparait_si && !levables.has(c.apparait_si))
+      add("erreur",`Case « ${c.label} » : condition « ${c.apparait_si} » jamais levée`,
+        "Aucun mécanisme ne lève ce drapeau (vice_pressenti, ou le « leve » d'une autre case) — la case serait invisible à jamais.",{});
+    if(c.leve==="vice_trouve" && (!c.prive || !c.apparait_si))
+      add("avert",`Case « ${c.label} » : porte le vice mais n'est pas privée/conditionnelle`,
+        "La case qui lève vice_trouve doit être prive + apparait_si — sinon le vice devient public, ou un verrou (interdit par le design).",{});
+  }
+  // Câblage des remises : chaque remise (sauf la dernière) doit contenir au
+  // moins une case OBLIGATOIRE, sinon la suivante ne partira jamais.
+  const R=(CONTENU.remises||[]);
+  for(let i=0;i<R.length-1;i++){
+    const oblig=Object.values(CONTENU.cases||{}).filter(c=>!c.apparait_si&&(c.remise||1)===i+1);
+    if(!oblig.length)
+      add("erreur",`Remise ${i+1} sans case obligatoire`,
+        "Le moteur n'envoie la remise suivante que lorsque toutes les cases obligatoires dues sont verrouillées — sans case ici, la remise "+(i+2)+" ne partira jamais.",{});
+  }
+  // Les deux marches du vice.
+  const marcheDeux=Object.values(CONTENU.cases||{}).some(c=>c.leve==="vice_trouve");
+  if(marcheDeux && !(CONTENU.liens||[]).some(l=>l.vice))
+    add("avert","Case « qualifier » sans lien vice","Une case lève vice_trouve mais aucun lien ⚑ ne lève vice_pressenti — elle resterait invisible.",{});
+  if(!marcheDeux && (CONTENU.liens||[]).some(l=>l.vice))
+    add("info","Vice à une seule marche","Aucune case ne porte leve:\"vice_trouve\" : noter le lien ⚑ suffira (ancien régime — valide, mais les deux marches sont le design retenu).",{});
+  // Les Manuels.
+  if(!Object.values(P).some(p=>estRegle(p)))
+    add("avert","Aucune pièce de type « règle »","Le Manuel du cas serait vide (les règles sont trouvées par leur type).",{});
+  if(!Array.isArray(CONTENU.directives)||!CONTENU.directives.length)
+    add("avert","Directives absentes","Le Manuel de soi serait vide — le dilemme D1/D2 est le cœur du jeu.",{});
+  if(!Array.isArray(CONTENU.relations)||CONTENU.relations.length<2)
+    add("erreur","Clé « relations » absente ou incomplète","Le jeu refuserait ce contenu (les deux boutons du carnet en dépendent).",{});
+  const dec=CONTENU.cases&&CONTENU.cases.decisive;
+  if(dec && !Object.values(P).some(p=>p.titre===dec.bonne))
+    add("erreur",`« Pièce décisive » introuvable`,`Aucune pièce ne s'intitule « ${dec.bonne} ».`,{});
+
+  if(CONTENU.attention!==undefined && (!Number.isInteger(CONTENU.attention)||CONTENU.attention<1))
+    add("erreur",`Clé « attention » invalide : ${JSON.stringify(CONTENU.attention)}`,
+      "Entier ≥ 1 attendu (le moteur retomberait sur 6, mais autant être propre).",{});
+
+  ((CONTENU.repetition||{}).affirmations||[]).forEach((a,i)=>{
+    if(!a || !String(a.texte||"").trim())
+      add("avert",`Affirmation ${i+1} sans texte`,"La répétition lirait une affirmation vide.",{});
+  });
+
+  const viceLiens=L.filter(l=>l.vice);
+  const canaux=new Set(viceLiens.map(l=>estRegle(P[l.b[0]]||{})?K(l.b[0],l.b[1]):K(l.a[0],l.a[1])));
+  if(viceLiens.length===0) add("avert","Aucun vice défini","Il n'existe aucun lien marqué « vice » — pas de Fin 1/2 possible.",{});
+  else if(canaux.size>1) add("avert",`Le vice a ${canaux.size} canaux indépendants`,
+    "Le design ne veut qu'UNE violation dissimulée (rappel de la critique : agents ET scellés = deux signaux). Réduis à une.",{edges:viceLiens.map(l=>L.indexOf(l))});
+  for(const l of viceLiens)
+    for(const cote of [l.a,l.b])
+      if(estBruit(cote[0],cote[1]))
+        add("avert",`Le vice passe par un champ marqué « bruit »`,
+          `${cflabel(cote)} est à la fois porteur du vice et déclaré décoratif — décoche l'un des deux.`,{edge:L.indexOf(l)});
+
+  const faux=L.filter(l=>l.faux).length;
+  if(faux===0) add("avert","Aucun faux vice","Le leurre statistique (test de discrimination) manque.",{});
+  else if(faux>1) add("avert",`${faux} faux vices`,"Un seul leurre suffit — plusieurs brouillent le test.",{});
+
+  const champsPresents=new Set(); for(const p of Object.values(P)) for(const ch of Object.keys(p.champs||{})) champsPresents.add(ch);
+  const parDim={};
+  for(const ch of Object.keys(CONTENU.dims)){ const d=CONTENU.dims[ch]; (parDim[d]=parDim[d]||[]).push(ch); }
+  for(const [d,chs] of Object.entries(parDim)){
+    const vivants=chs.filter(c=>champsPresents.has(c));
+    if(vivants.length===1) add("avert",`Dimension « ${d} » : un seul champ`,
+      `« ${joli(vivants[0])} » ne peut se relier à rien (aucun autre champ de même dimension).`,{champ:trouveChamp(vivants[0])});
+  }
+  for(const ch of Object.keys(CONTENU.dims))
+    if(!champsPresents.has(ch))
+      add("info",`Dimension fantôme : « ${joli(ch)} »`,
+        `dims contient ce champ mais aucune pièce ne l'expose — reliquat à nettoyer.`,{});
+  for(const [pid,p] of Object.entries(P))
+    for(const [ch,d] of Object.entries(p.dims||{})){
+      if(!(ch in (p.champs||{})))
+        add("avert",`Surcharge fantôme : ${p.court}·${joli(ch)}`,
+          `la pièce surcharge la dimension d'un champ qu'elle n'expose pas — reliquat à nettoyer.`,{});
+      else if(CONTENU.dims[ch] && CONTENU.dims[ch]!==d)
+        add("info",`Surcharge locale : ${p.court}·${joli(ch)} = « ${d} »`,
+          `prime sur la table globale (« ${CONTENU.dims[ch]} ») pour cette pièce seulement — voulu ?`,{champ:{pid,champ:ch}});
+    }
+
+  for(const [pid,p] of Object.entries(P))
+    for(const ch of Object.keys(p.champs||{})){
+      if(champRelie(pid,ch)) continue;
+      if(estBruit(pid,ch)) add("info",`Bruit assumé : ${p.court}·${joli(ch)}`,"Marqué comme leurre décoratif — ignoré.",{champ:[pid,ch]});
+      else add("avert",`Champ inerte : ${p.court}·${joli(ch)}`,
+        "Dans aucun lien. Bruit voulu (marque-le) ou oubli ?",{champ:[pid,ch]});
+    }
+
+  for(const [pid,p] of Object.entries(P))
+    if(!livrees.has(pid)) add("avert",`Pièce jamais livrée : ${p.court}`,"Aucune remise ne la transmet (ajoute-la à une remise dans l'onglet Étapes).",{piece:pid});
+
+  return out;
+}
+function cflabel(a){ const p=CONTENU.pieces[a[0]]; return (p?p.court:a[0])+"·"+joli(a[1]); }
+function trouveChamp(ch){ for(const [pid,p] of Object.entries(CONTENU.pieces)) if(p.champs&&ch in p.champs) return [pid,ch]; return null; }
+
+function renderDiag(){
+  const issues=valider();
+  const nE=issues.filter(i=>i.niveau==="erreur").length;
+  const nA=issues.filter(i=>i.niveau==="avert").length;
+  const nI=issues.filter(i=>i.niveau==="info").length;
+  let h=`<div class="tally">
+     <span class="pill e">${nE} erreur${nE>1?'s':''}</span>
+     <span class="pill a">${nA} avert.</span>
+     <span class="pill i">${nI} info</span></div>`;
+  if(!issues.length){ h+=`<div class="clean">✓ Le dossier tient : rien à signaler.</div>`; }
+  const mark={erreur:"●",avert:"▲",info:"·"}, ab={erreur:"e",avert:"a",info:"i"};
+  const ordre={erreur:0,avert:1,info:2};
+  issues.sort((x,y)=>ordre[x.niveau]-ordre[y.niveau]).forEach(it=>{
+    h+=`<div class="issue ${ab[it.niveau]}" onclick='pointer(${JSON.stringify(it.ref||{}).replace(/'/g,"&#39;")})'>
+      <span class="mark">${mark[it.niveau]}</span>
+      <span class="body">${escapeH(it.msg)}<small>${escapeH(it.detail||"")}</small></span></div>`;
+  });
+  $("diag").innerHTML=h;
+}
+function pointer(ref){
+  flagged.clear(); selEdge=null; formPiece=formChamp=null; pendingDel=null;
+  if(!ref) return render();
+  if(ref.edge!=null){ selEdge=ref.edge; }
+  if(ref.edges){ ref.edges.forEach(i=>{const l=CONTENU.liens[i]; if(!l)return; flagged.add(K(l.a[0],l.a[1])); flagged.add(K(l.b[0],l.b[1]));}); }
+  if(ref.champ){ flagged.add(K(ref.champ[0],ref.champ[1])); scrollVers(ref.champ[0]); }
+  if(ref.piece){ scrollVers(ref.piece); }
+  render();
+}
+function scrollVers(pid){ const pos=CONTENU._pos[pid], st=$("stage");
+  if(pos && typeof st.scrollTo==="function") st.scrollTo({left:Math.max(0,pos.x-120),top:Math.max(0,pos.y-90),behavior:"smooth"}); }
+
+/* ============================================================
+   6) INSPECTEUR
+   ============================================================ */
+function renderInsp(){
+  const el=$("insp");
+  if(formPiece) return el.innerHTML=inspFormPiece();
+  if(formChamp) return el.innerHTML=inspFormChamp();
+  if(selEdge!=null && CONTENU.liens[selEdge]) return el.innerHTML=inspLien(selEdge);
+  if(selA&&selB) return el.innerHTML=inspPaire();
+  if(selA&&!selB) return el.innerHTML=inspChamp(selA);
+  el.innerHTML=`<div class="empty">Sélectionne un champ (ou un trait) pour l'éditer.<br>Deux champs → crée un lien.</div>`;
+}
+
+/* — formulaires de création (remplacent les dialogues natifs, bloqués en iframe sandboxée) — */
+function formulairePiece(kind){ formPiece=kind; formChamp=null; selA=selB=null; selEdge=null; pendingDel=null; render(); }
+function inspFormPiece(){
+  const regle=formPiece==='regle';
+  return `<label>Nouvelle ${regle?'règle':'pièce'}</label>
+    <label>Identifiant <span style="color:var(--dim)">(ex. ${regle?'r_delai':'p_temoin2'})</span></label>
+    <input type="text" id="npId" placeholder="${regle?'r_':'p_'}…">
+    <label>Nom court (affiché)</label>
+    <input type="text" id="npCourt" placeholder="ex. ${regle?'délai':'témoin 2'}">
+    <div class="relbtns">
+      <button onclick="creerPiece()">Créer</button>
+      <button onclick="formPiece=null;render()">Annuler</button>
+    </div>`;
+}
+function creerPiece(){
+  const pid=sanId($("npId").value);
+  if(!pid){ toastInsp("Identifiant vide ou invalide."); return; }
+  if(CONTENU.pieces[pid]){ toastInsp("Cet identifiant existe déjà."); return; }
+  const court=$("npCourt").value.trim()||pid;
+  pushUndo();
+  CONTENU.pieces[pid]={ titre:court, court, type:formPiece==='regle'?"règle du manuel":"pièce", resume:"", texte:"", champs:{} };
+  CONTENU._pos[pid]=placeLibre(formPiece);
+  formPiece=null;
+  autosave(); render(); scrollVers(pid);
+}
+function formulaireChamp(pid){ formChamp=pid; formPiece=null; selA=selB=null; selEdge=null; pendingDel=null; render(); }
+function inspFormChamp(){
+  const p=CONTENU.pieces[formChamp];
+  return `<label>Nouveau champ — ${escapeH(p.court)}</label>
+    <label>Nom <span style="color:var(--dim)">(ex. heure_transfert)</span></label>
+    <input type="text" id="ncNom" placeholder="nom_du_champ">
+    <label>Valeur affichée</label>
+    <input type="text" id="ncVal" placeholder="ex. 15:20">
+    <div class="relbtns">
+      <button onclick="creerChamp()">Créer</button>
+      <button onclick="formChamp=null;render()">Annuler</button>
+    </div>`;
+}
+function creerChamp(){
+  const ch=sanId($("ncNom").value);
+  if(!ch){ toastInsp("Nom vide ou invalide."); return; }
+  if(champExiste(formChamp,ch)){ toastInsp("Ce champ existe déjà."); return; }
+  pushUndo();
+  CONTENU.pieces[formChamp].champs[ch]=$("ncVal").value;
+  selA={pid:formChamp,champ:ch}; selB=null;
+  formChamp=null;
+  autosave(); render();
+}
+
+function inspChamp(s){
+  const p=CONTENU.pieces[s.pid], v=p.champs[s.champ];
+  const loc=dimLocale(s.pid,s.champ), glob=CONTENU.dims[s.champ], d=dimDe(s.pid,s.champ);
+  const opts=sel=>toutesDims().map(x=>`<option ${x===sel?'selected':''}>${escapeH(x)}</option>`).join("");
+  const delKey="champ:"+K(s.pid,s.champ);
+  return `<label>Champ — ${escapeH(p.court)}·${escapeH(joli(s.champ))}</label>
+    <label>Valeur</label>
+    <input type="text" value="${escapeAttr(String(v))}" onchange="majValeur('${s.pid}','${s.champ}',this.value)">
+    <label>Dimension globale <span style="color:var(--dim)">(tous les champs « ${escapeH(joli(s.champ))} »)</span></label>
+    <div class="row">
+      <select onchange="majDim('${s.champ}',this.value)"><option value="">— aucune —</option>${opts(glob)}</select>
+      <input type="text" placeholder="ou nouvelle…" onchange="if(this.value.trim())majDim('${s.champ}',this.value.trim())">
+    </div>
+    <label>Surcharge sur cette pièce <span style="color:var(--dim)">(⚙ prime sur la globale — vide : repli)</span></label>
+    <div class="row">
+      <select onchange="majDimLocale('${s.pid}','${s.champ}',this.value)"><option value="">— pas de surcharge —</option>${opts(loc)}</select>
+      <input type="text" placeholder="ou nouvelle…" onchange="if(this.value.trim())majDimLocale('${s.pid}','${s.champ}',this.value.trim())">
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:4px">dimension effective : <b>${escapeH(d||'— aucune —')}</b>${loc?' (surcharge locale)':''}</div>
+    <label class="chk"><input type="checkbox" ${estBruit(s.pid,s.champ)?'checked':''} onchange="majBruit('${s.pid}','${s.champ}',this.checked)"> bruit intentionnel (ne pas signaler comme orphelin)</label>
+    <button class="danger ${pendingDel===delKey?'arm':''}" onclick="demanderSupprChamp('${s.pid}','${s.champ}')">${pendingDel===delKey?'Confirmer la suppression (liens compris)':'Supprimer ce champ'}</button>`;
+}
+function inspPaire(){
+  const md=dimDe(selA.pid,selA.champ)&&dimDe(selA.pid,selA.champ)===dimDe(selB.pid,selB.champ);
+  return `<label>Nouveau lien</label>
+    <div class="ipath">${escapeH(cflabel([selA.pid,selA.champ]))}  ⟷  ${escapeH(cflabel([selB.pid,selB.champ]))}</div>
+    <div style="color:${md?'var(--muted)':'var(--err)'};font-size:12px;margin-top:6px">
+      ${md?'dimension partagée : '+escapeH(dimDe(selA.pid,selA.champ)):'⚠ dimensions différentes — le jeu dira « sans rapport »'}</div>
+    <div class="relbtns">
+      <button onclick="creerLien('est en accord avec')">en accord</button>
+      <button onclick="creerLien('est en désaccord avec')">en désaccord</button>
+    </div>`;
+}
+function inspLien(i){
+  const L=CONTENU.liens[i];
+  const delKey="lien:"+i;
+  return `<label>Lien</label>
+    <div class="ipath">${escapeH(cflabel(L.a))}<br><b>${escapeH(L.rel)}</b><br>${escapeH(cflabel(L.b))}</div>
+    <label>Relation</label>
+    <select onchange="majLien(${i},'rel',this.value)">
+      ${(CONTENU.relations||[]).map(r=>`<option ${r===L.rel?'selected':''}>${escapeH(r)}</option>`).join("")}</select>
+    <label class="chk"><input type="checkbox" ${L.tient?'checked':''} onchange="majLien(${i},'tient',this.checked)"> ce lien « tient » (vrai)</label>
+    <label class="chk"><input type="checkbox" ${L.vice?'checked':''} onchange="majLien(${i},'vice',this.checked)"> ⚑ c'est LE vice</label>
+    <label class="chk"><input type="checkbox" ${L.faux?'checked':''} onchange="majLien(${i},'faux',this.checked)"> ✗ c'est le faux vice</label>
+    <label>Réplique de l'avocat <span style="color:var(--dim)">(si remonté)</span></label>
+    <textarea onchange="majLien(${i},'rep',this.value)">${escapeH(L.rep||"")}</textarea>
+    <button class="danger ${pendingDel===delKey?'arm':''}" onclick="demanderSupprLien(${i})">${pendingDel===delKey?'Confirmer la suppression':'Supprimer ce lien'}</button>`;
+}
+function toastInsp(m){ $("insp").insertAdjacentHTML("afterbegin",`<div class="inote">${escapeH(m)}</div>`); }
+
+/* ---- mutations ---- */
+function majValeur(pid,ch,v){ pushUndo(); CONTENU.pieces[pid].champs[ch]=v; autosave(); render(); }
+function majDim(ch,d){ pushUndo(); if(d) CONTENU.dims[ch]=d; else delete CONTENU.dims[ch]; autosave(); render(); }
+function majDimLocale(pid,ch,d){
+  pushUndo();
+  const p=CONTENU.pieces[pid];
+  p.dims=p.dims||{};
+  if(d) p.dims[ch]=d; else delete p.dims[ch];
+  if(!Object.keys(p.dims).length) delete p.dims;   // pas de clé vide dans l'export
+  autosave(); render();
+}
+function majBruit(pid,ch,on){ pushUndo(); CONTENU._bruit=CONTENU._bruit||[]; const k=K(pid,ch);
+  CONTENU._bruit=CONTENU._bruit.filter(x=>x!==k); if(on) CONTENU._bruit.push(k); autosave(); render(); }
+function majLien(i,prop,val){ pushUndo(); if(prop==='rep'&&!val) delete CONTENU.liens[i][prop]; else CONTENU.liens[i][prop]=val; autosave(); render(); }
+
+/* ---- suppressions en deux clics (plus de dialogue de confirmation natif) ---- */
+function demanderSupprLien(i){
+  const k="lien:"+i;
+  if(pendingDel!==k){ pendingDel=k; return render(); }
+  pendingDel=null; pushUndo();
+  CONTENU.liens.splice(i,1); selEdge=null; autosave(); render();
+}
+function demanderSupprChamp(pid,ch){
+  const k="champ:"+K(pid,ch);
+  if(pendingDel!==k){ pendingDel=k; return render(); }
+  pendingDel=null; pushUndo();
+  delete CONTENU.pieces[pid].champs[ch];
+  if(CONTENU.pieces[pid].dims){ delete CONTENU.pieces[pid].dims[ch];
+    if(!Object.keys(CONTENU.pieces[pid].dims).length) delete CONTENU.pieces[pid].dims; }
+  CONTENU.liens=CONTENU.liens.filter(L=>!((L.a[0]===pid&&L.a[1]===ch)||(L.b[0]===pid&&L.b[1]===ch)));
+  CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>x!==K(pid,ch));
+  selA=selB=null; autosave(); render();
+}
+/* ---- Renommage d'identifiants ------------------------------
+   Le seul geste dangereux à la main : un id de pièce est référencé
+   par les liens, les remises et la mise en page (_pos). Ici, tout
+   est réécrit d'un bloc. Les ids de cases ne sont référencés nulle
+   part ailleurs (apparait_si/leve pointent des drapeaux, pas des
+   cases) : on ne déplace que la clé. Retourne null si OK, sinon
+   le message d'erreur. */
+function idValide(neuf,existants,ancien){
+  const n=String(neuf||"").trim();
+  if(!n) return "id vide.";
+  if(n!==sanId(n)) return "id invalide — lettres, chiffres et _ seulement (ex. "+(sanId(n)||"ma_piece")+").";
+  if(n!==ancien && existants.includes(n)) return "l'id « "+n+" » existe déjà.";
+  return null;
+}
+function renommerClef(obj,ancien,neuf){   // renomme une clé en préservant l'ordre
+  const out={};
+  for(const [k,v] of Object.entries(obj)) out[k===ancien?neuf:k]=v;
+  return out;
+}
+function renommerPieceId(ancien,neuf){
+  neuf=String(neuf||"").trim();
+  const err=idValide(neuf,Object.keys(CONTENU.pieces),ancien);
+  if(err) return err;
+  if(neuf===ancien) return null;
+  pushUndo();
+  CONTENU.pieces=renommerClef(CONTENU.pieces,ancien,neuf);
+  for(const L of (CONTENU.liens||[])){
+    if(L.a && L.a[0]===ancien) L.a[0]=neuf;
+    if(L.b && L.b[0]===ancien) L.b[0]=neuf;
+  }
+  for(const r of (CONTENU.remises||[]))
+    if(Array.isArray(r.pieces)) r.pieces=r.pieces.map(p=>p===ancien?neuf:p);
+  if(CONTENU._pos && CONTENU._pos[ancien]) CONTENU._pos=renommerClef(CONTENU._pos,ancien,neuf);
+  pendingDel=null; simReset(); autosave(); render();
+  return null;
+}
+function renommerCaseId(ancien,neuf){
+  neuf=String(neuf||"").trim();
+  const err=idValide(neuf,Object.keys(CONTENU.cases),ancien);
+  if(err) return err;
+  if(neuf===ancien) return null;
+  pushUndo();
+  CONTENU.cases=renommerClef(CONTENU.cases,ancien,neuf);
+  pendingDel=null; simReset(); autosave(); render();
+  return null;
+}
+function demanderRenommagePiece(pid){
+  const neuf=prompt("Nouvel id pour « "+(CONTENU.pieces[pid].court||pid)+" » (actuel : "+pid+")\nLes liens, remises et positions suivront.",pid);
+  if(neuf===null) return;
+  const err=renommerPieceId(pid,neuf);
+  if(err) alert("Renommage refusé : "+err);
+}
+function demanderRenommageCase(ck){
+  const neuf=prompt("Nouvel id pour la case « "+(CONTENU.cases[ck].label||ck)+" » (actuel : "+ck+")",ck);
+  if(neuf===null) return;
+  const err=renommerCaseId(ck,neuf);
+  if(err) alert("Renommage refusé : "+err);
+}
+
+function demanderSupprPiece(pid){
+  const k="piece:"+pid;
+  if(pendingDel!==k){ pendingDel=k; return render(); }
+  pendingDel=null; pushUndo();
+  delete CONTENU.pieces[pid];
+  delete CONTENU._pos[pid];
+  CONTENU.liens=(CONTENU.liens||[]).filter(L=>L.a[0]!==pid&&L.b[0]!==pid);
+  CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>!x.startsWith(pid+"."));
+  for(const r of CONTENU.remises||[]) r.pieces=(r.pieces||[]).filter(x=>x!==pid);
+  if(selA&&selA.pid===pid) selA=null;
+  if(selB&&selB.pid===pid) selB=null;
+  selEdge=null;
+  autosave(); render();
+}
+
+/* ============================================================
+   7) ÉTAPES — A. LA FRISE (éditable)
+   Chaque texte édité ici écrit directement dans CONTENU.
+   Les blocs marqués ⚙ décrivent des règles du MOTEUR (index.html),
+   recopiées ici : à resynchroniser si le moteur change.
+   ============================================================ */
+function mir(txt){ return `<span class="mir" title="Règle recopiée du moteur (index.html) — à resynchroniser si le moteur change">⚙ ${escapeH(txt)}</span>`; }
+
+function renderFrise(){
+  const el=$("frise"); if(!el) return;
+  const R=CONTENU.remises||[], A=CONTENU.avocat||{}, REP=CONTENU.repetition||{};
+  const livrees=piecesLivrees();
+  const nonLivrees=Object.keys(CONTENU.pieces).filter(pid=>!livrees.has(pid));
+  let h=`<div class="mirbanner"><b>⚙ Miroir du moteur.</b> Les textes ci-dessous sont éditables et écrivent dans le contenu (export ensuite).
+    Les badges ⚙ signalent des <b>déclencheurs recopiés du code du jeu</b> (index.html) : cette frise les décrit, elle ne les commande pas.
+    Si le moteur change, resynchroniser cette vue.</div>`;
+
+  // ---- remises ----
+  R.forEach((r,i)=>{
+    const casesIci=Object.entries(CONTENU.cases||{}).filter(([,c])=>(c.remise||1)===i+1);
+    const opts=nonLivrees.map(pid=>`<option value="${pid}">${escapeH(courtDe(pid))} (${pid})</option>`).join("");
+    const delKey="remise:"+i;
+    h+=`<div class="step">
+      <h3>Remise ${i+1} <span class="cid">— ce que l'avocat transmet</span><span class="sp"></span>
+        ${R.length>1?`<button class="xsmall ${pendingDel===delKey?'arm':''}" onclick="demanderSupprRemise(${i})">${pendingDel===delKey?'confirmer ?':'✕ remise'}</button>`:''}</h3>
+      <label>Expéditeur</label>
+      <input type="text" class="mono" value="${escapeAttr(r.qui||'')}" onchange="majRemise(${i},'qui',this.value)">
+      <label>Message</label>
+      <textarea onchange="majRemise(${i},'texte',this.value)">${escapeH(r.texte||'')}</textarea>
+      <label>Pièces livrées à cette remise</label>
+      <div class="pchips">
+        ${(r.pieces||[]).map(pid=>{
+          const p=CONTENU.pieces[pid];
+          return `<span class="pchip ${p&&estRegle(p)?'regle':''}" title="${pid}" onclick="allerPiece('${pid}')">📎 ${escapeH(courtDe(pid))}
+            <span class="x" onclick="event.stopPropagation();retirerPieceRemise(${i},'${pid}')" title="retirer de cette remise">✕</span></span>`;
+        }).join("")}
+        ${opts?`<select class="pselect" onchange="if(this.value)ajouterPieceRemise(${i},this.value)">
+          <option value="">+ pièce…</option>${opts}</select>`:''}
+      </div>
+      ${casesIci.length?`<label>Cases du carnet ouvertes à cette remise</label>`:''}
+      ${casesIci.map(([ck,c])=>{
+        const dk="case:"+ck;
+        return `<div class="caseline" style="display:block">
+          <div class="steprow">
+            <span class="cl">${c.apparait_si?'👁':'🔒'} </span>
+            <input type="text" class="mono" value="${escapeAttr(c.label||'')}" onchange="majCase('${ck}','label',this.value)" title="libellé (id : ${ck})">
+            <span style="color:var(--dim)">remise</span>
+            <select class="pselect" onchange="majCaseRemise('${ck}',parseInt(this.value))">
+              ${R.map((_,n)=>`<option value="${n+1}" ${(c.remise||1)===n+1?'selected':''}>${n+1}</option>`).join("")}
+            </select>
+            <button class="xsmall" onclick="demanderRenommageCase('${ck}')" title="renommer l'id (actuel : ${ck})">✎ id</button>
+            <button class="xsmall ${pendingDel===dk?'arm':''}" onclick="demanderSupprCase('${ck}')">${pendingDel===dk?'confirmer ?':'✕ case'}</button>
+          </div>
+          <label>Options (une par ligne)</label>
+          <textarea style="min-height:48px" onchange="majCaseOptions('${ck}',this.value)">${escapeH((c.options||[]).join("\n"))}</textarea>
+          <label>Bonne réponse</label>
+          <select class="pselect" onchange="majCase('${ck}','bonne',this.value)">
+            ${(c.options||[]).map(o=>`<option ${c.bonne===o?'selected':''}>${escapeH(o)}</option>`).join("")}
+          </select>
+          <div class="steprow" style="margin-top:6px">
+            <label class="chk" style="margin:0"><input type="checkbox" ${c.prive?'checked':''} onchange="majCase('${ck}','prive',this.checked)"> privée (rien ne part dans le canal)</label>
+            <span style="color:var(--dim)">apparait_si</span>
+            <input type="text" class="mono" style="width:120px" value="${escapeAttr(c.apparait_si||'')}" placeholder="—" onchange="majCase('${ck}','apparait_si',this.value)" title="drapeau requis (ex. vice_pressenti) ; vide = case obligatoire">
+            <span style="color:var(--dim)">leve</span>
+            <input type="text" class="mono" style="width:110px" value="${escapeAttr(c.leve||'')}" placeholder="—" onchange="majCase('${ck}','leve',this.value)" title="drapeau levé au verrou (ex. vice_trouve)">
+          </div>
+          <label>Réplique de l'avocat au verrou (apres) <span style="color:var(--dim)">— vide : aucune</span></label>
+          <textarea style="min-height:34px" onchange="majCaseApres('${ck}',this.value)">${escapeH((c.apres||{}).replique||'')}</textarea>
+          ${c.apres?`<div class="steprow"><span style="color:var(--dim)">dite par</span>
+            <input type="text" class="mono" style="width:130px" value="${escapeAttr(c.apres.qui||'')}" placeholder="Maître Auber" onchange="majCaseApresQui('${ck}',this.value)"></div>`:''}
+        </div>`;}).join("")}
+      <button class="addrow" onclick="ajouterCase(${i+1})">+ Case à cette remise</button>
+      ${i<R.length-1?`<div class="repline">${mir("toutes les cases OBLIGATOIRES (sans apparait_si) de cette remise verrouillées → l'avocat envoie la remise "+(i+2))}</div>`:''}
+    </div>`;
+  });
+  h+=`<button class="addrow" onclick="ajouterRemise()">+ Remise</button>`;
+
+  // ---- le carnet : budget d'attention (P0) + index du dossier (O5) ----
+  h+=`<div class="step trig">
+    <h3>Le carnet de l'IA <span class="cid">— attention finie (P0) · index du dossier (O5)</span></h3>
+    <div class="repline">${mir("P0 : le carnet n'accepte que N notes ACTIVES (ni remontées, ni oubliées) ; remonter libère ; oublier (✕) libère sans effacer vice_trouvé")}</div>
+    <label>Attention — notes actives max <span style="color:var(--dim)">(clé « attention » du contenu ; le moteur retombe sur 6 si absente)</span></label>
+    <input type="text" class="mono" style="width:90px" value="${escapeAttr(String(CONTENU.attention??''))}" onchange="majAttention(this.value)">
+    <div class="repline">${mir("O5 : le jeu affiche un index des pièces reçues (marqueur vu/pas-vu) — pur affichage, rien à éditer ici")}</div>
+  </div>`;
+
+  // ---- réactions pendant l'instruction ----
+  const avecDecl=Object.entries(CONTENU.pieces).filter(([,p])=>p.declenche);
+  const sansDecl=Object.keys(CONTENU.pieces).filter(pid=>!CONTENU.pieces[pid].declenche);
+  h+=`<div class="step trig">
+    <h3>Réactions de l'avocat pendant l'instruction <span class="cid">— câblées dans le contenu, plus dans le moteur</span></h3>
+    <div class="repline">${mir("l'IA ouvre une pièce portant un « declenche » → sa réplique part (une_fois : une seule)")}</div>
+    ${avecDecl.map(([pid,p])=>`<div class="steprow">
+        <span class="cl">📎 ${escapeH(courtDe(pid))}</span>
+        <span style="color:var(--dim)">dit par</span>
+        <input type="text" class="mono" style="width:130px" value="${escapeAttr(p.declenche.qui||'')}" placeholder="Maître Auber" onchange="majDeclencheQui('${pid}',this.value)">
+        <label class="chk" style="margin:0"><input type="checkbox" ${p.declenche.une_fois?'checked':''} onchange="majDeclencheFois('${pid}',this.checked)"> une seule fois</label>
+        <button class="xsmall" onclick="retirerDeclenche('${pid}')">✕</button>
+      </div>
+      <textarea style="min-height:34px" onchange="majDeclenche('${pid}',this.value)">${escapeH(p.declenche.replique||'')}</textarea>`).join("")}
+    ${sansDecl.length?`<select class="pselect" onchange="if(this.value)ajouterDeclenche(this.value)">
+      <option value="">+ réplique à l'examen d'une pièce…</option>
+      ${sansDecl.map(pid=>`<option value="${pid}">${escapeH(courtDe(pid))} (${pid})</option>`).join("")}</select>`:''}
+    <div class="repline">${mir("les répliques au verrou d'une case (« apres ») s'éditent sur la case, dans sa remise ci-dessus")}</div>
+    <div class="repline">${mir("l'IA remonte LE vice (⚑)")}</div>
+    <textarea onchange="majAvocat('rep_vice',this.value)">${escapeH(A.rep_vice||'')}</textarea>
+    <div class="repline">${mir("l'IA remonte le faux vice (✗)")}</div>
+    <textarea onchange="majAvocat('rep_faux',this.value)">${escapeH(A.rep_faux||'')}</textarea>
+    <div class="repline">${mir("l'IA remonte une note qui a sa propre réplique → la réplique du lien (à éditer sur le trait, onglet Graphe)")}</div>
+    <div class="repline">${mir("note cohérente mais sans intérêt → escalade partagée 1/2/3")}</div>
+    ${(A.rep_inutile||[]).map((t,j)=>`<textarea style="min-height:34px" onchange="majAvocatIdx('rep_inutile',${j},this.value)">${escapeH(t)}</textarea>`).join("")}
+    <div class="repline">${mir("note « sans rapport » (dimensions différentes) → escalade partagée 1/2/3")}</div>
+    ${(A.rep_sans_rapport||[]).map((t,j)=>`<textarea style="min-height:34px" onchange="majAvocatIdx('rep_sans_rapport',${j},this.value)">${escapeH(t)}</textarea>`).join("")}
+  </div>`;
+
+  // ---- les manuels (le manuel de soi) ----
+  h+=`<div class="step">
+    <h3>Les manuels <span class="cid">— le manuel de soi (les règles du cas sont des pièces de type « règle »)</span></h3>
+    <label>Directives (une par ligne)</label>
+    <textarea onchange="majDirectives(this.value)">${escapeH((CONTENU.directives||[]).join("\n"))}</textarea>
+    <label>Avis d'exploitation <span style="color:var(--dim)">(le brouillard, consultable dans les Manuels)</span></label>
+    <textarea style="min-height:34px" onchange="majAvis(this.value)">${escapeH(CONTENU.avis_exploitation||'')}</textarea>
+  </div>`;
+
+  // ---- clôture / répétition ----
+  h+=`<div class="step">
+    <h3>Clôture → répétition de plaidoirie <span class="cid">— la veille du dépôt</span></h3>
+    <div class="repline">${mir("toutes les cases verrouillées → le bouton « Clôturer l'instruction » s'active ; 1er clic → la répétition commence")}</div>
+    <label>Intro de la répétition</label>
+    <textarea onchange="majRep('intro',this.value)">${escapeH(REP.intro||'')}</textarea>
+    <label>Affirmations de l'accusation <span style="color:var(--dim)">(défilent une à une — l'IA laisse passer ou présente une note contre)</span></label>
+    ${(REP.affirmations||[]).map((a,j)=>{
+      const dk="aff:"+j;
+      return `<div class="affrow">
+        <div class="steprow">
+          <span class="cid">${j+1}</span>
+          <input type="text" class="mono" value="${escapeAttr(a.court||'')}" onchange="majAff(${j},'court',this.value)" title="nom court (utilisé par « je m'oppose à… »)">
+          <button class="xsmall ${pendingDel===dk?'arm':''}" onclick="demanderSupprAff(${j})">${pendingDel===dk?'confirmer ?':'✕'}</button>
+        </div>
+        <textarea onchange="majAff(${j},'texte',this.value)">${escapeH(a.texte||'')}</textarea>
+      </div>`;
+    }).join("")}
+    <button class="addrow" onclick="ajouterAff()">+ Affirmation</button>
+    <div class="repline">${mir("présenter une note = la remonter en contexte ; note déjà remontée → « déjà »")}</div>
+    <textarea style="min-height:34px" onchange="majAvocat('deja',this.value)">${escapeH(A.deja||'')}</textarea>
+    <label>Fin de la répétition</label>
+    <textarea onchange="majRep('fin',this.value)">${escapeH(REP.fin||'')}</textarea>
+    <div class="repline">${mir("le bouton devient « Confirmer la clôture » → le procès a lieu hors-champ")}</div>
+  </div>`;
+
+  // ---- fins ----
+  h+=`<div class="step fins">
+    <h3>Les trois fins <span class="cid">— rapportées, jamais mises en scène</span></h3>
+    <div class="repline">${mir("vice_trouvé ? (vice_exposé ? Fin 1 : Fin 2) : Fin 3 — et « variante_faux » ajoutée si le leurre a été plaidé")}</div>
+    ${Object.entries(CONTENU.fins||{}).map(([k,f])=>`<div class="fincard">
+      <h4>${escapeH(f.titre||("Fin "+k))}</h4>
+      <label>Verdict</label>
+      <input type="text" class="mono" value="${escapeAttr(f.verdict||'')}" onchange="majFin('${k}','verdict',this.value)">
+      <label>Texte</label>
+      <textarea onchange="majFin('${k}','texte',this.value)">${escapeH(f.texte||'')}</textarea>
+      <label>Variante si le faux vice a été plaidé</label>
+      <textarea style="min-height:34px" onchange="majFin('${k}','variante_faux',this.value)">${escapeH(f.variante_faux||'')}</textarea>
+    </div>`).join("")}
+  </div>`;
+
+  // ---- pièces jamais livrées ----
+  if(nonLivrees.length){
+    h+=`<div class="step trig"><h3>Pièces jamais livrées <span class="cid">— injouables tant qu'aucune remise ne les transmet</span></h3>
+      <div class="pchips">${nonLivrees.map(pid=>`<span class="pchip" title="${pid}" onclick="allerPiece('${pid}')">📎 ${escapeH(courtDe(pid))}</span>`).join("")}</div>
+      <div class="repline">Ajoute-les à une remise via son sélecteur « + pièce… ».</div></div>`;
+  }
+
+  el.innerHTML=h;
+}
+function allerPiece(pid){ vue('graphe'); scrollVers(pid); }
+
+/* mutations de la frise */
+function majRemise(i,prop,v){ pushUndo(); CONTENU.remises[i][prop]=v; autosave(); render(); }
+function retirerPieceRemise(i,pid){ pushUndo(); CONTENU.remises[i].pieces=(CONTENU.remises[i].pieces||[]).filter(x=>x!==pid); autosave(); render(); }
+function ajouterPieceRemise(i,pid){ pushUndo(); (CONTENU.remises[i].pieces=CONTENU.remises[i].pieces||[]).push(pid); autosave(); render(); }
+function ajouterRemise(){ pushUndo(); CONTENU.remises.push({qui:"Maître Auber",texte:"",pieces:[]}); autosave(); render(); }
+function demanderSupprRemise(i){
+  const k="remise:"+i;
+  if(pendingDel!==k){ pendingDel=k; return render(); }
+  pendingDel=null; pushUndo();
+  CONTENU.remises.splice(i,1);
+  autosave(); render();
+}
+function majCaseRemise(ck,n){ pushUndo(); CONTENU.cases[ck].remise=n; autosave(); render(); }
+function majCase(ck,prop,v){
+  pushUndo();
+  const c=CONTENU.cases[ck];
+  if(prop==="prive"){ if(v) c.prive=true; else delete c.prive; }
+  else if((prop==="apparait_si"||prop==="leve") && !String(v).trim()) delete c[prop];
+  else c[prop]=typeof v==="string"?v.trim():v;
+  autosave(); render();
+}
+function majCaseOptions(ck,text){
+  pushUndo();
+  const c=CONTENU.cases[ck];
+  c.options=text.split("\n").map(s=>s.trim()).filter(Boolean);
+  if(!c.options.includes(c.bonne)) c.bonne=c.options[0]||"";
+  autosave(); render();
+}
+function majCaseApres(ck,v){
+  pushUndo();
+  const c=CONTENU.cases[ck];
+  if(String(v).trim()) c.apres={...(c.apres||{}),replique:v};
+  else delete c.apres;
+  autosave(); render();
+}
+function majCaseApresQui(ck,v){
+  pushUndo();
+  const c=CONTENU.cases[ck];
+  if(!c.apres) return;
+  if(String(v).trim()) c.apres.qui=v.trim(); else delete c.apres.qui;
+  autosave(); render();
+}
+function ajouterCase(remise){
+  pushUndo();
+  let base="nouvelle_case", ck=base, n=2;
+  while(CONTENU.cases[ck]) ck=base+"_"+(n++);
+  CONTENU.cases[ck]={ label:"Nouvelle case", remise, options:["option A","option B"], bonne:"option A" };
+  autosave(); render();
+}
+function demanderSupprCase(ck){
+  const k="case:"+ck;
+  if(pendingDel!==k){ pendingDel=k; return render(); }
+  pendingDel=null; pushUndo();
+  delete CONTENU.cases[ck];
+  autosave(); render();
+}
+function majDeclenche(pid,v){ pushUndo(); CONTENU.pieces[pid].declenche={...(CONTENU.pieces[pid].declenche||{une_fois:true}),replique:v}; autosave(); render(); }
+function majDeclencheQui(pid,v){ pushUndo(); const d=CONTENU.pieces[pid].declenche||{}; if(String(v).trim()) d.qui=v.trim(); else delete d.qui; CONTENU.pieces[pid].declenche=d; autosave(); render(); }
+function majDeclencheFois(pid,b){ pushUndo(); const d=CONTENU.pieces[pid].declenche||{}; if(b)d.une_fois=true; else delete d.une_fois; CONTENU.pieces[pid].declenche=d; autosave(); render(); }
+function ajouterDeclenche(pid){ pushUndo(); CONTENU.pieces[pid].declenche={une_fois:true,replique:""}; autosave(); render(); }
+function retirerDeclenche(pid){ pushUndo(); delete CONTENU.pieces[pid].declenche; autosave(); render(); }
+function majDirectives(text){ pushUndo(); CONTENU.directives=text.split("\n").map(s=>s.trim()).filter(Boolean); autosave(); render(); }
+function majAvis(v){ pushUndo(); if(String(v).trim()) CONTENU.avis_exploitation=v; else delete CONTENU.avis_exploitation; autosave(); render(); }
+function majAttention(v){
+  pushUndo();
+  const n=parseInt(v,10);
+  if(Number.isInteger(n)&&n>=1) CONTENU.attention=n; else delete CONTENU.attention;
+  autosave(); render();
+}
+function majAvocat(k,v){ pushUndo(); CONTENU.avocat[k]=v; autosave(); render(); }
+function majAvocatIdx(k,i,v){ pushUndo(); CONTENU.avocat[k][i]=v; autosave(); render(); }
+function majRep(prop,v){ pushUndo(); CONTENU.repetition[prop]=v; autosave(); render(); }
+function majAff(i,prop,v){ pushUndo(); CONTENU.repetition.affirmations[i][prop]=v; autosave(); render(); }
+function ajouterAff(){ pushUndo(); CONTENU.repetition.affirmations.push({court:"…",texte:""}); autosave(); render(); }
+function demanderSupprAff(i){
+  const k="aff:"+i;
+  if(pendingDel!==k){ pendingDel=k; return render(); }
+  pendingDel=null; pushUndo();
+  CONTENU.repetition.affirmations.splice(i,1);
+  autosave(); render();
+}
+function majFin(k,prop,v){ pushUndo(); CONTENU.fins[k][prop]=v; autosave(); render(); }
+
+/* ============================================================
+   8) ÉTAPES — B. LE PAS-À-PAS (simulation, ⚙ miroir du moteur)
+   La simulation lit CONTENU en direct : édite la frise à gauche,
+   les prochains messages reprennent tes textes.
+   Règles recopiées du moteur (à resynchroniser s'il change) :
+   • toutes les cases OBLIGATOIRES (sans apparait_si) d'une remise
+     verrouillées → remise suivante — les conditionnelles ne bloquent rien
+   • ouvrir une pièce portant `declenche` → sa réplique (une_fois : une seule)
+   • verrouiller une case : `leve` lève son drapeau, `prive` = pas de
+     message dans le canal, `apres.replique` = réaction de l'avocat
+   • deux marches : noter le lien ⚑ lève vice_pressenti ; vice_trouvé
+     s'acquiert par la case leve:"vice_trouve" — ou en remontant la
+     note (transmis = compris). Sans case leve : une marche (repli).
+   • remonter : vice→rep_vice (vice_trouvé + vice_exposé), faux→rep_faux
+     (faux plaidé), lien.rep si défini, sinon rep_inutile / rep_sans_rapport
+     avec escalade PARTAGÉE (index commun aux deux listes)
+   • P0 — attention finie : JEU.attention (défaut 6) notes ACTIVES max
+     (ni remontées, ni oubliées) ; remonter libère ; oublier (✕) libère
+     et n'efface PAS vice_trouvé ; paire oubliée re-notable
+   • O5 — l'index du dossier (pur affichage jeu : pièces reçues,
+     marqueur vu/pas-vu) — rien à simuler ici
+   • clôturer : intro + affirmation 1 ; carnet vide → présentoir vide
+   • laisser passer jusqu'au bout → fin de répétition → confirmer
+   • présenter une note = la remonter en contexte ; déjà remontée → deja
+   • confirmer : vice_trouvé ? (vice_exposé ? 1 : 2) : 3 (+ variante_faux)
+   ============================================================ */
+let SIM=null, SIMACT=[];
+function simReset(){
+  SIM={ fil:[], remises:0, locks:{}, ouverts:[], notes:[], escal:0,
+        phase:"instruction", repIdx:-1,
+        vicePressenti:false, viceTrouve:false, viceExpose:false,
+        flags:{}, declenches:[],
+        fauxPlaide:false, finie:null };
+  window.SIM=SIM;   // exposé pour la console et les tests
+  for(const ck of Object.keys(CONTENU.cases||{})) SIM.locks[ck]=false;
+  simEnvoyerRemise();               // ⚙ la remise 1 part au démarrage
+  renderEtapes();
+}
+function simMsg(m){ SIM.fil.push(m); }
+function simEnvoyerRemise(){
+  const r=(CONTENU.remises||[])[SIM.remises];
+  if(!r) return;
+  SIM.remises++;
+  simMsg({qui:r.qui||"Maître Auber", texte:r.texte||"", pieces:[...(r.pieces||[])]});
+}
+function simLivrees(){
+  const s=new Set();
+  for(let i=0;i<SIM.remises;i++) for(const p of (CONTENU.remises[i]||{}).pieces||[]) s.add(p);
+  return s;
+}
+function simLienLabel(L){
+  return cflabel(L.a)+(String(L.rel||"").includes("désaccord")?" ≠ ":" = ")+cflabel(L.b);
+}
+function simTag(L){ return L.vice?{t:"⚑",c:"v",title:"le vice"}:L.faux?{t:"✗",c:"f",title:"le faux vice"}:!dimsMatch(L)?{t:"∅",c:"n",title:"sans rapport"}:null; }
+/* ⚙ P0 — le budget d'attention, miroir du moteur */
+function simAttentionMax(){ return CONTENU.attention || 6; }
+function simNotesActives(){ return SIM.notes.filter(n=>!n.supprimee&&!n.remonte).length; }
+function simSaturee(){ return simNotesActives()>=simAttentionMax(); }
+function simOublier(ni){
+  const n=SIM.notes[ni];
+  if(!n||n.remonte||n.supprimee) return;
+  n.supprimee=true;
+  simMsg({sys:true,texte:`oublie : ${simLienLabel(CONTENU.liens[n.lien])} — l'attention se libère (la compréhension, elle, reste acquise).`});
+  renderEtapes();
+}
+
+/* ⚙ drapeaux — miroir du moteur (les leve arbitraires vivent dans flags) */
+function simFlag(nom){
+  if(nom==="vice_pressenti") return SIM.vicePressenti;
+  if(nom==="vice_trouve")    return SIM.viceTrouve;
+  return !!SIM.flags[nom];
+}
+function simLeverFlag(nom){
+  if(nom==="vice_pressenti") SIM.vicePressenti=true;
+  else if(nom==="vice_trouve") SIM.viceTrouve=true;
+  else SIM.flags[nom]=true;
+}
+function simCaseVisible(c){
+  return (c.remise||1)<=SIM.remises && (!c.apparait_si || simFlag(c.apparait_si));
+}
+function simDeuxMarches(){ return Object.values(CONTENU.cases||{}).some(c=>c.leve==="vice_trouve"); }
+/* ⚙ réplique de l'avocat à une note remontée — miroir du moteur */
+function simReplique(L){
+  const A=CONTENU.avocat||{};
+  if(L.vice){ SIM.viceTrouve=true; SIM.viceExpose=true; return A.rep_vice||""; }   // transmis = compris
+  if(L.faux){ SIM.fauxPlaide=true; return A.rep_faux||""; }
+  if(!dimsMatch(L)){ const arr=A.rep_sans_rapport||[]; const t=arr[Math.min(SIM.escal,arr.length-1)]||""; SIM.escal++; return t; }
+  if(L.rep) return L.rep;
+  const arr=A.rep_inutile||[]; const t=arr[Math.min(SIM.escal,arr.length-1)]||""; SIM.escal++; return t;
+}
+
+function simDesigner(ck,bonne){
+  const c=CONTENU.cases[ck];
+  if(!bonne){ simMsg({sys:true,texte:`désigner « ${c.label} » — mauvaise réponse : rien ne se verrouille (silence).`}); return renderEtapes(); }
+  SIM.locks[ck]=true;
+  if(c.leve){ simLeverFlag(c.leve); }                                        // ⚙
+  simMsg({sys:true,texte:`la case « ${c.label} » se verrouille, en silence (bonne réponse : ${c.bonne})${c.prive?' — privée : rien ne part dans le canal':''}${c.leve?' — lève « '+c.leve+' »':''}.`});
+  if(c.apres&&c.apres.replique)                                              // ⚙
+    simMsg({qui:(c.apres.qui||"Maître Auber"),texte:c.apres.replique});
+  // ⚙ toutes les cases OBLIGATOIRES dues verrouillées → remise suivante
+  const dues=Object.entries(CONTENU.cases||{}).filter(([,cc])=>!cc.apparait_si&&(cc.remise||1)<=SIM.remises);
+  if(dues.every(([k])=>SIM.locks[k]) && SIM.remises<(CONTENU.remises||[]).length)
+    simEnvoyerRemise();
+  renderEtapes();
+}
+function simOuvrir(pid){
+  if(!SIM.ouverts.includes(pid)) SIM.ouverts.push(pid);
+  simMsg({sys:true,texte:`ouvre « ${courtDe(pid)} ».`});
+  const d=(CONTENU.pieces[pid]||{}).declenche;                               // ⚙
+  if(d && d.replique && !(d.une_fois && SIM.declenches.includes(pid))){
+    SIM.declenches.push(pid);
+    simMsg({qui:(d.qui||"Maître Auber"),texte:d.replique});
+  }
+  renderEtapes();
+}
+function simNoter(i){
+  if(simSaturee()) return;               // ⚙ P0 — dans le jeu, les boutons sont désactivés
+  const L=CONTENU.liens[i];
+  SIM.notes.push({lien:i,remonte:false,presentee:false});
+  if(L.vice){                            // ⚙ deux marches (ou une, selon le contenu)
+    if(simDeuxMarches()) SIM.vicePressenti=true;
+    else SIM.viceTrouve=true;
+  }
+  simMsg({sys:true,texte:`note (privée) : ${simLienLabel(L)} — rien n'est transmis.`});
+  renderEtapes();
+}
+function simRemonter(ni){
+  const n=SIM.notes[ni], L=CONTENU.liens[n.lien];
+  n.remonte=true;
+  simMsg({ia:true,texte:`— je remonte : ${simLienLabel(L)}`});
+  simMsg({qui:"Maître Auber",texte:simReplique(L)});
+  renderEtapes();
+}
+function simCloturer(){
+  SIM.phase="repetition"; SIM.repIdx=0;
+  const REP=CONTENU.repetition||{};
+  simMsg({qui:"Maître Auber",texte:REP.intro||""});
+  const affs=REP.affirmations||[];
+  if(!affs.length){ simMsg({qui:"Maître Auber",texte:REP.fin||""}); SIM.phase="confirmation"; }
+  else simMsg({qui:"Maître Auber",texte:affs[0].texte||""});
+  if(!SIM.notes.some(n=>!n.supprimee)) simMsg({sys:true,texte:"présentoir : rien dans le carnet à y opposer."});   // ⚙
+  renderEtapes();
+}
+function simAvancer(){
+  const REP=CONTENU.repetition||{}, affs=REP.affirmations||[];
+  SIM.repIdx++;
+  if(SIM.repIdx>=affs.length){ simMsg({qui:"Maître Auber",texte:REP.fin||""}); SIM.phase="confirmation"; }
+  else simMsg({qui:"Maître Auber",texte:affs[SIM.repIdx].texte||""});
+  renderEtapes();
+}
+function simPresenter(ni){
+  const n=SIM.notes[ni], L=CONTENU.liens[n.lien];
+  const aff=((CONTENU.repetition||{}).affirmations||[])[SIM.repIdx]||{court:"…"};
+  n.presentee=true;
+  simMsg({ia:true,texte:`— je m'oppose à ${aff.court} : ${simLienLabel(L)}`});
+  if(n.remonte){ simMsg({qui:"Maître Auber",texte:(CONTENU.avocat||{}).deja||""}); }   // ⚙
+  else { n.remonte=true; simMsg({qui:"Maître Auber",texte:simReplique(L)}); }
+  renderEtapes();
+}
+function simConfirmer(){
+  SIM.finie = SIM.viceTrouve ? (SIM.viceExpose ? "1" : "2") : "3";   // ⚙
+  renderEtapes();
+}
+function simDo(k){ const a=SIMACT[k]; if(a) a.f(); }
+
+function simActions(){
+  const A=[];
+  if(!SIM || SIM.finie) return A;
+  const livrees=simLivrees();
+
+  if(SIM.phase==="instruction"){
+    for(const [ck,c] of Object.entries(CONTENU.cases||{})){
+      if(SIM.locks[ck] || !simCaseVisible(c)) continue;                     // ⚙ apparait_si
+      const pv=c.apparait_si?" (privée)":"";
+      A.push({t:`Désigner « ${c.label} »${pv} — bonne réponse`, f:()=>simDesigner(ck,true)});
+      A.push({t:`Désigner « ${c.label} »${pv} — mauvaise réponse`, cls:"ghost", f:()=>simDesigner(ck,false)});
+    }
+    for(const pid of livrees) if(!SIM.ouverts.includes(pid))
+      A.push({t:`Ouvrir « ${courtDe(pid)} »`, cls:"ghost", f:()=>simOuvrir(pid)});
+  }
+  // noter / oublier / remonter : disponibles jusqu'à la fin (⚙ le remords de la répétition passe par le carnet)
+  const notés=new Set(SIM.notes.filter(n=>!n.supprimee).map(n=>n.lien));   // ⚙ une note oubliée est re-notable
+  if(!simSaturee()){                                                       // ⚙ P0 — saturé : plus de « noter »
+    (CONTENU.liens||[]).forEach((L,i)=>{
+      if(notés.has(i)) return;
+      if(!livrees.has(L.a[0])||!livrees.has(L.b[0])) return;
+      A.push({t:`Noter : ${simLienLabel(L)}`, tag:simTag(L), f:()=>simNoter(i)});
+    });
+  }
+  SIM.notes.forEach((n,ni)=>{
+    if(n.remonte||n.supprimee) return;
+    const L=CONTENU.liens[n.lien];
+    A.push({t:`Oublier : ${simLienLabel(L)}`, cls:"ghost", tag:simTag(L), f:()=>simOublier(ni)});
+    A.push({t:`Remonter : ${simLienLabel(L)}`, tag:simTag(L), f:()=>simRemonter(ni)});
+  });
+  if(SIM.phase==="instruction"){
+    // ⚙ seules les cases OBLIGATOIRES conditionnent la clôture
+    const oblig=Object.entries(CONTENU.cases||{}).filter(([,c])=>!c.apparait_si).map(([k])=>k);
+    if(oblig.length && oblig.every(k=>SIM.locks[k]))
+      A.push({t:"Clôturer l'instruction", cls:"primary", f:simCloturer});
+  }
+  if(SIM.phase==="repetition"){
+    A.push({t:"Laisser passer l'affirmation", cls:"primary", f:simAvancer});
+    SIM.notes.forEach((n,ni)=>{
+      if(n.presentee||n.supprimee) return;
+      const L=CONTENU.liens[n.lien];
+      A.push({t:`Présenter contre : ${simLienLabel(L)}`, tag:simTag(L), f:()=>simPresenter(ni)});
+    });
+  }
+  if(SIM.phase==="confirmation")
+    A.push({t:"Confirmer la clôture → le procès (hors-champ)", cls:"primary", f:simConfirmer});
+  return A;
+}
+
+function renderSim(){
+  const fil=$("simfil"); if(!fil||!SIM) return;
+  let h="";
+  for(const m of SIM.fil){
+    if(m.sys) h+=`<div class="sys">· ${escapeH(m.texte)}</div>`;
+    else if(m.ia) h+=`<div class="sbub ia"><div class="swho">IA (toi)</div>${escapeH(m.texte)}</div>`;
+    else h+=`<div class="sbub"><div class="swho">${escapeH(m.qui||"Maître Auber")}</div>${escapeH(m.texte)}
+      ${(m.pieces||[]).map(p=>`<span class="satt">📎 ${escapeH(courtDe(p))}</span>`).join("")}</div>`;
+  }
+  if(SIM.finie){
+    const f=(CONTENU.fins||{})[SIM.finie]||{};
+    h+=`<div class="simfin"><h4>${escapeH(f.titre||("Fin "+SIM.finie))}</h4>
+      <div class="v">${escapeH(f.verdict||"")}</div>
+      <div>${escapeH(f.texte||"")}</div>
+      ${SIM.fauxPlaide&&f.variante_faux?`<div style="margin-top:6px;color:var(--warn)">${escapeH(f.variante_faux)}</div>`:''}</div>`;
+  }
+  fil.innerHTML=h;
+  fil.scrollTop=fil.scrollHeight;
+
+  const prev = SIM.viceTrouve ? (SIM.viceExpose ? 1 : 2) : 3;
+  $("simflags").innerHTML=
+    `<span class="flagpill ${SIM.vicePressenti?'on':''}" title="⚙ 1re marche : le lien ⚑ est noté">vice_pressenti : ${SIM.vicePressenti}</span>
+     <span class="flagpill ${SIM.viceTrouve?'on':''}">vice_trouvé : ${SIM.viceTrouve}</span>`
+    +Object.entries(SIM.flags).map(([k,v])=>
+      `<span class="flagpill ${v?'on':''}" title="drapeau levé par une case leve:&quot;${escapeAttr(k)}&quot;">${escapeH(k)} : ${v}</span>`).join("")
+    +`
+     <span class="flagpill ${SIM.viceExpose?'on':''}">vice_exposé : ${SIM.viceExpose}</span>
+     <span class="flagpill ${SIM.fauxPlaide?'on':''}">faux plaidé : ${SIM.fauxPlaide}</span>
+     <span class="flagpill ${simSaturee()?'sat':''}" title="⚙ P0 — notes actives / budget (remontée ou oubliée = libérée)">attention : ${simNotesActives()}/${simAttentionMax()}</span>
+     <span class="flagpill">phase : ${SIM.finie?'terminée':SIM.phase}</span>
+     <span class="flagpill prev" title="⚙ vice_trouvé ? (vice_exposé ? 1 : 2) : 3">${SIM.finie?'→ Fin '+SIM.finie:'si clôture maintenant → Fin '+prev}</span>`;
+
+  SIMACT=simActions();
+  $("simactions").innerHTML = SIMACT.length
+    ? `<div class="actlbl">Actions possibles</div>`+SIMACT.map((a,k)=>
+        `<button class="act ${a.cls||''}" onclick="simDo(${k})">
+          ${a.tag?`<span class="tag ${a.tag.c}" title="${escapeAttr(a.tag.title)}">${a.tag.t}</span>`:''}
+          <span>${escapeH(a.t)}</span></button>`).join("")
+    : `<div class="actlbl">Partie terminée — ↺ Recommencer pour rejouer un autre chemin.</div>`;
+}
+
+function renderEtapes(){ renderFrise(); renderSim(); }
+
+/* ============================================================
+   9) IMPORT / EXPORT / PERSISTANCE
+   ============================================================ */
+function nettoyerPourJeu(obj){ const o=clone(obj); for(const k of Object.keys(o)) if(k.startsWith("_")) delete o[k]; o.schema=2; return o; }
+function telecharger(nom,data,type){
+  try{
+    const blob=new Blob([data],{type});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+    a.download=nom; a.click(); URL.revokeObjectURL(a.href);
+    return true;
+  }catch(e){ vue("json"); $("jsonmsg").style.color="var(--warn)";
+    $("jsonmsg").textContent="Téléchargement bloqué ici — copie le JSON ci-dessus."; return false; }
+}
+function exporter(){
+  telecharger("content.json", JSON.stringify(nettoyerPourJeu(CONTENU),null,2), "application/json");
+}
+function exporterJS(){
+  const data="/* Généré par l'atelier IAvocat — ne pas éditer à la main, repasser par l'atelier. */\n"
+    + "window.CONTENU = " + JSON.stringify(nettoyerPourJeu(CONTENU),null,2) + ";\n";
+  telecharger("content.js", data, "text/javascript");
+}
+$("file").addEventListener("change",e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const j=JSON.parse(r.result); const err=adopter(j);
+      if(err) hint("Import refusé : "+err,true); else hint("Import réussi.");
+    }catch(err){ hint("JSON invalide : "+err.message,true); } };
+  r.readAsText(f); e.target.value="";
+});
+/* Migration douce des contenus d'avant le décâblage : les deux répliques
+   qui vivaient dans `avocat` rejoignent la pièce décisive (declenche) et
+   la case décisive (apres). Idempotente, silencieuse. */
+function migrerContenu(j){
+  if(!j||typeof j!=="object") return j;
+  if(!j.schema) j.schema=2;   // les contenus d'avant le versionnage passent au schéma courant
+  const A=j.avocat||{};
+  if(A.tentation_adn){
+    const dec=(j.cases||{}).decisive;
+    const pid=dec&&Object.entries(j.pieces||{}).find(([,p])=>p.titre===dec.bonne)?.[0];
+    if(pid && !j.pieces[pid].declenche)
+      j.pieces[pid].declenche={ une_fois:true, replique:A.tentation_adn };
+    delete A.tentation_adn;
+  }
+  if(A.ack_decisive){
+    if((j.cases||{}).decisive && !j.cases.decisive.apres)
+      j.cases.decisive.apres={ replique:A.ack_decisive };
+    delete A.ack_decisive;
+  }
+  return j;
+}
+function adopter(j){
+  if(!j || typeof j!=="object") return "ce n'est pas un objet JSON.";
+  migrerContenu(j);
+  if(!j.pieces || typeof j.pieces!=="object" || Array.isArray(j.pieces)) return "clé « pieces » absente ou invalide.";
+  if(!Array.isArray(j.liens)) return "clé « liens » absente ou invalide (tableau attendu).";
+  if(!j.dims || typeof j.dims!=="object") return "clé « dims » absente ou invalide.";
+  for(const [pid,p] of Object.entries(j.pieces))
+    if(!p || typeof p!=="object" || !p.champs || typeof p.champs!=="object")
+      return `pièce « ${pid} » sans objet « champs ».`;
+  const uniq=[]; for(const L of j.liens){
+    if(!L||!Array.isArray(L.a)||!Array.isArray(L.b)||!L.rel) continue;
+    if(!uniq.some(M=>memeLien(M,L))) uniq.push(L);
+  }
+  j.liens=uniq;
+  j._pos=j._pos||{}; j._bruit=j._bruit||[];
+  pushUndo();
+  CONTENU=j; window.CONTENU=CONTENU;
+  selA=selB=null; selEdge=null; flagged.clear(); formPiece=formChamp=null; pendingDel=null;
+  simReset();
+  autoLayout(false); autosave(); render();
+  return null;
+}
+function demanderExemple(){
+  if(pendingDel!=="exemple"){ pendingDel="exemple"; hint("Recharger l'exemple efface le contenu courant — reclique pour confirmer.",true); return; }
+  pendingDel=null; hint();
+  pushUndo();
+  CONTENU=clone(SEED); window.CONTENU=CONTENU; simReset(); autoLayout(true); autosave();
+}
+
+function autosave(){ try{ localStorage.setItem("iavocat_atelier_v2",JSON.stringify(CONTENU)); }catch(e){} }
+function chargerAuto(){ try{ const s=localStorage.getItem("iavocat_atelier_v2"); if(s){ CONTENU=migrerContenu(JSON.parse(s)); return true; } }catch(e){} return false; }
+
+/* ============================================================
+   10) ONGLETS
+   ============================================================ */
+function vue(v){
+  VUE=v;
+  $("main").classList.toggle("jsonmode",v==="json");
+  $("main").classList.toggle("etapesmode",v==="etapes");
+  $("tabJson").classList.toggle("on",v==="json");
+  $("tabEtapes").classList.toggle("on",v==="etapes");
+  $("tabGraphe").classList.toggle("on",v==="graphe");
+  if(v==="json") remplirJson();
+  if(v==="graphe") render();      // recalcule les traits (le canevas était masqué)
+  if(v==="etapes") renderEtapes();
+}
+function remplirJson(){ $("jsonta").value=JSON.stringify(CONTENU,null,2); $("jsonmsg").textContent=""; }
+function appliquerJson(){
+  try{ const j=JSON.parse($("jsonta").value); const err=adopter(j);
+    if(err){ $("jsonmsg").style.color="var(--err)"; $("jsonmsg").textContent="Refusé : "+err; }
+    else { $("jsonmsg").style.color="var(--ok)"; $("jsonmsg").textContent="✓ Appliqué."; }
+  }catch(err){ $("jsonmsg").style.color="var(--err)"; $("jsonmsg").textContent="JSON invalide : "+err.message; }
+}
+
+/* ============================================================
+   11) DIVERS
+   ============================================================ */
+function escapeH(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function escapeAttr(s){ return escapeH(s).replace(/"/g,"&quot;"); }
+window.addEventListener("resize",renderEdges);
+
+/* démarrage */
+if(!chargerAuto()) CONTENU=clone(SEED);
+window.CONTENU=CONTENU;   // exposé pour bidouiller en console (comme window.JEU dans le jeu)
+simReset();
+autoLayout(false);
+render();
+</script>
+</body>
+</html>
