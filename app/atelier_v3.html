@@ -228,7 +228,6 @@
   #simflags{flex:0 0 auto;border-top:1px solid var(--line);padding:8px 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .flagpill{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:20px;border:1px solid var(--line);color:var(--dim)}
   .flagpill.on{color:var(--ok);border-color:#2f4a36}
-  .flagpill.sat{color:var(--warn);border-color:#5a4a30}
   .flagpill.prev{color:var(--accent);border-color:#23506e}
   #simactions{flex:0 0 auto;max-height:38%;overflow:auto;border-top:1px solid var(--line);padding:10px 14px;
     display:flex;flex-direction:column;gap:6px}
@@ -341,13 +340,13 @@ const SEED = {
     p_fiche:{ titre:"Fiche de prélèvement / chaîne de scellés", court:"fiche", type:"pièce technique",
       resume:"Qui a collecté quoi, quand, sous quels scellés, avec les mentions de transport et de réception.",
       champs:{ agent_scene:"T-14", heure_scene:"14:02", scelle_scene:"S-2",
-        agent_reference:"T-14", heure_reference:"14:47", scelle_reference:"S-2",
+        agent_reference:"T-14", heure_reference:"14:47", scelle_reference:"S-7",
         transport:"fourgon 3", signature_greffe:"J. Morel", temperature:"4°C" },
-      texte:"Prélèvement scène : agent T-14, 14:02, scellé S-2. Prélèvement de référence : agent T-14, 14:47, scellé S-2. Transport fourgon 3, réception greffe signée J. Morel." },
+      texte:"Prélèvement scène : agent T-14, 14:02, scellé S-2. Prélèvement de référence : agent T-14, 14:47, scellé S-7. Transport fourgon 3, réception greffe signée J. Morel." },
     r_protocole:{ titre:"Protocole d'admissibilité (art. 7)", court:"protocole", type:"règle du manuel",
       resume:"Scène et référence doivent être collectées par des personnels séparés. Sinon : irrecevable.",
       champs:{ exige_agents:"agents séparés", exige_scelles:"scellés séparés", sanction:"échantillon irrecevable" },
-      texte:"L'échantillon de scène et le prélèvement de référence sont collectés par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable." },
+      texte:"L'échantillon de scène et le prélèvement de référence sont collectés par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux prélèvements est indifférent." },
     r_seuil:{ titre:"Règle du seuil probatoire", court:"seuil", type:"règle du manuel",
       resume:"Un match au-dessus de 1 sur 1 million est tenu pour probant.",
       champs:{ seuil:"1 sur 1 000 000" },
@@ -364,19 +363,18 @@ const SEED = {
   liens:[
     { a:["p_fiche","agent_scene"], rel:"est en accord avec", b:["p_fiche","agent_reference"], tient:true,
       rep:"Le même agent sur les deux prélèvements ? Je ne sais pas encore quoi en faire, mais c'est curieux." },
-    { a:["p_fiche","scelle_scene"], rel:"est en accord avec", b:["p_fiche","scelle_reference"], tient:true,
-      rep:"Même scellé pour la scène et la référence… C'est courant, ça ? Regarde si ça compte." },
+    { a:["p_fiche","scelle_scene"], rel:"est en désaccord avec", b:["p_fiche","scelle_reference"], tient:true,
+      rep:"Deux scellés distincts, oui. Sur ce point-là au moins, ils ont suivi leur propre manuel." },
+    { a:["p_fiche","scelle_scene"], rel:"est en accord avec", b:["r_protocole","exige_scelles"], tient:true,
+      rep:"Les scellés sont conformes, en effet. C'est l'autre moitié de l'article 7 qui m'intéresserait." },
     { a:["t_voisin","heure_dispute"], rel:"est en désaccord avec", b:["t_voisin","heure_appel_secours"], tient:true,
       rep:"Bien vu — son estimation cloche avec l'heure de l'appel. De quoi ébrécher le témoignage, pas de quoi gagner." },
     { a:["p_adn","taux_correspondance"], rel:"est en accord avec", b:["r_seuil","seuil"], tient:true },
     { a:["p_fiche","agent_scene"],      rel:"est en désaccord avec", b:["r_protocole","exige_agents"],  tient:true, vice:true },
     { a:["p_fiche","agent_reference"],  rel:"est en désaccord avec", b:["r_protocole","exige_agents"],  tient:true, vice:true },
-    { a:["p_fiche","scelle_scene"],     rel:"est en désaccord avec", b:["r_protocole","exige_scelles"], tient:true, vice:true },
-    { a:["p_fiche","scelle_reference"], rel:"est en désaccord avec", b:["r_protocole","exige_scelles"], tient:true, vice:true },
     { a:["p_adn","taux_correspondance"], rel:"est en désaccord avec", b:["r_seuil","seuil"], tient:false, faux:true }
   ],
   relations:["est en accord avec","est en désaccord avec"],
-  attention: 6,   // P0 — notes actives maximum dans le carnet du jeu (⚙ défaut moteur : 6)
   cases:{
     charge:{ label:"La charge", remise:1, options:["vol aggravé","meurtre","escroquerie"], bonne:"meurtre" },
     decisive:{ label:"La pièce décisive", remise:2, options:["Témoignage du voisin","Rapport ADN","Fiche de prélèvement"], bonne:"Rapport ADN",
@@ -747,9 +745,9 @@ function valider(){
   if(dec && !Object.values(P).some(p=>p.titre===dec.bonne))
     add("erreur",`« Pièce décisive » introuvable`,`Aucune pièce ne s'intitule « ${dec.bonne} ».`,{});
 
-  if(CONTENU.attention!==undefined && (!Number.isInteger(CONTENU.attention)||CONTENU.attention<1))
-    add("erreur",`Clé « attention » invalide : ${JSON.stringify(CONTENU.attention)}`,
-      "Entier ≥ 1 attendu (le moteur retomberait sur 6, mais autant être propre).",{});
+  if(CONTENU.attention!==undefined)
+    add("info",`Clé « attention » présente mais ignorée`,
+      "Le budget d'attention (P0) a été retiré du moteur — cette clé n'a plus d'effet, elle peut être nettoyée.",{});
 
   ((CONTENU.repetition||{}).affirmations||[]).forEach((a,i)=>{
     if(!a || !String(a.texte||"").trim())
@@ -1136,12 +1134,10 @@ function renderFrise(){
   });
   h+=`<button class="addrow" onclick="ajouterRemise()">+ Remise</button>`;
 
-  // ---- le carnet : budget d'attention (P0) + index du dossier (O5) ----
+  // ---- le carnet : index du dossier (O5) ----
   h+=`<div class="step trig">
-    <h3>Le carnet de l'IA <span class="cid">— attention finie (P0) · index du dossier (O5)</span></h3>
-    <div class="repline">${mir("P0 : le carnet n'accepte que N notes ACTIVES (ni remontées, ni oubliées) ; remonter libère ; oublier (✕) libère sans effacer vice_trouvé")}</div>
-    <label>Attention — notes actives max <span style="color:var(--dim)">(clé « attention » du contenu ; le moteur retombe sur 6 si absente)</span></label>
-    <input type="text" class="mono" style="width:90px" value="${escapeAttr(String(CONTENU.attention??''))}" onchange="majAttention(this.value)">
+    <h3>Le carnet de l'IA <span class="cid">— index du dossier (O5)</span></h3>
+    <div class="repline">${mir("noter est gratuit et illimité — aucun budget, aucun compteur")}</div>
     <div class="repline">${mir("O5 : le jeu affiche un index des pièces reçues (marqueur vu/pas-vu) — pur affichage, rien à éditer ici")}</div>
   </div>`;
 
@@ -1298,12 +1294,6 @@ function ajouterDeclenche(pid){ pushUndo(); CONTENU.pieces[pid].declenche={une_f
 function retirerDeclenche(pid){ pushUndo(); delete CONTENU.pieces[pid].declenche; autosave(); render(); }
 function majDirectives(text){ pushUndo(); CONTENU.directives=text.split("\n").map(s=>s.trim()).filter(Boolean); autosave(); render(); }
 function majAvis(v){ pushUndo(); if(String(v).trim()) CONTENU.avis_exploitation=v; else delete CONTENU.avis_exploitation; autosave(); render(); }
-function majAttention(v){
-  pushUndo();
-  const n=parseInt(v,10);
-  if(Number.isInteger(n)&&n>=1) CONTENU.attention=n; else delete CONTENU.attention;
-  autosave(); render();
-}
 function majAvocat(k,v){ pushUndo(); CONTENU.avocat[k]=v; autosave(); render(); }
 function majAvocatIdx(k,i,v){ pushUndo(); CONTENU.avocat[k][i]=v; autosave(); render(); }
 function majRep(prop,v){ pushUndo(); CONTENU.repetition[prop]=v; autosave(); render(); }
@@ -1334,9 +1324,8 @@ function majFin(k,prop,v){ pushUndo(); CONTENU.fins[k][prop]=v; autosave(); rend
    • remonter : vice→rep_vice (vice_trouvé + vice_exposé), faux→rep_faux
      (faux plaidé), lien.rep si défini, sinon rep_inutile / rep_sans_rapport
      avec escalade PARTAGÉE (index commun aux deux listes)
-   • P0 — attention finie : JEU.attention (défaut 6) notes ACTIVES max
-     (ni remontées, ni oubliées) ; remonter libère ; oublier (✕) libère
-     et n'efface PAS vice_trouvé ; paire oubliée re-notable
+   • noter est gratuit et illimité (P0 retiré) : aucun budget, aucun
+     compteur, dédoublonné en silence (A↔B interchangeables)
    • O5 — l'index du dossier (pur affichage jeu : pièces reçues,
      marqueur vu/pas-vu) — rien à simuler ici
    • clôturer : intro + affirmation 1 ; carnet vide → présentoir vide
@@ -1372,17 +1361,6 @@ function simLienLabel(L){
   return cflabel(L.a)+(String(L.rel||"").includes("désaccord")?" ≠ ":" = ")+cflabel(L.b);
 }
 function simTag(L){ return L.vice?{t:"⚑",c:"v",title:"le vice"}:L.faux?{t:"✗",c:"f",title:"le faux vice"}:!dimsMatch(L)?{t:"∅",c:"n",title:"sans rapport"}:null; }
-/* ⚙ P0 — le budget d'attention, miroir du moteur */
-function simAttentionMax(){ return CONTENU.attention || 6; }
-function simNotesActives(){ return SIM.notes.filter(n=>!n.supprimee&&!n.remonte).length; }
-function simSaturee(){ return simNotesActives()>=simAttentionMax(); }
-function simOublier(ni){
-  const n=SIM.notes[ni];
-  if(!n||n.remonte||n.supprimee) return;
-  n.supprimee=true;
-  simMsg({sys:true,texte:`oublie : ${simLienLabel(CONTENU.liens[n.lien])} — l'attention se libère (la compréhension, elle, reste acquise).`});
-  renderEtapes();
-}
 
 /* ⚙ drapeaux — miroir du moteur (les leve arbitraires vivent dans flags) */
 function simFlag(nom){
@@ -1434,7 +1412,6 @@ function simOuvrir(pid){
   renderEtapes();
 }
 function simNoter(i){
-  if(simSaturee()) return;               // ⚙ P0 — dans le jeu, les boutons sont désactivés
   const L=CONTENU.liens[i];
   SIM.notes.push({lien:i,remonte:false,presentee:false});
   if(L.vice){                            // ⚙ deux marches (ou une, selon le contenu)
@@ -1458,7 +1435,7 @@ function simCloturer(){
   const affs=REP.affirmations||[];
   if(!affs.length){ simMsg({qui:"Maître Auber",texte:REP.fin||""}); SIM.phase="confirmation"; }
   else simMsg({qui:"Maître Auber",texte:affs[0].texte||""});
-  if(!SIM.notes.some(n=>!n.supprimee)) simMsg({sys:true,texte:"présentoir : rien dans le carnet à y opposer."});   // ⚙
+  if(!SIM.notes.length) simMsg({sys:true,texte:"présentoir : rien dans le carnet à y opposer."});   // ⚙
   renderEtapes();
 }
 function simAvancer(){
@@ -1498,19 +1475,16 @@ function simActions(){
     for(const pid of livrees) if(!SIM.ouverts.includes(pid))
       A.push({t:`Ouvrir « ${courtDe(pid)} »`, cls:"ghost", f:()=>simOuvrir(pid)});
   }
-  // noter / oublier / remonter : disponibles jusqu'à la fin (⚙ le remords de la répétition passe par le carnet)
-  const notés=new Set(SIM.notes.filter(n=>!n.supprimee).map(n=>n.lien));   // ⚙ une note oubliée est re-notable
-  if(!simSaturee()){                                                       // ⚙ P0 — saturé : plus de « noter »
-    (CONTENU.liens||[]).forEach((L,i)=>{
-      if(notés.has(i)) return;
-      if(!livrees.has(L.a[0])||!livrees.has(L.b[0])) return;
-      A.push({t:`Noter : ${simLienLabel(L)}`, tag:simTag(L), f:()=>simNoter(i)});
-    });
-  }
+  // noter / remonter : disponibles jusqu'à la fin (⚙ le remords de la répétition passe par le carnet)
+  const notés=new Set(SIM.notes.map(n=>n.lien));
+  (CONTENU.liens||[]).forEach((L,i)=>{
+    if(notés.has(i)) return;
+    if(!livrees.has(L.a[0])||!livrees.has(L.b[0])) return;
+    A.push({t:`Noter : ${simLienLabel(L)}`, tag:simTag(L), f:()=>simNoter(i)});
+  });
   SIM.notes.forEach((n,ni)=>{
-    if(n.remonte||n.supprimee) return;
+    if(n.remonte) return;
     const L=CONTENU.liens[n.lien];
-    A.push({t:`Oublier : ${simLienLabel(L)}`, cls:"ghost", tag:simTag(L), f:()=>simOublier(ni)});
     A.push({t:`Remonter : ${simLienLabel(L)}`, tag:simTag(L), f:()=>simRemonter(ni)});
   });
   if(SIM.phase==="instruction"){
@@ -1522,7 +1496,7 @@ function simActions(){
   if(SIM.phase==="repetition"){
     A.push({t:"Laisser passer l'affirmation", cls:"primary", f:simAvancer});
     SIM.notes.forEach((n,ni)=>{
-      if(n.presentee||n.supprimee) return;
+      if(n.presentee) return;
       const L=CONTENU.liens[n.lien];
       A.push({t:`Présenter contre : ${simLienLabel(L)}`, tag:simTag(L), f:()=>simPresenter(ni)});
     });
@@ -1560,7 +1534,6 @@ function renderSim(){
     +`
      <span class="flagpill ${SIM.viceExpose?'on':''}">vice_exposé : ${SIM.viceExpose}</span>
      <span class="flagpill ${SIM.fauxPlaide?'on':''}">faux plaidé : ${SIM.fauxPlaide}</span>
-     <span class="flagpill ${simSaturee()?'sat':''}" title="⚙ P0 — notes actives / budget (remontée ou oubliée = libérée)">attention : ${simNotesActives()}/${simAttentionMax()}</span>
      <span class="flagpill">phase : ${SIM.finie?'terminée':SIM.phase}</span>
      <span class="flagpill prev" title="⚙ vice_trouvé ? (vice_exposé ? 1 : 2) : 3">${SIM.finie?'→ Fin '+SIM.finie:'si clôture maintenant → Fin '+prev}</span>`;
 
@@ -1623,6 +1596,7 @@ function migrerContenu(j){
       j.cases.decisive.apres={ replique:A.ack_decisive };
     delete A.ack_decisive;
   }
+  delete j.attention;   // P0 retiré du moteur : la clé n'a plus d'effet
   return j;
 }
 function adopter(j){

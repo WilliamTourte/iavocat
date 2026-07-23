@@ -9,7 +9,6 @@ const { check, bilan, canal, carnet, niveau1, verrouiller, lienVice,
 
 const AFFAIRE = {
   schema:2,
-  attention:3,                       // budget différent, pour vérifier qu'il suit
   relations:["concorde avec","contredit"],
   pieces:{
     doc_alpha:{ titre:"Document Alpha", court:"ALPHA", type:"pièce",
@@ -77,10 +76,10 @@ console.log("— une affaire de forme différente se joue —");
   check("remise 1 envoyée, sa pièce est à l'index",
     w.S.remisesEnvoyees===1 && carnet(w).includes("ALPHA"));
   check("carnet fermé tant qu'une seule pièce est livrée (rien à relier)",
-    !carnet(w).includes("attention :"));
+    !carnet(w).includes("Tes notes"));
   verrouiller(w,"case_un");
-  check("deux pièces livrées → le carnet s'ouvre avec le budget du contenu",
-    carnet(w).includes("attention : 0/3"));
+  check("deux pièces livrées → le carnet s'ouvre (noter est gratuit, sans budget)",
+    carnet(w).includes("Tes notes"));
   niveau1(w);
   check("les 3 remises sont parties (3 cases obligatoires enchaînées)", w.S.remisesEnvoyees===3);
   check("la réplique portée par la case a bien joué (avec son « qui »)",

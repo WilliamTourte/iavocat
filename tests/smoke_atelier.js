@@ -15,8 +15,8 @@ const w=bootAtelier();
 {
   const issues=w.valider();
   check("SEED : aucune erreur au diagnostic", issues.filter(i=>i.niveau==="erreur").length===0);
-  check("SEED : le double canal du vice est toujours signalé (avert)",
-    issues.some(i=>i.msg.includes("canaux indépendants")));
+  check("SEED : le vice est à canal unique — plus d'avert « canaux indépendants »",
+    !issues.some(i=>i.msg.includes("canaux indépendants")));
   check("SEED : la case du vice est privée + conditionnelle (pas d'avert dédié)",
     !issues.some(i=>i.msg.includes("n'est pas privée")));
 }

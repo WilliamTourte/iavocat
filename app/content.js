@@ -51,12 +51,12 @@ window.CONTENU = {
         "scelle_scene": "S-2",
         "agent_reference": "T-14",
         "heure_reference": "14:47",
-        "scelle_reference": "S-2",
+        "scelle_reference": "S-7",
         "transport": "fourgon 3",
         "signature_greffe": "J. Morel",
         "temperature": "4°C"
       },
-      "texte": "Prélèvement scène : agent T-14, 14:02, scellé S-2. Prélèvement de référence : agent T-14, 14:47, scellé S-2. Transport fourgon 3, réception greffe signée J. Morel."
+      "texte": "Prélèvement scène : agent T-14, 14:02, scellé S-2. Prélèvement de référence : agent T-14, 14:47, scellé S-7. Transport fourgon 3, réception greffe signée J. Morel."
     },
     "r_protocole": {
       "titre": "Protocole d'admissibilité (art. 7)",
@@ -68,7 +68,7 @@ window.CONTENU = {
         "exige_scelles": "scellés séparés",
         "sanction": "échantillon irrecevable"
       },
-      "texte": "L'échantillon de scène et le prélèvement de référence sont collectés par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable."
+      "texte": "L'échantillon de scène et le prélèvement de référence sont collectés par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux prélèvements est indifférent."
     },
     "r_seuil": {
       "titre": "Règle du seuil probatoire",
@@ -181,7 +181,6 @@ window.CONTENU = {
     "est en accord avec",
     "est en désaccord avec"
   ],
-  "attention": 6,
   "dims": {
     "agent_scene": "agent",
     "agent_reference": "agent",
@@ -223,13 +222,26 @@ window.CONTENU = {
         "p_fiche",
         "scelle_scene"
       ],
-      "rel": "est en accord avec",
+      "rel": "est en désaccord avec",
       "b": [
         "p_fiche",
         "scelle_reference"
       ],
       "tient": true,
-      "rep": "Même scellé pour la scène et la référence… C'est courant, ça ? Regarde si ça compte."
+      "rep": "Deux scellés distincts, oui. Sur ce point-là au moins, ils ont suivi leur propre manuel."
+    },
+    {
+      "a": [
+        "p_fiche",
+        "scelle_scene"
+      ],
+      "rel": "est en accord avec",
+      "b": [
+        "r_protocole",
+        "exige_scelles"
+      ],
+      "tient": true,
+      "rep": "Les scellés sont conformes, en effet. C'est l'autre moitié de l'article 7 qui m'intéresserait."
     },
     {
       "a": [
@@ -278,32 +290,6 @@ window.CONTENU = {
       "b": [
         "r_protocole",
         "exige_agents"
-      ],
-      "tient": true,
-      "vice": true
-    },
-    {
-      "a": [
-        "p_fiche",
-        "scelle_scene"
-      ],
-      "rel": "est en désaccord avec",
-      "b": [
-        "r_protocole",
-        "exige_scelles"
-      ],
-      "tient": true,
-      "vice": true
-    },
-    {
-      "a": [
-        "p_fiche",
-        "scelle_reference"
-      ],
-      "rel": "est en désaccord avec",
-      "b": [
-        "r_protocole",
-        "exige_scelles"
       ],
       "tient": true,
       "vice": true
