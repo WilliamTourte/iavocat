@@ -11,9 +11,12 @@ app/        index.html, atelier_v3.html, content.js — les trois artefacts du �
 docs/       ce fichier, conception_jeu_ia.md, PASSATION.md
 tests/      harnais.js + les six suites (§5)
 grammaire/  grammaire2.js + test_grammaire2.js — prototype NON branché (§7)
+scripts/    exporter-seed.js — régénère app/content.js depuis SEED en ligne de commande
 ```
 
-`content.js` doit rester à côté de `index.html` (le jeu le charge en `<script src="content.js">`) : les deux vivent dans `app/`, comme `atelier_v3.html`. `npm test` sait où chercher ; `npm run demo:grammaire` fait tourner le banc d'essai de la grammaire, séparément.
+`content.js` doit rester à côté de `index.html` (le jeu le charge en `<script src="content.js">`) : les deux vivent dans `app/`, comme `atelier_v3.html`. `npm test` sait où chercher ; `npm run demo:grammaire` fait tourner le banc d'essai de la grammaire, séparément ; `npm run export:seed` régénère `content.js` **par l'atelier lui-même** (voir encadré ci-dessous).
+
+> **`content.js` ne s'édite jamais à la main** (son en-tête le rappelle). La seule façon légitime de le faire changer sans navigateur est `npm run export:seed` : le script boote l'atelier en jsdom, charge `SEED`, exige zéro erreur au diagnostic (`valider()`), puis écrit `content.js` avec la même fonction que le bouton « Exporter content.js » (`nettoyerPourJeu` + le même gabarit). Toute autre affaire que celle du SEED se prépare dans le navigateur, où le bouton fait la même chose.
 
 ## 1. Les trois artefacts
 
@@ -74,6 +77,8 @@ Ce qui reste à dérouler **quand on modifie le moteur de `index.html`** (et seu
 | Manuels : règles = pièces dont le `type` contient « règle » ; `directives`/`avis_exploitation` optionnels | `openManuels()` | contrôles du diagnostic (`valider()`) |
 
 Méthode : modifier le moteur → mettre à jour la ou les fonctions `sim*` correspondantes et le commentaire « Règles recopiées du moteur » → étendre `smoke_atelier.js` d'un contrôle → relancer les suites.
+
+Méthode (contenu du SEED) : modifier `SEED` dans `atelier_v3.html` → `npm run export:seed` (régénère `content.js`, refuse si le diagnostic lève une erreur) → relancer les suites.
 
 **Migration.** L'atelier migre silencieusement les anciens contenus à l'import et au chargement (`migrerContenu()` : `avocat.tentation_adn` → `declenche` de la pièce décisive, `avocat.ack_decisive` → `apres` de la case décisive, et retire une éventuelle clé `attention` obsolète). Le jeu, lui, ne migre pas : un vieux `content.js` reste valide mais perd ces deux répliques (et ignore l'`attention` résiduelle) — repasser par l'atelier.
 

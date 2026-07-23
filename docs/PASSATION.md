@@ -11,14 +11,15 @@
 | Fichier | État |
 |---|---|
 | `app/index.html` | le jeu : moteur + `JEU_EMBARQUE` (repli). Sauvegarde, `schema`, deux marches, `apparait_si`/`prive`/`leve` **conservés** ; P0/attention **retiré** ; vice ramené à un canal (le personnel). |
-| `app/content.js` | le contenu joué, exporté de l'atelier. Mêmes changements que l'embarqué. |
+| `app/content.js` | le contenu joué. **Régénéré par `npm run export:seed`** (l'atelier lui-même, via jsdom) après un premier passage à la main pendant la consolidation — l'en-tête « ne pas éditer à la main » est de nouveau vrai. |
 | `app/atelier_v3.html` | l'outil d'écriture + diagnostic + simulation. Miroir `sim*` de P0 retiré ; diagnostic « canaux indépendants » vérifié silencieux sur le SEED (un seul canal désormais) ; migration nettoie une clé `attention` résiduelle. |
 | `tests/test_o5.js` | **remplace `test_p0_o5.js`** — 18 contrôles, vert. |
 | `tests/test_declencheurs.js`, `test_autre_affaire.js`, `test_parcours.js`, `test_sauvegarde.js`, `smoke_atelier.js` | mis à jour où le retrait de P0 et le vice à canal unique les touchaient ; verts. |
 | `grammaire/grammaire2.js` / `grammaire/test_grammaire2.js` | la grammaire du texte à trous et son banc d'essai (démonstration, pas une suite pass/fail). **Prototype non branché** — le jeu utilise toujours `noter()`/`choisirChamp()`. Mesures inchangées : 693 → 72 → 7. |
 | `docs/ARCHITECTURE.md` | à jour : §0 (disposition avec `grammaire/`), §2/§4 (P0 retiré des tables), §5 (suites renommées/reformulées), §7 (nouveau, décrit le prototype et son plan d'intégration). |
 | `docs/conception_jeu_ia.md` | l'arbitre du sens. Encadré des trois arbitrages ajouté en tête ; « fenêtre interdite » retirée des §7 (vice concret / déduction). |
-| `package.json` | `npm test` pointe vers `test_o5.js` ; `npm run demo:grammaire` lance le banc d'essai (hors `test`). |
+| `scripts/exporter-seed.js` | **nouveau.** `npm run export:seed` — régénère `content.js` depuis `SEED`, par l'atelier (diagnostic + export), jamais à la main. |
+| `package.json` | `npm test` pointe vers `test_o5.js` ; `npm run demo:grammaire` lance le banc d'essai (hors `test`) ; `npm run export:seed` régénère `content.js`. |
 
 **Rien ne manque** : les six suites + le prototype de grammaire sont tous présents et cohérents entre eux.
 
@@ -45,6 +46,10 @@ Le protocole déclare désormais le délai entre les deux prélèvements **indif
 ### Le prototype de grammaire est archivé, pas intégré
 
 `grammaire2.js`/`test_grammaire2.js` vivent dans `grammaire/`, en dehors de `app/` et `tests/` : ce sont des fichiers autonomes (`require("./grammaire2.js")`, pas de dépendance à `app/`). Le jeu n'en a pas connaissance. `docs/ARCHITECTURE.md` §7 documente le plan d'intégration en quatre étapes.
+
+### `content.js` re-garanti conforme (correctif après coup)
+
+Pendant la consolidation, `app/content.js` et `SEED` (dans `atelier_v3.html`) ont été édités à la main, en parallèle, pour rester synchronisés — ce qui viole l'invariant du §2 de `ARCHITECTURE.md` (« l'atelier est le seul endroit où l'on écrit »). Corrigé : `scripts/exporter-seed.js` boote l'atelier en jsdom, charge `SEED`, exige zéro erreur au diagnostic, puis exporte `content.js` avec la fonction réelle du bouton « Exporter ». `npm run export:seed` le relance à volonté ; `content.js` est désormais un export véritable, pas une copie tapée à la main. Si le SEED change à nouveau, ce script est la commande à lancer — pas un copier-coller.
 
 ## 3. Ce qui reste ouvert
 

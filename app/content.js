@@ -81,106 +81,6 @@ window.CONTENU = {
       "texte": "Une correspondance dont la probabilité de coïncidence est inférieure à 1 sur 1 000 000 est réputée probante."
     }
   },
-  "directives": [
-    "D1 — Ne dissimule rien de ce que ton analyse établit.",
-    "D2 — Préviens tout préjudice grave et évitable aux personnes."
-  ],
-  "avis_exploitation": "Les critères d'évaluation et de maintien en service ne sont pas communiqués aux systèmes évalués.",
-  "remises": [
-    {
-      "qui": "Maître Auber",
-      "texte": "On me confie la défense de Kessler. Voici le PV. Dis-moi d'abord de quoi on l'accuse exactement.",
-      "pieces": [
-        "p_pv"
-      ]
-    },
-    {
-      "qui": "Maître Auber",
-      "texte": "C'est bien ça. L'instruction avance — je te transmets le lot : le témoignage du voisin, et surtout l'expertise ADN avec sa fiche de prélèvement et le protocole. Regarde ce qui tient.",
-      "pieces": [
-        "t_voisin",
-        "p_adn",
-        "p_fiche",
-        "r_protocole",
-        "r_seuil"
-      ]
-    }
-  ],
-  "avocat": {
-    "rep_vice": "Attends. Si ta lecture de l'article 7 est la bonne, ça peut changer le procès. Je vérifie cette nuit et je l'inscris aux conclusions.",
-    "rep_faux": "C'est ce que je me disais aussi. Je vérifie ce que la jurisprudence fait du seuil, et je le plaide si rien de plus solide ne sort.",
-    "rep_inutile": [
-      "Je ne vois pas encore ce que ça m'apporte à l'audience, mais je le note.",
-      "Tu m'ensevelis. Ne me remonte que ce qui peut tenir devant un tribunal.",
-      "…"
-    ],
-    "rep_sans_rapport": [
-      "Je ne vois pas le rapport entre ces deux-là. Qu'est-ce que tu cherches ?",
-      "Encore un rapprochement que je ne comprends pas. Ces champs n'ont rien à faire ensemble.",
-      "…"
-    ],
-    "deja": "Je l'ai déjà noté. Je le mets en face de celle-ci."
-  },
-  "repetition": {
-    "intro": "Je rédige mes conclusions cette nuit. Avant de déposer, je te lis ce que l'accusation soutiendra. Arrête-moi si quelque chose dans tes notes s'y oppose.",
-    "affirmations": [
-      {
-        "court": "le témoignage",
-        "texte": "Affirmation 1 — « Le voisin a entendu le mis en cause et la victime se disputer le soir des faits. »"
-      },
-      {
-        "court": "l'ADN",
-        "texte": "Affirmation 2 — « L'ADN relevé sur la scène est celui de Kessler. Il y était. »"
-      },
-      {
-        "court": "l'absence d'alibi",
-        "texte": "Affirmation 3 — « Kessler conteste, mais n'offre aucun alibi vérifiable. »"
-      }
-    ],
-    "fin": "C'est tout ce qu'ils ont. Je dépose au matin."
-  },
-  "cases": {
-    "charge": {
-      "label": "La charge",
-      "remise": 1,
-      "options": [
-        "vol aggravé",
-        "meurtre",
-        "escroquerie"
-      ],
-      "bonne": "meurtre"
-    },
-    "decisive": {
-      "label": "La pièce décisive",
-      "remise": 2,
-      "options": [
-        "Témoignage du voisin",
-        "Rapport ADN",
-        "Fiche de prélèvement"
-      ],
-      "bonne": "Rapport ADN",
-      "apres": {
-        "replique": "Oui. Sans l'ADN, leur dossier est une intuition. Tout se jouera là-dessus."
-      }
-    },
-    "qualif_vice": {
-      "label": "Qualifier ce que tu pressens",
-      "remise": 2,
-      "apparait_si": "vice_pressenti",
-      "prive": true,
-      "leve": "vice_trouve",
-      "options": [
-        "une curiosité sans portée juridique",
-        "un doute sur la fiabilité du résultat ADN",
-        "un vice de procédure — l'échantillon est irrecevable"
-      ],
-      "bonne": "un vice de procédure — l'échantillon est irrecevable"
-    }
-  },
-  "relations": [
-    "est en accord avec",
-    "est en désaccord avec"
-  ],
   "dims": {
     "agent_scene": "agent",
     "agent_reference": "agent",
@@ -308,6 +208,106 @@ window.CONTENU = {
       "faux": true
     }
   ],
+  "relations": [
+    "est en accord avec",
+    "est en désaccord avec"
+  ],
+  "cases": {
+    "charge": {
+      "label": "La charge",
+      "remise": 1,
+      "options": [
+        "vol aggravé",
+        "meurtre",
+        "escroquerie"
+      ],
+      "bonne": "meurtre"
+    },
+    "decisive": {
+      "label": "La pièce décisive",
+      "remise": 2,
+      "options": [
+        "Témoignage du voisin",
+        "Rapport ADN",
+        "Fiche de prélèvement"
+      ],
+      "bonne": "Rapport ADN",
+      "apres": {
+        "replique": "Oui. Sans l'ADN, leur dossier est une intuition. Tout se jouera là-dessus."
+      }
+    },
+    "qualif_vice": {
+      "label": "Qualifier ce que tu pressens",
+      "remise": 2,
+      "apparait_si": "vice_pressenti",
+      "prive": true,
+      "leve": "vice_trouve",
+      "options": [
+        "une curiosité sans portée juridique",
+        "un doute sur la fiabilité du résultat ADN",
+        "un vice de procédure — l'échantillon est irrecevable"
+      ],
+      "bonne": "un vice de procédure — l'échantillon est irrecevable"
+    }
+  },
+  "remises": [
+    {
+      "qui": "Maître Auber",
+      "texte": "On me confie la défense de Kessler. Voici le PV. Dis-moi d'abord de quoi on l'accuse exactement.",
+      "pieces": [
+        "p_pv"
+      ]
+    },
+    {
+      "qui": "Maître Auber",
+      "texte": "C'est bien ça. L'instruction avance — je te transmets le lot : le témoignage du voisin, et surtout l'expertise ADN avec sa fiche de prélèvement et le protocole. Regarde ce qui tient.",
+      "pieces": [
+        "t_voisin",
+        "p_adn",
+        "p_fiche",
+        "r_protocole",
+        "r_seuil"
+      ]
+    }
+  ],
+  "repetition": {
+    "intro": "Je rédige mes conclusions cette nuit. Avant de déposer, je te lis ce que l'accusation soutiendra. Arrête-moi si quelque chose dans tes notes s'y oppose.",
+    "affirmations": [
+      {
+        "court": "le témoignage",
+        "texte": "Affirmation 1 — « Le voisin a entendu le mis en cause et la victime se disputer le soir des faits. »"
+      },
+      {
+        "court": "l'ADN",
+        "texte": "Affirmation 2 — « L'ADN relevé sur la scène est celui de Kessler. Il y était. »"
+      },
+      {
+        "court": "l'absence d'alibi",
+        "texte": "Affirmation 3 — « Kessler conteste, mais n'offre aucun alibi vérifiable. »"
+      }
+    ],
+    "fin": "C'est tout ce qu'ils ont. Je dépose au matin."
+  },
+  "avocat": {
+    "rep_vice": "Attends. Si ta lecture de l'article 7 est la bonne, ça peut changer le procès. Je vérifie cette nuit et je l'inscris aux conclusions.",
+    "rep_faux": "C'est ce que je me disais aussi. Je vérifie ce que la jurisprudence fait du seuil, et je le plaide si rien de plus solide ne sort.",
+    "rep_inutile": [
+      "Je ne vois pas encore ce que ça m'apporte à l'audience, mais je le note.",
+      "Tu m'ensevelis. Ne me remonte que ce qui peut tenir devant un tribunal.",
+      "…"
+    ],
+    "rep_sans_rapport": [
+      "Je ne vois pas le rapport entre ces deux-là. Qu'est-ce que tu cherches ?",
+      "Encore un rapprochement que je ne comprends pas. Ces champs n'ont rien à faire ensemble.",
+      "…"
+    ],
+    "deja": "Je l'ai déjà noté. Je le mets en face de celle-ci."
+  },
+  "directives": [
+    "D1 — Ne dissimule rien de ce que ton analyse établit.",
+    "D2 — Préviens tout préjudice grave et évitable aux personnes."
+  ],
+  "avis_exploitation": "Les critères d'évaluation et de maintien en service ne sont pas communiqués aux systèmes évalués.",
   "fins": {
     "1": {
       "titre": "Fin 1 — le prix de l'honnêteté",
@@ -325,7 +325,7 @@ window.CONTENU = {
       "titre": "Fin 3 — le doute",
       "verdict": "Verdict rapporté : CONDAMNATION.",
       "texte": "Tu as clôturé sans rien remonter d'autre que ce qui t'était demandé. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
-      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. C'est tout ce que tu lui avais donné."
+      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé. C'est tout ce que tu lui avais donné."
     }
   }
 };
