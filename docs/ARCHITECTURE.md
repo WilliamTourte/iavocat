@@ -16,7 +16,7 @@ scripts/    exporter-seed.js — régénère app/content.js depuis SEED en ligne
 
 `content.js` doit rester à côté de `index.html` (le jeu le charge en `<script src="content.js">`) : les deux vivent dans `app/`, comme `atelier_v3.html`. `npm test` sait où chercher ; `npm run demo:grammaire` fait tourner le banc d'essai de la grammaire, séparément ; `npm run export:seed` régénère `content.js` **par l'atelier lui-même** (voir encadré ci-dessous).
 
-> **`content.js` ne s'édite jamais à la main** (son en-tête le rappelle). La seule façon légitime de le faire changer sans navigateur est `npm run export:seed` : le script boote l'atelier en jsdom, charge `SEED`, exige zéro erreur au diagnostic (`valider()`), puis écrit `content.js` avec la même fonction que le bouton « Exporter content.js » (`nettoyerPourJeu` + le même gabarit). Toute autre affaire que celle du SEED se prépare dans le navigateur, où le bouton fait la même chose.
+> **`content.js` ne s'édite jamais à la main** (son en-tête le rappelle). La seule façon légitime de le faire changer sans navigateur est `npm run export:seed` : le script boote l'atelier en jsdom, charge `SEED`, exige zéro erreur au diagnostic (`valider()`), puis écrit `content.js` avec la même fonction que le bouton « Exporter content.js » (`nettoyerPourJeu` + le même gabarit). Toute autre affaire que celle du SEED se prépare dans le navigateur, où le bouton fait la même chose. `npm test` inclut `tests/verifier_content_sync.js`, qui échoue si `content.js` a dérivé de ce que `SEED` exporterait — c'est un contrôle automatique, pas une régénération automatique : il faut relancer `export:seed` soi-même. **Scopé à la phase actuelle** (une seule affaire) : le jour où l'atelier sert à écrire et exporter une affaire délibérément différente de `SEED`, ce contrôle devient un faux négatif permanent — le retirer à ce moment-là.
 
 ## 1. Les trois artefacts
 
@@ -99,7 +99,7 @@ Six suites vivent **dans le projet**, sur un harnais jsdom commun (`harnais.js`)
 
 (`test_boucle.js` et `smoke3.js` étaient les suites d'avant le décâblage — leurs terrains sont couverts par celles-ci ; `test_parcours.js` a été réécrite sur le harnais commun ; `test_p0_o5.js` a été remplacée par `test_o5.js` au retrait du budget d'attention.)
 
-Règle d'or : **une évolution n'est finie que quand les six suites sont vertes.** (`grammaire/test_grammaire2.js` est un septième script, mais c'est un banc d'essai de démonstration — pas de code de sortie, pas dans `npm test`. Voir §7.)
+Règle d'or : **une évolution n'est finie que quand les six suites sont vertes.** `npm test` enchaîne aussi `tests/verifier_content_sync.js` (§4) après les six — un garde-fou, pas une septième suite : il ne teste aucun comportement, seulement que `content.js` n'a pas dérivé de `SEED`. (`grammaire/test_grammaire2.js`, lui, est un banc d'essai de démonstration — pas de code de sortie, pas dans `npm test`. Voir §7.)
 
 ## 6. Résumé en trois phrases
 

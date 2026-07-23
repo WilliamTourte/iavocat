@@ -51,6 +51,8 @@ Le protocole déclare désormais le délai entre les deux prélèvements **indif
 
 Pendant la consolidation, `app/content.js` et `SEED` (dans `atelier_v3.html`) ont été édités à la main, en parallèle, pour rester synchronisés — ce qui viole l'invariant du §2 de `ARCHITECTURE.md` (« l'atelier est le seul endroit où l'on écrit »). Corrigé : `scripts/exporter-seed.js` boote l'atelier en jsdom, charge `SEED`, exige zéro erreur au diagnostic, puis exporte `content.js` avec la fonction réelle du bouton « Exporter ». `npm run export:seed` le relance à volonté ; `content.js` est désormais un export véritable, pas une copie tapée à la main. Si le SEED change à nouveau, ce script est la commande à lancer — pas un copier-coller.
 
+**Le garde-fou est maintenant automatique à la détection (pas à la correction) :** `tests/verifier_content_sync.js`, ajouté à `npm test`, échoue si `content.js` a dérivé de ce que `SEED` exporterait — sans jamais réécrire de fichier tout seul pendant les tests. Scopé à la phase actuelle (une seule affaire, celle de `SEED`) : à retirer le jour où l'atelier exporte délibérément une autre affaire (voir l'avertissement en tête de ce fichier de test et dans `ARCHITECTURE.md` §4).
+
 ## 3. Ce qui reste ouvert
 
 - **Le canal de révélation de la culpabilité.** Toujours non tranché (narrateur omniscient dans les fins).
