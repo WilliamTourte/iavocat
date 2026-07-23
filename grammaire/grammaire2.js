@@ -82,4 +82,9 @@ const LIENS = [
   { forme: "saut",         termes: ["rap"] }
 ];
 
-module.exports = { GRAMMAIRE, CHAMPS, LIENS };
+// Mode double : chargeable en Node (`require`) comme dans un navigateur
+// (`<script src>`), pour que le banc d'essai ET l'atelier lisent la MÊME
+// définition — pas de copie qui divergerait.
+const _data = { GRAMMAIRE, CHAMPS, LIENS };
+if (typeof module !== "undefined" && module.exports) module.exports = _data;
+if (typeof window !== "undefined") window.Grammaire = _data;

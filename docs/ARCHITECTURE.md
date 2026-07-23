@@ -10,7 +10,7 @@
 app/        index.html, atelier_v3.html, content.js — les trois artefacts du §1, toujours voisins
 docs/       ce fichier, conception_jeu_ia.md, PASSATION.md
 tests/      harnais.js + les six suites (§5)
-grammaire/  grammaire2.js + test_grammaire2.js — prototype NON branché (§7)
+grammaire/  grammaire2.js (données) + moteur.js + test_grammaire2.js — prototype NON branché (§7)
 scripts/    exporter-seed.js — régénère app/content.js depuis SEED en ligne de commande
 ```
 
@@ -109,10 +109,19 @@ Le contenu s'écrit dans l'atelier et voyage en un seul fichier, `content.js`, q
 
 `grammaire/grammaire2.js` explore un remplacement du geste actuel (champ + relation + champ, vocabulaire fermé) par un **texte à trous** : une machine à états (`GRAMMAIRE.blocs`) qui compose une phrase bloc par bloc, où chaque **forme** (`identite_oui`, `anteriorite`, `infraction`…) déclare par `slots` les dimensions qu'elle admet à chaque position. Une différence clé avec le moteur actuel : un terme peut être un **champ** ou une **note déjà composée** (`source:"note"`), ce qui permet la chaîne du vice en deux phrases (« ces deux agents sont la même chose » → « ce qui précède est contraire à l'article 7 ») plutôt qu'un seul clic.
 
+Trois fichiers, deux rôles :
+- `grammaire/grammaire2.js` — **les données** (`GRAMMAIRE`, `CHAMPS`, `LIENS`).
+- `grammaire/moteur.js` — **le moteur** (`creerMoteur(GRAMMAIRE, CHAMPS, LIENS)` → `valider`, `reduire`, `lienDe`, `rendre`, `squelettes`…), pur, sans données.
+- `grammaire/test_grammaire2.js` — le banc d'essai, qui consomme les deux.
+
+Les deux premiers sont **à mode double** (`module.exports` en Node, `window.Grammaire`/`window.MoteurGrammaire` en navigateur) : le banc d'essai *et* l'onglet Grammaire de l'atelier lisent la **même** source, jamais une copie.
+
+**Essayer dans l'atelier :** ouvre `app/atelier_v3.html` **dans un vrai navigateur** (pas les tests jsdom), onglet **« Grammaire (proto) »**. Il charge les deux fichiers via `<script src="../grammaire/…">` (chemins relatifs, valides en `file://`), et offre un composeur : choisir un squelette, remplir les trous (champs ou notes gardées), lire en direct le verdict (sensé / sans rapport, lien reconnu, drapeau levé) et la marge de bruit. Il **ne lit ni n'écrit `CONTENU`** — c'est un bac à sable. Sous jsdom, les `<script src>` ne se chargent pas : l'onglet affiche un encart au lieu de planter (d'où l'absence de contrôle automatisé sur cet onglet — `smoke_atelier.js` ne l'ouvre pas).
+
 `grammaire/test_grammaire2.js` est un **banc d'essai**, pas une suite pass/fail : il imprime son verdict (693 phrases légales → 72 sensées → 7 qui portent un lien du contenu) sans fixer de code de sortie. `npm run demo:grammaire` le lance.
 
-**Ce prototype n'est pas branché sur `app/index.html`** : le jeu utilise toujours `noter()`/`choisirChamp()`. L'intégrer demanderait (dans cet ordre, par prudence — chaque étape re-teste) :
-1. Charger `grammaire2.js` (ou son équivalent versionné) depuis le jeu et l'atelier.
-2. Remplacer `noter()` par un `composer()` qui déplie les blocs, dépile les termes, réduit et appelle `valider()`.
+**Ce prototype n'est pas branché sur `app/index.html`** : le jeu utilise toujours `noter()`/`choisirChamp()`, et l'onglet Grammaire de l'atelier ne touche pas à `CONTENU`. L'intégrer *pour de vrai* demanderait (dans cet ordre, par prudence — chaque étape re-teste) :
+1. Charger `grammaire2.js` + `moteur.js` (mode double, déjà en place) depuis le jeu comme l'atelier le fait déjà.
+2. Remplacer `noter()` par un `composer()` qui déplie les blocs, dépile les termes, réduit et appelle `valider()` (le moteur existe déjà — `grammaire/moteur.js`).
 3. Un éditeur de liens dans l'atelier qui parle en formes/slots plutôt qu'en paires de champs (commencer par une saisie textuelle brute, migrer ensuite).
 4. Vérifier que la marge de bruit (phrases sensées sans lien) reste non nulle — sinon « sensé » vaudrait « correct » et l'interface trahirait un des invariants du §8 de `conception_jeu_ia.md`.

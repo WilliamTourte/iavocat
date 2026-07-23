@@ -158,6 +158,37 @@
     border-radius:8px;padding:12px;font-family:var(--mono);font-size:12px;line-height:1.5}
   #jsonmsg{font-family:var(--mono);font-size:12px;margin-top:8px;min-height:1.2em}
 
+  /* ---- onglet Grammaire (prototype) ---- */
+  #grampane{display:none;padding:16px 20px;overflow:auto;min-height:0;max-width:900px}
+  main.grammode{grid-template-columns:1fr}
+  main.grammode #stage, main.grammode #right{display:none}
+  main.grammode #grampane{display:block}
+  #grampane h2{font-size:15px;margin:0 0 4px}
+  #grampane .lead{color:var(--muted);font-size:12.5px;max-width:72ch;margin:0 0 16px}
+  #grampane .warnbox{border:1px solid #5a4a30;background:#20180c;color:var(--warn);
+    border-radius:8px;padding:12px 14px;font-size:13px;max-width:72ch}
+  .gcompose{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--panel2);
+    border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+  .gcompose select{background:#0b0e12;color:var(--txt);border:1px solid var(--line2);
+    border-radius:6px;padding:7px 9px;font-family:var(--sans);font-size:13px}
+  .gcompose .lex{color:var(--dim);font-size:12px}
+  .gphrase{font-family:var(--mono);font-size:14px;background:#0b0e12;border:1px solid var(--line);
+    border-radius:8px;padding:12px 14px;margin-bottom:10px;line-height:1.5}
+  .gverdict{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+  .gpill{font-family:var(--mono);font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--line)}
+  .gpill.sense{color:var(--ok);border-color:#2f4a36}
+  .gpill.nonsense{color:var(--err);border-color:#5a3030}
+  .gpill.lien{color:var(--accent);border-color:#23506e}
+  .gpill.leve{color:var(--vice);border-color:#5a4030}
+  .gpill.bruit{color:var(--dim)}
+  #grampane h3{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px}
+  .gsquel{font-family:var(--mono);font-size:12.5px;color:var(--dim);line-height:1.7}
+  .gsquel b{color:var(--txt);font-weight:600}
+  .gsquel .f{color:var(--accent)}
+  .gstat{font-family:var(--mono);font-size:12.5px;color:var(--muted);line-height:1.7;
+    background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+  .gstat b{color:var(--txt)}
+
   /* ============================================================
      ONGLET ÉTAPES — frise + pas-à-pas
      ============================================================ */
@@ -263,6 +294,7 @@
   <button id="tabGraphe" class="on" onclick="vue('graphe')">Graphe &amp; diagnostic</button>
   <button id="tabEtapes" onclick="vue('etapes')">Étapes du jeu</button>
   <button id="tabJson" onclick="vue('json')">JSON</button>
+  <button id="tabGrammaire" onclick="vue('grammaire')" title="Prototype de texte à trous — non branché sur le jeu">Grammaire <span style="opacity:.55">(proto)</span></button>
 </nav>
 
 <main id="main">
@@ -314,7 +346,17 @@
     </div>
     <div id="jsonmsg"></div>
   </div>
+
+  <!-- ============ GRAMMAIRE (prototype, non branché) ============ -->
+  <div id="grampane"></div>
 </main>
+
+<!-- Le prototype de grammaire (onglet « Grammaire »). Chargé en dehors du
+     script principal : mêmes fichiers que le banc d'essai (npm run
+     demo:grammaire), pas de copie. En file:// ces chemins relatifs marchent ;
+     sous jsdom (tests) ils ne se chargent pas, et l'onglet le signale. -->
+<script src="../grammaire/grammaire2.js"></script>
+<script src="../grammaire/moteur.js"></script>
 
 <script>
 /* ============================================================
@@ -1638,12 +1680,15 @@ function vue(v){
   VUE=v;
   $("main").classList.toggle("jsonmode",v==="json");
   $("main").classList.toggle("etapesmode",v==="etapes");
+  $("main").classList.toggle("grammode",v==="grammaire");
   $("tabJson").classList.toggle("on",v==="json");
   $("tabEtapes").classList.toggle("on",v==="etapes");
   $("tabGraphe").classList.toggle("on",v==="graphe");
+  $("tabGrammaire").classList.toggle("on",v==="grammaire");
   if(v==="json") remplirJson();
   if(v==="graphe") render();      // recalcule les traits (le canevas était masqué)
   if(v==="etapes") renderEtapes();
+  if(v==="grammaire") renderGrammaire();
 }
 function remplirJson(){ $("jsonta").value=JSON.stringify(CONTENU,null,2); $("jsonmsg").textContent=""; }
 function appliquerJson(){
@@ -1651,6 +1696,169 @@ function appliquerJson(){
     if(err){ $("jsonmsg").style.color="var(--err)"; $("jsonmsg").textContent="Refusé : "+err; }
     else { $("jsonmsg").style.color="var(--ok)"; $("jsonmsg").textContent="✓ Appliqué."; }
   }catch(err){ $("jsonmsg").style.color="var(--err)"; $("jsonmsg").textContent="JSON invalide : "+err.message; }
+}
+
+/* ============================================================
+   10bis) ONGLET GRAMMAIRE — prototype de « texte à trous »
+   NON branché sur le contenu du jeu : c'est un bac à sable qui charge
+   grammaire/grammaire2.js (les données) et grammaire/moteur.js (le
+   moteur partagé avec le banc d'essai), pour SENTIR le geste. Il ne lit
+   ni n'écrit CONTENU. Sous jsdom (smoke_atelier), les <script src> ne se
+   chargent pas → window.Grammaire est absent → on affiche un encart, sans
+   planter. Voir docs/ARCHITECTURE.md §7.
+   ============================================================ */
+let GRAM={ squel:0, vals:{}, notes:[], _m:null };
+function moteurGram(){
+  if(typeof window.Grammaire==="undefined" || typeof window.MoteurGrammaire==="undefined") return null;
+  if(!GRAM._m){
+    const {GRAMMAIRE,CHAMPS,LIENS}=window.Grammaire;
+    GRAM._m=window.MoteurGrammaire.creerMoteur(GRAMMAIRE,CHAMPS,LIENS);
+    GRAM._sq=GRAM._m.squelettes();
+    GRAM._data=window.Grammaire;
+  }
+  return GRAM._m;
+}
+/* les blocs-terme du squelette courant (les « trous » à remplir) */
+function gramTermes(sq){ return sq.filter(b=>b.type==="terme"); }
+/* construit la chaîne {bloc, valeur} pour le moteur, à partir des choix */
+function gramChaine(sq){
+  let ti=0;
+  return sq.map(bloc=>{
+    if(bloc.type!=="terme") return {bloc,valeur:null};
+    const v=GRAM.vals[ti++];
+    if(v==null) return {bloc,valeur:undefined};
+    // slot « note » : la valeur est la RÉDUCTION de la note gardée ;
+    // slot « champ » : la valeur est l'id du champ.
+    return {bloc, valeur: bloc.source==="note" ? (GRAM.notes[v]||{}).red : v};
+  });
+}
+function gramSetVal(ti,val){ GRAM.vals[ti]=(val===""?null:val); renderGrammaire(); }
+function gramChoixSquel(i){ GRAM.squel=+i; GRAM.vals={}; renderGrammaire(); }
+function gramGarderNote(){
+  const m=moteurGram(); if(!m) return;
+  const sq=GRAM._sq[GRAM.squel], ch=gramChaine(sq);
+  if(ch.some(p=>p.bloc.type==="terme"&&p.valeur===undefined)) return;
+  const red=m.reduire(ch);
+  if(m.valider(red)) return;                       // on ne garde que le sensé
+  GRAM.notes.push({red, texte:m.rendre(ch)});
+  renderGrammaire();
+}
+function gramSupprNote(i){ GRAM.notes.splice(i,1); GRAM.vals={}; renderGrammaire(); }
+/* densité live : le même calcul que la section 4 du banc d'essai */
+function gramDensite(m){
+  const {CHAMPS}=GRAM._data;
+  const notes=GRAM.notes.map(n=>n.red);
+  let total=0,senses=0,avecLien=0;
+  for(const s of GRAM._sq){
+    const slots=s.filter(b=>b.type==="terme");
+    const sources=slots.map(b=>b.source==="note"?(notes.length?notes:[null]):CHAMPS.map(c=>c.id));
+    const combos=sources.reduce((a,src)=>a.flatMap(p=>src.map(v=>[...p,v])),[[]]);
+    for(const c of combos){
+      if(c.some(v=>v==null)) continue;
+      const r={forme:s.map(b=>b.forme).filter(Boolean).pop(), termes:c};
+      total++;
+      if(!m.valider(r)){ senses++; if(m.lienDe(r)) avecLien++; }
+    }
+  }
+  return {total,senses,avecLien};
+}
+function renderGrammaire(){
+  const pane=$("grampane");
+  const m=moteurGram();
+  if(!m){
+    pane.innerHTML=`<h2>Grammaire — prototype</h2>
+      <div class="warnbox">La grammaire n'est pas chargée. Cet onglet lit
+      <code>grammaire/grammaire2.js</code> et <code>grammaire/moteur.js</code> via
+      <code>&lt;script src&gt;</code> — ce qui exige d'<b>ouvrir l'atelier dans un vrai
+      navigateur</b> (les tests jsdom ne chargent pas ces scripts, c'est normal).
+      En ligne de commande, le banc d'essai reste <code>npm run demo:grammaire</code>.</div>`;
+    return;
+  }
+  const {CHAMPS}=GRAM._data;
+  const sq=GRAM._sq[GRAM.squel];
+  const termes=gramTermes(sq);
+  const forme=sq.map(b=>b.forme).filter(Boolean).pop();
+
+  // le sélecteur de squelette + les trous
+  let compo=`<div class="gcompose">
+    <select onchange="gramChoixSquel(this.value)">
+      ${GRAM._sq.map((s,i)=>{
+        const lbl=s.map(b=>b.type==="terme"?(b.source==="note"?"«note»":"___"):b.texte).join(" ");
+        return `<option value="${i}" ${i===GRAM.squel?'selected':''}>${escapeH(lbl)}</option>`;
+      }).join("")}
+    </select>`;
+  termes.forEach((b,ti)=>{
+    if(b.source==="note"){
+      compo+=` <select onchange="gramSetVal(${ti},this.value)">
+        <option value="">— note —</option>
+        ${GRAM.notes.map((n,i)=>`<option value="${i}" ${GRAM.vals[ti]==i?'selected':''}>${escapeH(n.texte)}</option>`).join("")}
+      </select>`;
+    } else {
+      compo+=` <select onchange="gramSetVal(${ti},this.value)">
+        <option value="">— champ —</option>
+        ${CHAMPS.map(c=>`<option value="${c.id}" ${GRAM.vals[ti]===c.id?'selected':''}>${escapeH(c.texte)} <span class="lex">(${c.dim})</span></option>`).join("")}
+      </select>`;
+    }
+  });
+  compo+=`</div>`;
+
+  // la phrase + le verdict
+  const ch=gramChaine(sq);
+  const complet=!ch.some(p=>p.bloc.type==="terme"&&p.valeur===undefined);
+  let phrase, verdict="";
+  if(!complet){
+    phrase=`<span style="color:var(--dim)">Remplis les trous pour composer une phrase…</span>`;
+  } else {
+    phrase=escapeH(m.rendre(ch));
+    const red=m.reduire(ch), raison=m.valider(red), lien=m.lienDe(red);
+    const pills=[];
+    if(raison) pills.push(`<span class="gpill nonsense">sans rapport — ${escapeH(raison)}</span>`);
+    else pills.push(`<span class="gpill sense">sensé</span>`);
+    if(!raison){
+      if(lien){
+        pills.push(`<span class="gpill lien">lien reconnu du contenu</span>`);
+        if(lien.leve) pills.push(`<span class="gpill leve">lève « ${escapeH(lien.leve)} »</span>`);
+      } else pills.push(`<span class="gpill bruit">bruit sensé (aucun lien) — la marge qui empêche « sensé » de valoir « correct »</span>`);
+    }
+    verdict=`<div class="gverdict">${pills.join("")}</div>`;
+    if(!raison){
+      const noteDejaLa=GRAM.notes.some(n=>n.texte===m.rendre(ch));
+      verdict+=`<button class="tbtn" ${noteDejaLa?'disabled':''} onclick="gramGarderNote()"
+        title="Rend cette phrase disponible comme « ce qui précède » dans une phrase composée">📌 Garder comme note${noteDejaLa?' (déjà gardée)':''}</button>`;
+    }
+  }
+
+  // les notes gardées
+  let notesH="";
+  if(GRAM.notes.length){
+    notesH=`<h3>Notes gardées <span style="font-weight:400;text-transform:none">(utilisables dans les slots «note» : « ce qui précède »)</span></h3>
+      <div class="gsquel">${GRAM.notes.map((n,i)=>
+        `<div>📌 ${escapeH(n.texte)} <button class="xsmall" onclick="gramSupprNote(${i})" style="margin-left:6px">✕</button></div>`).join("")}</div>`;
+  }
+
+  // la référence + la densité
+  const d=gramDensite(m);
+  const ref=`<h3>Les ${GRAM._sq.length} squelettes de phrase</h3>
+    <div class="gsquel">${GRAM._sq.map(s=>
+      "· "+s.map(b=>b.type==="terme"?(b.source==="note"?"<b>«note»</b>":"<b>___</b>"):escapeH(b.texte)).join(" ")
+      +'  → <span class="f">'+escapeH(s.map(b=>b.forme).filter(Boolean).pop())+"</span>").join("<br>")}</div>
+    <h3>Densité — la marge de bruit</h3>
+    <div class="gstat"><b>${d.total}</b> phrases légales · <b>${d.senses}</b> sensées
+      (${(100*d.senses/d.total).toFixed(1)} %) · <b>${d.avecLien}</b> portent un lien du contenu
+      → <b>${d.senses-d.avecLien}</b> phrases sensées <b>sans</b> lien : c'est la marge de bruit.<br>
+      Si elle tombait à 0, « sensé » vaudrait « correct » et l'interface trahirait
+      (invariant du §8 de conception_jeu_ia.md).${GRAM.notes.length?'':' <span style="color:var(--dim)">(garde des notes pour peupler les slots «note».)</span>'}</div>`;
+
+  pane.innerHTML=`<h2>Grammaire — prototype <span style="color:var(--dim);font-weight:400;font-size:12px">non branché sur le jeu</span></h2>
+    <p class="lead">Compose une phrase en remplissant les trous d'un squelette. Le moteur (partagé avec
+    <code>npm run demo:grammaire</code>) dit si elle est <b>sensée</b> (catégories respectées) et si elle
+    <b>reconnaît un lien</b> du contenu. Pour enchaîner (« ce qui précède est contraire à… »), garde d'abord
+    une phrase comme note. Rien ici ne touche au contenu du jeu.</p>
+    ${compo}
+    <div class="gphrase">${phrase}</div>
+    ${verdict}
+    ${notesH}
+    ${ref}`;
 }
 
 /* ============================================================

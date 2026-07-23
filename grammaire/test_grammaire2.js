@@ -2,53 +2,14 @@
 // ce script imprime son verdict (✅/❌) sur chaque ligne, mais ne fixe pas
 // de code de sortie (non intégré à `npm test`, voir docs/ARCHITECTURE.md).
 const { GRAMMAIRE, CHAMPS, LIENS } = require("./grammaire2.js");
-const G = GRAMMAIRE, C = Object.fromEntries(CHAMPS.map(c => [c.id, c]));
+const M = require("./moteur.js").creerMoteur(GRAMMAIRE, CHAMPS, LIENS);
+const G = GRAMMAIRE, C = M.C;                        // le moteur est partagé avec l'atelier
+const { valider, lienDe } = M;
 const ok = s => console.log("  ✅ " + s), ko = s => console.log("  ❌ " + s);
 const estFinal = e => G.finaux.includes(e);
-const offerts = e => G.blocs.filter(b => b.de === e);
-
-// ---------- MOTEUR ----------
-function reduire(ch) {
-  const termes = ch.filter(p => p.bloc.type === "terme").map(p => p.valeur); // champ id | reduction
-  const forme = ch.map(p => p.bloc.forme).filter(Boolean).pop() || null;
-  return { forme, termes };
-}
-const dimDe = t => (typeof t === "object" ? "affirmation" : C[t].dim);
-function valider(r) {                       // → null si sensé, sinon la raison
-  const f = G.formes[r.forme];
-  if (r.termes.length !== f.arite) return "arité";
-  for (let i = 0; i < r.termes.length; i++) {
-    const s = f.slots[i], d = dimDe(r.termes[i]);
-    if (s !== "*" && !s.includes(d)) return `slot ${i} refuse « ${d} »`;
-  }
-  if (f.relation === "meme_dim") {
-    const ds = r.termes.map(dimDe);
-    if (new Set(ds).size !== 1) return "dimensions différentes";
-    if (r.termes[0] === r.termes[1]) return "terme répété";
-  }
-  return null;
-}
-const memeTerme = (a, b) => (typeof a === "object" || typeof b === "object")
-  ? (typeof a === "object" && typeof b === "object" && memeRed(a, b))
-  : a === b;
-function memeRed(x, y) {
-  if (x.forme !== y.forme || x.termes.length !== y.termes.length) return false;
-  const f = G.formes[x.forme];
-  if (f.ordonne) return x.termes.every((t, i) => memeTerme(t, y.termes[i]));
-  return x.termes.every(t => y.termes.some(u => memeTerme(t, u)))
-      && y.termes.every(t => x.termes.some(u => memeTerme(t, u)));
-}
-const lienDe = r => LIENS.find(l => memeRed({ forme: l.forme, termes: l.termes }, r));
-function rendre(ch) {
-  return ch.map(p => p.bloc.type === "terme"
-    ? (p.bloc.source === "note" ? p.bloc.texte : C[p.valeur].texte)
-    : p.bloc.texte).join(" ") + ".";
-}
 
 // ---------- SQUELETTES ----------
-const squelettes = [];
-(function m(e, acc) { if (estFinal(e)) return squelettes.push(acc);
-  for (const b of offerts(e)) m(b.vers, [...acc, b]); })(G.depart, []);
+const squelettes = M.squelettes();
 
 console.log("=== 1. Structure ===");
 const etats = new Set([G.depart, ...G.blocs.flatMap(b => [b.de, b.vers])]);
