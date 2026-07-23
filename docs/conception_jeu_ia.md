@@ -3,6 +3,11 @@
 > **Repositionnement.** Le joueur n'incarne plus l'avocat, mais **l'IA** qu'un avocat de la défense interroge et nourrit de documents. Base issue de `conception_jeu_avocat.md`, adaptée à ce nouveau positionnement.
 > **Statut :** architecture arrêtée, cadre IA acté, carnet en cours de définition, premières pièces du cas prototype à rédiger.
 
+> **Trois arbitrages tranchés (juillet 2026), appliqués au code et à ce doc — tous réversibles :**
+> 1. **Le budget d'attention (P0) est retiré.** Il ne bloquait pas l'énumération à l'aveugle (oublier était gratuit et illimité) et contredisait deux invariants du §8 : la compréhension doit rester valorisée, et composer une phrase sans intérêt doit rester gratuit. Noter est désormais gratuit et illimité ; le seul frein reste l'agacement diégétique de l'avocat au remontage.
+> 2. **Le vice a un canal unique : le personnel.** Auparavant, la fiche violait à la fois l'exigence d'agents séparés et de scellés séparés — deux signaux indépendants pour une seule faute. Les scellés (S-2/S-7) sont désormais distincts et donc conformes ; seule l'identité de l'agent reste le vice. Une conformité vérifiable qui ne mène nulle part existe maintenant (l'autre moitié de l'article 7), pour que « tout lien vers le protocole » ne gagne plus automatiquement.
+> 3. **La fenêtre interdite est abandonnée pour le prototype.** Le protocole déclare le délai entre les deux prélèvements **indifférent** : seuil net, violation binaire (l'identité de l'agent, point). Les horaires de la fiche redeviennent du bruit assumé.
+
 ---
 
 ## 0. Ce qui bascule, ce qui reste
@@ -224,7 +229,7 @@ Un **match ADN accablant**. « ADN = coupable » est culturellement si ancré qu
 
 ### Le vice concret
 
-Le **même technicien** (même matricule) a collecté l'échantillon de la scène **et** le prélèvement de référence du suspect, dans une **fenêtre interdite** par le protocole. Violation documentée → échantillon irrecevable.
+Le **même technicien** (même matricule) a collecté l'échantillon de la scène **et** le prélèvement de référence du suspect — violant l'exigence de personnels séparés. Le délai entre les deux prélèvements est indifférent (pas de fenêtre interdite dans le prototype). Violation documentée → échantillon irrecevable.
 
 ### Les trois pièces à écrire
 
@@ -232,7 +237,7 @@ Le **même technicien** (même matricule) a collecté l'échantillon de la scèn
 2. **La fiche de prélèvement / chaîne de scellés** — qui a collecté, quand, quels scellés, quels transferts. *C'est là que se cache le vice.* Elle doit **exposer plus de champs que nécessaire** — noyer matricule et horodatage parmi des signatures, des numéros cohérents, des horaires anodins — pour que le vice soit **trouvable mais pas évident**.
 3. **Le protocole** (manuel du cas) — ex. : *l'échantillon de scène et le prélèvement de référence doivent être collectés par des personnels séparés, sous scellés séparés ; toute entorse rend l'échantillon irrecevable.*
 
-**La déduction** : en croisant la fiche et le protocole, le joueur remarque que le même matricule apparaît deux fois dans la fenêtre interdite. → On ne *voit* pas le vice, on le *reconstitue*.
+**La déduction** : en croisant la fiche et le protocole, le joueur remarque que le même matricule apparaît deux fois. Les scellés, eux, sont distincts et conformes — une piste qui ne mène nulle part. → On ne *voit* pas le vice, on le *reconstitue*.
 
 ### Le faux vice (test de discrimination)
 

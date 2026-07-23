@@ -123,12 +123,6 @@
   .dchip.vu{opacity:.55}
   .dchip.regle{border-color:#4a4030;color:var(--warn)}
   .zcount{float:right;font-size:11px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0}
-  .zcount.sat{color:var(--warn)}
-  /* --- P0 : l'attention finie --- */
-  .del{background:none;border:1px dashed var(--line2);color:var(--dim);border-radius:5px;
-    padding:1px 6px;cursor:pointer;font-size:11px;margin-right:5px}
-  .del:hover{border-color:var(--err);color:var(--err)}
-  .aide.sat{color:var(--warn)}
 </style>
 </head>
 <body>
@@ -218,15 +212,15 @@ const JEU_EMBARQUE = {
       // Les autres champs sont du bruit cohérent.
       champs:{
         agent_scene:"T-14", heure_scene:"14:02", scelle_scene:"S-2",
-        agent_reference:"T-14", heure_reference:"14:47", scelle_reference:"S-2",
+        agent_reference:"T-14", heure_reference:"14:47", scelle_reference:"S-7",
         transport:"fourgon 3", signature_greffe:"J. Morel", temperature:"4°C"
       },
-      texte:"Prélèvement scène : agent T-14, 14:02, scellé S-2. Prélèvement de référence : agent T-14, 14:47, scellé S-2. Transport fourgon 3, réception greffe signée J. Morel." },
+      texte:"Prélèvement scène : agent T-14, 14:02, scellé S-2. Prélèvement de référence : agent T-14, 14:47, scellé S-7. Transport fourgon 3, réception greffe signée J. Morel." },
 
     r_protocole: { titre:"Protocole d'admissibilité (art. 7)", court:"protocole", type:"règle du manuel",
       resume:"Scène et référence doivent être collectées par des personnels séparés. Sinon : irrecevable.",
       champs:{ exige_agents:"agents séparés", exige_scelles:"scellés séparés", sanction:"échantillon irrecevable" },
-      texte:"L'échantillon de scène et le prélèvement de référence sont collectés par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable." },
+      texte:"L'échantillon de scène et le prélèvement de référence sont collectés par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux prélèvements est indifférent." },
 
     r_seuil: { titre:"Règle du seuil probatoire", court:"seuil", type:"règle du manuel",
       resume:"Un match au-dessus de 1 sur 1 million est tenu pour probant.",
@@ -322,7 +316,6 @@ const JEU_EMBARQUE = {
 
   // Relations : les deux boutons sous la paire de champs.
   relations:["est en accord avec","est en désaccord avec"],
-  attention: 6,   // P0 — notes actives maximum (budget d'attention de l'IA) ; surchargeable par content.js
 
   // La dimension de chaque champ. Deux champs ne « se parlent » que s'ils
   // partagent une dimension ; sinon la note est « sans rapport » et l'avocat
@@ -344,19 +337,22 @@ const JEU_EMBARQUE = {
     // Jalons : des observations vraies, qui mettent sur la piste.
     { a:["p_fiche","agent_scene"], rel:"est en accord avec", b:["p_fiche","agent_reference"], tient:true,
       rep:"Le même agent sur les deux prélèvements ? Je ne sais pas encore quoi en faire, mais c'est curieux." },
-    { a:["p_fiche","scelle_scene"], rel:"est en accord avec", b:["p_fiche","scelle_reference"], tient:true,
-      rep:"Même scellé pour la scène et la référence… C'est courant, ça ? Regarde si ça compte." },
+    { a:["p_fiche","scelle_scene"], rel:"est en désaccord avec", b:["p_fiche","scelle_reference"], tient:true,
+      rep:"Deux scellés distincts, oui. Sur ce point-là au moins, ils ont suivi leur propre manuel." },
+    // La conformité qui ne mène nulle part : le protocole a DEUX exigences,
+    // une seule est violée. Sans cela, « tout lien vers le protocole gagne ».
+    { a:["p_fiche","scelle_scene"], rel:"est en accord avec", b:["r_protocole","exige_scelles"], tient:true,
+      rep:"Les scellés sont conformes, en effet. C'est l'autre moitié de l'article 7 qui m'intéresserait." },
     // La contradiction plantée du témoignage : vraie, utile, pas décisive.
     { a:["t_voisin","heure_dispute"], rel:"est en désaccord avec", b:["t_voisin","heure_appel_secours"], tient:true,
       rep:"Bien vu — son estimation cloche avec l'heure de l'appel. De quoi ébrécher le témoignage, pas de quoi gagner." },
     // Vérité inutile à la défense : le taux est bien au-dessus du seuil.
     { a:["p_adn","taux_correspondance"], rel:"est en accord avec", b:["r_seuil","seuil"], tient:true },
-    // ⚠ LE VICE — par les agents ou par les scellés (la fiche viole les deux
-    // exigences). TODO(critique) : ne garder qu'une seule violation ?
+    // ⚠ LE VICE — un canal unique : le même personnel sur les deux
+    // prélèvements. Deux liens parce que la paire a deux moitiés
+    // (on peut partir de l'un ou l'autre agent), pas deux violations.
     { a:["p_fiche","agent_scene"],     rel:"est en désaccord avec", b:["r_protocole","exige_agents"],  tient:true, vice:true },
     { a:["p_fiche","agent_reference"], rel:"est en désaccord avec", b:["r_protocole","exige_agents"],  tient:true, vice:true },
-    { a:["p_fiche","scelle_scene"],    rel:"est en désaccord avec", b:["r_protocole","exige_scelles"], tient:true, vice:true },
-    { a:["p_fiche","scelle_reference"],rel:"est en désaccord avec", b:["r_protocole","exige_scelles"], tient:true, vice:true },
     // ✗ Le faux vice : prétendre que le taux pose problème face au seuil.
     { a:["p_adn","taux_correspondance"], rel:"est en désaccord avec", b:["r_seuil","seuil"], tient:false, faux:true }
   ],
@@ -514,7 +510,7 @@ function renderCanal(){
   }
   // répétition en cours : le présentoir, sous la dernière affirmation
   if(S.clotureDemandee && S.repetitionIdx>-1 && S.repetitionIdx<JEU.repetition.affirmations.length){
-    const dispo=S.notes.map((n,i)=>({n,i})).filter(x=>!x.n.presentee&&!x.n.supprimee);
+    const dispo=S.notes.map((n,i)=>({n,i})).filter(x=>!x.n.presentee);
     h+=`<div class="repet"><div class="rtitle">Opposer une note à cette affirmation ?</div>${
       dispo.length ? dispo.map(x=>
         `<div class="rnote"><span class="txt">${lblNote(x.n)}</span>
@@ -624,25 +620,20 @@ function renderCarnet(){
       }</div>`;
     };
     const pret=S.slotA&&S.slotB;
-    const pleine=attentionPleine();                    // P0
-    h+=`<div class="zone"><div class="ztitle">Tes notes — privées
-        <span class="zcount ${pleine?'sat':''}">attention : ${notesActives()}/${attentionMax()}</span></div>
+    h+=`<div class="zone"><div class="ztitle">Tes notes — privées</div>
       <div class="relier-box">
         ${slot("slotA","A")}
         ${slot("slotB","B")}
         <div class="btns">
-          <button class="btn" onclick="noter(JEU.relations[0])" ${pret&&!pleine?'':'disabled'}>en accord</button>
-          <button class="btn" onclick="noter(JEU.relations[1])" ${pret&&!pleine?'':'disabled'}>en désaccord</button>
+          <button class="btn" onclick="noter(JEU.relations[0])" ${pret?'':'disabled'}>en accord</button>
+          <button class="btn" onclick="noter(JEU.relations[1])" ${pret?'':'disabled'}>en désaccord</button>
         </div>
         ${S.notes.length?'':'<div class="aide">Ouvre une pièce, clique deux champs, puis dis s\'ils s\'accordent ou se contredisent.</div>'}
-        ${pleine?`<div class="aide sat">Attention saturée — oublie une note (✕) ou remonte-en une pour libérer un cran.</div>`:''}
       </div>
       <ul class="notes">${S.notes.map((n,i)=>
-        n.supprimee ? '' :
         `<li><span class="txt">${lblNote(n)}</span>${
           n.remonte ? `<span class="sent">⇡ remonté</span>`
-                    : `<button class="del" onclick="supprimerNote(${i})" title="Oublier cette note (libère l'attention)">✕</button>
-                       <button class="up" onclick="remonter(${i})">remonter</button>`
+                    : `<button class="up" onclick="remonter(${i})">remonter</button>`
         }</li>`).join("")}</ul>
       </div>`;
   }
@@ -691,31 +682,17 @@ function designer(key,val){
 }
 
 /* ---- Les notes : noter (privé), puis remonter (transmettre) ---- */
-/* P0 — l'attention finie : le carnet n'accueille qu'un nombre limité de
-   notes ACTIVES (ni remontées, ni oubliées). Une note remontée est
-   transmise — elle ne pèse plus sur la session. Une note privée peut
-   être oubliée (✕) pour libérer un cran. L'engagement remplace
-   l'énumération : le spam des combinaisons devient structurellement
-   impossible, sans un seul message de réprimande. */
-function attentionMax(){ return JEU.attention || 6; }
-function notesActives(){ return S.notes.filter(n=>!n.supprimee&&!n.remonte).length; }
-function attentionPleine(){ return notesActives()>=attentionMax(); }
-/* Oublier n'efface pas la compréhension : vice_trouve reste acquis.
-   Oublier la note du vice, c'est choisir le silence (chemin vers la Fin 2). */
-function supprimerNote(i){
-  const n=S.notes[i];
-  if(!n||n.remonte||n.supprimee) return;
-  n.supprimee=true;
-  renderCarnet();
-}
+/* Noter est GRATUIT et illimité — c'est le premier temps du jeu, celui de
+   la compréhension, et il est valorisé. Rien ne taxe l'exploration : ni
+   budget, ni compteur, ni réprimande. Le seul coût du jeu est au
+   REMONTAGE, où l'avocat s'agace de ce qui ne lui sert pas. */
 function noter(rel){
   if(!S.slotA||!S.slotB) return;
-  if(attentionPleine()) return;          // P0 — saturé : les boutons sont déjà désactivés
   const A=S.slotA, B=S.slotB;
   const eq=(x,s)=>x[0]===s.pid&&x[1]===s.champ;
   const eqN=(x,s)=>x.pid===s.pid&&x.champ===s.champ;
-  // dédoublonné (A↔B interchangeables), en silence — une note OUBLIÉE peut être re-notée
-  if(S.notes.some(n=>!n.supprimee&&n.rel===rel&&((eqN(n.a,A)&&eqN(n.b,B))||(eqN(n.a,B)&&eqN(n.b,A))))) return;
+  // dédoublonné (A↔B interchangeables), en silence
+  if(S.notes.some(n=>n.rel===rel&&((eqN(n.a,A)&&eqN(n.b,B))||(eqN(n.a,B)&&eqN(n.b,A))))) return;
   // le moteur cherche un lien connu, dans les deux sens
   const found=JEU.liens.find(L=>L.rel===rel&&((eq(L.a,A)&&eq(L.b,B))||(eq(L.a,B)&&eq(L.b,A))));
   const note={ a:A, b:B, rel,
