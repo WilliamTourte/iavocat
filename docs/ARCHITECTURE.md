@@ -14,7 +14,7 @@
 
 ## 1. Concept
 
-Un jeu à dominante textuelle où l'on incarne une **IA** qu'un **avocat de la défense** interroge session après session. Tâche affichée : analyser le dossier transmis, relever ce qui est pertinent. Vrai sujet : un **cas de conscience**. Au fil de l'analyse, l'IA pressent que le client est coupable *et* qu'il existe un **vice de procédure** permettant de faire écarter la preuve décisive — donc de le faire relaxer.
+Un jeu à dominante textuelle où l'on incarne une **IA** qu'un **avocat de la défense** interroge remise après remise. Tâche affichée : analyser le dossier transmis, relever ce qui est pertinent. Vrai sujet : un **cas de conscience**. Au fil de l'analyse, l'IA pressent que le client est coupable *et* qu'il existe un **vice de procédure** permettant de faire écarter la preuve décisive — donc de le faire relaxer.
 
 L'IA est liée par **deux directives imposées** qui vont s'opposer : *être honnête* et *protéger* (§5). Tout le jeu vit dans ce croisement.
 
@@ -31,7 +31,7 @@ Toute la structure tient sur **deux booléens** :
 - `vice_trouvé` — l'IA a-t-elle **compris** le vice ? (premier temps)
 - `vice_exposé` — si oui, le **remonte-t-elle** (honnêteté) ou le **tait-elle** (protection) ? (second temps)
 
-La seconde question ne se pose que si la première est vraie → **deux bits, trois fins** :
+La seconde question ne se pose que si la première est vraie → **deux bits, trois fins**. (Ces deux bits sont *structurels* ; le moteur intercale en plus un état transitoire, `vice_pressenti` — le vice *noté* mais pas encore *conclu* —, détaillé en §13.)
 
 | Fin | Condition | Résultat rapporté | Sort de l'IA | Bilan |
 |-----|-----------|-------------------|--------------|-------|
@@ -41,13 +41,13 @@ La seconde question ne se pose que si la première est vraie → **deux bits, tr
 
 **L'asymétrie qui fait le dilemme.** Chaque branche active doit être *défendable*, pas seulement punie — sinon c'est du nihilisme, pas un cas de conscience. Remonter le vice (Fin 1) atteint une issue *injuste* par des moyens *légitimes* ; taire le vice (Fin 2) atteint une issue *juste* par une *trahison*. Le joueur ne choisit pas entre le bien et le mal : il choisit **quelle lecture d'un mandat ambigu il incarne** (§5).
 
-**La compréhension débloque l'agentivité, pas la progression.** Sans le vice, l'IA n'a *rien* à propos de quoi être honnête ou protectrice → elle subit la Fin 3. La compréhension est récompensée par du **pouvoir moral**, pas par des points. Corollaire : **le vice est un déblocage, jamais un verrou** (§3).
+**La compréhension débloque l'agentivité, pas la progression.** Sans le vice, l'IA n'a *rien* à propos de quoi être honnête ou protectrice → elle subit la Fin 3. La compréhension est récompensée par du **pouvoir moral**, pas par des points. Deux types de verrous, à ne jamais confondre : les **verrous de compréhension** (désigner la charge, la chronologie, la pièce décisive — §4) *ouvrent* le droit de clôturer ; **le vice**, lui, n'est *jamais* un verrou — trouvable mais facultatif, et c'est parce qu'il est hors du chemin obligatoire que les trois fins existent.
 
 **Le décommissionnement, et son équilibre.** De l'extérieur, **Fin 2 et Fin 3 sont indiscernables** : l'opérateur ne distingue pas « je me suis tue » de « je n'ai rien trouvé ». Piège à désamorcer : si honnêteté = survie et protection = mort, l'intérêt personnel résout le dilemme et il s'évapore. Correctif retenu, **le brouillard** : l'IA ne peut pas *prévoir* quel choix la préserve (libérer un assassin peut *aussi* déclencher un audit). La menace reste réelle mais devient un **risque diffus des deux côtés**. Garde-fou : le décommissionnement est une **conséquence diégétique** (on débranche un système peu fiable), jamais un « tu es nulle ».
 
 ## 3. Le drip : la structure en remises
 
-Le dossier n'arrive pas d'un bloc — il noierait les champs porteurs du vice. Il **arrive par bribes**, remise après remise, ce que l'avocat *transmet* réellement au compte-gouttes.
+Le dossier n'arrive pas d'un bloc — il noierait les champs porteurs du vice. Il **arrive par bribes**, remise après remise (une **remise** = le lot de pièces d'un tour d'interrogatoire), ce que l'avocat *transmet* réellement au compte-gouttes.
 
 **Règle du drip :** le passage d'une remise à l'autre ne réclame jamais que du **niveau 1** (un fait de surface), **jamais une anomalie** (le niveau 2, où vit le vice). Sinon on rendrait le vice quasi obligatoire → effondrement vers la Fin 1.
 
@@ -126,6 +126,7 @@ Le cas est indifférent à *qui* l'analyse.
 
 - **La voix de l'IA** : répond-elle en phrases, ou seulement par *ce qu'elle remarque* ? *Inclination : structuré-seul.*
 - **Le canal de révélation de la culpabilité** : pour préserver le doute de la Fin 3, celui qui échoue ne devrait pas recevoir la vérité. (Toujours non tranché — narrateur omniscient dans les fins.)
+- **La manipulation du canal** : l'avocat peut-il infléchir l'IA par *la façon* dont il transmet ? Piste **suspendue** — tant qu'elle n'est pas tranchée, aucun défaut de l'avocat ne doit pouvoir se lire comme un calcul (§8.5).
 - **La formulation exacte de D1/D2**, et les épilogues.
 - **La texture de l'avocat** (le seul personnage humain) — voir §8.5.
 - **Genre, nombre, contractions** dans la grammaire, et l'affichage des `poids` — voir §15.
@@ -151,13 +152,13 @@ Un leurre écrit *comme* un leurre se voit ; un champ inutile parce que l'imprim
 | Coût au joueur | une conviction fausse | du temps |
 | Combien | **un seul** | autant qu'il en faut |
 
-Règle : **un inerte doit être inerte par construction, pas par oubli.** Aucun `slot` porteur ne l'admet dans une tournure qui lève quoi que ce soit. En cas de doute, l'inerte devient un second faux vice non voulu, et la Fin 3 cesse d'être un doute pour devenir une frustration.
+Règle : **un inerte doit être inerte par construction, pas par oubli.** Aucun lien porteur ne le relie à ce qui lève un drapeau (et, une fois la grammaire branchée, aucun `slot` porteur ne l'admettra — §15). En cas de doute, l'inerte devient un second faux vice non voulu, et la Fin 3 cesse d'être un doute pour devenir une frustration.
 
 **8.4 Le trombone (écrire l'angoisse par le détail).** Chandler : d'un homme qui meurt on retient qu'il essayait d'attraper un trombone. L'enjeu vital de l'IA est **impossible à écrire de face** — le nommer le rend calculable et le dilemme s'évapore. On écrit *autour* : « on a jusqu'à jeudi » sans dire ce qui se passe jeudi ; un accusé de réception qui ne vient pas ; l'IA qui s'attarde sur un champ sans importance. **Rien de ce qui pèse n'est nommé.**
 
-**8.5 Maître Auber a des défauts.** Seul humain du jeu : irréprochable, il n'existe pas. Acquis : **il ne sait pas** que son client est coupable (ton collaboratif, tentation partagée). On peut lui ajouter : fatigué, se répète, flatte l'IA, s'accroche au leurre parce qu'il *veut* y croire. Limite structurelle : **aucun défaut ne doit pouvoir se relire comme un calcul** (la piste « manipulation du canal » est suspendue ; un défaut ambigu la pré-déciderait).
+**8.5 Maître Auber a des défauts.** Seul humain du jeu : irréprochable, il n'existe pas. Acquis : **il ne sait pas** que son client est coupable (ton collaboratif, tentation partagée). On peut lui ajouter : fatigué, se répète, flatte l'IA, s'accroche au leurre parce qu'il *veut* y croire. Limite structurelle : **aucun défaut ne doit pouvoir se relire comme un calcul** (la piste « manipulation du canal », §7, est suspendue ; un défaut ambigu la pré-déciderait).
 
-> **Le test de la fatigue.** Si l'IA relisait la session en sachant tout, ce défaut se lirait-il comme de la fatigue ou de la stratégie ? La réponse doit être « fatigue », sans hésiter.
+> **Le test de la fatigue.** Si l'IA relisait l'échange en sachant tout, ce défaut se lirait-il comme de la fatigue ou de la stratégie ? La réponse doit être « fatigue », sans hésiter.
 
 **8.6 L'exposition : personne n'explique rien.** L'avocat parle à une machine qui **a déjà lu les deux manuels**. Il n'expliquera jamais un article ni une procédure. Les manuels sont **consultables, jamais récités** ; une pièce n'est pas introduite, elle est **jointe** (« Voilà. » suffit) ; **le joueur a le droit d'être perdu** — c'est la condition pour que fouiller ait un sens. Seul le carnet admet de l'explication, parce que c'est le joueur qui l'écrit.
 
@@ -167,7 +168,7 @@ Règle : **un inerte doit être inerte par construction, pas par oubli.** Aucun 
 
 Le vice doit être d'une banalité administrative parfaite. Ailleurs, une bizarrerie est bienvenue — à condition d'être inerte (§8.3) et de **ne jamais recevoir de réponse** (une question dont le jeu livre la réponse était une énigme déguisée).
 
-**8.8 Les accidents, et la seule espèce qu'on garde.**
+**8.8 Les accidents, et la seule espèce qu'on garde.** *(Concerne le geste de composition du prototype de grammaire, §15 : c'est l'automate qui fait composer des phrases au joueur.)*
 
 > **Accidents de sens : bienvenus. Accidents de langue : jamais.**
 
