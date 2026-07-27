@@ -19,7 +19,8 @@ Le principe qui commande tout le reste, hérité de la session de conception :
 
 | Fichier | État |
 |---|---|
-| `docs/ARCHITECTURE.md` | **Réécrit.** C'est le cahier des charges de tout le reste : §2 le modèle (déclaration attribuée, empan, QQOQC, règle de surlignage, doublon banal), §3 le geste, §4 les quatre surfaces, §5 les trois drapeaux, §6 la grammaire branchée, §8 le schéma 3 et sa migration, §9 la checklist ⚙, §10 les suites |
+| `docs/ARCHITECTURE.md` | **Partie II réécrite, Partie I mise à jour.** Le fichier reste l'**unique source de vérité** (il avait absorbé `conception_jeu_ia.md` le 24 juillet — cette session l'a conservé et fusionné avec la refonte). Partie I : §1 le livrable et l'IA partisane, §3 les sessions, §4 **entièrement neuf** (l'atome, les cinq dimensions, le surlignage, le doublon banal, composer/verser, les quatre surfaces, les trois drapeaux), §6 l'affaire, §7 les invariants ; §5 (directives) et §8 (« Écrire ce qui sonne vrai ») intacts. Partie II : §11 le schéma 3 et sa migration, §14 la grammaire branchée, §15 la checklist ⚙, §16 les suites |
+| ~~`docs/conception_jeu_ia.md`~~ | **reste supprimé.** Son contenu de sens vit dans `ARCHITECTURE.md`, Partie I — décision du 24 juillet, conservée |
 | `app/moteur.js` | **Déplacé** depuis `grammaire/`. Le jeu, l'atelier et le banc d'essai lisent le même fichier ; `app/` redevient un dossier livrable en un seul zip |
 | `app/index.html` | **Moteur réécrit.** Empans surlignés et cliquables, mémoire par dimension, composeur branché sur la grammaire, brouillon, plan de plaidoirie, réactions au seul versement, `attend`/`apres` à la place des cases, trois drapeaux relogés. `JEU_EMBARQUE` en schéma 3 |
 | `app/atelier_v3.html` | **Mis au schéma 3.** SEED = la nouvelle affaire ; graphe et inspecteur sur les empans ; éditeur de pièce (le texte porte les marqueurs `{{id}}`) ; liens en `{forme, termes}` + `conclureLien` ; diagnostic refait ; frise et simulation réécrites ; migration 2→3 ; onglet Grammaire branché sur le contenu courant |
@@ -67,7 +68,7 @@ Pas de case « article » à remplir. Le joueur choisit *« …est contraire à 
 
 ### 3.6 Les Manuels sont filtrés par la livraison
 
-Une règle n'apparaît au Manuel du cas qu'une fois **livrée**. Mais les liaisons qui l'invoquent sont disponibles **dès la première phrase** (§2.7 de la conception : aucune tournure n'apparaît en cours de partie). On peut donc invoquer un article qu'on n'a pas lu — tension voulue, signalée dans l'interface.
+Une règle n'apparaît au Manuel du cas qu'une fois **livrée**. Mais les liaisons qui l'invoquent sont disponibles **dès la première phrase** (§4.5 d'`ARCHITECTURE.md` : aucune tournure n'apparaît en cours de partie). On peut donc invoquer un article qu'on n'a pas lu — tension voulue, signalée dans l'interface.
 
 ## 4. Ce que le diagnostic de l'atelier contrôle désormais
 

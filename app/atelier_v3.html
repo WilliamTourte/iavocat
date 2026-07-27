@@ -2123,7 +2123,7 @@ function renderGrammaire(){
       (${(100*d.senses/d.total).toFixed(1)} %) · <b>${d.avecLien}</b> portent un lien du contenu
       → <b>${d.senses-d.avecLien}</b> phrases sensées <b>sans</b> lien : c'est la marge de bruit.<br>
       Si elle tombait à 0, « sensé » vaudrait « correct » et l'interface trahirait
-      (invariant du §8 de conception_jeu_ia.md).${GRAM.notes.length?'':' <span style="color:var(--dim)">(garde des notes pour peupler les slots «note».)</span>'}</div>`;
+      (invariant du §14 de ARCHITECTURE.md).${GRAM.notes.length?'':' <span style="color:var(--dim)">(garde des notes pour peupler les slots «note».)</span>'}</div>`;
 
   pane.innerHTML=`<h2>Grammaire — prototype <span style="color:var(--dim);font-weight:400;font-size:12px">non branché sur le jeu</span></h2>
     <p class="lead">Compose une phrase en remplissant les trous d'un squelette. Le moteur (partagé avec
