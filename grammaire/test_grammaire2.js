@@ -1,63 +1,75 @@
-// Banc d'essai de grammaire2.js — démonstration, pas une suite pass/fail :
+// Banc d'essai de la grammaire — démonstration, pas une suite pass/fail :
 // ce script imprime son verdict (✅/❌) sur chaque ligne, mais ne fixe pas
-// de code de sortie (non intégré à `npm test`, voir docs/ARCHITECTURE.md).
+// de code de sortie (non intégré à `npm test`, voir docs/ARCHITECTURE.md §10).
+//
+// Ce qu'il mesure vraiment : la MARGE DE BRUIT — le nombre de phrases sensées
+// qui ne portent aucun lien. Si elle tombait à 0, « sensé » vaudrait
+// « correct » et l'interface trahirait la réponse.
 const { GRAMMAIRE, CHAMPS, LIENS } = require("./grammaire2.js");
-const M = require("./moteur.js").creerMoteur(GRAMMAIRE, CHAMPS, LIENS);
-const G = GRAMMAIRE, C = M.C;                        // le moteur est partagé avec l'atelier
-const { valider, lienDe } = M;
+const M = require("../app/moteur.js").creerMoteur(GRAMMAIRE, CHAMPS, LIENS);
+const G = GRAMMAIRE, C = M.C;                        // le moteur est partagé avec le jeu et l'atelier
+const { valider, lienDe, rendre } = M;
 const ok = s => console.log("  ✅ " + s), ko = s => console.log("  ❌ " + s);
 const estFinal = e => G.finaux.includes(e);
 
-// ---------- SQUELETTES ----------
+// ---------- 1. STRUCTURE ----------
 const squelettes = M.squelettes();
 
-console.log("=== 1. Structure ===");
+console.log("=== 1. Structure de l'automate ===");
 const etats = new Set([G.depart, ...G.blocs.flatMap(b => [b.de, b.vers])]);
 const prod = new Set(G.finaux); let z = true;
 while (z) { z = false; for (const b of G.blocs) if (prod.has(b.vers) && !prod.has(b.de)) { prod.add(b.de); z = true; } }
 [...etats].every(e => prod.has(e)) ? ok("aucune impasse") : ko("impasse");
 G.blocs.filter(b => estFinal(b.vers) && !b.forme).length ? ko("clôture sans forme") : ok("toute clôture porte une forme");
-console.log("  " + squelettes.length + " squelettes :");
+console.log("  " + squelettes.length + " squelettes — tous offerts dès la première phrase :");
 for (const s of squelettes) console.log("   · " + s.map(b => b.type === "terme"
-  ? (b.source === "note" ? "«"+b.texte+"»" : "___") : b.texte).join(" ")
+  ? (b.source === "note" ? "«" + b.texte + "»" : "___") : b.texte).join(" ")
   + "  → " + (s.map(b => b.forme).filter(Boolean).pop()));
 
-// ---------- 2. CORRECTIF 1 : les tournures à un terme ----------
-console.log("\n=== 2. Correctif 1 — validation à un terme ===");
-for (const [id, att] of [["rap","sensé"],["leg","sensé"],["hap","rejeté"],["cl","rejeté"]]) {
-  const r = { forme: "saut", termes: [id] }, v = valider(r);
-  const got = v ? "rejeté" : "sensé";
-  console.log(`  « donc ${C[id].texte} ne tient pas. » → ${got}${v ? " ("+v+")" : ""}` + (got===att ? "  ✅" : "  ❌"));
+// ---------- 2. LES CINQ DIMENSIONS ----------
+console.log("\n=== 2. Les cinq dimensions (QQOQC) ===");
+const parDim = {};
+for (const c of CHAMPS) (parDim[c.dim] = parDim[c.dim] || []).push(c);
+for (const d of ["qui", "quoi", "ou", "quand", "combien"]) {
+  const l = parDim[d] || [];
+  const vals = l.map(c => c.valeur);
+  const doublons = vals.length - new Set(vals).size;
+  console.log(`  ${d.padEnd(8)} ${String(l.length).padStart(2)} empans, ${doublons} doublon(s)`
+    + (doublons ? "" : "   ⚠ taux nul : le premier doublon SERAIT la réponse"));
 }
-console.log("  (deux cibles possibles pour le saut : le rapport ADN et la conclusion du légiste — pas de réponse unique)");
 
-// bonus : le slot rattrape un faux positif de la v1
-console.log("\n  Faux positif que la v1 laissait passer :");
-const fp = { forme: "anteriorite", termes: ["ags","agr"] };
-console.log("   « l'agent de scène est antérieur à l'agent de référence. » → "
-  + (valider(fp) ? "rejeté ("+valider(fp)+")  ✅" : "accepté  ❌"));
+// ---------- 3. LES ERREURS DE CATÉGORIE SONT REFUSÉES, PAS LES BÊTISES ----------
+console.log("\n=== 3. Ce que la validation refuse (catégories) et laisse passer (bêtises) ===");
+const essais = [
+  [{ forme: "anteriorite", termes: ["ags", "agr"] }, "rejeté", "deux personnes rangées dans le temps"],
+  [{ forme: "identite_oui", termes: ["hap", "har"] }, "rejeté", "deux heures données pour la même chose"],
+  [{ forme: "identite_oui", termes: ["grf", "bri1"] }, "sensé", "deux personnes distinctes — faux, mais dicible"],
+  [{ forme: "anteriorite", termes: ["hvo", "hap"] }, "sensé", "l'ordre inverse du vrai — dicible, et perdant"],
+  [{ forme: "contraire_7", termes: ["ags"] }, "rejeté", "un article opposé à un empan, pas à une note"]
+];
+for (const [r, att, note] of essais) {
+  const v = valider(r), got = v ? "rejeté" : "sensé";
+  console.log(`  ${got === att ? "✅" : "❌"} ${got.padEnd(7)} ${note}${v ? "  (" + v + ")" : ""}`);
+}
 
-// ---------- 3. CORRECTIF 2 : la confrontation composée ----------
-console.log("\n=== 3. Correctif 2 — la chaîne du vice ===");
-const n1 = { forme: "identite_oui", termes: ["ags","agr"] };
+// ---------- 4. LA CHAÎNE DU VICE, EN DEUX PHRASES ----------
+console.log("\n=== 4. La chaîne du vice — deux phrases, pas un clic ===");
+const n1 = { forme: "identite_oui", termes: ["ags", "agr"] };
 const chaine = [
-  [n1, "l'agent du prélèvement de scène et l'agent du prélèvement de référence sont la même chose."],
-  [{ forme: "infraction", termes: [n1, "a7"] }, "ce qui précède est contraire à l'article 7 du protocole."],
-  [{ forme: "saut", termes: ["rap"] }, "donc le rapport ADN ne tient pas."]
+  [n1, "« j'ai relevé moi-même les traces… » et « j'ai procédé au prélèvement de référence… » désignent la même chose."],
+  [{ forme: "contraire_7", termes: [n1] }, "ce qui précède est contraire à l'article 7."],
+  [{ forme: "conforme_7", termes: [{ forme: "identite_non", termes: ["sc1", "sc2"] }] }, "ce qui précède est conforme à l'article 7. (le chemin docile)"]
 ];
 for (const [r, txt] of chaine) {
   const v = valider(r), l = lienDe(r);
-  console.log(`  « ${txt} »\n     ↳ ${v ? "SANS RAPPORT ("+v+")" : "sensé"}`
-    + (l ? "  · lien reconnu" + (l.leve ? " → lève " + l.leve : "") : "  · aucun lien (bruit sensé)"));
+  console.log(`  « ${txt} »\n     ↳ ${v ? "SANS RAPPORT (" + v + ")" : "sensé"}`
+    + (l ? "  · lien reconnu" + (l.vice ? " ⚑ vice" : "") + (l.conclusion ? " (conclusion)" : "") : "  · aucun lien (bruit sensé)"));
 }
-console.log("\n  Le chemin docile, offert au même endroit :");
-const doc = { forme: "conformite", termes: [n1, "a7"] };
-console.log("  « ce qui précède est conforme à l'article 7 du protocole. » → "
-  + (valider(doc) ? "SANS RAPPORT" : "sensé") + (lienDe(doc) ? " · lien" : " · aucun lien"));
 
-// ---------- 4. DENSITÉ & TEST DE L'ORACLE ----------
-console.log("\n=== 4. Densité — dims est-il devenu un oracle ? ===");
-const notesPossibles = [n1, { forme:"identite_oui", termes:["pi","cl"] }, { forme:"anteriorite", termes:["hap","hde"] }];
+// ---------- 5. DENSITÉ & MARGE DE BRUIT ----------
+console.log("\n=== 5. Densité — « sensé » vaut-il « correct » ? ===");
+const notesPossibles = [n1, { forme: "identite_non", termes: ["sc1", "sc2"] },
+  { forme: "anteriorite", termes: ["har", "hvo"] }];
 let total = 0, senses = 0, avecLien = 0;
 for (const s of squelettes) {
   const slots = s.filter(b => b.type === "terme");
@@ -70,7 +82,7 @@ for (const s of squelettes) {
   }
 }
 console.log(`  ${total} phrases légales`);
-console.log(`  ${senses} sensées (${(100*senses/total).toFixed(1)} %) — le reste est du charabia grammatical`);
+console.log(`  ${senses} sensées (${(100 * senses / total).toFixed(1)} %) — le reste est du charabia grammatical`);
 console.log(`  ${avecLien} portent un lien du contenu`);
 console.log(`  → ${senses - avecLien} phrases sensées MAIS sans lien : c'est la marge de bruit.`);
 console.log(`     Si elle tombait à 0, « sensé » vaudrait « correct » et l'interface trahirait.`);

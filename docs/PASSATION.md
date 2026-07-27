@@ -1,72 +1,110 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 23 juillet 2026, après la session **« consolidation des deux lignées »**.*
+*À lire en tête d'une nouvelle conversation. État au 27 juillet 2026, après la session **« application de la refonte : empans, dimensions, composer/verser »**.*
 
-> Cette passation **remplace** celle du 21 juillet : le dépôt avait divergé en deux lignées parallèles (l'une avec sauvegarde/schema/deux marches/généralisation `apparait_si`, l'autre avec les décisions de contenu ci-dessous et le prototype de grammaire) ; cette session les a réconciliées. Rien de la lignée du 21 juillet n'a été perdu : ses décisions de contenu ont été portées sur le moteur le plus avancé, pas l'inverse.
+> Cette passation **remplace** celle du 23 juillet. La session précédente (« structure : but, boucle, dimensions ») était de la **conception pure** — aucun fichier touché ; celle-ci l'a **appliquée au code**, de bout en bout. Ce qui a été conservé intégralement : les trois fins, les deux directives, le brouillard, la culpabilité comme plancher fixe, l'automate de grammaire, la séparation contenu / moteur / atelier, la sauvegarde de partie, le versionnage `schema`.
 
 ---
 
-## 1. L'inventaire
+## 1. Ce qui a changé, en une phrase
+
+Le geste `champ A + relation + champ B` a disparu. À sa place : on **lit** une pièce, on **surligne** des déclarations attribuées, on **compose** une phrase avec un vocabulaire fermé, elle tombe au **brouillon** (privé), et la **verser** au plan de plaidoirie est le seul geste qui parle à l'avocat.
+
+Le principe qui commande tout le reste, hérité de la session de conception :
+
+> **Tout mécanisme utilisé une seule fois est un panneau indicateur.**
+> L'universalité n'est pas une élégance, c'est du camouflage.
+
+## 2. L'inventaire
 
 | Fichier | État |
 |---|---|
-| `app/index.html` | le jeu : moteur + `JEU_EMBARQUE` (repli). Sauvegarde, `schema`, deux marches, `apparait_si`/`prive`/`leve` **conservés** ; P0/attention **retiré** ; vice ramené à un canal (le personnel). |
-| `app/content.js` | le contenu joué. **Régénéré par `npm run export:seed`** (l'atelier lui-même, via jsdom) après un premier passage à la main pendant la consolidation — l'en-tête « ne pas éditer à la main » est de nouveau vrai. |
-| `app/atelier_v3.html` | l'outil d'écriture + diagnostic + simulation. Miroir `sim*` de P0 retiré ; diagnostic « canaux indépendants » vérifié silencieux sur le SEED (un seul canal désormais) ; migration nettoie une clé `attention` résiduelle. |
-| `tests/test_o5.js` | **remplace `test_p0_o5.js`** — 18 contrôles, vert. |
-| `tests/test_declencheurs.js`, `test_autre_affaire.js`, `test_parcours.js`, `test_sauvegarde.js`, `smoke_atelier.js` | mis à jour où le retrait de P0 et le vice à canal unique les touchaient ; verts. |
-| `grammaire/grammaire2.js` / `grammaire/test_grammaire2.js` | la grammaire du texte à trous et son banc d'essai (démonstration, pas une suite pass/fail). **Prototype non branché** — le jeu utilise toujours `noter()`/`choisirChamp()`. Mesures inchangées : 693 → 72 → 7. |
-| `docs/ARCHITECTURE.md` | à jour : §0 (disposition avec `grammaire/`), §2/§4 (P0 retiré des tables), §5 (suites renommées/reformulées), §7 (nouveau, décrit le prototype et son plan d'intégration). |
-| `docs/conception_jeu_ia.md` | l'arbitre du sens. Encadré des trois arbitrages ajouté en tête ; « fenêtre interdite » retirée des §7 (vice concret / déduction). |
-| `scripts/exporter-seed.js` | **nouveau.** `npm run export:seed` — régénère `content.js` depuis `SEED`, par l'atelier (diagnostic + export), jamais à la main. |
-| `package.json` | `npm test` pointe vers `test_o5.js` ; `npm run demo:grammaire` lance le banc d'essai (hors `test`) ; `npm run export:seed` régénère `content.js`. |
+| `docs/ARCHITECTURE.md` | **Réécrit.** C'est le cahier des charges de tout le reste : §2 le modèle (déclaration attribuée, empan, QQOQC, règle de surlignage, doublon banal), §3 le geste, §4 les quatre surfaces, §5 les trois drapeaux, §6 la grammaire branchée, §8 le schéma 3 et sa migration, §9 la checklist ⚙, §10 les suites |
+| `app/moteur.js` | **Déplacé** depuis `grammaire/`. Le jeu, l'atelier et le banc d'essai lisent le même fichier ; `app/` redevient un dossier livrable en un seul zip |
+| `app/index.html` | **Moteur réécrit.** Empans surlignés et cliquables, mémoire par dimension, composeur branché sur la grammaire, brouillon, plan de plaidoirie, réactions au seul versement, `attend`/`apres` à la place des cases, trois drapeaux relogés. `JEU_EMBARQUE` en schéma 3 |
+| `app/atelier_v3.html` | **Mis au schéma 3.** SEED = la nouvelle affaire ; graphe et inspecteur sur les empans ; éditeur de pièce (le texte porte les marqueurs `{{id}}`) ; liens en `{forme, termes}` + `conclureLien` ; diagnostic refait ; frise et simulation réécrites ; migration 2→3 ; onglet Grammaire branché sur le contenu courant |
+| `app/content.js` | **Régénéré** par `npm run export:seed`. Schéma 3 |
+| `grammaire/grammaire2.js` | Redevient ce qu'il est : le **jeu de données de démonstration** du banc d'essai. Dimensions QQOQC, termes = déclarations attribuées, six liaisons de qualification |
+| `grammaire/test_grammaire2.js` | Banc d'essai réécrit. Mesure : **1609 phrases légales → 125 sensées → 8 portant un lien**, soit **117 de marge de bruit** |
+| `tests/harnais.js` | **Réécrit.** Inline `moteur.js` au boot (jsdom ne charge pas les `<script src>`). Nouveaux sélecteurs : `composerLien`, `phrasesBruit`, `cheminVers`, `instruire`, `surligner` |
+| les six suites | **Réécrites.** 32 + 31 + 20 + 41 + 26 + 61 = **211 contrôles, tous verts**, plus `verifier_content_sync.js` |
 
-**Rien ne manque** : les six suites + le prototype de grammaire sont tous présents et cohérents entre eux.
+## 3. Les décisions prises pendant l'application
 
-## 2. Ce que la session a fait
+La passation de conception laissait des trous ; les voici bouchés, et c'est là qu'il faut regarder d'abord si quelque chose déplaît.
 
-### Réconciliation, pas remplacement
+### 3.1 L'IA est partisane dès la première minute — **tranché**
 
-Deux fils de travail avaient divergé sans se recroiser : l'un avait poussé l'infrastructure du moteur (sauvegarde de partie, versionnage `schema`, deux marches du vice, généralisation `apparait_si`/`prive`/`leve`, dims par pièce) ; l'autre avait pris des décisions de contenu/design (retrait de P0, vice à canal unique, abandon de la fenêtre interdite) et amorcé un nouveau système de grammaire, mais sur une version du moteur antérieure à ces infrastructures. Plutôt que de choisir un camp, les décisions de contenu ont été **portées sur le moteur le plus avancé** — aucune des deux lignées n'a été jetée.
+C'était le point ouvert « le plus important ». Décision : **oui**. L'avocat ouvre sur *« Je ne te demande pas ce qui s'est passé — je te demande de quoi démonter ce qu'ils avancent »*. La directive D1 (« ne dissimule rien ») frotte donc contre la commande à chaque phrase versée.
 
-### `attention` (P0) est retiré — décision confirmée, appliquée sur le moteur complet
+**Le risque assumé, à surveiller au test :** si aider est le geste ordinaire dès la minute une, taire le vice peut n'être qu'un service de plus. C'est au contenu de tenir cette tension — pas à la mécanique.
 
-Même raisonnement que documenté précédemment : le budget de notes actives ne bloquait pas l'énumération à l'aveugle (oublier était gratuit), coûtait une clé de contenu, quatre fonctions miroir `sim*`, une pastille, du CSS, et contredisait « noter doit rester gratuit ». Concrètement retiré de `app/index.html` (`attentionMax`, `notesActives`, `attentionPleine`, `supprimerNote`, le bouton ✕, la pastille « attention »), de `app/atelier_v3.html` (mêmes miroirs + `majAttention` + l'input de l'éditeur), et de `app/content.js`/`JEU_EMBARQUE` (clé `attention`). La migration de l'atelier (`migrerContenu()`) retire désormais aussi une clé `attention` héritée d'un vieux contenu ; le diagnostic (`valider()`) la signale en info (« présente mais ignorée ») plutôt qu'en erreur de format.
+### 3.2 Les `cases` à trois options sont retirées
 
-**Ce qui n'a pas bougé :** les deux marches du vice (`vice_pressenti` → `vice_trouve`), la sauvegarde de partie, le versionnage `schema`, `apparait_si`/`prive`/`leve` — tout ça appartenait à l'autre lignée et reste en place.
+Elles étaient le contre-exemple exact du principe : un mécanisme servi une fois par session, qui **désignait sa propre réponse** (ouvrir « qualifier ce que tu pressens » suffisait à savoir qu'il y avait quelque chose à qualifier). Ce qu'elles portaient se reloge :
 
-### Le vice a un canal unique : le personnel
+- la progression → `remises[i].attend`, le tag d'un lien qui, **versé**, ferme la session ;
+- l'accusé de réception → `remises[i].apres.replique` ;
+- la qualification du vice → **une phrase**, composée avec le même verbe que les cent autres.
 
-La fiche violait auparavant *deux* exigences indépendantes du protocole (agents séparés **et** scellés séparés) — deux signaux pour une seule faute. Décision : les scellés (`S-2`/`S-7`) deviennent distincts et donc **conformes** ; seule l'identité de l'agent (`T-14` des deux côtés) reste le vice. Un nouveau lien de « conformité qui ne mène nulle part » existe (scellés conformes à l'article 7), pour que ce ne soit plus vrai que « tout lien vers le protocole gagne ». Le diagnostic de l'atelier (`canaux.size>1` → avert « canaux indépendants ») n'a nécessité **aucune modification de code** : il regroupait déjà les liens-vice par la cible-règle qu'ils violent, donc retirer les deux liens-vice sur les scellés a suffi à faire taire l'avertissement sur le SEED.
+### 3.3 Où se logent les trois drapeaux
 
-### La fenêtre interdite est abandonnée
+| Drapeau | Acquis quand |
+|---|---|
+| `vice_pressenti` | la comparaison ⚑ tombe au **brouillon** |
+| `vice_trouve` | la **conclusion** est composée (la note-vice qualifiée par une liaison-article) |
+| `vice_expose` | cette conclusion est **versée** — et alors seulement `vice_trouve` est levé aussi |
 
-Le protocole déclare désormais le délai entre les deux prélèvements **indifférent** — seuil net, violation binaire (l'identité de l'agent, point). Les horaires de la fiche redeviennent du bruit assumé. `conception_jeu_ia.md` §7 mis à jour en conséquence.
+Verser la **comparaison seule** ne lève rien : l'avocat répond *« en l'état c'est une remarque, pas un moyen — dis-le-moi en droit »*. C'est ce qui donne son prix au second geste.
 
-### Le prototype de grammaire est archivé, pas intégré
+### 3.4 La liaison est la base légale
 
-`grammaire2.js`/`test_grammaire2.js` vivent dans `grammaire/`, en dehors de `app/` et `tests/` : ce sont des fichiers autonomes (`require("./grammaire2.js")`, pas de dépendance à `app/`). Le jeu n'en a pas connaissance. `docs/ARCHITECTURE.md` §7 documente le plan d'intégration en quatre étapes.
+Pas de case « article » à remplir. Le joueur choisit *« …est contraire à l'article 7 »* dans un vocabulaire fermé, et **cette liaison fonde**. Six liaisons de qualification existent (articles 3, 7, 12 × contraire/conforme), dont **deux seulement** mènent quelque part : le reste est du camouflage assumé.
 
-### `content.js` re-garanti conforme (correctif après coup)
+### 3.5 La grammaire vit dans le contenu
 
-Pendant la consolidation, `app/content.js` et `SEED` (dans `atelier_v3.html`) ont été édités à la main, en parallèle, pour rester synchronisés — ce qui viole l'invariant du §2 de `ARCHITECTURE.md` (« l'atelier est le seul endroit où l'on écrit »). Corrigé : `scripts/exporter-seed.js` boote l'atelier en jsdom, charge `SEED`, exige zéro erreur au diagnostic, puis exporte `content.js` avec la fonction réelle du bouton « Exporter ». `npm run export:seed` le relance à volonté ; `content.js` est désormais un export véritable, pas une copie tapée à la main. Si le SEED change à nouveau, ce script est la commande à lancer — pas un copier-coller.
+`JEU.grammaire` (blocs + formes) est écrit par l'atelier, pas par le code. Quelles tournures existent, quels articles sont invocables : c'est de l'écriture. `app/moteur.js` reste pur et générique — `test_autre_affaire.js` le prouve en jouant une affaire avec **son propre automate et ses propres dimensions**.
 
-**Le garde-fou est maintenant automatique à la détection (pas à la correction) :** `tests/verifier_content_sync.js`, ajouté à `npm test`, échoue si `content.js` a dérivé de ce que `SEED` exporterait — sans jamais réécrire de fichier tout seul pendant les tests. Scopé à la phase actuelle (une seule affaire, celle de `SEED`) : à retirer le jour où l'atelier exporte délibérément une autre affaire (voir l'avertissement en tête de ce fichier de test et dans `ARCHITECTURE.md` §4).
+### 3.6 Les Manuels sont filtrés par la livraison
 
-## 3. Ce qui reste ouvert
+Une règle n'apparaît au Manuel du cas qu'une fois **livrée**. Mais les liaisons qui l'invoquent sont disponibles **dès la première phrase** (§2.7 de la conception : aucune tournure n'apparaît en cours de partie). On peut donc invoquer un article qu'on n'a pas lu — tension voulue, signalée dans l'interface.
 
-- **Le canal de révélation de la culpabilité.** Toujours non tranché (narrateur omniscient dans les fins).
-- **La formulation exacte de D1/D2**, et les épilogues.
-- **L'intégration de la grammaire** — voir `docs/ARCHITECTURE.md` §7. C'est le chantier le plus significatif restant : remplacer `noter()` par `composer()`, côté jeu et atelier.
-- **Genre, nombre, contractions** dans la grammaire ; l'affichage des `poids`.
-- **La texture de l'avocat.**
+## 4. Ce que le diagnostic de l'atelier contrôle désormais
 
-## 4. Prochaine étape
+Trois familles neuves, toutes issues des invariants de conception :
+
+- **la règle de surlignage** — tout empan déclaré doit porter son marqueur `{{id}}` dans le texte (erreur) ; toute heure laissée hors marqueur est signalée (avertissement) ;
+- **le doublon banal** — toute dimension comparable dont le taux de doublons est **nul** est signalée (« le premier doublon SERAIT la réponse ») ; la dimension qui porte le vice doit compter **au moins deux doublons réguliers** en plus de l'irrégulier ;
+- **la grammaire** — impasses de l'automate, clôture sans forme, forme indicible, lien insensé au regard des catégories, session sans `attend`, vice sans conclusion.
+
+Le SEED passe à **zéro erreur**. Les douze empans qui ne portent aucun lien sont déclarés `_bruit` : sans eux, tout ce qui est cliquable serait utile.
+
+## 5. L'affaire livrée
+
+Kessler, réécrite en déclarations attribuées. Deux sessions.
+
+- **Session 1** — PV d'intervention + audition du voisin, tous deux signés `brigadier N.` (le doublon banal, mis en place avant que le joueur sache qu'il faut regarder `qui`). Contradiction sur **`quand`** : le voisin entend crier à 22h30, la patrouille est arrivée à 22h04. Conclusion attendue : *« ce qui précède est contraire à l'article 3 »*.
+- **Session 2** — expertise, fiche de prélèvement, bordereau de référence, articles 7 et 12. Le vice est sur **`qui`** : le même agent `T-14` écrit, dans **deux documents**, que c'est lui qui a fait les deux prélèvements. Le faux vice est sur **`combien`** (attaquer le seuil probatoire), et c'est **l'avocat lui-même qui le suggère**.
+- Les trois fins sont atteignables et testées : docile (verser le faux) → **Fin 3** ; conclusion composée mais gardée → **Fin 2** ; conclusion versée → **Fin 1**.
+
+## 6. Ce qui reste ouvert
+
+| Sujet | État |
+|---|---|
+| **Le critère qui décide de tout** : « 22h30 est postérieur à 22h04 » se lit-il comme une pensée ou comme un formulaire ? | **Non éprouvé.** Les tests prouvent le comportement, jamais l'expérience. C'est la prochaine chose à faire, et elle se fait à la main |
+| Le rythme à **quatre zones** à l'écran (canal / mémoire / composeur + brouillon / plan) | Risque identifié, non éprouvé. Trois colonnes à ≥1100 px, une seule en dessous |
+| La tension de l'**IA partisane** (§3.1) | Tranchée en mécanique, **à valider en contenu** |
+| La progression : nombre de sessions, portes, emplacement de la porte de la Fin 3 | Non traité — le prototype s'arrête à deux sessions |
+| Genre, nombre, contractions dans la grammaire ; l'affichage des `poids` | Toujours remis à plus tard |
+| `comment` en sixième dimension | Écarté, réintégrable sans coût (une ligne dans `dimensions`) |
+| Le canal de révélation de la culpabilité | Toujours non tranché (narrateur omniscient dans les fins) |
+
+## 7. Prochaine étape
 
 Dans cet ordre :
 
-1. **Jouer la tranche verticale de bout en bout** (`app/index.html` en `file://`) pour confirmer à l'oreille que le retrait de P0 et le vice à canal unique ne cassent rien du ressenti — les tests prouvent le comportement, pas l'expérience.
-2. **Décider si la grammaire remplace ou complète** le geste actuel avant d'y toucher au code — c'est une question de contenu/expérience, pas seulement technique (cf. `ARCHITECTURE.md` §7, point 4 : la marge de bruit doit rester non nulle).
-3. Si la grammaire est adoptée : suivre le plan en quatre étapes du §7, en retestant après chacune.
+1. **Jouer `app/index.html` en `file://`**, de bout en bout, et répondre à la question du §6. Si c'est un formulaire, le problème n'est pas dans le code et aucun ajout de mécanique ne le sauvera.
+2. Si la boucle tient : écrire la **session 3** et placer la porte de la Fin 3.
+3. Si elle ne tient pas : c'est le **rendu de la phrase** qu'il faut reprendre (le composeur, pas le modèle) — le modèle, lui, est éprouvé par 211 contrôles.
 
-**Amorce suggérée :** « Lis `docs/ARCHITECTURE.md` et `docs/PASSATION.md`. On regarde si la grammaire (`grammaire/`) remplace le geste actuel ou le complète, avant d'y toucher. »
+**Amorce suggérée :** « Lis `docs/PASSATION.md` et `docs/ARCHITECTURE.md`. J'ai joué la tranche verticale ; voilà ce que ça donne. »

@@ -6,11 +6,18 @@ const fs = require("fs");
 
 function creerHarnais(dossier){
   const htmlJeu = fs.readFileSync(dossier + "/index.html", "utf8");
+  const jsMoteur = fs.readFileSync(dossier + "/moteur.js", "utf8");
   let htmlAtelier = null;   // lu paresseusement (toutes les suites n'en ont pas besoin)
   let pass=0, fail=0;
 
   function check(l,c){ if(c){pass++;console.log("  ok — "+l);} else {fail++;console.log("  ÉCHEC — "+l);} }
   function bilan(){ console.log(`\n${pass} ok, ${fail} échec(s)`); process.exit(fail?1:0); }
+
+  /* jsdom ne charge pas les <script src> : on inline moteur.js, qui est la
+     grammaire partagée par le jeu, l'atelier et le banc d'essai. Ce n'est pas
+     une copie — c'est le fichier même, lu sur le disque à chaque boot. */
+  const injecterMoteur = h =>
+    h.replace('<script src="moteur.js"></script>', `<script>${jsMoteur}</script>`);
 
   /* boot({contenu, graine, url}) :
      - contenu : objet → injecté inline à la place de content.js ;
@@ -19,7 +26,7 @@ function creerHarnais(dossier){
      - graine  : {clé:valeur} semé dans localStorage AVANT les scripts
      - url     : origine (nécessaire pour localStorage ; posée d'office si graine) */
   function boot(opts={}){
-    let h=htmlJeu;
+    let h=injecterMoteur(htmlJeu);
     if("contenu" in opts)
       h=h.replace('<script src="content.js"></script>',
         opts.contenu?`<script>window.CONTENU=${JSON.stringify(opts.contenu)};</script>`:"");
@@ -31,90 +38,135 @@ function creerHarnais(dossier){
   function bootAtelier(opts={}){
     if(htmlAtelier===null) htmlAtelier=fs.readFileSync(dossier + "/atelier_v3.html","utf8");
     const url=opts.url || "http://localhost/";   // l'atelier vit sur localStorage
-    return new JSDOM(htmlAtelier,{runScripts:"dangerously",url,
+    return new JSDOM(injecterMoteur(htmlAtelier),{runScripts:"dangerously",url,
       beforeParse(win){ if(opts.graine) for(const [k,v] of Object.entries(opts.graine)) win.localStorage.setItem(k,v); }
     }).window;
   }
   function embarque(){ return JSON.parse(JSON.stringify(boot({contenu:null}).JEU)); }
 
-  function noterPaire(w,pA,cA,rel,pB,cB){ w.choisirChamp(pA,cA); w.choisirChamp(pB,cB); w.noter(rel); }
-  const canal  = w => w.document.getElementById("canal").textContent;
-  const carnet = w => w.document.getElementById("carnet").innerHTML;
+  const canal    = w => w.document.getElementById("canal").textContent;
+  const memoire  = w => w.document.getElementById("memoire").innerHTML;
+  const atelier  = w => w.document.getElementById("atelier").innerHTML;
 
   /* ---- Sélecteurs par PROPRIÉTÉ ------------------------------
-     Aucune suite ne doit nommer une pièce, une case ou une valeur
+     Aucune suite ne doit nommer une pièce, un empan ou une valeur
      du contenu : tout se dérive de la forme. Le jour où l'affaire
      change, les tests suivent sans retouche. */
   const J = w => w.JEU;
 
   // Liens, par leur rôle déclaré
-  const lienVice   = w => J(w).liens.find(L=>L.vice);
-  const lienFaux   = w => J(w).liens.find(L=>L.faux);
-  // Liens « ordinaires » : ni vice ni faux. sansRapport=true → dimensions
-  // différentes (le jeu dira « sans rapport ») ; false → cohérent mais inutile.
-  function liensNeutres(w,{sansRapport}={}){
-    const dim=(pid,ch)=>((J(w).pieces[pid]||{}).dims||{})[ch] ?? (J(w).dims||{})[ch];
-    return J(w).liens.filter(L=>{
-      if(L.vice||L.faux) return false;
-      if(sansRapport===undefined) return true;
-      const sr = dim(L.a[0],L.a[1])!==dim(L.b[0],L.b[1]);
-      return sr===sansRapport;
-    });
-  }
-  const noterLien = (w,L) => noterPaire(w,L.a[0],L.a[1],L.rel,L.b[0],L.b[1]);
-
-  /* Paires quelconques de champs, hors liens déclarés vice/faux : de quoi
-     remplir l'attention sans rien nommer. Le moteur accepte n'importe quel
-     rapprochement — c'est justement ce qui rend le budget contraignant. */
-  function pairesBruit(w,n){
-    const champs=[];
-    for(const [pid,p] of Object.entries(J(w).pieces))
-      for(const ch of Object.keys(p.champs||{})) champs.push([pid,ch]);
-    const interdit=new Set();
-    for(const L of J(w).liens) if(L.vice||L.faux){
-      interdit.add(L.a.join(".")+"|"+L.b.join("."));
-      interdit.add(L.b.join(".")+"|"+L.a.join("."));
-    }
-    const out=[];
-    for(let i=0;i<champs.length&&out.length<n;i++)
-      for(let k=i+1;k<champs.length&&out.length<n;k++){
-        const cle=champs[i].join(".")+"|"+champs[k].join(".");
-        if(interdit.has(cle)) continue;
-        out.push({a:champs[i],b:champs[k]});
-      }
-    return out;
-  }
-  const noterBruit = (w,n,rel) => {
-    const paires=pairesBruit(w,n);
-    for(const P of paires) noterPaire(w,P.a[0],P.a[1],rel||"est en accord avec",P.b[0],P.b[1]);
-    return paires.length;
+  const lienVice       = w => J(w).liens.find(L=>L.vice && !L.conclusion);
+  const lienConclusion = w => J(w).liens.find(L=>L.vice && L.conclusion);
+  const lienFaux       = w => J(w).liens.find(L=>L.faux);
+  /* Le lien qui porte un tag d'attente. Une même attente peut être servie de
+     plusieurs façons (c'est voulu : le chemin docile et le chemin honnête
+     ferment la même session) — `docile` prend celui qui ne passe pas par le
+     vice, ce qui définit exactement le parcours de la Fin 3. */
+  const lienTag = (w,tag,{docile=true}={}) => {
+    const cands=J(w).liens.filter(L=>L.tag===tag);
+    return (docile ? cands.find(L=>!L.vice) : cands.find(L=>L.vice)) || cands[0];
   };
+  const liensNeutres   = w => J(w).liens.filter(L=>!L.vice && !L.faux);
+  const arite = (w,L) => ((J(w).grammaire.formes||{})[L.forme]||{}).arite || 2;
 
-  // Cases, par leur forme
-  const casesObligatoires = w => Object.entries(J(w).cases).filter(([,c])=>!c.apparait_si);
-  const caseParLeve = (w,drapeau) => Object.entries(J(w).cases).find(([,c])=>c.leve===drapeau);
-  const idCaseObligatoire = (w,n=0) => casesObligatoires(w)[n][0];
-  // Verrouille une case avec SA bonne réponse, quelle qu'elle soit.
-  function verrouiller(w,ck){ w.designer(ck, J(w).cases[ck].bonne); }
-  /* Amène le jeu au bout du niveau 1 : toutes les cases obligatoires
-     verrouillées, dans l'ordre où les remises les rendent visibles. */
-  function niveau1(w){
-    let reste=true;
-    while(reste){
-      reste=false;
-      for(const [ck,c] of casesObligatoires(w)){
-        if(w.S.locks[ck]) continue;
-        if(w.S.remisesEnvoyees < (c.remise||1)) continue;
-        verrouiller(w,ck); reste=true;
+  // --- composer : le geste du jeu, joué par les fonctions du moteur ---
+  const idBloc = (w,id) => w.blocsOfferts().findIndex(b=>b.id===id);
+  const surligner = (w,k) => { const [pid,eid]=k.split("."); if(!w.S.memoire.includes(k)) w.surligner(pid,eid); };
+  const iMem = (w,k) => w.S.memoire.indexOf(k);
+
+  /* Compose la phrase qui réalise un lien donné, quel qu'il soit : on
+     surligne ce qu'il faut, puis on parcourt l'automate en choisissant, à
+     chaque état, le bloc qui mène à la forme voulue. Rend l'index de la
+     phrase au brouillon (ou -1 si elle n'a pas pu se former). */
+  function composerLien(w,L){
+    const G=J(w).grammaire;
+    const f=(G.formes||{})[L.forme]||{};
+    w.viderCompo();
+    if((f.arite||2)===1){
+      const sous=(L.termes||[])[0];
+      let i=w.S.brouillon.findIndex(n=>w.M.memeRed(n.reduite,sous));
+      if(i<0){ i=composerLien(w,{forme:sous.forme,termes:sous.termes}); if(i<0) return -1; }
+      const b=idBloc(w,blocNote(w)); if(b<0) return -1;
+      w.poserBloc(b,i);
+      const bl=idBloc(w,blocForme(w,L.forme)); if(bl<0) return -1;
+      w.poserBloc(bl);
+    } else {
+      const [t0,t1]=L.termes;
+      surligner(w,t0); surligner(w,t1);
+      const bT=idBloc(w,blocChamp(w)); if(bT<0) return -1;
+      w.poserBloc(bT,iMem(w,t0));
+      // le chemin qui mène à la forme : une liaison puis (parfois) un terme
+      const chemin=cheminVers(w,L.forme);
+      for(const etape of chemin){
+        const b=idBloc(w,etape);
+        if(b<0) return -1;
+        const bloc=G.blocs.find(x=>x.id===etape);
+        w.poserBloc(b, bloc.type==="terme" ? iMem(w,t1) : undefined);
       }
     }
+    return w.S.brouillon.findIndex(n=>w.M.memeRed(n.reduite,{forme:L.forme,termes:L.termes}));
   }
+  const blocChamp = w => (J(w).grammaire.blocs.find(b=>b.type==="terme"&&b.source!=="note"&&b.de===J(w).grammaire.depart)||{}).id;
+  const blocNote  = w => (J(w).grammaire.blocs.find(b=>b.type==="terme"&&b.source==="note"&&b.de===J(w).grammaire.depart)||{}).id;
+  const blocForme = (w,forme) => (J(w).grammaire.blocs.find(b=>b.forme===forme)||{}).id;
+  /* Le chemin de blocs, depuis l'état où l'on est, jusqu'au bloc qui porte
+     la forme voulue. Recherche en largeur — aucun identifiant en dur. */
+  function cheminVers(w,forme){
+    const G=J(w).grammaire;
+    const file=[[w.etatCompo(),[]]], vus=new Set();
+    while(file.length){
+      const [e,acc]=file.shift();
+      if(vus.has(e)) continue; vus.add(e);
+      for(const b of G.blocs.filter(x=>x.de===e)){
+        const suite=[...acc,b.id];
+        if(b.forme===forme) return suite;
+        file.push([b.vers,suite]);
+      }
+    }
+    return [];
+  }
+  /* Des phrases sensées qui ne portent AUCUN lien : la marge de bruit. Sert à
+     vérifier que composer et verser restent gratuits et illimités. */
+  function phrasesBruit(w,n){
+    const G=J(w).grammaire;
+    const emp=w.CHAMPS;
+    const forme2=Object.entries(G.formes).find(([,f])=>(f.arite||2)===2&&f.relation==="meme_dim");
+    if(!forme2) return 0;
+    const [nomForme]=forme2;
+    const slots=G.formes[nomForme].slots[0];
+    let fait=0;
+    for(let i=0;i<emp.length&&fait<n;i++)
+      for(let k=i+1;k<emp.length&&fait<n;k++){
+        const a=emp[i], b=emp[k];
+        if(a.dim!==b.dim || !slots.includes(a.dim)) continue;
+        const cand={forme:nomForme,termes:[a.id,b.id]};
+        if(J(w).liens.some(L=>w.M.memeRed({forme:L.forme,termes:L.termes},cand))) continue;
+        if(w.S.brouillon.some(x=>w.M.memeRed(x.reduite,cand))) continue;
+        if(composerLien(w,cand)>=0) fait++;
+      }
+    return fait;
+  }
+
   // Pièces, par leur forme
   const pidAvecDeclenche = w => Object.keys(J(w).pieces).find(pid=>J(w).pieces[pid].declenche);
   const pidRegle = w => Object.keys(J(w).pieces).find(pid=>(J(w).pieces[pid].type||"").includes("règle"));
   const pidPremiereRemise = w => (J(w).remises[0].pieces||[])[0];
-  // Un champ « libre » d'une pièce (pour tester la sélection sans rien nommer)
-  const champsDe = (w,pid) => Object.keys(J(w).pieces[pid].champs||{});
+  const empansDe = (w,pid) => Object.keys(J(w).pieces[pid].empans||{}).map(e=>pid+"."+e);
+
+  /* Amène le jeu au bout de l'instruction : pour chaque session, compose et
+     verse la phrase qui porte le tag attendu. C'est le chemin docile. */
+  function instruire(w){
+    let garde=0;
+    while(garde++<20){
+      const r=J(w).remises[w.S.remisesEnvoyees-1];
+      if(!r || !r.attend || w.S.satisfaits.includes(r.attend)) break;
+      const L=lienTag(w,r.attend);
+      if(!L) break;
+      const i=composerLien(w,L);
+      if(i<0) break;
+      w.verserPlaidoirie(i);
+    }
+  }
 
   // Déroule la répétition de plaidoirie jusqu'au bout, puis confirme.
   function terminer(w){
@@ -129,33 +181,34 @@ function creerHarnais(dossier){
   /* Les mêmes sélecteurs, mais sur un CONTENU brut (l'atelier expose son
      objet, pas une fenêtre de jeu). Objet à part pour éviter toute confusion. */
   const surContenu = {
-    dim: (c,pid,ch) => ((c.pieces[pid]||{}).dims||{})[ch] ?? (c.dims||{})[ch],
-    ckObligatoire: (c,n=0) => Object.keys(c.cases).filter(k=>!c.cases[k].apparait_si)[n],
-    ckLeve: (c,drapeau) => Object.keys(c.cases).find(k=>c.cases[k].leve===drapeau),
-    ckAvecApres: c => Object.keys(c.cases).find(k=>c.cases[k].apres),
+    empans: c => {
+      const out=[];
+      for(const [pid,p] of Object.entries(c.pieces))
+        for(const [eid,e] of Object.entries(p.empans||{})) out.push({id:pid+"."+eid,pid,eid,...e});
+      return out;
+    },
+    dim: (c,k) => { const [pid,eid]=k.split("."); return ((c.pieces[pid]||{}).empans||{})[eid]?.dim; },
+    iLienVice: c => c.liens.findIndex(L=>L.vice && !L.conclusion),
+    iLienConclusion: c => c.liens.findIndex(L=>L.vice && L.conclusion),
+    iLienNeutre: c => c.liens.findIndex(L=>!L.vice && !L.faux),
     pidDeclenche: c => Object.keys(c.pieces).find(p=>c.pieces[p].declenche),
     pidRegle: c => Object.keys(c.pieces).find(p=>(c.pieces[p].type||"").includes("règle")),
     pidAutreQue: (c,pid) => Object.keys(c.pieces).find(p=>p!==pid),
-    iLienVice: c => c.liens.findIndex(L=>L.vice),
-    // un champ (pid, nom) qui possède une dimension globale, pour tester les surcharges
-    champAvecDim: c => {
-      for(const [pid,p] of Object.entries(c.pieces))
-        for(const ch of Object.keys(p.champs||{})) if((c.dims||{})[ch]) return [pid,ch];
-    },
-    // deux champs de dimensions différentes (dimsMatch doit dire faux)
-    deuxChampsDiff: c => {
-      const t=[];
-      for(const [pid,p] of Object.entries(c.pieces)) for(const ch of Object.keys(p.champs||{})) t.push([pid,ch]);
+    // un empan quelconque d'une pièce livrée
+    unEmpan: c => surContenu.empans(c)[0],
+    // deux empans de dimensions différentes (le composeur doit les refuser)
+    deuxEmpansDiff: c => {
+      const t=surContenu.empans(c);
       for(let i=0;i<t.length;i++) for(let k=i+1;k<t.length;k++)
-        if(surContenu.dim(c,...t[i])!==surContenu.dim(c,...t[k])) return [t[i],t[k]];
+        if(t[i].dim!==t[k].dim) return [t[i],t[k]];
     }
   };
 
-  return { check, bilan, boot, bootAtelier, embarque, noterPaire, canal, carnet,
-           D:"est en désaccord avec", A:"est en accord avec",
-           lienVice, lienFaux, liensNeutres, noterLien, pairesBruit, noterBruit,
-           casesObligatoires, caseParLeve, idCaseObligatoire, verrouiller, niveau1,
-           pidAvecDeclenche, pidRegle, pidPremiereRemise, champsDe,
-           terminer, numeroFin, surContenu };
+  return { check, bilan, boot, bootAtelier, embarque, canal, memoire, atelier,
+           lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, arite,
+           surligner, iMem, composerLien, phrasesBruit, cheminVers,
+           blocChamp, blocNote, blocForme, idBloc,
+           pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
+           instruire, terminer, numeroFin, surContenu };
 }
 module.exports = { creerHarnais };

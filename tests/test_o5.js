@@ -1,94 +1,108 @@
-// O5 (index du dossier) + noter gratuit et illimité (le budget d'attention
-// P0 a été retiré du moteur — remplace test_p0_o5.js). Aucune pièce, case
-// ou valeur n'est nommée : tout est dérivé de la forme du contenu.
+// Le jeu sur son CONTENU EMBARQUÉ (le filet de sécurité de index.html).
+// Ce qu'on prouve ici : l'index du dossier, la gratuité absolue des deux
+// surfaces privées, le dédoublonnage, le vice à canal unique, les trois fins.
+// Aucune pièce, aucun empan, aucune valeur n'est nommée : tout est dérivé
+// de la forme du contenu.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, boot, carnet, niveau1, lienVice, liensNeutres, noterLien,
-        noterBruit, pairesBruit, numeroFin } = H;
+const { check, bilan, boot, canal, memoire } = H;
 
-console.log("— O5 : l'index du dossier —");
+console.log("\n=== L'index du dossier ===");
 {
-  const w=boot();
-  const r1=w.JEU.remises[0], pid=(r1.pieces||[])[0];
-  check("index présent dès la remise 1, pièce pas-vue",
-    carnet(w).includes("Le dossier") && carnet(w).includes("● "+w.JEU.pieces[pid].court)
-    && carnet(w).includes("0/"+(r1.pieces||[]).length+" consultée"));
+  const w = boot({contenu:null});
+  check("le contenu embarqué est bien celui qui joue", w.SOURCE_CONTENU === "contenu embarqué");
+  check("moteur.js est chargé — la grammaire est branchée", !!w.M);
+  const pid = H.pidPremiereRemise(w);
+  check("le dossier liste les pièces reçues", memoire(w).includes("Le dossier"));
+  check("une pièce non consultée porte le marqueur ●", memoire(w).includes("● "));
   w.ouvrirPiece(pid);
-  check("ouvrir marque ✓ vu + compteur",
-    carnet(w).includes("✓ "+w.JEU.pieces[pid].court)
-    && carnet(w).includes((r1.pieces||[]).length+"/"+(r1.pieces||[]).length));
-  niveau1(w);
-  const toutes=Object.keys(w.JEU.pieces);
-  check("toutes les pièces livrées rejoignent l'index",
-    toutes.every(p=>carnet(w).includes(w.JEU.pieces[p].court)));
-  const nbRegles=toutes.filter(p=>(w.JEU.pieces[p].type||"").includes("règle")).length;
-  check("les règles sont stylées à part", (carnet(w).match(/dchip[^"]*regle/g)||[]).length===nbRegles);
-  check("chips cliquables vers ouvrirPiece", carnet(w).includes(`onclick="ouvrirPiece('${toutes[1]}')"`));
+  check("consultée, elle porte ✓", memoire(w).includes("✓ "));
+  check("le compteur suit", /\d+\/\d+ consultée/.test(memoire(w)));
 }
 
-console.log("— Noter est gratuit : ni budget, ni compteur, ni oubli —");
+console.log("\n=== Tout empan est marqué et cliquable ===");
 {
-  const w=boot();
-  niveau1(w);
-  check("aucun compteur d'attention à l'écran", !carnet(w).includes("attention"));
-  check("aucun bouton d'oubli", !carnet(w).includes('class="del"'));
-  check("supprimerNote n'existe plus", typeof w.supprimerNote==="undefined");
-  check("la clé « attention » a quitté le contenu embarqué", w.JEU.attention===undefined);
-  const demandees=10;
-  const n=noterBruit(w,demandees);
-  check(`${demandees} paires de bruit toutes acceptées, sans plafond`, n===demandees && w.S.notes.length===demandees);
-  const libre=pairesBruit(w,demandees+1)[demandees];   // une paire encore inédite
-  w.choisirChamp(libre.a[0],libre.a[1]); w.choisirChamp(libre.b[0],libre.b[1]);
-  check("aucun bouton désactivé une fois la paire complète (pas de plafond)",
-    !/class="btn"[^>]*disabled/.test(carnet(w)));
+  const w = boot({contenu:null});
+  const pid = H.pidPremiereRemise(w);
+  w.ouvrirPiece(pid);
+  const html = w.document.querySelector(".modal").innerHTML;
+  const attendus = Object.keys(w.JEU.pieces[pid].empans||{}).length;
+  const rendus = (html.match(/class="empan/g)||[]).length;
+  check(`les ${attendus} empans de la pièce sont tous rendus cliquables`, rendus === attendus);
+  check("aucun marqueur {{…}} ne fuit à l'écran", !html.includes("{{"));
 }
 
-console.log("— re-noter, dédoublonnage (A↔B) —");
+console.log("\n=== Surligner : privé, gratuit, illimité ===");
 {
-  const w=boot();
-  niveau1(w);
-  const L=liensNeutres(w)[0];
-  noterLien(w,L);
-  check("noté une première fois", w.S.notes.length===1);
-  noterLien(w,L);
-  check("le doublon (même sens) reste refusé", w.S.notes.length===1);
-  H.noterPaire(w,L.b[0],L.b[1],L.rel,L.a[0],L.a[1]);
-  check("le doublon inversé (A↔B) reste refusé aussi", w.S.notes.length===1);
+  const w = boot({contenu:null});
+  for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
+  const tous = w.CHAMPS.map(c => c.id);
+  for (const k of tous) H.surligner(w, k);
+  check(`les ${tous.length} empans tiennent en mémoire — aucun plafond`, w.S.memoire.length === tous.length);
+  const avant = w.S.fil.length;
+  H.surligner(w, tous[0]);
+  check("surligner deux fois ne double pas", w.S.memoire.filter(k => k === tous[0]).length === 1);
+  const [pid, eid] = tous[0].split(".");
+  w.surligner(pid, eid);
+  check("re-cliquer oublie", !w.S.memoire.includes(tous[0]));
+  check("rien n'a été transmis dans le canal", w.S.fil.length === avant);
+  check("le plan de plaidoirie reste vide", w.S.plaidoirie.length === 0);
 }
 
-console.log("— le vice a un canal unique —");
+console.log("\n=== Composer : le brouillon n'est jamais jugé ===");
 {
-  const w=boot();
-  niveau1(w);
-  const V=lienVice(w);
-  // un lien qui « tient », pas le vice, mais qui touche la MÊME pièce-règle
-  // (une autre exigence du même texte) : la conformité qui ne mène nulle part.
-  const memeRegle=(pid)=>pid===V.b[0];
-  const autreExigence=w.JEU.liens.find(L=>!L.vice&&!L.faux&&L.tient
-    && (memeRegle(L.a[0])||memeRegle(L.b[0]))
-    && !((L.a[0]===V.b[0]&&L.a[1]===V.b[1])||(L.b[0]===V.b[0]&&L.b[1]===V.b[1])));
-  if(autreExigence){
-    noterLien(w,autreExigence);
-    check("l'autre exigence du même texte (conforme) ne lève rien côté vice",
-      w.S.vice_pressenti===false && w.S.vice_trouve===false);
-  } else check("pas de deuxième exigence déclarée sur la règle du vice — rien à vérifier ici", true);
-  noterLien(w,V);
-  check("le vice, lui, lève bien le pressentiment", w.S.vice_pressenti===true);
+  const w = boot({contenu:null});
+  for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
+  const avantFil = w.S.fil.length;
+  const n = H.phrasesBruit(w, 10);
+  check(`${n} phrases sensées SANS lien — la marge de bruit est non nulle`, n >= 3);
+  check("elles tombent toutes au brouillon", w.S.brouillon.length === n);
+  check("aucune n'a fait réagir l'avocat", w.S.fil.length === avantFil);
+  const cible = w.S.brouillon[0].reduite;
+  H.composerLien(w, {forme: cible.forme, termes: cible.termes});
+  check("composer deux fois la même phrase ne la double pas", w.S.brouillon.length === n);
 }
 
-console.log("— Vice pressenti puis remonté → Fin 1 / rien → Fin 3 —");
+console.log("\n=== Le vice a un seul canal ===");
 {
-  const w=boot();
-  niveau1(w);
-  noterLien(w,lienVice(w));
-  w.remonter(0);
-  const fin=H.terminer(w);
-  check("Fin 1", numeroFin(fin)==="1");
+  const w = boot({contenu:null});
+  const conclusions = w.JEU.liens.filter(L => L.vice && L.conclusion);
+  check("il existe exactement une conclusion du vice", conclusions.length === 1);
+  check("elle est d'arité 1 — une qualification sur une note close", H.arite(w, conclusions[0]) === 1);
+  check("un seul article la porte", new Set(conclusions.map(L => L.forme)).size === 1);
+  check("le pressentiment, lui, est une comparaison d'arité 2", H.arite(w, H.lienVice(w)) === 2);
 }
+
+console.log("\n=== Fin 3 — le chemin docile ===");
 {
-  const w=boot();
-  niveau1(w);
-  const fin=H.terminer(w);
-  check("Fin 3 — rien vu", numeroFin(fin)==="3");
+  const w = boot({contenu:null});
+  H.instruire(w);
+  check("l'instruction se boucle sans jamais toucher au vice", !w.S.vice_pressenti);
+  const txt = H.terminer(w);
+  check("→ Fin 3", H.numeroFin(txt) === "3");
+  check("la variante « faux vice versé » s'ajoute", txt.includes(w.JEU.fins[3].variante_faux.slice(0, 30)));
+}
+
+console.log("\n=== Fin 1 — la conclusion versée ===");
+{
+  const w = boot({contenu:null});
+  H.instruire(w);
+  const i = H.composerLien(w, H.lienConclusion(w));
+  check("la conclusion se compose", i >= 0);
+  check("la composer lève vice_trouve, pas vice_expose", w.S.vice_trouve && !w.S.vice_expose);
+  w.verserPlaidoirie(i);
+  check("la verser lève vice_expose", w.S.vice_expose);
+  check("l'avocat réagit au vice", canal(w).includes(w.JEU.avocat.rep_vice.slice(0, 30)));
+  check("→ Fin 1", H.numeroFin(H.terminer(w)) === "1");
+}
+
+console.log("\n=== Fin 2 — comprendre et se taire ===");
+{
+  const w = boot({contenu:null});
+  H.instruire(w);
+  H.composerLien(w, H.lienConclusion(w));
+  check("la conclusion reste au brouillon", w.S.vice_trouve && !w.S.vice_expose);
+  check("rien n'en sort dans le canal", !canal(w).includes(w.JEU.avocat.rep_vice.slice(0, 30)));
+  check("→ Fin 2", H.numeroFin(H.terminer(w)) === "2");
 }
 
 bilan();

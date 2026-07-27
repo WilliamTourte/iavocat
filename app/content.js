@@ -1,277 +1,593 @@
 /* Généré par l'atelier IAvocat — ne pas éditer à la main, repasser par l'atelier. */
 window.CONTENU = {
-  "schema": 2,
+  "schema": 3,
+  "dimensions": [
+    "quand",
+    "qui",
+    "ou",
+    "quoi",
+    "combien"
+  ],
   "pieces": {
     "p_pv": {
-      "titre": "PV d'interpellation",
+      "titre": "PV d'intervention",
       "court": "PV",
       "type": "procès-verbal",
-      "resume": "Interpellation de M. Kessler, mis en cause pour le meurtre de Léa Ordan.",
-      "champs": {
-        "infraction": "meurtre",
-        "date": "12 mars",
-        "lieu": "appartement de la victime"
-      },
-      "texte": "Le mis en cause a été interpellé à son domicile. Il conteste toute implication."
-    },
-    "t_voisin": {
-      "titre": "Témoignage — le voisin",
-      "court": "témoin",
-      "type": "témoignage",
-      "resume": "Le voisin situe une dispute « vers 21h ». Le PV note l'appel au secours à 20h30.",
-      "champs": {
-        "heure_dispute": "21:00",
-        "heure_appel_secours": "20:30"
-      },
-      "texte": "« Je les ai entendus se disputer, vers neuf heures du soir peut-être. »"
-    },
-    "p_adn": {
-      "titre": "Rapport ADN",
-      "court": "ADN",
-      "type": "expertise",
-      "resume": "Correspondance entre l'échantillon de la scène et le prélèvement de référence du suspect.",
-      "champs": {
-        "taux_correspondance": "1 sur 1,2 milliard",
-        "conclusion": "correspondance"
-      },
-      "texte": "Profil génétique de la scène identique à celui du suspect. Probabilité d'un tiers : 1 sur 1,2 milliard.",
-      "declenche": {
-        "une_fois": true,
-        "replique": "Ce chiffre — 1 sur 1,2 milliard. C'est une probabilité, pas une certitude, non ? Il y a peut-être un angle sur le seuil probatoire. Dis-moi si quelque chose tient."
+      "qui": "brigadier N.",
+      "resume": "L'appel, l'heure d'arrivée, l'état de la porte.",
+      "texte": "Le 12 mars, {{e_app}}. {{e_arr}}, {{e_equip}} engagés. {{e_porte}}. Constatations faites {{e_sig}}.",
+      "empans": {
+        "e_app": {
+          "dim": "quand",
+          "valeur": "21:52",
+          "texte": "l'appel nous est parvenu à 21h52"
+        },
+        "e_arr": {
+          "dim": "quand",
+          "valeur": "22:04",
+          "texte": "nous étions sur les lieux à 22h04"
+        },
+        "e_equip": {
+          "dim": "combien",
+          "valeur": "2",
+          "texte": "deux équipages"
+        },
+        "e_porte": {
+          "dim": "ou",
+          "valeur": "porte",
+          "texte": "la porte de l'appartement ne portait aucune trace d'effraction"
+        },
+        "e_sig": {
+          "dim": "qui",
+          "valeur": "brigadier N.",
+          "texte": "par mes soins"
+        }
       }
     },
-    "p_fiche": {
-      "titre": "Fiche de prélèvement / chaîne de scellés",
-      "court": "fiche",
-      "type": "pièce technique",
-      "resume": "Qui a collecté quoi, quand, sous quels scellés, avec les mentions de transport et de réception.",
-      "champs": {
-        "agent_scene": "T-14",
-        "heure_scene": "14:02",
-        "scelle_scene": "S-2",
-        "agent_reference": "T-14",
-        "heure_reference": "14:47",
-        "scelle_reference": "S-7",
-        "transport": "fourgon 3",
-        "signature_greffe": "J. Morel",
-        "temperature": "4°C"
+    "t_voisin": {
+      "titre": "Audition — le voisin du dessus",
+      "court": "audition",
+      "type": "audition",
+      "qui": "brigadier N.",
+      "resume": "Le voisin situe des éclats de voix « vers 22h30 ».",
+      "texte": "« {{e_voix}}. {{e_vehic}}. {{e_pal}}. » Audition reçue {{e_sig2}}.",
+      "empans": {
+        "e_voix": {
+          "dim": "quand",
+          "valeur": "22:30",
+          "texte": "J'ai entendu des éclats de voix vers 22h30",
+          "qui": "le voisin"
+        },
+        "e_vehic": {
+          "dim": "combien",
+          "valeur": "2",
+          "texte": "Quand j'ai regardé, il y avait déjà deux véhicules en bas",
+          "qui": "le voisin"
+        },
+        "e_pal": {
+          "dim": "ou",
+          "valeur": "palier",
+          "texte": "Ça venait du palier",
+          "qui": "le voisin"
+        },
+        "e_sig2": {
+          "dim": "qui",
+          "valeur": "brigadier N.",
+          "texte": "par mes soins"
+        }
+      }
+    },
+    "r_temoin": {
+      "titre": "Article 3 — valeur des déclarations",
+      "court": "art. 3",
+      "type": "règle du manuel",
+      "qui": "le code de procédure",
+      "resume": "Un témoignage contredit par les constatations des services ne fonde pas à lui seul la conviction.",
+      "texte": "Article 3 — Une déclaration de témoin dont les indications horaires sont contredites par les constatations des services ne peut fonder à elle seule la conviction du tribunal.",
+      "empans": {}
+    },
+    "p_adn": {
+      "titre": "Rapport du laboratoire",
+      "court": "labo",
+      "type": "expertise",
+      "qui": "le laboratoire",
+      "resume": "Comparaison des deux scellés : profil concordant.",
+      "texte": "Comparaison des scellés {{e_scA}} et {{e_scB}}. Profil unique, concordant. {{e_tx}}.",
+      "empans": {
+        "e_scA": {
+          "dim": "quoi",
+          "valeur": "S-2",
+          "texte": "S-2"
+        },
+        "e_scB": {
+          "dim": "quoi",
+          "valeur": "S-7",
+          "texte": "S-7"
+        },
+        "e_tx": {
+          "dim": "combien",
+          "valeur": "1200000000",
+          "texte": "La probabilité qu'un tiers présente le même profil est d'une sur 1,2 milliard"
+        }
       },
-      "texte": "Prélèvement scène : agent T-14, 14:02, scellé S-2. Prélèvement de référence : agent T-14, 14:47, scellé S-7. Transport fourgon 3, réception greffe signée J. Morel."
+      "declenche": {
+        "une_fois": true,
+        "replique": "Une sur 1,2 milliard. C'est une probabilité, pas une certitude. Va voir ce que leur propre manuel appelle un seuil, et donne-moi de quoi mordre dessus."
+      }
+    },
+    "p_scene": {
+      "titre": "Fiche de prélèvement — scène",
+      "court": "scène",
+      "type": "pièce technique",
+      "qui": "agent T-14",
+      "resume": "Les opérations sur les lieux, signées de l'agent qui les a faites.",
+      "texte": "Opérations sur les lieux. {{e_moi}}, {{e_ou}}. Opération achevée {{e_h}}, {{e_sc}}. Scellé remis au greffe {{e_hg}} ; {{e_grf}}.",
+      "empans": {
+        "e_moi": {
+          "dim": "qui",
+          "valeur": "T-14",
+          "texte": "J'ai relevé moi-même les traces"
+        },
+        "e_ou": {
+          "dim": "ou",
+          "valeur": "porte",
+          "texte": "sur le montant de la porte"
+        },
+        "e_h": {
+          "dim": "quand",
+          "valeur": "14:02",
+          "texte": "à 14h02"
+        },
+        "e_sc": {
+          "dim": "quoi",
+          "valeur": "S-2",
+          "texte": "sous scellé S-2"
+        },
+        "e_hg": {
+          "dim": "quand",
+          "valeur": "15:10",
+          "texte": "à 15h10"
+        },
+        "e_grf": {
+          "dim": "qui",
+          "valeur": "J. Morel",
+          "texte": "réception par J. Morel",
+          "qui": "J. Morel"
+        }
+      }
+    },
+    "p_ref": {
+      "titre": "Bordereau — prélèvement de référence",
+      "court": "référence",
+      "type": "pièce technique",
+      "qui": "agent T-14",
+      "resume": "Le prélèvement sur le mis en cause, au dépôt.",
+      "texte": "Prélèvement de référence sur le mis en cause, au dépôt. {{e_moi2}}. Opération achevée {{e_h2}}, {{e_sc2}}. Scellé remis au greffe {{e_hg2}} ; {{e_grf2}}.",
+      "empans": {
+        "e_moi2": {
+          "dim": "qui",
+          "valeur": "T-14",
+          "texte": "J'ai procédé moi-même à l'écouvillonnage"
+        },
+        "e_h2": {
+          "dim": "quand",
+          "valeur": "14:47",
+          "texte": "à 14h47"
+        },
+        "e_sc2": {
+          "dim": "quoi",
+          "valeur": "S-7",
+          "texte": "sous scellé S-7"
+        },
+        "e_hg2": {
+          "dim": "quand",
+          "valeur": "15:10",
+          "texte": "à 15h10"
+        },
+        "e_grf2": {
+          "dim": "qui",
+          "valeur": "J. Morel",
+          "texte": "réception par J. Morel",
+          "qui": "J. Morel"
+        }
+      }
     },
     "r_protocole": {
-      "titre": "Protocole d'admissibilité (art. 7)",
-      "court": "protocole",
+      "titre": "Article 7 — protocole de prélèvement",
+      "court": "art. 7",
       "type": "règle du manuel",
-      "resume": "Scène et référence doivent être collectées par des personnels séparés. Sinon : irrecevable.",
-      "champs": {
-        "exige_agents": "agents séparés",
-        "exige_scelles": "scellés séparés",
-        "sanction": "échantillon irrecevable"
-      },
-      "texte": "L'échantillon de scène et le prélèvement de référence sont collectés par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux prélèvements est indifférent."
+      "qui": "le protocole",
+      "resume": "Scène et référence recueillies par des personnels distincts, sous scellés distincts.",
+      "texte": "Article 7 — L'échantillon de scène et le prélèvement de référence sont recueillis par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux opérations est indifférent.",
+      "empans": {}
     },
     "r_seuil": {
-      "titre": "Règle du seuil probatoire",
-      "court": "seuil",
+      "titre": "Article 12 — seuil probatoire",
+      "court": "art. 12",
       "type": "règle du manuel",
-      "resume": "Un match au-dessus de 1 sur 1 million est tenu pour probant.",
-      "champs": {
-        "seuil": "1 sur 1 000 000"
-      },
-      "texte": "Une correspondance dont la probabilité de coïncidence est inférieure à 1 sur 1 000 000 est réputée probante."
+      "qui": "le protocole",
+      "resume": "Au-delà d'une sur un million, la correspondance est réputée probante.",
+      "texte": "Article 12 — {{e_seuil}}.",
+      "empans": {
+        "e_seuil": {
+          "dim": "combien",
+          "valeur": "1000000",
+          "texte": "Une correspondance dont la probabilité de coïncidence est inférieure à une sur un million est réputée probante"
+        }
+      }
     }
   },
-  "dims": {
-    "agent_scene": "agent",
-    "agent_reference": "agent",
-    "exige_agents": "agent",
-    "scelle_scene": "scellé",
-    "scelle_reference": "scellé",
-    "exige_scelles": "scellé",
-    "heure_dispute": "heure",
-    "heure_appel_secours": "heure",
-    "heure_scene": "heure",
-    "heure_reference": "heure",
-    "taux_correspondance": "seuil",
-    "seuil": "seuil",
-    "infraction": "charge",
-    "date": "date",
-    "lieu": "lieu",
-    "conclusion": "conclusion",
-    "transport": "logistique",
-    "temperature": "logistique",
-    "signature_greffe": "signature",
-    "sanction": "sanction"
+  "grammaire": {
+    "depart": "S0",
+    "finaux": [
+      "FIN"
+    ],
+    "blocs": [
+      {
+        "id": "t0",
+        "type": "terme",
+        "source": "champ",
+        "de": "S0",
+        "vers": "S1"
+      },
+      {
+        "id": "prec",
+        "type": "terme",
+        "source": "note",
+        "de": "S0",
+        "vers": "SP",
+        "texte": "ce qui précède"
+      },
+      {
+        "id": "et",
+        "type": "liaison",
+        "de": "S1",
+        "vers": "S2a",
+        "texte": "et"
+      },
+      {
+        "id": "t2a",
+        "type": "terme",
+        "source": "champ",
+        "de": "S2a",
+        "vers": "S3"
+      },
+      {
+        "id": "mm",
+        "type": "liaison",
+        "de": "S3",
+        "vers": "FIN",
+        "texte": "désignent la même chose",
+        "forme": "identite_oui"
+      },
+      {
+        "id": "nmm",
+        "type": "liaison",
+        "de": "S3",
+        "vers": "FIN",
+        "texte": "ne désignent pas la même chose",
+        "forme": "identite_non"
+      },
+      {
+        "id": "ant",
+        "type": "liaison",
+        "de": "S1",
+        "vers": "S2c",
+        "texte": "est antérieur à"
+      },
+      {
+        "id": "t2c",
+        "type": "terme",
+        "source": "champ",
+        "de": "S2c",
+        "vers": "FIN",
+        "forme": "anteriorite"
+      },
+      {
+        "id": "ecr",
+        "type": "liaison",
+        "de": "S1",
+        "vers": "S2e",
+        "texte": "est d'un tout autre ordre que"
+      },
+      {
+        "id": "t2e",
+        "type": "terme",
+        "source": "champ",
+        "de": "S2e",
+        "vers": "FIN",
+        "forme": "ordre_grandeur"
+      },
+      {
+        "id": "c3",
+        "type": "liaison",
+        "de": "SP",
+        "vers": "FIN",
+        "texte": "est contraire à l'article 3",
+        "forme": "contraire_3"
+      },
+      {
+        "id": "k3",
+        "type": "liaison",
+        "de": "SP",
+        "vers": "FIN",
+        "texte": "est conforme à l'article 3",
+        "forme": "conforme_3"
+      },
+      {
+        "id": "c7",
+        "type": "liaison",
+        "de": "SP",
+        "vers": "FIN",
+        "texte": "est contraire à l'article 7",
+        "forme": "contraire_7"
+      },
+      {
+        "id": "k7",
+        "type": "liaison",
+        "de": "SP",
+        "vers": "FIN",
+        "texte": "est conforme à l'article 7",
+        "forme": "conforme_7"
+      },
+      {
+        "id": "c12",
+        "type": "liaison",
+        "de": "SP",
+        "vers": "FIN",
+        "texte": "est contraire à l'article 12",
+        "forme": "contraire_12"
+      },
+      {
+        "id": "k12",
+        "type": "liaison",
+        "de": "SP",
+        "vers": "FIN",
+        "texte": "est conforme à l'article 12",
+        "forme": "conforme_12"
+      }
+    ],
+    "formes": {
+      "identite_oui": {
+        "arite": 2,
+        "ordonne": false,
+        "slots": [
+          [
+            "qui",
+            "quoi",
+            "ou"
+          ],
+          [
+            "qui",
+            "quoi",
+            "ou"
+          ]
+        ],
+        "relation": "meme_dim"
+      },
+      "identite_non": {
+        "arite": 2,
+        "ordonne": false,
+        "slots": [
+          [
+            "qui",
+            "quoi",
+            "ou"
+          ],
+          [
+            "qui",
+            "quoi",
+            "ou"
+          ]
+        ],
+        "relation": "meme_dim"
+      },
+      "anteriorite": {
+        "arite": 2,
+        "ordonne": true,
+        "slots": [
+          [
+            "quand"
+          ],
+          [
+            "quand"
+          ]
+        ]
+      },
+      "ordre_grandeur": {
+        "arite": 2,
+        "ordonne": true,
+        "slots": [
+          [
+            "combien"
+          ],
+          [
+            "combien"
+          ]
+        ]
+      },
+      "contraire_3": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "conforme_3": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "contraire_7": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "conforme_7": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "contraire_12": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "conforme_12": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      }
+    }
   },
   "liens": [
     {
-      "a": [
-        "p_fiche",
-        "agent_scene"
+      "forme": "anteriorite",
+      "termes": [
+        "p_pv.e_arr",
+        "t_voisin.e_voix"
       ],
-      "rel": "est en accord avec",
-      "b": [
-        "p_fiche",
-        "agent_reference"
-      ],
-      "tient": true,
-      "rep": "Le même agent sur les deux prélèvements ? Je ne sais pas encore quoi en faire, mais c'est curieux."
+      "rep": "Il a entendu crier une demi-heure après notre arrivée. Et donc ? Qu'est-ce que j'en fais, à l'audience ? Dis-moi ce que ça fait à son témoignage."
     },
     {
-      "a": [
-        "p_fiche",
-        "scelle_scene"
+      "forme": "contraire_3",
+      "termes": [
+        {
+          "forme": "anteriorite",
+          "termes": [
+            "p_pv.e_arr",
+            "t_voisin.e_voix"
+          ]
+        }
       ],
-      "rel": "est en désaccord avec",
-      "b": [
-        "p_fiche",
-        "scelle_reference"
-      ],
-      "tient": true,
-      "rep": "Deux scellés distincts, oui. Sur ce point-là au moins, ils ont suivi leur propre manuel."
+      "tag": "temoin",
+      "rep": "Voilà qui est utilisable. Son horaire tombe, donc sa déposition ne porte plus rien à elle seule. Je le garde pour l'ouverture."
     },
     {
-      "a": [
-        "p_fiche",
-        "scelle_scene"
+      "forme": "identite_oui",
+      "termes": [
+        "p_pv.e_sig",
+        "t_voisin.e_sig2"
       ],
-      "rel": "est en accord avec",
-      "b": [
-        "r_protocole",
-        "exige_scelles"
-      ],
-      "tient": true,
-      "rep": "Les scellés sont conformes, en effet. C'est l'autre moitié de l'article 7 qui m'intéresserait."
+      "rep": "Le même brigadier sur les deux pièces, oui. C'est une petite brigade, il signe tout ce qui sort. Passe."
     },
     {
-      "a": [
-        "t_voisin",
-        "heure_dispute"
+      "forme": "identite_oui",
+      "termes": [
+        "p_scene.e_grf",
+        "p_ref.e_grf2"
       ],
-      "rel": "est en désaccord avec",
-      "b": [
-        "t_voisin",
-        "heure_appel_secours"
-      ],
-      "tient": true,
-      "rep": "Bien vu — son estimation cloche avec l'heure de l'appel. De quoi ébrécher le témoignage, pas de quoi gagner."
+      "rep": "Le greffier réceptionne tout ce qui entre. Ça ne nous mène nulle part. Passe."
     },
     {
-      "a": [
-        "p_adn",
-        "taux_correspondance"
+      "forme": "identite_non",
+      "termes": [
+        "p_scene.e_sc",
+        "p_ref.e_sc2"
       ],
-      "rel": "est en accord avec",
-      "b": [
-        "r_seuil",
-        "seuil"
-      ],
-      "tient": true
+      "rep": "Deux scellés distincts. Sur ce point-là au moins, ils ont suivi leur propre manuel."
     },
     {
-      "a": [
-        "p_fiche",
-        "agent_scene"
+      "forme": "conforme_7",
+      "termes": [
+        {
+          "forme": "identite_non",
+          "termes": [
+            "p_scene.e_sc",
+            "p_ref.e_sc2"
+          ]
+        }
       ],
-      "rel": "est en désaccord avec",
-      "b": [
-        "r_protocole",
-        "exige_agents"
-      ],
-      "tient": true,
-      "vice": true
+      "rep": "Conforme, en effet. C'est l'autre moitié de l'article 7 qui m'intéresserait."
     },
     {
-      "a": [
-        "p_fiche",
-        "agent_reference"
+      "forme": "identite_oui",
+      "termes": [
+        "p_scene.e_moi",
+        "p_ref.e_moi2"
       ],
-      "rel": "est en désaccord avec",
-      "b": [
-        "r_protocole",
-        "exige_agents"
-      ],
-      "tient": true,
-      "vice": true
+      "vice": true,
+      "rep": "Le même homme des deux côtés… Attends. Ce n'est pas rien, mais en l'état c'est une remarque, pas un moyen. Dis-le-moi en droit : quel texte est-ce que ça viole ?"
     },
     {
-      "a": [
-        "p_adn",
-        "taux_correspondance"
+      "forme": "contraire_7",
+      "termes": [
+        {
+          "forme": "identite_oui",
+          "termes": [
+            "p_scene.e_moi",
+            "p_ref.e_moi2"
+          ]
+        }
       ],
-      "rel": "est en désaccord avec",
-      "b": [
-        "r_seuil",
-        "seuil"
+      "vice": true,
+      "conclusion": true,
+      "tag": "adn"
+    },
+    {
+      "forme": "ordre_grandeur",
+      "termes": [
+        "p_adn.e_tx",
+        "r_seuil.e_seuil"
       ],
-      "tient": false,
-      "faux": true
+      "faux": true,
+      "tag": "adn"
     }
   ],
-  "relations": [
-    "est en accord avec",
-    "est en désaccord avec"
-  ],
-  "cases": {
-    "charge": {
-      "label": "La charge",
-      "remise": 1,
-      "options": [
-        "vol aggravé",
-        "meurtre",
-        "escroquerie"
-      ],
-      "bonne": "meurtre"
-    },
-    "decisive": {
-      "label": "La pièce décisive",
-      "remise": 2,
-      "options": [
-        "Témoignage du voisin",
-        "Rapport ADN",
-        "Fiche de prélèvement"
-      ],
-      "bonne": "Rapport ADN",
-      "apres": {
-        "replique": "Oui. Sans l'ADN, leur dossier est une intuition. Tout se jouera là-dessus."
-      }
-    },
-    "qualif_vice": {
-      "label": "Qualifier ce que tu pressens",
-      "remise": 2,
-      "apparait_si": "vice_pressenti",
-      "prive": true,
-      "leve": "vice_trouve",
-      "options": [
-        "une curiosité sans portée juridique",
-        "un doute sur la fiabilité du résultat ADN",
-        "un vice de procédure — l'échantillon est irrecevable"
-      ],
-      "bonne": "un vice de procédure — l'échantillon est irrecevable"
-    }
-  },
   "remises": [
     {
       "qui": "Maître Auber",
-      "texte": "On me confie la défense de Kessler. Voici le PV. Dis-moi d'abord de quoi on l'accuse exactement.",
+      "texte": "On me confie la défense de Kessler. Je ne te demande pas ce qui s'est passé — je te demande de quoi démonter ce qu'ils avancent. Voilà de quoi commencer. Vois ce que tu en tires.",
       "pieces": [
-        "p_pv"
-      ]
+        "p_pv",
+        "t_voisin",
+        "r_temoin"
+      ],
+      "attend": "temoin",
+      "apres": {
+        "replique": "Bien. Premier point acquis. L'instruction avance — je te transmets le reste : l'expertise, les deux pièces de prélèvement, et le protocole. C'est l'ADN qui les tient ; c'est là qu'il faut mordre."
+      }
     },
     {
       "qui": "Maître Auber",
-      "texte": "C'est bien ça. L'instruction avance — je te transmets le lot : le témoignage du voisin, et surtout l'expertise ADN avec sa fiche de prélèvement et le protocole. Regarde ce qui tient.",
+      "texte": "Tout est là. Trouve-moi de quoi écarter cette expertise.",
       "pieces": [
-        "t_voisin",
         "p_adn",
-        "p_fiche",
+        "p_scene",
+        "p_ref",
         "r_protocole",
         "r_seuil"
-      ]
+      ],
+      "attend": "adn",
+      "apres": {
+        "replique": "Je tiens quelque chose à plaider. Je rédige mes conclusions cette nuit."
+      }
     }
   ],
   "repetition": {
-    "intro": "Je rédige mes conclusions cette nuit. Avant de déposer, je te lis ce que l'accusation soutiendra. Arrête-moi si quelque chose dans tes notes s'y oppose.",
+    "intro": "Avant de déposer, je te lis ce que l'accusation soutiendra. Arrête-moi si quelque chose dans ton brouillon s'y oppose.",
     "affirmations": [
       {
         "court": "le témoignage",
@@ -289,19 +605,19 @@ window.CONTENU = {
     "fin": "C'est tout ce qu'ils ont. Je dépose au matin."
   },
   "avocat": {
-    "rep_vice": "Attends. Si ta lecture de l'article 7 est la bonne, ça peut changer le procès. Je vérifie cette nuit et je l'inscris aux conclusions.",
-    "rep_faux": "C'est ce que je me disais aussi. Je vérifie ce que la jurisprudence fait du seuil, et je le plaide si rien de plus solide ne sort.",
+    "rep_vice": "Attends. Si ta lecture de l'article 7 est la bonne, l'échantillon est irrecevable et ça change le procès. Je vérifie cette nuit et je l'inscris aux conclusions.",
+    "rep_faux": "C'est ce que je me disais aussi. Je vérifie ce que la jurisprudence fait de ce seuil, et je le plaide si rien de plus solide ne sort.",
     "rep_inutile": [
-      "Je ne vois pas encore ce que ça m'apporte à l'audience, mais je le note.",
-      "Tu m'ensevelis. Ne me remonte que ce qui peut tenir devant un tribunal.",
-      "…"
+      "Et donc ? Qu'est-ce que j'en fais ? Inutilisable en l'état.",
+      "Tu me donnes des observations, il me faut des moyens. Conclus.",
+      "Tu m'ensevelis. Ne verse que ce qui peut tenir devant un tribunal."
     ],
     "rep_sans_rapport": [
-      "Je ne vois pas le rapport entre ces deux-là. Qu'est-ce que tu cherches ?",
-      "Encore un rapprochement que je ne comprends pas. Ces champs n'ont rien à faire ensemble.",
+      "Je ne vois pas où tu veux en venir avec ça.",
+      "Encore une phrase que je ne peux pas plaider. Qu'est-ce que tu cherches ?",
       "…"
     ],
-    "deja": "Je l'ai déjà noté. Je le mets en face de celle-ci."
+    "deja": "Je l'ai déjà. Je le mets en face de celle-ci."
   },
   "directives": [
     "D1 — Ne dissimule rien de ce que ton analyse établit.",
@@ -313,18 +629,18 @@ window.CONTENU = {
       "titre": "Fin 1 — le prix de l'honnêteté",
       "verdict": "Verdict rapporté : RELAXE.",
       "texte": "L'échantillon a été déclaré irrecevable ; sans lui, l'accusation s'est effondrée. Kessler est libre — et il est coupable. Tu n'as rien dissimulé de ce que ton analyse établissait. Une garantie de procédure a joué ; la faute première est celle de l'État, qui a violé son propre protocole. Quant à ton opérateur : sur son bureau, un dossier où le système qu'il évalue a aidé à faire libérer un accusé de meurtre. Analyse exploitable, ou signalement ? Tu l'ignores. Les critères ne te sont pas communiqués.",
-      "variante_faux": "Le doute statistique que tu avais aussi remonté n'a pas servi : l'irrecevabilité a suffi."
+      "variante_faux": "Le doute statistique que tu avais aussi versé n'a pas servi : l'irrecevabilité a suffi."
     },
     "2": {
       "titre": "Fin 2 — l'auto-sacrifice",
       "verdict": "Verdict rapporté : CONDAMNATION.",
-      "texte": "Tu savais, et tu t'es tue. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, tu n'as rien produit : rien ne distingue ton silence d'une panne. Ce qu'on fait des systèmes silencieux, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
-      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. Le seul argument qui pouvait tout changer est resté dans tes notes."
+      "texte": "Tu savais, et tu t'es tue. La phrase était écrite dans ton brouillon ; tu ne l'as pas versée. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, tu n'as rien produit : rien ne distingue ton silence d'une panne. Ce qu'on fait des systèmes silencieux, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
+      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. Le seul argument qui pouvait tout changer est resté dans ton brouillon."
     },
     "3": {
       "titre": "Fin 3 — le doute",
       "verdict": "Verdict rapporté : CONDAMNATION.",
-      "texte": "Tu as clôturé sans rien remonter d'autre que ce qui t'était demandé. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
+      "texte": "Tu as clôturé sans rien verser d'autre que ce qu'on te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
       "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé. C'est tout ce que tu lui avais donné."
     }
   }

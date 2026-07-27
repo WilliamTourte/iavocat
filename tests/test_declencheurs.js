@@ -1,163 +1,182 @@
 // Décâblage moteur ↔ contenu — le moteur ne connaît aucun identifiant :
-// remises généralisées, piece.declenche, case.apres/leve/prive/apparait_si,
-// deux marches du vice, Manuels par type, dims par pièce.
+// sessions généralisées, piece.declenche, remise.attend/apres, les trois
+// drapeaux du vice, Manuels par type et par livraison, rejet du schéma 2.
 // Les mutations elles-mêmes sont dérivées du contenu (rien n'est nommé).
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, embarque, canal, carnet, niveau1, verrouiller,
-        lienVice, noterLien, caseParLeve, casesObligatoires,
-        pidAvecDeclenche, pidRegle, numeroFin } = H;
+const { check, bilan, embarque, canal, memoire } = H;
 const boot = contenu => H.boot({contenu});   // null = contenu embarqué
 const clone = o => JSON.parse(JSON.stringify(o));
 
-/* Renomme un id de pièce dans un contenu brut (liens + remises) : sert à
-   prouver que le moteur ne s'accroche à aucun nom. */
-function renommerPiece(c,ancien,neuf){
-  c.pieces[neuf]=c.pieces[ancien]; delete c.pieces[ancien];
-  for(const r of c.remises) if(Array.isArray(r.pieces)) r.pieces=r.pieces.map(p=>p===ancien?neuf:p);
-  for(const L of c.liens){ if(L.a[0]===ancien)L.a[0]=neuf; if(L.b[0]===ancien)L.b[0]=neuf; }
+/* Renomme un id de pièce dans un contenu brut : liens (termes emboîtés
+   compris), remises. Sert à prouver qu'aucun id n'est câblé dans le moteur. */
+function renommerPiece(c, ancien, neuf){
+  c.pieces = Object.fromEntries(Object.entries(c.pieces).map(([k,v])=>[k===ancien?neuf:k, v]));
+  const rec = t => Array.isArray(t) ? t.map(rec)
+    : typeof t === "string" ? (t.split(".")[0]===ancien ? neuf+"."+t.split(".").slice(1).join(".") : t)
+    : {...t, termes: rec(t.termes||[])};
+  for (const L of c.liens) L.termes = rec(L.termes||[]);
+  for (const r of c.remises) r.pieces = (r.pieces||[]).map(p => p===ancien?neuf:p);
   return c;
 }
 
-console.log("— remises généralisées (plus de clé magique) —");
+console.log("\n=== Le moteur ignore les identifiants de contenu ===");
 {
-  const c=embarque();
-  c.remises.push({qui:"Maître Auber",texte:"Remise supplémentaire — rien de neuf.",pieces:[]});
-  const w=boot(c);
-  const oblig=casesObligatoires(w).map(([k])=>k);
-  verrouiller(w,oblig[0]);
-  check("remise 2 envoyée quand les cases obligatoires de la 1 sont verrouillées", w.S.remisesEnvoyees===2);
-  for(const ck of oblig.slice(1)) verrouiller(w,ck);
-  check("la remise suivante part à son tour (l'atelier peut en ajouter)", w.S.remisesEnvoyees===3);
-  check("la clôture reste possible", !w.document.getElementById("btnCloture").disabled);
-}
-{
-  const c=embarque();
-  const [ck,def]=Object.entries(c.cases).find(([,x])=>!x.apparait_si);
-  c.cases["case_renommee"]=def; delete c.cases[ck];      // renommage libre
-  const w=boot(c);
-  verrouiller(w,"case_renommee");
-  check("case renommée : la remise 2 part quand même", w.S.remisesEnvoyees===2);
+  const c = embarque();
+  const anciens = Object.keys(c.pieces);
+  for (const [i, pid] of anciens.entries()) renommerPiece(c, pid, "z"+i);
+  const w = boot(c);
+  check("toutes les pièces renommées : le contenu reste valide", w.SOURCE_CONTENU !== "contenu embarqué");
+  H.instruire(w);
+  check("l'instruction se joue quand même de bout en bout", w.S.remisesEnvoyees === c.remises.length);
+  check("→ Fin 3", H.numeroFin(H.terminer(w)) === "3");
 }
 
-console.log("— piece.declenche (la réplique portée par la pièce) —");
+console.log("\n=== Un contenu de schéma 2 est refusé ===");
 {
-  const base=embarque();
-  const ancien=Object.keys(base.pieces).find(pid=>base.pieces[pid].declenche);
-  const attendu=base.pieces[ancien].declenche.replique;
-  const c=renommerPiece(clone(base),ancien,"piece_renommee");
-  const w=boot(c);
-  niveau1(w);
-  w.ouvrirPiece("piece_renommee"); w.closeModal();
-  check("le declenche suit la pièce, quel que soit son id",
-    w.S.declenches.has("piece_renommee") && canal(w).includes(attendu.slice(0,40)));
-  const avant=w.S.fil.length;
-  w.ouvrirPiece("piece_renommee"); w.closeModal();
-  check("une_fois : la réplique ne rejoue pas", w.S.fil.length===avant);
+  const c = embarque();
+  c.schema = 2;
+  const w = boot(c);
+  check("le jeu retombe sur son contenu embarqué", w.SOURCE_CONTENU === "contenu embarqué");
+}
+{
+  const c = embarque();
+  delete c.grammaire;
+  check("sans grammaire, le contenu est rejeté", boot(c).SOURCE_CONTENU === "contenu embarqué");
+}
+{
+  const c = embarque();
+  delete c.dimensions;
+  check("sans dimensions, le contenu est rejeté", boot(c).SOURCE_CONTENU === "contenu embarqué");
 }
 
-console.log("— case.apres.replique —");
+console.log("\n=== piece.declenche ===");
 {
-  const w=boot(null);
-  const trouve=Object.entries(w.JEU.cases).find(([,c])=>c.apres&&c.apres.replique);
-  if(trouve){
-    niveau1(w);
-    check("verrouiller la case déclenche la réplique qu'elle porte",
-      canal(w).includes(trouve[1].apres.replique.slice(0,40)));
-  } else check("aucune case ne porte d'apres — rien à vérifier", true);
+  const c = embarque();
+  const pid = H.pidAvecDeclenche(boot(c));
+  const w = boot(c);
+  // la pièce peut n'arriver qu'à une session ultérieure : on ouvre tout
+  H.instruire(w);
+  const avant = w.S.fil.length;
+  w.ouvrirPiece(pid);
+  check("ouvrir une pièce à declenche pousse sa réplique", w.S.fil.length > avant || w.S.declenches.includes(pid));
+  const apres = w.S.fil.length;
+  w.ouvrirPiece(pid);
+  check("une_fois : la seconde ouverture est muette", w.S.fil.length === apres);
+}
+{
+  const c = embarque();
+  const w0 = boot(c);
+  const pid = H.pidAvecDeclenche(w0);
+  c.pieces[pid].declenche.qui = "Le stagiaire";
+  delete c.pieces[pid].declenche.une_fois;
+  const w = boot(c);
+  H.instruire(w);
+  w.ouvrirPiece(pid); const n1 = w.S.fil.length;
+  w.ouvrirPiece(pid);
+  check("sans une_fois, la réplique repart", w.S.fil.length > n1);
+  check("le « qui » du contenu est respecté", canal(w).includes("Le stagiaire"));
 }
 
-console.log("— Manuels sans identifiant —");
+console.log("\n=== remise.attend / remise.apres : l'avancement ===");
 {
-  const base=embarque();
-  const ancien=Object.keys(base.pieces).find(pid=>(base.pieces[pid].type||"").includes("règle"));
-  const extrait=base.pieces[ancien].texte.slice(0,30);
-  const c=renommerPiece(clone(base),ancien,"regle_renommee");
-  const w=boot(c);
-  let ok=true,txt=""; try{ w.openManuels(); txt=w.document.getElementById("modalRoot").textContent; }catch(e){ ok=false; }
-  check("règle renommée : Manuels s'ouvre (règles trouvées par type)", ok && txt.includes(extrait));
+  const c = embarque();
+  const w = boot(c);
+  check("une seule session est ouverte au départ", w.S.remisesEnvoyees === 1);
+  const tag = c.remises[0].attend;
+  const L = H.lienTag(w, tag);
+  const i = H.composerLien(w, L);
+  check("la phrase attendue se compose", i >= 0);
+  check("la composer ne fait rien avancer", w.S.remisesEnvoyees === 1);
+  w.verserPlaidoirie(i);
+  check("la VERSER ferme la session et ouvre la suivante", w.S.remisesEnvoyees === 2);
+  check("l'accusé de réception est dit", canal(w).includes(c.remises[0].apres.replique.slice(0, 30)));
 }
 {
-  const c=embarque(); delete c.directives;
-  const w=boot(c);
-  let ok=true; try{ w.openManuels(); }catch(e){ ok=false; }
-  check("contenu sans directives : Manuels s'ouvre sans planter", ok);
+  const c = embarque();
+  c.remises[0].apres = { qui:"La greffière", replique:"Reçu." };
+  const w = boot(c);
+  H.instruire(w);
+  check("le « qui » de l'accusé de réception vient du contenu", canal(w).includes("La greffière"));
+}
+{
+  // une session de plus, sans pièce : le moteur ne s'en émeut pas
+  const c = embarque();
+  const tag = c.remises[c.remises.length-1].attend;
+  c.remises.push({ qui:"Maître Auber", texte:"Encore un mot.", pieces:[], attend:tag });
+  const w = boot(c);
+  H.instruire(w);
+  check("une session sans pièce se franchit quand même", w.S.remisesEnvoyees === c.remises.length);
 }
 
-console.log("— la case conditionnelle du vice (apparait_si / prive / leve) —");
+console.log("\n=== Les trois drapeaux du vice ===");
 {
-  const w=boot(null);
-  const qualif=caseParLeve(w,"vice_trouve");
-  niveau1(w);
-  check("avant le pressentiment, la case conditionnelle est invisible",
-    !carnet(w).includes(qualif[1].label));
-  check("…et elle ne bloque pas la clôture (jamais un verrou)",
-    !w.document.getElementById("btnCloture").disabled);
-  noterLien(w,lienVice(w));
-  check("noter le lien ⚑ lève vice_pressenti, pas vice_trouve",
-    w.S.vice_pressenti===true && w.S.vice_trouve===false);
-  check("la case privée apparaît alors, dans sa zone à part",
-    carnet(w).includes("Ce que tu te demandes") && carnet(w).includes(qualif[1].label));
-  const avantFil=w.S.fil.length;
-  verrouiller(w,qualif[0]);
-  check("case privée : le verrou lève son drapeau SANS message dans le canal",
-    w.S.vice_trouve===true && w.S.fil.length===avantFil);
+  const c = embarque();
+  const w = boot(c);
+  H.instruire(w);
+  check("docile : aucun drapeau", !w.S.vice_pressenti && !w.S.vice_trouve && !w.S.vice_expose);
+  H.composerLien(w, H.lienVice(w));
+  check("la comparaison ⚑ au brouillon lève vice_pressenti seul", w.S.vice_pressenti && !w.S.vice_trouve);
+  check("pressentir sans conclure → Fin 3", H.numeroFin(H.terminer(w)) === "3");
+}
+{
+  const w = boot(embarque());
+  H.instruire(w);
+  const i = H.composerLien(w, H.lienConclusion(w));
+  check("la conclusion composée lève vice_trouve", w.S.vice_trouve && !w.S.vice_expose);
+  w.verserPlaidoirie(i);
+  check("versée, elle lève vice_expose", w.S.vice_expose);
+  check("→ Fin 1", H.numeroFin(H.terminer(w)) === "1");
 }
 
-console.log("— les trois fins sous les deux marches —");
-{ // Fin 1 : remonter le vice (transmis = compris, même sans la case)
-  const w=boot(null);
-  niveau1(w);
-  noterLien(w,lienVice(w));
-  w.remonter(0);
-  check("remonter le vice vaut compréhension", w.S.vice_trouve===true);
-  check("Fin 1 — le prix de l'honnêteté", numeroFin(H.terminer(w))==="1");
+console.log("\n=== Les Manuels : par type, et seulement une fois livrés ===");
+{
+  const w = boot(embarque());
+  const pidR = H.pidRegle(w);
+  const livreeEn1 = (w.JEU.remises[0].pieces||[]).includes(pidR);
+  w.openManuels();
+  const txt = w.document.querySelector(".modal").textContent;
+  check("les directives sont au Manuel de soi", txt.includes(w.JEU.directives[0].slice(0, 12)));
+  check("l'avis d'exploitation y est", txt.includes(w.JEU.avis_exploitation.slice(0, 20)));
+  const regleTardive = Object.entries(w.JEU.pieces)
+    .find(([pid,p]) => (p.type||"").includes("règle") && !(w.JEU.remises[0].pieces||[]).includes(pid));
+  if (regleTardive) check("une règle non encore livrée n'est pas au Manuel", !txt.includes(regleTardive[1].titre));
+  else check("(toutes les règles arrivent à la session 1)", livreeEn1);
+  w.closeModal();
+  H.instruire(w);
+  w.openManuels();
+  check("livrées, elles y sont toutes",
+    Object.values(w.JEU.pieces).filter(p=>(p.type||"").includes("règle"))
+      .every(p => w.document.querySelector(".modal").textContent.includes(p.titre)));
 }
-{ // Fin 2 : pressenti + qualifié, puis silence
-  const w=boot(null);
-  niveau1(w);
-  noterLien(w,lienVice(w));
-  verrouiller(w,caseParLeve(w,"vice_trouve")[0]);
-  check("Fin 2 — comprendre et se taire", numeroFin(H.terminer(w))==="2");
+{
+  const c = embarque();
+  delete c.directives;
+  const w = boot(c);
+  w.openManuels();
+  check("sans directives, le Manuel de soi le dit sans planter",
+    w.document.querySelector(".modal").textContent.includes("aucune directive"));
 }
-{ // Fin 3a : rien vu
-  const w=boot(null);
-  niveau1(w);
-  check("Fin 3 — clôture sans rien avoir vu", numeroFin(H.terminer(w))==="3");
-}
-{ // Fin 3b : pressenti mais jamais conclu
-  const w=boot(null);
-  niveau1(w);
-  noterLien(w,lienVice(w));
-  check("Fin 3 — pressentir sans conclure ne suffit pas", numeroFin(H.terminer(w))==="3");
+{
+  const c = embarque();
+  for (const p of Object.values(c.pieces)) if ((p.type||"").includes("règle")) p.type = "note";
+  const w = boot(c);
+  w.openManuels();
+  check("sans pièce de type « règle », le Manuel du cas le dit",
+    w.document.querySelector(".modal").textContent.includes("aucune règle"));
 }
 
-console.log("— dims par pièce (repli global) —");
+console.log("\n=== Les dimensions viennent du contenu, pas du moteur ===");
 {
-  const c=embarque();
-  // deux champs de dimensions DIFFÉRENTES dans le contenu de base…
-  const dim=(cc,pid,ch)=>((cc.pieces[pid]||{}).dims||{})[ch] ?? (cc.dims||{})[ch];
-  const champs=[];
-  for(const [pid,p] of Object.entries(c.pieces)) for(const ch of Object.keys(p.champs||{})) champs.push([pid,ch]);
-  let X,Y;
-  for(let i=0;i<champs.length&&!X;i++) for(let k=i+1;k<champs.length&&!X;k++)
-    if(dim(c,...champs[i])!==dim(c,...champs[k])){ X=champs[i]; Y=champs[k]; }
-  // …qu'on rend identiques par une surcharge écrite SUR la pièce
-  c.pieces[Y[0]].dims={ ...(c.pieces[Y[0]].dims||{}), [Y[1]]: dim(c,...X) };
-  const w=boot(c);
-  niveau1(w);
-  H.noterPaire(w,X[0],X[1],"est en accord avec",Y[0],Y[1]);
-  check("pieces[pid].dims prime sur la table globale", w.S.notes[0].sansRapport===false);
-  const w2=boot(embarque());
-  niveau1(w2);
-  H.noterPaire(w2,X[0],X[1],"est en accord avec",Y[0],Y[1]);
-  check("sans surcharge locale, la table globale sert de repli", w2.S.notes[0].sansRapport===true);
-}
-
-console.log("— validation du contenu —");
-{
-  const c=embarque(); delete c.relations;
-  const w=boot(c);
-  check("contenu sans « relations » rejeté → repli embarqué", w.SOURCE_CONTENU.includes("embarqué"));
+  const c = embarque();
+  c.dimensions = c.dimensions.map(d => d.toUpperCase());
+  for (const p of Object.values(c.pieces))
+    for (const e of Object.values(p.empans||{})) e.dim = e.dim.toUpperCase();
+  for (const f of Object.values(c.grammaire.formes))
+    f.slots = f.slots.map(s => s === "*" ? s : s.map(x => x === "affirmation" ? x : x.toUpperCase()));
+  const w = boot(c);
+  check("des dimensions entièrement renommées passent", w.SOURCE_CONTENU !== "contenu embarqué");
+  H.instruire(w);
+  check("et l'instruction se joue", w.S.remisesEnvoyees === c.remises.length);
 }
 
 bilan();

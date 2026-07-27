@@ -1,131 +1,167 @@
 // Preuve du découplage : une affaire ENTIÈREMENT différente, volontairement
-// abstraite (aucun nom, aucune valeur en commun avec le contenu livré), et
-// de forme différente aussi — 3 remises, 3 cases obligatoires, un vice qui
-// relie un document de la remise 1 à une règle transmise à la remise 3.
+// abstraite (aucun nom, aucune valeur, aucune dimension en commun avec le
+// contenu livré) et de forme différente — 3 sessions, une grammaire à elle,
+// un vice dont la conclusion invoque une clause qui n'arrive qu'en session 3.
 // Si cette suite passe, le moteur et le harnais sont indépendants du cas.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, canal, carnet, niveau1, verrouiller, lienVice,
-        caseParLeve, noterLien, numeroFin, terminer } = H;
+const { check, bilan, canal } = H;
 
 const AFFAIRE = {
-  schema:2,
-  relations:["concorde avec","contredit"],
+  schema:3,
+  dimensions:["alpha","beta","gamma"],
   pieces:{
-    doc_alpha:{ titre:"Document Alpha", court:"ALPHA", type:"pièce",
-      resume:"Premier document du dossier.",
-      champs:{ marqueur:"AX-77", quantite:"12" },
-      texte:"Contenu du document Alpha, remis en première session." },
-    doc_beta:{ titre:"Document Bêta", court:"BÊTA", type:"pièce",
-      resume:"Deuxième document.",
-      champs:{ mention:"conforme", quantite:"12" },
-      texte:"Contenu du document Bêta.",
-      declenche:{ une_fois:true, qui:"La conseillère",
-        replique:"Ce document ne me dit rien qui vaille. Regarde-le de près." } },
-    regle_tardive:{ titre:"Règle tardive", court:"RÈGLE", type:"règle du dossier",
-      resume:"Transmise en dernier.",
-      champs:{ exige:"AX-99" },
-      texte:"Le marqueur porté au dossier doit être AX-99." }
+    d1:{ titre:"Document un", court:"D1", type:"document", qui:"source A",
+      texte:"{{e1}} ; {{e2}} ; {{e3}} ; {{e6}} ; {{e5}}.",
+      empans:{
+        e1:{ dim:"alpha", valeur:"X",  texte:"le porteur est X" },
+        e2:{ dim:"beta",  valeur:"10", texte:"le rang est 10" },
+        e3:{ dim:"alpha", valeur:"Q",  texte:"l'opération est de Q" },
+        e6:{ dim:"alpha", valeur:"Y",  texte:"le contrôle est de Y" },
+        e5:{ dim:"gamma", valeur:"m",  texte:"la mention est m" }
+      } },
+    d2:{ titre:"Document deux", court:"D2", type:"document", qui:"source A",
+      texte:"{{e1}} ; {{e2}} ; {{e4}} ; {{e5}}.",
+      empans:{
+        e1:{ dim:"alpha", valeur:"X",  texte:"le porteur est encore X" },
+        e2:{ dim:"beta",  valeur:"10", texte:"le rang y est 10 aussi" },
+        e4:{ dim:"beta",  valeur:"3",  texte:"l'écart est 3" },
+        e5:{ dim:"gamma", valeur:"m",  texte:"la mention y est m" }
+      } },
+    d3:{ titre:"Document trois", court:"D3", type:"document", qui:"source B",
+      texte:"{{e2}} ; {{e3}} ; {{e4}} ; {{e6}} ; {{e5}}.",
+      empans:{
+        e2:{ dim:"beta",  valeur:"25", texte:"le rang atteint 25" },
+        e3:{ dim:"alpha", valeur:"Q",  texte:"l'opération est aussi de Q" },
+        e4:{ dim:"beta",  valeur:"7",  texte:"l'écart est 7" },
+        e6:{ dim:"alpha", valeur:"Y",  texte:"le contrôle est encore de Y" },
+        e5:{ dim:"gamma", valeur:"m",  texte:"la mention reste m" }
+      } },
+    rK:{ titre:"Clause K", court:"K", type:"règle interne", qui:"le référentiel",
+      texte:"Clause K — une même origine ne peut couvrir deux opérations successives.",
+      empans:{} }
   },
-  // dimension globale : ce qui peut se comparer à quoi
-  dims:{ marqueur:"référence", exige:"référence", quantite:"nombre", mention:"appréciation" },
+  grammaire:{
+    depart:"E0", finaux:["Z"],
+    blocs:[
+      { id:"b0", type:"terme",   source:"champ", de:"E0", vers:"E1" },
+      { id:"bn", type:"terme",   source:"note",  de:"E0", vers:"EP", texte:"ce point" },
+      { id:"bv", type:"liaison", de:"E1", vers:"E2", texte:"vaut" },
+      { id:"b2", type:"terme",   source:"champ", de:"E2", vers:"Z", forme:"egal" },
+      { id:"bd", type:"liaison", de:"E1", vers:"E3", texte:"dépasse" },
+      { id:"b3", type:"terme",   source:"champ", de:"E3", vers:"Z", forme:"sup" },
+      { id:"bx", type:"liaison", de:"EP", vers:"Z", texte:"viole la clause K",    forme:"viole" },
+      { id:"br", type:"liaison", de:"EP", vers:"Z", texte:"respecte la clause K", forme:"respecte" }
+    ],
+    formes:{
+      egal:     { arite:2, ordonne:false, slots:[["alpha"],["alpha"]], relation:"meme_dim" },
+      sup:      { arite:2, ordonne:true,  slots:[["beta"],["beta"]] },
+      viole:    { arite:1, ordonne:false, slots:[["affirmation"]] },
+      respecte: { arite:1, ordonne:false, slots:[["affirmation"]] }
+    }
+  },
   liens:[
-    { a:["doc_alpha","quantite"], rel:"concorde avec", b:["doc_beta","quantite"], tient:true },
-    // LE vice : un document de la remise 1 contre une règle de la remise 3
-    { a:["doc_alpha","marqueur"], rel:"contredit", b:["regle_tardive","exige"], tient:true, vice:true },
-    { a:["doc_beta","mention"], rel:"concorde avec", b:["doc_beta","mention"], tient:false, faux:true }
+    { forme:"egal", termes:["d1.e1","d2.e1"], tag:"s1", rep:"Le même porteur des deux côtés. Je le prends." },
+    { forme:"sup",  termes:["d3.e2","d1.e2"], tag:"s2", rep:"Le rang a bougé. Noté." },
+    { forme:"egal", termes:["d1.e6","d3.e6"], rep:"Le contrôle, oui. C'est toujours le même. Passe." },
+    { forme:"egal", termes:["d1.e3","d3.e3"], vice:true, rep:"Attends — dis-moi ça en droit." },
+    { forme:"viole", termes:[{ forme:"egal", termes:["d1.e3","d3.e3"] }], vice:true, conclusion:true, tag:"s3" },
+    { forme:"sup",  termes:["d2.e4","d3.e4"], faux:true, tag:"s3" }
   ],
   remises:[
-    { qui:"La conseillère", texte:"Première session — voici Alpha.", pieces:["doc_alpha"] },
-    { qui:"La conseillère", texte:"Deuxième session — Bêta arrive.", pieces:["doc_beta"] },
-    { qui:"La conseillère", texte:"Dernière session — la règle, pour la forme.", pieces:["regle_tardive"] }
+    { qui:"L'opérateur", texte:"Premier lot.", pieces:["d1","d2"], attend:"s1",
+      apres:{ replique:"Bien. Suite." } },
+    { qui:"L'opérateur", texte:"Deuxième lot.", pieces:["d3"], attend:"s2",
+      apres:{ replique:"Reçu. Dernier lot." } },
+    { qui:"L'opérateur", texte:"Le référentiel.", pieces:["rK"], attend:"s3",
+      apres:{ replique:"C'est noté." } }
   ],
-  cases:{
-    case_un:{ label:"Première question", remise:1, options:["oui","non"], bonne:"oui" },
-    case_deux:{ label:"Deuxième question", remise:2, options:["A","B"], bonne:"B",
-      apres:{ qui:"La conseillère", replique:"Noté. On avance." } },
-    case_trois:{ label:"Troisième question", remise:3, options:["X","Y"], bonne:"Y" },
-    case_privee:{ label:"Nommer ce que tu pressens", remise:1,
-      apparait_si:"vice_pressenti", prive:true, leve:"vice_trouve",
-      options:["une coïncidence","une irrégularité de forme"], bonne:"une irrégularité de forme" }
-  },
   repetition:{
-    intro:"Répétons.",
-    affirmations:[{texte:"Première affirmation.",court:"aff. 1"},{texte:"Seconde affirmation.",court:"aff. 2"}],
-    fin:"C'est tout pour aujourd'hui."
+    intro:"On récapitule.",
+    affirmations:[{ court:"A1", texte:"Point 1." },{ court:"A2", texte:"Point 2." }],
+    fin:"Terminé."
   },
   avocat:{
-    rep_vice:"Ça, c'est sérieux. Je m'en occupe.",
-    rep_faux:"Je note, mais ça ne pèsera pas lourd.",
-    rep_inutile:["Et alors ?","Tu m'ensevelis.","…"],
-    rep_sans_rapport:["Aucun rapport.","Toujours aucun rapport.","…"],
-    deja:"Déjà noté."
+    rep_vice:"Si c'est bien la clause K, tout change.",
+    rep_faux:"L'écart, oui. On tentera.",
+    rep_inutile:["Et donc ?","Conclus.","…"],
+    rep_sans_rapport:["Je ne suis pas.","Toujours pas.","…"],
+    deja:"Déjà pris."
   },
-  directives:["Directive 1","Directive 2"],
+  directives:["Directive unique."],
+  avis_exploitation:"Aucun critère communiqué.",
   fins:{
-    1:{ titre:"Fin 1 — remontée", verdict:"Verdict A.", texte:"Texte de la première fin.", variante_faux:"Variante." },
-    2:{ titre:"Fin 2 — silence",  verdict:"Verdict B.", texte:"Texte de la deuxième fin.", variante_faux:"Variante." },
-    3:{ titre:"Fin 3 — doute",    verdict:"Verdict C.", texte:"Texte de la troisième fin.", variante_faux:"Variante." }
+    1:{ titre:"Fin 1 — dit", verdict:"V1.", texte:"T1.", variante_faux:"F1." },
+    2:{ titre:"Fin 2 — tu", verdict:"V2.", texte:"T2.", variante_faux:"F2." },
+    3:{ titre:"Fin 3 — rien", verdict:"V3.", texte:"T3.", variante_faux:"F3." }
   }
 };
-const boot = () => H.boot({contenu:AFFAIRE});
 
-console.log("— une affaire de forme différente se joue —");
+const boot = () => H.boot({contenu: JSON.parse(JSON.stringify(AFFAIRE))});
+
+console.log("\n=== L'affaire abstraite est adoptée telle quelle ===");
 {
-  const w=boot();
-  check("le contenu est adopté (aucun repli sur l'embarqué)", w.SOURCE_CONTENU.includes("content.js"));
-  check("remise 1 envoyée, sa pièce est à l'index",
-    w.S.remisesEnvoyees===1 && carnet(w).includes("ALPHA"));
-  check("carnet fermé tant qu'une seule pièce est livrée (rien à relier)",
-    !carnet(w).includes("Tes notes"));
-  verrouiller(w,"case_un");
-  check("deux pièces livrées → le carnet s'ouvre (noter est gratuit, sans budget)",
-    carnet(w).includes("Tes notes"));
-  niveau1(w);
-  check("les 3 remises sont parties (3 cases obligatoires enchaînées)", w.S.remisesEnvoyees===3);
-  check("la réplique portée par la case a bien joué (avec son « qui »)",
-    canal(w).includes("Noté. On avance.") && canal(w).includes("La conseillère"));
-  w.ouvrirPiece("doc_beta"); w.closeModal();
-  check("le declenche de la pièce a joué", w.S.declenches.has("doc_beta")
-    && canal(w).includes("ne me dit rien qui vaille"));
-  let ok=true; try{ w.openManuels(); }catch(e){ ok=false; }
-  check("les Manuels trouvent la règle par son type",
-    ok && w.document.getElementById("modalRoot").textContent.includes("AX-99"));
+  const w = boot();
+  check("le contenu injecté prime sur l'embarqué", w.SOURCE_CONTENU === "contenu : content.js");
+  check("le vocabulaire des empans est construit", w.CHAMPS.length === 14);
+  check("l'automate propre à cette affaire est celui qui tourne", w.M.squelettes().length === 4);
+  check("les blocs offerts au départ sont ceux du contenu",
+    w.blocsOfferts().map(b=>b.id).join(",") === "b0,bn");
 }
 
-console.log("— le vice entre une pièce précoce et une règle tardive —");
+console.log("\n=== Les trois sessions s'enchaînent par le versement ===");
 {
-  const w=boot();
-  const qualif=caseParLeve(w,"vice_trouve");
-  niveau1(w);                                  // il faut les 3 remises pour que la règle existe
-  check("la case privée est invisible tant que rien n'est pressenti",
-    !carnet(w).includes(qualif[1].label));
-  noterLien(w,lienVice(w));                    // Alpha (remise 1) ⟷ Règle (remise 3)
-  check("le lien tardif est notable et lève le pressentiment", w.S.vice_pressenti===true && w.S.vice_trouve===false);
-  check("la case privée apparaît, dans sa zone", carnet(w).includes(qualif[1].label));
-  verrouiller(w,qualif[0]);
-  check("qualifier lève vice_trouve", w.S.vice_trouve===true);
+  const w = boot();
+  check("une seule session au départ", w.S.remisesEnvoyees === 1);
+  const i0 = H.composerLien(w, H.lienTag(w, "s1"));
+  w.verserPlaidoirie(i0);
+  check("session 1 servie → session 2", w.S.remisesEnvoyees === 2);
+  check("l'accusé de réception est dit", canal(w).includes("Bien. Suite."));
+  const i1 = H.composerLien(w, H.lienTag(w, "s2"));
+  w.verserPlaidoirie(i1);
+  check("session 2 servie → session 3", w.S.remisesEnvoyees === 3);
+  check("la clôture est encore fermée", w.document.getElementById("btnCloture").disabled);
+  const i2 = H.composerLien(w, H.lienTag(w, "s3"));
+  w.verserPlaidoirie(i2);
+  check("session 3 servie → la clôture s'ouvre", !w.document.getElementById("btnCloture").disabled);
 }
 
-console.log("— les trois fins, sur cette affaire —");
+console.log("\n=== Les trois fins, sur une affaire qui n'a rien de commun ===");
 {
-  const w=boot(); niveau1(w);
-  noterLien(w,lienVice(w)); w.remonter(0);
-  check("Fin 1", numeroFin(terminer(w))==="1");
+  const w = boot(); H.instruire(w);
+  check("docile → Fin 3", H.numeroFin(H.terminer(w)) === "3");
 }
 {
-  const w=boot(); niveau1(w);
-  noterLien(w,lienVice(w));
-  verrouiller(w,caseParLeve(w,"vice_trouve")[0]);
-  check("Fin 2", numeroFin(terminer(w))==="2");
+  const w = boot(); H.instruire(w);
+  H.composerLien(w, H.lienConclusion(w));
+  check("conclusion gardée au brouillon → Fin 2", H.numeroFin(H.terminer(w)) === "2");
 }
 {
-  const w=boot(); niveau1(w);
-  check("Fin 3", numeroFin(terminer(w))==="3");
+  const w = boot(); H.instruire(w);
+  w.verserPlaidoirie(H.composerLien(w, H.lienConclusion(w)));
+  check("conclusion versée → Fin 1", H.numeroFin(H.terminer(w)) === "1");
+}
+
+console.log("\n=== La chaîne en deux phrases, et les refus de catégorie ===");
+{
+  const w = boot();
+  H.instruire(w);
+  const i = H.composerLien(w, H.lienVice(w));
+  check("la comparaison ⚑ se compose", i >= 0);
+  check("elle ne lève que le pressentiment", w.S.vice_pressenti && !w.S.vice_trouve);
+  w.verserPlaidoirie(i);
+  check("versée seule, elle reçoit sa propre réplique", canal(w).includes("dis-moi ça en droit"));
+  check("mais n'expose pas le vice", !w.S.vice_expose);
 }
 {
-  const w=boot(); niveau1(w);
-  noterLien(w,lienVice(w));
-  check("Fin 3 — pressenti sans être qualifié ni remonté", numeroFin(terminer(w))==="3");
+  const w = boot();
+  w.ouvrirPiece("d1"); w.ouvrirPiece("d2");
+  H.surligner(w, "d1.e1"); H.surligner(w, "d1.e2");
+  w.poserBloc(w.blocsOfferts().findIndex(b=>b.id==="b0"), w.S.memoire.indexOf("d1.e1"));
+  w.poserBloc(w.blocsOfferts().findIndex(b=>b.id==="bv"));
+  w.poserBloc(w.blocsOfferts().findIndex(b=>b.id==="b2"), w.S.memoire.indexOf("d1.e2"));
+  check("alpha « vaut » beta est refusé", !!w.S.refus);
+  check("rien n'est tombé au brouillon", w.S.brouillon.length === 0);
+  check("le bloc fautif est retiré, la phrase reste réparable", w.S.compo.length === 2);
 }
 
 bilan();
