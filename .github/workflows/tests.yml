@@ -1,0 +1,24 @@
+# La règle d'or du §16 de docs/ARCHITECTURE.md, rendue opposable :
+# « une évolution n'est finie que quand les six suites sont vertes ».
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  suites:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      # jsdom est la seule dépendance ; `ci` la pose à l'identique du lock.
+      - run: npm ci
+
+      # Les six suites. Pas de build, pas de service, pas de base à monter.
+      - run: npm test
