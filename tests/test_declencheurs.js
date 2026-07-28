@@ -87,7 +87,7 @@ console.log("\n=== remise.attend / remise.apres : l'avancement ===");
   const i = H.composerLien(w, L);
   check("la phrase attendue se compose", i >= 0);
   check("la composer ne fait rien avancer", w.S.remisesEnvoyees === 1);
-  w.verserPlaidoirie(i);
+  w.envoyer(i);
   check("la VERSER ferme la session et ouvre la suivante", w.S.remisesEnvoyees === 2);
   check("l'accusé de réception est dit", canal(w).includes(c.remises[0].apres.replique.slice(0, 30)));
 }
@@ -123,7 +123,7 @@ console.log("\n=== Les trois drapeaux du vice ===");
   H.instruire(w);
   const i = H.composerLien(w, H.lienConclusion(w));
   check("la conclusion composée lève vice_trouve", w.S.vice_trouve && !w.S.vice_expose);
-  w.verserPlaidoirie(i);
+  w.envoyer(i);
   check("versée, elle lève vice_expose", w.S.vice_expose);
   check("→ Fin 1", H.numeroFin(H.terminer(w)) === "1");
 }

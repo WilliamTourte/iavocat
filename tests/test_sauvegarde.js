@@ -14,7 +14,7 @@ console.log("\n=== Les quatre surfaces survivent au rechargement ===");
   for (const pid of Object.keys(w1.JEU.pieces)) w1.ouvrirPiece(pid);
   const L = w1.JEU.liens.find(x => !x.vice && !x.faux);
   const i = H.composerLien(w1, L);
-  w1.verserPlaidoirie(i);
+  w1.envoyer(i);
   H.phrasesBruit(w1, 2);
   const avant = {
     memoire: [...w1.S.memoire], brouillon: w1.S.brouillon.length,
@@ -52,6 +52,22 @@ console.log("\n=== Une composition en cours survit aussi ===");
   check("et l'automate repart du bon état", w2.etatCompo() === etat);
   check("les blocs offerts sont les mêmes",
     w2.blocsOfferts().map(b=>b.id).join() === w1.blocsOfferts().map(b=>b.id).join());
+}
+{
+  // La phrase close qui attend SUR PLACE : c'est l'écart entre comprendre et
+  // dire (§4.7). Le perdre au rechargement effacerait la Fin 2.
+  const w1 = boot();
+  const i = H.composerLien(w1, H.lienConclusion(w1));
+  check("la conclusion est close et attend", w1.S.prete === i && i >= 0);
+  check("elle n'est pas partie", !w1.S.brouillon[i].versee && w1.S.plaidoirie.length === 0);
+
+  const w2 = boot({[CLE]: sauvegarde(w1)});
+  check("la phrase en attente survit au rechargement", w2.S.prete === i);
+  check("elle s'affiche toujours sur place", H.atelier(w2).includes(w2.S.brouillon[i].texte));
+  check("vice_trouve a survécu, vice_expose non", w2.S.vice_trouve && !w2.S.vice_expose);
+  w2.effacerPrete();
+  check("l'effacer ne la retire pas du journal", w2.S.prete === null && !!w2.S.brouillon[i]);
+  check("et ne retire pas ce qu'on avait compris", w2.S.vice_trouve);
 }
 
 console.log("\n=== Les drapeaux et les déclencheurs ===");

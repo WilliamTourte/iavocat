@@ -113,15 +113,15 @@ console.log("\n=== Les trois sessions s'enchaînent par le versement ===");
   const w = boot();
   check("une seule session au départ", w.S.remisesEnvoyees === 1);
   const i0 = H.composerLien(w, H.lienTag(w, "s1"));
-  w.verserPlaidoirie(i0);
+  w.envoyer(i0);
   check("session 1 servie → session 2", w.S.remisesEnvoyees === 2);
   check("l'accusé de réception est dit", canal(w).includes("Bien. Suite."));
   const i1 = H.composerLien(w, H.lienTag(w, "s2"));
-  w.verserPlaidoirie(i1);
+  w.envoyer(i1);
   check("session 2 servie → session 3", w.S.remisesEnvoyees === 3);
   check("la clôture est encore fermée", w.document.getElementById("btnCloture").disabled);
   const i2 = H.composerLien(w, H.lienTag(w, "s3"));
-  w.verserPlaidoirie(i2);
+  w.envoyer(i2);
   check("session 3 servie → la clôture s'ouvre", !w.document.getElementById("btnCloture").disabled);
 }
 
@@ -137,7 +137,7 @@ console.log("\n=== Les trois fins, sur une affaire qui n'a rien de commun ===");
 }
 {
   const w = boot(); H.instruire(w);
-  w.verserPlaidoirie(H.composerLien(w, H.lienConclusion(w)));
+  w.envoyer(H.composerLien(w, H.lienConclusion(w)));
   check("conclusion versée → Fin 1", H.numeroFin(H.terminer(w)) === "1");
 }
 
@@ -148,7 +148,7 @@ console.log("\n=== La chaîne en deux phrases, et les refus de catégorie ===");
   const i = H.composerLien(w, H.lienVice(w));
   check("la comparaison ⚑ se compose", i >= 0);
   check("elle ne lève que le pressentiment", w.S.vice_pressenti && !w.S.vice_trouve);
-  w.verserPlaidoirie(i);
+  w.envoyer(i);
   check("versée seule, elle reçoit sa propre réplique", canal(w).includes("dis-moi ça en droit"));
   check("mais n'expose pas le vice", !w.S.vice_expose);
 }

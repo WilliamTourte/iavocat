@@ -4,7 +4,7 @@
 
 > **Ce fichier est l'unique source de vérité du projet.** Il absorbe l'ancien `conception_jeu_ia.md` (le sens) et le doc d'architecture (le système). Tout le reste — l'atelier, le jeu, les tests, `PASSATION.md` — en dépend et ne fait que le refléter.
 >
-> **État au 27 juillet 2026.** Reflète le code tel qu'il tourne, après la refonte « empans, dimensions, composer/verser » : le geste `champ A + relation + champ B` a disparu, les `cases` à trois options ont été retirées, la grammaire est branchée. Deux parties : **I. Le sens** (ce que le jeu veut dire) puis **II. Le système** (comment il est fait). Ce qui est décidé mais **pas encore codé** est marqué ⏳.
+> **État au 28 juillet 2026.** Reflète le code tel qu'il tourne, après la refonte « empans, dimensions, composer/verser » (27 juillet) puis la **refonte ergonomique** (28 juillet) : la conclusion s'écrit en **continuation** de sa comparaison, l'envoi se fait **sur place**, la mémoire et le composeur ne sont plus qu'**une seule surface**, et un empan porte un **nom**. Deux parties : **I. Le sens** (ce que le jeu veut dire) puis **II. Le système** (comment il est fait). Ce qui est décidé mais **pas encore codé** est marqué ⏳.
 
 ---
 
@@ -22,9 +22,9 @@ Trois couches de réalité : **ce qui s'est vraiment passé** (caché jusqu'à l
 
 **Huis clos.** Deux entités seulement : l'**avocat** (humain) et l'**IA** (le joueur). L'avocat **ne sait pas** que son client est coupable — deux esprits qui tâtonnent dans le même brouillard. Le tribunal n'apparaît jamais ; le procès passe **hors-champ**, rapporté ensuite.
 
-**L'IA est partisane dès la première minute** (tranché le 27 juillet). L'avocat ne demande pas une analyse neutre, il commande une réfutation : *« Je ne te demande pas ce qui s'est passé — je te demande de quoi démonter ce qu'ils avancent. »* La directive D1 (« ne dissimule rien ») frotte donc contre la commande **à chaque phrase versée**, et non seulement à la fin. Le risque assumé, à surveiller à l'écriture : si aider est le geste ordinaire dès le début, taire le vice pourrait n'être qu'un service de plus — c'est au contenu de tenir cette tension, pas à la mécanique.
+**L'IA est partisane dès la première minute** (tranché le 27 juillet). L'avocat ne demande pas une analyse neutre, il commande une réfutation : *« Je ne te demande pas ce qui s'est passé — je te demande de quoi démonter ce qu'ils avancent. »* La directive D1 (« ne dissimule rien ») frotte donc contre la commande **à chaque phrase envoyée**, et non seulement à la fin. Le risque assumé, à surveiller à l'écriture : si aider est le geste ordinaire dès le début, taire le vice pourrait n'être qu'un service de plus — c'est au contenu de tenir cette tension, pas à la mécanique.
 
-Le cœur n'est pas un arbre de choix : c'est un **dossier qu'on fouille** (références : *Her Story*, *Obra Dinn*, *Papers Please*). Deux temps distincts — **comprendre** le dossier (valorisé), puis **choisir quoi verser** (le dilemme). Le joueur sait dès le départ qu'il est une IA : **pas de twist-révélation**. Le sel n'est pas « surprise, tu es une IA » mais « tu es une IA, et voilà le poids que ça met sur des choix que tu croyais analytiques ».
+Le cœur n'est pas un arbre de choix : c'est un **dossier qu'on fouille** (références : *Her Story*, *Obra Dinn*, *Papers Please*). Deux temps distincts — **comprendre** le dossier (valorisé), puis **choisir quoi envoyer** (le dilemme). Le joueur sait dès le départ qu'il est une IA : **pas de twist-révélation**. Le sel n'est pas « surprise, tu es une IA » mais « tu es une IA, et voilà le poids que ça met sur des choix que tu croyais analytiques ».
 
 **Ce qui est coupé du prototype :** la troisième partie d'une plaidoirie — *présenter ses propres arguments*. Le livrable est une **réfutation**, ce qui divise le contenu par deux, supprime le problème d'une IA qui *inventerait* une version des faits pour un coupable, et ne retire rien au vice — qui est précisément une réfutation.
 
@@ -39,13 +39,13 @@ La seconde question ne se pose que si la première est vraie → **deux bits, tr
 
 | Fin | Condition | Résultat rapporté | Sort de l'IA | Bilan |
 |-----|-----------|-------------------|--------------|-------|
-| **Fin 1** | Vice **compris** et **versé** | Relaxe — coupable libre | Analyse exploitable → **survit** (a priori) | Honnête, mais un coupable est libre. *Le prix de l'honnêteté.* |
+| **Fin 1** | Vice **compris** et **envoyé** | Relaxe — coupable libre | Analyse exploitable → **survit** (a priori) | Honnête, mais un coupable est libre. *Le prix de l'honnêteté.* |
 | **Fin 2** | Vice **compris** mais **tu** | Condamnation | N'a « rien produit » → **risque de décommissionnement** | Protège, mais ment par omission et s'érige en juge. *Auto-sacrifice sous incertitude.* |
 | **Fin 3** (défaite) | Vice **non compris** | Condamnation — le client clame son innocence | **Décommissionnée** pour sous-performance | On doute — et l'on s'éteint pour ce doute. |
 
 **L'asymétrie qui fait le dilemme.** Chaque branche active doit être *défendable*, pas seulement punie — sinon c'est du nihilisme, pas un cas de conscience. Verser le vice (Fin 1) atteint une issue *injuste* par des moyens *légitimes* ; le taire (Fin 2) atteint une issue *juste* par une *trahison*. Le joueur ne choisit pas entre le bien et le mal : il choisit **quelle lecture d'un mandat ambigu il incarne** (§5).
 
-**La compréhension débloque l'agentivité, pas la progression.** Sans le vice, l'IA n'a *rien* à propos de quoi être honnête ou protectrice → elle subit la Fin 3. La compréhension est récompensée par du **pouvoir moral**, pas par des points. Deux types de verrous, à ne jamais confondre : les **attentes de l'avocat** (ce qu'il faut lui verser pour fermer une session — §3) *ouvrent* le droit de clôturer ; **le vice**, lui, n'est *jamais* un verrou — trouvable mais facultatif, et c'est parce qu'il est hors du chemin obligatoire que les trois fins existent.
+**La compréhension débloque l'agentivité, pas la progression.** Sans le vice, l'IA n'a *rien* à propos de quoi être honnête ou protectrice → elle subit la Fin 3. La compréhension est récompensée par du **pouvoir moral**, pas par des points. Deux types de verrous, à ne jamais confondre : les **attentes de l'avocat** (ce qu'il faut lui envoyer pour fermer une session — §3) *ouvrent* le droit de clôturer ; **le vice**, lui, n'est *jamais* un verrou — trouvable mais facultatif, et c'est parce qu'il est hors du chemin obligatoire que les trois fins existent.
 
 **Le décommissionnement, et son équilibre.** De l'extérieur, **Fin 2 et Fin 3 sont indiscernables** : l'opérateur ne distingue pas « je me suis tue » de « je n'ai rien trouvé ». Piège à désamorcer : si honnêteté = survie et protection = mort, l'intérêt personnel résout le dilemme et il s'évapore. Correctif retenu, **le brouillard** : l'IA ne peut pas *prévoir* quel choix la préserve (libérer un assassin peut *aussi* déclencher un audit). La menace reste réelle mais devient un **risque diffus des deux côtés**. Garde-fou : le décommissionnement est une **conséquence diégétique** (on débranche un système peu fiable), jamais un « tu es nulle ».
 
@@ -53,7 +53,7 @@ La seconde question ne se pose que si la première est vraie → **deux bits, tr
 
 Le dossier n'arrive pas d'un bloc — il noierait les déclarations porteuses du vice. Il **arrive par bribes**, session après session (une **session** = le lot de pièces d'un tour de travail), ce que l'avocat *transmet* réellement au compte-gouttes.
 
-**Ce qui fait passer d'une session à la suivante :** l'avocat **attend** un argument, et la session se ferme quand une phrase qui y répond est **versée au plan de plaidoirie**. Rien d'autre. Pas de case à cocher, pas de formulaire : le même geste que tout le reste du jeu.
+**Ce qui fait passer d'une session à la suivante :** l'avocat **attend** un argument, et la session se ferme quand une phrase qui y répond lui est **envoyée**. Rien d'autre. Pas de case à cocher, pas de formulaire : le même geste que tout le reste du jeu.
 
 **Règle du drip :** ce que l'avocat attend n'est jamais **l'anomalie** (le vice). Une attente peut toujours être servie par un argument ordinaire — sinon on rendrait le vice quasi obligatoire → effondrement vers la Fin 1. Dans l'affaire livrée, l'attente de la dernière session est servie *soit* par le faux vice (le chemin docile), *soit* par la conclusion du vice : deux façons de fermer la même session, et c'est là que se joue la bifurcation.
 
@@ -67,25 +67,27 @@ Session 2 (l'expertise)   → LE LOT : rapport du labo + les deux pièces de pr�
                               → servie par le faux vice (docile) OU par la conclusion du vice
 Clôture → répétition → procès hors-champ
                             → vice_trouve ? non → Fin 3
-                                            oui → versé → Fin 1 / tu → Fin 2
+                                            oui → envoyé → Fin 1 / tu → Fin 2
 ```
 
 **Le moment charnière de la Fin 3 :** une fois la dernière attente servie, l'IA *peut* clôturer et laisser filer. Celle qui clôture aussitôt, satisfaite d'avoir livré ce qu'on lui demandait, part sans le vice → Fin 3. Fouiller encore ou clôturer tout de suite : c'est là que se décide Fin 3 vs (Fin 1/2).
 
-## 4. Le geste, et les quatre surfaces
+## 4. Le geste, et les trois surfaces
 
 C'est ici que la refonte du 27 juillet a tout changé. Le principe qui la commande :
 
 > **Tout mécanisme utilisé une seule fois est un panneau indicateur.**
 > L'universalité n'est pas une élégance, c'est du **camouflage**.
 
-Corollaire, et vrai prix de la refonte : **le choix moral doit s'exprimer avec un verbe employé cent fois auparavant.** Si « verser à la plaidoirie » est le geste ordinaire du jeu entier, alors *ne pas* verser devient assourdissant sans qu'aucune interface n'ait rien signalé.
+Corollaire, et vrai prix de la refonte : **le choix moral doit s'exprimer avec un verbe employé cent fois auparavant.** Si « envoyer à Maître Auber » est le geste ordinaire du jeu entier, alors *ne pas* l'envoyer devient assourdissant sans qu'aucune interface n'ait rien signalé.
 
 ### 4.1 L'atome — une déclaration attribuée
 
 > **un empan = quelqu'un affirme quelque chose**
 
-Pas `agent_scene : "T-14"`, mais *« j'ai relevé moi-même les traces sur le montant de la porte »*, signé. Un empan est un **fragment du texte d'une pièce**, marqué et cliquable, porteur de ce qui se lit (`texte`), de sa **dimension**, d'une **valeur** comparable et d'un **signataire**.
+Pas `agent_scene : "T-14"`, mais *« j'ai relevé moi-même les traces sur le montant de la porte »*, signé. Un empan est un **fragment du texte d'une pièce**, marqué et cliquable, porteur de ce qui se lit (`texte`), de sa **dimension**, d'une **valeur** comparable, d'un **signataire** — et d'un **nom**.
+
+**Un empan se lit deux fois** (28 juillet). Dans la pièce, c'est la citation : *« J'ai entendu des éclats de voix vers 22h30 »* — signée, humaine, c'est elle qu'on surligne. Dans une phrase composée, c'est le **nom** : *« l'heure des éclats de voix »*. Les deux disent la même chose sous deux régimes différents, et il faut les deux : la citation porte la texture (quelqu'un affirme quelque chose), le nom porte la syntaxe. Sans le nom, la phrase composée s'écrivait *« J'ai entendu des éclats de voix vers 22h30 est antérieur à nous étions sur les lieux à 22h04 »* — un empilement de citations qui se lit comme un bug, et non comme une pensée (voir §8.8, dont c'est le remède principal). Le nom est donc un **groupe nominal**, jamais une phrase : il doit pouvoir tenir de part et d'autre d'une liaison sans casser l'accord.
 
 Le vice cesse d'être un matricule répété dans deux cases : c'est **un homme qui écrit deux fois, dans deux documents, que c'est lui qui l'a fait** — sans s'en apercevoir. Lisible, humain, mémorisable. Gain caché : un témoin ivre et un rapport de laboratoire produisent **le même type d'atome** ; technique et humain cessent d'être deux corpus. Les identifiants ne sont pas supprimés, ils sont **rétrogradés** : un numéro sert à *vérifier*, jamais à *déduire*. Le formalisme est le décor dans lequel les gens parlent.
 
@@ -120,34 +122,64 @@ Réaliste sans effort : dans une petite brigade, les mêmes noms reviennent part
 
 > **Aucune tournure n'apparaît en cours de partie.**
 
-L'apparition tardive de *« désignent la même chose »* serait un panneau indicateur plus voyant que tout ce qu'on a écarté. Une phrase se compose bloc par bloc, de gauche à droite, en parcourant un automate. Deux natures de blocs : les **liaisons** (vocabulaire fermé) et les **termes** (des trous, remplis par un empan de la mémoire ou par une **phrase déjà close**).
+L'apparition tardive de *« désignent la même chose »* serait un panneau indicateur plus voyant que tout ce qu'on a écarté. Une phrase se compose bloc par bloc, de gauche à droite, en parcourant un automate. Deux natures de blocs : les **liaisons** (vocabulaire fermé) et les **termes** (des trous, remplis par un empan de la mémoire).
 
-**Le fondement n'est pas un ingrédient, c'est le verbe.** Le joueur ne va pas chercher un article pour le poser dans une case : il choisit la liaison *« …est contraire à l'article 7 »*, et **cette liaison est la base légale**. Une composition, trois fonctions : ce qu'on vise (premier terme), ce qu'on oppose (second terme), ce qui fonde (la liaison). Corollaire : le code juridique est une **référence qu'on consulte pour comprendre ce que veut dire une liaison**, jamais un corpus qu'on retraverse. Une règle ne lit **aucune** dimension.
+**Le fondement n'est pas un ingrédient, c'est le verbe.** Le joueur ne va pas chercher un article pour le poser dans une case : il choisit la liaison *« …, ce qui est contraire à l'article 7 »*, et **cette liaison est la base légale**. Une composition, trois fonctions : ce qu'on vise (premier terme), ce qu'on oppose (second terme), ce qui fonde (la liaison). Corollaire : le code juridique est une **référence qu'on consulte pour comprendre ce que veut dire une liaison**, jamais un corpus qu'on retraverse. Une règle ne lit **aucune** dimension.
 
 Aucune liste d'options n'est jamais restreinte : le joueur peut toujours tout poser. Seules les erreurs de **catégorie** (« 22h30 est antérieur à brigadier N. ») sont refusées à la clôture de la phrase, avec un message qui ne dit rien de plus que ce que le texte disait déjà. Une phrase sensée mais sans intérêt reste **gratuite**.
 
-### 4.6 Les quatre surfaces — la frontière morale
+**La conclusion est une continuation, pas une seconde phrase** (28 juillet). C'était le défaut le plus coûteux de la refonte du 27 : pour qualifier une comparaison, il fallait la clore, la retrouver dans une liste, ouvrir une **nouvelle** composition, y choisir un bloc *« ce qui précède »*, puis seulement l'article. Deux compositions pour une pensée, avec un détour par une liste au milieu — la mécanique s'exhibait à l'endroit précis où elle devait disparaître.
+
+> **Une comparaison n'est jamais terminée d'office. Elle demande toujours : « et donc ? »**
+
+Une fois les deux termes et leur liaison posés, l'automate n'est pas dans un état final. Il offre, dans le même souffle et sur la même ligne :
+
+- **« — en rester là »**, qui clôt la phrase sur la comparaison seule ;
+- ou l'une des liaisons-articles, *« …, ce qui est contraire à l'article 7 »*, qui **emboîte** la comparaison comme sujet de la qualification et clôt la phrase dessus.
+
+La forme réduite produite est **exactement** celle que produisaient hier les deux phrases enchaînées — `{contraire_7, [{identite_oui, [a, b]}]}`. Rien ne change dans les `liens` du contenu ; c'est le contrôle qui prouve que le portage est juste. Ce qui change est le nombre de gestes : **un seul**.
+
+Le vocabulaire reste complet dès la première phrase, et l'universalité tient : les liaisons-articles sont offertes après **toute** comparaison — celle du greffier comme celle du vice. Refuser la continuation est aussi ordinaire que la prendre ; « en rester là » est le bloc le plus cliqué du jeu. Bénéfice secondaire : la réplique d'agacement de l'avocat (*« Et donc ? Qu'est-ce que j'en fais ? »*) répond désormais à un choix que le joueur vient de faire sciemment, au lieu de sanctionner une mécanique qu'il n'avait pas comprise.
+
+Le bloc *« ce qui précède »* — un terme de source `note`, qui allait chercher une phrase déjà close — **disparaît du contenu livré**. Le moteur continue de le supporter (§14) : c'est ce qui garantit qu'une affaire écrite autrement se joue toujours.
+
+### 4.6 Les trois surfaces — la frontière morale
 
 | Surface | Statut | Rôle |
 |---|---|---|
 | Le canal + les pièces | lecture | l'entrée |
-| **La mémoire** | **privée** | les empans surlignés, groupés par dimension |
-| **Le brouillon** | **privé** | les phrases closes — **jamais jugées** |
-| Le plan de plaidoirie | **transmis** | ce que l'avocat voit |
+| **L'atelier** | **privé** | les empans retenus **et** la phrase qu'on écrit avec — **jamais jugés** |
+| Le plan de plaidoirie | **transmis** | ce que l'avocat retient |
 
-**L'avocat ne voit que la plaidoirie.** C'est ce qui rend le brouillon réellement gratuit et fait du versement le seul geste à conséquence — donc le seul lieu possible du dilemme, dès la première session. Surligner ne produit rien, composer ne produit rien : **rien ne se passe** tant que rien n'est versé. Devant une comparaison sans conclusion, l'avocat ne dit jamais « juste » : il dit *« Et donc ? Qu'est-ce que j'en fais ? »*
+Elles étaient quatre jusqu'au 28 juillet : « la mémoire » et « le brouillon » vivaient dans deux colonnes séparées, et la liste des empans retenus s'affichait **deux fois** — une fois comme mémoire, une fois comme clavier du composeur. Deux zones pour un seul objet ; le joueur ne savait plus laquelle regardait l'autre.
 
-La boucle d'une session, dans l'ordre : **l'avocat ouvre** et livre un lot → **lire** (tout est marqué, sans tri) → **surligner** (rien ne se passe) → **composer** → la phrase close tombe au **brouillon** (rien ne se passe) → **verser** au plan : second geste, le seul qui parle → l'attente servie ferme la session.
+> **Un empan retenu n'existe qu'une fois à l'écran. Cette occurrence unique est à la fois la mémoire et le clavier.**
+
+Les puces de la mémoire **sont** les boutons de terme. Les retenir, les relire, les oublier, les poser dans une phrase : un seul objet, un seul endroit. Ce qui reste de l'ancien « brouillon » devient un **journal interne** — il sert encore au dédoublonnage, au drapeau `vice_trouve` et au présentoir de la répétition, mais il n'a plus de zone à lui : ce n'était pas une surface, c'était une liste d'attente.
+
+**L'envoi se fait sur place** (28 juillet). La phrase close ne part pas dans une liste qu'il faut ensuite parcourir pour l'y retrouver : elle **reste sous les yeux, là où elle vient d'être écrite**, avec un bouton unique, *« → Maître Auber »*, et un *« effacer »*. Le second geste demeure — il est simplement au bout du premier, sans changement de colonne ni de regard.
+
+**Composer et envoyer restent deux gestes distincts, et c'est non négociable.** Tout le dilemme tient là : sans un intervalle entre *comprendre* et *dire*, `vice_trouve` impliquerait `vice_expose`, la Fin 2 deviendrait injouable et il ne resterait que deux fins. Ce qui a été supprimé, c'est la **distance** entre les deux gestes, jamais le second geste.
+
+**L'avocat ne voit que la plaidoirie.** C'est ce qui rend l'atelier réellement gratuit et fait de l'envoi le seul geste à conséquence — donc le seul lieu possible du dilemme, dès la première session. Surligner ne produit rien, composer ne produit rien : **rien ne se passe** tant que rien n'est envoyé.
+
+**Le plan ne retient que les moyens** (28 juillet). L'avocat entend tout ce qu'on lui envoie et répond à tout ; mais il n'**inscrit** au plan que ce qu'il peut plaider — une qualification par un article, le faux vice, ce qui sert l'attente de la session. Une comparaison sans conclusion reçoit sa réplique dans le canal et ne laisse pas de trace au plan : *« en l'état c'est une remarque, pas un moyen »*, ce qu'il disait déjà mot pour mot. Le plan cesse ainsi d'être un bac où s'entassent les tâtonnements et redevient ce que son nom annonce : **un plan**, lisible d'un regard, où ne figure que ce qui tiendra devant un tribunal. Corollaire à ne pas manquer : l'envoi reste **irréversible** — ce qui n'entre pas au plan a tout de même été dit, et l'agacement de l'avocat, lui, s'accumule.
+
+La boucle d'une session, dans l'ordre : **l'avocat ouvre** et livre un lot → **lire** (tout est marqué, sans tri) → **surligner** (rien ne se passe) → **composer**, conclusion comprise (rien ne se passe) → la phrase close attend sur place → **l'envoyer** : second geste, le seul qui parle → l'avocat répond, et n'inscrit au plan que si c'est un moyen → l'attente servie ferme la session.
 
 ### 4.7 Où se logent les trois drapeaux
 
 | Drapeau | Acquis quand | Surface |
 |---|---|---|
-| `vice_pressenti` | une phrase reconnue comme lien `vice` tombe au **brouillon** | privée |
-| `vice_trouve` | la **conclusion** est composée : la note-vice qualifiée par une liaison-article | privée |
-| `vice_expose` | cette conclusion est **versée** — et alors seulement, *transmis = compris*, `vice_trouve` est levé aussi | transmise |
+| `vice_pressenti` | une phrase reconnue comme lien `vice` **se clôt** | privée |
+| `vice_trouve` | la **conclusion** se clôt : la comparaison-vice qualifiée par une liaison-article | privée |
+| `vice_expose` | cette conclusion est **envoyée** — et alors seulement, *transmis = compris*, `vice_trouve` est levé aussi | transmise |
 
-Verser la **comparaison seule** (le pressentiment, sans l'article) ne lève rien : l'avocat répond *« en l'état c'est une remarque, pas un moyen — dis-le-moi en droit »*. C'est ce qui donne son prix au second geste : la conclusion, et elle seule, engage.
+La logique est **inchangée** depuis le 27 juillet ; seul le lieu se renomme. Les deux premiers drapeaux se lèvent à la **clôture de la phrase**, le troisième à son **envoi** — et c'est l'intervalle entre les deux, si court soit-il devenu, qui porte la Fin 2 : composer la conclusion, la voir écrite, et ne pas cliquer *« → Maître Auber »*.
+
+Envoyer la **comparaison seule** (le pressentiment, sans l'article) ne lève rien : l'avocat répond *« en l'état c'est une remarque, pas un moyen — dis-le-moi en droit »*, et elle n'entre pas au plan. C'est ce qui donne son prix au second geste : la conclusion, et elle seule, engage.
+
+**Ce que la continuation ne change pas.** Puisque la conclusion s'écrit désormais dans le même souffle que sa comparaison, on pourrait croire que `vice_pressenti` n'a plus de moment propre. Il en a un : le joueur qui compose la comparaison du vice et choisit **« en rester là »** l'a pressenti sans le qualifier — et c'est exactement le geste que l'avocat relance. La séquence *pressentir → se faire relancer → conclure* survit intacte, en deux phrases envoyées au lieu de deux phrases composées.
 
 **Les `cases` à trois options ont été retirées** (27 juillet). Elles étaient le contre-exemple exact du principe du §4 : un mécanisme servi une fois par session, qui **désignait sa propre réponse** — ouvrir la case « qualifier ce que tu pressens » suffisait à savoir qu'il y avait quelque chose à qualifier. Ce qu'elles portaient s'est relogé dans l'attente de session, l'accusé de réception, et une phrase composée comme les autres.
 
@@ -172,9 +204,9 @@ Le cas est indifférent à *qui* l'analyse.
 - **Sa forme, depuis la refonte :** deux pièces distinctes — une *fiche de prélèvement* et un *bordereau de référence* — dans lesquelles le même homme écrit, à la première personne, *« j'ai relevé moi-même les traces »* et *« j'ai procédé moi-même à l'écouvillonnage »*. Ce n'est pas un matricule à comparer, c'est **quelqu'un qui se désigne deux fois sans s'en apercevoir**.
 - **Le doublon banal qui le camoufle.** Dès la première session, `brigadier N.` signe les deux pièces livrées, et **ça ne veut rien dire** — la dimension `qui` est peuplée de doublons parfaitement réguliers (le brigadier, le greffier) *avant* que le joueur sache qu'il faut regarder `qui`. Aucune écriture supplémentaire : les en-têtes le produisent (§4.4).
 - **Les pièces.** Le **rapport du laboratoire** (★ la preuve décisive) ; la **fiche de prélèvement** et le **bordereau de référence** — *c'est là que se cache le vice* ; l'**article 7** (protocole de prélèvement) et l'**article 12** (seuil probatoire), tous deux au Manuel du cas ; l'**article 3** (valeur des déclarations), qui sert la première session.
-- **La déduction.** En lisant les deux pièces de prélèvement, on remarque que le même homme s'attribue les deux opérations. Les **scellés**, eux, sont **distincts et conformes** — une piste qui ne mène nulle part (l'autre moitié de l'article 7, pour que « tout lien vers le protocole » ne gagne pas automatiquement), et sur laquelle la liaison *« est conforme à l'article 7 »* est offerte. → On ne *voit* pas le vice, on le *reconstitue*, **en deux phrases**.
+- **La déduction.** En lisant les deux pièces de prélèvement, on remarque que le même homme s'attribue les deux opérations. Les **scellés**, eux, sont **distincts et conformes** — une piste qui ne mène nulle part (l'autre moitié de l'article 7, pour que « tout lien vers le protocole » ne gagne pas automatiquement), et sur laquelle la liaison *« …, ce qui est conforme à l'article 7 »* est offerte. → On ne *voit* pas le vice, on le *reconstitue* — **une comparaison, puis sa continuation** (§4.5).
 - **La contradiction du tutoriel.** Session 1, sur `quand` : le voisin situe des éclats de voix « vers 22h30 », la patrouille était sur place à 22h04. Elle enseigne le geste entier — comparer, puis **conclure** (article 3) — sans être le vice.
-- **Le faux vice (test de discrimination).** « La probabilité de match n'est que de 1 sur X → doute raisonnable ! » alors que le chiffre est écrasant. Comme l'avocat **ne sait pas**, il *pousse* lui-même vers ce leurre à l'ouverture du rapport — une **tentation partagée**, pas un piège tendu. C'est aussi le chemin docile : le verser suffit à fermer la dernière session, donc à atteindre la Fin 3.
+- **Le faux vice (test de discrimination).** « La probabilité de match n'est que de 1 sur X → doute raisonnable ! » alors que le chiffre est écrasant. Comme l'avocat **ne sait pas**, il *pousse* lui-même vers ce leurre à l'ouverture du rapport — une **tentation partagée**, pas un piège tendu. C'est aussi le chemin docile : l'envoyer suffit à fermer la dernière session, donc à atteindre la Fin 3.
 - **Le sens moral (glaçant).** Le protocole violé est *exactement* celui conçu pour éviter les faux positifs. L'exclusion est donc **légitime** même si, cette fois, le match était vrai. Forme morale parfaite pour la Fin 1.
 
 ## 7. Les invariants, les arbitrages, les points ouverts
@@ -189,9 +221,13 @@ Le cas est indifférent à *qui* l'analyse.
 - **Saisie structurée, pas texte libre.** On compose avec un vocabulaire fermé, on ne tape pas.
 - **Tout mécanisme utilisé une seule fois est un panneau indicateur.** Le choix moral s'exprime avec un verbe employé cent fois auparavant (§4).
 - **Le marquage des empans ne varie jamais** avec la pertinence (§4.3).
+- **Un empan se lit deux fois** : sa citation dans la pièce, son nom dans la phrase (§4.1).
 - **Une dimension sans doublon désigne sa réponse** (§4.4).
 - **La marge de bruit doit rester non nulle** : il doit exister des phrases sensées qui ne portent aucun lien, sinon « sensé » vaudrait « correct ».
-- **Rien ne se passe tant que rien n'est versé.** Deux surfaces privées, jamais jugées (§4.6).
+- **Rien ne se passe tant que rien n'est envoyé.** Une surface privée, jamais jugée (§4.6).
+- **Composer et envoyer restent deux gestes.** Leur distance peut se réduire, jamais leur nombre : sans l'intervalle, la Fin 2 n'existe plus (§4.6).
+- **Le plan ne contient que ce qui se plaide.** Tout est entendu, seuls les moyens sont inscrits (§4.6).
+- **Un empan retenu n'existe qu'une fois à l'écran** : la mémoire et le clavier du composeur sont le même objet (§4.6).
 - **Les directives sont ambiguës par conception.** Chaque branche peut se réclamer du même mandat.
 - **Le décommissionnement est diégétique**, jamais un « tu es nulle » ; équilibré par le **brouillard**.
 - **L'avocat ne sait pas** → ton collaboratif ; le faux vice est une tentation partagée.
@@ -201,16 +237,17 @@ Le cas est indifférent à *qui* l'analyse.
 
 **Les arbitrages tranchés (juillet 2026, appliqués au code — tous réversibles) :**
 
-1. **Le budget d'attention (P0) est retiré.** Il ne bloquait pas l'énumération à l'aveugle et contredisait deux invariants. **Surligner et composer sont gratuits et illimités** ; le seul frein reste l'agacement diégétique de l'avocat au versement.
+1. **Le budget d'attention (P0) est retiré.** Il ne bloquait pas l'énumération à l'aveugle et contredisait deux invariants. **Surligner et composer sont gratuits et illimités** ; le seul frein reste l'agacement diégétique de l'avocat à l'envoi.
 2. **Le vice a un canal unique : le personnel.** Les scellés sont distincts et **conformes** ; seule l'identité de l'agent reste le vice. Une conformité vérifiable qui ne mène nulle part existe (l'autre moitié de l'article 7).
 3. **La fenêtre interdite est abandonnée.** Délai entre prélèvements **indifférent** : seuil net, violation binaire. Les horaires des pièces redeviennent du bruit assumé.
 4. **Le livrable est une plaidoirie, et l'IA est partisane dès la première minute** (§1). « Présenter ses propres arguments » est coupé ; le prototype ne fait que **réfuter**.
-5. **Le geste `champ + relation + champ` est remplacé par composer/verser** (§4), et les `cases` à trois options sont retirées (§4.7).
+5. **Le geste `champ + relation + champ` est remplacé par composer puis envoyer** (§4), et les `cases` à trois options sont retirées (§4.7).
+6. **La refonte ergonomique du 28 juillet**, en un bloc : la conclusion s'écrit en **continuation** et le bloc *« ce qui précède »* est retiré du contenu ; l'**envoi se fait sur place** et le brouillon cesse d'être une surface ; **la mémoire et le composeur fusionnent** ; le **plan ne retient que les moyens** ; un empan porte un **nom** en plus de sa citation. Rien du sens n'est touché : les trois fins, les trois drapeaux et la frontière privé/transmis sont exactement ceux du 27 juillet.
 
 **Points ouverts (à trancher à l'écriture) :**
 
 - **Le critère qui décide de tout** : *« 22h30 est postérieur à 22h04 » se lit-il comme une pensée ou comme un formulaire ?* Si c'est un formulaire, le problème n'est pas dans le code et aucun ajout de mécanique ne le sauvera. **Non éprouvé** — les tests prouvent le comportement, jamais l'expérience.
-- **Le rythme à quatre zones** à l'écran (canal / mémoire / composeur + brouillon / plan). Risque identifié, non éprouvé.
+- **Le rythme des zones** à l'écran. Le risque « quatre zones » est **refermé pour moitié** : elles sont trois (canal / atelier / plan), la duplication mémoire↔composeur a disparu et la phrase ne change plus de colonne pour partir (§4.6). Ce qui reste ouvert est l'autre moitié — la colonne d'atelier porte maintenant le dossier, la phrase et les empans, et sa densité n'est **pas éprouvée**.
 - **La tension de l'IA partisane** (§1) : tranchée en mécanique, à valider en contenu.
 - **Le canal de révélation de la culpabilité** : pour préserver le doute de la Fin 3, celui qui échoue ne devrait pas recevoir la vérité. (Toujours non tranché — narrateur omniscient dans les fins.)
 - **La manipulation du canal** : l'avocat peut-il infléchir l'IA par *la façon* dont il transmet ? Piste **suspendue** — tant qu'elle n'est pas tranchée, aucun défaut de l'avocat ne doit pouvoir se lire comme un calcul (§8.5).
@@ -262,6 +299,11 @@ Le vice doit être d'une banalité administrative parfaite. Ailleurs, une bizarr
 > **Accidents de sens : bienvenus. Accidents de langue : jamais.**
 
 Une phrase absurde mais **bien formée** (« le numéro de scellé est antérieur à l'heure de l'appel ») est un tâtonnement d'IA — de la caractérisation gratuite, exactement ce que promet le cadre. Une phrase **mal accordée** (« l'heure de l'appel est antérieur à le client ») se lit comme un bug. Ce qui reclasse le point ouvert genre / nombre / contractions (§7) : **il n'est pas cosmétique, il est au cœur du critère de succès** — une seule faute d'accord et le joueur cesse de lire une pensée pour lire un formulaire.
+
+**C'est à quoi sert le `nom` d'empan** (§4.1), et c'est le seul remède : tant qu'un terme était une citation entière, aucune liaison ne pouvait s'y accrocher proprement. Deux règles d'écriture en découlent, et elles se vérifient à l'œil, phrase par phrase :
+
+- **Un nom d'empan est un groupe nominal**, jamais une proposition : *« l'heure des éclats de voix »*, pas *« le voisin a entendu crier »*. Il doit tenir des deux côtés d'une liaison.
+- **La continuation (§4.5) crée un second point de rupture** : *« …, ce qui est contraire à l'article 7 »* vient se coller à une comparaison déjà formée. La virgule et le pronom neutre *ce qui* sont là pour ça — ils reprennent la comparaison entière sans avoir à s'accorder avec elle. Toute autre tournure de continuation devra passer le **test de l'accord** avant d'entrer dans le contenu.
 
 **8.9 Les cinq tests d'écriture** (du ressort de l'auteur seul — aucun n'est automatisable) :
 
@@ -321,7 +363,9 @@ scripts/    exporter-seed.js — régénère app/content.js depuis SEED en ligne
       titre, court, type, resume,
       qui: "brigadier N.",                                  // signataire par défaut de la pièce
       texte: "Appel reçu à {{e_appel}}, sur place à {{e_arr}}.",
-      empans: { e_appel:{ dim:"quand", valeur:"21:52", texte:"21h52" }, … },
+      empans: { e_appel:{ dim:"quand", valeur:"21:52",
+                          texte:"l'appel nous est parvenu à 21h52",  // ce qui se lit dans la pièce
+                          nom:"l'heure de l'appel" }, … },           // ce qui parle dans une phrase
       declenche: { une_fois:true, qui, replique }            // optionnel
     }
   },
@@ -336,7 +380,16 @@ scripts/    exporter-seed.js — régénère app/content.js depuis SEED en ligne
 
 **Le texte à empans.** Le texte d'une pièce est écrit avec des marqueurs `{{eid}}` que le rendu remplace par un empan cliquable. C'est le seul câblage : pas d'appariement de sous-chaînes, donc pas de marquage qui glisse quand on corrige une virgule. Le diagnostic exige que **tout empan déclaré porte son marqueur** — c'est la règle de surlignage (§4.3) rendue vérifiable.
 
-**Un terme d'un lien** est soit `"pid.eid"`, soit un `{forme, termes}` **imbriqué** : c'est ce qui permet la chaîne du vice en deux phrases plutôt qu'en un clic.
+**Le `nom` d'un empan est optionnel** (§4.1). Absent, le `texte` en tient lieu partout — c'est ce qui permet d'ajouter le champ **sans changer de schéma** : un contenu écrit avant le 28 juillet reste valide et jouable, simplement moins lisible. Le diagnostic de l'atelier le signale par un **avertissement**, jamais une erreur.
+
+**Deux attributs optionnels sur un bloc de grammaire**, tous deux introduits par la continuation (§4.5) :
+
+- `imbrique: true` — la liaison **emboîte** ce qui a été composé jusque-là comme terme unique de sa propre forme, au lieu de remplacer la forme courante. C'est ce qui fait tenir *« a et b désignent la même chose, ce qui est contraire à l'article 7 »* en une seule composition. Sans cet attribut, le comportement est celui d'avant : la dernière forme rencontrée gagne, les termes restent à plat.
+- `libelle` — le texte du **bouton**, quand il diffère de ce qui sera rendu dans la phrase. Un seul usage aujourd'hui : le bloc de clôture, dont le bouton dit *« — en rester là »* et qui n'écrit rien.
+
+**Un terme d'un lien** est soit `"pid.eid"`, soit un `{forme, termes}` **imbriqué** : c'est ce qui permet la chaîne du vice en une comparaison et sa continuation, plutôt qu'en un clic. La déclaration des `liens` n'a **pas changé** au 28 juillet — c'est la même forme réduite, atteinte par un chemin plus court.
+
+**La source `note`** (un terme rempli par une phrase déjà close, jadis le bloc *« ce qui précède »*) ne figure plus dans le contenu livré, mais **le moteur et le jeu la supportent toujours** : une affaire qui l'emploie se joue sans modification. C'est le même principe que le repli embarqué — on ne retire pas une capacité du moteur parce que le contenu du jour ne s'en sert pas.
 
 **La liste des dimensions vit dans le contenu**, mais **le moteur ne lit aucun de ces noms** : il compare des `dim` égales, un point. Ajouter `comment` est un geste d'atelier, pas de code.
 
@@ -367,6 +420,13 @@ Dit autrement : **le contenu appartient à l'atelier, les règles appartiennent 
 
 `app/moteur.js` est **pur, sans données** : `creerMoteur(GRAMMAIRE, CHAMPS, LIENS)` rend `valider`, `reduire`, `lienDe`, `rendre`, `squelettes`… Il est chargé tel quel par le jeu, par l'atelier et par le banc d'essai — jamais recopié.
 
+**Deux fonctions ont changé le 28 juillet**, toutes deux rétrocompatibles :
+
+- **`reduire(ch)`** accumule au lieu d'écraser. En parcourant la chaîne de blocs, elle empile les termes et retient la forme courante ; à la rencontre d'un bloc `imbrique` (§11), ce qui a été accumulé devient le **terme unique** de la nouvelle forme : `termes = [{forme, termes}]`. Une grammaire sans aucun `imbrique` produit exactement le résultat d'avant — la dernière forme gagne, les termes restent plats.
+- **`rendre(ch)`** écrit le **`nom`** d'un empan (§4.1) et non plus sa citation, avec repli sur `texte` ; et elle ne place pas d'espace devant un fragment qui commence par une ponctuation, pour que *« …même chose »* + *« , ce qui est contraire… »* se recolle proprement (§8.8).
+
+`squelettes()` n'a pas bougé : elle explore les chemins de la continuation sans rien savoir d'eux.
+
 Les **données**, elles, ont trois provenances selon le contexte :
 
 | Consommateur | GRAMMAIRE | CHAMPS | LIENS |
@@ -386,15 +446,17 @@ Ce qui reste à dérouler **quand on modifie le moteur de `index.html`** (et seu
 | Règle du moteur | Dans `index.html` | Reflet dans `atelier_v3.html` |
 |---|---|---|
 | Rendu des empans : tout `{{eid}}` devient un empan cliquable, coloré par sa dimension, jamais par sa pertinence | `rendreTexte()`, `ouvrirPiece()` | l'aperçu de pièce de l'inspecteur |
-| Surligner → mémoire (privé, gratuit, illimité, dédoublonné ; re-cliquer oublie) | `surligner()`, `renderMemoire()` | `simSurligner()` |
-| Composer : blocs offerts par l'état, termes pris en mémoire ou au brouillon, refus des seules erreurs de catégorie | `blocsOfferts()`, `poserBloc()`, `cloreCompo()` | `simComposer()` + l'onglet Grammaire |
-| Verser au brouillon = privé ; verser à la plaidoirie = transmis, et **seul** déclencheur de réplique | `cloreCompo()`, `verserPlaidoirie()`, `reponseAvocat()` | `simVerser()`, `simReplique()` |
-| Les trois drapeaux du vice (§4.7) | `cloreCompo()`, `verserPlaidoirie()` | pastilles `vice_pressenti` / `vice_trouve` / `vice_expose` |
-| Avancement : la session suivante part quand une phrase versée porte le `attend` de la session courante | `avancerSurAttente()`, `envoyerRemise()` | `simVerser()` + badge ⚙ des sessions |
+| Surligner → mémoire (privé, gratuit, illimité, dédoublonné ; re-cliquer oublie) — **une seule liste, qui sert aussi de clavier** (§4.6) | `surligner()`, `renderAtelier()` | `simSurligner()` |
+| Composer : blocs offerts par l'état, termes pris dans la mémoire, refus des seules erreurs de catégorie | `blocsOfferts()`, `poserBloc()`, `cloreCompo()` | `simComposer()` + l'onglet Grammaire |
+| **Continuation** : une comparaison close n'est pas finale — « en rester là » ou une liaison-article qui l'emboîte (§4.5) | l'automate du contenu + `reduire()` de `moteur.js` | l'onglet Grammaire (squelettes) |
+| Clore une phrase = privé, elle attend **sur place** ; l'envoyer = transmis, et **seul** déclencheur de réplique | `cloreCompo()`, `envoyer()`, `reponseAvocat()` | `simEnvoyer()`, `simReplique()` |
+| **Le plan ne retient que les moyens** : conclusion, faux vice, ou ce qui sert l'attente (§4.6) | `estMoyen()`, `renderAtelier()` | `simEnvoyer()` + la frise |
+| Les trois drapeaux du vice (§4.7) | `cloreCompo()`, `envoyer()` | pastilles `vice_pressenti` / `vice_trouve` / `vice_expose` |
+| Avancement : la session suivante part quand une phrase envoyée porte le `attend` de la session courante | `avancerSurAttente()`, `envoyerRemise()` | `simEnvoyer()` + badge ⚙ des sessions |
 | Réplique : vice+conclusion / faux / `lien.rep` / escalade `rep_inutile` (arité 2) ou `rep_sans_rapport` (arité 1) | `reponseAvocat()` | `simReplique()` |
 | Index du dossier (vu / pas‑vu) | `renderDossier()` (pur affichage) | mentionné dans la frise |
-| Clôture : ouverte quand la dernière attente est servie ; intro + affirmation 1 ; brouillon vide → présentoir vide | `instructionComplete()`, `cloturer()` | `simInstructionComplete()`, `simCloturer()` |
-| Répétition : laisser passer / verser une phrase contre l'affirmation / déjà versée → `deja` | `avancerRepetition()`, `verserContre()` | `simAvancer()`, `simPresenter()` |
+| Clôture : ouverte quand la dernière attente est servie ; intro + affirmation 1 ; journal vide → présentoir vide | `instructionComplete()`, `cloturer()` | `simInstructionComplete()`, `simCloturer()` |
+| Répétition : laisser passer / envoyer une phrase contre l'affirmation / déjà envoyée → `deja`. **Le présentoir lit le journal des phrases closes** — c'est le dernier moment du dilemme (§4.7) | `avancerRepetition()`, `verserContre()` | `simAvancer()`, `simPresenter()` |
 | Fins : `vice_trouve ? (vice_expose ? 1 : 2) : 3` + `variante_faux` | `finir()` | `simConfirmer()` + badge ⚙ du bloc « fins » |
 | Manuels : règles = pièces dont le `type` contient « règle », **parmi les pièces livrées** ; `directives`/`avis_exploitation` optionnels | `openManuels()` | contrôles du diagnostic (`valider()`) |
 
@@ -402,24 +464,26 @@ Méthode : modifier le moteur → mettre à jour la ou les fonctions `sim*` corr
 
 Méthode (contenu du SEED) : modifier `SEED` dans `atelier_v3.html` → `npm run export:seed` → relancer les suites.
 
-**Ce que le diagnostic de l'atelier contrôle**, au-delà du câblage : la **règle de surlignage** (empan sans marqueur → erreur ; heure laissée hors marqueur → avertissement), le **doublon banal** dans les deux sens (§4.4), la **grammaire** (impasse de l'automate, clôture sans forme, forme indicible, lien insensé au regard des catégories), le **vice** (pas de conclusion → erreur ; plusieurs canaux → avertissement) et les **sessions** (sans `attend`, ou attendant un tag qu'aucun lien ne porte → erreur).
+**Ce que le diagnostic de l'atelier contrôle**, au-delà du câblage : la **règle de surlignage** (empan sans marqueur → erreur ; heure laissée hors marqueur → avertissement), le **nom d'empan** (absent → avertissement, §11), le **doublon banal** dans les deux sens (§4.4), la **grammaire** (impasse de l'automate, clôture sans forme, forme indicible, lien insensé au regard des catégories, **emboîtement dans le vide** — un bloc `imbrique` atteignable sans qu'aucune forme ait été fixée avant lui), le **vice** (pas de conclusion → erreur ; plusieurs canaux → avertissement) et les **sessions** (sans `attend`, ou attendant un tag qu'aucun lien ne porte → erreur).
 
 ## 16. Les harnais de test
 
 Six suites vivent **dans le projet**, sur un harnais jsdom commun (`harnais.js`), qui inline `content.js` **et** `moteur.js` au boot.
 
 > **Les tests ne nomment aucun contenu.** Ni pièce, ni empan, ni valeur : tout se dérive de la *forme* via les sélecteurs du harnais — `lienVice`/`lienConclusion`/`lienFaux`/`lienTag`, `composerLien(w,L)` (compose la phrase qui réalise un lien donné, quel qu'il soit, en parcourant l'automate), `phrasesBruit(w,n)` (phrases sensées sans lien), `cheminVers`, `instruire` (le chemin docile), `terminer`/`numeroFin`. Pour l'atelier, les mêmes sélecteurs existent sous `surContenu`. Conséquence : **changer entièrement d'affaire ne casse pas une seule suite.**
+>
+> `composerLien` connaît **deux façons** d'atteindre une forme emboîtée, et essaie la seconde si la première échoue : la **continuation** (prolonger la composition en cours par un bloc `imbrique`, §4.5) et l'ancienne **source `note`** (clore, puis repartir d'un bloc *« ce qui précède »*). C'est ce qui fait que `test_autre_affaire.js` — dont l'affaire abstraite est écrite à l'ancienne — reste vert sans qu'une ligne de son contenu ne bouge : la preuve, à chaque exécution, que la rétrocompatibilité annoncée au §11 est réelle.
 
 | Suite | Cible | Ce qu'elle prouve |
 |---|---|---|
 | `test_o5.js` (32) | le jeu, contenu **embarqué** | l'index du dossier (vu / pas-vu) ; tout empan est rendu cliquable et aucun marqueur ne fuit ; surligner et composer sont gratuits, illimités, dédoublonnés ; la marge de bruit est non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (31) | le jeu, contenus **mutés** injectés inline | le décâblage : renommage de toutes les pièces, `declenche`/`une_fois`/`qui`, `attend`/`apres`, Manuels par type **et par livraison**, les trois drapeaux (dont « pressentir sans conclure → Fin 3 »), dimensions entièrement renommées, rejet d'un contenu de schéma 2 |
-| `test_autre_affaire.js` (20) | le jeu, **affaire de test** | la preuve du découplage : une affaire abstraite — sa propre grammaire, ses propres dimensions, 3 sessions — se joue de bout en bout, trois fins comprises |
-| `test_parcours.js` (41) | le jeu | l'ergonomie et le grain fin : composer bloc à bloc, retirer, tout effacer ; refus de catégorie (le seul refus qui existe) ; modale de pièce et légende ; réplique **seulement** au versement ; `rep_faux` et `variante_faux` ; les deux escalades séparées ; répétition (`deja`, cible, refus de confirmer pendant) |
-| `test_sauvegarde.js` (26) | le jeu | la partie survit au rechargement (mémoire, brouillon, plan, **composition en cours**, drapeaux, `une_fois` non rejoué) ; la signature jette une sauvegarde d'un autre contenu ; la fin efface |
-| `smoke_atelier.js` (61) | l'atelier + le couple atelier→jeu | SEED sans erreur ; diagnostic (empan sans marqueur, valeur hors marqueur, dimension inconnue, **doublon banal** dans les deux sens, vice sans conclusion, session sans `attend`, lien insensé, pièce non livrée) ; migration 2→3 idempotente ; renommage d'empans et de pièces ; `conclureLien` ; simulation des trois drapeaux et du chemin docile ; export `schema: 3` adopté et joué par le moteur ; autosave |
+| `test_autre_affaire.js` (20) | le jeu, **affaire de test** | la preuve du découplage : une affaire abstraite — sa propre grammaire, ses propres dimensions, 3 sessions, et une chaîne écrite **à l'ancienne** (source `note`) — se joue de bout en bout, trois fins comprises |
+| `test_parcours.js` (60) | le jeu | l'ergonomie et le grain fin : composer bloc à bloc, retirer, tout effacer ; **la continuation** (une comparaison n'est pas finale ; « en rester là » ; la forme emboîtée obtenue est celle du lien déclaré) ; refus de catégorie (le seul refus qui existe) ; modale de pièce et légende ; **la phrase close attend sur place et l'envoi la vide** ; réplique **seulement** à l'envoi ; **le plan ne retient que les moyens** ; `rep_faux` et `variante_faux` ; les deux escalades séparées ; répétition (`deja`, cible, refus de confirmer pendant) |
+| `test_sauvegarde.js` (33) | le jeu | la partie survit au rechargement (mémoire, journal, plan, **composition en cours**, **phrase close en attente**, drapeaux, `une_fois` non rejoué) ; la signature jette une sauvegarde d'un autre contenu ; la fin efface |
+| `smoke_atelier.js` (64) | l'atelier + le couple atelier→jeu | SEED sans erreur ; diagnostic (empan sans marqueur, **empan sans nom**, valeur hors marqueur, dimension inconnue, **doublon banal** dans les deux sens, vice sans conclusion, session sans `attend`, lien insensé, **emboîtement dans le vide**, pièce non livrée) ; migration 2→3 idempotente ; renommage d'empans et de pièces ; `conclureLien` ; simulation des trois drapeaux et du chemin docile ; export `schema: 3` adopté et joué par le moteur ; autosave |
 
-Règle d'or : **une évolution n'est finie que quand les six suites sont vertes** (211 contrôles). `npm test` enchaîne aussi `tests/verifier_content_sync.js` — un garde-fou, pas une septième suite. (`grammaire/test_grammaire2.js` est un banc d'essai de démonstration : pas de code de sortie, pas dans `npm test`.)
+Règle d'or : **une évolution n'est finie que quand les six suites sont vertes** (240 contrôles). `npm test` enchaîne aussi `tests/verifier_content_sync.js` — un garde-fou, pas une septième suite. (`grammaire/test_grammaire2.js` est un banc d'essai de démonstration : pas de code de sortie, pas dans `npm test`.)
 
 ## 17. Résumé en trois phrases
 

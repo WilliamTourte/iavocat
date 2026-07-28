@@ -42,6 +42,27 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
 }
 {
   const w = neuf();
+  const e = SC.unEmpan(w.CONTENU);
+  delete w.CONTENU.pieces[e.pid].empans[e.eid].nom;
+  check("un empan sans nom est un avertissement, pas une erreur",
+    msgs(w).includes("Empan sans nom") && !err(w).some(i => /sans nom/.test(i.msg)));
+}
+{
+  // un bloc qui emboîte alors qu'aucune forme n'a encore été fixée
+  const w = neuf();
+  const G = w.CONTENU.grammaire;
+  G.blocs.push({ id:"vide", type:"liaison", de:G.depart, vers:G.finaux[0],
+                 imbrique:true, texte:", ce qui est douteux", forme:Object.keys(G.formes)[0] });
+  check("emboîter dans le vide est une erreur", msgs(w).includes("emboîte dans le vide"));
+}
+{
+  // le bloc « en rester là » : sans forme, mais parti d'un état déjà formé
+  const w = neuf();
+  check("un bloc de clôture sans forme, après une forme fixée, passe",
+    !msgs(w).includes("clôt une phrase sans forme"));
+}
+{
+  const w = neuf();
   const d = w.CONTENU.dimensions[0];
   let n = 0;
   for (const p of Object.values(w.CONTENU.pieces))
@@ -195,7 +216,7 @@ console.log("\n=== La simulation reflète le moteur ===");
   w.simComposer(SC.iLienConclusion(w.CONTENU));
   check("composer la conclusion lève vice_trouve", w.SIM.viceTrouve && !w.SIM.viceExpose);
   const iConc = w.SIM.brouillon.findIndex(n => n.lien === SC.iLienConclusion(w.CONTENU));
-  w.simVerser(iConc);
+  w.simEnvoyer(iConc);
   check("la verser lève vice_expose", w.SIM.viceExpose);
   check("l'avocat a répondu", w.SIM.fil.some(m => m.texte === w.CONTENU.avocat.rep_vice));
 }
@@ -210,7 +231,7 @@ console.log("\n=== La simulation reflète le moteur ===");
     if (i < 0) break;
     for (const k of w.feuillesLien(w.CONTENU.liens[i])) w.simSurligner(k);
     w.simComposer(i);
-    w.simVerser(w.SIM.brouillon.findIndex(n => n.lien === i));
+    w.simEnvoyer(w.SIM.brouillon.findIndex(n => n.lien === i));
   }
   check("toutes les sessions sont servies", w.SIM.remises === w.CONTENU.remises.length);
   w.simCloturer();
