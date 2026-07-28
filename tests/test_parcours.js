@@ -4,7 +4,7 @@
 // grain fin de la répétition de plaidoirie. Contenu embarqué.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, canal, memoire, atelier, plan } = H;
-const boot = () => H.boot({contenu:null});
+const boot = () => H.boot();
 
 console.log("\n=== Le composeur, bloc par bloc ===");
 {
@@ -39,7 +39,9 @@ console.log("\n=== Refus de catégorie : le seul refus qui existe ===");
   const iT = () => w.blocsOfferts().findIndex(x => x.type === "terme" && x.source !== "note");
   w.poserBloc(iT(), w.S.memoire.indexOf(a.id));
   w.poserBloc(iT(), w.S.memoire.indexOf(b.id));
-  H.cloreSurPlace(w);
+  // C'est l'article — le seul moyen de clore — qui déclenche la validation.
+  const iArt = w.blocsOfferts().findIndex(x => x.imbrique);
+  if (iArt >= 0) w.poserBloc(iArt); else H.cloreSurPlace(w);
   check("deux dimensions différentes : la phrase est refusée", !!w.S.refus);
   check("le message ne dit rien de plus que la catégorie",
     /ne se comparent pas|dimensions différentes|slot/.test(w.S.refus));
@@ -56,8 +58,7 @@ console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
   // deux empans doit produire exactement la forme déclarée — sans que le
   // joueur ait rien eu à choisir.
   let tous = true, n = 0;
-  for (const L of w.JEU.liens) {
-    if ((w.JEU.grammaire.formes[L.forme].arite || 2) !== 2) continue;
+  for (const L of H.comparaisons(w)) {
     n++;
     if (w.M.deduire(L.termes[0], L.termes[1]) !== L.forme) tous = false;
   }
@@ -68,22 +69,25 @@ console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
      le joueur lit « l'heure d'arrivée l'heure des éclats ». Aucune suite ne
      l'avait vu ; c'est la relecture à l'œil qui l'a attrapé. */
   let patronsOk = true, vus = 0;
-  for (const L of w.JEU.liens) {
+  for (const L of H.comparaisons(w)) {
     const f = w.JEU.grammaire.formes[L.forme];
-    if ((f.arite || 2) !== 2 || !f.patron) continue;
-    const i = H.composerLien(w, L);
-    if (i < 0) { patronsOk = false; continue; }
+    if (!f.patron) continue;
+    // La comparaison ne peut plus se clore seule : on la lit dans le composeur,
+    // là où le joueur la voit avant de choisir son article.
+    w.viderCompo();
+    if (!H.poserComparaison(w, L)) { patronsOk = false; continue; }
     vus++;
     const nom = id => (w.M.C[id] || {}).nom;
     const ord = w.M.ordonner(L.forme, L.termes);
     const attendu = f.patron.replace("{a}", nom(ord[0])).replace("{b}", nom(ord[1]));
-    if (w.S.brouillon[i].texte !== attendu + ".") patronsOk = false;
+    if (!w.M.rendre(w.chaineCompo()).startsWith(attendu)) patronsOk = false;
   }
+  w.viderCompo();
   check(`les ${vus} phrases déduites s'écrivent par leur patron, verbe compris`, vus > 0 && patronsOk);
 
   // L'ordre canonique : une forme ordonnée range ses termes selon son `sens`,
   // quel que soit l'ordre dans lequel le joueur a cliqué.
-  const ord = w.JEU.liens.find(L => (w.JEU.grammaire.formes[L.forme]||{}).ordonne);
+  const ord = H.comparaisons(w).find(L => (w.JEU.grammaire.formes[L.forme]||{}).ordonne);
   if (ord) {
     const [x, y] = ord.termes;
     check("l'ordre des clics n'importe pas : la forme range ses termes",
@@ -142,19 +146,19 @@ console.log("\n=== La continuation : une comparaison demande toujours « et donc
   check("la comparaison est posée mais PAS close", w.S.compo.length > 0 && w.S.brouillon.length === 0);
   const offerts = w.blocsOfferts();
   check("l'automate offre de continuer", offerts.some(b => b.imbrique));
-  check("et offre d'en rester là", offerts.some(b => !b.forme && !b.imbrique));
   check("toutes les liaisons-articles sont offertes, pas seulement la bonne",
     offerts.filter(b => b.imbrique).length > 1);
 
-  // en rester là : on obtient la comparaison seule
+  /* LE « CF ARTICLE » OBLIGATOIRE : rien ne clôt une comparaison qu'un
+     article. Tout ce que l'IA dit est fondé — il n'y a pas d'issue nue. */
+  check("aucun bloc ne clôt sans qualifier", !offerts.some(b => !b.forme && !b.imbrique));
+  check("tous les blocs offerts portent un article", offerts.every(b => b.imbrique && b.forme));
   const w2 = boot();
   H.livrerTout(w2);
   H.poserComparaison(w2, sous); H.cloreSurPlace(w2);
-  check("« en rester là » clôt sur la comparaison seule",
-    w2.S.brouillon.length === 1 && w2.M.memeRed(w2.S.brouillon[0].reduite, sous));
-  w2.envoyer(0);
-  check("envoyée seule, elle ne lève pas vice_expose", w2.S.vice_pressenti && !w2.S.vice_expose);
-  check("et l'avocat ne l'inscrit pas au plan", !plan(w2).includes(w2.S.brouillon[0].texte));
+  check("une comparaison seule ne peut pas se clore", w2.S.brouillon.length === 0);
+  check("mais le pressentiment, lui, a bien eu lieu au composeur", w2.S.vice_pressenti);
+  check("et il n'a rien transmis", w2.S.plaidoirie.length === 0 && !w2.S.vice_expose);
 
   // continuer : on obtient la forme emboîtée, en UNE phrase
   const i = H.composerLien(w, C);
@@ -239,10 +243,16 @@ console.log("\n=== Le plan ne retient que les moyens ===");
   H.phrasesBruit(w, 3);
   const n = w.S.brouillon.length;
   for (let i = 0; i < n; i++) w.envoyer(i);
-  check("les phrases sans lien font monter l'escalade « et donc ? »", w.S.inutiles >= 2);
+  /* Depuis que l'article est obligatoire, une phrase de bruit est une
+     QUALIFICATION qui ne se rattache à rien : c'est l'escalade
+     `rep_sans_rapport` qui monte, et plus celle des comparaisons nues —
+     lesquelles ne peuvent plus se clore. `rep_inutile` reste un filet, pour
+     une affaire qui offrirait encore de clore sans qualifier. */
+  check("les phrases sans lien font monter l'escalade « sans rapport »", w.S.incompris >= 2);
   check("la seconde réplique n'est pas la première",
-    canal(w).includes(w.JEU.avocat.rep_inutile[1].slice(0, 20)));
-  check("l'escalade des qualifications est un compteur séparé", w.S.incompris === 0);
+    canal(w).includes(w.JEU.avocat.rep_sans_rapport[1].slice(0, 20)));
+  check("l'escalade des comparaisons nues est un compteur séparé, et reste à zéro",
+    w.S.inutiles === 0);
 }
 
 console.log("\n=== La répétition de plaidoirie ===");

@@ -1,35 +1,39 @@
 // Harnais commun des suites IAvocat — jsdom, un seul endroit pour booter
-// le jeu (contenu embarqué, injecté inline, ou graine localStorage) et
+// le jeu (contenu livré, muté et injecté inline, ou graine localStorage) et
 // l'atelier. Chaque suite garde ses assertions ; ici, que la tuyauterie.
 const { JSDOM } = require("jsdom");
 const fs = require("fs");
 
 function creerHarnais(dossier){
   const htmlJeu = fs.readFileSync(dossier + "/index.html", "utf8");
-  const jsMoteur = fs.readFileSync(dossier + "/moteur.js", "utf8");
+  const lire = f => fs.readFileSync(dossier + "/" + f, "utf8");
   let htmlAtelier = null;   // lu paresseusement (toutes les suites n'en ont pas besoin)
   let pass=0, fail=0;
 
   function check(l,c){ if(c){pass++;console.log("  ok — "+l);} else {fail++;console.log("  ÉCHEC — "+l);} }
   function bilan(){ console.log(`\n${pass} ok, ${fail} échec(s)`); process.exit(fail?1:0); }
 
-  /* jsdom ne charge pas les <script src> : on inline moteur.js, qui est la
-     grammaire partagée par le jeu, l'atelier et le banc d'essai. Ce n'est pas
-     une copie — c'est le fichier même, lu sur le disque à chaque boot. */
-  const injecterMoteur = h =>
-    h.replace('<script src="moteur.js"></script>', `<script>${jsMoteur}</script>`);
+  /* jsdom ne charge aucun <script src> : on inline les trois fichiers voisins
+     — la grammaire, les règles, le contenu. Ce ne sont pas des copies : ce
+     sont les fichiers mêmes, relus sur le disque à chaque boot. C'est ce qui
+     permet au contenu de n'exister qu'en un exemplaire (§12). */
+  const injecter = h => h
+    .replace('<script src="moteur.js"></script>', `<script>${lire("moteur.js")}</script>`)
+    .replace('<script src="regles.js"></script>', `<script>${lire("regles.js")}</script>`)
+    .replace('<script src="content.js"></script>', `<script>${lire("content.js")}</script>`);
 
   /* boot({contenu, graine, url}) :
      - contenu : objet → injecté inline à la place de content.js ;
-                 null → balise retirée (contenu embarqué) ;
-                 absent → balise laissée (jsdom ne charge pas les src : embarqué aussi)
+                 null → balise retirée (aucun contenu : le jeu affiche sa panne)
+                 absent → content.js, le contenu livré
      - graine  : {clé:valeur} semé dans localStorage AVANT les scripts
      - url     : origine (nécessaire pour localStorage ; posée d'office si graine) */
   function boot(opts={}){
-    let h=injecterMoteur(htmlJeu);
+    let h=htmlJeu;
     if("contenu" in opts)
       h=h.replace('<script src="content.js"></script>',
         opts.contenu?`<script>window.CONTENU=${JSON.stringify(opts.contenu)};</script>`:"");
+    h=injecter(h);
     const url=opts.url || (opts.graine ? "http://localhost/" : undefined);
     return new JSDOM(h,{runScripts:"dangerously", ...(url?{url}:{}),
       beforeParse(win){ if(opts.graine) for(const [k,v] of Object.entries(opts.graine)) win.localStorage.setItem(k,v); }
@@ -38,11 +42,13 @@ function creerHarnais(dossier){
   function bootAtelier(opts={}){
     if(htmlAtelier===null) htmlAtelier=fs.readFileSync(dossier + "/atelier_v3.html","utf8");
     const url=opts.url || "http://localhost/";   // l'atelier vit sur localStorage
-    return new JSDOM(injecterMoteur(htmlAtelier),{runScripts:"dangerously",url,
+    return new JSDOM(injecter(htmlAtelier),{runScripts:"dangerously",url,
       beforeParse(win){ if(opts.graine) for(const [k,v] of Object.entries(opts.graine)) win.localStorage.setItem(k,v); }
     }).window;
   }
-  function embarque(){ return JSON.parse(JSON.stringify(boot({contenu:null}).JEU)); }
+  /* Le contenu LIVRÉ — celui de content.js, le seul qui existe. Les suites qui
+     éprouvent le décâblage partent de lui et le mutent. */
+  function contenuLivre(){ return JSON.parse(JSON.stringify(boot().JEU)); }
 
   const canal    = w => w.document.getElementById("canal").textContent;
   /* La mémoire et le composeur ne font plus qu'une colonne (§4.6) : les deux
@@ -58,7 +64,17 @@ function creerHarnais(dossier){
   const J = w => w.JEU;
 
   // Liens, par leur rôle déclaré
-  const lienVice       = w => J(w).liens.find(L=>L.vice && !L.conclusion);
+  /* LE PRESSENTIMENT. Depuis que l'article est obligatoire, la comparaison du
+     vice ne peut plus se clore seule : elle n'est plus déclarée comme lien à
+     part, elle est le TERME EMBOÎTÉ de la conclusion. On la lit donc là — et
+     si une affaire l'expose encore comme lien nu (écriture à l'ancienne), on
+     prend celui-là. */
+  const lienVice = w => {
+    const nu = J(w).liens.find(L=>L.vice && !L.conclusion);
+    if(nu) return nu;
+    const c = lienConclusion(w), t = c && (c.termes||[])[0];
+    return (t && typeof t === "object") ? t : undefined;
+  };
   const lienConclusion = w => J(w).liens.find(L=>L.vice && L.conclusion);
   const lienFaux       = w => J(w).liens.find(L=>L.faux);
   /* Le lien qui porte un tag d'attente. Une même attente peut être servie de
@@ -70,6 +86,23 @@ function creerHarnais(dossier){
     return (docile ? cands.find(L=>!L.vice) : cands.find(L=>L.vice)) || cands[0];
   };
   const liensNeutres   = w => J(w).liens.filter(L=>!L.vice && !L.faux);
+  /* Toutes les COMPARAISONS (arité 2) que le contenu déclare. Depuis que
+     l'article est obligatoire, elles ne sont plus des liens de plein droit :
+     elles vivent emboîtées dans les qualifications. On les cherche donc là où
+     elles sont, sans supposer laquelle des deux écritures l'affaire emploie. */
+  const comparaisons = w => {
+    const out=[], vus=new Set();
+    const rec = t => {
+      if(!t || typeof t!=="object" || Array.isArray(t)) return;
+      if(t.forme && (((J(w).grammaire.formes||{})[t.forme]||{}).arite||2)===2){
+        const cle=JSON.stringify([t.forme,t.termes]);
+        if(!vus.has(cle)){ vus.add(cle); out.push({forme:t.forme,termes:t.termes}); }
+      }
+      for(const u of (t.termes||[])) rec(u);
+    };
+    for(const L of J(w).liens) rec(L);
+    return out;
+  };
   const arite = (w,L) => ((J(w).grammaire.formes||{})[L.forme]||{}).arite || 2;
 
   // --- composer : le geste du jeu, joué par les fonctions du moteur ---
@@ -165,14 +198,25 @@ function creerHarnais(dossier){
     }
     return [];
   }
+  /* Les liaisons-articles offertes ici et maintenant : celles dont la pièce a
+     été livrée. Vide pour une affaire écrite à l'ancienne. */
+  const articlesDisponibles = w => {
+    const livrees=new Set(w.piecesLivrees());
+    return (J(w).grammaire.blocs||[]).filter(b=>b.imbrique && b.forme && (!b.piece || livrees.has(b.piece)));
+  };
   /* Des phrases sensées qui ne portent AUCUN lien : la marge de bruit. Sert à
-     vérifier que composer et verser restent gratuits et illimités. */
+     vérifier que composer et verser restent gratuits et illimités.
+     Depuis que l'article est obligatoire, une phrase de bruit est une
+     comparaison quelconque QUALIFIÉE par un article quelconque — c'est-à-dire
+     bien formée, fondée, et sans le moindre intérêt. C'est exactement ce que
+     l'invariant demande : « sensé » ne doit jamais valoir « correct ». */
   function phrasesBruit(w,n){
     const G=J(w).grammaire;
     const emp=w.CHAMPS;
     const deduction=(G.blocs||[]).some(x=>x.deduit);
     const forme2=Object.entries(G.formes).find(([,f])=>(f.arite||2)===2&&f.relation==="meme_dim");
     if(!deduction && !forme2) return 0;
+    const arts=articlesDisponibles(w);
     let fait=0;
     for(let i=0;i<emp.length&&fait<n;i++)
       for(let k=i+1;k<emp.length&&fait<n;k++){
@@ -185,10 +229,18 @@ function creerHarnais(dossier){
                if(!G.formes[nomForme].slots[0].includes(a.dim)) continue; }
         if(!nomForme) continue;
         const termes=w.M.ordonner ? w.M.ordonner(nomForme,[a.id,b.id]) : [a.id,b.id];
-        const cand={forme:nomForme,termes};
-        if(J(w).liens.some(L=>w.M.memeRed({forme:L.forme,termes:L.termes},cand))) continue;
-        if(w.S.brouillon.some(x=>w.M.memeRed(x.reduite,cand))) continue;
-        if(composerLien(w,cand)>=0) fait++;
+        const comparaison={forme:nomForme,termes};
+        // Chaque continuation possible fait une phrase de bruit de plus ; sans
+        // continuation (affaire à l'ancienne), la comparaison se clôt seule.
+        const cands = arts.length
+          ? arts.map(bl=>({forme:bl.forme, termes:[comparaison]}))
+          : [comparaison];
+        for(const cand of cands){
+          if(fait>=n) break;
+          if(J(w).liens.some(L=>w.M.memeRed({forme:L.forme,termes:L.termes},cand))) continue;
+          if(w.S.brouillon.some(x=>w.M.memeRed(x.reduite,cand))) continue;
+          if(composerLien(w,cand)>=0) fait++;
+        }
       }
     return fait;
   }
@@ -240,8 +292,16 @@ function creerHarnais(dossier){
       return out;
     },
     dim: (c,k) => { const [pid,eid]=k.split("."); return ((c.pieces[pid]||{}).empans||{})[eid]?.dim; },
-    iLienVice: c => c.liens.findIndex(L=>L.vice && !L.conclusion),
+    // Le lien qui PORTE le vice : la conclusion, depuis que l'article est
+    // obligatoire ; le pressentiment nu si l'affaire l'expose encore.
+    iLienVice: c => { const i=c.liens.findIndex(L=>L.vice && !L.conclusion);
+                      return i>=0 ? i : c.liens.findIndex(L=>L.vice); },
     iLienConclusion: c => c.liens.findIndex(L=>L.vice && L.conclusion),
+    // La comparaison du vice, où qu'elle vive : lien nu, ou terme emboîté.
+    sousVice: c => { const L=c.liens.find(x=>x.vice && x.conclusion) || c.liens.find(x=>x.vice);
+                     if(!L) return null;
+                     const t=(L.termes||[])[0];
+                     return (t && typeof t==="object") ? t : L; },
     iLienNeutre: c => c.liens.findIndex(L=>!L.vice && !L.faux),
     pidDeclenche: c => Object.keys(c.pieces).find(p=>c.pieces[p].declenche),
     pidRegle: c => Object.keys(c.pieces).find(p=>(c.pieces[p].type||"").includes("règle")),
@@ -256,11 +316,11 @@ function creerHarnais(dossier){
     }
   };
 
-  return { check, bilan, boot, bootAtelier, embarque, canal, memoire, atelier,
-           lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, arite,
+  return { check, bilan, boot, bootAtelier, contenuLivre, canal, memoire, atelier,
+           lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, comparaisons, arite,
            plan, cloreSurPlace, poserComparaison, livrerTout,
            surligner, iMem, composerLien, phrasesBruit, cheminVers,
-           blocChamp, blocNote, blocForme, idBloc,
+           blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
            instruire, terminer, numeroFin, surContenu };
 }

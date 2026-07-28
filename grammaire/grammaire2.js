@@ -1,7 +1,7 @@
 // Jeu de données de DÉMONSTRATION pour la grammaire — pas le contenu joué.
 //
 // Le contenu réel porte sa propre grammaire (`JEU.grammaire`, schéma 3, voir
-// docs/ARCHITECTURE.md §6 et §8) ; ce fichier sert au banc d'essai et à
+// docs/ARCHITECTURE.md §11 et §14) ; ce fichier sert au banc d'essai et à
 // l'onglet « Grammaire » de l'atelier, qui mesurent la marge de bruit sur un
 // échantillon stable. Le moteur, lui, est partagé : ../app/moteur.js.
 //

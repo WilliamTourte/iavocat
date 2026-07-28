@@ -7,12 +7,20 @@ const neuf = () => { const w = H.bootAtelier(); w.demanderExemple(); w.demanderE
 const err = w => w.valider().filter(i => i.niveau === "erreur");
 const msgs = w => w.valider().map(i => i.msg).join(" | ");
 
-console.log("\n=== Le SEED tient debout ===");
+/* L'atelier ne porte plus de copie du contenu : il ÉDITE content.js. Ce bloc
+   remplace donc l'ancien garde-fou de synchronisation — il ne compare plus
+   deux exemplaires, il vérifie que le seul qui existe tient debout. */
+console.log("\n=== content.js tient debout, et c'est lui que l'atelier édite ===");
 {
   const w = neuf();
   check("moteur.js est chargé dans l'atelier", !!w.MoteurGrammaire && !!w.MG());
-  check("le SEED est en schéma 3", w.CONTENU.schema === 3);
+  check("regles.js aussi — le pas-à-pas ne recopie plus les règles", !!w.ReglesJeu && !!w.RG());
+  check("l'atelier part de content.js, pas d'une graine à lui", !!w.LIVRE);
+  check("le contenu chargé est en schéma 3", w.CONTENU.schema === 3);
   check("zéro erreur au diagnostic", err(w).length === 0);
+  const exporte = JSON.stringify(w.nettoyerPourJeu(w.CONTENU), null, 2);
+  check("et le réexporter le rend à l'identique — aucune dérive possible",
+    exporte === JSON.stringify(w.nettoyerPourJeu(JSON.parse(JSON.stringify(w.LIVRE))), null, 2));
   check("aucune dimension sans doublon", !msgs(w).includes("aucun doublon"));
   check("aucun empan non marqué", !msgs(w).includes("Empan non marqué"));
   check("aucune valeur oubliée hors marqueur", !msgs(w).includes("Valeur non marquée"));
@@ -113,7 +121,7 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
 }
 {
   const w = neuf();
-  const LV = w.CONTENU.liens[SC.iLienVice(w.CONTENU)];
+  const LV = SC.sousVice(w.CONTENU);
   const dv = SC.dim(w.CONTENU, LV.termes[0]);
   const valVice = new Set(LV.termes.map(t => {
     const [pid,eid] = String(t).split(".");
@@ -127,8 +135,38 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
     msgs(w).includes("doublon(s) régulier(s)"));
 }
 {
+  /* Un article est une RÉFÉRENCE : il ne porte aucun empan, et il annonce ce
+     qu'il régit. Les deux contrôles qui rendent l'invariant vérifiable. */
   const w = neuf();
-  w.CONTENU.liens = w.CONTENU.liens.filter(L => !(L.vice && L.conclusion));
+  const pidR = SC.pidRegle(w.CONTENU);
+  check("dans le contenu livré, aucune règle ne porte d'empan",
+    Object.values(w.CONTENU.pieces).filter(p => (p.type||"").includes("règle"))
+      .every(p => Object.keys(p.empans||{}).length === 0));
+  check("et chaque règle livrée annonce ce qu'elle régit",
+    Object.values(w.CONTENU.pieces).filter(p => (p.type||"").includes("règle"))
+      .every(p => Array.isArray(p.porte) && p.porte.length));
+  const e = SC.unEmpan(w.CONTENU);
+  w.CONTENU.pieces[pidR].empans = { intrus: { dim: e.dim, valeur: e.valeur, texte: "x", nom: "x" } };
+  w.CONTENU.pieces[pidR].texte += " {{intrus}}";
+  check("une règle qui porte un empan est une erreur", msgs(w).includes("porte 1 empan"));
+}
+{
+  const w = neuf();
+  w.CONTENU.pieces[SC.pidRegle(w.CONTENU)].porte = ["dimension_inventee"];
+  check("un `porte` sur une dimension inconnue est une erreur",
+    msgs(w).includes("dimension inconnue"));
+}
+{
+  const w = neuf();
+  delete w.CONTENU.pieces[SC.pidRegle(w.CONTENU)].porte;
+  check("une règle sans `porte` est un avertissement",
+    msgs(w).includes("n'annonce pas ce qu'elle régit"));
+}
+{
+  const w = neuf();
+  // Un vice déclaré que rien ne conclut : le joueur pourrait le pressentir
+  // sans jamais pouvoir le dire en droit.
+  for (const L of w.CONTENU.liens) if (L.vice) delete L.conclusion;
   check("un vice sans conclusion est une erreur", msgs(w).includes("pas de conclusion"));
 }
 {
@@ -143,7 +181,9 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
 }
 {
   const w = neuf();
-  const L = w.CONTENU.liens[SC.iLienNeutre(w.CONTENU)];
+  const L0 = w.CONTENU.liens[SC.iLienNeutre(w.CONTENU)];
+  // La comparaison à casser est emboîtée sous sa qualification.
+  const L = (L0.termes||[]).length === 1 && typeof L0.termes[0] === "object" ? L0.termes[0] : L0;
   if (L.termes.length === 2 && typeof L.termes[1] === "string") {
     const autre = SC.empans(w.CONTENU).find(e => e.dim !== SC.dim(w.CONTENU, L.termes[0]));
     L.termes[1] = autre.id;
@@ -233,7 +273,12 @@ console.log("\n=== Édition : empans, liens, renommages ===");
 }
 {
   const w = neuf();
-  const i = SC.iLienVice(w.CONTENU);
+  /* Depuis que l'article est obligatoire, le contenu livré ne déclare plus
+     aucune comparaison nue : on en crée une à la main (c'est ce que fait
+     l'auteur dans le graphe), puis on la conclut. */
+  const sv = SC.sousVice(w.CONTENU);
+  w.CONTENU.liens.push({ forme: sv.forme, termes: JSON.parse(JSON.stringify(sv.termes)) });
+  const i = w.CONTENU.liens.length - 1;
   const formes1 = Object.entries(w.CONTENU.grammaire.formes).filter(([,f]) => f.arite === 1).map(([k]) => k);
   const avant = w.CONTENU.liens.length;
   w.conclureLien(i, formes1[0]);
@@ -248,36 +293,43 @@ console.log("\n=== La simulation reflète le moteur ===");
 {
   const w = neuf();
   w.simReset();
-  check("la session 1 part au démarrage", w.SIM.remises === 1);
-  const feuilles = w.feuillesLien(w.CONTENU.liens[SC.iLienVice(w.CONTENU)]);
+  check("la session 1 part au démarrage", w.SIM.remisesEnvoyees === 1);
+  const feuilles = w.feuillesLien(SC.sousVice(w.CONTENU));
   for (const k of feuilles) w.simSurligner(k);
   check("surligner remplit la mémoire, pas le plan",
     w.SIM.memoire.length === feuilles.length && w.SIM.plaidoirie.length === 0);
-  w.simComposer(SC.iLienVice(w.CONTENU));
-  check("composer le lien ⚑ lève vice_pressenti seul", w.SIM.vicePressenti && !w.SIM.viceTrouve);
+  w.simComparer(SC.sousVice(w.CONTENU));
+  check("comparer sans qualifier lève vice_pressenti seul",
+    w.SIM.vice_pressenti && !w.SIM.vice_trouve);
+  check("et n'écrit rien", w.SIM.brouillon.length === 0);
   w.simComposer(SC.iLienConclusion(w.CONTENU));
-  check("composer la conclusion lève vice_trouve", w.SIM.viceTrouve && !w.SIM.viceExpose);
-  const iConc = w.SIM.brouillon.findIndex(n => n.lien === SC.iLienConclusion(w.CONTENU));
+  check("composer la conclusion lève vice_trouve", w.SIM.vice_trouve && !w.SIM.vice_expose);
+  const conc = w.CONTENU.liens[SC.iLienConclusion(w.CONTENU)];
+  const iConc = w.SIM.brouillon.findIndex(n => n.lien && n.lien.conclusion);
   w.simEnvoyer(iConc);
-  check("la verser lève vice_expose", w.SIM.viceExpose);
+  check("la verser lève vice_expose", w.SIM.vice_expose);
   check("l'avocat a répondu", w.SIM.fil.some(m => m.texte === w.CONTENU.avocat.rep_vice));
+  check("le pas-à-pas et le jeu partagent les mêmes règles", !!w.ReglesJeu);
 }
+
+console.log("\n=== Le chemin docile, simulé ===");
 {
-  const w = neuf();
+  const w = H.bootAtelier();
   w.simReset();
   let garde = 0;
-  while (garde++ < 10) {
-    const r = w.CONTENU.remises[w.SIM.remises-1];
+  while (garde++ < 20) {
+    const r = w.CONTENU.remises[w.SIM.remisesEnvoyees-1];
     if (!r || !r.attend || w.SIM.satisfaits.includes(r.attend)) break;
     const i = w.CONTENU.liens.findIndex(L => L.tag === r.attend && !L.vice);
     if (i < 0) break;
     for (const k of w.feuillesLien(w.CONTENU.liens[i])) w.simSurligner(k);
     w.simComposer(i);
-    w.simEnvoyer(w.SIM.brouillon.findIndex(n => n.lien === i));
+    const L = w.CONTENU.liens[i];
+    w.simEnvoyer(w.SIM.brouillon.findIndex(n => n.lien === L));
   }
-  check("toutes les sessions sont servies", w.SIM.remises === w.CONTENU.remises.length);
+  check("toutes les sessions sont servies", w.SIM.remisesEnvoyees === w.CONTENU.remises.length);
   w.simCloturer();
-  while (w.SIM.phase === "repetition") w.simAvancer();
+  while (w.simPhase() === "repetition") w.simAvancer();
   w.simConfirmer();
   check("docile → Fin 3", w.SIM.finie === "3");
 }
