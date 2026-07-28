@@ -104,6 +104,18 @@ function creerHarnais(dossier){
     return out;
   };
   const arite = (w,L) => ((J(w).grammaire.formes||{})[L.forme]||{}).arite || 2;
+  /* Les CITATIONS que le contenu déclare : une forme d'arité 1 dont le terme
+     est ATOMIQUE. Un fait se cite, une relation se fonde (§4.5) — c'est
+     l'emboîtement, et lui seul, qui sépare une citation d'une qualification.
+     Vide pour une affaire qui n'emploie pas la seconde voie de clôture. */
+  const citations = w => J(w).liens.filter(L =>
+    arite(w,L)===1 && typeof (L.termes||[])[0]==="string");
+  // Le bloc qui clôt sur une citation, s'il existe.
+  const blocCite = w => (J(w).grammaire.blocs||[]).find(b=>b.cite && b.forme);
+  /* La liste d'attentes CÔTÉ CONTENU — les objets rendus sont ceux du contenu,
+     pour qu'une suite puisse les retoucher avant le boot. Pour une affaire à
+     l'ancienne, c'est la remise elle-même qui porte `attend` et `apres`. */
+  const attentesContenu = r => Array.isArray(r.attentes) ? r.attentes : [r];
 
   // --- composer : le geste du jeu, joué par les fonctions du moteur ---
   const idBloc = (w,id) => w.blocsOfferts().findIndex(b=>b.id===id);
@@ -121,6 +133,19 @@ function creerHarnais(dossier){
 
     if((f.arite||2)===1){
       const sous=(L.termes||[])[0]||{};
+      /* 0) LA CITATION (§4.5) : un fait se cite. Un seul empan, clos par une
+            liaison qui n'emboîte rien — pas d'article, il n'y a pas de
+            raisonnement à fonder. */
+      if(typeof (L.termes||[])[0]==="string"){
+        const k=(L.termes||[])[0];
+        surligner(w,k);
+        const bT=idBloc(w,blocChamp(w)); if(bT<0) return -1;
+        w.poserBloc(bT,iMem(w,k));
+        const bc=w.blocsOfferts().findIndex(x=>x.forme===L.forme && !x.imbrique);
+        if(bc<0) return -1;
+        w.poserBloc(bc);
+        return trouve();
+      }
       /* 1) LA CONTINUATION (§4.5) : poser la comparaison sans la clore, puis
             la liaison qui l'emboîte — le chemin du contenu d'aujourd'hui. */
       if(sous.forme && poserComparaison(w,sous)){
@@ -242,6 +267,17 @@ function creerHarnais(dossier){
           if(composerLien(w,cand)>=0) fait++;
         }
       }
+    /* Depuis que le fait se cite, chaque empan est à lui seul une phrase close
+       possible. D'une autre nature : elle ne se fonde que sur elle-même, donc
+       elle ne sert pas à chercher — les citer toutes ne dit rien de plus que
+       les avoir lues. Mais elle compte dans la marge. */
+    const bc=blocCite(w);
+    if(bc) for(let i=0;i<emp.length&&fait<n;i++){
+      const cand={forme:bc.forme,termes:[emp[i].id]};
+      if(J(w).liens.some(L=>w.M.memeRed({forme:L.forme,termes:L.termes},cand))) continue;
+      if(w.S.brouillon.some(x=>w.M.memeRed(x.reduite,cand))) continue;
+      if(composerLien(w,cand)>=0) fait++;
+    }
     return fait;
   }
 
@@ -255,10 +291,14 @@ function creerHarnais(dossier){
      verse la phrase qui porte le tag attendu. C'est le chemin docile. */
   function instruire(w){
     let garde=0;
-    while(garde++<20){
-      const r=J(w).remises[w.S.remisesEnvoyees-1];
-      if(!r || !r.attend || w.S.satisfaits.includes(r.attend)) break;
-      const L=lienTag(w,r.attend);
+    while(garde++<40){
+      // Une remise attend une SUITE de réponses (§3). La normalisation vit
+      // dans regles.js, en un seul exemplaire : on l'appelle, on ne la recopie
+      // pas — une affaire à l'ancienne y devient une liste à un élément.
+      const r=w.R.remiseCourante(w.S);
+      const a=w.R.attenteCourante(w.S,r);
+      if(!a) break;
+      const L=lienTag(w,a.attend);
       if(!L) break;
       const i=composerLien(w,L);
       if(i<0) break;
@@ -318,6 +358,7 @@ function creerHarnais(dossier){
 
   return { check, bilan, boot, bootAtelier, contenuLivre, canal, memoire, atelier,
            lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, comparaisons, arite,
+           citations, blocCite, attentesContenu,
            plan, cloreSurPlace, poserComparaison, livrerTout,
            surligner, iMem, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,

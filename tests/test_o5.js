@@ -74,8 +74,20 @@ console.log("\n=== Le vice a un seul canal ===");
   check("un seul article la porte", new Set(conclusions.map(L => L.forme)).size === 1);
   check("le pressentiment, lui, est la comparaison emboîtée — arité 2",
         H.arite(w, H.lienVice(w)) === 2);
-  check("aucune phrase ne se dit sans article : tout lien est une qualification",
+  /* DEUX RÉGIMES DE FONDEMENT (§4.5). Tout lien est d'arité 1 — aucune
+     comparaison ne se dit nue. Mais l'arité 1 couvre deux natures, que
+     l'emboîtement sépare : une CITATION porte un terme atomique (un fait se
+     cite), une QUALIFICATION porte une comparaison emboîtée (une relation se
+     fonde). Rien d'autre ne doit exister. */
+  check("aucune comparaison ne se dit nue : tout lien est d'arité 1",
         w.JEU.liens.every(L => H.arite(w, L) === 1));
+  const cits = H.citations(w);
+  const quals = w.JEU.liens.filter(L => typeof (L.termes || [])[0] === "object");
+  check("les liens se partagent entre citations et qualifications, sans reste",
+        cits.length + quals.length === w.JEU.liens.length);
+  check("les deux natures sont représentées", cits.length > 0 && quals.length > 0);
+  check("une citation ne porte jamais de drapeau du vice",
+        cits.every(L => !L.vice && !L.conclusion));
 }
 
 console.log("\n=== Fin 3 — le chemin docile ===");

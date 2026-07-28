@@ -267,12 +267,23 @@ window.CONTENU = {
         "vers": "S1"
       },
       {
+        "id": "c0",
+        "type": "liaison",
+        "de": "S1",
+        "vers": "FIN",
+        "cite": true,
+        "texte": "",
+        "libelle": "Répondre — citer ce passage",
+        "forme": "citation"
+      },
+      {
         "id": "t1",
         "type": "terme",
         "source": "champ",
         "de": "S1",
         "vers": "S4",
-        "deduit": true
+        "deduit": true,
+        "piece": "r_temoin"
       },
       {
         "id": "a3",
@@ -404,10 +415,47 @@ window.CONTENU = {
             "affirmation"
           ]
         ]
+      },
+      "citation": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "qui",
+            "quoi",
+            "ou",
+            "quand",
+            "combien"
+          ]
+        ]
       }
     }
   },
   "liens": [
+    {
+      "forme": "citation",
+      "termes": [
+        "p_pv.e_arr"
+      ],
+      "tag": "q_arrivee",
+      "rep": "22h04. L'heure des services — c'est celle qui fait foi, retiens-la."
+    },
+    {
+      "forme": "citation",
+      "termes": [
+        "p_pv.e_equip"
+      ],
+      "tag": "q_equipages",
+      "rep": "Deux. Ça n'a l'air de rien — retiens quand même que ce genre de chiffre se retrouve ailleurs, et qu'il ne veut pas dire grand-chose."
+    },
+    {
+      "forme": "citation",
+      "termes": [
+        "t_voisin.e_voix"
+      ],
+      "tag": "q_voix",
+      "rep": "« Vers » 22h30. Un témoin arrondit ; un procès-verbal, non."
+    },
     {
       "forme": "article_3",
       "termes": [
@@ -494,16 +542,43 @@ window.CONTENU = {
   "remises": [
     {
       "qui": "Maître Auber",
-      "texte": "On me confie la défense de Kessler. Je ne te demande pas ce qui s'est passé — je te demande de quoi démonter ce qu'ils avancent. Voilà de quoi commencer. Vois ce que tu en tires.",
+      "texte": "On me confie la défense de Kessler. Je ne te demande pas ce qui s'est passé — je te demande de quoi démonter ce qu'ils avancent. Mais avant de me dire quoi que ce soit : montre-moi que tu sais lire un dossier. Deux pièces, trois questions.",
       "pieces": [
         "p_pv",
-        "t_voisin",
+        "t_voisin"
+      ],
+      "attentes": [
+        {
+          "question": "Le procès-verbal, d'abord. À quelle heure la patrouille est-elle arrivée sur les lieux ?",
+          "attend": "q_arrivee"
+        },
+        {
+          "question": "Bien. Toujours au procès-verbal : combien d'équipages ont été engagés ?",
+          "attend": "q_equipages"
+        },
+        {
+          "question": "Passons à l'audition du voisin. À quelle heure situe-t-il ces éclats de voix ?",
+          "attend": "q_voix",
+          "apres": {
+            "replique": "Tu sais lire, c'est déjà ça. Et tu as maintenant les deux heures sous les yeux — celle de la patrouille et celle du voisin. Voilà l'article 3 : à partir d'ici, je ne te demande plus ce qui est écrit, je te demande ce que tu en tires."
+          }
+        }
+      ]
+    },
+    {
+      "qui": "Maître Auber",
+      "texte": "Ces deux heures, donc. Qu'est-ce qu'elles disent l'une de l'autre — et au regard de quel texte ?",
+      "pieces": [
         "r_temoin"
       ],
-      "attend": "temoin",
-      "apres": {
-        "replique": "Bien. Premier point acquis. L'instruction avance — je te transmets le reste : l'expertise, les deux pièces de prélèvement, et le protocole. C'est l'ADN qui les tient ; c'est là qu'il faut mordre."
-      }
+      "attentes": [
+        {
+          "attend": "temoin",
+          "apres": {
+            "replique": "Premier point acquis. L'instruction avance — je te transmets le reste : l'expertise, les deux pièces de prélèvement, et le protocole. C'est l'ADN qui les tient ; c'est là qu'il faut mordre."
+          }
+        }
+      ]
     },
     {
       "qui": "Maître Auber",
@@ -515,10 +590,14 @@ window.CONTENU = {
         "r_protocole",
         "r_seuil"
       ],
-      "attend": "adn",
-      "apres": {
-        "replique": "Je tiens quelque chose à plaider. Je rédige mes conclusions cette nuit."
-      }
+      "attentes": [
+        {
+          "attend": "adn",
+          "apres": {
+            "replique": "Je tiens quelque chose à plaider. Je rédige mes conclusions cette nuit."
+          }
+        }
+      ]
     }
   ],
   "repetition": {
@@ -549,6 +628,11 @@ window.CONTENU = {
       "Je ne vois pas où tu veux en venir avec ça.",
       "Encore une phrase que je ne peux pas plaider. Qu'est-ce que tu cherches ?",
       "…"
+    ],
+    "rep_hors_sujet": [
+      "Ce n'est pas ce que je te demande. Relis la question.",
+      "Non. La réponse est dans le dossier — cherche le passage qui répond, pas un autre.",
+      "Je t'attends toujours."
     ],
     "deja": "Je l'ai déjà. Je le mets en face de celle-ci."
   },

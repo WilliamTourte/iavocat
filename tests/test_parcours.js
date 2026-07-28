@@ -29,6 +29,7 @@ console.log("\n=== Le composeur, bloc par bloc ===");
 console.log("\n=== Refus de catégorie : le seul refus qui existe ===");
 {
   const w = boot();
+  H.livrerTout(w);   // la comparaison n'est composable qu'une fois son texte reçu (§4.5)
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   const a = w.CHAMPS[0];
   const b = w.CHAMPS.find(c => c.dim !== a.dim);
@@ -116,17 +117,23 @@ console.log("\n=== On n'invoque pas un texte qu'on n'a pas reçu ===");
   const w = boot();
   const G = w.JEU.grammaire;
   const avecPiece = G.blocs.filter(b => b.piece);
-  check("des liaisons sont conditionnées à une pièce", avecPiece.length > 0);
+  check("des blocs sont conditionnés à une pièce", avecPiece.length > 0);
   // amener la composition en S4, où les articles sont offerts
   const C = H.lienConclusion(w);
+  H.livrerTout(w);
   H.poserComparaison(w, C.termes[0]);
   const offerts = w.blocsOfferts();
-  const livrees = new Set(w.piecesLivrees());
-  check("aucun article non livré n'est offert",
-    offerts.every(b => !b.piece || livrees.has(b.piece)));
-  const manquant = avecPiece.find(b => !livrees.has(b.piece));
-  check("l'article du vice, lui, n'est pas encore là", !!manquant);
-  check("il n'est donc pas dans la liste", !offerts.some(b => b.id === (manquant||{}).id));
+  check("tout ce qui est offert a sa pièce",
+    offerts.every(b => !b.piece || new Set(w.piecesLivrees()).has(b.piece)));
+
+  // Le même, sans rien livrer : l'article du vice n'est pas encore là.
+  const w0 = boot();
+  const livrees0 = new Set(w0.piecesLivrees());
+  const manquant = avecPiece.find(b => b.imbrique && !livrees0.has(b.piece));
+  check("l'article du vice n'est pas encore là", !!manquant);
+  check("il n'est donc offert nulle part",
+    !H.cheminVers(w0, (manquant||{}).forme).length
+    || !w0.blocsOfferts().some(b => b.id === (manquant||{}).id));
 
   // une fois la pièce livrée, la même liaison apparaît
   const w2 = boot();
@@ -134,6 +141,83 @@ console.log("\n=== On n'invoque pas un texte qu'on n'a pas reçu ===");
   H.poserComparaison(w2, C.termes[0]);
   check("livré, il est offert", w2.blocsOfferts().some(b => b.id === (manquant||{}).id));
   check("et la conclusion devient composable", H.composerLien(w2, C) >= 0);
+}
+
+console.log("\n=== Un fait se cite, une relation se fonde ===");
+{
+  /* LA SECONDE VOIE DE CLÔTURE (§4.5). Un empan seul se clôt par sa citation :
+     le désigner, c'est déjà citer une pièce, et le fondement est dans le geste.
+     Aucun article n'est requis — il n'y a pas de raisonnement à fonder. */
+  const w = boot();
+  const cits = H.citations(w);
+  check("le contenu déclare des citations", cits.length > 0);
+  const bc = H.blocCite(w);
+  check("un bloc les clôt, et il n'emboîte rien", !!bc && !bc.imbrique);
+
+  const L = cits[0];
+  for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
+  H.surligner(w, L.termes[0]);
+  const iT = w.blocsOfferts().findIndex(b => b.type === "terme" && b.source !== "note");
+  w.poserBloc(iT, w.S.memoire.indexOf(L.termes[0]));
+  const offerts = w.blocsOfferts();
+  check("un seul empan posé, l'automate offre déjà de clore", offerts.some(b => b.cite));
+  check("et aucun article n'est requis pour cette voie",
+    offerts.filter(b => b.cite).every(b => !b.piece));
+  w.poserBloc(offerts.findIndex(b => b.cite));
+  check("la citation se clôt sans article", w.S.brouillon.length === 1);
+  check("elle porte exactement le lien déclaré",
+    w.M.memeRed(w.S.brouillon[0].reduite, {forme: L.forme, termes: L.termes}));
+  check("son terme est resté ATOMIQUE — rien n'a été emboîté",
+    typeof w.S.brouillon[0].reduite.termes[0] === "string");
+  check("elle attend sur place, comme toute phrase close", w.S.prete === 0);
+
+  /* L'ÉCRITURE : un empan s'y lit DEUX FOIS — son nom, puis sa citation, puis
+     la pièce d'où elle sort. C'est ce qui fait qu'une réponse répond au lieu
+     de reformuler la question (§4.1). */
+  const e = w.CHAMPS.find(c => c.id === L.termes[0]);
+  const txt = w.S.brouillon[0].texte;
+  check("la phrase porte le nom de l'empan", txt.includes(e.nom));
+  check("et sa citation", txt.includes(e.texte));
+  check("et la pièce d'où elle vient", !e.court || txt.includes(e.court));
+
+  // Une comparaison, elle, ne s'écrit QUE par les noms — sinon on retomberait
+  // sur l'empilement de citations que le nom avait soigné (§8.8).
+  const w2 = boot();
+  H.livrerTout(w2);
+  const C = H.lienConclusion(w2);
+  const j = H.composerLien(w2, C);
+  const feuilles = w2.CHAMPS.filter(c => (C.termes[0].termes || []).includes(c.id));
+  check("une comparaison ne cite pas, elle nomme",
+    j >= 0 && feuilles.every(c => !w2.S.brouillon[j].texte.includes(c.texte)));
+}
+{
+  /* LA VOIE DE COMPARAISON N'EST PAS OUVERTE D'EMBLÉE. Le second empan attend
+     lui aussi sa pièce : la session 1 n'enseigne qu'à lire (§3). */
+  const w = boot();
+  const G = w.JEU.grammaire;
+  const second = (G.blocs || []).find(b => b.type === "terme" && b.deduit);
+  if (second && second.piece) {
+    check("le second empan est conditionné à une pièce",
+      !new Set(w.piecesLivrees()).has(second.piece));
+    for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
+    const e = w.CHAMPS[0];
+    H.surligner(w, e.id);
+    w.poserBloc(w.blocsOfferts().findIndex(b => b.type === "terme"), 0);
+    check("un empan posé, aucun second n'est offert",
+      !w.blocsOfferts().some(b => b.type === "terme" && b.deduit));
+    check("seule la citation reste, donc la session 1 ne compare pas",
+      w.blocsOfferts().every(b => b.cite));
+    // livrée, elle s'ouvre — et pour tous les empans, sans préférence
+    const w2 = boot();
+    H.livrerTout(w2);
+    for (const pid of Object.keys(w2.JEU.pieces)) w2.ouvrirPiece(pid);
+    H.surligner(w2, e.id);
+    w2.poserBloc(w2.blocsOfferts().findIndex(b => b.type === "terme"), 0);
+    check("une fois la pièce livrée, le second empan est offert",
+      w2.blocsOfferts().some(b => b.type === "terme" && b.deduit));
+    check("et la citation reste offerte à côté : deux voies, pas une bascule",
+      w2.blocsOfferts().some(b => b.cite));
+  }
 }
 
 console.log("\n=== La continuation : une comparaison demande toujours « et donc ? » ===");
@@ -214,16 +298,18 @@ console.log("\n=== Les répliques : seulement au versement ===");
 console.log("\n=== Le plan ne retient que les moyens ===");
 {
   const w = boot();
+  H.livrerTout(w);   // toutes les tournures reçues, pour atteindre l'observation
   // une observation : reconnue, commentée, mais impossible à plaider
   const obs = w.JEU.liens.find(x => !x.tag && !x.conclusion && !x.faux);
   const i = H.composerLien(w, obs);
+  check("l'observation se compose", i >= 0);
   w.envoyer(i);
   check("l'observation est bien partie", w.S.brouillon[i].versee);
   check("l'avocat y a répondu", w.S.fil.length > 1);
   check("mais elle n'entre pas au plan", !plan(w).includes(w.S.brouillon[i].texte));
   check("le plan le dit au lieu de rester muet", plan(w).includes("ce qu'il peut plaider"));
-  // un moyen : ce qui ferme une session
-  const moyen = H.lienTag(w, w.JEU.remises[0].attend);
+  // un moyen : ce qui sert une attente de session
+  const moyen = H.lienTag(w, w.R.attentesDe(w.JEU.remises[0])[0].attend);
   const j = H.composerLien(w, moyen);
   w.envoyer(j);
   check("un moyen, lui, s'y inscrit", plan(w).includes(w.S.brouillon[j].texte));
@@ -239,6 +325,7 @@ console.log("\n=== Le plan ne retient que les moyens ===");
 }
 {
   const w = boot();
+  H.livrerTout(w);
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   H.phrasesBruit(w, 3);
   const n = w.S.brouillon.length;
@@ -253,6 +340,27 @@ console.log("\n=== Le plan ne retient que les moyens ===");
     canal(w).includes(w.JEU.avocat.rep_sans_rapport[1].slice(0, 20)));
   check("l'escalade des comparaisons nues est un compteur séparé, et reste à zéro",
     w.S.inutiles === 0);
+}
+{
+  /* TROIS façons de rater, trois agacements. Une citation hors sujet n'est ni
+     une comparaison nue ni un article mal rattaché : c'est une réponse qui ne
+     répond pas, et elle a son escalade à elle (§4.5). */
+  const w = boot();
+  const bc = H.blocCite(w);
+  if (bc) {
+    for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
+    const attendus = new Set(H.citations(w).map(L => L.termes[0]));
+    const horsSujet = w.CHAMPS.filter(c => !attendus.has(c.id)).slice(0, 2);
+    for (const e of horsSujet) {
+      const i = H.composerLien(w, { forme: bc.forme, termes: [e.id] });
+      if (i >= 0) w.envoyer(i);
+    }
+    check("citer un passage qui ne répond pas fait monter « hors sujet »", w.S.hors_sujet >= 2);
+    check("l'avocat renvoie à la question",
+      canal(w).includes(w.JEU.avocat.rep_hors_sujet[0].slice(0, 20)));
+    check("et les deux autres escalades restent à zéro",
+      w.S.incompris === 0 && w.S.inutiles === 0);
+  }
 }
 
 console.log("\n=== La répétition de plaidoirie ===");
