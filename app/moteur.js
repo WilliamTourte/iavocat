@@ -87,6 +87,15 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     for (let i = 0; i < r.termes.length; i++) {
       const s = f.slots[i], d = dimDe(r.termes[i]);
       if (s !== "*" && !s.includes(d)) return `slot ${i} refuse « ${d} »`;
+      // Un terme EMBOÎTÉ doit tenir pour lui-même. Sans ce contrôle, qualifier
+      // une comparaison bancale la blanchirait : « affirmation » est une
+      // catégorie que tout objet satisfait, y compris le vide. Depuis que
+      // l'article est obligatoire (§4.5), c'est le seul chemin de clôture —
+      // donc le seul endroit où la catégorie peut encore trancher.
+      if (typeof r.termes[i] === "object") {
+        const err = valider(r.termes[i]);
+        if (err) return err;
+      }
     }
     if (f.relation === "meme_dim") {
       const ds = r.termes.map(dimDe);

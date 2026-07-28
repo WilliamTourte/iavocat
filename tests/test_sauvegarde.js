@@ -3,7 +3,7 @@
 // le localStorage via beforeParse.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, canal, memoire } = H;
-const boot = graine => H.boot({contenu:null, graine, url:"http://localhost/"});
+const boot = graine => H.boot({graine, url:"http://localhost/"});
 const bootContenu = (contenu,graine) => H.boot({contenu, graine, url:"http://localhost/"});
 const sauvegarde = w => w.localStorage.getItem("iavocat_partie");
 const CLE = "iavocat_partie";

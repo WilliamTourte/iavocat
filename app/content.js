@@ -1,4 +1,7 @@
-/* Généré par l'atelier IAvocat — ne pas éditer à la main, repasser par l'atelier. */
+/* LE CONTENU DE L'AFFAIRE — l'unique exemplaire. Le jeu (index.html) et
+   l'atelier (atelier_v3.html) chargent ce même fichier ; il n'y a plus ni
+   copie embarquée ni graine d'atelier. On l'écrit dans l'atelier, qui le
+   réexporte par-dessus (« Exporter content.js »). Voir docs/ARCHITECTURE.md §12. */
 window.CONTENU = {
   "schema": 3,
   "dimensions": [
@@ -92,6 +95,9 @@ window.CONTENU = {
       "type": "règle du manuel",
       "qui": "le code de procédure",
       "resume": "Un témoignage contredit par les constatations des services ne fonde pas à lui seul la conviction.",
+      "porte": [
+        "quand"
+      ],
       "texte": "Article 3 — Une déclaration de témoin dont les indications horaires sont contredites par les constatations des services ne peut fonder à elle seule la conviction du tribunal.",
       "empans": {}
     },
@@ -101,7 +107,7 @@ window.CONTENU = {
       "type": "expertise",
       "qui": "le laboratoire",
       "resume": "Comparaison des deux scellés : profil concordant.",
-      "texte": "Comparaison des scellés {{e_scA}} et {{e_scB}}. Profil unique, concordant. {{e_tx}}.",
+      "texte": "Comparaison des scellés {{e_scA}} et {{e_scB}}. Profil unique, concordant. {{e_tx}} ; {{e_seuil}}.",
       "empans": {
         "e_scA": {
           "dim": "quoi",
@@ -120,11 +126,17 @@ window.CONTENU = {
           "valeur": "1200000000",
           "texte": "La probabilité qu'un tiers présente le même profil est d'une sur 1,2 milliard",
           "nom": "la probabilité de coïncidence du profil"
+        },
+        "e_seuil": {
+          "dim": "combien",
+          "valeur": "1000000",
+          "texte": "le seuil réglementaire de l'article 12 est d'une sur un million",
+          "nom": "le seuil probatoire réglementaire"
         }
       },
       "declenche": {
         "une_fois": true,
-        "replique": "Une sur 1,2 milliard. C'est une probabilité, pas une certitude. Va voir ce que leur propre manuel appelle un seuil, et donne-moi de quoi mordre dessus."
+        "replique": "Une sur 1,2 milliard, contre un seuil d'une sur un million. C'est une probabilité, pas une certitude. Donne-moi de quoi mordre dessus — et dis-moi sous quel texte."
       }
     },
     "p_scene": {
@@ -221,6 +233,10 @@ window.CONTENU = {
       "type": "règle du manuel",
       "qui": "le protocole",
       "resume": "Scène et référence recueillies par des personnels distincts, sous scellés distincts.",
+      "porte": [
+        "qui",
+        "quoi"
+      ],
       "texte": "Article 7 — L'échantillon de scène et le prélèvement de référence sont recueillis par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux opérations est indifférent.",
       "empans": {}
     },
@@ -230,15 +246,11 @@ window.CONTENU = {
       "type": "règle du manuel",
       "qui": "le protocole",
       "resume": "Au-delà d'une sur un million, la correspondance est réputée probante.",
-      "texte": "Article 12 — {{e_seuil}}.",
-      "empans": {
-        "e_seuil": {
-          "dim": "combien",
-          "valeur": "1000000",
-          "texte": "Une correspondance dont la probabilité de coïncidence est inférieure à une sur un million est réputée probante",
-          "nom": "le seuil probatoire de l'article 12"
-        }
-      }
+      "porte": [
+        "combien"
+      ],
+      "texte": "Article 12 — Une correspondance dont la probabilité de coïncidence est inférieure à une sur un million est réputée probante.",
+      "empans": {}
     }
   },
   "grammaire": {
@@ -261,14 +273,6 @@ window.CONTENU = {
         "de": "S1",
         "vers": "S4",
         "deduit": true
-      },
-      {
-        "id": "pt",
-        "type": "liaison",
-        "de": "S4",
-        "vers": "FIN",
-        "texte": "",
-        "libelle": "— en rester là"
       },
       {
         "id": "a3",
@@ -405,14 +409,6 @@ window.CONTENU = {
   },
   "liens": [
     {
-      "forme": "anteriorite",
-      "termes": [
-        "p_pv.e_arr",
-        "t_voisin.e_voix"
-      ],
-      "rep": "Il a entendu crier une demi-heure après notre arrivée. Et donc ? Qu'est-ce que j'en fais, à l'audience ? Dis-moi ce que ça fait à son témoignage."
-    },
-    {
       "forme": "article_3",
       "termes": [
         {
@@ -427,28 +423,30 @@ window.CONTENU = {
       "rep": "Voilà qui est utilisable. Son horaire tombe, donc sa déposition ne porte plus rien à elle seule. Je le garde pour l'ouverture."
     },
     {
-      "forme": "identite_oui",
+      "forme": "article_3",
       "termes": [
-        "p_pv.e_sig",
-        "t_voisin.e_sig2"
+        {
+          "forme": "identite_oui",
+          "termes": [
+            "p_pv.e_sig",
+            "t_voisin.e_sig2"
+          ]
+        }
       ],
-      "rep": "Le même brigadier sur les deux pièces, oui. C'est une petite brigade, il signe tout ce qui sort. Passe."
+      "rep": "Le même brigadier au bas des deux pièces, oui. C'est une petite brigade, il signe tout ce qui sort — et l'article 3 parle d'horaires, pas de signatures. Passe."
     },
     {
-      "forme": "identite_oui",
+      "forme": "article_7",
       "termes": [
-        "p_scene.e_grf",
-        "p_ref.e_grf2"
+        {
+          "forme": "identite_oui",
+          "termes": [
+            "p_scene.e_grf",
+            "p_ref.e_grf2"
+          ]
+        }
       ],
-      "rep": "Le greffier réceptionne tout ce qui entre. Ça ne nous mène nulle part. Passe."
-    },
-    {
-      "forme": "identite_non",
-      "termes": [
-        "p_scene.e_sc",
-        "p_ref.e_sc2"
-      ],
-      "rep": "Deux scellés distincts. Sur ce point-là au moins, ils ont suivi leur propre manuel."
+      "rep": "Le greffier réceptionne tout ce qui entre ; l'article 7 ne lui demande rien. Ça ne nous mène nulle part. Passe."
     },
     {
       "forme": "article_7",
@@ -462,15 +460,6 @@ window.CONTENU = {
         }
       ],
       "rep": "Conforme, en effet. C'est l'autre moitié de l'article 7 qui m'intéresserait."
-    },
-    {
-      "forme": "identite_oui",
-      "termes": [
-        "p_scene.e_moi",
-        "p_ref.e_moi2"
-      ],
-      "vice": true,
-      "rep": "Le même homme des deux côtés… Attends. Ce n'est pas rien, mais en l'état c'est une remarque, pas un moyen. Dis-le-moi en droit : quel texte est-ce que ça viole ?"
     },
     {
       "forme": "article_7",
@@ -488,10 +477,15 @@ window.CONTENU = {
       "tag": "adn"
     },
     {
-      "forme": "ordre_grandeur",
+      "forme": "article_12",
       "termes": [
-        "p_adn.e_tx",
-        "r_seuil.e_seuil"
+        {
+          "forme": "ordre_grandeur",
+          "termes": [
+            "p_adn.e_tx",
+            "p_adn.e_seuil"
+          ]
+        }
       ],
       "faux": true,
       "tag": "adn"
@@ -549,9 +543,7 @@ window.CONTENU = {
     "rep_vice": "Attends. Si ta lecture de l'article 7 est la bonne, l'échantillon est irrecevable et ça change le procès. Je vérifie cette nuit et je l'inscris aux conclusions.",
     "rep_faux": "C'est ce que je me disais aussi. Je vérifie ce que la jurisprudence fait de ce seuil, et je le plaide si rien de plus solide ne sort.",
     "rep_inutile": [
-      "Et donc ? Qu'est-ce que j'en fais ? Inutilisable en l'état.",
-      "Tu me donnes des observations, il me faut des moyens. Conclus.",
-      "Tu m'ensevelis. Ne m'envoie que ce qui peut tenir devant un tribunal."
+      "Et donc ? Une observation n'est pas un moyen — dis-le-moi en droit."
     ],
     "rep_sans_rapport": [
       "Je ne vois pas où tu veux en venir avec ça.",

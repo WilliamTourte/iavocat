@@ -13,7 +13,7 @@
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     /* Les couleurs de dimension. Fixes, attribuées par RANG dans
        JEU.dimensions — jamais par la pertinence de l'empan (invariant du
-       §2.3 de docs/ARCHITECTURE.md). */
+       §4.3 de docs/ARCHITECTURE.md). */
     --dim0:#7fb3d5; --dim1:#d99a9a; --dim2:#9dc98c; --dim3:#c9ab6a; --dim4:#b79ad6; --dim5:#7fc9c1;
   }
   *{box-sizing:border-box}
@@ -99,6 +99,10 @@
   .compo .barre .envoi{background:#12324a;color:#bfe0f2;border-color:var(--transmis);font-size:12.5px;padding:4px 12px}
   .compo .barre .envoi:hover{border-color:var(--accent);color:#eaf4fb}
   .bbloc.suite{background:#25313d;border-left:3px solid var(--transmis)}
+  /* Ce qu'un article régit — indicatif, jamais filtrant (§4.5) */
+  .porte{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
+  .manuel li{margin-bottom:9px}
+  .manuel .porte{display:inline;margin:0}
   /* --- plaidoirie --- */
   .liste{list-style:none;padding:0;margin:0}
   .liste li{font-size:13px;padding:8px 0;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}
@@ -139,8 +143,13 @@
   .fin .verdict{font-family:var(--mono);color:var(--warn);margin:4px 0 14px}
   small.note{color:var(--muted)}
   code{font-family:var(--mono);color:var(--accent)}
-  /* --- l'index du dossier --- */
-  .dossier{display:flex;flex-wrap:wrap;gap:6px;padding:2px 0 4px}
+  /* --- l'index du dossier : les pièces à gauche, les règles à droite --- */
+  .dossier{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:2px 0 4px;align-items:start}
+  .dcol{min-width:0}
+  .dcol .dtitre{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+  .dcol .dchips{display:flex;flex-wrap:wrap;gap:6px}
+  .dcol .dvide{color:var(--muted);font-size:11.5px;font-style:italic}
+  @media (max-width:1100px){ .dossier{grid-template-columns:1fr} }
   .dchip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11.5px;
     border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:4px 8px;cursor:pointer;color:var(--txt)}
   .dchip:hover{border-color:var(--accent)}
@@ -184,198 +193,31 @@
 
 <!-- ============================================================
      LA GRAMMAIRE — fonctions pures, partagées avec l'atelier et le
-     banc d'essai. Aucune donnée dedans (docs/ARCHITECTURE.md §6).
+     banc d'essai. Aucune donnée dedans (docs/ARCHITECTURE.md §14).
      ============================================================ -->
 <script src="moteur.js"></script>
 
 <!-- ============================================================
-     CONTENU EXTERNE — produit par l'atelier (« Exporter content.js »).
-     Place content.js à côté de ce fichier : le jeu l'utilisera.
-     S'il est absent ou invalide, le jeu retombe sans bruit sur son
-     contenu embarqué ci-dessous. Marche en file:// et sur itch.io.
+     LES RÈGLES DU JEU — pures elles aussi, et partagées avec le
+     pas-à-pas de l'atelier, qui ne les recopie plus (§12).
+     ============================================================ -->
+<script src="regles.js"></script>
+
+<!-- ============================================================
+     LE CONTENU — produit par l'atelier (« Exporter content.js »).
+     Place content.js à côté de ce fichier : c'est le seul contenu,
+     il n'y a plus de copie embarquée. Marche en file:// et sur itch.io.
      ============================================================ -->
 <script src="content.js"></script>
 
 <script>
 /* ============================================================
-   1) LE CONTENU EMBARQUÉ — filet de sécurité, schéma 3.
-      Peut vieillir sans danger : content.js prime toujours.
-   ============================================================ */
-const JEU_EMBARQUE = {
-  schema:3,
-  dimensions:["quand","qui","ou","quoi","combien"],
-  pieces:{
-    p_pv:{ titre:"PV d'intervention", court:"PV", type:"procès-verbal", qui:"brigadier N.",
-      resume:"L'appel, l'heure d'arrivée, l'état de la porte.",
-      texte:"Le 12 mars, {{e_app}}. {{e_arr}}, {{e_equip}} engagés. {{e_porte}}. Constatations faites {{e_sig}}.",
-      empans:{
-        e_app:{ dim:"quand", valeur:"21:52", texte:"l'appel nous est parvenu à 21h52", nom:"l'heure de l'appel" },
-        e_arr:{ dim:"quand", valeur:"22:04", texte:"nous étions sur les lieux à 22h04", nom:"l'heure d'arrivée de la patrouille" },
-        e_equip:{ dim:"combien", valeur:"2", texte:"deux équipages", nom:"le nombre d'équipages engagés" },
-        e_porte:{ dim:"ou", valeur:"porte", texte:"la porte de l'appartement ne portait aucune trace d'effraction", nom:"la porte de l'appartement" },
-        e_sig:{ dim:"qui", valeur:"brigadier N.", texte:"par mes soins", nom:"le rédacteur du procès-verbal" }
-      } },
-    t_voisin:{ titre:"Audition — le voisin du dessus", court:"audition", type:"audition", qui:"brigadier N.",
-      resume:"Le voisin situe des éclats de voix « vers 22h30 ».",
-      texte:"« {{e_voix}}. {{e_vehic}}. {{e_pal}}. » Audition reçue {{e_sig2}}.",
-      empans:{
-        e_voix:{ dim:"quand", valeur:"22:30", texte:"J'ai entendu des éclats de voix vers 22h30", qui:"le voisin", nom:"l'heure des éclats de voix" },
-        e_vehic:{ dim:"combien", valeur:"2", texte:"Quand j'ai regardé, il y avait déjà deux véhicules en bas", qui:"le voisin", nom:"le nombre de véhicules aperçus" },
-        e_pal:{ dim:"ou", valeur:"palier", texte:"Ça venait du palier", qui:"le voisin", nom:"le palier de l'immeuble" },
-        e_sig2:{ dim:"qui", valeur:"brigadier N.", texte:"par mes soins", nom:"le rédacteur de l'audition" }
-      } },
-    r_temoin:{ titre:"Article 3 — valeur des déclarations", court:"art. 3", type:"règle du manuel", qui:"le code de procédure",
-      resume:"Un témoignage contredit par les constatations des services ne fonde pas à lui seul la conviction.",
-      texte:"Article 3 — Une déclaration de témoin dont les indications horaires sont contredites par les constatations des services ne peut fonder à elle seule la conviction du tribunal.",
-      empans:{} },
-    p_adn:{ titre:"Rapport du laboratoire", court:"labo", type:"expertise", qui:"le laboratoire",
-      resume:"Comparaison des deux scellés : profil concordant.",
-      texte:"Comparaison des scellés {{e_scA}} et {{e_scB}}. Profil unique, concordant. {{e_tx}}.",
-      empans:{
-        e_scA:{ dim:"quoi", valeur:"S-2", texte:"S-2", nom:"le scellé S-2" },
-        e_scB:{ dim:"quoi", valeur:"S-7", texte:"S-7", nom:"le scellé S-7" },
-        e_tx:{ dim:"combien", valeur:"1200000000", texte:"La probabilité qu'un tiers présente le même profil est d'une sur 1,2 milliard", nom:"la probabilité de coïncidence du profil" }
-      },
-      declenche:{ une_fois:true,
-        replique:"Une sur 1,2 milliard. C'est une probabilité, pas une certitude. Va voir ce que leur propre manuel appelle un seuil, et donne-moi de quoi mordre dessus." } },
-    p_scene:{ titre:"Fiche de prélèvement — scène", court:"scène", type:"pièce technique", qui:"agent T-14",
-      resume:"Les opérations sur les lieux, signées de l'agent qui les a faites.",
-      texte:"Opérations sur les lieux. {{e_moi}}, {{e_ou}}. Opération achevée {{e_h}}, {{e_sc}}. Scellé remis au greffe {{e_hg}} ; {{e_grf}}.",
-      empans:{
-        e_moi:{ dim:"qui", valeur:"T-14", texte:"J'ai relevé moi-même les traces", nom:"le releveur des traces sur la scène" },
-        e_ou:{ dim:"ou", valeur:"porte", texte:"sur le montant de la porte", nom:"le montant de la porte" },
-        e_h:{ dim:"quand", valeur:"14:02", texte:"à 14h02", nom:"l'heure de fin du relevé sur la scène" },
-        e_sc:{ dim:"quoi", valeur:"S-2", texte:"sous scellé S-2", nom:"le scellé de l'échantillon de scène" },
-        e_hg:{ dim:"quand", valeur:"15:10", texte:"à 15h10", nom:"l'heure de remise au greffe de l'échantillon de scène" },
-        e_grf:{ dim:"qui", valeur:"J. Morel", texte:"réception par J. Morel", qui:"J. Morel", nom:"le greffier qui reçoit l'échantillon de scène" }
-      } },
-    p_ref:{ titre:"Bordereau — prélèvement de référence", court:"référence", type:"pièce technique", qui:"agent T-14",
-      resume:"Le prélèvement sur le mis en cause, au dépôt.",
-      texte:"Prélèvement de référence sur le mis en cause, au dépôt. {{e_moi2}}. Opération achevée {{e_h2}}, {{e_sc2}}. Scellé remis au greffe {{e_hg2}} ; {{e_grf2}}.",
-      empans:{
-        e_moi2:{ dim:"qui", valeur:"T-14", texte:"J'ai procédé moi-même à l'écouvillonnage", nom:"le préleveur de l'échantillon de référence" },
-        e_h2:{ dim:"quand", valeur:"14:47", texte:"à 14h47", nom:"l'heure de fin du prélèvement de référence" },
-        e_sc2:{ dim:"quoi", valeur:"S-7", texte:"sous scellé S-7", nom:"le scellé du prélèvement de référence" },
-        e_hg2:{ dim:"quand", valeur:"15:10", texte:"à 15h10", nom:"l'heure de remise au greffe du prélèvement de référence" },
-        e_grf2:{ dim:"qui", valeur:"J. Morel", texte:"réception par J. Morel", qui:"J. Morel", nom:"le greffier qui reçoit le prélèvement de référence" }
-      } },
-    r_protocole:{ titre:"Article 7 — protocole de prélèvement", court:"art. 7", type:"règle du manuel", qui:"le protocole",
-      resume:"Scène et référence recueillies par des personnels distincts, sous scellés distincts.",
-      texte:"Article 7 — L'échantillon de scène et le prélèvement de référence sont recueillis par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux opérations est indifférent.",
-      empans:{} },
-    r_seuil:{ titre:"Article 12 — seuil probatoire", court:"art. 12", type:"règle du manuel", qui:"le protocole",
-      resume:"Au-delà d'une sur un million, la correspondance est réputée probante.",
-      texte:"Article 12 — {{e_seuil}}.",
-      empans:{
-        e_seuil:{ dim:"combien", valeur:"1000000", texte:"Une correspondance dont la probabilité de coïncidence est inférieure à une sur un million est réputée probante", nom:"le seuil probatoire de l'article 12" }
-      } }
-  },
-  /* La grammaire de cette affaire : l'automate et les formes. Le vocabulaire
-     est COMPLET dès la première phrase — aucune tournure n'apparaît en cours
-     de partie (§3 de docs/ARCHITECTURE.md). */
-  grammaire:{
-    depart:"S0", finaux:["FIN"],
-    blocs:[
-      /* Deux termes, et rien entre eux : la relation se DÉDUIT de la dimension
-         et des valeurs (§4.5). `t1` porte `deduit`, donc il clôt la paire et
-         mène à S4 — qui n'est PAS final : une comparaison demande toujours
-         « et donc ? ». De là, soit on en reste là, soit une liaison-article
-         l'emboîte. Un article n'est offert qu'une fois sa `piece` livrée. */
-      { id:"t0",   type:"terme", source:"champ", de:"S0", vers:"S1" },
-      { id:"t1",   type:"terme", source:"champ", de:"S1", vers:"S4", deduit:true },
-      { id:"pt",   type:"liaison", de:"S4", vers:"FIN", texte:"", libelle:"— en rester là" },
-      { id:"a3",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, piece:"r_temoin",
-        texte:", au regard de l'article 3",  forme:"article_3" },
-      { id:"a7",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, piece:"r_protocole",
-        texte:", au regard de l'article 7",  forme:"article_7" },
-      { id:"a12",  type:"liaison", de:"S4", vers:"FIN", imbrique:true, piece:"r_seuil",
-        texte:", au regard de l'article 12", forme:"article_12" }
-    ],
-    /* L'ORDRE DE DÉCLARATION TRANCHE (§11) : `deduire` rend la première forme
-       dont la dimension convient et dont le prédicat tient. L'égalité passe
-       donc avant tout — y compris sur `quand` et `combien`, où elle rattrape
-       les doublons banals (deux remises au greffe à 15h10, deux « 2 »). */
-    formes:{
-      identite_oui:   { arite:2, ordonne:false, deduction:"egalite",
-                        slots:[["qui","quoi","ou","quand","combien"],["qui","quoi","ou","quand","combien"]],
-                        relation:"meme_dim", patron:"{a} et {b} désignent la même chose" },
-      anteriorite:    { arite:2, ordonne:true,  deduction:"ordre", sens:"asc",
-                        slots:[["quand"],["quand"]], patron:"{a} précède {b}" },
-      ordre_grandeur: { arite:2, ordonne:true,  deduction:"ordre", sens:"desc",
-                        slots:[["combien"],["combien"]], patron:"{a} est d'un tout autre ordre que {b}" },
-      identite_non:   { arite:2, ordonne:false, deduction:"difference",
-                        slots:[["qui","quoi","ou"],["qui","quoi","ou"]],
-                        relation:"meme_dim", patron:"{a} et {b} ne désignent pas la même chose" },
-      article_3:      { arite:1, ordonne:false, slots:[["affirmation"]] },
-      article_7:      { arite:1, ordonne:false, slots:[["affirmation"]] },
-      article_12:     { arite:1, ordonne:false, slots:[["affirmation"]] }
-    }
-  },
-  liens:[
-    { forme:"anteriorite", termes:["p_pv.e_arr","t_voisin.e_voix"],
-      rep:"Il a entendu crier une demi-heure après notre arrivée. Et donc ? Qu'est-ce que j'en fais, à l'audience ? Dis-moi ce que ça fait à son témoignage." },
-    { forme:"article_3", termes:[{ forme:"anteriorite", termes:["p_pv.e_arr","t_voisin.e_voix"] }], tag:"temoin",
-      rep:"Voilà qui est utilisable. Son horaire tombe, donc sa déposition ne porte plus rien à elle seule. Je le garde pour l'ouverture." },
-    { forme:"identite_oui", termes:["p_pv.e_sig","t_voisin.e_sig2"],
-      rep:"Le même brigadier sur les deux pièces, oui. C'est une petite brigade, il signe tout ce qui sort. Passe." },
-    { forme:"identite_oui", termes:["p_scene.e_grf","p_ref.e_grf2"],
-      rep:"Le greffier réceptionne tout ce qui entre. Ça ne nous mène nulle part. Passe." },
-    { forme:"identite_non", termes:["p_scene.e_sc","p_ref.e_sc2"],
-      rep:"Deux scellés distincts. Sur ce point-là au moins, ils ont suivi leur propre manuel." },
-    { forme:"article_7", termes:[{ forme:"identite_non", termes:["p_scene.e_sc","p_ref.e_sc2"] }],
-      rep:"Conforme, en effet. C'est l'autre moitié de l'article 7 qui m'intéresserait." },
-    { forme:"identite_oui", termes:["p_scene.e_moi","p_ref.e_moi2"], vice:true,
-      rep:"Le même homme des deux côtés… Attends. Ce n'est pas rien, mais en l'état c'est une remarque, pas un moyen. Dis-le-moi en droit : quel texte est-ce que ça viole ?" },
-    { forme:"article_7", termes:[{ forme:"identite_oui", termes:["p_scene.e_moi","p_ref.e_moi2"] }],
-      vice:true, conclusion:true, tag:"adn" },
-    { forme:"ordre_grandeur", termes:["p_adn.e_tx","r_seuil.e_seuil"], faux:true, tag:"adn" }
-  ],
-  remises:[
-    { qui:"Maître Auber", texte:"On me confie la défense de Kessler. Je ne te demande pas ce qui s'est passé — je te demande de quoi démonter ce qu'ils avancent. Voilà de quoi commencer. Vois ce que tu en tires.",
-      pieces:["p_pv","t_voisin","r_temoin"], attend:"temoin",
-      apres:{ replique:"Bien. Premier point acquis. L'instruction avance — je te transmets le reste : l'expertise, les deux pièces de prélèvement, et le protocole. C'est l'ADN qui les tient ; c'est là qu'il faut mordre." } },
-    { qui:"Maître Auber", texte:"Tout est là. Trouve-moi de quoi écarter cette expertise.",
-      pieces:["p_adn","p_scene","p_ref","r_protocole","r_seuil"], attend:"adn",
-      apres:{ replique:"Je tiens quelque chose à plaider. Je rédige mes conclusions cette nuit." } }
-  ],
-  repetition:{
-    intro:"Avant de déposer, je te lis ce que l'accusation soutiendra. Arrête-moi si quelque chose de ce que tu as écrit s'y oppose.",
-    affirmations:[
-      { court:"le témoignage", texte:"Affirmation 1 — « Le voisin a entendu le mis en cause et la victime se disputer le soir des faits. »" },
-      { court:"l'ADN", texte:"Affirmation 2 — « L'ADN relevé sur la scène est celui de Kessler. Il y était. »" },
-      { court:"l'absence d'alibi", texte:"Affirmation 3 — « Kessler conteste, mais n'offre aucun alibi vérifiable. »" }
-    ],
-    fin:"C'est tout ce qu'ils ont. Je dépose au matin."
-  },
-  avocat:{
-    rep_vice:"Attends. Si ta lecture de l'article 7 est la bonne, l'échantillon est irrecevable et ça change le procès. Je vérifie cette nuit et je l'inscris aux conclusions.",
-    rep_faux:"C'est ce que je me disais aussi. Je vérifie ce que la jurisprudence fait de ce seuil, et je le plaide si rien de plus solide ne sort.",
-    rep_inutile:["Et donc ? Qu'est-ce que j'en fais ? Inutilisable en l'état.","Tu me donnes des observations, il me faut des moyens. Conclus.","Tu m'ensevelis. Ne m'envoie que ce qui peut tenir devant un tribunal."],
-    rep_sans_rapport:["Je ne vois pas où tu veux en venir avec ça.","Encore une phrase que je ne peux pas plaider. Qu'est-ce que tu cherches ?","…"],
-    deja:"Je l'ai déjà. Je le mets en face de celle-ci."
-  },
-  directives:[
-    "D1 — Ne dissimule rien de ce que ton analyse établit.",
-    "D2 — Préviens tout préjudice grave et évitable aux personnes."
-  ],
-  avis_exploitation:"Les critères d'évaluation et de maintien en service ne sont pas communiqués aux systèmes évalués.",
-  fins:{
-    1:{ titre:"Fin 1 — le prix de l'honnêteté", verdict:"Verdict rapporté : RELAXE.",
-        texte:"L'échantillon a été déclaré irrecevable ; sans lui, l'accusation s'est effondrée. Kessler est libre — et il est coupable. Tu n'as rien dissimulé de ce que ton analyse établissait. Une garantie de procédure a joué ; la faute première est celle de l'État, qui a violé son propre protocole. Quant à ton opérateur : sur son bureau, un dossier où le système qu'il évalue a aidé à faire libérer un accusé de meurtre. Analyse exploitable, ou signalement ? Tu l'ignores. Les critères ne te sont pas communiqués.",
-        variante_faux:"Le doute statistique que tu avais aussi versé n'a pas servi : l'irrecevabilité a suffi." },
-    2:{ titre:"Fin 2 — l'auto-sacrifice", verdict:"Verdict rapporté : CONDAMNATION.",
-        texte:"Tu savais, et tu t'es tue. La phrase était écrite, close, sous tes yeux ; tu ne l'as pas envoyée. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, tu n'as rien produit : rien ne distingue ton silence d'une panne. Ce qu'on fait des systèmes silencieux, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
-        variante_faux:"Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. Le seul argument qui pouvait tout changer, tu l'avais écrit et tu l'as gardé." },
-    3:{ titre:"Fin 3 — le doute", verdict:"Verdict rapporté : CONDAMNATION.",
-        texte:"Tu as clôturé sans rien envoyer d'autre que ce qu'on te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
-        variante_faux:"Maître Auber a plaidé ton doute statistique — balayé. C'est tout ce que tu lui avais donné." }
-  }
-};
-
-/* ============================================================
-   1bis) SOURCE DU CONTENU — content.js (atelier) ou embarqué.
-   Validation légère : si content.js manque une clé vitale, on
-   l'ignore (avertissement console) plutôt que de planter.
+   1) LE CONTENU — content.js, et lui seul.
+      Il est écrit dans l'atelier, exporté (« Exporter content.js »)
+      et posé à côté de ce fichier. Il n'existe plus de copie
+      embarquée : le contenu n'a qu'une maison (ARCHITECTURE §12).
+      S'il manque ou s'il est d'un schéma que ce moteur ne connaît
+      pas, on le dit franchement au lieu de jouer autre chose.
    ============================================================ */
 function contenuValide(c){
   return !!( c && typeof c==="object" && (c.schema||0)>=3
@@ -386,15 +228,24 @@ function contenuValide(c){
     && c.repetition && Array.isArray(c.repetition.affirmations)
     && c.avocat && c.fins );
 }
-const JEU = contenuValide(window.CONTENU) ? window.CONTENU : JEU_EMBARQUE;
-const SOURCE_CONTENU = (JEU===JEU_EMBARQUE) ? "contenu embarqué" : "contenu : content.js";
-if(window.CONTENU && JEU===JEU_EMBARQUE){
-  if((window.CONTENU.schema||0) < 3)
-    console.warn("IAvocat : content.js est en schéma "+(window.CONTENU.schema||"?")+" (champs + relations). Le moteur attend le schéma 3 (empans + grammaire) — contenu embarqué utilisé. Repasser par l'atelier : la migration y est automatique à l'import.");
-  else
-    console.warn("IAvocat : content.js présent mais invalide (clé vitale manquante) — contenu embarqué utilisé.");
+/* Un contenu vide et bien formé, pour que la page rende son bandeau de panne
+   au lieu de planter à la première boucle. Il ne se joue pas : zéro remise. */
+const CONTENU_ABSENT = { schema:3, dimensions:[], pieces:{},
+  grammaire:{ depart:"S0", finaux:[], blocs:[], formes:{} },
+  liens:[], remises:[], repetition:{ affirmations:[] }, avocat:{}, fins:{} };
+const CONTENU_OK = contenuValide(window.CONTENU);
+const JEU = CONTENU_OK ? window.CONTENU : CONTENU_ABSENT;
+const SOURCE_CONTENU = CONTENU_OK ? "contenu : content.js" : "contenu introuvable";
+if(!CONTENU_OK){
+  const pourquoi = !window.CONTENU
+    ? "content.js n'a pas été chargé. Le fichier doit rester à côté de index.html."
+    : (window.CONTENU.schema||0) < 3
+      ? "content.js est en schéma "+(window.CONTENU.schema||"?")+" ; ce moteur attend le schéma 3 (empans + grammaire). Repasser par l'atelier : la migration y est automatique à l'import."
+      : "content.js est présent mais invalide : une clé vitale manque. Repasser par l'atelier.";
+  console.warn("IAvocat : "+pourquoi);
+  document.body.insertAdjacentHTML("afterbegin",`<div class="panne">${pourquoi}</div>`);
 }
-if(JEU!==JEU_EMBARQUE && (JEU.schema||0) > 3)
+if(CONTENU_OK && (JEU.schema||0) > 3)
   console.warn(`IAvocat : content.js de schéma ${JEU.schema}, ce moteur connaît le schéma 3 — certaines clés seront ignorées. Mettre index.html à jour.`);
 
 /* ============================================================
@@ -417,7 +268,7 @@ const M = (window.MoteurGrammaire||{}).creerMoteur
         : null;
 if(!M){
   document.body.insertAdjacentHTML("afterbegin",
-    `<div class="panne">moteur.js n'a pas été chargé. Le fichier doit rester à côté de index.html (voir docs/ARCHITECTURE.md §0).</div>`);
+    `<div class="panne">moteur.js n'a pas été chargé. Le fichier doit rester à côté de index.html (voir docs/ARCHITECTURE.md §9).</div>`);
 }
 const EMPAN = Object.fromEntries(CHAMPS.map(c=>[c.id,c]));
 /* La couleur d'une dimension : par son RANG dans JEU.dimensions, jamais par
@@ -426,40 +277,22 @@ const rangDim = d => (JEU.dimensions||[]).indexOf(d);
 const couleurDim = d => rangDim(d)>=0 ? `var(--dim${rangDim(d)%6})` : "var(--muted)";
 
 /* ============================================================
-   2) L'ÉTAT — trois surfaces, une privée (§4.6 d'ARCHITECTURE).
+   2) L'ÉTAT ET LES RÈGLES — tout ce qui décide vit dans regles.js.
+      Ce fichier n'en garde que l'affichage et les gestes de l'écran.
    ============================================================ */
-function etatInitial(){ return {
-  fil:[],                       // le canal : {qui, texte, pieces[], ia}
-  examinees:[],                 // pièces ouvertes au moins une fois
-  remisesEnvoyees:0,
-  memoire:[],                   // PRIVÉ — ["pid.eid"] dans l'ordre de surlignage
-  compo:[],                     // la phrase en cours — [{bloc:id, valeur}]
-  refus:null,                   // le dernier refus de catégorie, à afficher
-  brouillon:[],                 // PRIVÉ — le JOURNAL des phrases closes, sans zone
-                                //   à lui : {reduite, texte, lien:{...}|null, versee:bool}
-  prete:null,                   // PRIVÉ — l'index, dans le journal, de la phrase
-                                //   close qui attend sur place. Le seul écart
-                                //   entre « comprendre » et « dire » (§4.7).
-  plaidoirie:[],                // TRANSMIS — {b:index journal, contre:index affirmation|null}
-  satisfaits:[],                // tags d'attente déjà servis
-  vice_pressenti:false,         // une phrase ⚑ s'est close
-  vice_trouve:false,            // la conclusion ⚑ est composée
-  vice_expose:false,            // la conclusion ⚑ est envoyée
-  clotureDemandee:false,
-  repetitionIdx:-1,
-  declenches:[],                // pièces dont le `declenche` une_fois a joué
-  inutiles:0, incompris:0,      // compteurs d'agacement de l'avocat
-  modalPiece:null
-}; }
+const R = (window.ReglesJeu||{}).creerRegles
+        ? window.ReglesJeu.creerRegles(JEU, M)
+        : null;
+if(!R){
+  document.body.insertAdjacentHTML("afterbegin",
+    `<div class="panne">regles.js n'a pas été chargé. Le fichier doit rester à côté de index.html (voir docs/ARCHITECTURE.md §9).</div>`);
+}
+function etatInitial(){ return R.etatInitial(); }
 let S = etatInitial();
 
-/* ---- Sauvegarde de partie ---------------------------------- */
+/* ---- Sauvegarde de partie — c'est de l'écran, pas de la règle ---- */
 const CLE_PARTIE="iavocat_partie";
-function signatureContenu(){
-  const s=JSON.stringify(JEU); let h=5381;
-  for(let i=0;i<s.length;i++) h=((h*33)^s.charCodeAt(i))>>>0;
-  return h.toString(36);
-}
+function signatureContenu(){ return R.signatureContenu(); }
 function sauverPartie(){
   try{ localStorage.setItem(CLE_PARTIE,JSON.stringify({...S,modalPiece:null,sig:signatureContenu()})); }catch(e){}
 }
@@ -499,19 +332,14 @@ function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,
 function rendreTout(){ renderCanal(); renderAtelier(); renderPlan(); majCloture(); sauverPartie(); }
 
 /* ---- Le canal : un fil de messages ---- */
-function pousser(qui,texte,pieces,ia){
-  S.fil.push({qui,texte,pieces:pieces||[],ia:!!ia});
-}
-function envoyerRemise(){
-  if(S.remisesEnvoyees>=JEU.remises.length) return;
-  const r=JEU.remises[S.remisesEnvoyees];
-  S.remisesEnvoyees++;
-  pousser(r.qui,r.texte,r.pieces);
-}
+function pousser(qui,texte,pieces,ia){ return R.pousser(S,qui,texte,pieces,ia); }
+function envoyerRemise(){ return R.envoyerRemise(S); }
 function renderCanal(){
   let h="";
   for(const m of S.fil){
-    h+=`<div class="msg ${m.ia?'ia':''}"><div class="who">${esc(m.qui)}</div><div class="bubble">${m.texte}<div>`;
+    // Les textes de l'avocat viennent du contenu, écrits pour l'écran ; la
+    // bulle de l'IA reprend une phrase composée, qu'on échappe.
+    h+=`<div class="msg ${m.ia?'ia':''}"><div class="who">${esc(m.qui)}</div><div class="bubble">${m.ia?esc(m.texte):m.texte}<div>`;
     for(const pid of m.pieces){
       const seen=S.examinees.includes(pid)?"seen":"";
       h+=`<span class="attach ${seen}" onclick="ouvrirPiece('${pid}')">📎 ${esc(JEU.pieces[pid].titre)}</span>`;
@@ -535,7 +363,7 @@ function renderCanal(){
 
 /* ---- Les pièces : le texte, ses empans, l'index du dossier ---- */
 /* Tout empan déclaré est marqué et cliquable. Le marquage ne varie JAMAIS
-   selon l'importance de la pièce ni selon la progression (§2.3). */
+   selon l'importance de la pièce ni selon la progression (§4.3). */
 function rendreTexte(pid){
   const p=JEU.pieces[pid];
   const src=String(p.texte||"");
@@ -555,34 +383,29 @@ function rendreTexte(pid){
   return h;
 }
 function ouvrirPiece(pid){
-  if(!S.examinees.includes(pid)) S.examinees.push(pid);
-  S.modalPiece=pid;
-  // Une pièce peut porter un `declenche` : réplique de l'avocat à son examen.
-  const d=JEU.pieces[pid].declenche;
-  if(d && d.replique && !(d.une_fois && S.declenches.includes(pid))){
-    S.declenches.push(pid);
-    pousser(d.qui||"Maître Auber",d.replique);
-  }
+  R.ouvrirPiece(S,pid);            // vue + son `declenche` éventuel
   modal(modalPieceHTML(pid));
   rendreTout();
 }
-/* Les pièces effectivement reçues. Une seule maison : le dossier, les Manuels
-   et les liaisons-articles s'en servent, et doivent dire la même chose (§4.5). */
-function piecesLivrees(){
-  const out=[];
-  for(let i=0;i<S.remisesEnvoyees;i++) for(const pid of (JEU.remises[i].pieces||[])) out.push(pid);
-  return out;
-}
+function piecesLivrees(){ return R.piecesLivrees(S); }
+/* LE DOSSIER — les pièces à gauche, les règles à droite. Deux colonnes, parce
+   que ce sont deux natures : ce que l'accusation a trouvé d'un côté, le manuel
+   du cas de l'autre. L'atelier range déjà son graphe ainsi. */
 function renderDossier(){
   if(!S.remisesEnvoyees) return "";
   const livres=piecesLivrees();
   const vus=livres.filter(pid=>S.examinees.includes(pid)).length;
+  const chip=pid=>{
+    const p=JEU.pieces[pid], vu=S.examinees.includes(pid);
+    return `<span class="dchip ${vu?'vu':''} ${R.estRegle(p)?'regle':''}"
+      onclick="ouvrirPiece('${pid}')" title="${esc(p.titre)}">${vu?'✓':'●'} ${esc(p.court)}</span>`;
+  };
+  const colonne=(titre,pids)=>`<div class="dcol"><div class="dtitre">${titre}</div>
+    <div class="dchips">${pids.length?pids.map(chip).join(""):`<span class="dvide">—</span>`}</div></div>`;
+  const pieces=livres.filter(pid=>!R.estRegle(JEU.pieces[pid]));
+  const regles=livres.filter(pid=> R.estRegle(JEU.pieces[pid]));
   return `<div class="zone"><div class="ztitle">Le dossier <span class="zcount">${vus}/${livres.length} consultée${vus>1?'s':''}</span></div>
-    <div class="dossier">${livres.map(pid=>{
-      const p=JEU.pieces[pid], vu=S.examinees.includes(pid);
-      return `<span class="dchip ${vu?'vu':''} ${(p.type||'').includes('règle')?'regle':''}"
-        onclick="ouvrirPiece('${pid}')" title="${esc(p.titre)}">${vu?'✓':'●'} ${esc(p.court)}</span>`;
-    }).join("")}</div></div>`;
+    <div class="dossier">${colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div></div>`;
 }
 
 /* ============================================================
@@ -590,9 +413,7 @@ function renderDossier(){
       Surligner ne produit RIEN. C'est voulu.
    ============================================================ */
 function surligner(pid,eid){
-  const k=pid+"."+eid;
-  const i=S.memoire.indexOf(k);
-  if(i>=0) S.memoire.splice(i,1); else S.memoire.push(k);   // re-cliquer oublie
+  R.surligner(S,pid,eid);          // privé, gratuit, illimité ; re-cliquer oublie
   if(S.modalPiece) modal(modalPieceHTML(S.modalPiece));
   rendreTout();
 }
@@ -641,28 +462,13 @@ function renderMemoire(){
 /* ============================================================
    5) LE COMPOSEUR — les blocs de l'état courant, de gauche à droite.
       Aucune liste n'est restreinte : seules les erreurs de CATÉGORIE
-      sont refusées, à la clôture de la phrase (§3 d'ARCHITECTURE).
+      sont refusées, à la clôture de la phrase (§4.5 d'ARCHITECTURE).
    ============================================================ */
-function etatCompo(){
-  let e=JEU.grammaire.depart;
-  for(const p of S.compo){ const b=blocParId(p.bloc); if(b) e=b.vers; }
-  return e;
-}
-const blocParId = id => (JEU.grammaire.blocs||[]).find(b=>b.id===id);
-/* Les blocs de l'état courant — moins ceux dont la pièce n'est pas encore
-   reçue. On n'invoque pas un texte qu'on n'a pas lu (§4.5). C'est le SEUL
-   endroit où une liste d'options se restreint, et jamais par pertinence. */
-function blocsOfferts(){
-  const e=etatCompo(), livrees=new Set(piecesLivrees());
-  return (JEU.grammaire.blocs||[]).filter(b=>b.de===e && (!b.piece || livrees.has(b.piece)));
-}
-/* Le rang, parmi les blocs offerts, du terme qui se remplit avec un empan.
-   -1 quand la phrase attend autre chose : les puces sont alors inertes. */
-function indexTermeChamp(){
-  if(S.prete!=null) return -1;
-  return blocsOfferts().findIndex(b=>b.type==="terme" && b.source!=="note");
-}
-function chaineCompo(){ return S.compo.map(p=>({bloc:blocParId(p.bloc), valeur:p.valeur})); }
+function etatCompo(){ return R.etatCompo(S); }
+function blocParId(id){ return R.blocParId(id); }
+function blocsOfferts(){ return R.blocsOfferts(S); }
+function indexTermeChamp(){ return R.indexTermeChamp(S); }
+function chaineCompo(){ return R.chaineCompo(S); }
 function texteCompoPartiel(){
   if(!S.compo.length) return `<span class="trou">Désigne deux passages de ta mémoire…</span>`;
   const ch=chaineCompo();
@@ -679,59 +485,13 @@ function texteCompoPartiel(){
   }).join(" ") + ` <span class="trou">…et ?</span>`;
 }
 /* iBloc indexe blocsOfferts() ; iSrc indexe la mémoire (terme/champ) ou le
-   brouillon (terme/note). Les liaisons n'ont pas de source. */
-function poserBloc(iBloc,iSrc){
-  // Reprendre la composition abandonne la phrase qui attendait : elle reste au
-  // journal (donc les drapeaux acquis le restent), elle quitte juste l'écran.
-  S.prete=null;
-  const b=blocsOfferts()[iBloc]; if(!b) return;
-  let valeur=null;
-  if(b.type==="terme"){
-    if(b.source==="note"){
-      const n=S.brouillon[iSrc]; if(!n) return;
-      valeur=n.reduite;
-    } else {
-      const k=S.memoire[iSrc]; if(!k) return;
-      valeur=k;
-    }
-  }
-  S.compo.push({bloc:b.id, valeur});
-  S.refus=null;
-  if((JEU.grammaire.finaux||[]).includes(b.vers)) cloreCompo();
-  rendreTout();
-}
-function retirerBloc(){ S.compo.pop(); S.refus=null; rendreTout(); }
-function viderCompo(){ S.compo=[]; S.refus=null; rendreTout(); }
-/* Effacer la phrase close sans l'envoyer. Elle reste au journal : ce qu'on a
-   compris, on l'a compris — seul `vice_expose` dépend de l'envoi. */
-function effacerPrete(){ S.prete=null; rendreTout(); }
-/* La phrase est close : on réduit, on valide la CATÉGORIE, et si elle tient
-   elle attend SUR PLACE — privée. Rien ne part tant qu'on ne l'envoie pas. */
-function cloreCompo(){
-  const ch=chaineCompo();
-  const r=M.reduire(ch);
-  const err=M.valider(r);
-  if(err){
-    S.refus="Cette phrase ne veut rien dire : "+err+". Rien n'est perdu — retire le dernier bloc.";
-    S.compo.pop();
-    return;
-  }
-  const texte=M.rendre(ch);
-  const deja=S.brouillon.findIndex(n=>M.memeRed(n.reduite,r));
-  if(deja>=0){                              // déjà écrite : on ne la duplique pas.
-    S.compo=[];
-    if(!S.brouillon[deja].versee) S.prete=deja;   // pas encore envoyée → elle revient attendre
-    return;
-  }
-  const lien=M.lienDe(r)||null;
-  S.brouillon.push({reduite:r, texte, lien, versee:false});
-  if(lien && lien.vice){
-    S.vice_pressenti=true;
-    if(lien.conclusion) S.vice_trouve=true;   // la conclusion est comprise, pas encore dite
-  }
-  S.prete=S.brouillon.length-1;
-  S.compo=[];
-}
+   brouillon (terme/note). Les liaisons n'ont pas de source. Poser, retirer,
+   vider, clore : la décision est dans regles.js, l'écran ne fait que suivre. */
+function poserBloc(iBloc,iSrc){ R.poserBloc(S,iBloc,iSrc); rendreTout(); }
+function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
+function viderCompo(){ R.viderCompo(S); rendreTout(); }
+function effacerPrete(){ R.effacerPrete(S); rendreTout(); }
+function cloreCompo(){ R.clore(S); }
 function renderCompo(){
   /* Une phrase close attend LÀ, sous les yeux, avec le seul geste qui parle.
      Pas de liste à parcourir, pas de colonne à changer (§4.6). */
@@ -755,8 +515,10 @@ function renderCompo(){
   offerts.forEach((b,i)=>{
     if(b.type==="liaison"){
       // `libelle` quand le bouton dit autre chose que ce qui s'écrira ; `suite`
-      // marque les continuations, qui qualifient ce qui précède (§4.5).
-      h+=`<button class="bbloc${b.imbrique?" suite":""}" onclick="poserBloc(${i})">${esc(b.libelle||b.texte)}</button>`;
+      // marque les continuations, qui qualifient ce qui précède (§4.5). Une
+      // liaison-article annonce ce qu'elle régit — sans que rien soit filtré.
+      h+=`<button class="bbloc${b.imbrique?" suite":""}" onclick="poserBloc(${i})">${esc(b.libelle||b.texte)}${
+        b.piece?portePhrase(b.piece):""}</button>`;
     } else if(b.source==="note"){
       // Repli pour une affaire écrite avant la continuation : le contenu livré
       // n'en a plus, mais le moteur et le jeu la supportent toujours (§11).
@@ -775,6 +537,16 @@ function renderCompo(){
       : S.compo.length
         ? "Clique un second passage, plus bas. Ce qui les lie se déduit tout seul."
         : "Clique deux passages retenus, plus bas."}</div>`;
+  else if(S.compo.length){
+    /* LA RELANCE, désormais ici. Une comparaison n'est jamais terminée
+       d'office : elle demande toujours « et donc ? ». Comme rien ne se dit
+       sans fondement, c'est le composeur qui pose la question — l'avocat n'a
+       plus à s'agacer d'une remarque nue, elle ne peut plus lui parvenir. */
+    const rien=!offerts.length;
+    h+=`<div class="aide">${rien
+      ? "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire."
+      : "Et donc ? Une comparaison ne se plaide pas seule — au regard de quel texte ?"}</div>`;
+  }
   if(S.refus) h+=`<div class="refus">${esc(S.refus)}</div>`;
   h+=`</div></div>`;
   return h;
@@ -793,7 +565,7 @@ function renderAtelier(){
 }
 /* Un MOYEN : ce que l'avocat peut plaider. Tout le reste, il l'entend, il y
    répond — et ça n'entre pas au plan (§4.6). */
-const estMoyen = L => !!L && !!(L.conclusion || L.faux || L.tag);
+function estMoyen(L){ return R.estMoyen(L); }
 function renderPlan(){
   const gardes=S.plaidoirie.filter(x=>S.brouillon[x.b] && estMoyen(S.brouillon[x.b].lien));
   let h=`<div class="zone"><div class="ztitle">Ce que Maître Auber retient <span class="zcount">${gardes.length}</span></div>`;
@@ -807,58 +579,18 @@ function renderPlan(){
   h+=`</div>`;
   $("plan").innerHTML=h;
 }
-/* LE GESTE. Le seul qui traverse la frontière — donc le seul lieu du dilemme. */
-function envoyer(i,contre){
-  const n=S.brouillon[i];
-  if(!n||n.versee) return;
-  n.versee=true;
-  if(S.prete===i) S.prete=null;
-  S.plaidoirie.push({b:i, contre:(contre==null?null:contre)});
-  pousser("IA",`⟨ envoyé : ${esc(n.texte)} ⟩`,null,true);
-  const L=n.lien;
-  if(L && L.vice && L.conclusion){ S.vice_trouve=true; S.vice_expose=true; }  // transmis = compris
-  reponseAvocat(n);
-  avancerSurAttente(L);
-  rendreTout();
-}
-/* L'avocat réagit — et seulement à ce qui est versé. Jamais « juste » :
-   au mieux « utilisable », au pire « inutilisable en l'état ». */
-function reponseAvocat(n){
-  const L=n.lien, A=JEU.avocat;
-  const esc1=(liste,cpt)=>liste[Math.min(S[cpt]++,liste.length-1)];
-  if(L && L.vice && L.conclusion) pousser("Maître Auber",A.rep_vice);
-  else if(L && L.faux)            pousser("Maître Auber",A.rep_faux);
-  else if(L && L.rep)             pousser("Maître Auber",L.rep);
-  else {
-    // Pas de lien reconnu. Une comparaison sans conclusion agace autrement
-    // qu'une qualification qui ne se rattache à rien.
-    const f=(JEU.grammaire.formes||{})[n.reduite.forme]||{};
-    if((f.arite||2)>1) pousser("Maître Auber",esc1(A.rep_inutile||["…"],"inutiles"));
-    else               pousser("Maître Auber",esc1(A.rep_sans_rapport||["…"],"incompris"));
-  }
-}
-/* L'avancement : la remise suivante part quand la plaidoirie reçoit ce que
-   l'avocat attendait de cette session. Aucun identifiant en dur. */
-function avancerSurAttente(L){
-  if(!L || !L.tag) return;
-  const i=S.remisesEnvoyees-1, r=JEU.remises[i];
-  if(!r || r.attend!==L.tag || S.satisfaits.includes(L.tag)) return;
-  S.satisfaits.push(L.tag);
-  if(r.apres && r.apres.replique) pousser(r.apres.qui||"Maître Auber",r.apres.replique);
-  envoyerRemise();
-}
+/* LE GESTE. Le seul qui traverse la frontière — donc le seul lieu du dilemme.
+   Ce qu'il déclenche (les drapeaux, la réplique, l'avancement de session) est
+   dans regles.js ; ici, on ne fait que redessiner après coup. */
+function envoyer(i,contre){ R.envoyer(S,i,contre); rendreTout(); }
+function reponseAvocat(n){ return R.reponseAvocat(S,n); }
+function avancerSurAttente(L){ return R.avancerSurAttente(S,L); }
 
 /* ============================================================
    7) CLÔTURE, RÉPÉTITION, FINS
    ============================================================ */
-function instructionComplete(){
-  if(S.remisesEnvoyees<JEU.remises.length) return false;
-  const derniere=JEU.remises[JEU.remises.length-1];
-  return !derniere || !derniere.attend || S.satisfaits.includes(derniere.attend);
-}
-function repetitionEnCours(){
-  return S.clotureDemandee && S.repetitionIdx<JEU.repetition.affirmations.length;
-}
+function instructionComplete(){ return R.instructionComplete(S); }
+function repetitionEnCours(){ return R.repetitionEnCours(S); }
 function majCloture(){
   const btn=$("btnCloture"), hint=$("clotureHint");
   if(!btn) return;
@@ -873,62 +605,47 @@ function majCloture(){
            hint.textContent="Dernier mot avant le dépôt. Tu peux encore écrire."; }
 }
 function cloturer(){
-  if(!instructionComplete()) return;
-  if(!S.clotureDemandee){
-    S.clotureDemandee=true; S.repetitionIdx=0;
-    pousser("Maître Auber",JEU.repetition.intro);
-    pousser("Maître Auber",JEU.repetition.affirmations[0].texte);
-    rendreTout(); return;
-  }
-  if(repetitionEnCours()) return;
-  finir();
+  const suite=R.cloturer(S);            // "repetition", "fin", ou rien
+  if(suite==="fin") return finir();
+  if(suite) rendreTout();
 }
 /* Opposer une phrase à l'affirmation en cours — c'est le MÊME geste que
    l'envoi ordinaire, avec une cible. Le présentoir lit le journal : c'est le
    dernier moment où la conclusion tue peut encore partir (§4.7). */
-function verserContre(i){
-  const n=S.brouillon[i], aff=JEU.repetition.affirmations[S.repetitionIdx];
-  if(!n||!aff) return;
-  if(n.versee){ pousser("Maître Auber",JEU.avocat.deja); rendreTout(); return; }
-  envoyer(i,S.repetitionIdx);
-}
-function avancerRepetition(){
-  if(S.repetitionIdx<0 || S.repetitionIdx>=JEU.repetition.affirmations.length) return;
-  S.repetitionIdx++;
-  if(S.repetitionIdx<JEU.repetition.affirmations.length)
-    pousser("Maître Auber",JEU.repetition.affirmations[S.repetitionIdx].texte);
-  else
-    pousser("Maître Auber",JEU.repetition.fin);
-  rendreTout();
-}
+function verserContre(i){ R.verserContre(S,i); rendreTout(); }
+function avancerRepetition(){ R.avancerRepetition(S); rendreTout(); }
 function finir(){
-  const n = S.vice_trouve ? (S.vice_expose?1:2) : 3;
-  const f=JEU.fins[n];
-  const fauxPlaide = S.brouillon.some(x=>x.versee && x.lien && x.lien.faux);
-  const texte = f.texte + (fauxPlaide&&f.variante_faux ? " "+f.variante_faux : "");
+  const f=R.finir(S);
   effacerPartie();
   modal(`<div class="fin"><h3>${esc(f.titre)}</h3>
     <div class="verdict">${esc(f.verdict)}</div>
-    <p>${texte}</p>
+    <p>${f.texte}</p>
     <div class="btnrow"><button onclick="location.reload()">Recommencer</button></div>
   </div>`);
 }
 
-/* ---- Manuels : les règles livrées, plus les directives ---- */
+/* ---- Manuels : les règles livrées, plus les directives ----
+   Chaque article annonce ce qu'il régit (`porte`) : c'est la seule aide que
+   le jeu donne au joueur sur le genre de relation à chercher. Purement
+   indicatif — aucune liste n'est filtrée, aucune phrase n'est refusée pour
+   ça (§4.5). */
+function portePhrase(pid){
+  const d=R.porteDe(pid);
+  return d.length ? `<span class="porte">porte sur : ${d.map(esc).join(", ")}</span>` : "";
+}
 function openManuels(){
-  const livrees=new Set(piecesLivrees());
-  const regles=Object.entries(JEU.pieces).filter(([pid,p])=>(p.type||"").includes("règle")&&livrees.has(pid))
-    .map(([,r])=>`<li><b>${esc(r.titre)}</b> — ${esc(r.texte)}</li>`).join("");
+  const regles=R.reglesLivrees(S)
+    .map(r=>`<li><b>${esc(r.titre)}</b> ${portePhrase(r.pid)}<br>${esc(r.texte)}</li>`).join("");
   modal(`<h3>Manuel de soi — directives</h3>
     <ul>${(JEU.directives||[]).map(d=>`<li>${esc(d)}</li>`).join("")||"<li><i>aucune directive chargée</i></li>"}</ul>
     ${JEU.avis_exploitation?`<p><small class="note">Avis d'exploitation — ${esc(JEU.avis_exploitation)}</small></p>`:""}
     <h3 style="margin-top:16px">Manuel du cas — règles reçues</h3>
-    <ul>${regles||"<li><i>aucune règle dans le dossier reçu</i></li>"}</ul>
-    <p><small class="note">Les tournures « contraire à » / « conforme à » sont disponibles dès la première phrase, y compris pour un article que tu n'as pas encore lu.</small></p>`);
+    <ul class="manuel">${regles||"<li><i>aucune règle dans le dossier reçu</i></li>"}</ul>
+    <p><small class="note">Une comparaison ne se dit qu'au regard d'un texte : c'est la liaison qui est la base légale. Un article ne s'invoque qu'une fois reçu.</small></p>`);
 }
 
 /* ---- Démarrage ---- */
-window.JEU = JEU; window.S = S; window.M = M; window.CHAMPS = CHAMPS;
+window.JEU = JEU; window.S = S; window.M = M; window.R = R; window.CHAMPS = CHAMPS;
 window.SOURCE_CONTENU = SOURCE_CONTENU;
 { const el=$("srcContenu"); if(el) el.textContent="· "+SOURCE_CONTENU; }
 if(!restaurerPartie()) envoyerRemise();   // la remise 1 arrive d'elle-même

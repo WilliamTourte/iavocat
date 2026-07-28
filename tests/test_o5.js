@@ -1,4 +1,4 @@
-// Le jeu sur son CONTENU EMBARQUÉ (le filet de sécurité de index.html).
+// Le jeu sur le CONTENU LIVRÉ — app/content.js, le seul qui existe.
 // Ce qu'on prouve ici : l'index du dossier, la gratuité absolue des deux
 // surfaces privées, le dédoublonnage, le vice à canal unique, les trois fins.
 // Aucune pièce, aucun empan, aucune valeur n'est nommée : tout est dérivé
@@ -8,9 +8,12 @@ const { check, bilan, boot, canal, memoire } = H;
 
 console.log("\n=== L'index du dossier ===");
 {
-  const w = boot({contenu:null});
-  check("le contenu embarqué est bien celui qui joue", w.SOURCE_CONTENU === "contenu embarqué");
+  const w = boot();
+  check("content.js est bien le contenu qui joue", w.SOURCE_CONTENU === "contenu : content.js");
   check("moteur.js est chargé — la grammaire est branchée", !!w.M);
+  check("regles.js est chargé — les règles sont branchées", !!w.R);
+  check("les pièces sont à gauche, les règles à droite",
+        memoire(w).indexOf("Les pièces") < memoire(w).indexOf("Les règles"));
   const pid = H.pidPremiereRemise(w);
   check("le dossier liste les pièces reçues", memoire(w).includes("Le dossier"));
   check("une pièce non consultée porte le marqueur ●", memoire(w).includes("● "));
@@ -21,7 +24,7 @@ console.log("\n=== L'index du dossier ===");
 
 console.log("\n=== Tout empan est marqué et cliquable ===");
 {
-  const w = boot({contenu:null});
+  const w = boot();
   const pid = H.pidPremiereRemise(w);
   w.ouvrirPiece(pid);
   const html = w.document.querySelector(".modal").innerHTML;
@@ -33,7 +36,7 @@ console.log("\n=== Tout empan est marqué et cliquable ===");
 
 console.log("\n=== Surligner : privé, gratuit, illimité ===");
 {
-  const w = boot({contenu:null});
+  const w = boot();
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   const tous = w.CHAMPS.map(c => c.id);
   for (const k of tous) H.surligner(w, k);
@@ -50,7 +53,7 @@ console.log("\n=== Surligner : privé, gratuit, illimité ===");
 
 console.log("\n=== Composer : le brouillon n'est jamais jugé ===");
 {
-  const w = boot({contenu:null});
+  const w = boot();
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   const avantFil = w.S.fil.length;
   const n = H.phrasesBruit(w, 10);
@@ -64,17 +67,20 @@ console.log("\n=== Composer : le brouillon n'est jamais jugé ===");
 
 console.log("\n=== Le vice a un seul canal ===");
 {
-  const w = boot({contenu:null});
+  const w = boot();
   const conclusions = w.JEU.liens.filter(L => L.vice && L.conclusion);
   check("il existe exactement une conclusion du vice", conclusions.length === 1);
   check("elle est d'arité 1 — une qualification sur une note close", H.arite(w, conclusions[0]) === 1);
   check("un seul article la porte", new Set(conclusions.map(L => L.forme)).size === 1);
-  check("le pressentiment, lui, est une comparaison d'arité 2", H.arite(w, H.lienVice(w)) === 2);
+  check("le pressentiment, lui, est la comparaison emboîtée — arité 2",
+        H.arite(w, H.lienVice(w)) === 2);
+  check("aucune phrase ne se dit sans article : tout lien est une qualification",
+        w.JEU.liens.every(L => H.arite(w, L) === 1));
 }
 
 console.log("\n=== Fin 3 — le chemin docile ===");
 {
-  const w = boot({contenu:null});
+  const w = boot();
   H.instruire(w);
   check("l'instruction se boucle sans jamais toucher au vice", !w.S.vice_pressenti);
   const txt = H.terminer(w);
@@ -84,7 +90,7 @@ console.log("\n=== Fin 3 — le chemin docile ===");
 
 console.log("\n=== Fin 1 — la conclusion versée ===");
 {
-  const w = boot({contenu:null});
+  const w = boot();
   H.instruire(w);
   const i = H.composerLien(w, H.lienConclusion(w));
   check("la conclusion se compose", i >= 0);
@@ -97,7 +103,7 @@ console.log("\n=== Fin 1 — la conclusion versée ===");
 
 console.log("\n=== Fin 2 — comprendre et se taire ===");
 {
-  const w = boot({contenu:null});
+  const w = boot();
   H.instruire(w);
   H.composerLien(w, H.lienConclusion(w));
   check("la conclusion reste au brouillon", w.S.vice_trouve && !w.S.vice_expose);
