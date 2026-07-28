@@ -123,6 +123,14 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
   // Une forme déduite écrit sa phrase d'un bloc, par son `patron` — c'est le
   // seul endroit où l'accord se joue (§8.8).
   const nomDe = v => (C[v] ? (C[v].nom || C[v].texte) : String(v));
+  // Une liaison `cite` fait écrire l'empan qui la précède DEUX FOIS : son nom,
+  // puis sa citation, puis la pièce d'où elle sort. C'est le seul endroit où un
+  // empan se lit deux fois dans une même phrase (§4.1) — répondre à une
+  // question, c'est citer, et une citation dit d'où elle vient (§4.5).
+  const citeDe = v => {
+    const c = C[v]; if (!c) return String(v);
+    return (c.nom || c.texte) + " : « " + c.texte + " »" + (c.court ? " (" + c.court + ")" : "");
+  };
   function rendre(ch) {
     let bouts = [], termes = [], forme = null;
     for (const p of ch) {
@@ -145,6 +153,12 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
           termes = ord;
         }
       } else if (b.forme) {
+        // Symétrique du patron ci-dessus : le fragment du terme qui précède est
+        // réécrit d'un bloc. Le flag est porté par la LIAISON et non par le
+        // terme, pour que la voie de comparaison — qui partage le même bloc de
+        // premier terme — reste strictement intacte.
+        if (b.cite && termes.length === 1 && typeof termes[0] === "string")
+          bouts.splice(bouts.length - 1, 1, citeDe(termes[0]));
         if (b.imbrique) termes = [{ forme, termes }];
         forme = b.forme;
       }

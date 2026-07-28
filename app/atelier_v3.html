@@ -228,6 +228,8 @@
   .pchip .x:hover{color:var(--err)}
   .pselect{width:auto !important;font-size:11.5px !important;padding:3px 6px !important;font-family:var(--mono) !important}
   .steprow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  /* une attente de session : l'avocat pose, attend, accuse réception, repose */
+  .attente{border-left:2px solid var(--line);padding-left:10px;margin:8px 0 12px}
   .caseline{display:flex;gap:8px;align-items:center;font-size:12.5px;margin-top:5px;flex-wrap:wrap}
   .caseline .cl{font-family:var(--mono);color:var(--ok)}
   .affrow{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:8px;background:var(--panel2)}
@@ -408,6 +410,15 @@ const joli = k => k.replace(/_/g," ");
 const K = (pid,ch) => pid+"."+ch;
 function sanId(s){ return String(s||"").trim().replace(/[^\p{L}\p{N}_]/gu,"_").replace(/_+/g,"_").replace(/^_|_$/g,""); }
 function estRegle(p){ return (p.type||"").includes("règle"); }
+/* La liste d'attentes d'une remise (§3). La normalisation vit dans regles.js —
+   on l'appelle plutôt que de la recopier ; le repli ne sert que si regles.js
+   n'a pas pu être chargé. Les objets rendus sont ceux du contenu, si bien que
+   l'inspecteur les édite en place. */
+function attentesDeRemise(r){
+  if(!r) return [];
+  if(Array.isArray(r.attentes)) return r.attentes;
+  return r.attend ? [r] : [];
+}
 function empanDe(pid,eid){ const p=CONTENU.pieces[pid]; return p && p.empans && p.empans[eid]; }
 function empanExiste(pid,eid){ return !!empanDe(pid,eid); }
 /* La dimension d'un empan est écrite SUR l'empan — il n'y a plus de table
@@ -424,8 +435,13 @@ function empansPlats(){
   const out=[];
   for(const [pid,p] of Object.entries(CONTENU.pieces||{}))
     for(const [eid,e] of Object.entries(p.empans||{}))
+      /* `nom` et `court` comptent : sans `nom`, le banc d'essai écrirait les
+         phrases par leur citation quand le jeu les écrit par leur nom (§4.1) —
+         deux exemplaires qui divergent en silence. `court` dit d'où sort une
+         citation (§4.5). Même aplatissement que index.html, à la ligne près. */
       out.push({ id:pid+"."+eid, pid, eid, dim:e.dim, valeur:e.valeur,
-                 texte:e.texte, qui:e.qui || p.qui || "" });
+                 texte:e.texte, nom:e.nom || e.texte, qui:e.qui || p.qui || "",
+                 court:p.court || "" });
   return out;
 }
 /* Le moteur de grammaire, appliqué au contenu courant. Reconstruit seulement
@@ -899,38 +915,65 @@ function valider(){
   /* ---- les remises et leurs attentes ---- */
   const R=CONTENU.remises||[];
   const tags=new Set(LI.map(l=>l.tag).filter(Boolean));
+  /* Un chemin de composition existe-t-il, avec les seules pièces reçues à ce
+     stade, qui passe par la forme voulue et atteigne un état final ? Recherche
+     en largeur sur les états, en ne franchissant que les blocs livrés. */
+  const formeComposable=(forme,dispo)=>{
+    const G=CONTENU.grammaire||{}, fins=new Set(G.finaux||[]);
+    const vus=new Set(), file=[[G.depart,false]];
+    while(file.length){
+      const [e,vue]=file.shift();
+      const cle=e+"|"+vue; if(vus.has(cle)) continue; vus.add(cle);
+      if(vue && fins.has(e)) return true;
+      for(const b of (G.blocs||[])){
+        if(b.de!==e) continue;
+        if(b.piece && !dispo.has(b.piece)) continue;
+        file.push([b.vers, vue || b.forme===forme]);
+      }
+    }
+    return false;
+  };
   R.forEach((r,i)=>{
     for(const pid of r.pieces||[])
       if(!P[pid]) add("erreur",`Remise ${i+1} référence une pièce inexistante`,
         `« ${pid} » n'existe pas — le jeu planterait en la livrant.`,{});
     if(!(r.pieces||[]).length)
       add("info",`Remise ${i+1} ne livre aucune pièce`,"Session purement narrative ?",{});
-    if(!r.attend)
-      add("erreur",`Remise ${i+1} sans « attend »`,
+    /* Une remise attend une SUITE de réponses (§3) : l'avocat pose, attend,
+       accuse réception, repose. L'ancienne forme — `attend`/`apres` sur la
+       remise — se lit comme une liste à un élément. */
+    const attentes=attentesDeRemise(r);
+    if(!attentes.length)
+      add("erreur",`Remise ${i+1} sans attente`,
         i<R.length-1
           ? `La remise ${i+2} ne partirait jamais : c'est le versement d'une phrase portant ce tag qui ferme la session.`
           : "La clôture ne s'ouvrirait jamais — la dernière remise doit elle aussi attendre quelque chose.",{});
-    else if(!tags.has(r.attend))
-      add("erreur",`Remise ${i+1} attend « ${r.attend} », qu'aucun lien ne porte`,
-        "Aucune phrase composable ne satisfait cette attente — la session serait sans issue.",{});
-    /* L'ARTICLE LIVRÉ TROP TARD. Depuis que les liaisons-articles sont filtrées
-       par livraison (§4.5), une attente peut devenir inservable : si TOUS les
-       liens qui la portent exigent un article dont la pièce arrive plus tard,
-       le joueur ne peut littéralement pas écrire la phrase qu'on lui demande.
-       Aucune relecture n'attrape ça ; une partie de test, après vingt minutes. */
-    else {
-      const dispo=new Set();
-      for(let k=0;k<=i;k++) for(const pid of (R[k].pieces||[])) dispo.add(pid);
-      const pieceDuBloc=f=>((CONTENU.grammaire.blocs||[]).find(b=>b.forme===f)||{}).piece;
-      const servables=(CONTENU.liens||[]).filter(L=>{
-        if(L.tag!==r.attend) return false;
-        const pc=pieceDuBloc(L.forme);
-        return !pc || dispo.has(pc);
-      });
+    // Les pièces reçues à ce stade : celles de cette remise et de toutes les précédentes.
+    const dispo=new Set();
+    for(let k=0;k<=i;k++) for(const pid of (R[k].pieces||[])) dispo.add(pid);
+    attentes.forEach((a,j)=>{
+      const ou=attentes.length>1 ? ` (attente ${j+1})` : "";
+      if(!a.attend){
+        add("erreur",`Remise ${i+1}${ou} : une question sans tag à servir`,
+          "Une question posée que rien ne peut satisfaire bloque la session : donne-lui un « attend ».",{});
+        return;
+      }
+      if(!tags.has(a.attend)){
+        add("erreur",`Remise ${i+1}${ou} attend « ${a.attend} », qu'aucun lien ne porte`,
+          "Aucune phrase composable ne satisfait cette attente — la session serait sans issue.",{});
+        return;
+      }
+      /* LE BLOC LIVRÉ TROP TARD. Depuis que les blocs sont filtrés par
+         livraison (§4.5), une attente peut devenir inservable : si TOUTES les
+         phrases qui la servent exigent une pièce qui arrive plus tard, le
+         joueur ne peut littéralement pas écrire ce qu'on lui demande. Ça vaut
+         pour un article, et depuis le 30 juillet pour le second empan aussi.
+         Aucune relecture n'attrape ça ; une partie de test, après vingt minutes. */
+      const servables=(CONTENU.liens||[]).filter(L=>L.tag===a.attend && formeComposable(L.forme,dispo));
       if(!servables.length)
-        add("erreur",`Remise ${i+1} attend « ${r.attend} », mais son article n'est pas encore livré`,
-          "Toutes les phrases qui serviraient cette attente invoquent un texte que le joueur n'a pas encore reçu : la session est inclôturable. Livre la règle plus tôt, ou déplace l'attente.",{});
-    }
+        add("erreur",`Remise ${i+1}${ou} attend « ${a.attend} », mais de quoi l'écrire n'est pas encore livré`,
+          "Toutes les phrases qui serviraient cette attente passent par un bloc dont la pièce n'a pas encore été remise : la session est inclôturable. Livre la pièce plus tôt, ou déplace l'attente.",{});
+    });
   });
 
   /* ---- les manuels ---- */
@@ -1340,19 +1383,27 @@ function renderFrise(){
         ${opts?`<select class="pselect" onchange="if(this.value)ajouterPieceRemise(${i},this.value)">
           <option value="">+ pièce…</option>${opts}</select>`:""}
       </div>
-      <label>Ce que l'avocat attend <span style="color:var(--dim)">(le tag d'un lien : la session se ferme quand une phrase qui le porte est VERSÉE)</span></label>
-      <div class="steprow">
-        <input type="text" class="mono" style="width:150px" value="${escapeAttr(r.attend||"")}" placeholder="—" onchange="majRemise(${i},'attend',this.value)">
-        ${tags.length?`<select class="pselect" onchange="if(this.value)majRemise(${i},'attend',this.value)">
-          <option value="">tags existants…</option>${tags.map(t=>`<option ${t===r.attend?"selected":""}>${escapeH(t)}</option>`).join("")}</select>`:""}
-      </div>
-      <label>Accusé de réception (apres) <span style="color:var(--dim)">— dit quand l'attente est servie</span></label>
-      <textarea style="min-height:34px" onchange="majRemiseApres(${i},this.value)">${escapeH((r.apres||{}).replique||"")}</textarea>
-      ${r.apres?`<div class="steprow"><span style="color:var(--dim)">dit par</span>
-        <input type="text" class="mono" style="width:130px" value="${escapeAttr(r.apres.qui||"")}" placeholder="Maître Auber" onchange="majRemiseApresQui(${i},this.value)"></div>`:""}
+      <label>Ce que l'avocat attend <span style="color:var(--dim)">(une SUITE : il pose, attend, accuse réception, repose. La session ne se ferme qu'une fois la liste épuisée)</span></label>
+      ${attentesDeRemise(r).map((a,j)=>`<div class="attente">
+        <label>Question posée <span style="color:var(--dim)">— facultatif : laissée vide, l'avocat n'attend qu'une phrase, sans la demander</span></label>
+        <textarea style="min-height:34px" onchange="majAttente(${i},${j},'question',this.value)">${escapeH(a.question||"")}</textarea>
+        <label>Tag servi</label>
+        <div class="steprow">
+          <input type="text" class="mono" style="width:150px" value="${escapeAttr(a.attend||"")}" placeholder="—" onchange="majAttente(${i},${j},'attend',this.value)">
+          ${tags.length?`<select class="pselect" onchange="if(this.value)majAttente(${i},${j},'attend',this.value)">
+            <option value="">tags existants…</option>${tags.map(t=>`<option ${t===a.attend?"selected":""}>${escapeH(t)}</option>`).join("")}</select>`:""}
+          ${attentesDeRemise(r).length>1?`<button class="xsmall" onclick="retirerAttente(${i},${j})">✕ attente</button>`:""}
+        </div>
+        <label>Accusé de réception (apres) <span style="color:var(--dim)">— dit quand cette attente est servie</span></label>
+        <textarea style="min-height:34px" onchange="majAttenteApres(${i},${j},this.value)">${escapeH((a.apres||{}).replique||"")}</textarea>
+        ${a.apres?`<div class="steprow"><span style="color:var(--dim)">dit par</span>
+          <input type="text" class="mono" style="width:130px" value="${escapeAttr(a.apres.qui||"")}" placeholder="Maître Auber" onchange="majAttenteApresQui(${i},${j},this.value)"></div>`:""}
+      </div>`).join("")}
+      <button class="addrow" onclick="ajouterAttente(${i})">+ Attente</button>
+      <div class="repline">${mir("une phrase portant le tag d'une attente est versée au plan → réplique « apres » → la question suivante est posée")}</div>
       <div class="repline">${mir(i<R.length-1
-        ? "une phrase portant le tag « "+(r.attend||"—")+" » est versée au plan → réplique « apres », puis la session "+(i+2)+" part"
-        : "une phrase portant le tag « "+(r.attend||"—")+" » est versée au plan → le bouton « Clôturer l'instruction » s'ouvre")}</div>
+        ? "la DERNIÈRE attente de la liste servie → la session "+(i+2)+" part"
+        : "la DERNIÈRE attente de la liste servie → le bouton « Clôturer l'instruction » s'ouvre")}</div>
     </div>`;
   });
   h+=`<button class="addrow" onclick="ajouterRemise()">+ Session</button>`;
@@ -1362,6 +1413,7 @@ function renderFrise(){
     <h3>Les quatre surfaces <span class="cid">— deux privées, deux transmises</span></h3>
     <div class="repline">${mir("lire → SURLIGNER : l'empan tombe en mémoire (privé). Rien ne se passe")}</div>
     <div class="repline">${mir("COMPOSER : les blocs de l'état courant, de gauche à droite ; seules les erreurs de catégorie sont refusées")}</div>
+    <div class="repline">${mir("deux voies de clôture : un fait SE CITE (un empan, clos par sa citation) — une relation SE FONDE (deux empans, clos par un article)")}</div>
     <div class="repline">${mir("la phrase close tombe au BROUILLON (privé) — jamais jugée, gratuite, illimitée, dédoublonnée")}</div>
     <div class="repline">${mir("VERSER au plan de plaidoirie : le seul geste transmis, donc le seul à conséquence")}</div>
     <div class="repline">${mir("l'index du dossier (pièces reçues, marqueur vu/pas-vu) — pur affichage, rien à éditer ici")}</div>
@@ -1474,6 +1526,45 @@ function demanderSupprRemise(i){
   CONTENU.remises.splice(i,1);
   autosave(); render();
 }
+/* LES ATTENTES D'UNE SESSION (§3). Éditer une remise écrite à l'ancienne la
+   convertit en liste : on n'écrit plus qu'une forme, mais on lit les deux. */
+function attentesEditables(i){
+  const r=CONTENU.remises[i];
+  if(!Array.isArray(r.attentes)){
+    const a={};
+    if(r.attend) a.attend=r.attend;
+    if(r.apres)  a.apres=r.apres;
+    delete r.attend; delete r.apres;
+    r.attentes=Object.keys(a).length?[a]:[{}];
+  }
+  return r.attentes;
+}
+function majAttente(i,j,prop,v){
+  pushUndo();
+  const a=attentesEditables(i)[j]; if(!a) return;
+  const s=typeof v==="string"?v.trim():v;
+  if(!s) delete a[prop]; else a[prop]=prop==="attend"?s:v;
+  autosave(); render();
+}
+function majAttenteApres(i,j,v){
+  pushUndo();
+  const a=attentesEditables(i)[j]; if(!a) return;
+  if(String(v).trim()) a.apres={...(a.apres||{}),replique:v}; else delete a.apres;
+  autosave(); render();
+}
+function majAttenteApresQui(i,j,v){
+  pushUndo();
+  const a=attentesEditables(i)[j]; if(!a||!a.apres) return;
+  if(String(v).trim()) a.apres.qui=v.trim(); else delete a.apres.qui;
+  autosave(); render();
+}
+function ajouterAttente(i){ pushUndo(); attentesEditables(i).push({}); autosave(); render(); }
+function retirerAttente(i,j){
+  pushUndo();
+  const as=attentesEditables(i);
+  if(as.length>1) as.splice(j,1);
+  autosave(); render();
+}
 /* les accusés de réception vivent désormais sur la SESSION, pas sur une case */
 function majRemiseApres(i,v){
   pushUndo();
@@ -1562,9 +1653,12 @@ function simComposable(L){
   const f=formeDe(L.forme)||{}, R=RG();
   if((f.arite||2)===1){
     const sous=(L.termes||[])[0];
-    if(!sous || typeof sous!=="object") return false;
     const bloc=(CONTENU.grammaire.blocs||[]).find(b=>b.forme===L.forme);
     if(bloc && bloc.piece && !simLivrees().has(bloc.piece)) return false;
+    /* UNE CITATION : le terme est atomique. Un fait se cite — il suffit de
+       l'avoir en mémoire, aucun article n'est requis (§4.5). */
+    if(typeof sous==="string") return SIM.memoire.includes(sous);
+    if(!sous || typeof sous!=="object") return false;
     return feuillesLien(sous).every(k=>SIM.memoire.includes(k))
         || SIM.brouillon.some(n=>n.reduite && R && R.estRegle && memeReduite(n.reduite,sous));
   }
@@ -1653,11 +1747,13 @@ function simActions(){
     if(!feuillesLien(r).every(k=>SIM.memoire.includes(k))) continue;
     A.push({t:`Comparer (sans qualifier) : ${labelLien(r)}`, cls:"ghost", f:()=>simComparer(r)});
   }
-  // composer : les phrases que la mémoire rend atteignables
+  /* composer : les phrases que la mémoire rend atteignables. Deux voies, deux
+     verbes — on ne compose pas une citation, on répond (§4.5). */
   (CONTENU.liens||[]).forEach((L,i)=>{
     const deja=SIM.brouillon.some(n=>memeReduite(n.reduite,{forme:L.forme,termes:L.termes||[]}));
     if(deja || !simComposable(L)) return;
-    A.push({t:`Composer : ${labelLien(L)}`, tag:simTag(L), f:()=>simComposer(i)});
+    const cite=(formeDe(L.forme)||{}).arite===1 && typeof (L.termes||[])[0]==="string";
+    A.push({t:`${cite?"Répondre (citer)":"Composer"} : ${labelLien(L)}`, tag:simTag(L), f:()=>simComposer(i)});
   });
   // envoyer : le seul geste transmis
   if(phase!=="repetition")

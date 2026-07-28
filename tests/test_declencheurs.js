@@ -91,31 +91,76 @@ console.log("\n=== piece.declenche ===");
   check("le « qui » du contenu est respecté", canal(w).includes("Le stagiaire"));
 }
 
-console.log("\n=== remise.attend / remise.apres : l'avancement ===");
+console.log("\n=== Les attentes d'une remise : l'avancement ===");
 {
   const c = contenuLivre();
   const w = boot(c);
   check("une seule session est ouverte au départ", w.S.remisesEnvoyees === 1);
-  const tag = c.remises[0].attend;
-  const L = H.lienTag(w, tag);
-  const i = H.composerLien(w, L);
-  check("la phrase attendue se compose", i >= 0);
-  check("la composer ne fait rien avancer", w.S.remisesEnvoyees === 1);
-  w.envoyer(i);
-  check("la VERSER ferme la session et ouvre la suivante", w.S.remisesEnvoyees === 2);
-  check("l'accusé de réception est dit", canal(w).includes(c.remises[0].apres.replique.slice(0, 30)));
+  /* Une remise attend une SUITE de réponses (§3). Elle ne se ferme qu'une fois
+     toutes servies, et chacune est servie par le même geste : composer, verser. */
+  const as = w.R.attentesDe(c.remises[0]);
+  check("la première remise attend au moins une réponse", as.length >= 1);
+  as.forEach((a, k) => {
+    const i = H.composerLien(w, H.lienTag(w, a.attend));
+    if (k === 0) {
+      check("la phrase attendue se compose", i >= 0);
+      check("la composer ne fait rien avancer", w.S.remisesEnvoyees === 1);
+    }
+    w.envoyer(i);
+    if (k < as.length - 1)
+      check("une attente servie n'ouvre pas encore la session suivante", w.S.remisesEnvoyees === 1);
+  });
+  check("la dernière attente servie ferme la session et ouvre la suivante", w.S.remisesEnvoyees === 2);
+  const fin = as[as.length - 1].apres;
+  check("l'accusé de réception est dit",
+        !fin || canal(w).includes(fin.replique.slice(0, 30)));
+}
+{
+  // Chaque question posée arrive dans le canal quand son attente devient courante.
+  const c = contenuLivre();
+  const w = boot(c);
+  const as = w.R.attentesDe(c.remises[0]).filter(a => a.question);
+  if (as.length) {
+    check("la première question est posée au démarrage", canal(w).includes(as[0].question));
+    if (as.length > 1) {
+      check("la suivante ne l'est pas encore", !canal(w).includes(as[1].question));
+      w.envoyer(H.composerLien(w, H.lienTag(w, as[0].attend)));
+      check("elle est posée dès que la précédente est servie", canal(w).includes(as[1].question));
+    }
+  }
+}
+{
+  /* Répondre DANS LE DÉSORDRE est accepté : on ne restreint jamais par la
+     pertinence (§4.5). L'attente servie est celle dont le tag correspond, et
+     la question reposée est la première encore due. */
+  const c = contenuLivre();
+  const w = boot(c);
+  const as = w.R.attentesDe(c.remises[0]);
+  if (as.length > 1) {
+    const derniere = as[as.length - 1];
+    w.envoyer(H.composerLien(w, H.lienTag(w, derniere.attend)));
+    check("servir la dernière attente d'abord est accepté",
+      w.S.satisfaits.includes(derniere.attend));
+    check("mais ne ferme pas la session pour autant", w.S.remisesEnvoyees === 1);
+    check("et la première question reste posée",
+      !as[0].question || canal(w).includes(as[0].question));
+    as.slice(0, -1).forEach(a => w.envoyer(H.composerLien(w, H.lienTag(w, a.attend))));
+    check("le reste servi, la session passe enfin", w.S.remisesEnvoyees === 2);
+  }
 }
 {
   const c = contenuLivre();
-  c.remises[0].apres = { qui:"La greffière", replique:"Reçu." };
+  const as = H.attentesContenu(c.remises[0]);
+  as[as.length-1].apres = { qui:"La greffière", replique:"Reçu." };
   const w = boot(c);
   H.instruire(w);
   check("le « qui » de l'accusé de réception vient du contenu", canal(w).includes("La greffière"));
 }
 {
-  // une session de plus, sans pièce : le moteur ne s'en émeut pas
+  // une session de plus, sans pièce, écrite À L'ANCIENNE : le moteur ne s'en émeut pas
   const c = contenuLivre();
-  const tag = c.remises[c.remises.length-1].attend;
+  const derniere = c.remises[c.remises.length-1];
+  const tag = H.attentesContenu(derniere).slice(-1)[0].attend;
   c.remises.push({ qui:"Maître Auber", texte:"Encore un mot.", pieces:[], attend:tag });
   const w = boot(c);
   H.instruire(w);

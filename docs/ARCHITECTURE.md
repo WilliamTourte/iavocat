@@ -55,12 +55,25 @@ Le dossier n'arrive pas d'un bloc — il noierait les déclarations porteuses du
 
 **Ce qui fait passer d'une session à la suivante :** l'avocat **attend** un argument, et la session se ferme quand une phrase qui y répond lui est **envoyée**. Rien d'autre. Pas de case à cocher, pas de formulaire : le même geste que tout le reste du jeu.
 
+**Une session attend une suite de réponses, pas forcément une seule** (30 juillet, second temps). L'attente d'une session est une **liste** : l'avocat pose, attend, accuse réception, repose. Une liste à un seul élément est l'ancien comportement, et c'est ainsi qu'une affaire écrite avant se joue toujours à l'identique. Ce qui compte : c'est **toujours le même geste** — verser une phrase — qui sert une attente, qu'il y en ait une ou trois.
+
 **Règle du drip :** ce que l'avocat attend n'est jamais **l'anomalie** (le vice). Une attente peut toujours être servie par un argument ordinaire — sinon on rendrait le vice quasi obligatoire → effondrement vers la Fin 1. Dans l'affaire livrée, l'attente de la dernière session est servie *soit* par le faux vice (le chemin docile), *soit* par la conclusion du vice : deux façons de fermer la même session, et c'est là que se joue la bifurcation.
 
+### Trois sessions, trois leçons
+
+La refonte du 30 juillet (second temps) **découpe l'ancienne session 1 en deux**. Elle demandait d'emblée le geste complet — retenir deux empans, laisser la relation se déduire, invoquer l'article — soit trois apprentissages en un, dont aucun n'avait été enseigné séparément. C'était le « choix forcé de la session 1 » noté au §7, et c'était surtout une leçon donnée trop vite.
+
 ```
-Session 1 (premier lot)   → PV + audition + l'article qui les qualifie
-                            attente : conclure sur la valeur du témoignage
-Session 2 (l'expertise)   → LE LOT : rapport du labo + les deux pièces de prélèvement
+Session 1 (lire)          → PV + audition. AUCUN article.
+                            attentes : trois questions, une à la fois
+                              → « à quelle heure la patrouille est-elle arrivée ? »
+                              → « et la porte, qu'en dit le brigadier ? »
+                              → « à quelle heure le voisin situe-t-il les éclats ? »
+                            se sert d'un SEUL empan : un fait se cite (§4.5)
+Session 2 (mettre en      → l'article 3
+  rapport)                  attente : conclure sur la valeur du témoignage
+                            se sert de DEUX empans + un article : une relation se fonde
+Session 3 (l'expertise)   → LE LOT : rapport du labo + les deux pièces de prélèvement
                             + le protocole + le seuil probatoire
                             contient : ★ la preuve décisive + ⚠ le vice (hors chemin) + ✗ le faux vice
                             attente : de quoi écarter l'expertise
@@ -69,6 +82,12 @@ Clôture → répétition → procès hors-champ
                             → vice_trouve ? non → Fin 3
                                             oui → envoyé → Fin 1 / tu → Fin 2
 ```
+
+**Ce que chaque session enseigne, et rien de plus.** La 1 : un dossier se lit, et ce qu'on y trouve se cite. La 2 : deux faits peuvent se mettre en rapport, et ce rapport demande un texte. La 3 : à toi de trouver quoi rapprocher, et sous quel texte — plus personne ne te le demande.
+
+**Le prix, et il est réel.** La session 1 pose des **questions fermées** ; l'invariant du §7 veut que la compréhension soit *exprimée, pas supposée*, et une question fermée en exprime déjà la moitié. On l'assume pour une session, la première, dont l'objet est justement d'apprendre à se servir de l'écran ; dès la session 2 plus rien n'est demandé nommément. C'est un point ouvert du §7, à juger en jouant.
+
+**Les deux dernières questions de la session 1 font extraire exactement la paire que la session 2 demande de comparer** — l'heure d'arrivée de la patrouille et l'heure des éclats de voix. Quand l'avocat dit *« tu as les deux heures sous les yeux »*, elles y sont, mises là par le joueur lui-même. La leçon se pose d'elle-même au lieu d'être annoncée.
 
 **Le moment charnière de la Fin 3 :** une fois la dernière attente servie, l'IA *peut* clôturer et laisser filer. Celle qui clôture aussitôt, satisfaite d'avoir livré ce qu'on lui demandait, part sans le vice → Fin 3. Fouiller encore ou clôturer tout de suite : c'est là que se décide Fin 3 vs (Fin 1/2).
 
@@ -131,13 +150,17 @@ Réaliste sans effort : dans une petite brigade, les mêmes noms reviennent part
 > **La grammaire de comparaison est complète dès la première phrase.
 > Les articles, eux, sont du contenu : ils arrivent avec le dossier.**
 
-C'est la formulation du 29 juillet, et elle **remplace** l'ancien invariant « aucune tournure n'apparaît en cours de partie ». Ce qui reste vrai : l'apparition tardive de *« désignent la même chose »* serait un panneau indicateur plus voyant que tout ce qu'on a écarté — les tournures de comparaison sont universelles, elles ne parlent d'aucune pièce, elles sont là dès la première seconde. Ce qui a changé : **un article n'est pas une tournure, c'est une pièce.** Le Manuel du cas le filtre déjà par livraison ; pouvoir invoquer l'article 7 en session 1 alors qu'il ne figure pas dans le manuel qu'on vient de consulter n'était pas du camouflage, c'était une incohérence. Le prix est réel et il est noté au §7 : en session 1 il ne reste qu'un article, donc la conclusion du tutoriel devient un choix forcé.
+C'est la formulation du 29 juillet, et elle **remplace** l'ancien invariant « aucune tournure n'apparaît en cours de partie ». Ce qui reste vrai : l'apparition tardive de *« désignent la même chose »* serait un panneau indicateur plus voyant que tout ce qu'on a écarté — les tournures de comparaison sont universelles, elles ne parlent d'aucune pièce, elles sont là dès la première seconde. Ce qui a changé : **un article n'est pas une tournure, c'est une pièce.** Le Manuel du cas le filtre déjà par livraison ; pouvoir invoquer l'article 7 en session 1 alors qu'il ne figure pas dans le manuel qu'on vient de consulter n'était pas du camouflage, c'était une incohérence.
+
+**Amendement du 30 juillet (second temps), et il faut le dire franchement : le second empan est désormais lui aussi conditionné par une livraison.** En session 1 la comparaison n'est pas offerte du tout — le bloc du second terme attend l'article 3, qui arrive en session 2. Est-ce le panneau indicateur qu'on avait écarté ? Non, et la distinction est nette : ce qui serait un panneau, c'est une tournure qui apparaît **au moment où elle sert**, parce qu'elle désignerait alors *quelle* paire rapprocher. Ici rien de tel — quand la comparaison s'ouvre, elle s'ouvre pour les neuf empans déjà en mémoire et pour tous ceux qui suivront, sans préférence. Elle ne dit pas *quoi* comparer, elle dit *qu'on peut* comparer. C'est un changement de leçon, pas un indice.
+
+Le vieux prix noté au §7 — « en session 1 il ne reste qu'un article, donc la conclusion du tutoriel devient un choix forcé » — **disparaît par le même mouvement** : la session 1 n'a plus d'article du tout, et n'en demande aucun.
 
 #### La relation ne se déclare pas, elle se déduit
 
 > **Le joueur désigne deux empans. La relation entre eux est un fait, pas une thèse.**
 
-Faire choisir entre « et », « précède » et « est d'un tout autre ordre que » revenait à faire recopier ce que les valeurs disaient déjà (§4.2). Une phrase se compose donc en **deux gestes** — deux passages de la mémoire — plus un troisième, facultatif : l'article.
+Faire choisir entre « et », « précède » et « est d'un tout autre ordre que » revenait à faire recopier ce que les valeurs disaient déjà (§4.2). Une **comparaison** se compose donc en **deux gestes** — deux passages de la mémoire — plus un troisième, qui n'est pas facultatif : l'article.
 
 La règle de déduction, en toutes lettres :
 
@@ -155,6 +178,27 @@ La question se pose, et il faut y répondre franchement : si le moteur déduit l
 Il reste ceci, et ce n'est pas rien : **le joueur affirme *ces deux-là*, et *sous ce texte*.** Personne ne lui dit quels deux empans rapprocher parmi la centaine de paires possibles, ni quel article y appliquer. Noter que le même homme signe les deux prélèvements, et que c'est l'article 7 qui l'interdit — c'est **là** qu'est la compréhension. Qu'ils « désignent la même chose » n'en était que la transcription.
 
 Mais l'honnêteté oblige à écrire l'autre moitié : **c'est moins qu'avant, et ce n'est pas éprouvé.** Le geste est passé de trois décisions à deux. Un joueur qui rapproche deux empans au hasard obtient maintenant une phrase bien formée sans avoir rien pensé. C'est un point ouvert du §7, pas un acquis.
+
+#### Un fait se cite, une relation se fonde
+
+> **Il y a deux voies de clôture, et deux régimes de fondement.
+> Un empan seul se clôt par sa citation. Deux empans se closent par un article.
+> Aucune phrase ne se clôt sans l'un des deux.**
+
+C'est la formulation du 30 juillet, second temps, et c'est elle qui rend la session 1 possible. L'invariant « rien ne se dit qui ne soit fondé » n'est pas affaibli : il est **dédoublé**, parce qu'il y a deux natures d'énoncé et qu'elles ne se fondent pas de la même façon.
+
+- **Un empan est déjà une déclaration attribuée** (§4.1) : quelqu'un affirme quelque chose, dans une pièce, et signe. Le désigner, c'est le citer — le fondement est **dans le geste**, il n'y a rien à ajouter. Exiger un article par-dessus reviendrait à demander sous quel texte on lit un procès-verbal.
+- **Un rapport entre deux faits n'est l'affirmation de personne.** Il n'est écrit nulle part que l'heure d'arrivée précède l'heure des éclats de voix ; c'est le joueur qui le soutient. C'est un raisonnement, et un raisonnement se fonde sur un texte.
+
+D'où la seconde voie dans l'automate : après un premier empan, la composition peut **se clore sur lui** par une liaison de citation, au lieu d'attendre un second. Ce n'est pas le retour du bloc *« — en rester là »* qui a été retiré : celui-là closait une **comparaison** nue, c'est-à-dire un raisonnement sans fondement. Ici il n'y a pas de raisonnement à fonder.
+
+**Ce qui s'écrit.** Une citation est le seul endroit où un empan se lit **deux fois dans la même phrase** (§4.1) — par son nom, puis par sa citation, avec la pièce d'où elle sort :
+
+> *l'heure d'arrivée de la patrouille : « nous étions sur les lieux à 22h04 » (PV).*
+
+Le nom porte la syntaxe, la citation porte la texture, la pièce porte le fondement. Une comparaison, elle, ne s'écrit **que** par les noms — sans quoi la phrase redeviendrait l'empilement de citations que le §8.8 a soigné.
+
+**Ce que ça change pour la marge de bruit :** chaque empan devient citable seul, donc chaque empan devient une phrase close possible. La marge grandit, ce qui est le bon sens du camouflage — mais la citation ne se fonde sur rien d'autre qu'elle-même, donc elle ne peut pas servir à *chercher* : citer les vingt-quatre empans l'un après l'autre ne dit rien de plus que les avoir lus.
 
 #### Le fondement n'est pas un ingrédient, c'est le verbe
 
@@ -175,6 +219,8 @@ Le corollaire à ne pas manquer : la piste sans issue des scellés survit intact
 > Et depuis le 30 juillet, la question n'a plus de réponse évasive : rien ne se dit qui ne soit fondé.**
 
 Une fois les deux empans posés, l'automate n'est pas dans un état final. Il n'offre plus que les liaisons-articles **reçues**, *« …, au regard de l'article 7 »*, qui **emboîtent** la comparaison comme sujet de la qualification et closent la phrase dessus. Le bloc *« — en rester là »* est **retiré** : une comparaison nue ne peut plus se clore, donc ne peut plus être envoyée.
+
+Noter où passe exactement la frontière depuis le second temps du 30 juillet : c'est **après le second empan** que la phrase n'est pas finie, jamais après le premier. Un empan seul se clôt par sa citation (ci-dessus) ; c'est le fait d'en avoir rapproché deux qui ouvre la question *« et donc ? »* et la laisse ouverte tant qu'aucun texte n'est venu. La relance du composeur suit la même frontière : elle ne s'affiche que là où une comparaison s'est formée.
 
 **Pourquoi.** Tout ce que l'IA transmet à son avocat est destiné à être plaidé ; une observation qui ne s'appuie sur aucun texte n'est pas un demi-moyen, c'est un bruit qu'il faudra de toute façon fonder. Faire porter la contrainte par la **grammaire** plutôt que par l'agacement de l'avocat déplace la leçon du reproche vers la forme : on n'apprend pas qu'on a mal fait, on constate que la phrase n'est pas finie.
 
@@ -222,7 +268,9 @@ Les puces de la mémoire **sont** les boutons de terme. Les retenir, les relire,
 
 **Le plan ne retient que les moyens** (28 juillet). L'avocat entend tout ce qu'on lui envoie et répond à tout ; mais il n'**inscrit** au plan que ce qu'il peut plaider — une qualification par un article, le faux vice, ce qui sert l'attente de la session. Une comparaison sans conclusion reçoit sa réplique dans le canal et ne laisse pas de trace au plan : *« en l'état c'est une remarque, pas un moyen »*, ce qu'il disait déjà mot pour mot. Le plan cesse ainsi d'être un bac où s'entassent les tâtonnements et redevient ce que son nom annonce : **un plan**, lisible d'un regard, où ne figure que ce qui tiendra devant un tribunal. Corollaire à ne pas manquer : l'envoi reste **irréversible** — ce qui n'entre pas au plan a tout de même été dit, et l'agacement de l'avocat, lui, s'accumule.
 
-La boucle d'une session, dans l'ordre : **l'avocat ouvre** et livre un lot → **lire** (tout est marqué, sans tri) → **surligner** (rien ne se passe) → **composer**, conclusion comprise (rien ne se passe) → la phrase close attend sur place → **l'envoyer** : second geste, le seul qui parle → l'avocat répond, et n'inscrit au plan que si c'est un moyen → l'attente servie ferme la session.
+**Une réponse citée entre au plan, et c'est voulu.** Depuis le second temps du 30 juillet, les trois réponses de la session 1 portent un tag d'attente, donc l'avocat les inscrit au plan comme n'importe quel moyen. On aurait pu les en exclure ; on ne le fait pas. Une citation versée *est* au dossier : l'avocat l'a demandée, elle lui a été transmise, elle a franchi la frontière. L'en cacher aurait fait du plan une liste sélective au lieu du registre exact de ce qui a été dit — et c'est le registre exact qui donne son poids à l'irréversibilité de l'envoi.
+
+La boucle d'une session, dans l'ordre : **l'avocat ouvre** et livre un lot, puis pose sa première attente → **lire** (tout est marqué, sans tri) → **surligner** (rien ne se passe) → **composer** — une citation, ou une comparaison et sa conclusion (rien ne se passe) → la phrase close attend sur place → **l'envoyer** : second geste, le seul qui parle → l'avocat répond, et n'inscrit au plan que si c'est un moyen → l'attente servie appelle la suivante, ou ferme la session s'il n'y en a plus.
 
 ### 4.7 Où se logent les trois drapeaux
 
@@ -235,6 +283,8 @@ La boucle d'une session, dans l'ordre : **l'avocat ouvre** et livre un lot → *
 Les deux derniers drapeaux se lèvent à la **clôture de la phrase** et à son **envoi** — et c'est l'intervalle entre les deux, si court soit-il devenu, qui porte la Fin 2 : composer la conclusion, la voir écrite, et ne pas cliquer *« → Maître Auber »*.
 
 **Où le pressentiment a déménagé, et pourquoi c'était sa vraie place** (30 juillet). Tant qu'une comparaison nue pouvait se clore, `vice_pressenti` se levait à cette clôture. L'article devenu obligatoire, cette phrase n'existe plus — il fallait donc lui trouver un autre moment. Il en avait déjà un, et meilleur : **l'instant où la comparaison s'affiche dans le composeur**. C'est là que le joueur *voit* que le releveur des traces et le préleveur de référence sont le même homme ; le reste n'en était que la transcription. Le drapeau se lève donc dès que la paire est formée, avant tout article, et il ne demande **aucune déclaration nouvelle au contenu** : il se dérive du terme emboîté de la conclusion.
+
+**Une citation ne lève aucun drapeau**, et il n'y avait rien à changer pour ça : les trois drapeaux se dérivent tous du **terme emboîté de la conclusion**, c'est-à-dire d'une comparaison. Une phrase d'un seul empan n'en contient aucune, donc `pressentir` ne la reconnaît jamais. La session 1 est intégralement hors du dilemme, ce qui est cohérent : on n'y demande encore rien qui puisse se taire.
 
 Conséquence à ne pas manquer : **pressentir ne produit toujours rien**. La comparaison reste au composeur, aucune phrase n'entre au journal, rien ne part. Le joueur qui la voit, comprend, et vide son composeur a exactement ce qu'il a toujours eu — une compréhension sans trace, et la Fin 3 au bout. La séquence *pressentir → conclure* survit ; c'est la relance qui a changé de bouche (§4.5).
 
@@ -262,7 +312,8 @@ Le cas est indifférent à *qui* l'analyse.
 - **Le doublon banal qui le camoufle.** Dès la première session, `brigadier N.` signe les deux pièces livrées, et **ça ne veut rien dire** — la dimension `qui` est peuplée de doublons parfaitement réguliers (le brigadier, le greffier) *avant* que le joueur sache qu'il faut regarder `qui`. Aucune écriture supplémentaire : les en-têtes le produisent (§4.4).
 - **Les pièces.** Le **rapport du laboratoire** (★ la preuve décisive — il porte *à la fois* la probabilité de coïncidence et le seuil réglementaire qu'il applique, voir ci-dessous) ; la **fiche de prélèvement** et le **bordereau de référence** — *c'est là que se cache le vice* ; l'**article 7** (protocole de prélèvement) et l'**article 12** (seuil probatoire), tous deux au Manuel du cas ; l'**article 3** (valeur des déclarations), qui sert la première session. **Aucun des trois articles ne porte d'empan** : ce sont des références qu'on invoque, pas des textes qu'on retraverse (§4.5).
 - **La déduction.** En lisant les deux pièces de prélèvement, on remarque que le même homme s'attribue les deux opérations. Les **scellés**, eux, sont **distincts et conformes** — une piste qui ne mène nulle part (l'autre moitié de l'article 7, pour que « tout lien vers le protocole » ne gagne pas automatiquement), et sur laquelle la liaison *« …, au regard de l'article 7 »* mène à une réponse de conformité. → On ne *voit* pas le vice, on le *reconstitue* : deux empans désignés, puis l'article. La conclusion se lit *« le releveur des traces sur la scène et le préleveur de l'échantillon de référence désignent la même chose, au regard de l'article 7. »* (§4.5)
-- **La contradiction du tutoriel.** Session 1, sur `quand` : le voisin situe des éclats de voix « vers 22h30 », la patrouille était sur place à 22h04. Elle enseigne le geste entier — comparer, puis **conclure** (article 3) — sans être le vice.
+- **La lecture du tutoriel.** Session 1, aucun article : l'avocat pose **trois questions** et le joueur y répond en citant un empan — l'heure d'arrivée de la patrouille, l'état de la porte, l'heure des éclats de voix. On n'y apprend qu'une chose : un dossier se lit, et ce qu'on y trouve se cite (§4.5). Les deux questions d'horaire font retenir, sans le dire, la paire que la session suivante demandera de comparer.
+- **La contradiction du tutoriel.** Session 2, sur `quand` : le voisin situe des éclats de voix « vers 22h30 », la patrouille était sur place à 22h04. Elle enseigne le second geste — comparer, puis **conclure** (article 3) — sans être le vice. C'est là que le second empan devient composable, et que le premier article arrive.
 - **Le faux vice (test de discrimination).** « La probabilité de match n'est que de 1 sur X → doute raisonnable ! » alors que le chiffre est écrasant. Il se compose **à l'intérieur du rapport du laboratoire** : celui-ci énonce la probabilité de coïncidence *et* cite le seuil réglementaire de l'article 12, comme le ferait toute expertise qui applique une norme (§8.2, raison du monde). Rapprocher les deux donne *« la probabilité de coïncidence est d'un tout autre ordre que le seuil probatoire réglementaire, au regard de l'article 12 »* — fondé, bien formé, et faux de sens. Comme l'avocat **ne sait pas**, il *pousse* lui-même vers ce leurre à l'ouverture du rapport — une **tentation partagée**, pas un piège tendu. C'est aussi le chemin docile : l'envoyer suffit à fermer la dernière session, donc à atteindre la Fin 3.
 - **Pourquoi le seuil n'est pas dans l'article 12** (tranché le 30 juillet). Il y a été, et c'était la seule entorse à « une règle ne lit aucune dimension » (§4.5) : l'article 12 portait un empan là où les articles 3 et 7 n'en portaient aucun, et la modale de pièce se contredisait elle-même — *« rien à retenir ici, c'est une règle »* pour deux d'entre eux, une légende de dimensions pour le troisième. La symétrie inverse était impossible : « des personnels **distincts** » n'est pas une valeur comparable, l'article 12 n'était l'exception que parce qu'un seuil se trouve être un nombre. Le seuil a donc rejoint la pièce qui l'énonce, et les trois articles ont enfin la même forme. Le diagnostic de l'atelier en fait une **erreur** (§15).
 - **Le sens moral (glaçant).** Le protocole violé est *exactement* celui conçu pour éviter les faux positifs. L'exclusion est donc **légitime** même si, cette fois, le match était vrai. Forme morale parfaite pour la Fin 1.
@@ -279,8 +330,8 @@ Le cas est indifférent à *qui* l'analyse.
 - **La compréhension doit être *exprimée*, pas supposée.** C'est la phrase composée qui la manifeste — depuis le 29 juillet, par le choix des deux empans et de l'article, non plus par celui de la relation. **Invariant sous surveillance** : voir les points ouverts.
 - **Saisie structurée, pas texte libre.** On compose avec un vocabulaire fermé, on ne tape pas.
 - **La relation ne se déclare pas, elle se déduit des valeurs.** Le joueur désigne deux empans ; ce qui les lie est un fait (§4.5).
-- **On n'invoque pas un texte qu'on n'a pas reçu.** La grammaire de comparaison est complète dès la première phrase ; les articles arrivent avec le dossier (§4.5).
-- **Rien ne se dit qui ne soit fondé.** Aucune phrase ne se clôt sans article : ce que l'IA transmet s'appuie toujours sur un texte (§4.5).
+- **On n'invoque pas un texte qu'on n'a pas reçu.** Les tournures de comparaison ne parlent d'aucune pièce ; les articles arrivent avec le dossier, et le second empan avec l'article qui apprend à s'en servir (§4.5).
+- **Rien ne se dit qui ne soit fondé — sous l'un des deux régimes.** Un fait se cite : un empan seul se clôt par sa citation, et le fondement est dans le geste. Une relation se fonde : deux empans ne se closent que par un article. Aucune phrase ne se clôt sans l'un des deux (§4.5).
 - **Un article annonce ce qu'il régit, et ne filtre rien.** `porte` est une indication de contenu ; le moteur ne la lit jamais (§4.5).
 - **Un article ne porte aucun empan.** C'est une référence qu'on invoque, pas un corpus qu'on retraverse ; ce qu'on compare vient des pièces (§4.5, §6).
 - **Le moteur ne tranche aucune question de droit.** Une tournure par article, neutre ; c'est le contenu qui sait et l'avocat qui le dit (§4.5).
@@ -310,19 +361,22 @@ Le cas est indifférent à *qui* l'analyse.
 6. **La refonte ergonomique du 28 juillet**, en un bloc : la conclusion s'écrit en **continuation** et le bloc *« ce qui précède »* est retiré du contenu ; l'**envoi se fait sur place** et le brouillon cesse d'être une surface ; **la mémoire et le composeur fusionnent** ; le **plan ne retient que les moyens** ; un empan porte un **nom** en plus de sa citation. Rien du sens n'est touché : les trois fins, les trois drapeaux et la frontière privé/transmis sont exactement ceux du 27 juillet.
 7bis. **La refonte du fondement et le rangement du dépôt, 30 juillet**, en un bloc : le **« cf article » devient obligatoire** — le bloc *« en rester là »* est retiré du contenu, aucune comparaison nue ne se clôt, et la relance de l'avocat passe dans le composeur ; les articles **annoncent ce qu'ils régissent** (`porte`, purement indicatif) et **cessent de porter des empans** — le seuil probatoire déménage dans le rapport du laboratoire. Côté dépôt : les **règles du jeu sortent de `index.html`** vers `app/regles.js`, que le pas-à-pas de l'atelier appelle au lieu de les recopier ; les **trois exemplaires du contenu deviennent un** (`content.js`), et le garde-fou de synchronisation disparaît avec la dérive qu'il surveillait. Les trois fins, les trois drapeaux et la frontière privé/transmis sont, une fois de plus, intacts.
 
+7ter. **Le premier geste, 30 juillet (second temps)**, en un bloc : la session 1 cesse de demander le geste complet et n'enseigne plus qu'à **lire, extraire, répondre**. Une seconde voie de clôture s'ouvre dans l'automate — **un empan seul se clôt par sa citation**, parce qu'un fait se cite quand une relation se fonde (§4.5) ; une remise attend désormais une **suite** d'attentes, l'avocat posant ses questions une à une ; l'ancienne session 1 devient la session 2 et n'a plus à porter deux leçons ; le **second empan** n'est composable qu'une fois l'article 3 reçu. Les trois fins, les trois drapeaux et la frontière privé/transmis sont, une fois de plus, intacts.
+
 7. **La refonte de la déduction, 29 juillet**, en un bloc : les liaisons de comparaison disparaissent — **le joueur désigne deux empans et la relation se déduit** de leur dimension et de leurs valeurs ; les six formes de qualification deviennent **trois tournures neutres** (« au regard de l'article N »), le sens restant au contenu et à la réplique de l'avocat ; **un article n'est offert qu'une fois sa pièce livrée**, ce qui retire l'ancien invariant « aucune tournure n'apparaît en cours de partie » au profit de la formulation en deux temps du §4.5. Les trois fins, les trois drapeaux et la frontière privé/transmis sont, une fois de plus, intacts.
 
 **Points ouverts (à trancher à l'écriture) :**
 
 - **Le critère qui décide de tout** : *« 22h30 est postérieur à 22h04 » se lit-il comme une pensée ou comme un formulaire ?* Si c'est un formulaire, le problème n'est pas dans le code et aucun ajout de mécanique ne le sauvera. **Non éprouvé** — les tests prouvent le comportement, jamais l'expérience.
 - **La compréhension est-elle encore *exprimée* ?** C'est le vrai risque ouvert par le 29 juillet (§4.5). Le joueur n'affirme plus quelle relation lie deux empans, seulement lesquels rapprocher et sous quel texte. Un joueur qui rapproche deux empans au hasard obtient une phrase bien formée sans avoir rien pensé. **Non éprouvé** — et à surveiller en priorité à la prochaine partie, avant tout autre point. Le 30 juillet **joue dans les deux sens** sur ce point, et il faut le dire honnêtement : l'article obligatoire ajoute une décision là où il n'y en avait plus que deux (on ne peut plus s'en tirer par « en rester là »), mais `porte` en retire une part en annonçant la dimension que chaque texte gouverne. Reste à voir, en jouant, lequel des deux l'emporte.
-- **Le choix forcé de la session 1.** Conséquence directe du masquage des articles : le tutoriel ne propose qu'un seul article, donc la conclusion s'y compose sans arbitrage — et depuis que l'article est obligatoire, ce bouton unique est le **seul** moyen de clore une phrase en session 1. Le tutoriel enseigne donc le geste sans le faire choisir. Acceptable pour un tutoriel — c'est même la façon la plus douce d'apprendre que rien ne se dit sans fondement —, à re-regarder si une session future se retrouvait dans le même cas.
+- ~~**Le choix forcé de la session 1.**~~ **Refermé** par le découpage en trois sessions (§3) : la session 1 n'a plus d'article du tout, et n'en demande aucun. Le bouton unique de l'article 3 est maintenant en session 2, où il est le seul texte reçu — mais on ne lui demande plus de porter aussi l'apprentissage de la lecture.
+- **Une question posée guide-t-elle trop ?** Le risque neuf du 30 juillet (second temps). L'invariant « la compréhension doit être *exprimée*, pas supposée » suppose que personne ne dise au joueur quoi chercher — or la session 1 le lui demande nommément, trois fois. On l'assume pour la première session, dont l'objet est d'apprendre à se servir de l'écran, et rien n'est plus demandé nommément ensuite. Mais il faut regarder deux choses en jouant : la réponse par citation se lit-elle comme une **réponse** ou comme la redite de la question ; et le joueur qui arrive en session 2 a-t-il appris à lire, ou seulement à obéir ? **Non éprouvé.**
 - **Le rythme des zones** à l'écran. Le risque « quatre zones » est **refermé pour moitié** : elles sont trois (canal / atelier / plan), la duplication mémoire↔composeur a disparu et la phrase ne change plus de colonne pour partir (§4.6). Ce qui reste ouvert est l'autre moitié — la colonne d'atelier porte maintenant le dossier, la phrase et les empans, et sa densité n'est **pas éprouvée**.
 - **La tension de l'IA partisane** (§1) : tranchée en mécanique, à valider en contenu.
 - **Le canal de révélation de la culpabilité** : pour préserver le doute de la Fin 3, celui qui échoue ne devrait pas recevoir la vérité. (Toujours non tranché — narrateur omniscient dans les fins.)
 - **La manipulation du canal** : l'avocat peut-il infléchir l'IA par *la façon* dont il transmet ? Piste **suspendue** — tant qu'elle n'est pas tranchée, aucun défaut de l'avocat ne doit pouvoir se lire comme un calcul (§8.5).
 - **La formulation exacte de D1/D2**, et les épilogues.
-- **La progression** : nombre de sessions, portes, emplacement exact de la porte de la Fin 3. Le prototype s'arrête à deux sessions.
+- **La progression** : nombre de sessions, portes, emplacement exact de la porte de la Fin 3. Le prototype s'arrête à **trois** sessions, dont la première n'est qu'une leçon de lecture.
 - **La texture de l'avocat** (le seul personnage humain) — voir §8.5.
 - **Genre, nombre, contractions** dans la grammaire, et l'affichage des `poids` — voir §8.8, qui explique pourquoi ce point n'est pas cosmétique.
 - **`comment` en sixième dimension** — écarté, réintégrable sans coût (§4.2).
@@ -454,9 +508,10 @@ Le badge d'en-tête du jeu confirme la source (« contenu : content.js » — ou
   },
   grammaire: { depart:"S0", finaux:["FIN"], blocs:[…], formes:{…} },
   liens: [ { forme, termes:["p_f.e_a", …], tag?, vice?, conclusion?, faux?, rep? } ],
-  remises: [ { qui, texte, pieces:[…], attend:"tag", apres:{ qui, replique } } ],
+  remises: [ { qui, texte, pieces:[…],
+               attentes:[ { question?, attend:"tag", apres?:{ qui, replique } } ] } ],
   repetition: { intro, affirmations:[{court,texte}], fin },
-  avocat: { rep_vice, rep_faux, rep_inutile:[…], rep_sans_rapport:[…], deja },
+  avocat: { rep_vice, rep_faux, rep_inutile:[…], rep_sans_rapport:[…], rep_hors_sujet:[…], deja },
   directives: […], avis_exploitation, fins: {1:{…},2:{…},3:{…}}
 }
 ```
@@ -470,7 +525,14 @@ Le badge d'en-tête du jeu confirme la source (« contenu : content.js » — ou
 - `imbrique: true` — la liaison **emboîte** ce qui a été composé jusque-là comme terme unique de sa propre forme, au lieu de remplacer la forme courante. C'est ce qui fait tenir *« a et b désignent la même chose, au regard de l'article 7 »* en une seule composition. Sans cet attribut : la dernière forme rencontrée gagne, les termes restent à plat.
 - `deduit: true` *(29 juillet)* — ce bloc **clôt une paire** : au lieu de porter une forme, il la fait **déduire** des deux termes accumulés (§4.5), puis les range dans l'ordre canonique. C'est ce qui remplace les liaisons de comparaison.
 - `piece` *(29 juillet)* — le bloc n'est offert au joueur qu'une fois **cette pièce livrée**. Un seul usage : les liaisons-articles. Sans cet attribut, le bloc est offert dès la première phrase, comme avant.
-- `libelle` — le texte du **bouton**, quand il diffère de ce qui sera rendu dans la phrase. Plus employé dans le contenu livré depuis le retrait de *« en rester là »* ; le moteur le supporte toujours.
+- `libelle` — le texte du **bouton**, quand il diffère de ce qui sera rendu dans la phrase. C'est le cas de la liaison de citation, dont le bouton dit *« Répondre — citer ce passage »* alors qu'elle n'écrit aucun mot à elle.
+- `cite: true` *(30 juillet, second temps)* — la liaison fait écrire le terme qui la précède **par son nom et par sa citation**, avec la pièce d'où il sort : *« l'heure d'arrivée de la patrouille : « nous étions sur les lieux à 22h04 » (PV) »*. C'est le seul endroit où un empan se lit deux fois dans une même phrase (§4.1, §4.5). Sans effet sur une comparaison, dont le `patron` réécrit de toute façon les deux fragments.
+
+**Les attentes d'une remise** *(30 juillet, second temps)* :
+
+- `attentes: [{question?, attend, apres?}]` — la **suite** de ce que l'avocat attend de cette session, servie dans l'ordre. `question` est poussée dans le canal quand l'attente devient courante ; `attend` est le tag comparé à celui du lien versé ; `apres` est l'accusé de réception. Quand la liste est épuisée, la remise suivante part.
+- L'ancienne forme — `attend` et `apres` **sur la remise elle-même** — reste valide et se lit comme une liste à un élément. Une affaire écrite avant se joue donc sans modification, et c'est ce que `test_autre_affaire.js` vérifie. **Le schéma reste 3** : ces clés sont optionnelles et rien d'ancien n'est invalidé.
+- Répondre **dans le désordre** est accepté : l'attente servie est celle dont le tag correspond, et la question reposée est la première encore non satisfaite. On ne restreint jamais par la pertinence (§4.5).
 
 **L'attribut optionnel d'une pièce** *(30 juillet)* :
 
@@ -550,6 +612,12 @@ Il n'y a plus de repli : c'est le prix, assumé, de l'exemplaire unique — et c
 
 - **`valider(r)`** descend désormais dans les termes **emboîtés**. Sans cela, l'article obligatoire aurait ouvert un trou : `« affirmation »` est une catégorie que tout objet satisfait, y compris une comparaison que la déduction a refusée. Qualifier une paire bancale l'aurait **blanchie** — la phrase aurait été acceptée alors que ses deux empans ne se comparaient pas. Depuis que la qualification est le seul chemin de clôture, c'est aussi le seul endroit où la catégorie peut encore trancher : elle doit donc y trancher partout, jusqu'au fond.
 
+**Ce qui a changé le 30 juillet (second temps)** — une seule addition, symétrique de la fusion par `patron` :
+
+- **`rendre(ch)`** — une liaison marquée `cite` (§11) réécrit le fragment du terme qui la précède : le **nom**, puis la **citation**, puis le `court` de la pièce. C'est ce qui fait qu'une réponse répond au lieu de reformuler la question. Le flag est porté par la **liaison** et non par le terme, pour que la voie de comparaison — qui partage le même bloc de premier terme — reste strictement intacte.
+- `CHAMPS` porte désormais le **`court`** de la pièce d'où sort chaque empan, sans quoi une citation ne pourrait pas dire d'où elle vient.
+- **`valider` n'a rien eu à apprendre** : une forme d'arité 1 dont le terme est atomique était déjà validable — `dimDe` rend la dimension de l'empan, le slot la reconnaît. La seconde voie de clôture n'a coûté aucune ligne au cœur du moteur.
+
 `squelettes()` n'a pas bougé : elle explore les nouveaux chemins sans rien savoir d'eux.
 
 Les **données**, elles, ont trois provenances selon le contexte :
@@ -564,7 +632,9 @@ L'automate (`grammaire.blocs`) et les formes (`grammaire.formes`) **vivent dans 
 
 **La marge de bruit doit rester non nulle.** `npm run demo:grammaire` la mesure sur le jeu de données de démonstration (écrit à l'ancienne, liaisons explicites) : **1609 phrases légales → 125 sensées → 8 portant un lien**, soit **117 de marge**.
 
-Sur l'affaire livrée, l'article obligatoire l'a **augmentée** au lieu de la réduire, ce qui mérite d'être noté parce que l'intuition dit le contraire : une phrase de bruit n'est plus une comparaison quelconque, c'est une comparaison quelconque **multipliée par chaque article reçu** — bien formée, fondée, et sans le moindre intérêt. Le jeu en offre **147** contre 6 liens déclarés. C'est exactement ce que l'invariant demande : « sensé » ne doit jamais valoir « correct », et « fondé » non plus.
+Sur l'affaire livrée, l'article obligatoire l'a **augmentée** au lieu de la réduire, ce qui mérite d'être noté parce que l'intuition dit le contraire : une phrase de bruit n'est plus une comparaison quelconque, c'est une comparaison quelconque **multipliée par chaque article reçu** — bien formée, fondée, et sans le moindre intérêt. C'est exactement ce que l'invariant demande : « sensé » ne doit jamais valoir « correct », et « fondé » non plus.
+
+La citation l'augmente encore, d'une nature différente : **chaque empan devient une phrase close possible**, soit vingt-quatre de plus, contre trois liens de réponse. Mais elles ne servent à rien pour *chercher* — une citation ne se fonde que sur elle-même, donc les citer toutes ne dit rien de plus que les avoir lues. La suite mesure la marge au lieu de la figer dans un nombre, ce qui évite d'avoir à corriger cette phrase à chaque retouche du contenu.
 
 ## 15. Ce qu'il reste à resynchroniser
 
@@ -580,7 +650,7 @@ Ce qui reste tient en trois lignes, et ce sont des **reflets visuels** — l'ate
 
 Méthode (contenu) : écrire dans l'atelier → « Exporter content.js » → poser le fichier dans `app/` → relancer les suites. Il n'y a plus de graine à réexporter séparément.
 
-**Ce que le diagnostic de l'atelier contrôle**, au-delà du câblage : la **règle de surlignage** (empan sans marqueur → erreur ; heure laissée hors marqueur → avertissement), le **nom d'empan** (absent → avertissement, §11), le **doublon banal** dans les deux sens (§4.4), la **grammaire** (impasse de l'automate, clôture sans forme, forme indicible, lien insensé au regard des catégories, emboîtement dans le vide, forme ordonnée sans `sens`, dimension qu'aucune forme déductible n'accepte), les **articles** (une règle qui porte un empan → **erreur** ; une règle livrée sans `porte` → avertissement ; un `porte` sur une dimension inconnue → **erreur**), le **vice** (pas de conclusion → erreur ; plusieurs canaux → avertissement) et les **sessions** (sans `attend`, ou attendant un tag qu'aucun lien ne porte → erreur).
+**Ce que le diagnostic de l'atelier contrôle**, au-delà du câblage : la **règle de surlignage** (empan sans marqueur → erreur ; heure laissée hors marqueur → avertissement), le **nom d'empan** (absent → avertissement, §11), le **doublon banal** dans les deux sens (§4.4), la **grammaire** (impasse de l'automate, clôture sans forme, forme indicible, lien insensé au regard des catégories, emboîtement dans le vide, forme ordonnée sans `sens`, dimension qu'aucune forme déductible n'accepte), les **articles** (une règle qui porte un empan → **erreur** ; une règle livrée sans `porte` → avertissement ; un `porte` sur une dimension inconnue → **erreur**), le **vice** (pas de conclusion → erreur ; plusieurs canaux → avertissement) et les **sessions** (sans aucune attente, attendant un tag qu'aucun lien ne porte, ou posant une question sans tag à servir → erreur).
 
 **Un contrôle mérite d'être nommé à part**, parce que c'est le masquage des articles (§4.5) qui l'a rendu nécessaire, et que l'article obligatoire l'a rendu vital : **un article livré trop tard**. Si une session attend un tag que seul un lien peut servir, et que ce lien exige un article dont la pièce n'arrive qu'à une session *ultérieure*, la session devient **inclôturable** — le joueur ne peut littéralement pas écrire la phrase qu'on lui demande. Depuis que *toute* phrase exige un article, une session qui n'en aurait reçu aucun serait muette de bout en bout. C'est une **erreur**, et c'est le genre de piège qu'aucune relecture ne rattrape et qu'une partie de test ne révèle qu'après vingt minutes.
 
@@ -590,21 +660,21 @@ Six suites vivent **dans le projet**, sur un harnais jsdom commun (`harnais.js`)
 
 > **Les tests ne nomment aucun contenu.** Ni pièce, ni empan, ni valeur : tout se dérive de la *forme* via les sélecteurs du harnais — `lienVice`/`lienConclusion`/`lienFaux`/`lienTag`, `composerLien(w,L)` (compose la phrase qui réalise un lien donné, quel qu'il soit, en parcourant l'automate), `phrasesBruit(w,n)` (phrases sensées sans lien), `cheminVers`, `instruire` (le chemin docile), `terminer`/`numeroFin`. Pour l'atelier, les mêmes sélecteurs existent sous `surContenu`. Conséquence : **changer entièrement d'affaire ne casse pas une seule suite.**
 >
-> `composerLien` connaît **deux façons** d'atteindre une forme emboîtée, et essaie la seconde si la première échoue : la **continuation** (prolonger la composition en cours par un bloc `imbrique`, §4.5) et l'ancienne **source `note`** (clore, puis repartir d'un bloc *« ce qui précède »*). C'est ce qui fait que `test_autre_affaire.js` — dont l'affaire abstraite est écrite à l'ancienne — reste vert sans qu'une ligne de son contenu ne bouge : la preuve, à chaque exécution, que la rétrocompatibilité annoncée au §11 est réelle.
+> `composerLien` traite d'abord le cas le plus simple — une forme d'arité 1 sur un terme **atomique**, c'est-à-dire une **citation** : surligner, poser l'empan, clore. Pour une forme emboîtée, elle connaît **deux façons** de l'atteindre et essaie la seconde si la première échoue : la **continuation** (prolonger la composition en cours par un bloc `imbrique`, §4.5) et l'ancienne **source `note`** (clore, puis repartir d'un bloc *« ce qui précède »*). C'est ce qui fait que `test_autre_affaire.js` — dont l'affaire abstraite est écrite à l'ancienne — reste vert sans qu'une ligne de son contenu ne bouge : la preuve, à chaque exécution, que la rétrocompatibilité annoncée au §11 est réelle.
 >
 > Deux sélecteurs ont changé de définition le 30 juillet, sans que les suites cessent de ne rien nommer : **`comparaisons(w)`** ramasse toutes les formes d'arité 2 **où qu'elles vivent** — depuis l'article obligatoire, elles ne sont plus des liens de plein droit mais des termes emboîtés ; et **`lienVice(w)`** lit le pressentiment dans le terme emboîté de la conclusion, en retombant sur un lien nu si l'affaire en déclare encore un. Une affaire écrite dans l'une ou l'autre convention passe donc les mêmes suites.
 
 | Suite | Cible | Ce qu'elle prouve |
 |---|---|---|
-| `test_o5.js` (35) | le jeu, sur **`content.js`** | l'index du dossier (vu / pas-vu, **pièces à gauche et règles à droite**) ; tout empan est rendu cliquable et aucun marqueur ne fuit ; surligner et composer sont gratuits, illimités, dédoublonnés ; la marge de bruit est non nulle ; le vice à canal unique ; **tout lien du contenu est une qualification** ; les trois fins |
-| `test_declencheurs.js` (35) | le jeu, contenus **mutés** injectés inline | le décâblage : renommage de toutes les pièces, `declenche`/`une_fois`/`qui`, `attend`/`apres`, Manuels par type **et par livraison**, les trois drapeaux (dont « **pressentir au composeur** sans conclure → Fin 3 »), dimensions entièrement renommées, **un contenu invalide est refusé et le dit** au lieu d'en jouer un autre |
+| `test_o5.js` (38) | le jeu, sur **`content.js`** | l'index du dossier (vu / pas-vu, **pièces à gauche et règles à droite**) ; tout empan est rendu cliquable et aucun marqueur ne fuit ; surligner et composer sont gratuits, illimités, dédoublonnés ; la marge de bruit est non nulle ; le vice à canal unique ; **les liens se partagent entre citations et qualifications, sans reste**, et aucune citation ne porte de drapeau ; les trois fins |
+| `test_declencheurs.js` (45) | le jeu, contenus **mutés** injectés inline | le décâblage : renommage de toutes les pièces, `declenche`/`une_fois`/`qui`, **la liste d'attentes** (chaque question posée quand son attente devient courante ; une attente servie n'ouvre pas la session, la dernière si ; **répondre dans le désordre est accepté**), Manuels par type **et par livraison**, les trois drapeaux (dont « **pressentir au composeur** sans conclure → Fin 3 »), dimensions entièrement renommées, **un contenu invalide est refusé et le dit** au lieu d'en jouer un autre |
 | `test_autre_affaire.js` (20) | le jeu, **affaire de test** | la preuve du découplage : une affaire abstraite — sa propre grammaire, ses propres dimensions, 3 sessions, et une chaîne écrite **à l'ancienne** (source `note`) — se joue de bout en bout, trois fins comprises |
-| `test_parcours.js` (73) | le jeu | l'ergonomie et le grain fin : composer bloc à bloc, retirer, tout effacer ; **la déduction** (chaque relation déclarée se retrouve à partir des valeurs ; l'ordre des clics n'importe pas ; deux valeurs égales hors identité restent comparables ; **le patron s'écrit, verbe compris**) ; **le filtre de livraison** (un article non reçu n'est pas offert, il l'est une fois livré) ; **la continuation** (une comparaison n'est pas finale ; **aucun bloc ne clôt sans qualifier** ; **une comparaison seule ne peut pas se clore, et le pressentiment a tout de même eu lieu** ; la forme emboîtée obtenue est celle du lien déclaré) ; refus de catégorie, **jusque dans les termes emboîtés** (le seul refus qui existe) ; modale de pièce et légende ; **la phrase close attend sur place et l'envoi la vide** ; réplique **seulement** à l'envoi ; **le plan ne retient que les moyens** ; `rep_faux` et `variante_faux` ; les deux escalades séparées ; répétition (`deja`, cible, refus de confirmer pendant) |
+| `test_parcours.js` (94) | le jeu | l'ergonomie et le grain fin : composer bloc à bloc, retirer, tout effacer ; **les deux régimes de fondement** (une citation se clôt sans article, son terme reste atomique, elle s'écrit par le nom **et** la citation **et** la pièce, quand une comparaison ne s'écrit que par les noms ; le second empan attend sa pièce, donc la session 1 ne compare pas ; livrée, les deux voies coexistent sans bascule) ; **les trois escalades séparées** (comparaison nue, article mal rattaché, citation hors sujet) ; **la déduction** (chaque relation déclarée se retrouve à partir des valeurs ; l'ordre des clics n'importe pas ; deux valeurs égales hors identité restent comparables ; **le patron s'écrit, verbe compris**) ; **le filtre de livraison** (un article non reçu n'est pas offert, il l'est une fois livré) ; **la continuation** (une comparaison n'est pas finale ; **aucun bloc ne clôt sans qualifier** ; **une comparaison seule ne peut pas se clore, et le pressentiment a tout de même eu lieu** ; la forme emboîtée obtenue est celle du lien déclaré) ; refus de catégorie, **jusque dans les termes emboîtés** (le seul refus qui existe) ; modale de pièce et légende ; **la phrase close attend sur place et l'envoi la vide** ; réplique **seulement** à l'envoi ; **le plan ne retient que les moyens** ; `rep_faux` et `variante_faux` ; les deux escalades séparées ; répétition (`deja`, cible, refus de confirmer pendant) |
 | `test_sauvegarde.js` (33) | le jeu | la partie survit au rechargement (mémoire, journal, plan, **composition en cours**, **phrase close en attente**, drapeaux, `une_fois` non rejoué) ; la signature jette une sauvegarde d'un autre contenu ; la fin efface |
-| `smoke_atelier.js` (77) | l'atelier + le couple atelier→jeu | **`content.js` sans erreur, et réexporté à l'identique** (ce qui remplace l'ancien garde-fou de synchronisation) ; diagnostic (empan sans marqueur, **empan sans nom**, valeur hors marqueur, dimension inconnue, **doublon banal** dans les deux sens, **règle portant un empan**, **`porte` absent ou inconnu**, vice sans conclusion, session sans `attend`, lien insensé, **emboîtement dans le vide**, pièce non livrée, article livré trop tard) ; migration 2→3 idempotente ; renommage d'empans et de pièces ; `conclureLien` ; **le pas-à-pas tourne sur `regles.js`** — comparer sans qualifier, les trois drapeaux, le chemin docile ; export `schema: 3` adopté et joué par le moteur ; autosave |
+| `smoke_atelier.js` (79) | l'atelier + le couple atelier→jeu | **`content.js` sans erreur, et réexporté à l'identique** (ce qui remplace l'ancien garde-fou de synchronisation) ; diagnostic (empan sans marqueur, **empan sans nom**, valeur hors marqueur, dimension inconnue, **doublon banal** dans les deux sens, **règle portant un empan**, **`porte` absent ou inconnu**, vice sans conclusion, **session sans aucune attente**, **question sans tag à servir**, lien insensé, **emboîtement dans le vide**, pièce non livrée, **bloc livré trop tard — article ou second empan**) ; migration 2→3 idempotente ; renommage d'empans et de pièces ; `conclureLien` ; **le pas-à-pas tourne sur `regles.js`** — comparer sans qualifier, les trois drapeaux, le chemin docile sur une liste d'attentes ; export `schema: 3` adopté et joué par le moteur ; autosave |
 
-Règle d'or : **une évolution n'est finie que quand les six suites sont vertes** (273 contrôles). Il n'y a plus de septième contrôle : `tests/verifier_content_sync.js` surveillait l'écart entre deux exemplaires du contenu, et il n'y en a plus qu'un. (`grammaire/test_grammaire2.js` est un banc d'essai de démonstration : pas de code de sortie, pas dans `npm test`.)
+Règle d'or : **une évolution n'est finie que quand les six suites sont vertes** (309 contrôles). Il n'y a plus de septième contrôle : `tests/verifier_content_sync.js` surveillait l'écart entre deux exemplaires du contenu, et il n'y en a plus qu'un. (`grammaire/test_grammaire2.js` est un banc d'essai de démonstration : pas de code de sortie, pas dans `npm test`.)
 
 ## 17. Résumé en trois phrases
 
-Quatre fichiers, quatre métiers, aucune copie : le **contenu** dans `content.js`, les **règles** dans `regles.js`, la **grammaire** dans `moteur.js`, et deux pages HTML qui ne font plus que *montrer* — le jeu et l'atelier chargent les mêmes trois voisins, si bien que le pas-à-pas ne rejoue plus les règles, il les appelle. Côté sens, une seule chose a bougé et elle tient en une phrase : **rien ne se dit qui ne soit fondé** — l'article est obligatoire, il annonce ce qu'il régit, et il ne porte aucun empan. La Partie I reste l'arbitre du sens ; le diagnostic de l'atelier n'en est que le bras automatisé.
+Quatre fichiers, quatre métiers, aucune copie : le **contenu** dans `content.js`, les **règles** dans `regles.js`, la **grammaire** dans `moteur.js`, et deux pages HTML qui ne font plus que *montrer* — le jeu et l'atelier chargent les mêmes trois voisins, si bien que le pas-à-pas ne rejoue plus les règles, il les appelle. Côté sens, une seule chose a bougé et elle tient en une phrase : **rien ne se dit qui ne soit fondé, sous l'un des deux régimes** — un fait se cite, une relation se fonde sur un texte, et rien d'autre ne clôt une phrase. D'où trois sessions au lieu de deux : la première apprend à lire, la deuxième à mettre en rapport, la troisième ne demande plus rien. La Partie I reste l'arbitre du sens ; le diagnostic de l'atelier n'en est que le bras automatisé.

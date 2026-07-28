@@ -53,6 +53,7 @@
   .zone{margin-bottom:16px}
   .zone .ztitle{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
   .aide{color:var(--muted);font-size:12px;margin-top:8px;font-style:italic}
+  .aide.question{margin-top:0;margin-bottom:10px;color:var(--fg);border-left:2px solid var(--muted);padding-left:8px}
   /* --- les empans dans le texte d'une pièce --- */
   .piecetexte{line-height:1.9}
   .empan{border-bottom:2px solid var(--dc,var(--muted));border-radius:2px;padding:1px 2px;cursor:pointer;
@@ -260,7 +261,8 @@ const CHAMPS = (function(){
   for(const [pid,p] of Object.entries(JEU.pieces||{}))
     for(const [eid,e] of Object.entries(p.empans||{}))
       out.push({ id:pid+"."+eid, pid, eid, dim:e.dim, valeur:e.valeur,
-                 texte:e.texte, nom:e.nom || e.texte, qui:e.qui || p.qui || "" });
+                 texte:e.texte, nom:e.nom || e.texte, qui:e.qui || p.qui || "",
+                 court:p.court || "" });   // une citation dit d'où elle vient (§4.5)
   return out;
 })();
 const M = (window.MoteurGrammaire||{}).creerMoteur
@@ -470,7 +472,11 @@ function blocsOfferts(){ return R.blocsOfferts(S); }
 function indexTermeChamp(){ return R.indexTermeChamp(S); }
 function chaineCompo(){ return R.chaineCompo(S); }
 function texteCompoPartiel(){
-  if(!S.compo.length) return `<span class="trou">Désigne deux passages de ta mémoire…</span>`;
+  const offerts=blocsOfferts();
+  if(!S.compo.length)
+    return `<span class="trou">${offerts.some(b=>b.type==="terme"&&b.deduit)
+      ? "Désigne deux passages de ta mémoire…"
+      : "Désigne le passage qui répond…"}</span>`;
   const ch=chaineCompo();
   /* Tant que le second empan n'est pas posé, la relation n'existe pas : on ne
      l'invente pas, on montre le trou. Une fois la paire close, `rendre` écrit
@@ -482,7 +488,8 @@ function texteCompoPartiel(){
     if(p.bloc.source==="note") return `<span class="bl terme">${esc(p.bloc.texte)}</span>`;
     const e=EMPAN[p.valeur];
     return `<span class="bl terme" style="--dc:${couleurDim(e?e.dim:"")}">${esc(e?(e.nom||e.texte):p.valeur)}</span>`;
-  }).join(" ") + ` <span class="trou">…et ?</span>`;
+  }).join(" ") + (offerts.some(b=>b.type==="terme"&&b.deduit)
+    ? ` <span class="trou">…et ?</span>` : "");
 }
 /* iBloc indexe blocsOfferts() ; iSrc indexe la mémoire (terme/champ) ou le
    brouillon (terme/note). Les liaisons n'ont pas de source. Poser, retirer,
@@ -492,11 +499,18 @@ function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
 function viderCompo(){ R.viderCompo(S); rendreTout(); }
 function effacerPrete(){ R.effacerPrete(S); rendreTout(); }
 function cloreCompo(){ R.clore(S); }
+/* La question en cours, rappelée au-dessus du composeur : dans le canal elle
+   défile dès que l'avocat reparle, et on écrit la réponse ici. */
+function rappelQuestion(){
+  const a=R.attenteCourante(S,R.remiseCourante(S));
+  return (a&&a.question) ? `<div class="aide question">Il attend : « ${esc(a.question)} »</div>` : "";
+}
 function renderCompo(){
   /* Une phrase close attend LÀ, sous les yeux, avec le seul geste qui parle.
      Pas de liste à parcourir, pas de colonne à changer (§4.6). */
   if(S.prete!=null && S.brouillon[S.prete]){
     return `<div class="zone"><div class="ztitle">Ta phrase</div><div class="compo prete">
+      ${rappelQuestion()}
       <div class="phrase close">${esc(S.brouillon[S.prete].texte)}</div>
       <div class="barre">
         <button class="envoi" onclick="envoyer(${S.prete})">→ Maître Auber</button>
@@ -507,6 +521,7 @@ function renderCompo(){
   }
   const offerts=blocsOfferts();
   let h=`<div class="zone"><div class="ztitle">Ta phrase</div><div class="compo">
+    ${rappelQuestion()}
     <div class="phrase">${texteCompoPartiel()}</div>`;
   if(S.compo.length)
     h+=`<div class="barre"><button onclick="retirerBloc()">← retirer</button><button onclick="viderCompo()">tout effacer</button></div>`;
@@ -531,17 +546,29 @@ function renderCompo(){
     }
   });
   h+=`</div>`;
+  /* Deux voies de clôture, deux aides (§4.5). Un empan seul se clôt par sa
+     citation ; deux empans ne se closent que par un article. */
+  const second=offerts.some(b=>b.type==="terme"&&b.deduit);
+  const citation=offerts.some(b=>b.cite);
   if(attendTerme)
     h+=`<div class="aide">${!S.memoire.length
       ? "Ouvre une pièce et retiens d'abord un passage."
       : S.compo.length
         ? "Clique un second passage, plus bas. Ce qui les lie se déduit tout seul."
-        : "Clique deux passages retenus, plus bas."}</div>`;
+        : second
+          ? "Clique deux passages retenus, plus bas."
+          : "Clique le passage qui répond, plus bas."}</div>`;
+  else if(S.compo.length && citation && second)
+    h+=`<div class="aide">Clique un second passage pour le mettre en rapport — ou cite celui-ci tel quel.</div>`;
+  else if(S.compo.length && citation)
+    h+=`<div class="aide">Un fait se cite : cette phrase-là est finie dès que tu la clos.</div>`;
   else if(S.compo.length){
     /* LA RELANCE, désormais ici. Une comparaison n'est jamais terminée
        d'office : elle demande toujours « et donc ? ». Comme rien ne se dit
        sans fondement, c'est le composeur qui pose la question — l'avocat n'a
-       plus à s'agacer d'une remarque nue, elle ne peut plus lui parvenir. */
+       plus à s'agacer d'une remarque nue, elle ne peut plus lui parvenir.
+       Elle ne vaut QUE pour une comparaison : une citation, elle, se fonde
+       toute seule, et la question ne se pose pas. */
     const rien=!offerts.length;
     h+=`<div class="aide">${rien
       ? "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire."

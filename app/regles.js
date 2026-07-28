@@ -34,6 +34,7 @@ function creerRegles(JEU, M) {
     repetitionIdx: -1,
     declenches: [],               // pièces dont le `declenche` une_fois a joué
     inutiles: 0, incompris: 0,    // compteurs d'agacement de l'avocat
+    hors_sujet: 0,                // …et celui des citations qui ne répondent pas
     modalPiece: null
   }; }
 
@@ -48,11 +49,30 @@ function creerRegles(JEU, M) {
   const pousser = (S, qui, texte, pieces, ia) =>
     S.fil.push({ qui, texte, pieces: pieces || [], ia: !!ia });
 
+  /* Une remise attend une SUITE de réponses : l'avocat pose, attend, accuse
+     réception, repose. L'ancienne forme — un `attend` et un `apres` sur la
+     remise elle-même — se lit comme une liste à un élément, si bien qu'une
+     affaire écrite avant se joue sans modification (§11). */
+  function attentesDe(r) {
+    if (!r) return [];
+    if (Array.isArray(r.attentes)) return r.attentes;
+    return r.attend ? [{ attend: r.attend, apres: r.apres }] : [];
+  }
+  // La première attente encore non servie. Répondre dans le désordre est
+  // accepté : on ne restreint jamais par la pertinence (§4.5).
+  const attenteCourante = (S, r) => attentesDe(r).find(a => !S.satisfaits.includes(a.attend));
+  const remiseCourante = S => JEU.remises[S.remisesEnvoyees - 1];
+  function poserQuestion(S, r) {
+    const a = attenteCourante(S, r);
+    if (a && a.question) pousser(S, r.qui || "Maître Auber", a.question);
+  }
+
   function envoyerRemise(S) {
     if (S.remisesEnvoyees >= JEU.remises.length) return;
     const r = JEU.remises[S.remisesEnvoyees];
     S.remisesEnvoyees++;
     pousser(S, r.qui, r.texte, r.pieces);
+    poserQuestion(S, r);
   }
 
   // Ouvrir une pièce : elle est vue, et elle peut porter un `declenche`.
@@ -218,10 +238,14 @@ function creerRegles(JEU, M) {
     else if (L && L.faux)            pousser(S, "Maître Auber", A.rep_faux);
     else if (L && L.rep)             pousser(S, "Maître Auber", L.rep);
     else {
-      // Pas de lien reconnu. Une comparaison sans conclusion agace autrement
-      // qu'une qualification qui ne se rattache à rien.
+      // Pas de lien reconnu. Trois façons de rater, trois agacements : une
+      // comparaison sans conclusion, une qualification qui ne se rattache à
+      // rien, et — depuis que le fait se cite — une citation hors sujet. Les
+      // deux dernières sont d'arité 1 ; c'est l'emboîtement qui les sépare.
       const f = (JEU.grammaire.formes || {})[n.reduite.forme] || {};
+      const emboite = typeof ((n.reduite.termes || [])[0]) === "object";
       if ((f.arite || 2) > 1) pousser(S, "Maître Auber", esc1(A.rep_inutile || ["…"], "inutiles"));
+      else if (!emboite)      pousser(S, "Maître Auber", esc1(A.rep_hors_sujet || ["…"], "hors_sujet"));
       else                    pousser(S, "Maître Auber", esc1(A.rep_sans_rapport || ["…"], "incompris"));
     }
   }
@@ -230,18 +254,24 @@ function creerRegles(JEU, M) {
      l'avocat attendait de cette session. Aucun identifiant en dur. */
   function avancerSurAttente(S, L) {
     if (!L || !L.tag) return;
-    const i = S.remisesEnvoyees - 1, r = JEU.remises[i];
-    if (!r || r.attend !== L.tag || S.satisfaits.includes(L.tag)) return;
+    const r = remiseCourante(S);
+    const a = attentesDe(r).find(x => x.attend === L.tag);
+    if (!a || S.satisfaits.includes(L.tag)) return;
     S.satisfaits.push(L.tag);
-    if (r.apres && r.apres.replique) pousser(S, r.apres.qui || "Maître Auber", r.apres.replique);
-    envoyerRemise(S);
+    if (a.apres && a.apres.replique) pousser(S, a.apres.qui || "Maître Auber", a.apres.replique);
+    // Il reste une question dans cette session ? On la pose. Sinon la session
+    // est servie, et la suivante part.
+    if (attenteCourante(S, r)) poserQuestion(S, r);
+    else envoyerRemise(S);
   }
 
   /* ---- CLÔTURE, RÉPÉTITION, FINS ------------------------------------ */
   function instructionComplete(S) {
     if (S.remisesEnvoyees < JEU.remises.length) return false;
-    const derniere = JEU.remises[JEU.remises.length - 1];
-    return !derniere || !derniere.attend || S.satisfaits.includes(derniere.attend);
+    // `every` sur une liste vide vaut true : une dernière remise sans attente
+    // laisse la clôture ouverte, exactement comme avant.
+    return attentesDe(JEU.remises[JEU.remises.length - 1])
+      .every(a => S.satisfaits.includes(a.attend));
   }
   const repetitionEnCours = S =>
     S.clotureDemandee && S.repetitionIdx < JEU.repetition.affirmations.length;
@@ -304,6 +334,7 @@ function creerRegles(JEU, M) {
            chaineCompo, sousLienVice, estPressentiment, pressentir, majPressentiment,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            estMoyen, envoyer, reponseAvocat, avancerSurAttente,
+           attentesDe, attenteCourante, remiseCourante,
            instructionComplete, repetitionEnCours, cloturer, verserContre,
            avancerRepetition, finir };
 }

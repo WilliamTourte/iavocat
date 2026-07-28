@@ -171,13 +171,34 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
 }
 {
   const w = neuf();
-  delete w.CONTENU.remises[0].attend;
-  check("une session sans « attend » est une erreur", msgs(w).includes("sans « attend »"));
+  const r = w.CONTENU.remises[0];
+  delete r.attend; delete r.attentes;
+  check("une session sans aucune attente est une erreur", msgs(w).includes("sans attente"));
 }
 {
   const w = neuf();
-  w.CONTENU.remises[0].attend = "tag_qui_n_existe_pas";
+  const as = w.attentesDeRemise(w.CONTENU.remises[0]);
+  as[0].attend = "tag_qui_n_existe_pas";
   check("une attente qu'aucun lien ne porte est une erreur", msgs(w).includes("qu'aucun lien ne porte"));
+}
+{
+  // Une question posée que rien ne peut satisfaire bloquerait la session.
+  const w = neuf();
+  const as = w.attentesDeRemise(w.CONTENU.remises[0]);
+  as[0].question = "Et alors ?"; delete as[0].attend;
+  check("une question sans tag à servir est une erreur", msgs(w).includes("sans tag à servir"));
+}
+{
+  /* Le second empan livré trop tard : depuis qu'un bloc de terme peut lui aussi
+     être conditionné, une attente qui exige une comparaison devient inservable
+     si ce bloc n'est pas encore là. Le diagnostic doit le voir. */
+  const w = neuf();
+  const t = (w.CONTENU.grammaire.blocs || []).find(b => b.type === "terme" && b.deduit);
+  if (t) {
+    t.piece = w.CONTENU.remises[w.CONTENU.remises.length - 1].pieces[0];
+    check("un bloc de terme livré trop tard rend une attente inservable",
+      msgs(w).includes("n'est pas encore livré"));
+  }
 }
 {
   const w = neuf();
@@ -317,10 +338,13 @@ console.log("\n=== Le chemin docile, simulé ===");
   const w = H.bootAtelier();
   w.simReset();
   let garde = 0;
-  while (garde++ < 20) {
+  while (garde++ < 40) {
+    // Une remise attend une SUITE de réponses (§3) : on sert la première encore
+    // due, et la remise suivante ne part qu'une fois la liste épuisée.
     const r = w.CONTENU.remises[w.SIM.remisesEnvoyees-1];
-    if (!r || !r.attend || w.SIM.satisfaits.includes(r.attend)) break;
-    const i = w.CONTENU.liens.findIndex(L => L.tag === r.attend && !L.vice);
+    const a = w.attentesDeRemise(r).find(x => !w.SIM.satisfaits.includes(x.attend));
+    if (!a) break;
+    const i = w.CONTENU.liens.findIndex(L => L.tag === a.attend && !L.vice);
     if (i < 0) break;
     for (const k of w.feuillesLien(w.CONTENU.liens[i])) w.simSurligner(k);
     w.simComposer(i);
