@@ -33,26 +33,109 @@ console.log("\n=== Refus de catégorie : le seul refus qui existe ===");
   const a = w.CHAMPS[0];
   const b = w.CHAMPS.find(c => c.dim !== a.dim);
   H.surligner(w, a.id); H.surligner(w, b.id);
-  const G = w.JEU.grammaire;
-  const forme = Object.entries(G.formes).find(([,f]) => f.relation === "meme_dim")[0];
-  const iT = w.blocsOfferts().findIndex(x => x.type === "terme" && x.source !== "note");
-  w.poserBloc(iT, w.S.memoire.indexOf(a.id));
-  for (const id of H.cheminVers(w, forme)) {
-    const j = w.blocsOfferts().findIndex(x => x.id === id);
-    const bl = G.blocs.find(x => x.id === id);
-    w.poserBloc(j, bl.type === "terme" ? w.S.memoire.indexOf(b.id) : undefined);
-  }
-  H.cloreSurPlace(w);   // une comparaison n'est plus close d'office : « en rester là »
+  check("aucune relation ne se déduit entre deux dimensions", w.M.deduire(a.id, b.id) === null);
+  // On désigne quand même les deux : rien n'est jamais interdit à la pose,
+  // c'est à la clôture que la catégorie tranche (§4.5).
+  const iT = () => w.blocsOfferts().findIndex(x => x.type === "terme" && x.source !== "note");
+  w.poserBloc(iT(), w.S.memoire.indexOf(a.id));
+  w.poserBloc(iT(), w.S.memoire.indexOf(b.id));
+  H.cloreSurPlace(w);
   check("deux dimensions différentes : la phrase est refusée", !!w.S.refus);
-  check("le message ne dit rien de plus que la catégorie", /dimensions différentes|slot/.test(w.S.refus));
+  check("le message ne dit rien de plus que la catégorie",
+    /ne se comparent pas|dimensions différentes|slot/.test(w.S.refus));
   check("rien n'est tombé au journal", w.S.brouillon.length === 0);
   check("et rien n'attend d'être envoyé", w.S.prete === null);
   check("rien n'est parti au plan", w.S.plaidoirie.length === 0);
 }
 
+console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
+{
+  const w = boot();
+  H.livrerTout(w);
+  // Le contrôle central : pour CHAQUE lien d'arité 2 du contenu, désigner ses
+  // deux empans doit produire exactement la forme déclarée — sans que le
+  // joueur ait rien eu à choisir.
+  let tous = true, n = 0;
+  for (const L of w.JEU.liens) {
+    if ((w.JEU.grammaire.formes[L.forme].arite || 2) !== 2) continue;
+    n++;
+    if (w.M.deduire(L.termes[0], L.termes[1]) !== L.forme) tous = false;
+  }
+  check(`les ${n} relations déclarées se déduisent toutes des valeurs`, n > 0 && tous);
+
+  /* Le PATRON doit s'écrire. Une régression ici ne casse aucune forme réduite
+     — les phrases restent reconnues — mais le verbe disparaît de la phrase et
+     le joueur lit « l'heure d'arrivée l'heure des éclats ». Aucune suite ne
+     l'avait vu ; c'est la relecture à l'œil qui l'a attrapé. */
+  let patronsOk = true, vus = 0;
+  for (const L of w.JEU.liens) {
+    const f = w.JEU.grammaire.formes[L.forme];
+    if ((f.arite || 2) !== 2 || !f.patron) continue;
+    const i = H.composerLien(w, L);
+    if (i < 0) { patronsOk = false; continue; }
+    vus++;
+    const nom = id => (w.M.C[id] || {}).nom;
+    const ord = w.M.ordonner(L.forme, L.termes);
+    const attendu = f.patron.replace("{a}", nom(ord[0])).replace("{b}", nom(ord[1]));
+    if (w.S.brouillon[i].texte !== attendu + ".") patronsOk = false;
+  }
+  check(`les ${vus} phrases déduites s'écrivent par leur patron, verbe compris`, vus > 0 && patronsOk);
+
+  // L'ordre canonique : une forme ordonnée range ses termes selon son `sens`,
+  // quel que soit l'ordre dans lequel le joueur a cliqué.
+  const ord = w.JEU.liens.find(L => (w.JEU.grammaire.formes[L.forme]||{}).ordonne);
+  if (ord) {
+    const [x, y] = ord.termes;
+    check("l'ordre des clics n'importe pas : la forme range ses termes",
+      JSON.stringify(w.M.ordonner(ord.forme, [y, x])) === JSON.stringify([x, y]));
+  } else check("(aucune forme ordonnée dans ce contenu)", true);
+
+  // Deux valeurs égales dans une dimension d'écart restent composables : ce
+  // sont des doublons banals, ils doivent vivre (§4.4).
+  const paires = [];
+  for (let i = 0; i < w.CHAMPS.length; i++)
+    for (let j = i + 1; j < w.CHAMPS.length; j++) {
+      const a = w.CHAMPS[i], b = w.CHAMPS[j];
+      if (a.dim === b.dim && a.valeur === b.valeur && !["qui","quoi","ou"].includes(a.dim))
+        paires.push([a, b]);
+    }
+  if (paires.length) {
+    const [a, b] = paires[0];
+    const f = w.M.deduire(a.id, b.id);
+    check("deux valeurs égales hors identité restent comparables", !!f);
+    check("et se lisent comme une identité", (w.JEU.grammaire.formes[f]||{}).deduction === "egalite");
+  } else check("(aucune paire égale hors identité dans ce contenu)", true);
+}
+
+console.log("\n=== On n'invoque pas un texte qu'on n'a pas reçu ===");
+{
+  const w = boot();
+  const G = w.JEU.grammaire;
+  const avecPiece = G.blocs.filter(b => b.piece);
+  check("des liaisons sont conditionnées à une pièce", avecPiece.length > 0);
+  // amener la composition en S4, où les articles sont offerts
+  const C = H.lienConclusion(w);
+  H.poserComparaison(w, C.termes[0]);
+  const offerts = w.blocsOfferts();
+  const livrees = new Set(w.piecesLivrees());
+  check("aucun article non livré n'est offert",
+    offerts.every(b => !b.piece || livrees.has(b.piece)));
+  const manquant = avecPiece.find(b => !livrees.has(b.piece));
+  check("l'article du vice, lui, n'est pas encore là", !!manquant);
+  check("il n'est donc pas dans la liste", !offerts.some(b => b.id === (manquant||{}).id));
+
+  // une fois la pièce livrée, la même liaison apparaît
+  const w2 = boot();
+  H.livrerTout(w2);
+  H.poserComparaison(w2, C.termes[0]);
+  check("livré, il est offert", w2.blocsOfferts().some(b => b.id === (manquant||{}).id));
+  check("et la conclusion devient composable", H.composerLien(w2, C) >= 0);
+}
+
 console.log("\n=== La continuation : une comparaison demande toujours « et donc ? » ===");
 {
   const w = boot();
+  H.livrerTout(w);                            // l'article doit avoir été reçu (§4.5)
   const C = H.lienConclusion(w);              // arité 1 : une comparaison qualifiée
   const sous = C.termes[0];                   // la comparaison qu'elle emboîte
   H.poserComparaison(w, sous);
@@ -65,6 +148,7 @@ console.log("\n=== La continuation : une comparaison demande toujours « et donc
 
   // en rester là : on obtient la comparaison seule
   const w2 = boot();
+  H.livrerTout(w2);
   H.poserComparaison(w2, sous); H.cloreSurPlace(w2);
   check("« en rester là » clôt sur la comparaison seule",
     w2.S.brouillon.length === 1 && w2.M.memeRed(w2.S.brouillon[0].reduite, sous));
@@ -78,7 +162,7 @@ console.log("\n=== La continuation : une comparaison demande toujours « et donc
     i >= 0 && w.M.memeRed(w.S.brouillon[i].reduite, {forme: C.forme, termes: C.termes}));
   check("en une seule phrase, sans passer par une liste", w.S.brouillon.length === 1);
   check("la phrase se lit d'un trait, ponctuation recollée",
-    /, ce qui /.test(w.S.brouillon[i].texte) && !/ ,/.test(w.S.brouillon[i].texte));
+    /, au regard /.test(w.S.brouillon[i].texte) && !/ ,/.test(w.S.brouillon[i].texte));
   check("elle est écrite avec les NOMS des empans, pas les citations",
     w.CHAMPS.filter(c => sous.termes.includes(c.id))
             .every(c => w.S.brouillon[i].texte.includes(c.nom)));

@@ -16,6 +16,10 @@ function renommerPiece(c, ancien, neuf){
     : {...t, termes: rec(t.termes||[])};
   for (const L of c.liens) L.termes = rec(L.termes||[]);
   for (const r of c.remises) r.pieces = (r.pieces||[]).map(p => p===ancien?neuf:p);
+  // Depuis que les liaisons-articles sont filtrées par livraison (§4.5), un
+  // bloc de grammaire peut désigner une pièce : c'est une référence de plus
+  // à suivre, sans quoi l'article ne serait plus jamais offert.
+  for (const b of (c.grammaire||{}).blocs||[]) if (b.piece===ancien) b.piece = neuf;
   return c;
 }
 
