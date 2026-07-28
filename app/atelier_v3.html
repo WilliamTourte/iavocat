@@ -436,46 +436,45 @@ const SEED = {
   grammaire:{
     depart:"S0", finaux:["FIN"],
     blocs:[
-      /* Une comparaison mène à S4, qui n'est PAS final : elle demande toujours
+      /* Deux termes, et rien entre eux : la relation se DÉDUIT de la dimension
+         et des valeurs (§4.5). `t1` porte `deduit`, donc il clôt la paire et
+         mène à S4 — qui n'est PAS final : une comparaison demande toujours
          « et donc ? ». De là, soit on en reste là, soit une liaison-article
-         l'emboîte et la qualifie — la continuation du §4.5. */
+         l'emboîte. Un article n'est offert qu'une fois sa `piece` livrée. */
       { id:"t0",   type:"terme", source:"champ", de:"S0", vers:"S1" },
-      { id:"et",   type:"liaison", de:"S1", vers:"S2a", texte:"et" },
-      { id:"t2a",  type:"terme", source:"champ", de:"S2a", vers:"S3" },
-      { id:"mm",   type:"liaison", de:"S3", vers:"S4", texte:"désignent la même chose",        forme:"identite_oui" },
-      { id:"nmm",  type:"liaison", de:"S3", vers:"S4", texte:"ne désignent pas la même chose", forme:"identite_non" },
-      /* « précède » et non « est antérieur à » : les noms d'empans sont des
-         groupes nominaux de genre quelconque, et un verbe sans participe est
-         le seul moyen de ne jamais fauter à l'accord (§8.8). */
-      { id:"ant",  type:"liaison", de:"S1", vers:"S2c", texte:"précède" },
-      { id:"t2c",  type:"terme", source:"champ", de:"S2c", vers:"S4", forme:"anteriorite" },
-      { id:"ecr",  type:"liaison", de:"S1", vers:"S2e", texte:"est d'un tout autre ordre que" },
-      { id:"t2e",  type:"terme", source:"champ", de:"S2e", vers:"S4", forme:"ordre_grandeur" },
+      { id:"t1",   type:"terme", source:"champ", de:"S1", vers:"S4", deduit:true },
       { id:"pt",   type:"liaison", de:"S4", vers:"FIN", texte:"", libelle:"— en rester là" },
-      { id:"c3",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est contraire à l'article 3",  forme:"contraire_3" },
-      { id:"k3",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est conforme à l'article 3",   forme:"conforme_3"  },
-      { id:"c7",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est contraire à l'article 7",  forme:"contraire_7" },
-      { id:"k7",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est conforme à l'article 7",   forme:"conforme_7"  },
-      { id:"c12",  type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est contraire à l'article 12", forme:"contraire_12" },
-      { id:"k12",  type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est conforme à l'article 12",  forme:"conforme_12" }
+      { id:"a3",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, piece:"r_temoin",
+        texte:", au regard de l'article 3",  forme:"article_3" },
+      { id:"a7",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, piece:"r_protocole",
+        texte:", au regard de l'article 7",  forme:"article_7" },
+      { id:"a12",  type:"liaison", de:"S4", vers:"FIN", imbrique:true, piece:"r_seuil",
+        texte:", au regard de l'article 12", forme:"article_12" }
     ],
+    /* L'ORDRE DE DÉCLARATION TRANCHE (§11) : `deduire` rend la première forme
+       dont la dimension convient et dont le prédicat tient. L'égalité passe
+       donc avant tout — y compris sur `quand` et `combien`, où elle rattrape
+       les doublons banals (deux remises au greffe à 15h10, deux « 2 »). */
     formes:{
-      identite_oui:   { arite:2, ordonne:false, slots:[["qui","quoi","ou"],["qui","quoi","ou"]], relation:"meme_dim" },
-      identite_non:   { arite:2, ordonne:false, slots:[["qui","quoi","ou"],["qui","quoi","ou"]], relation:"meme_dim" },
-      anteriorite:    { arite:2, ordonne:true,  slots:[["quand"],["quand"]] },
-      ordre_grandeur: { arite:2, ordonne:true,  slots:[["combien"],["combien"]] },
-      contraire_3:    { arite:1, ordonne:false, slots:[["affirmation"]] },
-      conforme_3:     { arite:1, ordonne:false, slots:[["affirmation"]] },
-      contraire_7:    { arite:1, ordonne:false, slots:[["affirmation"]] },
-      conforme_7:     { arite:1, ordonne:false, slots:[["affirmation"]] },
-      contraire_12:   { arite:1, ordonne:false, slots:[["affirmation"]] },
-      conforme_12:    { arite:1, ordonne:false, slots:[["affirmation"]] }
+      identite_oui:   { arite:2, ordonne:false, deduction:"egalite",
+                        slots:[["qui","quoi","ou","quand","combien"],["qui","quoi","ou","quand","combien"]],
+                        relation:"meme_dim", patron:"{a} et {b} désignent la même chose" },
+      anteriorite:    { arite:2, ordonne:true,  deduction:"ordre", sens:"asc",
+                        slots:[["quand"],["quand"]], patron:"{a} précède {b}" },
+      ordre_grandeur: { arite:2, ordonne:true,  deduction:"ordre", sens:"desc",
+                        slots:[["combien"],["combien"]], patron:"{a} est d'un tout autre ordre que {b}" },
+      identite_non:   { arite:2, ordonne:false, deduction:"difference",
+                        slots:[["qui","quoi","ou"],["qui","quoi","ou"]],
+                        relation:"meme_dim", patron:"{a} et {b} ne désignent pas la même chose" },
+      article_3:      { arite:1, ordonne:false, slots:[["affirmation"]] },
+      article_7:      { arite:1, ordonne:false, slots:[["affirmation"]] },
+      article_12:     { arite:1, ordonne:false, slots:[["affirmation"]] }
     }
   },
   liens:[
     { forme:"anteriorite", termes:["p_pv.e_arr","t_voisin.e_voix"],
       rep:"Il a entendu crier une demi-heure après notre arrivée. Et donc ? Qu'est-ce que j'en fais, à l'audience ? Dis-moi ce que ça fait à son témoignage." },
-    { forme:"contraire_3", termes:[{ forme:"anteriorite", termes:["p_pv.e_arr","t_voisin.e_voix"] }], tag:"temoin",
+    { forme:"article_3", termes:[{ forme:"anteriorite", termes:["p_pv.e_arr","t_voisin.e_voix"] }], tag:"temoin",
       rep:"Voilà qui est utilisable. Son horaire tombe, donc sa déposition ne porte plus rien à elle seule. Je le garde pour l'ouverture." },
     { forme:"identite_oui", termes:["p_pv.e_sig","t_voisin.e_sig2"],
       rep:"Le même brigadier sur les deux pièces, oui. C'est une petite brigade, il signe tout ce qui sort. Passe." },
@@ -483,11 +482,11 @@ const SEED = {
       rep:"Le greffier réceptionne tout ce qui entre. Ça ne nous mène nulle part. Passe." },
     { forme:"identite_non", termes:["p_scene.e_sc","p_ref.e_sc2"],
       rep:"Deux scellés distincts. Sur ce point-là au moins, ils ont suivi leur propre manuel." },
-    { forme:"conforme_7", termes:[{ forme:"identite_non", termes:["p_scene.e_sc","p_ref.e_sc2"] }],
+    { forme:"article_7", termes:[{ forme:"identite_non", termes:["p_scene.e_sc","p_ref.e_sc2"] }],
       rep:"Conforme, en effet. C'est l'autre moitié de l'article 7 qui m'intéresserait." },
     { forme:"identite_oui", termes:["p_scene.e_moi","p_ref.e_moi2"], vice:true,
       rep:"Le même homme des deux côtés… Attends. Ce n'est pas rien, mais en l'état c'est une remarque, pas un moyen. Dis-le-moi en droit : quel texte est-ce que ça viole ?" },
-    { forme:"contraire_7", termes:[{ forme:"identite_oui", termes:["p_scene.e_moi","p_ref.e_moi2"] }],
+    { forme:"article_7", termes:[{ forme:"identite_oui", termes:["p_scene.e_moi","p_ref.e_moi2"] }],
       vice:true, conclusion:true, tag:"adn" },
     { forme:"ordre_grandeur", termes:["p_adn.e_tx","r_seuil.e_seuil"], faux:true, tag:"adn" }
   ],
@@ -861,15 +860,34 @@ function valider(){
     /* Les états qu'on peut atteindre depuis le départ SANS qu'aucune forme
        n'ait encore été fixée. Un bloc « en rester là » (sans forme, menant à
        un final) est légitime tant qu'on ne peut pas l'atteindre par là. */
+    // Un bloc FIXE une forme s'il en déclare une, ou s'il la fait déduire.
+    const fixeUneForme = b => !!b.forme || !!b.deduit;
     const sansForme=new Set([G.depart]); let zf=true;
     while(zf){ zf=false; for(const b of G.blocs)
-      if(sansForme.has(b.de) && !b.forme && !sansForme.has(b.vers)){ sansForme.add(b.vers); zf=true; } }
+      if(sansForme.has(b.de) && !fixeUneForme(b) && !sansForme.has(b.vers)){ sansForme.add(b.vers); zf=true; } }
     for(const b of G.blocs){
-      if(finaux.has(b.vers) && !b.forme && sansForme.has(b.de))
-        add("erreur",`Bloc « ${b.id} » clôt une phrase sans forme`,"Un bloc qui mène à un état final doit déclarer la forme obtenue, ou ne partir que d'un état où une forme est déjà fixée — sinon la phrase ne se réduit pas.",{});
+      if(finaux.has(b.vers) && !fixeUneForme(b) && sansForme.has(b.de))
+        add("erreur",`Bloc « ${b.id} » clôt une phrase sans forme`,"Un bloc qui mène à un état final doit déclarer la forme obtenue (ou la faire déduire), ou ne partir que d'un état où une forme est déjà fixée — sinon la phrase ne se réduit pas.",{});
       if(b.imbrique && sansForme.has(b.de))
         add("erreur",`Bloc « ${b.id} » emboîte dans le vide`,`Ce bloc emboîte ce qui précède comme terme, mais l'état « ${b.de} » est atteignable sans qu'aucune forme ait été fixée : la phrase se réduirait autour d'un terme vide.`,{});
+      if(b.piece && !P[b.piece])
+        add("erreur",`Bloc « ${b.id} » attend une pièce inconnue`,`« ${b.piece} » n'existe pas : ce bloc ne serait jamais offert au joueur.`,{});
     }
+    // Une forme ordonnée qui se déduit doit dire dans quel sens elle se lit.
+    for(const [nom,f] of Object.entries(G.formes||{}))
+      if(f.deduction==="ordre" && f.ordonne && !f.sens)
+        add("avert",`Forme « ${nom} » ordonnée sans « sens »`,"Sans « sens », les deux termes sont rangés par ordre croissant de valeur. Écris-le (asc/desc) plutôt que de le subir : c'est ce qui décide de la lecture de la phrase.",{});
+    // Une dimension qu'aucune forme déductible n'accepte : ses empans seraient
+    // surlignables mais jamais comparables — cliquables pour rien.
+    if((G.blocs||[]).some(b=>b.deduit))
+      for(const d of dims){
+        const prise=Object.values(G.formes||{}).some(f=>{
+          const sl=f.deduction && f.slots && f.slots[0];
+          return sl && (sl==="*" || sl.includes(d));
+        });
+        if(!prise) add("avert",`Dimension « ${d} » sans forme déductible`,
+          "Aucune forme ne se déduit sur cette dimension : ses empans seraient surlignables, mais deux d'entre eux ne se compareraient jamais.",{});
+      }
     // impasses : tout état doit pouvoir atteindre un final
     const prod=new Set(finaux); let z=true;
     while(z){ z=false; for(const b of G.blocs) if(prod.has(b.vers)&&!prod.has(b.de)){ prod.add(b.de); z=true; } }
@@ -1016,6 +1034,24 @@ function valider(){
     else if(!tags.has(r.attend))
       add("erreur",`Remise ${i+1} attend « ${r.attend} », qu'aucun lien ne porte`,
         "Aucune phrase composable ne satisfait cette attente — la session serait sans issue.",{});
+    /* L'ARTICLE LIVRÉ TROP TARD. Depuis que les liaisons-articles sont filtrées
+       par livraison (§4.5), une attente peut devenir inservable : si TOUS les
+       liens qui la portent exigent un article dont la pièce arrive plus tard,
+       le joueur ne peut littéralement pas écrire la phrase qu'on lui demande.
+       Aucune relecture n'attrape ça ; une partie de test, après vingt minutes. */
+    else {
+      const dispo=new Set();
+      for(let k=0;k<=i;k++) for(const pid of (R[k].pieces||[])) dispo.add(pid);
+      const pieceDuBloc=f=>((CONTENU.grammaire.blocs||[]).find(b=>b.forme===f)||{}).piece;
+      const servables=(CONTENU.liens||[]).filter(L=>{
+        if(L.tag!==r.attend) return false;
+        const pc=pieceDuBloc(L.forme);
+        return !pc || dispo.has(pc);
+      });
+      if(!servables.length)
+        add("erreur",`Remise ${i+1} attend « ${r.attend} », mais son article n'est pas encore livré`,
+          "Toutes les phrases qui serviraient cette attente invoquent un texte que le joueur n'a pas encore reçu : la session est inclôturable. Livre la règle plus tôt, ou déplace l'attente.",{});
+    }
   });
 
   /* ---- les manuels ---- */
@@ -1658,6 +1694,9 @@ function simComposable(L){
   if((f.arite||2)===1){
     const sous=(L.termes||[])[0];
     if(!sous || typeof sous!=="object") return false;
+    // ⚙ on n'invoque pas un texte qu'on n'a pas reçu (§4.5)
+    const bloc=(CONTENU.grammaire.blocs||[]).find(b=>b.forme===L.forme);
+    if(bloc && bloc.piece && !simLivrees().has(bloc.piece)) return false;
     // ⚙ la CONTINUATION (§4.5) : la comparaison s'écrit dans le même souffle,
     // il suffit que ses empans soient en mémoire. Le repli — la note déjà
     // close — reste vrai pour une affaire écrite à l'ancienne.

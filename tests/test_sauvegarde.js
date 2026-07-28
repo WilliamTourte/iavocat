@@ -57,6 +57,7 @@ console.log("\n=== Une composition en cours survit aussi ===");
   // La phrase close qui attend SUR PLACE : c'est l'écart entre comprendre et
   // dire (§4.7). Le perdre au rechargement effacerait la Fin 2.
   const w1 = boot();
+  H.livrerTout(w1);                           // l'article doit avoir été reçu (§4.5)
   const i = H.composerLien(w1, H.lienConclusion(w1));
   check("la conclusion est close et attend", w1.S.prete === i && i >= 0);
   check("elle n'est pas partie", !w1.S.brouillon[i].versee && w1.S.plaidoirie.length === 0);

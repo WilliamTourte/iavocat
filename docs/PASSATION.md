@@ -1,82 +1,85 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 28 juillet 2026, après la session **« refonte ergonomique : continuation, envoi sur place, surface unique, empans nommés »**.*
+*À lire en tête d'une nouvelle conversation. État au 29 juillet 2026, après la session **« la relation se déduit, l'article se désigne, le manuel se mérite »**.*
 
-> Cette passation **remplace** celle du 27 juillet. La session précédente avait appliqué au code la refonte « empans, dimensions, composer/verser » ; **celle-ci part de retours de jeu** et corrige l'usage, sans toucher au sens. Ce qui a été conservé intégralement : les trois fins, les trois drapeaux, la frontière privé / transmis, les deux directives, le brouillard, la culpabilité comme plancher fixe, la séparation contenu / moteur / atelier, la sauvegarde de partie, le versionnage `schema` (toujours **3** — les ajouts sont optionnels).
+> Cette passation **remplace** celle du 28 juillet. Deux sessions de suite sont maintenant parties de **retours de jeu** et ont corrigé l'usage sans toucher au sens. Ce qui a été conservé intégralement, une fois de plus : les trois fins, les trois drapeaux, la frontière privé / transmis, les deux directives, le brouillard, la culpabilité comme plancher fixe, la séparation contenu / moteur / atelier, la sauvegarde de partie, le versionnage `schema` (toujours **3**).
 
 ---
 
 ## 1. D'où vient cette session
 
-Cinq retours après avoir joué la tranche verticale. Ils ne portent pas sur le sens — ils disent que **la mécanique se voit** :
+Trois retours après avoir rejoué la tranche verticale. Ils disent tous la même chose sous trois angles : **le joueur passait son temps à déclarer ce que le jeu savait déjà.**
 
-1. composer *« X et Y sont la même chose »* **puis** recomposer *« ce qui précède est contraire à Z »* : confus, deux gestes pour une pensée ;
-2. un empan s'affiche par sa citation brute (*« j'ai entendu des éclats de voix »*) : il lui faut un **nom** (*« l'heure de l'appel du témoin »*) ;
-3. le plan de plaidoirie garde **tout**, erreurs comprises, au lieu de ce qui est bon ;
-4. « la mémoire » et « composer » **font double emploi** — on se perd entre les deux ;
-5. composer **puis** aller verser ailleurs n'est pas intuitif : la phrase devrait partir dès qu'elle est faite.
+1. Choisir entre « et », « précède », « est d'un tout autre ordre que » : il ne devrait avoir qu'à **désigner deux éléments**.
+2. Choisir **l'article** devrait suffire, sans trancher entre « est conforme » et « n'est pas conforme ».
+3. On pouvait invoquer **l'article 7 dès la remise 1**, sans l'avoir reçu.
 
 ## 2. Ce qui a changé, en une phrase
 
-La conclusion s'écrit **en continuation** de sa comparaison, la phrase close **attend sur place** avec un unique bouton *« → Maître Auber »*, la mémoire **est** le clavier du composeur, le plan **ne retient que les moyens**, et un empan porte un **nom** en plus de sa citation.
+Le joueur **désigne deux empans** et la relation se **déduit** de leur dimension et de leurs valeurs ; la qualification est **neutre** (« …, au regard de l'article 7 »), le sens restant au contenu et à la réplique de l'avocat ; un article n'est **offert qu'une fois sa pièce livrée**.
 
-Les deux principes qui ont commandé les arbitrages :
+## 3. L'invariant qui est tombé, et ce qui l'a remplacé
 
-> **Tout mécanisme utilisé une seule fois est un panneau indicateur.**
-> **Composer et envoyer restent deux gestes ; leur distance peut se réduire, jamais leur nombre.**
+C'est le point à connaître avant de toucher quoi que ce soit.
 
-## 3. Les deux arbitrages qui touchaient à la structure
+> **Avant (§4.5)** — « Aucune tournure n'apparaît en cours de partie. »
+> **Depuis** — « **La grammaire de comparaison est complète dès la première phrase. Les articles, eux, sont du contenu : ils arrivent avec le dossier.** »
 
-Les retours 3 et 5 ne pouvaient pas être appliqués tels quels. Ils ont été tranchés avec l'auteur avant d'écrire une ligne.
+Le retour 3 contredisait frontalement l'ancien invariant. L'arbitrage a été pris en connaissance de cause, et la distinction tient : les tournures de comparaison sont universelles, elles ne parlent d'aucune pièce ; **un article *est* une pièce**, et le Manuel du cas le filtrait déjà par livraison. L'incohérence réelle était de pouvoir invoquer un texte absent du manuel qu'on venait de consulter.
 
-### 3.1 Retour 5 — l'envoi automatique était impossible
+**Le coût, assumé et écrit dans les points ouverts :** en session 1 il ne reste qu'un article, donc la conclusion du tutoriel est un **choix forcé**. Le camouflage du vice ne repose plus que sur le choix des deux empans.
 
-Si la phrase part dès qu'elle est close, alors `vice_trouve ⇒ vice_expose` : **la Fin 2 disparaît** et il ne reste que deux fins. Arbitrage retenu : **l'envoi reste un geste distinct, mais il se fait sur place**. La phrase close ne va plus dans une liste « brouillon » qu'il faut parcourir — elle reste affichée là où elle vient d'être écrite. Ce qui a été supprimé, c'est la **distance** entre les deux gestes, jamais le second geste. Aucun texte de fin n'a eu à être réécrit.
+## 4. Les deux arbitrages pris avec l'auteur
 
-### 3.2 Retour 3 — « ce qui est BON » = ce que l'avocat peut plaider
+- **Retour 2 — une tournure neutre par article.** Le moteur ne devine pas la conformité : il n'a pas à trancher une question de droit (invariant « l'IA informe, elle ne tranche pas »). C'est le **lien du contenu** qui sait, et **l'avocat qui le dit**. Bénéfice : la piste sans issue des scellés (« l'autre moitié de l'article 7 ») survit — elle serait morte si « contraire » avait été la seule lecture.
+- **Retour 3 — masquer jusqu'à livraison**, plutôt qu'offrir puis refuser.
 
-Critère retenu : **les moyens seulement**. Reste au plan ce qui porte une `conclusion`, le `faux` vice, ou un `tag` d'attente. Une comparaison sans conclusion reçoit sa réplique dans le canal et **n'y figure pas** — ce que l'avocat disait déjà mot pour mot (*« en l'état c'est une remarque, pas un moyen »*). Le faux vice, lui, est gardé : l'avocat y croit, et `variante_faux` en dépend.
-
-## 4. L'inventaire
+## 5. L'inventaire
 
 | Fichier | État |
 |---|---|
-| `docs/ARCHITECTURE.md` | **Réécrit d'abord, avant tout code** — méthode demandée par l'auteur, à conserver. Partie I : §4.1 (l'empan se lit deux fois), §4.5 (**la continuation**, entièrement neuf), §4.6 (**trois** surfaces au lieu de quatre, l'envoi sur place, le plan des moyens), §4.7 (les drapeaux, logique inchangée, lieux renommés), §7 (quatre invariants ajoutés, arbitrage 6), §8.8 (le nom d'empan comme remède d'accord). Partie II : §11 (`nom`, `imbrique`, `libelle`), §14 (`reduire` emboîte, `rendre` écrit le nom), §15, §16 |
-| `app/moteur.js` | `reduire()` **accumule et emboîte** sur `bloc.imbrique` ; `rendre()` écrit `nom \|\| texte` et ne met pas d'espace devant une ponctuation. **Rétrocompatible** : une grammaire sans `imbrique` produit exactement le résultat d'avant |
-| `app/index.html` | La colonne « mémoire » et la colonne « composeur + brouillon » **fusionnent** ; `renderMemoire()` rend les puces-clavier, `renderPlan()` filtre par `estMoyen()`, `verserPlaidoirie()` devient `envoyer()`, `S.prete` porte la phrase qui attend. `JEU_EMBARQUE` aligné sur le SEED |
-| `app/atelier_v3.html` | SEED : **~20 empans nommés**, automate à continuation (état `S4`, bloc « en rester là », six liaisons-articles `imbrique`), `est antérieur à` → **`précède`** (accord). Diagnostic : `nom` manquant (avertissement), emboîtement dans le vide (erreur), clôture sans forme assouplie. Inspecteur : champ « Nom ». Simulation : `simEnvoyer()`, `simMoyen()`, `simComposable()` par continuation |
+| `docs/ARCHITECTURE.md` | **Réécrit d'abord, avant tout code** — méthode à conserver. §4.1 (la `valeur` porte la relation), §4.2 (colonne « ce qui se déduit »), §4.4 (le doublon banal porte désormais **tout** le camouflage), §4.5 (réécriture centrale + invariant remplacé + qualification neutre), §6, §7 (trois invariants ajoutés, un amendé, arbitrage 7, deux points ouverts), §8.8, §11, §14, §15, §16 |
+| `app/moteur.js` | Trois fonctions neuves — `comparer()`, `deduire()`, `ordonner()` — et deux retouches : `reduire()` déduit sur un bloc `deduit`, `rendre()` écrit par le `patron` de la forme. **Rétrocompatible** : sans `deduit`/`deduction`/`patron`, comportement identique au 28 juillet |
+| `app/index.html` | `piecesLivrees()` factorisée (dossier, Manuels, blocs) ; `blocsOfferts()` filtre par pièce livrée — **c'est le seul endroit où le retour 3 s'applique** ; `texteCompoPartiel()` montre « …et ? » tant que la paire n'est pas close. `JEU_EMBARQUE` aligné |
+| `app/atelier_v3.html` | SEED : automate à deux termes (`t0`, `t1` avec `deduit`), trois liaisons-articles avec `piece`, formes avec `deduction`/`sens`/`patron` et **ordre de déclaration signifiant**. Diagnostic : quatre contrôles neufs (voir §6). `simComposable()` filtre par livraison |
 | `app/content.js` | **Régénéré** par `npm run export:seed` |
-| `tests/harnais.js` | `composerLien` connaît **deux chemins** vers une forme emboîtée — la continuation d'abord, la source `note` en repli. Nouveaux : `poserComparaison`, `cloreSurPlace`, `plan` |
-| les six suites | 32 + 31 + 20 + 60 + 33 + 64 = **240 contrôles, tous verts**, plus `verifier_content_sync.js` |
+| `tests/harnais.js` | `poserComparaison` connaît les deux grammaires ; **`livrerTout(w)`** neuf ; `phrasesBruit` demande la forme au moteur au lieu de la choisir ; **garde dans `terminer()`** — un contenu inclôturable échoue au lieu de pendre |
+| les six suites | 32 + 31 + 20 + 72 + 33 + 67 = **255 contrôles, tous verts**, plus `verifier_content_sync.js` |
 
-## 5. Les points de vigilance pour la suite
+## 6. Les contrôles neufs du diagnostic
 
-- **`est antérieur à` a dû devenir `précède`.** Les noms d'empans sont des groupes nominaux de genre quelconque (*« l'heure… »*, *« le releveur… »*) : un verbe à participe fautait à l'accord une fois sur deux. **Toute liaison ajoutée doit passer le test de l'accord** (§8.9 d'`ARCHITECTURE.md`) — c'est devenu le point le plus fragile du contenu.
-- **La continuation ne laisse plus de prémisse orpheline.** Conclure produisait hier deux phrases au journal, dont une jamais transmise ; il n'y en a plus qu'une. Un test le vérifie explicitement.
-- **La source `note` reste supportée** par le moteur et par le jeu, bien qu'absente du contenu livré. `test_autre_affaire.js` l'exerce à chaque exécution : c'est la preuve, en continu, de la rétrocompatibilité annoncée au §11. Ne pas la retirer.
-- **`S.prete` est l'écart entre comprendre et dire.** Le perdre (au rechargement, à un refactor du composeur) effacerait la Fin 2 sans qu'aucun test de fin ne rougisse ailleurs. `test_sauvegarde.js` le garde.
+- forme `deduction:"ordre"` sans `sens` → avertissement ;
+- bloc `piece` pointant une pièce inexistante → erreur ;
+- dimension qu'aucune forme déductible n'accepte → avertissement ;
+- **l'article livré trop tard** → **erreur**. Si toutes les phrases qui serviraient l'attente d'une session invoquent un texte livré *plus tard*, la session est **inclôturable**. C'est le piège que le retour 3 a introduit ; aucune relecture ne l'attrape, et une partie de test ne le révèle qu'après vingt minutes.
 
-## 6. Ce qui reste ouvert
+## 7. Les points de vigilance pour la suite
+
+- **La relecture à l'œil a attrapé ce que 254 contrôles laissaient passer.** Le `patron` ne s'écrivait pas — un `continue` de trop dans `rendre()` — et les phrases sortaient sans verbe : *« l'heure d'arrivée de la patrouille l'heure des éclats de voix. »* Les formes réduites étaient justes, donc tout était vert. **Un test dédié existe maintenant**, mais la leçon vaut au-delà : après toute retouche du rendu, **relire les phrases**, ne pas se fier aux suites.
+- **L'ordre de déclaration des formes est signifiant.** `identite_oui` doit rester **en tête** (l'égalité passe avant tout), et `identite_non` en queue. Réordonner, c'est changer le jeu.
+- **`identite_oui` accepte les cinq dimensions**, pas seulement l'identité. Ce n'est pas un laxisme : sans ça, les deux remises au greffe à 15h10 et les deux « 2 » (équipages / véhicules) — des **doublons banals** — cesseraient d'être composables.
+- **Le doublon banal porte maintenant tout le camouflage** (§4.4). Rapprocher deux empans affiche leur égalité ; si une dimension ne comptait qu'un doublon, il suffirait d'essayer les paires pour tomber sur le vice sans avoir rien compris. Le diagnostic le contrôle déjà — ne jamais le désactiver.
+- **`renommerPiece` dans `test_declencheurs.js`** doit suivre **toutes** les références à une pièce, y compris `grammaire.blocs[].piece`. L'oubli ne fait pas échouer le test : il le fait **pendre**.
+
+## 8. Ce qui reste ouvert
 
 | Sujet | État |
 |---|---|
-| **Le critère qui décide de tout** : la phrase composée se lit-elle comme une pensée ou comme un formulaire ? | **Toujours non éprouvé** — mais c'est la question à laquelle cette session s'est attaquée. Les phrases se lisent maintenant *« le releveur des traces sur la scène et le préleveur de l'échantillon de référence désignent la même chose, ce qui est contraire à l'article 7. »* À juger à la main, en jouant |
-| Le rythme des zones | **Refermé pour moitié** : trois zones, plus de duplication, la phrase ne change plus de colonne. L'autre moitié reste ouverte — la colonne d'atelier porte le dossier, la phrase et les empans, et sa densité n'est pas éprouvée |
-| La majuscule en tête de phrase composée | Non traité. Les phrases commencent en minuscule, comme avant la refonte |
-| La tension de l'**IA partisane** | Tranchée en mécanique, **à valider en contenu** |
-| La progression : nombre de sessions, portes, emplacement de la porte de la Fin 3 | Non traité — le prototype s'arrête à deux sessions |
-| Genre, nombre, contractions dans la grammaire | **Partiellement traité** par les noms d'empans et par `précède`. Le cas général reste ouvert |
-| `comment` en sixième dimension | Écarté, réintégrable sans coût |
-| Le canal de révélation de la culpabilité | Toujours non tranché (narrateur omniscient dans les fins) |
+| **La compréhension est-elle encore *exprimée* ?** | **Le vrai risque de cette session.** Le joueur n'affirme plus quelle relation lie deux empans, seulement lesquels rapprocher et sous quel texte. Un joueur qui rapproche deux empans au hasard obtient une phrase bien formée sans avoir rien pensé. **Non éprouvé — à regarder en priorité à la prochaine partie** |
+| **Le choix forcé de la session 1** | Conséquence directe du masquage des articles. Acceptable pour un tutoriel, à re-regarder si une session future s'y retrouvait |
+| Le critère qui décide de tout : une pensée ou un formulaire ? | Les phrases se lisent bien (*« le releveur des traces sur la scène et le préleveur de l'échantillon de référence désignent la même chose, au regard de l'article 7. »*). Reste à juger **en jouant** |
+| Le rythme des zones | Trois zones depuis le 28 ; densité de la colonne d'atelier non éprouvée |
+| La majuscule en tête de phrase composée | Toujours non traité |
+| La progression : sessions, portes, place de la Fin 3 | Le prototype s'arrête à deux sessions |
+| `comment` en sixième dimension | Écarté, réintégrable — mais il faudrait lui donner une forme déductible (§6) |
+| Le canal de révélation de la culpabilité | Toujours non tranché |
 
-## 7. Prochaine étape
+## 9. Prochaine étape
 
-Dans cet ordre :
-
-1. **Jouer `app/index.html` en `file://`**, de bout en bout, et répondre à la question du §6. Les cinq retours sont appliqués ; il faut maintenant savoir s'ils suffisent.
+1. **Jouer `app/index.html` en `file://`**, de bout en bout, et répondre à la question du §8 : composer deux clics suffit-il à faire *penser*, ou est-ce devenu trop facile ? C'est la question que cette session a ouverte, et elle prime sur tout le reste.
 2. Si la boucle tient : écrire la **session 3** et placer la porte de la Fin 3.
-3. Si elle ne tient pas : c'est encore le **rendu de la phrase** qu'il faut reprendre (les noms d'empans et les liaisons, pas le modèle) — le modèle est éprouvé par 240 contrôles.
+3. Si elle ne tient pas : le levier n'est plus la mécanique mais le **contenu** — plus d'empans par dimension, plus de doublons banals, pour que désigner la bonne paire redevienne un travail.
 
-**Méthode à conserver, demandée par l'auteur :** toute évolution part de `docs/ARCHITECTURE.md`. On réécrit le document, on le fait relire, **puis** on applique au code. Le fichier reste l'unique source de vérité.
+**Méthode à conserver, demandée par l'auteur :** toute évolution part de `docs/ARCHITECTURE.md`. On réécrit le document, on le fait relire, **puis** on applique au code.
 
-**Amorce suggérée :** « Lis `docs/PASSATION.md` et `docs/ARCHITECTURE.md`. J'ai rejoué la tranche verticale après la refonte ergonomique ; voilà ce que ça donne. »
+**Amorce suggérée :** « Lis `docs/PASSATION.md` et `docs/ARCHITECTURE.md`. J'ai rejoué la tranche verticale après la refonte de la déduction ; voilà ce que ça donne. »

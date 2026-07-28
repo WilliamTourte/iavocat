@@ -276,43 +276,45 @@ const JEU_EMBARQUE = {
   grammaire:{
     depart:"S0", finaux:["FIN"],
     blocs:[
-      /* Une comparaison mène à S4, qui n'est PAS final : elle demande toujours
+      /* Deux termes, et rien entre eux : la relation se DÉDUIT de la dimension
+         et des valeurs (§4.5). `t1` porte `deduit`, donc il clôt la paire et
+         mène à S4 — qui n'est PAS final : une comparaison demande toujours
          « et donc ? ». De là, soit on en reste là, soit une liaison-article
-         l'emboîte et la qualifie — la continuation du §4.5. */
+         l'emboîte. Un article n'est offert qu'une fois sa `piece` livrée. */
       { id:"t0",   type:"terme", source:"champ", de:"S0", vers:"S1" },
-      { id:"et",   type:"liaison", de:"S1", vers:"S2a", texte:"et" },
-      { id:"t2a",  type:"terme", source:"champ", de:"S2a", vers:"S3" },
-      { id:"mm",   type:"liaison", de:"S3", vers:"S4", texte:"désignent la même chose",        forme:"identite_oui" },
-      { id:"nmm",  type:"liaison", de:"S3", vers:"S4", texte:"ne désignent pas la même chose", forme:"identite_non" },
-      { id:"ant",  type:"liaison", de:"S1", vers:"S2c", texte:"précède" },
-      { id:"t2c",  type:"terme", source:"champ", de:"S2c", vers:"S4", forme:"anteriorite" },
-      { id:"ecr",  type:"liaison", de:"S1", vers:"S2e", texte:"est d'un tout autre ordre que" },
-      { id:"t2e",  type:"terme", source:"champ", de:"S2e", vers:"S4", forme:"ordre_grandeur" },
+      { id:"t1",   type:"terme", source:"champ", de:"S1", vers:"S4", deduit:true },
       { id:"pt",   type:"liaison", de:"S4", vers:"FIN", texte:"", libelle:"— en rester là" },
-      { id:"c3",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est contraire à l'article 3",  forme:"contraire_3" },
-      { id:"k3",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est conforme à l'article 3",   forme:"conforme_3"  },
-      { id:"c7",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est contraire à l'article 7",  forme:"contraire_7" },
-      { id:"k7",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est conforme à l'article 7",   forme:"conforme_7"  },
-      { id:"c12",  type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est contraire à l'article 12", forme:"contraire_12" },
-      { id:"k12",  type:"liaison", de:"S4", vers:"FIN", imbrique:true, texte:", ce qui est conforme à l'article 12",  forme:"conforme_12" }
+      { id:"a3",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, piece:"r_temoin",
+        texte:", au regard de l'article 3",  forme:"article_3" },
+      { id:"a7",   type:"liaison", de:"S4", vers:"FIN", imbrique:true, piece:"r_protocole",
+        texte:", au regard de l'article 7",  forme:"article_7" },
+      { id:"a12",  type:"liaison", de:"S4", vers:"FIN", imbrique:true, piece:"r_seuil",
+        texte:", au regard de l'article 12", forme:"article_12" }
     ],
+    /* L'ORDRE DE DÉCLARATION TRANCHE (§11) : `deduire` rend la première forme
+       dont la dimension convient et dont le prédicat tient. L'égalité passe
+       donc avant tout — y compris sur `quand` et `combien`, où elle rattrape
+       les doublons banals (deux remises au greffe à 15h10, deux « 2 »). */
     formes:{
-      identite_oui:   { arite:2, ordonne:false, slots:[["qui","quoi","ou"],["qui","quoi","ou"]], relation:"meme_dim" },
-      identite_non:   { arite:2, ordonne:false, slots:[["qui","quoi","ou"],["qui","quoi","ou"]], relation:"meme_dim" },
-      anteriorite:    { arite:2, ordonne:true,  slots:[["quand"],["quand"]] },
-      ordre_grandeur: { arite:2, ordonne:true,  slots:[["combien"],["combien"]] },
-      contraire_3:    { arite:1, ordonne:false, slots:[["affirmation"]] },
-      conforme_3:     { arite:1, ordonne:false, slots:[["affirmation"]] },
-      contraire_7:    { arite:1, ordonne:false, slots:[["affirmation"]] },
-      conforme_7:     { arite:1, ordonne:false, slots:[["affirmation"]] },
-      contraire_12:   { arite:1, ordonne:false, slots:[["affirmation"]] },
-      conforme_12:    { arite:1, ordonne:false, slots:[["affirmation"]] }
+      identite_oui:   { arite:2, ordonne:false, deduction:"egalite",
+                        slots:[["qui","quoi","ou","quand","combien"],["qui","quoi","ou","quand","combien"]],
+                        relation:"meme_dim", patron:"{a} et {b} désignent la même chose" },
+      anteriorite:    { arite:2, ordonne:true,  deduction:"ordre", sens:"asc",
+                        slots:[["quand"],["quand"]], patron:"{a} précède {b}" },
+      ordre_grandeur: { arite:2, ordonne:true,  deduction:"ordre", sens:"desc",
+                        slots:[["combien"],["combien"]], patron:"{a} est d'un tout autre ordre que {b}" },
+      identite_non:   { arite:2, ordonne:false, deduction:"difference",
+                        slots:[["qui","quoi","ou"],["qui","quoi","ou"]],
+                        relation:"meme_dim", patron:"{a} et {b} ne désignent pas la même chose" },
+      article_3:      { arite:1, ordonne:false, slots:[["affirmation"]] },
+      article_7:      { arite:1, ordonne:false, slots:[["affirmation"]] },
+      article_12:     { arite:1, ordonne:false, slots:[["affirmation"]] }
     }
   },
   liens:[
     { forme:"anteriorite", termes:["p_pv.e_arr","t_voisin.e_voix"],
       rep:"Il a entendu crier une demi-heure après notre arrivée. Et donc ? Qu'est-ce que j'en fais, à l'audience ? Dis-moi ce que ça fait à son témoignage." },
-    { forme:"contraire_3", termes:[{ forme:"anteriorite", termes:["p_pv.e_arr","t_voisin.e_voix"] }], tag:"temoin",
+    { forme:"article_3", termes:[{ forme:"anteriorite", termes:["p_pv.e_arr","t_voisin.e_voix"] }], tag:"temoin",
       rep:"Voilà qui est utilisable. Son horaire tombe, donc sa déposition ne porte plus rien à elle seule. Je le garde pour l'ouverture." },
     { forme:"identite_oui", termes:["p_pv.e_sig","t_voisin.e_sig2"],
       rep:"Le même brigadier sur les deux pièces, oui. C'est une petite brigade, il signe tout ce qui sort. Passe." },
@@ -320,11 +322,11 @@ const JEU_EMBARQUE = {
       rep:"Le greffier réceptionne tout ce qui entre. Ça ne nous mène nulle part. Passe." },
     { forme:"identite_non", termes:["p_scene.e_sc","p_ref.e_sc2"],
       rep:"Deux scellés distincts. Sur ce point-là au moins, ils ont suivi leur propre manuel." },
-    { forme:"conforme_7", termes:[{ forme:"identite_non", termes:["p_scene.e_sc","p_ref.e_sc2"] }],
+    { forme:"article_7", termes:[{ forme:"identite_non", termes:["p_scene.e_sc","p_ref.e_sc2"] }],
       rep:"Conforme, en effet. C'est l'autre moitié de l'article 7 qui m'intéresserait." },
     { forme:"identite_oui", termes:["p_scene.e_moi","p_ref.e_moi2"], vice:true,
       rep:"Le même homme des deux côtés… Attends. Ce n'est pas rien, mais en l'état c'est une remarque, pas un moyen. Dis-le-moi en droit : quel texte est-ce que ça viole ?" },
-    { forme:"contraire_7", termes:[{ forme:"identite_oui", termes:["p_scene.e_moi","p_ref.e_moi2"] }],
+    { forme:"article_7", termes:[{ forme:"identite_oui", termes:["p_scene.e_moi","p_ref.e_moi2"] }],
       vice:true, conclusion:true, tag:"adn" },
     { forme:"ordre_grandeur", termes:["p_adn.e_tx","r_seuil.e_seuil"], faux:true, tag:"adn" }
   ],
@@ -564,10 +566,16 @@ function ouvrirPiece(pid){
   modal(modalPieceHTML(pid));
   rendreTout();
 }
+/* Les pièces effectivement reçues. Une seule maison : le dossier, les Manuels
+   et les liaisons-articles s'en servent, et doivent dire la même chose (§4.5). */
+function piecesLivrees(){
+  const out=[];
+  for(let i=0;i<S.remisesEnvoyees;i++) for(const pid of (JEU.remises[i].pieces||[])) out.push(pid);
+  return out;
+}
 function renderDossier(){
   if(!S.remisesEnvoyees) return "";
-  const livres=[];
-  for(let i=0;i<S.remisesEnvoyees;i++) for(const pid of JEU.remises[i].pieces||[]) livres.push(pid);
+  const livres=piecesLivrees();
   const vus=livres.filter(pid=>S.examinees.includes(pid)).length;
   return `<div class="zone"><div class="ztitle">Le dossier <span class="zcount">${vus}/${livres.length} consultée${vus>1?'s':''}</span></div>
     <div class="dossier">${livres.map(pid=>{
@@ -641,7 +649,13 @@ function etatCompo(){
   return e;
 }
 const blocParId = id => (JEU.grammaire.blocs||[]).find(b=>b.id===id);
-function blocsOfferts(){ const e=etatCompo(); return (JEU.grammaire.blocs||[]).filter(b=>b.de===e); }
+/* Les blocs de l'état courant — moins ceux dont la pièce n'est pas encore
+   reçue. On n'invoque pas un texte qu'on n'a pas lu (§4.5). C'est le SEUL
+   endroit où une liste d'options se restreint, et jamais par pertinence. */
+function blocsOfferts(){
+  const e=etatCompo(), livrees=new Set(piecesLivrees());
+  return (JEU.grammaire.blocs||[]).filter(b=>b.de===e && (!b.piece || livrees.has(b.piece)));
+}
 /* Le rang, parmi les blocs offerts, du terme qui se remplit avec un empan.
    -1 quand la phrase attend autre chose : les puces sont alors inertes. */
 function indexTermeChamp(){
@@ -650,13 +664,19 @@ function indexTermeChamp(){
 }
 function chaineCompo(){ return S.compo.map(p=>({bloc:blocParId(p.bloc), valeur:p.valeur})); }
 function texteCompoPartiel(){
-  if(!S.compo.length) return `<span class="trou">Compose une phrase…</span>`;
-  return chaineCompo().map(p=>{
+  if(!S.compo.length) return `<span class="trou">Désigne deux passages de ta mémoire…</span>`;
+  const ch=chaineCompo();
+  /* Tant que le second empan n'est pas posé, la relation n'existe pas : on ne
+     l'invente pas, on montre le trou. Une fois la paire close, `rendre` écrit
+     la phrase déduite d'un bloc, par son patron (§4.5). */
+  const fini=ch.some(p=>p.bloc.deduit);
+  if(fini) return `<span class="bl">${esc(M.rendre(ch).replace(/\.$/,""))}</span>`;
+  return ch.map(p=>{
     if(p.bloc.type!=="terme") return `<span class="bl">${esc(p.bloc.texte)}</span>`;
     if(p.bloc.source==="note") return `<span class="bl terme">${esc(p.bloc.texte)}</span>`;
     const e=EMPAN[p.valeur];
     return `<span class="bl terme" style="--dc:${couleurDim(e?e.dim:"")}">${esc(e?(e.nom||e.texte):p.valeur)}</span>`;
-  }).join(" ");
+  }).join(" ") + ` <span class="trou">…et ?</span>`;
 }
 /* iBloc indexe blocsOfferts() ; iSrc indexe la mémoire (terme/champ) ou le
    brouillon (terme/note). Les liaisons n'ont pas de source. */
@@ -750,9 +770,11 @@ function renderCompo(){
   });
   h+=`</div>`;
   if(attendTerme)
-    h+=`<div class="aide">${S.memoire.length
-      ? "Clique un passage retenu, plus bas."
-      : "Ouvre une pièce et retiens d'abord un passage."}</div>`;
+    h+=`<div class="aide">${!S.memoire.length
+      ? "Ouvre une pièce et retiens d'abord un passage."
+      : S.compo.length
+        ? "Clique un second passage, plus bas. Ce qui les lie se déduit tout seul."
+        : "Clique deux passages retenus, plus bas."}</div>`;
   if(S.refus) h+=`<div class="refus">${esc(S.refus)}</div>`;
   h+=`</div></div>`;
   return h;
@@ -894,8 +916,7 @@ function finir(){
 
 /* ---- Manuels : les règles livrées, plus les directives ---- */
 function openManuels(){
-  const livrees=new Set();
-  for(let i=0;i<S.remisesEnvoyees;i++) for(const pid of JEU.remises[i].pieces||[]) livrees.add(pid);
+  const livrees=new Set(piecesLivrees());
   const regles=Object.entries(JEU.pieces).filter(([pid,p])=>(p.type||"").includes("règle")&&livrees.has(pid))
     .map(([,r])=>`<li><b>${esc(r.titre)}</b> — ${esc(r.texte)}</li>`).join("");
   modal(`<h3>Manuel de soi — directives</h3>

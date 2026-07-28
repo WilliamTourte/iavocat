@@ -63,6 +63,48 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
 }
 {
   const w = neuf();
+  const b = w.CONTENU.grammaire.blocs.find(x => x.piece);
+  if (b) {
+    b.piece = "piece_qui_nexiste_pas";
+    check("un bloc conditionné à une pièce inconnue est une erreur",
+      msgs(w).includes("attend une pièce inconnue"));
+  } else check("(aucun bloc conditionné à une pièce)", true);
+}
+{
+  const w = neuf();
+  const e = Object.entries(w.CONTENU.grammaire.formes).find(([,f]) => f.deduction === "ordre" && f.ordonne);
+  if (e) {
+    delete e[1].sens;
+    check("une forme ordonnée sans « sens » est un avertissement",
+      msgs(w).includes("ordonnée sans « sens »") && !err(w).some(i => /sans « sens »/.test(i.msg)));
+  } else check("(aucune forme ordonnée déductible)", true);
+}
+{
+  // LE contrôle que le masquage des articles a rendu nécessaire : une session
+  // qui attend une phrase dont l'article n'arrivera qu'après.
+  const w = neuf();
+  const C = w.CONTENU;
+  const bloc = C.grammaire.blocs.find(x => x.piece);
+  if (bloc) {
+    // on retire la pièce de l'article de toutes les remises, puis on la livre
+    // en dernier : l'attente qu'elle sert devient inservable à temps.
+    let sert = null;
+    for (const L of C.liens) if (L.tag && L.forme === bloc.forme) sert = L.tag;
+    if (sert) {
+      for (const r of C.remises) r.pieces = (r.pieces||[]).filter(p => p !== bloc.piece);
+      C.remises[C.remises.length-1].pieces.push(bloc.piece);
+      const iAttend = C.remises.findIndex(r => r.attend === sert);
+      const seulement = C.liens.filter(L => L.tag === sert).every(L => L.forme === bloc.forme);
+      if (iAttend >= 0 && iAttend < C.remises.length - 1 && seulement)
+        check("un article livré après la session qui l'attend est une erreur",
+          msgs(w).includes("son article n'est pas encore livré"));
+      else check("(l'attente reste servable autrement — pas de piège ici)",
+          !msgs(w).includes("son article n'est pas encore livré"));
+    } else check("(aucune attente servie par un article)", true);
+  } else check("(aucun bloc conditionné à une pièce)", true);
+}
+{
+  const w = neuf();
   const d = w.CONTENU.dimensions[0];
   let n = 0;
   for (const p of Object.values(w.CONTENU.pieces))

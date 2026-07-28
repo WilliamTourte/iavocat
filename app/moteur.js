@@ -8,17 +8,68 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
   const estFinal = e => G.finaux.includes(e);
   const offerts = e => G.blocs.filter(b => b.de === e);
 
+  /* ---- LA DÉDUCTION (§4.5) --------------------------------------------
+     La relation entre deux empans n'est pas une thèse, c'est un fait : elle
+     se calcule de leur dimension et de leurs valeurs. Le joueur désigne, il
+     ne déclare plus. -------------------------------------------------- */
+  // Une valeur en nombre quand elle en est un — « 22:04 » compris. Sinon null.
+  // Volontairement fruste : une valeur est un jeton de contenu, pas un type.
+  const enNombre = v => {
+    const s = String(v == null ? "" : v).trim();
+    if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
+    const m = s.match(/^(\d{1,2}):(\d{2})$/);
+    return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+  };
+  function comparer(a, b) {
+    const x = enNombre(a), y = enNombre(b);
+    if (x !== null && y !== null) return x < y ? -1 : x > y ? 1 : 0;
+    const sa = String(a), sb = String(b);
+    return sa < sb ? -1 : sa > sb ? 1 : 0;
+  }
+  // La forme qui lie deux empans, ou null. Dimensions différentes → null, et
+  // c'est le seul refus qui existe. L'ORDRE de déclaration des formes tranche
+  // les ambiguïtés : la première qui accepte la dimension et dont le prédicat
+  // tient l'emporte (§11).
+  function deduire(idA, idB) {
+    const a = C[idA], b = C[idB];
+    if (!a || !b || idA === idB || a.dim !== b.dim) return null;
+    const egal = comparer(a.valeur, b.valeur) === 0;
+    for (const [nom, f] of Object.entries(G.formes)) {
+      if (!f.deduction || (f.arite || 2) !== 2) continue;
+      const s = f.slots && f.slots[0];
+      if (s !== "*" && !(s || []).includes(a.dim)) continue;
+      if (f.deduction === "egalite" ? egal : !egal) return nom;
+    }
+    return null;
+  }
+  // Les deux termes rangés selon le `sens` de la forme (« asc » par défaut).
+  // Sans effet sur une forme non ordonnée : `memeRed` y ignore déjà l'ordre.
+  function ordonner(forme, termes) {
+    const f = G.formes[forme];
+    if (!f || !f.ordonne || termes.length !== 2) return termes;
+    if (termes.some(t => typeof t === "object" || !C[t])) return termes;
+    const [x, y] = termes;
+    const inverser = (f.sens || "asc") === "asc"
+      ? comparer(C[x].valeur, C[y].valeur) > 0
+      : comparer(C[x].valeur, C[y].valeur) < 0;
+    return inverser ? [y, x] : [x, y];
+  }
+
   // Une chaîne de blocs choisis → sa forme réduite {forme, termes}.
+  // Un bloc `deduit` fait DÉDUIRE la forme des deux termes accumulés.
   // Un bloc `imbrique` EMBOÎTE ce qui a été composé jusque-là comme terme unique
   // de sa propre forme — c'est la continuation (§4.5) : « a et b désignent la
-  // même chose » + « , ce qui est contraire à l'article 7 ». Sans `imbrique`,
+  // même chose » + « , au regard de l'article 7 ». Sans ni l'un ni l'autre,
   // le comportement est celui d'avant : la dernière forme gagne, termes à plat.
   function reduire(ch) {
     let termes = [], forme = null;
     for (const p of ch) {
       const b = p.bloc;
       if (b.type === "terme") termes.push(p.valeur);
-      if (b.forme) {
+      if (b.deduit) {
+        forme = termes.length === 2 ? deduire(termes[0], termes[1]) : null;
+        if (forme) termes = ordonner(forme, termes);
+      } else if (b.forme) {
         if (b.imbrique) termes = [{ forme, termes }];
         forme = b.forme;
       }
@@ -29,6 +80,9 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
   // → null si la phrase est sensée (catégories respectées), sinon la raison.
   function valider(r) {
     const f = G.formes[r.forme];
+    // Aucune forme : la déduction n'a rien trouvé. Le message ne dit rien de
+    // plus que ce que l'écran disait déjà (§4.5).
+    if (!f) return "ces deux-là ne se comparent pas";
     if (r.termes.length !== f.arite) return "arité";
     for (let i = 0; i < r.termes.length; i++) {
       const s = f.slots[i], d = dimDe(r.termes[i]);
@@ -57,11 +111,36 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
   // son `nom` (« l'heure des éclats de voix »), pas par sa citation — §4.1 ;
   // et rien ne s'insère devant une ponctuation, pour que la continuation se
   // recolle proprement (§8.8).
-  const motDe = p => p.bloc.type === "terme"
-    ? (p.bloc.source === "note" ? p.bloc.texte : (C[p.valeur].nom || C[p.valeur].texte))
-    : p.bloc.texte;
+  // Une forme déduite écrit sa phrase d'un bloc, par son `patron` — c'est le
+  // seul endroit où l'accord se joue (§8.8).
+  const nomDe = v => (C[v] ? (C[v].nom || C[v].texte) : String(v));
   function rendre(ch) {
-    return ch.map(motDe).filter(t => t != null && t !== "")
+    let bouts = [], termes = [], forme = null;
+    for (const p of ch) {
+      const b = p.bloc;
+      // Un bloc peut être terme ET `deduit` : c'est le second empan qui clôt
+      // la paire. Les deux traitements s'enchaînent, jamais l'un ou l'autre.
+      if (b.type === "terme") {
+        termes.push(p.valeur);
+        bouts.push(b.source === "note" ? b.texte : nomDe(p.valeur));
+      } else if (b.texte) bouts.push(b.texte);
+      if (b.deduit) {
+        forme = termes.length === 2 ? deduire(termes[0], termes[1]) : null;
+        const f = forme && G.formes[forme];
+        if (f && f.patron) {
+          // Les deux derniers fragments SONT les deux termes : un automate à
+          // déduction ne place aucune liaison entre eux.
+          const ord = ordonner(forme, termes);
+          bouts.splice(bouts.length - 2, 2,
+            f.patron.replace("{a}", nomDe(ord[0])).replace("{b}", nomDe(ord[1])));
+          termes = ord;
+        }
+      } else if (b.forme) {
+        if (b.imbrique) termes = [{ forme, termes }];
+        forme = b.forme;
+      }
+    }
+    return bouts.filter(t => t != null && t !== "")
       .reduce((acc, t) => acc + (acc && !/^[,;:.…]/.test(t) ? " " : "") + t, "") + ".";
   }
   // Tous les squelettes de phrase (chemins de l'automate, départ → final).
@@ -71,7 +150,8 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
       for (const b of offerts(e)) m(b.vers, [...acc, b]); })(G.depart, []);
     return out;
   }
-  return { C, estFinal, offerts, reduire, dimDe, valider, memeTerme, memeRed, lienDe, rendre, squelettes };
+  return { C, estFinal, offerts, reduire, dimDe, valider, memeTerme, memeRed, lienDe, rendre,
+           squelettes, comparer, deduire, ordonner };
 }
 
 const _api = { creerMoteur };

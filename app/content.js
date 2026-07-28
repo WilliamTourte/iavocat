@@ -255,64 +255,12 @@ window.CONTENU = {
         "vers": "S1"
       },
       {
-        "id": "et",
-        "type": "liaison",
-        "de": "S1",
-        "vers": "S2a",
-        "texte": "et"
-      },
-      {
-        "id": "t2a",
+        "id": "t1",
         "type": "terme",
         "source": "champ",
-        "de": "S2a",
-        "vers": "S3"
-      },
-      {
-        "id": "mm",
-        "type": "liaison",
-        "de": "S3",
-        "vers": "S4",
-        "texte": "désignent la même chose",
-        "forme": "identite_oui"
-      },
-      {
-        "id": "nmm",
-        "type": "liaison",
-        "de": "S3",
-        "vers": "S4",
-        "texte": "ne désignent pas la même chose",
-        "forme": "identite_non"
-      },
-      {
-        "id": "ant",
-        "type": "liaison",
         "de": "S1",
-        "vers": "S2c",
-        "texte": "précède"
-      },
-      {
-        "id": "t2c",
-        "type": "terme",
-        "source": "champ",
-        "de": "S2c",
         "vers": "S4",
-        "forme": "anteriorite"
-      },
-      {
-        "id": "ecr",
-        "type": "liaison",
-        "de": "S1",
-        "vers": "S2e",
-        "texte": "est d'un tout autre ordre que"
-      },
-      {
-        "id": "t2e",
-        "type": "terme",
-        "source": "champ",
-        "de": "S2e",
-        "vers": "S4",
-        "forme": "ordre_grandeur"
+        "deduit": true
       },
       {
         "id": "pt",
@@ -323,98 +271,65 @@ window.CONTENU = {
         "libelle": "— en rester là"
       },
       {
-        "id": "c3",
+        "id": "a3",
         "type": "liaison",
         "de": "S4",
         "vers": "FIN",
         "imbrique": true,
-        "texte": ", ce qui est contraire à l'article 3",
-        "forme": "contraire_3"
+        "piece": "r_temoin",
+        "texte": ", au regard de l'article 3",
+        "forme": "article_3"
       },
       {
-        "id": "k3",
+        "id": "a7",
         "type": "liaison",
         "de": "S4",
         "vers": "FIN",
         "imbrique": true,
-        "texte": ", ce qui est conforme à l'article 3",
-        "forme": "conforme_3"
+        "piece": "r_protocole",
+        "texte": ", au regard de l'article 7",
+        "forme": "article_7"
       },
       {
-        "id": "c7",
+        "id": "a12",
         "type": "liaison",
         "de": "S4",
         "vers": "FIN",
         "imbrique": true,
-        "texte": ", ce qui est contraire à l'article 7",
-        "forme": "contraire_7"
-      },
-      {
-        "id": "k7",
-        "type": "liaison",
-        "de": "S4",
-        "vers": "FIN",
-        "imbrique": true,
-        "texte": ", ce qui est conforme à l'article 7",
-        "forme": "conforme_7"
-      },
-      {
-        "id": "c12",
-        "type": "liaison",
-        "de": "S4",
-        "vers": "FIN",
-        "imbrique": true,
-        "texte": ", ce qui est contraire à l'article 12",
-        "forme": "contraire_12"
-      },
-      {
-        "id": "k12",
-        "type": "liaison",
-        "de": "S4",
-        "vers": "FIN",
-        "imbrique": true,
-        "texte": ", ce qui est conforme à l'article 12",
-        "forme": "conforme_12"
+        "piece": "r_seuil",
+        "texte": ", au regard de l'article 12",
+        "forme": "article_12"
       }
     ],
     "formes": {
       "identite_oui": {
         "arite": 2,
         "ordonne": false,
+        "deduction": "egalite",
         "slots": [
           [
             "qui",
             "quoi",
-            "ou"
+            "ou",
+            "quand",
+            "combien"
           ],
           [
             "qui",
             "quoi",
-            "ou"
+            "ou",
+            "quand",
+            "combien"
           ]
         ],
-        "relation": "meme_dim"
-      },
-      "identite_non": {
-        "arite": 2,
-        "ordonne": false,
-        "slots": [
-          [
-            "qui",
-            "quoi",
-            "ou"
-          ],
-          [
-            "qui",
-            "quoi",
-            "ou"
-          ]
-        ],
-        "relation": "meme_dim"
+        "relation": "meme_dim",
+        "patron": "{a} et {b} désignent la même chose"
       },
       "anteriorite": {
         "arite": 2,
         "ordonne": true,
+        "deduction": "ordre",
+        "sens": "asc",
         "slots": [
           [
             "quand"
@@ -422,11 +337,14 @@ window.CONTENU = {
           [
             "quand"
           ]
-        ]
+        ],
+        "patron": "{a} précède {b}"
       },
       "ordre_grandeur": {
         "arite": 2,
         "ordonne": true,
+        "deduction": "ordre",
+        "sens": "desc",
         "slots": [
           [
             "combien"
@@ -434,9 +352,29 @@ window.CONTENU = {
           [
             "combien"
           ]
-        ]
+        ],
+        "patron": "{a} est d'un tout autre ordre que {b}"
       },
-      "contraire_3": {
+      "identite_non": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "difference",
+        "slots": [
+          [
+            "qui",
+            "quoi",
+            "ou"
+          ],
+          [
+            "qui",
+            "quoi",
+            "ou"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} ne désignent pas la même chose"
+      },
+      "article_3": {
         "arite": 1,
         "ordonne": false,
         "slots": [
@@ -445,7 +383,7 @@ window.CONTENU = {
           ]
         ]
       },
-      "conforme_3": {
+      "article_7": {
         "arite": 1,
         "ordonne": false,
         "slots": [
@@ -454,34 +392,7 @@ window.CONTENU = {
           ]
         ]
       },
-      "contraire_7": {
-        "arite": 1,
-        "ordonne": false,
-        "slots": [
-          [
-            "affirmation"
-          ]
-        ]
-      },
-      "conforme_7": {
-        "arite": 1,
-        "ordonne": false,
-        "slots": [
-          [
-            "affirmation"
-          ]
-        ]
-      },
-      "contraire_12": {
-        "arite": 1,
-        "ordonne": false,
-        "slots": [
-          [
-            "affirmation"
-          ]
-        ]
-      },
-      "conforme_12": {
+      "article_12": {
         "arite": 1,
         "ordonne": false,
         "slots": [
@@ -502,7 +413,7 @@ window.CONTENU = {
       "rep": "Il a entendu crier une demi-heure après notre arrivée. Et donc ? Qu'est-ce que j'en fais, à l'audience ? Dis-moi ce que ça fait à son témoignage."
     },
     {
-      "forme": "contraire_3",
+      "forme": "article_3",
       "termes": [
         {
           "forme": "anteriorite",
@@ -540,7 +451,7 @@ window.CONTENU = {
       "rep": "Deux scellés distincts. Sur ce point-là au moins, ils ont suivi leur propre manuel."
     },
     {
-      "forme": "conforme_7",
+      "forme": "article_7",
       "termes": [
         {
           "forme": "identite_non",
@@ -562,7 +473,7 @@ window.CONTENU = {
       "rep": "Le même homme des deux côtés… Attends. Ce n'est pas rien, mais en l'état c'est une remarque, pas un moyen. Dis-le-moi en droit : quel texte est-ce que ça viole ?"
     },
     {
-      "forme": "contraire_7",
+      "forme": "article_7",
       "termes": [
         {
           "forme": "identite_oui",

@@ -119,12 +119,24 @@ function creerHarnais(dossier){
     surligner(w,t0); surligner(w,t1);
     const bT=idBloc(w,blocChamp(w)); if(bT<0) return false;
     w.poserBloc(bT,iMem(w,t0));
+    // Grammaire à DÉDUCTION : le second terme clôt la paire, rien entre les deux.
+    const bD=w.blocsOfferts().findIndex(x=>x.type==="terme"&&x.source!=="note"&&x.deduit);
+    if(bD>=0){ w.poserBloc(bD,iMem(w,t1)); return true; }
+    // Grammaire à liaisons explicites (à l'ancienne) : on parcourt l'automate.
     for(const etape of cheminVers(w,L.forme)){
       const b=idBloc(w,etape); if(b<0) return false;
       const bloc=G.blocs.find(x=>x.id===etape);
       w.poserBloc(b, bloc.type==="terme" ? iMem(w,t1) : undefined);
     }
     return true;
+  }
+  /* Fait partir toutes les remises, sans jouer l'instruction. Utile depuis que
+     les liaisons-articles sont filtrées par livraison (§4.5) : une suite qui
+     compose une conclusion sans jouer doit d'abord avoir reçu le texte. */
+  function livrerTout(w){
+    let garde=0;
+    while(w.S.remisesEnvoyees < J(w).remises.length && garde++<20) w.envoyerRemise();
+    w.rendreTout();
   }
   /* « En rester là » : le bloc qui clôt sans rien qualifier. Sans effet si
      l'automate a déjà refermé la phrase tout seul. */
@@ -158,16 +170,22 @@ function creerHarnais(dossier){
   function phrasesBruit(w,n){
     const G=J(w).grammaire;
     const emp=w.CHAMPS;
+    const deduction=(G.blocs||[]).some(x=>x.deduit);
     const forme2=Object.entries(G.formes).find(([,f])=>(f.arite||2)===2&&f.relation==="meme_dim");
-    if(!forme2) return 0;
-    const [nomForme]=forme2;
-    const slots=G.formes[nomForme].slots[0];
+    if(!deduction && !forme2) return 0;
     let fait=0;
     for(let i=0;i<emp.length&&fait<n;i++)
       for(let k=i+1;k<emp.length&&fait<n;k++){
         const a=emp[i], b=emp[k];
-        if(a.dim!==b.dim || !slots.includes(a.dim)) continue;
-        const cand={forme:nomForme,termes:[a.id,b.id]};
+        if(a.dim!==b.dim) continue;
+        // La forme n'est plus choisie : c'est celle que le moteur DÉDUIRA.
+        let nomForme;
+        if(deduction) nomForme=w.M.deduire(a.id,b.id);
+        else { nomForme=forme2[0];
+               if(!G.formes[nomForme].slots[0].includes(a.dim)) continue; }
+        if(!nomForme) continue;
+        const termes=w.M.ordonner ? w.M.ordonner(nomForme,[a.id,b.id]) : [a.id,b.id];
+        const cand={forme:nomForme,termes};
         if(J(w).liens.some(L=>w.M.memeRed({forme:L.forme,termes:L.termes},cand))) continue;
         if(w.S.brouillon.some(x=>w.M.memeRed(x.reduite,cand))) continue;
         if(composerLien(w,cand)>=0) fait++;
@@ -199,7 +217,13 @@ function creerHarnais(dossier){
   // Déroule la répétition de plaidoirie jusqu'au bout, puis confirme.
   function terminer(w){
     w.cloturer();
-    while(w.S.repetitionIdx < J(w).repetition.affirmations.length) w.avancerRepetition();
+    // Garde : si la clôture ne s'ouvre pas (attente inservable, article livré
+    // trop tard…), `repetitionIdx` reste à -1. Mieux vaut rendre "" et faire
+    // échouer le contrôle que tourner en rond sans rien dire.
+    let garde=0;
+    while(w.S.repetitionIdx >= 0
+          && w.S.repetitionIdx < J(w).repetition.affirmations.length
+          && garde++ < 50) w.avancerRepetition();
     w.cloturer();
     const f=w.document.querySelector(".fin");
     return f ? f.textContent : "";
@@ -234,7 +258,7 @@ function creerHarnais(dossier){
 
   return { check, bilan, boot, bootAtelier, embarque, canal, memoire, atelier,
            lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, arite,
-           plan, cloreSurPlace, poserComparaison,
+           plan, cloreSurPlace, poserComparaison, livrerTout,
            surligner, iMem, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
