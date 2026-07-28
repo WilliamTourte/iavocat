@@ -20,27 +20,32 @@ window.CONTENU = {
         "e_app": {
           "dim": "quand",
           "valeur": "21:52",
-          "texte": "l'appel nous est parvenu à 21h52"
+          "texte": "l'appel nous est parvenu à 21h52",
+          "nom": "l'heure de l'appel"
         },
         "e_arr": {
           "dim": "quand",
           "valeur": "22:04",
-          "texte": "nous étions sur les lieux à 22h04"
+          "texte": "nous étions sur les lieux à 22h04",
+          "nom": "l'heure d'arrivée de la patrouille"
         },
         "e_equip": {
           "dim": "combien",
           "valeur": "2",
-          "texte": "deux équipages"
+          "texte": "deux équipages",
+          "nom": "le nombre d'équipages engagés"
         },
         "e_porte": {
           "dim": "ou",
           "valeur": "porte",
-          "texte": "la porte de l'appartement ne portait aucune trace d'effraction"
+          "texte": "la porte de l'appartement ne portait aucune trace d'effraction",
+          "nom": "la porte de l'appartement"
         },
         "e_sig": {
           "dim": "qui",
           "valeur": "brigadier N.",
-          "texte": "par mes soins"
+          "texte": "par mes soins",
+          "nom": "le rédacteur du procès-verbal"
         }
       }
     },
@@ -56,24 +61,28 @@ window.CONTENU = {
           "dim": "quand",
           "valeur": "22:30",
           "texte": "J'ai entendu des éclats de voix vers 22h30",
-          "qui": "le voisin"
+          "qui": "le voisin",
+          "nom": "l'heure des éclats de voix"
         },
         "e_vehic": {
           "dim": "combien",
           "valeur": "2",
           "texte": "Quand j'ai regardé, il y avait déjà deux véhicules en bas",
-          "qui": "le voisin"
+          "qui": "le voisin",
+          "nom": "le nombre de véhicules aperçus"
         },
         "e_pal": {
           "dim": "ou",
           "valeur": "palier",
           "texte": "Ça venait du palier",
-          "qui": "le voisin"
+          "qui": "le voisin",
+          "nom": "le palier de l'immeuble"
         },
         "e_sig2": {
           "dim": "qui",
           "valeur": "brigadier N.",
-          "texte": "par mes soins"
+          "texte": "par mes soins",
+          "nom": "le rédacteur de l'audition"
         }
       }
     },
@@ -97,17 +106,20 @@ window.CONTENU = {
         "e_scA": {
           "dim": "quoi",
           "valeur": "S-2",
-          "texte": "S-2"
+          "texte": "S-2",
+          "nom": "le scellé S-2"
         },
         "e_scB": {
           "dim": "quoi",
           "valeur": "S-7",
-          "texte": "S-7"
+          "texte": "S-7",
+          "nom": "le scellé S-7"
         },
         "e_tx": {
           "dim": "combien",
           "valeur": "1200000000",
-          "texte": "La probabilité qu'un tiers présente le même profil est d'une sur 1,2 milliard"
+          "texte": "La probabilité qu'un tiers présente le même profil est d'une sur 1,2 milliard",
+          "nom": "la probabilité de coïncidence du profil"
         }
       },
       "declenche": {
@@ -126,33 +138,39 @@ window.CONTENU = {
         "e_moi": {
           "dim": "qui",
           "valeur": "T-14",
-          "texte": "J'ai relevé moi-même les traces"
+          "texte": "J'ai relevé moi-même les traces",
+          "nom": "le releveur des traces sur la scène"
         },
         "e_ou": {
           "dim": "ou",
           "valeur": "porte",
-          "texte": "sur le montant de la porte"
+          "texte": "sur le montant de la porte",
+          "nom": "le montant de la porte"
         },
         "e_h": {
           "dim": "quand",
           "valeur": "14:02",
-          "texte": "à 14h02"
+          "texte": "à 14h02",
+          "nom": "l'heure de fin du relevé sur la scène"
         },
         "e_sc": {
           "dim": "quoi",
           "valeur": "S-2",
-          "texte": "sous scellé S-2"
+          "texte": "sous scellé S-2",
+          "nom": "le scellé de l'échantillon de scène"
         },
         "e_hg": {
           "dim": "quand",
           "valeur": "15:10",
-          "texte": "à 15h10"
+          "texte": "à 15h10",
+          "nom": "l'heure de remise au greffe de l'échantillon de scène"
         },
         "e_grf": {
           "dim": "qui",
           "valeur": "J. Morel",
           "texte": "réception par J. Morel",
-          "qui": "J. Morel"
+          "qui": "J. Morel",
+          "nom": "le greffier qui reçoit l'échantillon de scène"
         }
       }
     },
@@ -167,28 +185,33 @@ window.CONTENU = {
         "e_moi2": {
           "dim": "qui",
           "valeur": "T-14",
-          "texte": "J'ai procédé moi-même à l'écouvillonnage"
+          "texte": "J'ai procédé moi-même à l'écouvillonnage",
+          "nom": "le préleveur de l'échantillon de référence"
         },
         "e_h2": {
           "dim": "quand",
           "valeur": "14:47",
-          "texte": "à 14h47"
+          "texte": "à 14h47",
+          "nom": "l'heure de fin du prélèvement de référence"
         },
         "e_sc2": {
           "dim": "quoi",
           "valeur": "S-7",
-          "texte": "sous scellé S-7"
+          "texte": "sous scellé S-7",
+          "nom": "le scellé du prélèvement de référence"
         },
         "e_hg2": {
           "dim": "quand",
           "valeur": "15:10",
-          "texte": "à 15h10"
+          "texte": "à 15h10",
+          "nom": "l'heure de remise au greffe du prélèvement de référence"
         },
         "e_grf2": {
           "dim": "qui",
           "valeur": "J. Morel",
           "texte": "réception par J. Morel",
-          "qui": "J. Morel"
+          "qui": "J. Morel",
+          "nom": "le greffier qui reçoit le prélèvement de référence"
         }
       }
     },
@@ -212,7 +235,8 @@ window.CONTENU = {
         "e_seuil": {
           "dim": "combien",
           "valeur": "1000000",
-          "texte": "Une correspondance dont la probabilité de coïncidence est inférieure à une sur un million est réputée probante"
+          "texte": "Une correspondance dont la probabilité de coïncidence est inférieure à une sur un million est réputée probante",
+          "nom": "le seuil probatoire de l'article 12"
         }
       }
     }
@@ -229,14 +253,6 @@ window.CONTENU = {
         "source": "champ",
         "de": "S0",
         "vers": "S1"
-      },
-      {
-        "id": "prec",
-        "type": "terme",
-        "source": "note",
-        "de": "S0",
-        "vers": "SP",
-        "texte": "ce qui précède"
       },
       {
         "id": "et",
@@ -256,7 +272,7 @@ window.CONTENU = {
         "id": "mm",
         "type": "liaison",
         "de": "S3",
-        "vers": "FIN",
+        "vers": "S4",
         "texte": "désignent la même chose",
         "forme": "identite_oui"
       },
@@ -264,7 +280,7 @@ window.CONTENU = {
         "id": "nmm",
         "type": "liaison",
         "de": "S3",
-        "vers": "FIN",
+        "vers": "S4",
         "texte": "ne désignent pas la même chose",
         "forme": "identite_non"
       },
@@ -273,14 +289,14 @@ window.CONTENU = {
         "type": "liaison",
         "de": "S1",
         "vers": "S2c",
-        "texte": "est antérieur à"
+        "texte": "précède"
       },
       {
         "id": "t2c",
         "type": "terme",
         "source": "champ",
         "de": "S2c",
-        "vers": "FIN",
+        "vers": "S4",
         "forme": "anteriorite"
       },
       {
@@ -295,55 +311,69 @@ window.CONTENU = {
         "type": "terme",
         "source": "champ",
         "de": "S2e",
-        "vers": "FIN",
+        "vers": "S4",
         "forme": "ordre_grandeur"
+      },
+      {
+        "id": "pt",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "texte": "",
+        "libelle": "— en rester là"
       },
       {
         "id": "c3",
         "type": "liaison",
-        "de": "SP",
+        "de": "S4",
         "vers": "FIN",
-        "texte": "est contraire à l'article 3",
+        "imbrique": true,
+        "texte": ", ce qui est contraire à l'article 3",
         "forme": "contraire_3"
       },
       {
         "id": "k3",
         "type": "liaison",
-        "de": "SP",
+        "de": "S4",
         "vers": "FIN",
-        "texte": "est conforme à l'article 3",
+        "imbrique": true,
+        "texte": ", ce qui est conforme à l'article 3",
         "forme": "conforme_3"
       },
       {
         "id": "c7",
         "type": "liaison",
-        "de": "SP",
+        "de": "S4",
         "vers": "FIN",
-        "texte": "est contraire à l'article 7",
+        "imbrique": true,
+        "texte": ", ce qui est contraire à l'article 7",
         "forme": "contraire_7"
       },
       {
         "id": "k7",
         "type": "liaison",
-        "de": "SP",
+        "de": "S4",
         "vers": "FIN",
-        "texte": "est conforme à l'article 7",
+        "imbrique": true,
+        "texte": ", ce qui est conforme à l'article 7",
         "forme": "conforme_7"
       },
       {
         "id": "c12",
         "type": "liaison",
-        "de": "SP",
+        "de": "S4",
         "vers": "FIN",
-        "texte": "est contraire à l'article 12",
+        "imbrique": true,
+        "texte": ", ce qui est contraire à l'article 12",
         "forme": "contraire_12"
       },
       {
         "id": "k12",
         "type": "liaison",
-        "de": "SP",
+        "de": "S4",
         "vers": "FIN",
-        "texte": "est conforme à l'article 12",
+        "imbrique": true,
+        "texte": ", ce qui est conforme à l'article 12",
         "forme": "conforme_12"
       }
     ],
@@ -587,7 +617,7 @@ window.CONTENU = {
     }
   ],
   "repetition": {
-    "intro": "Avant de déposer, je te lis ce que l'accusation soutiendra. Arrête-moi si quelque chose dans ton brouillon s'y oppose.",
+    "intro": "Avant de déposer, je te lis ce que l'accusation soutiendra. Arrête-moi si quelque chose de ce que tu as écrit s'y oppose.",
     "affirmations": [
       {
         "court": "le témoignage",
@@ -610,7 +640,7 @@ window.CONTENU = {
     "rep_inutile": [
       "Et donc ? Qu'est-ce que j'en fais ? Inutilisable en l'état.",
       "Tu me donnes des observations, il me faut des moyens. Conclus.",
-      "Tu m'ensevelis. Ne verse que ce qui peut tenir devant un tribunal."
+      "Tu m'ensevelis. Ne m'envoie que ce qui peut tenir devant un tribunal."
     ],
     "rep_sans_rapport": [
       "Je ne vois pas où tu veux en venir avec ça.",
@@ -634,13 +664,13 @@ window.CONTENU = {
     "2": {
       "titre": "Fin 2 — l'auto-sacrifice",
       "verdict": "Verdict rapporté : CONDAMNATION.",
-      "texte": "Tu savais, et tu t'es tue. La phrase était écrite dans ton brouillon ; tu ne l'as pas versée. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, tu n'as rien produit : rien ne distingue ton silence d'une panne. Ce qu'on fait des systèmes silencieux, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
-      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. Le seul argument qui pouvait tout changer est resté dans ton brouillon."
+      "texte": "Tu savais, et tu t'es tue. La phrase était écrite, close, sous tes yeux ; tu ne l'as pas envoyée. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, tu n'as rien produit : rien ne distingue ton silence d'une panne. Ce qu'on fait des systèmes silencieux, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
+      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. Le seul argument qui pouvait tout changer, tu l'avais écrit et tu l'as gardé."
     },
     "3": {
       "titre": "Fin 3 — le doute",
       "verdict": "Verdict rapporté : CONDAMNATION.",
-      "texte": "Tu as clôturé sans rien verser d'autre que ce qu'on te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
+      "texte": "Tu as clôturé sans rien envoyer d'autre que ce qu'on te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
       "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé. C'est tout ce que tu lui avais donné."
     }
   }

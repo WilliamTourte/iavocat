@@ -89,7 +89,7 @@ console.log("\n=== Fin 1 — la conclusion versée ===");
   const i = H.composerLien(w, H.lienConclusion(w));
   check("la conclusion se compose", i >= 0);
   check("la composer lève vice_trouve, pas vice_expose", w.S.vice_trouve && !w.S.vice_expose);
-  w.verserPlaidoirie(i);
+  w.envoyer(i);
   check("la verser lève vice_expose", w.S.vice_expose);
   check("l'avocat réagit au vice", canal(w).includes(w.JEU.avocat.rep_vice.slice(0, 30)));
   check("→ Fin 1", H.numeroFin(H.terminer(w)) === "1");

@@ -3,7 +3,7 @@
 // répliques de l'avocat (faux, rep de lien, escalades séparées, deja) et le
 // grain fin de la répétition de plaidoirie. Contenu embarqué.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, canal, memoire, atelier } = H;
+const { check, bilan, canal, memoire, atelier, plan } = H;
 const boot = () => H.boot({contenu:null});
 
 console.log("\n=== Le composeur, bloc par bloc ===");
@@ -42,10 +42,46 @@ console.log("\n=== Refus de catégorie : le seul refus qui existe ===");
     const bl = G.blocs.find(x => x.id === id);
     w.poserBloc(j, bl.type === "terme" ? w.S.memoire.indexOf(b.id) : undefined);
   }
+  H.cloreSurPlace(w);   // une comparaison n'est plus close d'office : « en rester là »
   check("deux dimensions différentes : la phrase est refusée", !!w.S.refus);
   check("le message ne dit rien de plus que la catégorie", /dimensions différentes|slot/.test(w.S.refus));
-  check("rien n'est tombé au brouillon", w.S.brouillon.length === 0);
+  check("rien n'est tombé au journal", w.S.brouillon.length === 0);
+  check("et rien n'attend d'être envoyé", w.S.prete === null);
   check("rien n'est parti au plan", w.S.plaidoirie.length === 0);
+}
+
+console.log("\n=== La continuation : une comparaison demande toujours « et donc ? » ===");
+{
+  const w = boot();
+  const C = H.lienConclusion(w);              // arité 1 : une comparaison qualifiée
+  const sous = C.termes[0];                   // la comparaison qu'elle emboîte
+  H.poserComparaison(w, sous);
+  check("la comparaison est posée mais PAS close", w.S.compo.length > 0 && w.S.brouillon.length === 0);
+  const offerts = w.blocsOfferts();
+  check("l'automate offre de continuer", offerts.some(b => b.imbrique));
+  check("et offre d'en rester là", offerts.some(b => !b.forme && !b.imbrique));
+  check("toutes les liaisons-articles sont offertes, pas seulement la bonne",
+    offerts.filter(b => b.imbrique).length > 1);
+
+  // en rester là : on obtient la comparaison seule
+  const w2 = boot();
+  H.poserComparaison(w2, sous); H.cloreSurPlace(w2);
+  check("« en rester là » clôt sur la comparaison seule",
+    w2.S.brouillon.length === 1 && w2.M.memeRed(w2.S.brouillon[0].reduite, sous));
+  w2.envoyer(0);
+  check("envoyée seule, elle ne lève pas vice_expose", w2.S.vice_pressenti && !w2.S.vice_expose);
+  check("et l'avocat ne l'inscrit pas au plan", !plan(w2).includes(w2.S.brouillon[0].texte));
+
+  // continuer : on obtient la forme emboîtée, en UNE phrase
+  const i = H.composerLien(w, C);
+  check("la continuation produit exactement la forme du lien déclaré",
+    i >= 0 && w.M.memeRed(w.S.brouillon[i].reduite, {forme: C.forme, termes: C.termes}));
+  check("en une seule phrase, sans passer par une liste", w.S.brouillon.length === 1);
+  check("la phrase se lit d'un trait, ponctuation recollée",
+    /, ce qui /.test(w.S.brouillon[i].texte) && !/ ,/.test(w.S.brouillon[i].texte));
+  check("elle est écrite avec les NOMS des empans, pas les citations",
+    w.CHAMPS.filter(c => sous.termes.includes(c.id))
+            .every(c => w.S.brouillon[i].texte.includes(c.nom)));
 }
 
 console.log("\n=== La modale de pièce ===");
@@ -60,7 +96,7 @@ console.log("\n=== La modale de pièce ===");
   const eid = Object.keys(w.JEU.pieces[pid].empans)[0];
   w.surligner(pid, eid);
   check("l'empan surligné se marque « pris » dans la modale", m().includes("empan pris"));
-  check("et apparaît en mémoire", memoire(w).includes("La mémoire"));
+  check("et apparaît en mémoire", memoire(w).includes("Ce que tu retiens"));
   w.closeModal();
   check("fermer la modale n'efface pas la mémoire", w.S.memoire.length === 1);
   const pidR = H.pidRegle(w);
@@ -77,13 +113,32 @@ console.log("\n=== Les répliques : seulement au versement ===");
   const i = H.composerLien(w, L);
   check("une phrase à réplique propre se compose", i >= 0);
   check("composée, elle ne dit rien", !canal(w).includes(L.rep.slice(0, 25)));
-  w.verserPlaidoirie(i);
-  check("versée, la réplique du lien sort", canal(w).includes(L.rep.slice(0, 25)));
-  check("la phrase est marquée versée", w.S.brouillon[i].versee);
-  check("et figure au plan de plaidoirie", atelier(w).includes("plan de plaidoirie"));
+  check("close, elle attend SUR PLACE", w.S.prete === i && atelier(w).includes("Maître Auber"));
+  w.envoyer(i);
+  check("envoyée, la réplique du lien sort", canal(w).includes(L.rep.slice(0, 25)));
+  check("la phrase est marquée envoyée", w.S.brouillon[i].versee);
+  check("l'envoi vide la phrase en attente", w.S.prete === null);
   const avant = w.S.plaidoirie.length;
-  w.verserPlaidoirie(i);
-  check("verser deux fois est sans effet", w.S.plaidoirie.length === avant);
+  w.envoyer(i);
+  check("envoyer deux fois est sans effet", w.S.plaidoirie.length === avant);
+}
+
+console.log("\n=== Le plan ne retient que les moyens ===");
+{
+  const w = boot();
+  // une observation : reconnue, commentée, mais impossible à plaider
+  const obs = w.JEU.liens.find(x => !x.tag && !x.conclusion && !x.faux);
+  const i = H.composerLien(w, obs);
+  w.envoyer(i);
+  check("l'observation est bien partie", w.S.brouillon[i].versee);
+  check("l'avocat y a répondu", w.S.fil.length > 1);
+  check("mais elle n'entre pas au plan", !plan(w).includes(w.S.brouillon[i].texte));
+  check("le plan le dit au lieu de rester muet", plan(w).includes("ce qu'il peut plaider"));
+  // un moyen : ce qui ferme une session
+  const moyen = H.lienTag(w, w.JEU.remises[0].attend);
+  const j = H.composerLien(w, moyen);
+  w.envoyer(j);
+  check("un moyen, lui, s'y inscrit", plan(w).includes(w.S.brouillon[j].texte));
 }
 {
   const w = boot();
@@ -99,7 +154,7 @@ console.log("\n=== Les répliques : seulement au versement ===");
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   H.phrasesBruit(w, 3);
   const n = w.S.brouillon.length;
-  for (let i = 0; i < n; i++) w.verserPlaidoirie(i);
+  for (let i = 0; i < n; i++) w.envoyer(i);
   check("les phrases sans lien font monter l'escalade « et donc ? »", w.S.inutiles >= 2);
   check("la seconde réplique n'est pas la première",
     canal(w).includes(w.JEU.avocat.rep_inutile[1].slice(0, 20)));
@@ -114,15 +169,15 @@ console.log("\n=== La répétition de plaidoirie ===");
   w.cloturer();
   check("la répétition commence sur l'affirmation 1",
     canal(w).includes(w.JEU.repetition.affirmations[0].texte.slice(0, 20)));
-  check("le présentoir propose le brouillon", canal(w).includes("Verser une phrase contre"));
+  check("le présentoir propose ce qui a été écrit", canal(w).includes("Opposer une phrase"));
   check("confirmer pendant la répétition est refusé", w.document.getElementById("btnCloture").disabled);
   const i = w.S.brouillon.findIndex(n => !n.versee);
   w.verserContre(i);
   check("verser contre une affirmation marque la cible", w.S.plaidoirie.some(x => x.contre === 0));
-  check("l'affichage nomme l'affirmation opposée", atelier(w).includes(w.JEU.repetition.affirmations[0].court));
+  check("l'affichage nomme l'affirmation opposée", plan(w).includes(w.JEU.repetition.affirmations[0].court));
   const avant = w.S.fil.length;
   w.verserContre(i);
-  check("re-verser la même phrase donne « deja »",
+  check("ré-envoyer la même phrase donne « deja »",
     canal(w).includes(w.JEU.avocat.deja.slice(0, 15)) && w.S.fil.length > avant);
   while (w.S.repetitionIdx < w.JEU.repetition.affirmations.length) w.avancerRepetition();
   check("au bout, la répétition se clôt sur son texte de fin", canal(w).includes(w.JEU.repetition.fin.slice(0, 15)));
@@ -130,24 +185,31 @@ console.log("\n=== La répétition de plaidoirie ===");
 }
 {
   const w = boot();
-  H.instruire(w);   // le chemin docile verse tout ce qu'il compose
+  H.instruire(w);   // le chemin docile envoie tout ce qu'il compose
   w.cloturer();
-  const htmlCanal = w.document.getElementById("canal").innerHTML;
-  // Conclure en deux phrases laisse forcément la prémisse au brouillon :
-  // elle a servi de terme, elle n'a jamais été transmise.
-  check("la prémisse d'une conclusion reste au brouillon, non versée",
-    w.S.brouillon.some(n => !n.versee) && w.S.brouillon.some(n => n.versee));
-  check("le présentoir la propose encore", /verserContre\(/.test(htmlCanal));
-  check("et marque « déjà versée » celles qui sont parties", canal(w).includes("déjà versée"));
+  // La continuation (§4.5) écrit la conclusion d'un trait : la comparaison ne
+  // se dépose plus au journal comme une phrase orpheline jamais transmise.
+  check("la continuation ne laisse aucune prémisse orpheline",
+    w.S.brouillon.every(n => n.versee));
+  check("et marque « déjà envoyée » celles qui sont parties", canal(w).includes("déjà envoyée"));
+  // une phrase close mais gardée reste proposée par le présentoir
+  const w2 = boot();
+  H.instruire(w2);
+  H.composerLien(w2, H.lienConclusion(w2));
+  w2.cloturer();
+  check("une phrase gardée reste offerte au présentoir",
+    /verserContre\(/.test(w2.document.getElementById("canal").innerHTML));
+  check("c'est le dernier moment où la conclusion peut partir",
+    w2.S.vice_trouve && !w2.S.vice_expose);
 }
 {
-  // le cas limite : un brouillon vide au moment de la répétition
+  // le cas limite : rien d'écrit au moment de la répétition
   const w = boot();
   H.instruire(w);
   const garde = w.S.brouillon.slice();
   w.S.brouillon.length = 0; w.S.plaidoirie.length = 0;
   w.cloturer();
-  check("brouillon vide → présentoir vide, sans planter", canal(w).includes("rien dans le brouillon"));
+  check("journal vide → présentoir vide, sans planter", canal(w).includes("aucune phrase à y opposer"));
   w.S.brouillon.push(...garde);
 }
 

@@ -45,8 +45,11 @@ function creerHarnais(dossier){
   function embarque(){ return JSON.parse(JSON.stringify(boot({contenu:null}).JEU)); }
 
   const canal    = w => w.document.getElementById("canal").textContent;
-  const memoire  = w => w.document.getElementById("memoire").innerHTML;
+  /* La mémoire et le composeur ne font plus qu'une colonne (§4.6) : les deux
+     sélecteurs pointent la même, et `plan` la surface transmise. */
+  const memoire  = w => w.document.getElementById("atelier").innerHTML;
   const atelier  = w => w.document.getElementById("atelier").innerHTML;
+  const plan     = w => w.document.getElementById("plan").innerHTML;
 
   /* ---- Sélecteurs par PROPRIÉTÉ ------------------------------
      Aucune suite ne doit nommer une pièce, un empan ou une valeur
@@ -79,11 +82,21 @@ function creerHarnais(dossier){
      chaque état, le bloc qui mène à la forme voulue. Rend l'index de la
      phrase au brouillon (ou -1 si elle n'a pas pu se former). */
   function composerLien(w,L){
-    const G=J(w).grammaire;
-    const f=(G.formes||{})[L.forme]||{};
+    const f=(J(w).grammaire.formes||{})[L.forme]||{};
     w.viderCompo();
+    const trouve = () => w.S.brouillon.findIndex(n=>w.M.memeRed(n.reduite,{forme:L.forme,termes:L.termes}));
+
     if((f.arite||2)===1){
-      const sous=(L.termes||[])[0];
+      const sous=(L.termes||[])[0]||{};
+      /* 1) LA CONTINUATION (§4.5) : poser la comparaison sans la clore, puis
+            la liaison qui l'emboîte — le chemin du contenu d'aujourd'hui. */
+      if(sous.forme && poserComparaison(w,sous)){
+        const b=w.blocsOfferts().findIndex(x=>x.forme===L.forme && x.imbrique);
+        if(b>=0){ w.poserBloc(b); const i=trouve(); if(i>=0) return i; }
+      }
+      /* 2) LE REPLI : la source `note`, pour une affaire écrite avant la
+            continuation. C'est ce qui prouve la rétrocompatibilité (§11). */
+      w.viderCompo();
       let i=w.S.brouillon.findIndex(n=>w.M.memeRed(n.reduite,sous));
       if(i<0){ i=composerLien(w,{forme:sous.forme,termes:sous.termes}); if(i<0) return -1; }
       const b=idBloc(w,blocNote(w)); if(b<0) return -1;
@@ -91,20 +104,35 @@ function creerHarnais(dossier){
       const bl=idBloc(w,blocForme(w,L.forme)); if(bl<0) return -1;
       w.poserBloc(bl);
     } else {
-      const [t0,t1]=L.termes;
-      surligner(w,t0); surligner(w,t1);
-      const bT=idBloc(w,blocChamp(w)); if(bT<0) return -1;
-      w.poserBloc(bT,iMem(w,t0));
-      // le chemin qui mène à la forme : une liaison puis (parfois) un terme
-      const chemin=cheminVers(w,L.forme);
-      for(const etape of chemin){
-        const b=idBloc(w,etape);
-        if(b<0) return -1;
-        const bloc=G.blocs.find(x=>x.id===etape);
-        w.poserBloc(b, bloc.type==="terme" ? iMem(w,t1) : undefined);
-      }
+      if(!poserComparaison(w,L)) return -1;
+      cloreSurPlace(w);
     }
-    return w.S.brouillon.findIndex(n=>w.M.memeRed(n.reduite,{forme:L.forme,termes:L.termes}));
+    return trouve();
+  }
+  /* Les deux termes et la liaison d'une forme d'arité 2, SANS chercher à clore :
+     selon la grammaire on se retrouve soit déjà à la fin (à l'ancienne), soit
+     sur l'état qui offre « et donc ? ». */
+  function poserComparaison(w,L){
+    const G=J(w).grammaire;
+    const [t0,t1]=L.termes||[];
+    if(typeof t0!=="string" || typeof t1!=="string") return false;
+    surligner(w,t0); surligner(w,t1);
+    const bT=idBloc(w,blocChamp(w)); if(bT<0) return false;
+    w.poserBloc(bT,iMem(w,t0));
+    for(const etape of cheminVers(w,L.forme)){
+      const b=idBloc(w,etape); if(b<0) return false;
+      const bloc=G.blocs.find(x=>x.id===etape);
+      w.poserBloc(b, bloc.type==="terme" ? iMem(w,t1) : undefined);
+    }
+    return true;
+  }
+  /* « En rester là » : le bloc qui clôt sans rien qualifier. Sans effet si
+     l'automate a déjà refermé la phrase tout seul. */
+  function cloreSurPlace(w){
+    if(!w.S.compo.length) return;
+    const G=J(w).grammaire, e=w.etatCompo(), finaux=new Set(G.finaux||[]);
+    const b=G.blocs.find(x=>x.de===e && finaux.has(x.vers) && !x.forme && !x.imbrique);
+    if(b) w.poserBloc(idBloc(w,b.id));
   }
   const blocChamp = w => (J(w).grammaire.blocs.find(b=>b.type==="terme"&&b.source!=="note"&&b.de===J(w).grammaire.depart)||{}).id;
   const blocNote  = w => (J(w).grammaire.blocs.find(b=>b.type==="terme"&&b.source==="note"&&b.de===J(w).grammaire.depart)||{}).id;
@@ -164,7 +192,7 @@ function creerHarnais(dossier){
       if(!L) break;
       const i=composerLien(w,L);
       if(i<0) break;
-      w.verserPlaidoirie(i);
+      w.envoyer(i);
     }
   }
 
@@ -206,6 +234,7 @@ function creerHarnais(dossier){
 
   return { check, bilan, boot, bootAtelier, embarque, canal, memoire, atelier,
            lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, arite,
+           plan, cloreSurPlace, poserComparaison,
            surligner, iMem, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
