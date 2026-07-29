@@ -15,7 +15,7 @@ test. **Zéro build, zéro serveur, zéro dépendance à l'exécution** : `app/i
 **Toujours d'abord `docs/PASSATION.md`** — l'état du jour, les décisions prises avec l'auteur, et la
 prochaine étape. C'est court et c'est daté.
 
-Ensuite, dans `docs/ARCHITECTURE.md` (680 lignes : on n'en lit que ce qu'il faut) —
+Ensuite, dans `docs/ARCHITECTURE.md` (480 lignes : on n'en lit que ce qu'il faut) —
 
 | Ce qu'on vient faire | Ce qu'on lit |
 |---|---|
@@ -43,7 +43,7 @@ Rien d'autre à préparer : pas de build, pas de service, pas de base. En sessio
 des captures dans `captures/` (ignoré par git), en versant le fil de l'avocat sur la sortie standard.
 
 Deux choses qu'il est le seul à faire : il éprouve le **vrai** chargement des trois `<script src>`,
-là où le harnais de test les inline (§13) ; et il permet la **relecture à l'œil**, que le §6 de la
+là où le harnais de test les inline (§13) ; et il permet la **relecture à l'œil**, que le §2 de la
 passation rappelle irremplaçable. Il ne réimplémente rien — il injecte `tests/harnais.js` dans la page
 et appelle son `instruire`, donc il joue exactement le chemin que jouent les suites.
 
@@ -61,7 +61,7 @@ Concrètement : le contenu vit **en un seul exemplaire** dans `app/content.js`, 
 HTML ne font que *montrer*. Le pas-à-pas de l'atelier **appelle** les règles du jeu, il ne les rejoue
 pas — c'est ce qui a permis de supprimer une checklist de resynchronisation de dix-sept lignes (§12).
 
-Les **pièges déjà payés** sont listés au §6 de `docs/PASSATION.md` — les lire avant de toucher au
+Les **pièges déjà payés** sont listés au §2 de `docs/PASSATION.md` — les lire avant de toucher au
 moteur ou à la grammaire. Les trois qui reviennent : les `const` de haut niveau ne sont pas des
 propriétés de `window` ; l'index `iBloc` de `poserBloc` est **positionnel dans la liste filtrée**, donc
 dépendant de la session ; le flag `cite` est porté par la **liaison**, jamais par le terme.
@@ -69,7 +69,7 @@ dépendant de la session ; le flag `cite` est porté par la **liaison**, jamais 
 ## La méthode, demandée par l'auteur
 
 Toute évolution part de `docs/ARCHITECTURE.md` : **on réécrit le document, on le fait relire, puis on
-applique au code.** Le §8 de la passation le redit à chaque fois. Et à la fin, on relit les phrases
+applique au code.** La passation le redit à chaque fois, en clôture. Et à la fin, on relit les phrases
 composées **à l'œil** : c'est comme ça qu'on attrape ce qu'aucune suite ne voit.
 
 ## Une convention de dates, pour éviter la méprise

@@ -15,9 +15,9 @@
 | Fichier | ~lignes | Ce qu'il porte | Ce qu'il ne porte jamais |
 |---|---|---|---|
 | `app/content.js` | 664 | **le contenu** — une affaire, en un seul exemplaire | aucune règle |
-| `app/regles.js` | 344 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
+| `app/regles.js` | 361 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
 | `app/moteur.js` | 182 | **la grammaire** — composer, valider, rendre | aucune donnée |
-| `app/index.html` | 682 | **le jeu** — l'affichage et les gestes d'écran | ne décide rien |
+| `app/index.html` | 792 | **le jeu** — l'affichage et les gestes d'écran | ne décide rien |
 | `app/atelier_v3.html` | 2170 | **l'atelier** — écrire et diagnostiquer une affaire | ne recopie rien (§12) |
 
 `regles.js` et `moteur.js` sont en **mode double** — `require` (tests, banc) ou `<script src>` (jeu,
@@ -85,7 +85,7 @@ L'**ancienne forme** `attend`/`apres` posée sur la remise se lit comme une list
 ## Les six suites
 
 Point d'entrée unique : `tests/harnais.js`, `creerHarnais(dossier)`. `npm test` les enchaîne dans
-l'ordre de `package.json` — **309 contrôles, tout vert ou ce n'est pas fini** (§16).
+l'ordre de `package.json` — **325 contrôles, tout vert ou ce n'est pas fini** (§16).
 
 Le harnais **inline** les trois `<script src>` au boot, parce que jsdom n'en charge aucun (§13) —
 c'est pourquoi `npm run vue` existe : il est le seul à éprouver le vrai chargement.
@@ -109,7 +109,7 @@ il narre les gestes privés en lignes « · ». Le badge ⚙ signale une règle 
 
 ## Les pièges déjà payés
 
-**Ils sont au §6 de `docs/PASSATION.md`, et c'est là qu'il faut les lire** — ils changent à chaque
+**Ils sont au §2 de `docs/PASSATION.md`, et c'est là qu'il faut les lire** — ils changent à chaque
 session. Les trois qui reviennent, pour mémoire seulement : les `const` de haut niveau ne sont pas
 des propriétés de `window` ; l'index `iBloc` de `poserBloc` est **positionnel dans la liste filtrée**,
 donc dépendant de la session ; le flag `cite` est porté par la **liaison**, jamais par le terme.
@@ -120,4 +120,4 @@ donc dépendant de la session ; le flag `cite` est porté par la **liaison**, ja
   de ce qui s'écrit sont des attributs `libelle` déclarés dans le contenu, et le §11 les nomme.
 - **Explorer pour trouver *où décide* quelque chose.** La réponse est toujours `regles.js` : les deux
   pages HTML ne décident rien (§9). Si une décision semble vivre dans une page, c'est un bug.
-- **Lire `ARCHITECTURE.md` en entier.** 680 lignes, et le tableau de `CLAUDE.md` dit lesquelles.
+- **Lire `ARCHITECTURE.md` en entier.** 480 lignes, et le tableau de `CLAUDE.md` dit lesquelles.
