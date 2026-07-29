@@ -1,9 +1,28 @@
 # IAvocat — Lexique
 
-*Un mot, un sens. Ce fichier ne décide rien (le sens vit dans `ARCHITECTURE.md`, le code dans `CARTE.md`) —
-il **arbitre le vocabulaire** : quel mot dire, à qui, pour quelle chose. En cas d'écart entre ce fichier
-et l'écran ou le code, c'est ce fichier qui a tort et qu'il faut corriger : il documente un choix, il n'en
-fait pas foi.*
+*Un mot, un sens. Ce fichier ne décide ni le sens (c'est `ARCHITECTURE.md`) ni l'emplacement (c'est
+`CARTE.md`) — il **arbitre le vocabulaire** : quel mot dire, à qui, pour quelle chose.*
+
+> **Deux régimes, et un écart ne se tranche pas de la même façon selon celui dont il relève.**
+>
+> **1. Quel mot dire — le lexique fait foi.** Si le code appelle `atelier` la surface du milieu du jeu,
+> ce n'est pas le lexique qui est en retard : c'est le code qui est à corriger. C'est ce qui est arrivé
+> le 2 août, et c'est le régime qui donne à ce fichier son utilité — sans lui, il ne serait qu'un
+> constat de plus à tenir à jour.
+>
+> **2. Ce qui existe et porte ce mot — le code fait foi.** Si une ligne d'ici cite `S.memoire` quand le
+> code dit `S.retenus`, c'est cette ligne qui est périmée. Les identifiants, les ids, les noms de
+> fonction ne se décrètent pas d'ici : ils s'y **relèvent**.
+>
+> **Comment savoir de quel régime relève un écart :** demander si le désaccord porte sur **le choix
+> d'un mot** (régime 1) ou sur **l'inventaire de ce qui le porte** (régime 2). Chaque ligne de ce
+> fichier mêle les deux — le terme arbitré, et les identifiants cités en exemple.
+
+**Ce n'est pas une cinquième source de vérité.** Le §12 d'`ARCHITECTURE.md` en pose quatre, et elles
+portent sur le **projet** : le contenu, les règles, la grammaire, le sens. Celle-ci porte sur les
+**mots avec lesquels on en parle**. Aucun arbitrage de vocabulaire ne peut trancher une question de
+sens : quand nommer une chose autrement reviendrait à la changer, ce n'est plus du vocabulaire, et
+c'est la Partie I qui décide.
 
 ## Comment le lire
 
