@@ -341,7 +341,9 @@ console.log("\n=== La modale de pièce ===");
   const eid = Object.keys(w.JEU.pieces[pid].empans)[0];
   w.surligner(pid, eid);
   check("l'empan surligné se marque « pris » dans la modale", m().includes("empan pris"));
-  check("et apparaît en mémoire", memoire(w).includes("Ce que tu retiens"));
+  const empan = w.JEU.pieces[pid].empans[eid];
+  check("et apparaît en mémoire",
+    memoire(w).includes("zoneMemoire") && memoire(w).includes(empan.nom || empan.texte));
   w.closeModal();
   check("fermer la modale n'efface pas la mémoire", w.S.memoire.length === 1);
   const pidR = H.pidRegle(w);
