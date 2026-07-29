@@ -165,12 +165,19 @@
   [data-tuto]{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;
     animation:pouls 1.8s ease-in-out infinite}
   @keyframes pouls{0%,100%{outline-color:var(--accent)}50%{outline-color:transparent}}
+  /* Ce n'est pas le passage demandé : même halo, même place, autre couleur.
+     Rien n'est barré ni grisé — le geste reste permis, c'est le tutoriel qui
+     ne suit pas (§4.8). */
+  [data-tuto="alerte"]{outline-color:var(--warn);animation-name:poulsAlerte}
+  @keyframes poulsAlerte{0%,100%{outline-color:var(--warn)}50%{outline-color:transparent}}
   @media (prefers-reduced-motion:reduce){ [data-tuto]{animation:none} }
   #tuto{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:60;
     display:flex;align-items:baseline;gap:14px;max-width:min(560px,calc(100vw - 32px));
     background:var(--panel2);border:1px solid var(--accent);border-radius:10px;
     padding:10px 16px;font-size:13px;box-shadow:0 6px 22px rgba(0,0,0,.45)}
   #tuto[hidden]{display:none}
+  #tuto[data-alerte]{border-color:var(--warn)}
+  #tuto[data-alerte] .dit{color:var(--warn)}
   #tuto .pas{color:var(--muted);font-family:var(--mono);font-size:11px}
   #tuto .dit{flex:1}
   #tuto .passer{background:none;border:none;color:var(--muted);font-size:11.5px;
@@ -359,22 +366,42 @@ try{ tutoFait = !!localStorage.getItem(CLE_TUTO); }catch(e){}
 function effacerTuto(){ try{ localStorage.removeItem(CLE_TUTO); }catch(e){} }
 function tutoClore(){ tutoFait=true; try{ localStorage.setItem(CLE_TUTO,"1"); }catch(e){} }
 function tutoPasser(){ tutoClore(); majTutoriel(); }
+/* Ce que la question attend, dérivé du contenu exactement comme le fait le
+   harnais : le tag de l'attente courante, le lien qui le porte, son terme s'il
+   est ATOMIQUE. Rien n'est nommé ici, et une comparaison ne rend rien — le
+   tutoriel ne juge que la réponse par citation, la seule qu'il enseigne. */
+function tutoAttendu(){
+  const a=R.attenteCourante(S,R.remiseCourante(S));
+  const L=a&&a.attend&&(JEU.liens||[]).find(x=>x.tag===a.attend);
+  const t=L&&(L.termes||[])[0];
+  return typeof t==="string" ? t : null;
+}
 /* Quatre temps, et pas un de plus — ce sont ceux qui restent depuis qu'une
    suite unique se pose toute seule (§4.5). Le second en a deux moitiés : la
-   pièce ouverte couvre l'écran, il faut la refermer pour atteindre sa mémoire. */
+   pièce ouverte couvre l'écran, il faut la refermer pour atteindre sa mémoire.
+   Le tutoriel n'avance qu'avec le passage demandé. Il n'EMPÊCHE rien pour
+   autant : la mémoire reste gratuite, illimitée et réversible, la phrase se
+   compose et s'envoie quand même. Ce qu'il retient, c'est son approbation —
+   c'est tout ce qu'un panneau indicateur peut retenir (§4.8). */
 function tutoEtape(){
-  if(S.remisesEnvoyees!==1 || S.satisfaits.length || S.plaidoirie.length) return null;
-  if(!S.memoire.length)
+  if(S.remisesEnvoyees!==1 || S.satisfaits.length) return null;
+  const veut=tutoAttendu();
+  if(veut ? !S.memoire.includes(veut) : !S.memoire.length){
+    // Autre chose est retenu : ce n'est pas le passage demandé, et on le dit.
+    const rate = !!veut && S.memoire.length>0;
     return S.modalPiece
-      ? {n:2, ou:"#modalRoot .piecetexte",
-            dit:"Les passages soulignés se retiennent d'un clic. Prends celui qui répond."}
-      : {n:1, ou:"#canal .attach",
-            dit:"Ouvre la pièce : ce qu'il te demande est écrit dedans."};
+      ? {n:2, ou:"#modalRoot .piecetexte", alerte:rate,
+            dit: rate ? "Ce n'est pas ce qu'il demande. Relis sa question, et prends le passage qui y répond."
+                      : "Les passages soulignés se retiennent d'un clic. Prends celui qui répond."}
+      : {n:1, ou:"#canal .attach", alerte:rate,
+            dit: rate ? "Ce n'est pas ce qu'il demande. Rouvre la pièce et relis sa question."
+                      : "Ouvre la pièce : ce qu'il te demande est écrit dedans."};
+  }
   if(S.prete==null)
     return S.modalPiece
       ? {n:2, ou:"#modalRoot .close",
             dit:"Retenu — et rien n'en est sorti. Referme la pièce."}
-      : {n:3, ou:"#atelier .mchip",
+      : {n:3, ou:"#atelier > .zone:last-child",
             dit:"Ce que tu retiens est ton clavier. Clique-le pour l'écrire."};
   return  {n:4, ou:"#atelier button.envoi",
             dit:"Ta phrase est écrite, et personne ne l'a lue. À toi de l'envoyer."};
@@ -394,7 +421,8 @@ function majTutoriel(){
     banniere.hidden=true; return;
   }
   tutoCible=document.querySelector(e.ou);
-  if(tutoCible) tutoCible.setAttribute("data-tuto","");
+  if(tutoCible) tutoCible.setAttribute("data-tuto", e.alerte?"alerte":"");
+  banniere.toggleAttribute("data-alerte", !!e.alerte);
   $("tutoPas").textContent=e.n+"/4";
   $("tutoDit").textContent=e.dit;
   banniere.hidden=false;

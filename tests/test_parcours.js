@@ -290,12 +290,28 @@ console.log("\n=== Le premier geste, montré ===");
   check("et tous les empans y restent marqués pareil — aucune lampe torche",
     ![...cible.querySelectorAll(".empan")].some(e => e.hasAttribute("data-tuto")));
 
-  H.surligner(w, H.empansDe(w, pid)[0]);
-  w.closeModal();
-  const puce = halo();
-  check("le passage retenu, il montre la mémoire", !!puce && puce.classList.contains("mchip"));
+  /* LE MAUVAIS PASSAGE. Le tutoriel n'avance pas et le dit — mais il
+     n'empêche rien : la mémoire retient quand même, gratuite et réversible. */
+  const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
+  const autre = H.empansDe(w, pid).find(k => k !== veut);
+  H.surligner(w, autre);
+  check("un autre passage se retient tout de même", w.S.memoire.includes(autre));
+  check("mais le tutoriel ne prend pas ça pour une réponse",
+    w.document.getElementById("tuto").hasAttribute("data-alerte"));
+  check("et il le montre là où le geste s'est trompé",
+    halo() === w.document.querySelector(".piecetexte"));
+  check("sans jamais désigner celui qu'il fallait",
+    ![...w.document.querySelectorAll(".empan")].some(e => e.hasAttribute("data-tuto")));
 
-  w.poserBloc(w.blocsOfferts().findIndex(b => b.type === "terme" && b.source !== "note"), 0);
+  H.surligner(w, veut);
+  check("le bon passage retenu, l'alerte tombe",
+    !w.document.getElementById("tuto").hasAttribute("data-alerte"));
+  w.closeModal();
+  const zone = halo();
+  check("et il montre la mémoire", !!zone && zone.contains(w.document.querySelector(".mchip")));
+
+  w.poserBloc(w.blocsOfferts().findIndex(b => b.type === "terme" && b.source !== "note"),
+              w.S.memoire.indexOf(veut));
   const envoi = halo();
   check("la phrase close, il montre le seul geste qui parle",
     !!envoi && envoi.classList.contains("envoi"));

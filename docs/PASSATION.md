@@ -114,7 +114,9 @@ Deux retours de l'auteur, qui se rejoignent : *« il faut enlever la double conf
 
 **2. Le tutoriel du premier geste** (§4.8, section neuve). Un bandeau hors fiction, en bas de l'écran, et un halo qui se déplace sur quatre temps : la pièce jointe → **le texte** de la pièce → la puce mémoire → *« → Maître Auber »*. Il s'efface dès la première réponse envoyée et ne revient plus (clé `iavocat_tuto`, distincte de la sauvegarde de partie).
 
-- **Le halo entoure la zone, jamais le bon empan.** C'est l'arbitrage central : pointer *« 22h04 »* serait la lampe torche que le §4.3 interdit. Tous les empans restent marqués à l'identique, et **le joueur a le droit de se tromper** — éprouvé : en cliquant l'heure de l'appel au lieu de l'heure d'arrivée, la phrase se forme quand même et l'avocat répond hors sujet.
+- **Le halo entoure la zone, jamais le bon empan.** C'est l'arbitrage central : pointer *« 22h04 »* serait la lampe torche que le §4.3 interdit. Tous les empans restent marqués à l'identique.
+- **Il corrige un passage qui ne répond pas** (ajout de fin de session, sur retour de l'auteur). Halo ambre, bandeau ambre, *« Ce n'est pas ce qu'il demande. Relis sa question, et prends le passage qui y répond. »*, et le tutoriel **n'avance pas**. La distinction qui porte tout : *rien n'est empêché* — le passage se retient quand même, la phrase se compose, se clôt, s'envoie, l'avocat répond hors sujet ; ce que le tutoriel retient, c'est **son approbation**. Et il **ne dit jamais lequel c'était** : le halo ne bouge pas, aucun empan ne change de marquage, la phrase renvoie à la question et non à la réponse.
+- **Le prix, inscrit noir sur blanc :** pour dire *« ce n'est pas ça »*, l'écran doit **savoir ce que c'était**. Il le dérive comme le harnais (tag de l'attente → lien → terme s'il est atomique), sans nommer aucune pièce. C'est le seul endroit du dépôt où l'interface connaît la réponse — pendant la première question, et pas une de plus. Une comparaison ne rend rien : le tutoriel ne juge que la citation, la seule chose qu'il enseigne.
 - **Il ne décide rien** : son temps se dérive de `S` (`modalPiece`, `memoire`, `prete`), aucun champ d'état neuf, aucun changement au schéma 3. Une suite le prouve en comparant l'état de départ avec et sans lui.
 - Il vit **entièrement dans `index.html`**, du même côté que la sauvegarde de partie, qui est déjà *« de l'écran, pas de la règle »*. Ses phrases ne sont pas du contenu : dans la fiction, personne n'explique rien (§8.6).
 - Le halo se pose par **attribut** (`data-tuto`), jamais par une classe — la sérialisation le range en fin de balise et laisse les `class="…"` intactes, que des suites lisent au caractère près.
@@ -125,15 +127,17 @@ Deux retours de l'auteur, qui se rejoignent : *« il faut enlever la double conf
 |---|---|
 | `docs/ARCHITECTURE.md` | **§4.5** — sous-titre neuf *« Une suite unique n'est pas un choix »* ; **§4.8 — section neuve**, *« Le premier geste, montré »* ; §7 (un invariant neuf, deux invariants amendés, arbitrage 7quater, le point ouvert « une question guide-t-elle trop ? » **chargé**) ; §9 (`index.html` porte aussi le tutoriel) ; §16 |
 | `app/regles.js` | `cloreSansChoix`, appelée depuis `poserBloc` après un terme. **Rien d'autre** — et aucun nouveau champ d'état |
-| `app/index.html` | Le bloc tutoriel (CSS `[data-tuto]` + `#tuto`, `tutoEtape`, `majTutoriel`, la clé `iavocat_tuto`) ; `majTutoriel()` en fin de `rendreTout` ; `closeModal` rend désormais, parce que refermer est un geste comme un autre |
+| `app/index.html` | Le bloc tutoriel (CSS `[data-tuto]` / `[data-tuto="alerte"]` + `#tuto`, `tutoAttendu`, `tutoEtape`, `majTutoriel`, la clé `iavocat_tuto`) ; `majTutoriel()` en fin de `rendreTout` ; `closeModal` rend désormais, parce que refermer est un geste comme un autre |
 | `tests/harnais.js` | `composerLien` tolère la clôture automatique **sans cesser** de jouer le cas où le bouton existe ; `poserComparaison` devient une **sonde qui se défait** — sans quoi elle laissait une citation au journal en session 1 |
-| les six suites | 38 + 45 + 20 + **105** + 33 + 79 = **320 contrôles, tous verts** (309 avant) |
+| les six suites | 38 + 45 + 20 + **110** + 33 + 79 = **325 contrôles, tous verts** (309 avant) |
 
 ### Points de vigilance qui s'ajoutent au §6
 
 - **La règle de clôture automatique se déclenche sur un COMPTE de blocs offerts.** Toute affaire dont un état n'offre qu'une liaison finale non-`imbrique` la verra s'appliquer. C'est voulu, c'est universel — mais ça veut dire qu'ajouter ou retirer un bloc peut changer le nombre de clics ailleurs. `test_autre_affaire.js` n'a pas bougé (ses états offrent deux liaisons), et c'est lui qui le surveille.
 - **Une sonde du harnais ne doit rien laisser au journal.** `poserComparaison` posait son premier terme avant de découvrir qu'elle ne pouvait pas continuer ; depuis que ce premier terme clôt une phrase, l'échec devait se défaire. Piège à connaître pour toute fonction de test qui « essaie » un chemin.
 - **Le tutoriel a deux moitiés au temps 2**, et c'est délibéré : la modale couvre l'écran, il faut donc la refermer pour atteindre sa mémoire. Le bandeau affiche `2/4` dans les deux cas.
+- **Le tutoriel se termine sur `S.satisfaits`, pas sur `S.plaidoirie`.** C'est ce qui lui permet de rester là quand une réponse hors sujet a été envoyée — la question n'est pas servie, donc la leçon n'est pas finie.
+- **Au temps 3, le halo entoure la ZONE mémoire, pas une puce.** Si le joueur a retenu un mauvais passage avant le bon, pointer une puce désignerait laquelle des deux est la bonne — la lampe torche déplacée d'un cran.
 
 ### Ce que ça fait au point ouvert le plus chaud
 

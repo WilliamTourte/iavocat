@@ -37,16 +37,25 @@ Se lit de haut en bas : c'est la boucle d'une session (§4.6). `index.html` n'y 
 | **surligner** (privé, gratuit) | `surligner` | — | `renderMemoire` | 4.6 |
 | ce que le composeur offre | `blocsOfferts`, `etatCompo`, `indexTermeChamp` | `offerts` | `renderCompo` | 4.5 |
 | **poser un bloc** | `poserBloc`, `retirerBloc`, `viderCompo` | `reduire`, `deduire`, `ordonner` | `texteCompoPartiel` | 4.5 |
+| la clôture sans choix | `cloreSansChoix` (appelée par `poserBloc`) | — | *(rien : le bouton disparaît)* | 4.5 |
 | le pressentiment ⚑ | `majPressentiment`, `pressentir`, `sousLienVice` | `memeRed` | *(rien : privé)* | 4.7 |
 | **clore la phrase** | `clore` → `clorePhrase` | `valider`, `rendre`, `lienDe` | `renderCompo` (zone « ta phrase ») | 4.5 |
 | **envoyer** — le seul geste transmis | `envoyer` → `reponseAvocat` → `avancerSurAttente` | — | `renderPlan`, `renderCanal` | 4.6 |
 | ce qui entre au plan | `estMoyen` | — | `renderPlan` | 4.6 |
 | clôturer, répétition | `instructionComplete`, `cloturer`, `verserContre`, `avancerRepetition` | — | `majCloture` | 5 |
 | la fin | `finir` | — | `finir` (modale) | 5 |
+| **le tutoriel du premier geste** | *(aucune — il ne décide rien)* | — | `tutoAttendu`, `tutoEtape`, `majTutoriel` | 4.8 |
 
 **Les deux voies de clôture** (§4.5) ne sont pas deux mécaniques : c'est le **même** `clore`. Ce qui
 les sépare vit dans le contenu — une liaison portant `cite:true`, lue par `rendre` de `moteur.js`
 (`citeDe`), contre une forme d'arité 2 déduite par `deduire` et écrite par son `patron`.
+
+**Le tutoriel n'a pas de colonne « règle », et c'est le point.** Il vit entièrement dans
+`index.html`, comme la sauvegarde de partie : son temps se dérive de `S`, il n'ajoute aucun champ
+d'état, il ne refuse aucun geste. Seule exception à connaître : `tutoAttendu` **dérive du contenu ce
+que la question attend** (tag de l'attente → lien → terme atomique), pour pouvoir dire *« ce n'est
+pas ça »* sans jamais dire lequel c'était. C'est le seul endroit où l'écran connaît la réponse, et
+ça s'éteint avec le tutoriel (§4.8).
 
 ## L'état `S`
 
