@@ -361,7 +361,7 @@ console.log("\n=== Les répliques : seulement au versement ===");
   check("une phrase à réplique propre se compose", i >= 0);
   check("composée, elle ne dit rien", !canal(w).includes(L.rep.slice(0, 25)));
   // « sur place » = sous le canal, là où la phrase vient d'être écrite (§4.6)
-  check("close, elle attend SUR PLACE", w.S.prete === i && composeur(w).includes("Maître Auber"));
+  check("close, elle attend SUR PLACE", w.S.prete === i && composeur(w).includes("Envoyer"));
   w.envoyer(i);
   check("envoyée, la réplique du lien sort", canal(w).includes(L.rep.slice(0, 25)));
   check("la phrase est marquée envoyée", w.S.brouillon[i].versee);

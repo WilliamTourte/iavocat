@@ -2,7 +2,7 @@
 
 *Le sens, le jeu, l'atelier, le contenu : qui fait quoi, où vit la vérité, et quoi resynchroniser quand.*
 
-> **Ce fichier est l'unique source de vérité du projet.** Tout le reste — l'atelier, le jeu, les tests, `PASSATION.md` — en dépend et ne fait que le refléter.
+> **Ce fichier est l'unique source de vérité du projet.** Tout le reste — l'atelier, le jeu, les tests, `PASSATION.md` — en dépend et ne fait que le refléter. Pour le choix des mots eux-mêmes (empan/passage, lien/liaison…), voir `docs/LEXIQUE.md`, qui arbitre le vocabulaire sans jamais trancher le sens.
 >
 > **État au 31 juillet 2026.** Décrit le code tel qu'il tourne. Deux parties : **I. Le sens** (ce que le jeu veut dire) puis **II. Le système** (comment il est fait). Ce qui est décidé mais **pas encore codé** est marqué ⏳. L'historique des révisions qui ont mené à cet état vit en fin de document (§18) ; le corps du texte décrit l'état actuel, pas la façon dont on y est arrivé.
 

@@ -846,6 +846,9 @@ function portePhrase(pid){
   const d=R.porteDe(pid);
   return d.length ? `<span class="porte">porte sur : ${d.map(esc).join(", ")}</span>` : "";
 }
+/* ORPHELINE depuis le retrait du <header> : plus aucun bouton à l'écran ne
+   l'appelle. Laissée en l'état exprès — à rebrancher ou à retirer plus tard,
+   pas maintenant (docs/PASSATION.md §3). */
 function openManuels(){
   const regles=R.reglesLivrees(S)
     .map(r=>`<li><b>${esc(r.titre)}</b> ${portePhrase(r.pid)}<br>${esc(r.texte)}</li>`).join("");

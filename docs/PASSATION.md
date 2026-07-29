@@ -93,6 +93,7 @@ Neuf décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
 | La progression : portes, place de la Fin 3 | Trois sessions actées ; la porte de la Fin 3 reste à placer |
 | `comment` en sixième dimension | Écarté, réintégrable sans coût |
 | Le canal de révélation de la culpabilité | Non tranché |
+| `openManuels()` orpheline | Le `<header>` qui l'appelait a été retiré ; la fonction reste, sans bouton. Laissée en l'état : à rebrancher ou retirer plus tard, pas maintenant |
 
 ## 4. Prochaine étape
 
