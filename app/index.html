@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IAvocat — tranche verticale</title>
+<title>IAvocat</title>
 <style>
   :root{
     --bg:#0e1116; --panel:#161b22; --panel2:#1c232d; --line:#2b3440;
     --txt:#d7dde5; --muted:#8b97a6; --accent:#6fb3d6; --lock:#7bbf8a; --warn:#d6a96f;
-    --prive:#3a3242; --transmis:#23506e;
+  
     --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     /* Les couleurs de dimension. Fixes, attribuées par RANG dans
@@ -32,13 +32,23 @@
   /* Le compte du plan monte dans l'en-tête : une seule zone, un seul titre (§4.9) */
   .col > h2 .zcount{float:none;margin-left:auto}
   .col > h2 .tag{font-size:10.5px;letter-spacing:.4px;border-radius:4px;padding:1px 6px;font-weight:500}
-  .tag.prive{background:var(--prive);color:#cbb9dc}
-  .tag.transmis{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis)}
+
   .body{padding:12px 14px;overflow-y:auto;max-height:72vh}
   .col.demi .body{max-height:34vh}
+  /* `.col` pose `display:flex`, qui BAT la règle `[hidden]{display:none}` du
+     navigateur : sans cette ligne, cacher la colonne du plan ne ferait rien. */
+  .col[hidden]{display:none}
+  /* Le composeur, ancré sous le fil : il ne défile pas avec lui (§4.6). Le
+     filet le sépare de la conversation — écrire n'est pas parler. */
+  #composeur{border-top:1px solid var(--line);padding:12px 14px;background:var(--panel)}
+  #composeur .zone{margin:0}
+  /* Sans plan, l'écran s'ouvre à deux colonnes (§4.9). `.cloture` est câblée
+     sur trois : elle suit, sinon elle déborde. */
+  .wrap.sansPlan{grid-template-columns:1fr 1fr}
+  .wrap.sansPlan .cloture{grid-column:1/3}
   @media (max-width:1100px){
-    .wrap{grid-template-columns:1fr}
-    .cloture{grid-column:1 !important}
+    .wrap,.wrap.sansPlan{grid-template-columns:1fr}
+    .cloture,.wrap.sansPlan .cloture{grid-column:1 !important}
     .body,.col.demi .body{max-height:44vh}
   }
   /* --- canal --- */
@@ -54,7 +64,20 @@
   .attach.seen{opacity:.6}
   /* --- zones --- */
   .zone{margin-bottom:12px}
-  .zone .ztitle{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+  /* Le dossier et la mémoire partagent une colonne (§4.6) mais pas un sujet :
+     chacun a son propre cadre plein, pour rester visuellement deux blocs et
+     non un seul enchaînement (le composeur et les autres `.zone` gardent le
+     rendu simple, sans cadre — seuls ces deux-là le portent). Sans titre ni
+     compteur pour l'instant : le cadre seul suffit à les distinguer. */
+  #zoneDossier,#zoneMemoire{border:1px solid var(--line);border-radius:8px;
+    background:var(--panel2);padding:10px 12px;margin-bottom:12px}
+  /* Le cadre reprend celui des SURFACES (`.col > h2`) en plus discret : la
+     zone se distingue du texte courant sans rivaliser avec l'en-tête de
+     colonne qu'elle sert (§4.9). */
+  .zone .ztitle{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;
+    margin-bottom:8px;padding:5px 10px;border:1px solid var(--line);border-radius:6px;
+    background:var(--panel2);display:flex;align-items:baseline;gap:8px}
+  .zone .ztitle .zcount{float:none;margin-left:auto}
   .aide{color:var(--muted);font-size:12px;margin-top:8px;font-style:italic}
   .aide.question{margin-top:0;margin-bottom:10px;color:var(--fg);border-left:2px solid var(--muted);padding-left:8px}
   /* --- les empans dans le texte d'une pièce --- */
@@ -200,27 +223,28 @@
 </style>
 </head>
 <body>
-<header>
-  <h1>IAvocat</h1>
-  <span class="sub">tranche verticale — l'affaire Kessler</span>
-  <span class="sub" id="srcContenu" style="opacity:.6"></span>
-  <span class="spacer"></span>
-  <button onclick="openManuels()">Manuels</button>
-</header>
 
 <div class="wrap">
   <!-- Un en-tête nomme la SURFACE (§4.6), jamais les zones qu'elle contient :
        elles portent déjà leur titre, plus bas (§4.9). -->
   <section class="col">
-    <h2>Le canal</h2>
+    <h2>Discussion</h2>
     <div class="body" id="canal"></div>
+    <!-- On répond SOUS la question (§4.6). `#composeur` est le FRÈRE de
+         `#canal`, jamais son enfant : le fil défile et se recale en bas à
+         chaque message, la phrase qu'on écrit ne doit pas partir avec lui.
+         Aucune étiquette « privé » ici — le statut se lit dans le fait que
+         rien n'en sort, pas dans un en-tête (§4.6). -->
+    <div id="composeur"></div>
   </section>
   <section class="col">
-    <h2>L'atelier <span class="tag prive">privé</span></h2>
+    <h2>Mémoire</h2>
     <div class="body" id="atelier"></div>
   </section>
-  <section class="col">
-    <h2>Le plan <span class="tag transmis">transmis</span><span class="zcount" id="planCount"></span></h2>
+  <!-- Caché tant que rien ne s'y inscrit : ce qui n'existe pas encore ne
+       s'affiche pas (§4.9). C'est `renderPlan` qui pose le `hidden`. -->
+  <section class="col" id="colPlan" hidden>
+    <h2>Plaidoirie<span class="zcount" id="planCount"></span></h2>
     <div class="body" id="plan"></div>
   </section>
   <div class="cloture">
@@ -416,11 +440,11 @@ function tutoEtape(){
   if(S.prete==null)
     return S.modalPiece
       ? {n:2, ou:"#modalRoot .close",
-            dit:"Retenu — et rien n'en est sorti. Referme la pièce."}
+            dit:"Passage retenu. Referme la pièce."}
       : {n:3, ou:"#zoneMemoire",
-            dit:"Ce que tu retiens est ton clavier. Clique-le pour l'écrire."};
-  return  {n:4, ou:"#atelier button.envoi",
-            dit:"Ta phrase est écrite, et personne ne l'a lue. À toi de l'envoyer."};
+            dit:"Pour répondre, sélectionne le passage pertinent"};
+  return  {n:4, ou:"#composeur button.envoi",
+            dit:"Clique sur → Envoyer"};
 }
 /* En fin de `rendreTout`, comme `majCloture` : les trois colonnes et la modale
    sont refaites à chaque geste, donc le halo se repose à chaque geste. On
@@ -457,7 +481,7 @@ function modal(html){
      </div>`;
 }
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function rendreTout(){ renderCanal(); renderAtelier(); renderPlan(); majCloture(); majTutoriel(); sauverPartie(); }
+function rendreTout(){ renderCanal(); renderComposeur(); renderAtelier(); renderPlan(); majCloture(); majTutoriel(); sauverPartie(); }
 
 /* ---- Le canal : un fil de messages ---- */
 function pousser(qui,texte,pieces,ia){ return R.pousser(S,qui,texte,pieces,ia); }
@@ -528,7 +552,6 @@ function piecesLivrees(){ return R.piecesLivrees(S); }
 function renderDossier(){
   if(!S.remisesEnvoyees) return "";
   const livres=piecesLivrees();
-  const vus=livres.filter(pid=>S.examinees.includes(pid)).length;
   const chip=pid=>{
     const p=JEU.pieces[pid], vu=S.examinees.includes(pid);
     return `<span class="dchip ${vu?'vu':''} ${R.estRegle(p)?'regle':''}"
@@ -540,7 +563,7 @@ function renderDossier(){
     <div class="dchips">${pids.length?pids.map(chip).join(""):`<span class="dvide">—</span>`}</div></div>`;
   const pieces=livres.filter(pid=>!R.estRegle(JEU.pieces[pid]));
   const regles=livres.filter(pid=> R.estRegle(JEU.pieces[pid]));
-  return `<div class="zone"><div class="ztitle">Le dossier <span class="zcount">${vus}/${livres.length}</span></div>
+  return `<div class="zone" id="zoneDossier">
     <div class="dossier">${colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div></div>`;
 }
 
@@ -558,9 +581,7 @@ function modalPieceHTML(pid){
   const dims=[...new Set(Object.values(p.empans||{}).map(e=>e.dim))];
   return `<h3>${esc(p.titre)}</h3><small class="note">${esc(p.type)} — ${esc(p.qui||"")}</small>
     <p class="piecetexte">${rendreTexte(pid)}</p>
-    ${dims.length?`<div class="legende">${dims.map(d=>`<span style="--dc:${couleurDim(d)}">${esc(d)}</span>`).join("")}</div>
-    <small class="note">Clique un passage pour le retenir — rien n'en sort.</small>`
-    :`<small class="note">Rien à retenir ici — c'est une règle, elle se lit.</small>`}`;
+    `;
 }
 /* La mémoire est AUSSI le clavier du composeur : un empan retenu n'existe
    qu'une fois à l'écran (§4.6). Deux lignes, pas trois (§4.9) : le NOM (ce qui
@@ -572,12 +593,12 @@ function modalPieceHTML(pid){
    par `:last-child`, ce qui dépendait de l'ordre des zones (§4.8). */
 function renderMemoire(){
   const iT=indexTermeChamp();
-  let h=`<div class="zone" id="zoneMemoire"><div class="ztitle">Ce que tu retiens <span class="zcount">${S.memoire.length}</span></div>`;
+  let h=`<div class="zone" id="zoneMemoire">`;
   if(!S.memoire.length){
     // Le geste, c'est le composeur qui le nomme (§4.9) ; ici, la seule chose
     // que la zone vide ait à dire est ce qu'elle est — une surface qui ne
     // transmet rien (§4.6).
-    h+=`<div class="aide">Rien de ce qui vient ici n'en part.</div>`;
+    h+=`<div class="aide">Alimente ta mémoire en sélectionnant des passages du dossier .</div>`;
   } else {
     for(const d of JEU.dimensions||[]){
       const ks=S.memoire.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
@@ -623,12 +644,12 @@ function souffle(){
   const attendTerme=offerts.some(b=>b.type==="terme"&&b.source!=="note");
   if(!S.compo.length){
     if(!S.memoire.length) return "Ouvre une pièce et retiens un passage.";
-    return second ? "Désigne deux passages de ta mémoire…" : "Désigne le passage qui répond…";
+    return second ? "Sélectionne deux passages depuis ta mémoire…" : "Depuis ta mémoire, sélectionne un passage pour répondre";
   }
   const citation=offerts.some(b=>b.cite);
-  if(citation && second) return "Un second passage pour les mettre en rapport — ou cite celui-ci.";
-  if(citation) return "Un fait se cite : la phrase est finie dès que tu la clos.";
-  if(attendTerme) return "Clique un second passage, plus bas. Ce qui les lie se déduit tout seul.";
+  if(citation && second) return "Ajouter un second passage ?";
+  if(citation) return "Quel article citer pour appuyer la déclaration ?";
+  if(attendTerme) return "Clique sur un second passage pour le mettre en relation";
   /* LA RELANCE. Une comparaison n'est jamais terminée d'office : elle demande
      toujours « et donc ? ». C'est le composeur qui pose la question — l'avocat
      n'a plus à s'agacer d'une remarque nue, elle ne peut plus lui parvenir.
@@ -668,24 +689,32 @@ function cloreCompo(){ R.clore(S); }
    les guillemets et le filet de gauche disent déjà qui parle (§4.9). */
 function rappelQuestion(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
-  return (a&&a.question) ? `<div class="aide question">« ${esc(a.question)} »</div>` : "";
+  if(!a || !a.question) return "";
+  /* Depuis que le composeur est SOUS le fil (§4.6), la question vient souvent
+     d'être posée juste au-dessus : la rappeler l'écrirait deux fois à quelques
+     pixels d'écart. On ne la redit donc que lorsqu'elle a cessé d'être le
+     dernier mot — c'est-à-dire quand l'avocat a reparlé depuis, et qu'elle a
+     commencé à remonter hors de vue (§4.9). Dérivé de `S`, sans champ neuf. */
+  const dernier=S.fil[S.fil.length-1];
+  if(dernier && dernier.texte===a.question) return "";
+  return `<div class="aide question">« ${esc(a.question)} »</div>`;
 }
 function renderCompo(){
   /* Une phrase close attend LÀ, sous les yeux, avec le seul geste qui parle.
      Pas de liste à parcourir, pas de colonne à changer (§4.6). */
   if(S.prete!=null && S.brouillon[S.prete]){
-    return `<div class="zone"><div class="ztitle">Ta phrase</div><div class="compo prete">
+    return `<div class="zone"><div class="ztitle">Réponse</div><div class="compo prete">
       ${rappelQuestion()}
       <div class="phrase close">${esc(S.brouillon[S.prete].texte)}</div>
       <div class="barre">
-        <button class="envoi" onclick="envoyer(${S.prete})">→ Maître Auber</button>
+        <button class="envoi" onclick="envoyer(${S.prete})">→ Envoyer</button>
         <button onclick="effacerPrete()">effacer</button>
       </div>
       ${S.plaidoirie.length?"":`<div class="aide">Tant que tu ne l'envoies pas, personne ne la lit.</div>`}
     </div></div>`;
   }
   const offerts=blocsOfferts();
-  let h=`<div class="zone"><div class="ztitle">Ta phrase</div><div class="compo">
+  let h=`<div class="zone"><div class="ztitle">Ta réponse</div><div class="compo">
     ${rappelQuestion()}
     <div class="phrase">${texteCompoPartiel()}</div>`;
   if(S.compo.length)
@@ -725,10 +754,18 @@ function renderCompo(){
       conséquence — donc le seul lieu possible du dilemme. Et il
       n'inscrit au plan que les MOYENS : le reste, il le dit.
    ============================================================ */
-/* La colonne de travail : le dossier, la phrase, les empans retenus. Une seule
-   surface privée, et la liste d'empans n'y figure qu'une fois (§4.6). */
+/* La colonne de travail : le dossier et les empans retenus. La phrase, elle,
+   s'écrit sous le canal depuis le 31 juillet (§4.6) — le clavier reste ici,
+   c'est le prix accepté de l'arbitrage (§7). La liste d'empans ne figure
+   toujours qu'une fois à l'écran. */
 function renderAtelier(){
-  $("atelier").innerHTML = renderDossier() + renderCompo() + renderMemoire();
+  $("atelier").innerHTML = renderDossier() + renderMemoire();
+}
+/* Le composeur, sous le fil : `renderCompo` rend déjà une zone autonome, avec
+   son titre, le rappel de la question et le bouton d'envoi. Il n'a rien eu à
+   apprendre du déménagement — seule sa destination change. */
+function renderComposeur(){
+  $("composeur").innerHTML = renderCompo();
 }
 /* Un MOYEN : ce que l'avocat peut plaider. Tout le reste, il l'entend, il y
    répond — et ça n'entre pas au plan (§4.6). */
@@ -738,11 +775,16 @@ function estMoyen(L){ return R.estMoyen(L); }
    se renommer sous son propre en-tête. */
 function renderPlan(){
   const gardes=S.plaidoirie.filter(x=>S.brouillon[x.b] && estMoyen(S.brouillon[x.b].lien));
+  /* Vide, la colonne n'existe pas : ce qui n'a rien à montrer ne prend pas de
+     place pour dire qu'il n'a rien à montrer (§4.9). Elle apparaît d'elle-même
+     au premier moyen versé, et c'est cette apparition qui l'enseigne — d'où
+     l'absence de toute phrase d'attente ici : elle serait inatteignable. */
+  const vide = !gardes.length;
+  { const c=$("colPlan"); if(c) c.hidden=vide; }
+  { const w=document.querySelector(".wrap"); if(w) w.classList.toggle("sansPlan",vide); }
   { const c=$("planCount"); if(c) c.textContent=gardes.length||""; }
   let h=`<div class="zone">`;
-  if(!gardes.length)
-    h+=`<div class="aide">Il n'inscrit ici que ce qu'il peut plaider.</div>`;
-  else h+=`<ul class="liste plaid">${gardes.map(x=>
+  h+=`<ul class="liste plaid">${gardes.map(x=>
     `<li><span class="txt">${esc(S.brouillon[x.b].texte)}${
       x.contre!=null && JEU.repetition.affirmations[x.contre]
         ? `<span class="contre">opposé à : ${esc(JEU.repetition.affirmations[x.contre].court)}</span>`:""
@@ -804,6 +846,9 @@ function portePhrase(pid){
   const d=R.porteDe(pid);
   return d.length ? `<span class="porte">porte sur : ${d.map(esc).join(", ")}</span>` : "";
 }
+/* ORPHELINE depuis le retrait du <header> : plus aucun bouton à l'écran ne
+   l'appelle. Laissée en l'état exprès — à rebrancher ou à retirer plus tard,
+   pas maintenant (docs/PASSATION.md §3). */
 function openManuels(){
   const regles=R.reglesLivrees(S)
     .map(r=>`<li><b>${esc(r.titre)}</b> ${portePhrase(r.pid)}<br>${esc(r.texte)}</li>`).join("");

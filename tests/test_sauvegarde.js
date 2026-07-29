@@ -68,7 +68,7 @@ console.log("\n=== Une composition en cours survit aussi ===");
 
   const w2 = boot({[CLE]: sauvegarde(w1)});
   check("la phrase en attente survit au rechargement", w2.S.prete === i);
-  check("elle s'affiche toujours sur place", H.atelier(w2).includes(w2.S.brouillon[i].texte));
+  check("elle s'affiche toujours sur place", H.composeur(w2).includes(w2.S.brouillon[i].texte));
   check("vice_trouve a survécu, vice_expose non", w2.S.vice_trouve && !w2.S.vice_expose);
   w2.effacerPrete();
   check("l'effacer ne la retire pas du journal", w2.S.prete === null && !!w2.S.brouillon[i]);
