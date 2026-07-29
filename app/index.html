@@ -158,6 +158,24 @@
   .dchip.regle{border-color:#4a4030;color:var(--warn)}
   .zcount{float:right;font-size:11px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0}
   .panne{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;padding:12px;margin:16px 20px}
+  /* --- le tutoriel du premier geste (§4.8) : de la signalétique, pas de la
+     mécanique. Le halo ENTOURE la zone où le geste a lieu — jamais un empan,
+     sinon l'interface désignerait la réponse à la lampe torche (§4.3). Aucun
+     voile : il intercepterait les clics qu'il prétend montrer. --- */
+  [data-tuto]{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;
+    animation:pouls 1.8s ease-in-out infinite}
+  @keyframes pouls{0%,100%{outline-color:var(--accent)}50%{outline-color:transparent}}
+  @media (prefers-reduced-motion:reduce){ [data-tuto]{animation:none} }
+  #tuto{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:60;
+    display:flex;align-items:baseline;gap:14px;max-width:min(560px,calc(100vw - 32px));
+    background:var(--panel2);border:1px solid var(--accent);border-radius:10px;
+    padding:10px 16px;font-size:13px;box-shadow:0 6px 22px rgba(0,0,0,.45)}
+  #tuto[hidden]{display:none}
+  #tuto .pas{color:var(--muted);font-family:var(--mono);font-size:11px}
+  #tuto .dit{flex:1}
+  #tuto .passer{background:none;border:none;color:var(--muted);font-size:11.5px;
+    cursor:pointer;text-decoration:underline;padding:0;white-space:nowrap}
+  #tuto .passer:hover{color:var(--txt)}
 </style>
 </head>
 <body>
@@ -191,6 +209,15 @@
 </div>
 
 <div id="modalRoot"></div>
+
+<!-- Le tutoriel parle depuis le CHROME, hors de la fiction : l'avocat, lui,
+     n'explique rien (§8.6). Le bandeau ne bouge jamais ; seul son texte
+     change, et le halo se déplace d'un élément à l'autre (§4.8). -->
+<div id="tuto" hidden>
+  <span class="pas" id="tutoPas"></span>
+  <span class="dit" id="tutoDit"></span>
+  <button class="passer" onclick="tutoPasser()">je sais faire</button>
+</div>
 
 <!-- ============================================================
      LA GRAMMAIRE — fonctions pures, partagées avec l'atelier et le
@@ -316,14 +343,69 @@ function recommencer(){
     setTimeout(()=>{ confirmRecommencer=false; if(b) b.textContent="⟲ recommencer"; },2500);
     return;
   }
-  effacerPartie(); location.reload();
+  effacerPartie(); effacerTuto(); location.reload();
+}
+
+/* ---- Le tutoriel du premier geste (§4.8) — de l'écran, pas de la règle ----
+   Il ne DÉCIDE rien : son temps courant se dérive de `S`, il n'ajoute aucun
+   champ d'état et il ne se sauvegarde pas avec la partie. Retirer ce bloc
+   laisserait le jeu identique. Le halo entoure la ZONE où le geste a lieu —
+   jamais le bon empan : ce serait désigner la réponse à la lampe torche (§4.3).
+   Ses phrases ne sont pas du contenu : elles parlent depuis le chrome, hors de
+   la fiction, parce que dans la fiction personne n'explique rien (§8.6). */
+const CLE_TUTO="iavocat_tuto";
+let tutoFait=false;
+try{ tutoFait = !!localStorage.getItem(CLE_TUTO); }catch(e){}
+function effacerTuto(){ try{ localStorage.removeItem(CLE_TUTO); }catch(e){} }
+function tutoClore(){ tutoFait=true; try{ localStorage.setItem(CLE_TUTO,"1"); }catch(e){} }
+function tutoPasser(){ tutoClore(); majTutoriel(); }
+/* Quatre temps, et pas un de plus — ce sont ceux qui restent depuis qu'une
+   suite unique se pose toute seule (§4.5). Le second en a deux moitiés : la
+   pièce ouverte couvre l'écran, il faut la refermer pour atteindre sa mémoire. */
+function tutoEtape(){
+  if(S.remisesEnvoyees!==1 || S.satisfaits.length || S.plaidoirie.length) return null;
+  if(!S.memoire.length)
+    return S.modalPiece
+      ? {n:2, ou:"#modalRoot .piecetexte",
+            dit:"Les passages soulignés se retiennent d'un clic. Prends celui qui répond."}
+      : {n:1, ou:"#canal .attach",
+            dit:"Ouvre la pièce : ce qu'il te demande est écrit dedans."};
+  if(S.prete==null)
+    return S.modalPiece
+      ? {n:2, ou:"#modalRoot .close",
+            dit:"Retenu — et rien n'en est sorti. Referme la pièce."}
+      : {n:3, ou:"#atelier .mchip",
+            dit:"Ce que tu retiens est ton clavier. Clique-le pour l'écrire."};
+  return  {n:4, ou:"#atelier button.envoi",
+            dit:"Ta phrase est écrite, et personne ne l'a lue. À toi de l'envoyer."};
+}
+/* En fin de `rendreTout`, comme `majCloture` : les trois colonnes et la modale
+   sont refaites à chaque geste, donc le halo se repose à chaque geste. On
+   marque par un ATTRIBUT et non par une classe — la sérialisation le range en
+   fin de balise et laisse les `class="…"` intactes, que des suites lisent. */
+let tutoCible=null;
+function majTutoriel(){
+  const banniere=$("tuto"); if(!banniere) return;
+  if(tutoCible){ tutoCible.removeAttribute("data-tuto"); tutoCible=null; }
+  const e = tutoFait ? null : tutoEtape();
+  if(!e){
+    // Première réponse envoyée (ou partie déjà avancée) : il ne revient plus.
+    if(!tutoFait && S.remisesEnvoyees>=1) tutoClore();
+    banniere.hidden=true; return;
+  }
+  tutoCible=document.querySelector(e.ou);
+  if(tutoCible) tutoCible.setAttribute("data-tuto","");
+  $("tutoPas").textContent=e.n+"/4";
+  $("tutoDit").textContent=e.dit;
+  banniere.hidden=false;
 }
 
 /* ============================================================
    3) RENDU COMMUN
    ============================================================ */
 const modalRoot = $("modalRoot");
-function closeModal(){ S.modalPiece=null; modalRoot.innerHTML=""; }
+// Refermer est un geste comme un autre : le tutoriel doit pouvoir suivre (§4.8).
+function closeModal(){ S.modalPiece=null; modalRoot.innerHTML=""; rendreTout(); }
 function modal(html){
   modalRoot.innerHTML =
     `<div class="overlay" onclick="if(event.target===this)closeModal()">
@@ -331,7 +413,7 @@ function modal(html){
      </div>`;
 }
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function rendreTout(){ renderCanal(); renderAtelier(); renderPlan(); majCloture(); sauverPartie(); }
+function rendreTout(){ renderCanal(); renderAtelier(); renderPlan(); majCloture(); majTutoriel(); sauverPartie(); }
 
 /* ---- Le canal : un fil de messages ---- */
 function pousser(qui,texte,pieces,ia){ return R.pousser(S,qui,texte,pieces,ia); }

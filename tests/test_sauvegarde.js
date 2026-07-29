@@ -37,7 +37,11 @@ console.log("\n=== Les quatre surfaces survivent au rechargement ===");
 
 console.log("\n=== Une composition en cours survit aussi ===");
 {
+  /* Il faut livrer d'abord : une composition ne reste EN COURS que là où
+     l'état suivant offre un choix. Ailleurs elle se clôt seule (§4.5) — c'est
+     alors la phrase close en attente qui survit, éprouvée juste après. */
   const w1 = boot();
+  H.livrerTout(w1);
   const pid = H.pidPremiereRemise(w1);
   w1.ouvrirPiece(pid);
   const k = H.empansDe(w1, pid)[0];

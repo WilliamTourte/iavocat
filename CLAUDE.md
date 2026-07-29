@@ -29,7 +29,7 @@ Ensuite, dans `docs/ARCHITECTURE.md` (680 lignes : on n'en lit que ce qu'il faut
 ## Les commandes
 
 ```sh
-npm test               # les six suites — 309 contrôles. La règle d'or : tout vert, ou ce n'est pas fini (§16)
+npm test               # les six suites — 320 contrôles. La règle d'or : tout vert, ou ce n'est pas fini (§16)
 npm run vue            # ouvre le jeu dans un VRAI navigateur, joue, capture. Voir ci-dessous
 npm run demo:grammaire # banc d'essai de la grammaire. Hors `npm test` : pas de code de sortie
 ```

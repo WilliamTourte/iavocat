@@ -141,6 +141,9 @@ function creerHarnais(dossier){
         surligner(w,k);
         const bT=idBloc(w,blocChamp(w)); if(bT<0) return -1;
         w.poserBloc(bT,iMem(w,k));
+        /* L'automate a pu se refermer tout seul : une suite unique n'est pas un
+           choix (§4.5). Là où le choix existe encore, la liaison se pose. */
+        const deja=trouve(); if(deja>=0) return deja;
         const bc=w.blocsOfferts().findIndex(x=>x.forme===L.forme && !x.imbrique);
         if(bc<0) return -1;
         w.poserBloc(bc);
@@ -159,6 +162,7 @@ function creerHarnais(dossier){
       if(i<0){ i=composerLien(w,{forme:sous.forme,termes:sous.termes}); if(i<0) return -1; }
       const b=idBloc(w,blocNote(w)); if(b<0) return -1;
       w.poserBloc(b,i);
+      const deja=trouve(); if(deja>=0) return deja;   // refermé tout seul (§4.5)
       const bl=idBloc(w,blocForme(w,L.forme)); if(bl<0) return -1;
       w.poserBloc(bl);
     } else {
@@ -176,13 +180,21 @@ function creerHarnais(dossier){
     if(typeof t0!=="string" || typeof t1!=="string") return false;
     surligner(w,t0); surligner(w,t1);
     const bT=idBloc(w,blocChamp(w)); if(bT<0) return false;
+    /* C'est une SONDE : quand la comparaison n'est pas ouverte (session 1, où
+       le second empan attend sa pièce), poser le premier terme suffit à clore
+       une citation — une suite unique n'est pas un choix (§4.5). Une sonde qui
+       échoue ne doit rien laisser au journal : on note où l'on en était. */
+    const n0=w.S.brouillon.length, p0=w.S.prete;
+    const echec=()=>{ w.S.brouillon.length=n0; w.S.prete=p0; w.viderCompo(); return false; };
     w.poserBloc(bT,iMem(w,t0));
     // Grammaire à DÉDUCTION : le second terme clôt la paire, rien entre les deux.
     const bD=w.blocsOfferts().findIndex(x=>x.type==="terme"&&x.source!=="note"&&x.deduit);
     if(bD>=0){ w.poserBloc(bD,iMem(w,t1)); return true; }
     // Grammaire à liaisons explicites (à l'ancienne) : on parcourt l'automate.
-    for(const etape of cheminVers(w,L.forme)){
-      const b=idBloc(w,etape); if(b<0) return false;
+    const chemin=cheminVers(w,L.forme);
+    if(!chemin.length) return echec();
+    for(const etape of chemin){
+      const b=idBloc(w,etape); if(b<0) return echec();
       const bloc=G.blocs.find(x=>x.id===etape);
       w.poserBloc(b, bloc.type==="terme" ? iMem(w,t1) : undefined);
     }

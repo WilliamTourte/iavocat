@@ -8,7 +8,12 @@ const boot = () => H.boot();
 
 console.log("\n=== Le composeur, bloc par bloc ===");
 {
+  /* On livre tout d'abord : une composition ne RESTE ouverte que là où l'état
+     suivant offre un vrai choix. Là où il n'en offre qu'un, la phrase se clôt
+     d'elle-même — une suite unique n'est pas un choix (§4.5), et il n'y a plus
+     rien à retirer ni à vider. */
   const w = boot();
+  H.livrerTout(w);
   check("au départ, la phrase est vide", w.S.compo.length === 0);
   check("l'état de départ offre au moins un bloc", w.blocsOfferts().length > 0);
   const emp = w.CHAMPS.filter(c => c.dim === w.CHAMPS[0].dim).slice(0, 2);
@@ -159,11 +164,12 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
   H.surligner(w, L.termes[0]);
   const iT = w.blocsOfferts().findIndex(b => b.type === "terme" && b.source !== "note");
   w.poserBloc(iT, w.S.memoire.indexOf(L.termes[0]));
-  const offerts = w.blocsOfferts();
-  check("un seul empan posé, l'automate offre déjà de clore", offerts.some(b => b.cite));
-  check("et aucun article n'est requis pour cette voie",
-    offerts.filter(b => b.cite).every(b => !b.piece));
-  w.poserBloc(offerts.findIndex(b => b.cite));
+  /* En session 1 l'état qui suit l'empan n'offre QUE cette clôture : une suite
+     unique n'est pas un choix, la phrase se referme sans qu'on la confirme
+     (§4.5). Le geste est donc : désigner, et c'est tout. */
+  check("un seul empan posé, la phrase s'est close d'elle-même",
+    w.S.compo.length === 0 && w.S.brouillon.length === 1);
+  check("et aucun article n'est requis pour cette voie", !bc.piece);
   check("la citation se clôt sans article", w.S.brouillon.length === 1);
   check("elle porte exactement le lien déclaré",
     w.M.memeRed(w.S.brouillon[0].reduite, {forme: L.forme, termes: L.termes}));
@@ -202,11 +208,18 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
     for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
     const e = w.CHAMPS[0];
     H.surligner(w, e.id);
-    w.poserBloc(w.blocsOfferts().findIndex(b => b.type === "terme"), 0);
+    /* Ce que l'état suivant offre ne s'observe plus APRÈS la pose : il n'offre
+       qu'une clôture, donc la phrase se referme (§4.5). On le lit donc sur la
+       grammaire, filtrée par ce qui est livré — comme le fait le jeu. */
+    const livrees = new Set(w.piecesLivrees());
+    const apres = (G.blocs || []).filter(b => b.de === second.de && (!b.piece || livrees.has(b.piece)));
     check("un empan posé, aucun second n'est offert",
-      !w.blocsOfferts().some(b => b.type === "terme" && b.deduit));
+      !apres.some(b => b.type === "terme" && b.deduit));
     check("seule la citation reste, donc la session 1 ne compare pas",
-      w.blocsOfferts().every(b => b.cite));
+      apres.length === 1 && apres[0].cite);
+    w.poserBloc(w.blocsOfferts().findIndex(b => b.type === "terme"), 0);
+    check("et le geste s'arrête là : la phrase s'est close toute seule",
+      w.S.compo.length === 0 && w.S.prete !== null);
     // livrée, elle s'ouvre — et pour tous les empans, sans préférence
     const w2 = boot();
     H.livrerTout(w2);
@@ -254,6 +267,51 @@ console.log("\n=== La continuation : une comparaison demande toujours « et donc
   check("elle est écrite avec les NOMS des empans, pas les citations",
     w.CHAMPS.filter(c => sous.termes.includes(c.id))
             .every(c => w.S.brouillon[i].texte.includes(c.nom)));
+}
+
+console.log("\n=== Le premier geste, montré ===");
+{
+  /* LE TUTORIEL (§4.8). De la signalétique, pas de la mécanique : il pointe la
+     ZONE où le geste a lieu, jamais le bon empan, et il ne décide rien. Comme
+     partout ailleurs, rien n'est nommé ici — ni pièce, ni empan, ni phrase. */
+  const w = H.boot({url:"http://localhost/"});
+  const halo = () => w.document.querySelector("[data-tuto]");
+  const bandeau = () => w.document.getElementById("tuto");
+  const dansCanal = el => !!el && w.document.getElementById("canal").contains(el);
+
+  check("au premier écran, le tutoriel parle", !bandeau().hidden);
+  check("et il montre la pièce à ouvrir, dans le canal", dansCanal(halo()));
+
+  const pid = H.pidPremiereRemise(w);
+  w.ouvrirPiece(pid);
+  const cible = halo();
+  check("la pièce ouverte, il montre son TEXTE, pas un empan",
+    !!cible && cible.classList.contains("piecetexte"));
+  check("et tous les empans y restent marqués pareil — aucune lampe torche",
+    ![...cible.querySelectorAll(".empan")].some(e => e.hasAttribute("data-tuto")));
+
+  H.surligner(w, H.empansDe(w, pid)[0]);
+  w.closeModal();
+  const puce = halo();
+  check("le passage retenu, il montre la mémoire", !!puce && puce.classList.contains("mchip"));
+
+  w.poserBloc(w.blocsOfferts().findIndex(b => b.type === "terme" && b.source !== "note"), 0);
+  const envoi = halo();
+  check("la phrase close, il montre le seul geste qui parle",
+    !!envoi && envoi.classList.contains("envoi"));
+
+  w.envoyer(w.S.prete);
+  check("la réponse envoyée, il se tait", bandeau().hidden && !halo());
+  check("et il ne reviendra pas", !!w.localStorage.getItem("iavocat_tuto"));
+}
+{
+  /* IL NE DÉCIDE RIEN : le jeu est exactement le même sans lui. */
+  const avec = H.boot({url:"http://localhost/"});
+  const sans = H.boot({graine:{iavocat_tuto:"1"}});
+  check("déjà vu, il ne s'affiche plus",
+    sans.document.getElementById("tuto").hidden && !sans.document.querySelector("[data-tuto]"));
+  check("et l'état de départ est identique, halo ou pas",
+    JSON.stringify(avec.S) === JSON.stringify(sans.S));
 }
 
 console.log("\n=== La modale de pièce ===");

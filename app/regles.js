@@ -168,6 +168,23 @@ function creerRegles(JEU, M) {
     S.refus = null;
     majPressentiment(S);
     if ((JEU.grammaire.finaux || []).includes(b.vers)) clore(S);
+    else if (b.type === "terme") cloreSansChoix(S);
+  }
+  /* UNE SUITE UNIQUE N'EST PAS UN CHOIX (§4.5). Un seul bloc offert, c'est une
+     liaison, elle clôt et elle n'emboîte rien : elle ne dit rien que le joueur
+     aurait pu décider — c'est de la ponctuation, on la pose pour lui.
+     `imbrique` est exclu, et c'est le point qui compte : invoquer un texte est
+     un acte, jamais une ponctuation. Même seul offert, un article se clique —
+     sans quoi la relance « et donc ? » se répondrait toute seule.
+     Rien ici ne lit le contenu : un compte, un type, un état final. */
+  function cloreSansChoix(S) {
+    const offerts = blocsOfferts(S);
+    if (offerts.length !== 1) return;
+    const b = offerts[0];
+    if (b.type !== "liaison" || b.imbrique) return;
+    if (!(JEU.grammaire.finaux || []).includes(b.vers)) return;
+    S.compo.push({ bloc: b.id, valeur: null });
+    clore(S);
   }
   function retirerBloc(S) { S.compo.pop(); S.refus = null; }
   function viderCompo(S) { S.compo = []; S.refus = null; }
