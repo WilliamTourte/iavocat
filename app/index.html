@@ -577,9 +577,7 @@ function modalPieceHTML(pid){
   const dims=[...new Set(Object.values(p.empans||{}).map(e=>e.dim))];
   return `<h3>${esc(p.titre)}</h3><small class="note">${esc(p.type)} — ${esc(p.qui||"")}</small>
     <p class="piecetexte">${rendreTexte(pid)}</p>
-    ${dims.length?`<div class="legende">${dims.map(d=>`<span style="--dc:${couleurDim(d)}">${esc(d)}</span>`).join("")}</div>
-    <small class="note">Clique un passage pour le retenir — rien n'en sort.</small>`
-    :`<small class="note">Rien à retenir ici — c'est une règle, elle se lit.</small>`}`;
+    `;
 }
 /* La mémoire est AUSSI le clavier du composeur : un empan retenu n'existe
    qu'une fois à l'écran (§4.6). Deux lignes, pas trois (§4.9) : le NOM (ce qui
