@@ -3,7 +3,7 @@
 // répliques de l'avocat (faux, rep de lien, escalades séparées, deja) et le
 // grain fin de la répétition de plaidoirie. Contenu embarqué.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, canal, memoire, atelier, plan } = H;
+const { check, bilan, canal, memoire, atelier, composeur, plan, planVisible } = H;
 const boot = () => H.boot();
 
 console.log("\n=== Le composeur, bloc par bloc ===");
@@ -359,7 +359,8 @@ console.log("\n=== Les répliques : seulement au versement ===");
   const i = H.composerLien(w, L);
   check("une phrase à réplique propre se compose", i >= 0);
   check("composée, elle ne dit rien", !canal(w).includes(L.rep.slice(0, 25)));
-  check("close, elle attend SUR PLACE", w.S.prete === i && atelier(w).includes("Maître Auber"));
+  // « sur place » = sous le canal, là où la phrase vient d'être écrite (§4.6)
+  check("close, elle attend SUR PLACE", w.S.prete === i && composeur(w).includes("Maître Auber"));
   w.envoyer(i);
   check("envoyée, la réplique du lien sort", canal(w).includes(L.rep.slice(0, 25)));
   check("la phrase est marquée envoyée", w.S.brouillon[i].versee);
@@ -367,6 +368,26 @@ console.log("\n=== Les répliques : seulement au versement ===");
   const avant = w.S.plaidoirie.length;
   w.envoyer(i);
   check("envoyer deux fois est sans effet", w.S.plaidoirie.length === avant);
+}
+
+console.log("\n=== L'économie de l'écran : ce qui est déjà sous les yeux ===");
+{
+  /* Le composeur vit SOUS le fil (§4.6) : la question qu'on vient de poser est
+     souvent la bulle juste au-dessus. Le rappel ne la redit donc que lorsqu'elle
+     a cessé d'être le dernier mot (§4.9). Rien n'est nommé ici : la question se
+     dérive de l'attente courante, comme partout ailleurs. */
+  const w = boot();
+  const q = w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
+  check("au départ, la question vient d'être posée : elle est le dernier mot",
+    !!q && !!q.question && w.S.fil[w.S.fil.length - 1].texte === q.question);
+  check("le composeur ne la répète donc pas", !composeur(w).includes(q.question));
+  /* On fait reparler l'avocat par le geste qui le fait toujours parler : ouvrir
+     une pièce qui porte un `declenche`. C'est le déclencheur, pas la pièce, qui
+     compte ici — l'assertion porte sur l'écran, pas sur un chemin de partie. */
+  w.ouvrirPiece(H.pidAvecDeclenche(w));
+  check("l'avocat ayant repris la parole, la question n'est plus le dernier mot",
+    w.S.fil[w.S.fil.length - 1].texte !== q.question);
+  check("le composeur la rappelle alors", composeur(w).includes(q.question));
 }
 
 console.log("\n=== Le plan ne retient que les moyens ===");
@@ -381,12 +402,17 @@ console.log("\n=== Le plan ne retient que les moyens ===");
   check("l'observation est bien partie", w.S.brouillon[i].versee);
   check("l'avocat y a répondu", w.S.fil.length > 1);
   check("mais elle n'entre pas au plan", !plan(w).includes(w.S.brouillon[i].texte));
-  check("le plan le dit au lieu de rester muet", plan(w).includes("ce qu'il peut plaider"));
+  /* Le plan ne se contente plus de le dire : tant que rien ne s'y inscrit, sa
+     colonne n'existe pas (§4.9). Une phrase envoyée mais non plaidable ne l'ouvre
+     donc pas — c'est le MOYEN qui la fait apparaître, et cette apparition est
+     ce qui enseigne le plan. On éprouve les deux états, pas seulement le second. */
+  check("et le plan n'a pas encore de colonne à l'écran", !planVisible(w));
   // un moyen : ce qui sert une attente de session
   const moyen = H.lienTag(w, w.R.attentesDe(w.JEU.remises[0])[0].attend);
   const j = H.composerLien(w, moyen);
   w.envoyer(j);
   check("un moyen, lui, s'y inscrit", plan(w).includes(w.S.brouillon[j].texte));
+  check("et fait apparaître la colonne", planVisible(w));
 }
 {
   const w = boot();

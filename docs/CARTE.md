@@ -17,7 +17,7 @@
 | `app/content.js` | 664 | **le contenu** — une affaire, en un seul exemplaire | aucune règle |
 | `app/regles.js` | 361 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
 | `app/moteur.js` | 182 | **la grammaire** — composer, valider, rendre | aucune donnée |
-| `app/index.html` | 792 | **le jeu** — l'affichage et les gestes d'écran | ne décide rien |
+| `app/index.html` | 866 | **le jeu** — l'affichage et les gestes d'écran | ne décide rien |
 | `app/atelier_v3.html` | 2170 | **l'atelier** — écrire et diagnostiquer une affaire | ne recopie rien (§12) |
 
 `regles.js` et `moteur.js` sont en **mode double** — `require` (tests, banc) ou `<script src>` (jeu,
@@ -37,12 +37,13 @@ Se lit de haut en bas : c'est la boucle d'une session (§4.6). `index.html` n'y 
 | **surligner** (privé, gratuit) | `surligner` | — | `renderMemoire` | 4.6 |
 | ce que le composeur offre | `blocsOfferts`, `etatCompo`, `indexTermeChamp` | `offerts` | `renderCompo` | 4.5 |
 | ce que l'écran souffle — **une seule voix par état** | *(aucune — dérivé de `S`)* | — | `souffle` (dans le fantôme si la phrase est vide, dans l'aide sinon) | 4.9 |
+| le rappel de la question — **seulement si elle n'est plus le dernier mot** | `attenteCourante`, `remiseCourante` | — | `rappelQuestion` | 4.9 |
 | **poser un bloc** | `poserBloc`, `retirerBloc`, `viderCompo` | `reduire`, `deduire`, `ordonner` | `texteCompoPartiel` | 4.5 |
 | la clôture sans choix | `cloreSansChoix` (appelée par `poserBloc`) | — | *(rien : le bouton disparaît)* | 4.5 |
 | le pressentiment ⚑ | `majPressentiment`, `pressentir`, `sousLienVice` | `memeRed` | *(rien : privé)* | 4.7 |
-| **clore la phrase** | `clore` → `clorePhrase` | `valider`, `rendre`, `lienDe` | `renderCompo` (zone « ta phrase ») | 4.5 |
+| **clore la phrase** | `clore` → `clorePhrase` | `valider`, `rendre`, `lienDe` | `renderCompo` → `renderComposeur` (`#composeur`, **sous le canal**) | 4.5 |
 | **envoyer** — le seul geste transmis | `envoyer` → `reponseAvocat` → `avancerSurAttente` | — | `renderPlan`, `renderCanal` | 4.6 |
-| ce qui entre au plan | `estMoyen` | — | `renderPlan` | 4.6 |
+| ce qui entre au plan | `estMoyen` | — | `renderPlan` — **cache sa colonne** (`#colPlan`) tant que rien ne s'y inscrit | 4.6, 4.9 |
 | clôturer, répétition | `instructionComplete`, `cloturer`, `verserContre`, `avancerRepetition` | — | `majCloture` | 5 |
 | la fin | `finir` | — | `finir` (modale) | 5 |
 | **le tutoriel du premier geste** | *(aucune — il ne décide rien)* | — | `tutoAttendu`, `tutoEtape`, `majTutoriel` | 4.8 |
@@ -86,13 +87,14 @@ L'**ancienne forme** `attend`/`apres` posée sur la remise se lit comme une list
 ## Les six suites
 
 Point d'entrée unique : `tests/harnais.js`, `creerHarnais(dossier)`. `npm test` les enchaîne dans
-l'ordre de `package.json` — **325 contrôles, tout vert ou ce n'est pas fini** (§16).
+l'ordre de `package.json` — **330 contrôles, tout vert ou ce n'est pas fini** (§16).
 
 Le harnais **inline** les trois `<script src>` au boot, parce que jsdom n'en charge aucun (§13) —
 c'est pourquoi `npm run vue` existe : il est le seul à éprouver le vrai chargement.
 
 Ce qu'il expose, et qui est le **contrat d'interaction** : `boot` / `bootAtelier`, les lectures
-d'écran (`canal`, `atelier`, `plan`), les désignations de contenu (`lienVice`, `lienConclusion`,
+d'écran (`canal`, `atelier`, **`composeur`** — il vit sous le canal depuis le 31 juillet —, `plan` et
+**`planVisible`**, qui dit si la colonne du plan existe), les désignations de contenu (`lienVice`, `lienConclusion`,
 `lienFaux`, `lienTag`, `citations`, `blocCite`, `comparaisons`, `attentesContenu`), et les chemins
 (`surligner`, `composerLien`, `poserComparaison`, `cheminVers`, `cloreSurPlace`, `livrerTout`,
 `instruire`, `terminer`). **Aucune suite ne nomme une pièce, un empan ou une valeur** : elles les

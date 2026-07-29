@@ -51,11 +51,15 @@ function creerHarnais(dossier){
   function contenuLivre(){ return JSON.parse(JSON.stringify(boot().JEU)); }
 
   const canal    = w => w.document.getElementById("canal").textContent;
-  /* La mémoire et le composeur ne font plus qu'une colonne (§4.6) : les deux
-     sélecteurs pointent la même, et `plan` la surface transmise. */
+  /* Quatre surfaces à lire. `atelier` et `memoire` pointent la même colonne —
+     le dossier et les empans retenus ; le COMPOSEUR a sa propre lecture depuis
+     qu'il vit sous le canal (§4.6). `plan` reste la surface transmise, et
+     `planVisible` dit si sa colonne existe : vide, elle est retirée (§4.9). */
   const memoire  = w => w.document.getElementById("atelier").innerHTML;
   const atelier  = w => w.document.getElementById("atelier").innerHTML;
+  const composeur = w => w.document.getElementById("composeur").innerHTML;
   const plan     = w => w.document.getElementById("plan").innerHTML;
+  const planVisible = w => !w.document.getElementById("colPlan").hidden;
 
   /* ---- Sélecteurs par PROPRIÉTÉ ------------------------------
      Aucune suite ne doit nommer une pièce, un empan ou une valeur
@@ -369,6 +373,7 @@ function creerHarnais(dossier){
   };
 
   return { check, bilan, boot, bootAtelier, contenuLivre, canal, memoire, atelier,
+           composeur, planVisible,
            lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
            plan, cloreSurPlace, poserComparaison, livrerTout,

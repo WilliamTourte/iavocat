@@ -36,9 +36,20 @@
   .tag.transmis{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis)}
   .body{padding:12px 14px;overflow-y:auto;max-height:72vh}
   .col.demi .body{max-height:34vh}
+  /* `.col` pose `display:flex`, qui BAT la règle `[hidden]{display:none}` du
+     navigateur : sans cette ligne, cacher la colonne du plan ne ferait rien. */
+  .col[hidden]{display:none}
+  /* Le composeur, ancré sous le fil : il ne défile pas avec lui (§4.6). Le
+     filet le sépare de la conversation — écrire n'est pas parler. */
+  #composeur{border-top:1px solid var(--line);padding:12px 14px;background:var(--panel)}
+  #composeur .zone{margin:0}
+  /* Sans plan, l'écran s'ouvre à deux colonnes (§4.9). `.cloture` est câblée
+     sur trois : elle suit, sinon elle déborde. */
+  .wrap.sansPlan{grid-template-columns:1fr 1fr}
+  .wrap.sansPlan .cloture{grid-column:1/3}
   @media (max-width:1100px){
-    .wrap{grid-template-columns:1fr}
-    .cloture{grid-column:1 !important}
+    .wrap,.wrap.sansPlan{grid-template-columns:1fr}
+    .cloture,.wrap.sansPlan .cloture{grid-column:1 !important}
     .body,.col.demi .body{max-height:44vh}
   }
   /* --- canal --- */
@@ -214,12 +225,20 @@
   <section class="col">
     <h2>Le canal</h2>
     <div class="body" id="canal"></div>
+    <!-- On répond SOUS la question (§4.6). `#composeur` est le FRÈRE de
+         `#canal`, jamais son enfant : le fil défile et se recale en bas à
+         chaque message, la phrase qu'on écrit ne doit pas partir avec lui.
+         Aucune étiquette « privé » ici — le statut se lit dans le fait que
+         rien n'en sort, pas dans un en-tête (§4.6). -->
+    <div id="composeur"></div>
   </section>
   <section class="col">
     <h2>L'atelier <span class="tag prive">privé</span></h2>
     <div class="body" id="atelier"></div>
   </section>
-  <section class="col">
+  <!-- Caché tant que rien ne s'y inscrit : ce qui n'existe pas encore ne
+       s'affiche pas (§4.9). C'est `renderPlan` qui pose le `hidden`. -->
+  <section class="col" id="colPlan" hidden>
     <h2>Le plan <span class="tag transmis">transmis</span><span class="zcount" id="planCount"></span></h2>
     <div class="body" id="plan"></div>
   </section>
@@ -419,7 +438,7 @@ function tutoEtape(){
             dit:"Retenu — et rien n'en est sorti. Referme la pièce."}
       : {n:3, ou:"#zoneMemoire",
             dit:"Ce que tu retiens est ton clavier. Clique-le pour l'écrire."};
-  return  {n:4, ou:"#atelier button.envoi",
+  return  {n:4, ou:"#composeur button.envoi",
             dit:"Ta phrase est écrite, et personne ne l'a lue. À toi de l'envoyer."};
 }
 /* En fin de `rendreTout`, comme `majCloture` : les trois colonnes et la modale
@@ -457,7 +476,7 @@ function modal(html){
      </div>`;
 }
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function rendreTout(){ renderCanal(); renderAtelier(); renderPlan(); majCloture(); majTutoriel(); sauverPartie(); }
+function rendreTout(){ renderCanal(); renderComposeur(); renderAtelier(); renderPlan(); majCloture(); majTutoriel(); sauverPartie(); }
 
 /* ---- Le canal : un fil de messages ---- */
 function pousser(qui,texte,pieces,ia){ return R.pousser(S,qui,texte,pieces,ia); }
@@ -668,7 +687,15 @@ function cloreCompo(){ R.clore(S); }
    les guillemets et le filet de gauche disent déjà qui parle (§4.9). */
 function rappelQuestion(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
-  return (a&&a.question) ? `<div class="aide question">« ${esc(a.question)} »</div>` : "";
+  if(!a || !a.question) return "";
+  /* Depuis que le composeur est SOUS le fil (§4.6), la question vient souvent
+     d'être posée juste au-dessus : la rappeler l'écrirait deux fois à quelques
+     pixels d'écart. On ne la redit donc que lorsqu'elle a cessé d'être le
+     dernier mot — c'est-à-dire quand l'avocat a reparlé depuis, et qu'elle a
+     commencé à remonter hors de vue (§4.9). Dérivé de `S`, sans champ neuf. */
+  const dernier=S.fil[S.fil.length-1];
+  if(dernier && dernier.texte===a.question) return "";
+  return `<div class="aide question">« ${esc(a.question)} »</div>`;
 }
 function renderCompo(){
   /* Une phrase close attend LÀ, sous les yeux, avec le seul geste qui parle.
@@ -725,10 +752,18 @@ function renderCompo(){
       conséquence — donc le seul lieu possible du dilemme. Et il
       n'inscrit au plan que les MOYENS : le reste, il le dit.
    ============================================================ */
-/* La colonne de travail : le dossier, la phrase, les empans retenus. Une seule
-   surface privée, et la liste d'empans n'y figure qu'une fois (§4.6). */
+/* La colonne de travail : le dossier et les empans retenus. La phrase, elle,
+   s'écrit sous le canal depuis le 31 juillet (§4.6) — le clavier reste ici,
+   c'est le prix accepté de l'arbitrage (§7). La liste d'empans ne figure
+   toujours qu'une fois à l'écran. */
 function renderAtelier(){
-  $("atelier").innerHTML = renderDossier() + renderCompo() + renderMemoire();
+  $("atelier").innerHTML = renderDossier() + renderMemoire();
+}
+/* Le composeur, sous le fil : `renderCompo` rend déjà une zone autonome, avec
+   son titre, le rappel de la question et le bouton d'envoi. Il n'a rien eu à
+   apprendre du déménagement — seule sa destination change. */
+function renderComposeur(){
+  $("composeur").innerHTML = renderCompo();
 }
 /* Un MOYEN : ce que l'avocat peut plaider. Tout le reste, il l'entend, il y
    répond — et ça n'entre pas au plan (§4.6). */
@@ -738,11 +773,16 @@ function estMoyen(L){ return R.estMoyen(L); }
    se renommer sous son propre en-tête. */
 function renderPlan(){
   const gardes=S.plaidoirie.filter(x=>S.brouillon[x.b] && estMoyen(S.brouillon[x.b].lien));
+  /* Vide, la colonne n'existe pas : ce qui n'a rien à montrer ne prend pas de
+     place pour dire qu'il n'a rien à montrer (§4.9). Elle apparaît d'elle-même
+     au premier moyen versé, et c'est cette apparition qui l'enseigne — d'où
+     l'absence de toute phrase d'attente ici : elle serait inatteignable. */
+  const vide = !gardes.length;
+  { const c=$("colPlan"); if(c) c.hidden=vide; }
+  { const w=document.querySelector(".wrap"); if(w) w.classList.toggle("sansPlan",vide); }
   { const c=$("planCount"); if(c) c.textContent=gardes.length||""; }
   let h=`<div class="zone">`;
-  if(!gardes.length)
-    h+=`<div class="aide">Il n'inscrit ici que ce qu'il peut plaider.</div>`;
-  else h+=`<ul class="liste plaid">${gardes.map(x=>
+  h+=`<ul class="liste plaid">${gardes.map(x=>
     `<li><span class="txt">${esc(S.brouillon[x.b].texte)}${
       x.contre!=null && JEU.repetition.affirmations[x.contre]
         ? `<span class="contre">opposé à : ${esc(JEU.repetition.affirmations[x.contre].court)}</span>`:""

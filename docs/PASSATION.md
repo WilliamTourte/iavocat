@@ -1,10 +1,10 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 1ᵉʳ août 2026.*
+*À lire en tête d'une nouvelle conversation. État au 1ᵉʳ août 2026, après la session « on répond sous la question ».*
 
 ## 1. Où en est le jeu
 
-Sept décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.8, §4.9.
+Neuf décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9.
 
 1. **Trois sessions.** R1 lire/extraire/répondre (`p_pv`, `t_voisin`, aucun article) ; R2 comparer
    (`r_temoin`, l'article 3) ; R3 l'ADN et le vice.
@@ -27,6 +27,15 @@ Sept décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
    plus. Un titre par zone, le locuteur au seul changement de locuteur, la puce de mémoire sur deux
    lignes. Trois phrases ne se coupent pas, parce qu'elles *sont* le jeu : « Rien n'en sort »,
    « → Maître Auber », « Et donc ? ».
+8. **On répond sous la question** *(31 juillet)*. Le composeur quitte la colonne de l'atelier pour
+   s'ancrer **sous le fil du canal**, à la place d'une zone de saisie de messagerie. La mémoire, elle,
+   **reste dans l'atelier** — c'est un arbitrage pris avec l'auteur, pas un oubli : on rend la
+   co-location du 28 juillet pour gagner l'évidence du geste (§7). Le composeur ne porte **aucune
+   étiquette « privé »** : son statut se lit dans le fait que rien n'en sort.
+9. **Ce qui n'existe pas encore ne s'affiche pas** *(31 juillet)*. La colonne du plan est **entièrement
+   retirée** tant que rien ne s'y inscrit — l'écran s'ouvre à deux colonnes. Elle apparaît au premier
+   moyen versé, et c'est cette apparition qui l'enseigne. La phrase d'attente *« Il n'inscrit ici que
+   ce qu'il peut plaider »* a disparu avec elle : elle était devenue inatteignable.
 
 ## 2. Points de vigilance
 
@@ -47,11 +56,20 @@ Sept décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
   contrôle.
 - La relecture à l'œil des phrases composées reste irremplaçable après toute retouche du contenu ou
   de la grammaire.
-- Six chaînes de **chrome** sont épinglées par les suites (`Le dossier`, `Ce que tu retiens`, le
-  `Maître Auber` du bouton d'envoi, `ce qu'il peut plaider`, `elle se lit`, `legende`) : les
-  renommer sans toucher au test qui les nomme casse une suite sans rien dire d'utile (§16).
-- La cible du 3ᵉ temps du tutoriel est `#zoneMemoire`, un id posé exprès : elle se visait autrefois
-  par `:last-child`, ce qui dépendait de l'ordre des zones de l'atelier.
+- Cinq chaînes de **chrome** sont épinglées par les suites (`Le dossier`, `Ce que tu retiens`, le
+  `Maître Auber` du bouton d'envoi, `elle se lit`, `legende`) : les renommer sans toucher au test qui
+  les nomme casse une suite sans rien dire d'utile (§16). *`ce qu'il peut plaider` n'en fait plus
+  partie : la phrase et son assertion ont disparu avec la colonne vide (décision 9).*
+- **Trois ids sont des points d'ancrage, pas de la décoration** : `#zoneMemoire` (3ᵉ temps du
+  tutoriel), `#composeur` (4ᵉ temps **et** lecture d'écran du harnais), `#colPlan` (ce que
+  `planVisible` interroge). Les renommer casse le tutoriel en silence — `majTutoriel` teste
+  `if(tutoCible)` et ne se plaint pas d'une cible introuvable.
+- **`#composeur` est le frère de `#canal`, jamais son enfant.** `renderCanal` finit par
+  `el.scrollTop=el.scrollHeight` : glissé dedans, le composeur partirait au défilement à chaque
+  message.
+- **`.col{display:flex}` bat `[hidden]{display:none}`.** Cacher la colonne du plan par le seul
+  attribut `hidden` ne ferait rien sans la règle explicite `.col[hidden]{display:none}` — et
+  `.cloture` est câblée sur trois colonnes (`grid-column:1/4`), d'où la variante `.wrap.sansPlan`.
 
 ## 3. Ce qui reste ouvert
 
@@ -61,7 +79,8 @@ Sept décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
 | La compréhension est-elle encore *exprimée* ? | Depuis que la relation se déduit, un joueur peut rapprocher deux empans au hasard et obtenir une phrase bien formée. **Non éprouvé** |
 | Le critère qui décide de tout : pensée ou formulaire ? | Les phrases se lisent bien à l'écrit ; reste à juger en jouant |
 | La marge de bruit | Mesurée par la suite de test, pas figée dans un nombre |
-| Le rythme des zones | La colonne d'atelier porte le dossier, la phrase et les empans. Allégée par le §4.9 (≈10 lignes de moins à état égal) ; **à juger en jouant**, pas sur capture |
+| **Le va-et-vient entre les deux colonnes** | **Le point ouvert le plus concret, et le prix de la décision 8.** On clique une puce dans l'atelier, la phrase s'écrit sous le canal. Deux symptômes à guetter en jouant **une session entière** : le regard qui cherche où le texte est parti, la main qui repose un empan parce qu'elle a perdu le fil. Repli : faire descendre la mémoire aussi — **pas** remonter le composeur. **Non éprouvé** |
+| Le rythme des zones | L'atelier ne porte plus que le dossier et les empans ; le canal porte le fil et la phrase ; l'écran s'ouvre à deux colonnes. **À juger en jouant**, pas sur capture |
 | L'aide unique en dit-elle assez ? | Le composeur ne nomme plus le geste suivant qu'une fois. **Non éprouvé** : c'est le repli le plus simple si un joueur se perd — remettre l'aide sous le composeur, elle est à un `if` près |
 | La majuscule en tête de phrase composée | Non traité |
 | La progression : portes, place de la Fin 3 | Trois sessions actées ; la porte de la Fin 3 reste à placer |
@@ -70,10 +89,11 @@ Sept décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
 
 ## 4. Prochaine étape
 
-1. **Jouer `app/index.html` en `file://`, de bout en bout, à froid**, et juger deux choses d'un
+1. **Jouer `app/index.html` en `file://`, de bout en bout, à froid**, et juger trois choses d'un
    coup : la session 1 (la réponse par citation répond-elle, ou reformule-t-elle ? la session 2 se
-   lit-elle comme « maintenant, mets-les en rapport » ?) et l'écran allégé (l'aide unique du
-   composeur suffit-elle à savoir quoi faire ?).
+   lit-elle comme « maintenant, mets-les en rapport » ?), l'écran allégé (l'aide unique du composeur
+   suffit-elle à savoir quoi faire ?), et **le va-et-vient de la décision 8** — c'est le neuf, et
+   c'est ce qui a un prix connu d'avance.
 2. Si la boucle tient : écrire la session 4 et placer la porte de la Fin 3.
 3. Si la session 1 guide trop : retirer les `question` une à une — c'est le repli, et il n'exige
    aucune ligne de code. Si l'écran ne guide plus assez, le repli symétrique est aussi court :
