@@ -36,6 +36,7 @@ Se lit de haut en bas : c'est la boucle d'une session (§4.6). `index.html` n'y 
 | l'index du dossier | `piecesLivrees` | — | `renderDossier` | 4.5 |
 | **surligner** (privé, gratuit) | `surligner` | — | `renderMemoire` | 4.6 |
 | ce que le composeur offre | `blocsOfferts`, `etatCompo`, `indexTermeChamp` | `offerts` | `renderCompo` | 4.5 |
+| ce que l'écran souffle — **une seule voix par état** | *(aucune — dérivé de `S`)* | — | `souffle` (dans le fantôme si la phrase est vide, dans l'aide sinon) | 4.9 |
 | **poser un bloc** | `poserBloc`, `retirerBloc`, `viderCompo` | `reduire`, `deduire`, `ordonner` | `texteCompoPartiel` | 4.5 |
 | la clôture sans choix | `cloreSansChoix` (appelée par `poserBloc`) | — | *(rien : le bouton disparaît)* | 4.5 |
 | le pressentiment ⚑ | `majPressentiment`, `pressentir`, `sousLienVice` | `memeRed` | *(rien : privé)* | 4.7 |

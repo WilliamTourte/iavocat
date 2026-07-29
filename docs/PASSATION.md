@@ -1,10 +1,10 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 31 juillet 2026.*
+*À lire en tête d'une nouvelle conversation. État au 1ᵉʳ août 2026.*
 
 ## 1. Où en est le jeu
 
-Six décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.8.
+Sept décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.8, §4.9.
 
 1. **Trois sessions.** R1 lire/extraire/répondre (`p_pv`, `t_voisin`, aucun article) ; R2 comparer
    (`r_temoin`, l'article 3) ; R3 l'ADN et le vice.
@@ -22,6 +22,11 @@ Six décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.
 6. **Le tutoriel du premier geste.** Quatre temps (pièce → texte → mémoire → envoi), un halo qui
    entoure la zone où le geste a lieu, jamais un empan. Il corrige un passage qui ne répond pas (halo
    ambre) sans jamais l'empêcher ni dire lequel c'était. Il s'efface dès la première réponse envoyée.
+7. **Une voix par état.** L'écran ne nomme jamais deux fois le même geste suivant : une seule aide,
+   dérivée de l'état, dans le fantôme tant que la phrase est vide et dans l'aide dès qu'elle ne l'est
+   plus. Un titre par zone, le locuteur au seul changement de locuteur, la puce de mémoire sur deux
+   lignes. Trois phrases ne se coupent pas, parce qu'elles *sont* le jeu : « Rien n'en sort »,
+   « → Maître Auber », « Et donc ? ».
 
 ## 2. Points de vigilance
 
@@ -42,6 +47,11 @@ Six décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.
   contrôle.
 - La relecture à l'œil des phrases composées reste irremplaçable après toute retouche du contenu ou
   de la grammaire.
+- Six chaînes de **chrome** sont épinglées par les suites (`Le dossier`, `Ce que tu retiens`, le
+  `Maître Auber` du bouton d'envoi, `ce qu'il peut plaider`, `elle se lit`, `legende`) : les
+  renommer sans toucher au test qui les nomme casse une suite sans rien dire d'utile (§16).
+- La cible du 3ᵉ temps du tutoriel est `#zoneMemoire`, un id posé exprès : elle se visait autrefois
+  par `:last-child`, ce qui dépendait de l'ordre des zones de l'atelier.
 
 ## 3. Ce qui reste ouvert
 
@@ -51,7 +61,8 @@ Six décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.
 | La compréhension est-elle encore *exprimée* ? | Depuis que la relation se déduit, un joueur peut rapprocher deux empans au hasard et obtenir une phrase bien formée. **Non éprouvé** |
 | Le critère qui décide de tout : pensée ou formulaire ? | Les phrases se lisent bien à l'écrit ; reste à juger en jouant |
 | La marge de bruit | Mesurée par la suite de test, pas figée dans un nombre |
-| Le rythme des zones | La colonne d'atelier porte le dossier, la phrase et les empans ; densité non éprouvée |
+| Le rythme des zones | La colonne d'atelier porte le dossier, la phrase et les empans. Allégée par le §4.9 (≈10 lignes de moins à état égal) ; **à juger en jouant**, pas sur capture |
+| L'aide unique en dit-elle assez ? | Le composeur ne nomme plus le geste suivant qu'une fois. **Non éprouvé** : c'est le repli le plus simple si un joueur se perd — remettre l'aide sous le composeur, elle est à un `if` près |
 | La majuscule en tête de phrase composée | Non traité |
 | La progression : portes, place de la Fin 3 | Trois sessions actées ; la porte de la Fin 3 reste à placer |
 | `comment` en sixième dimension | Écarté, réintégrable sans coût |
@@ -59,12 +70,14 @@ Six décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.
 
 ## 4. Prochaine étape
 
-1. **Jouer `app/index.html` en `file://`, de bout en bout, à froid**, et juger la session 1 avant
-   tout le reste : la réponse par citation répond-elle, ou reformule-t-elle ? la session 2 se lit-elle
-   comme « maintenant, mets-les en rapport » ?
+1. **Jouer `app/index.html` en `file://`, de bout en bout, à froid**, et juger deux choses d'un
+   coup : la session 1 (la réponse par citation répond-elle, ou reformule-t-elle ? la session 2 se
+   lit-elle comme « maintenant, mets-les en rapport » ?) et l'écran allégé (l'aide unique du
+   composeur suffit-elle à savoir quoi faire ?).
 2. Si la boucle tient : écrire la session 4 et placer la porte de la Fin 3.
 3. Si la session 1 guide trop : retirer les `question` une à une — c'est le repli, et il n'exige
-   aucune ligne de code.
+   aucune ligne de code. Si l'écran ne guide plus assez, le repli symétrique est aussi court :
+   rendre l'aide **et** le fantôme, comme avant.
 
 **Méthode à conserver :** toute évolution part de `docs/ARCHITECTURE.md` — on réécrit le document, on
 le fait relire, puis on applique au code.

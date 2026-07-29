@@ -12,14 +12,15 @@ console.log("\n=== L'index du dossier ===");
   check("content.js est bien le contenu qui joue", w.SOURCE_CONTENU === "contenu : content.js");
   check("moteur.js est chargé — la grammaire est branchée", !!w.M);
   check("regles.js est chargé — les règles sont branchées", !!w.R);
-  check("les pièces sont à gauche, les règles à droite",
+  check("les pièces viennent d'abord, les règles ensuite",
         memoire(w).indexOf("Les pièces") < memoire(w).indexOf("Les règles"));
   const pid = H.pidPremiereRemise(w);
   check("le dossier liste les pièces reçues", memoire(w).includes("Le dossier"));
   check("une pièce non consultée porte le marqueur ●", memoire(w).includes("● "));
   w.ouvrirPiece(pid);
   check("consultée, elle porte ✓", memoire(w).includes("✓ "));
-  check("le compteur suit", /\d+\/\d+ consultée/.test(memoire(w)));
+  // Le compteur ne dit plus « consultée » : les ✓ et les ● le disent déjà (§4.9).
+  check("le compteur suit", memoire(w).includes(">1/" + w.R.piecesLivrees(w.S).length + "<"));
 }
 
 console.log("\n=== Tout empan est marqué et cliquable ===");

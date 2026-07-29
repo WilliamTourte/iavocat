@@ -181,6 +181,20 @@ Le prix : pour dire « ce n'est pas ça », le tutoriel doit **savoir ce que c'�
 
 **Le tutoriel ne décide rien** — il *juge*, sans rien décider : aucun champ d'état neuf, pas de sauvegarde, aucune règle, aucun geste refusé. Son temps courant se **dérive** de `S`, exactement comme le composeur dérive ses aides ; le retirer laisserait le jeu identique. Il vit **entièrement dans `index.html`**, du même côté que la sauvegarde de partie — « de l'écran, pas de la règle ». **Ses phrases ne sont pas du contenu** : le §8.6 pose que personne n'explique rien, l'avocat surtout pas ; le tutoriel parle donc depuis le **chrome**, hors de la fiction, et le joueur peut le faire taire d'un mot. Il ne contredit pas l'invariant « tout mécanisme utilisé une seule fois est un panneau indicateur » : c'est le seul panneau qui ne désigne qu'un bouton, jamais une réponse à l'intérieur du jeu, et il s'efface pour de bon dès la première réponse envoyée.
 
+### 4.9 L'économie de l'écran
+
+Le jeu se lit bien sur le papier et se lisait mal à l'écran. Le coupable n'était pas la prose — c'était le **chrome**, qui redisait à côté de chaque chose ce que cette chose disait déjà : un en-tête de colonne qui énumérait ses propres zones, un composeur qui nommait le geste suivant trois fois (le texte-fantôme, l'aide, le bandeau du tutoriel), un locuteur réécrit au-dessus de quatre bulles d'affilée. **Le joueur cessait de lire parce qu'il y avait trop à lire, et ce qui était en trop n'était jamais la fiction.**
+
+Trois règles, qui ne portent que sur l'écran :
+
+1. **Une voix par état.** Le jeu dit déjà, à chaque instant, quel est le geste suivant (§4.8) — il ne le dit **qu'une fois**. Le texte-fantôme de la phrase vide et l'aide sous le composeur étaient la même phrase à deux endroits : c'est désormais **une** phrase, dérivée de l'état, rendue dans le fantôme tant que la phrase est vide, dans l'aide dès qu'elle ne l'est plus.
+2. **Un titre par zone.** L'en-tête d'une colonne nomme la **surface** — *le canal*, *l'atelier*, *le plan* (§4.6) — et rien d'autre ; les titres intérieurs nomment les **zones**. Un en-tête qui énumère ses zones les dit deux fois : *« Ce que tu retiens et ce que tu écris »* était exactement la concaténation des deux titres qu'il surplombait.
+3. **Ce qui ne change pas ne se répète pas.** Le locuteur ne s'affiche qu'au **changement** de locuteur — quatre bulles d'affilée de Maître Auber n'ont qu'un nom au-dessus ; la source d'un empan tient sur la ligne de sa citation au lieu d'en prendre une à elle ; un compteur ne dit pas ce que les puces qu'il compte disent déjà — *« 2/8 »* sous « Le dossier », les ✓ et les ● se chargent du reste ; et ce qui ne s'apprend qu'une fois par partie ne se dit qu'une fois.
+
+**La densité ne touche pas au sens, et c'est la borne.** Une phrase de chrome se coupe parce qu'elle explique ; une phrase qui *est* le jeu reste, même seule sur sa ligne. Trois ne se coupent pas : *« Rien n'en sort »* (§4.6 — la gratuité de la surface privée est une promesse, pas une indication), *« → Maître Auber »* (§4.6 — le second geste, non négociable), *« Et donc ? »* (§4.5 — la relance porte la contrainte de fondement par la forme, pas par le reproche). Réciproquement, ce qui ne se dit qu'une fois par partie se dit **une fois** : la phrase qui rappelle que rien ne part tant qu'on n'envoie pas s'efface après le premier envoi, comme le tutoriel s'efface après la première réponse — le joueur l'a éprouvée, la répéter serait douter de lui.
+
+**Rien de tout cela ne décide quoi que ce soit.** Ces règles vivent entièrement dans `index.html`, se dérivent de `S` sans y ajouter un champ, et ne touchent ni au contenu, ni aux règles, ni à la grammaire : aucune information ne disparaît de l'écran, seule sa deuxième occurrence disparaît.
+
 ## 5. Les directives (le manuel de soi)
 
 Le second manuel décrit **ce que l'IA est censée être**. Son ambiguïté fait le dilemme. Le piège à éviter : deux règles qui pointent *chacune* proprement vers une fin — ça, c'est un *lookup*, pas un dilemme. On veut l'inverse : **des mots clairs, une application contestable**, de sorte que chaque branche puisse se réclamer du même mandat. L'ambiguïté n'est pas dans le vocabulaire, elle est dans le **périmètre** et la **priorité**.
@@ -238,6 +252,7 @@ Le cas est indifférent à *qui* l'analyse. **La preuve décisive** — un match
 - **Composer et envoyer restent deux gestes.** Leur distance peut se réduire, jamais leur nombre (§4.6).
 - **Le plan ne contient que ce qui se plaide.** Tout est entendu, seuls les moyens sont inscrits (§4.6).
 - **Un empan retenu n'existe qu'une fois à l'écran** : la mémoire et le clavier du composeur sont le même objet (§4.6).
+- **Une voix par état.** Le jeu ne nomme jamais deux fois le même geste suivant ; ce qui *est* le jeu ne se coupe pas pour autant (§4.9).
 - **Les directives sont ambiguës par conception.** Chaque branche peut se réclamer du même mandat.
 - **Le décommissionnement est diégétique**, jamais un « tu es nulle » ; équilibré par le **brouillard**.
 - **L'avocat ne sait pas** → ton collaboratif ; le faux vice est une tentation partagée.
@@ -455,12 +470,14 @@ Six suites vivent dans le projet, sur un harnais jsdom commun (`harnais.js`), qu
 
 | Suite | Cible | Ce qu'elle prouve |
 |---|---|---|
-| `test_o5.js` (38) | le jeu, sur **`content.js`** | l'index du dossier (pièces à gauche, règles à droite) ; tout empan est cliquable et aucun marqueur ne fuit ; surligner et composer sont gratuits, illimités, dédoublonnés ; la marge de bruit est non nulle ; le vice à canal unique ; les liens se partagent entre citations et qualifications sans reste ; les trois fins |
+| `test_o5.js` (38) | le jeu, sur **`content.js`** | l'index du dossier (pièces d'abord, règles ensuite) ; tout empan est cliquable et aucun marqueur ne fuit ; surligner et composer sont gratuits, illimités, dédoublonnés ; la marge de bruit est non nulle ; le vice à canal unique ; les liens se partagent entre citations et qualifications sans reste ; les trois fins |
 | `test_declencheurs.js` (45) | le jeu, contenus **mutés** injectés inline | le décâblage : renommage de toutes les pièces, `declenche`/`une_fois`/`qui`, la liste d'attentes (question posée quand elle devient courante, désordre accepté), Manuels par type et par livraison, les trois drapeaux, dimensions renommées, un contenu invalide est refusé et le dit |
 | `test_autre_affaire.js` (20) | le jeu, **affaire de test** | le découplage : une affaire abstraite écrite à l'ancienne (source `note`) se joue de bout en bout, trois fins comprises |
 | `test_parcours.js` (110) | le jeu | l'ergonomie et le grain fin : composer bloc à bloc, retirer, tout effacer ; le tutoriel du premier geste ; les deux régimes de fondement (citation qui se clôt d'elle-même, comparaison qui ne s'écrit que par les noms) ; les trois escalades séparées (comparaison nue, article mal rattaché, citation hors sujet) ; la déduction (patron, ordre des clics indifférent) ; le filtre de livraison ; la continuation (aucun bloc ne clôt sans qualifier) ; le plan qui ne retient que les moyens ; la répétition |
 | `test_sauvegarde.js` (33) | le jeu | la partie survit au rechargement (mémoire, journal, plan, composition en cours, phrase close en attente, drapeaux) ; la signature jette une sauvegarde d'un autre contenu ; la fin efface |
 | `smoke_atelier.js` (79) | l'atelier + le couple atelier→jeu | `content.js` sans erreur et réexporté à l'identique ; le diagnostic au complet ; migration 2→3 idempotente ; renommage d'empans et de pièces ; le pas-à-pas tourne sur `regles.js` ; export `schema: 3` adopté et joué par le moteur ; autosave |
+
+**Six chaînes de chrome sont épinglées**, en revanche, et c'est autre chose : `Le dossier`, `Ce que tu retiens`, le `Maître Auber` du bouton d'envoi, `ce qu'il peut plaider`, `elle se lit`, `legende`. Ce n'est pas du contenu — ce sont les repères par lesquels une suite atteint une zone sans la nommer par sa structure. On les renomme si on veut, mais jamais sans toucher au test qui les nomme : c'est la seule laisse entre l'écran et les suites, et elle est courte exprès (§4.9).
 
 Règle d'or : **une évolution n'est finie que quand les six suites sont vertes** (325 contrôles). `tests/verifier_content_sync.js` n'existe plus : il surveillait l'écart entre deux exemplaires du contenu, et il n'y en a plus qu'un. (`grammaire/test_grammaire2.js` est un banc d'essai de démonstration : pas de code de sortie, pas dans `npm test`.)
 
@@ -478,3 +495,4 @@ Une ligne par étape, pour ne jamais rouvrir un débat déjà tranché sans savo
 - **30 juillet, premier temps — refonte du fondement.** Le « au regard de l'article » devient obligatoire ; les articles annoncent ce qu'ils régissent (`porte`) et cessent de porter des empans ; `regles.js` est extrait d'`index.html`, le contenu passe à un exemplaire unique (§4.5, §9, §12).
 - **30 juillet, second temps — le premier geste : lire, extraire, répondre.** La session 1 ancienne se scinde en deux ; un empan seul se clôt par sa citation ; une remise attend une liste d'attentes (§3, §4.5).
 - **31 juillet — le clic en trop, et le geste montré.** La confirmation disparaît quand une seule liaison non `imbrique` est offerte ; le tutoriel du premier geste apparaît (§4.5, §4.8).
+- **1ᵉʳ août — l'économie de l'écran.** Une voix par état, un titre par zone, le locuteur au changement ; les puces de mémoire passent de trois lignes à deux. Rien du contenu, des règles ni de la grammaire ne bouge (§4.9).
