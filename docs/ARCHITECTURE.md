@@ -134,12 +134,14 @@ Le principe qui commande tout le composeur : **tout mécanisme utilisé une seul
 
 ### 4.6 Les trois surfaces — la frontière morale
 
+**Les en-têtes à l'écran** *(depuis le 29 juillet)* : « Discussion », « Mémoire », « Plaidoirie ». Le corps de ce document continue de nommer les surfaces par leur rôle — *le canal*, *l'atelier*, *le plan* — ces trois noms ne désignent que le fil de conversation, la zone privée de collecte, et ce qui est transmis à l'avocat ; ils ne se confondent pas avec `app/atelier_v3.html`, l'outil d'écriture du contenu (§9), qui garde son nom.
+
 | Surface | Statut | Rôle |
 |---|---|---|
-| Le canal + les pièces | lecture | l'entrée |
+| Le canal (« Discussion ») + les pièces | lecture | l'entrée |
 | **Le composeur** — *sous le canal* | **privé** | la phrase qu'on écrit — **jamais jugée** |
-| **L'atelier** | **privé** | le dossier et les empans retenus — **jamais jugés** |
-| Le plan de plaidoirie | **transmis** | ce que l'avocat retient |
+| **L'atelier** (« Mémoire ») | **privé** | le dossier et les empans retenus — **jamais jugés** |
+| Le plan de plaidoirie (« Plaidoirie ») | **transmis** | ce que l'avocat retient |
 
 **Un empan retenu n'existe qu'une fois à l'écran** : cette occurrence unique est à la fois la mémoire et le clavier. Les puces de la mémoire **sont** les boutons de terme — les retenir, les relire, les oublier, les poser dans une phrase, un seul objet, un seul endroit. Le journal interne (l'ancien « brouillon ») sert au dédoublonnage, au drapeau `vice_trouve` et au présentoir de la répétition, mais n'a pas de zone à lui.
 
@@ -193,7 +195,7 @@ Le jeu se lit bien sur le papier et se lisait mal à l'écran. Le coupable n'ét
 Quatre règles, qui ne portent que sur l'écran :
 
 1. **Une voix par état.** Le jeu dit déjà, à chaque instant, quel est le geste suivant (§4.8) — il ne le dit **qu'une fois**. Le texte-fantôme de la phrase vide et l'aide sous le composeur étaient la même phrase à deux endroits : c'est désormais **une** phrase, dérivée de l'état, rendue dans le fantôme tant que la phrase est vide, dans l'aide dès qu'elle ne l'est plus.
-2. **Un titre par zone.** L'en-tête d'une colonne nomme la **surface** — *le canal*, *l'atelier*, *le plan* (§4.6) — et rien d'autre ; les titres intérieurs nomment les **zones**. Un en-tête qui énumère ses zones les dit deux fois : *« Ce que tu retiens et ce que tu écris »* était exactement la concaténation des deux titres qu'il surplombait.
+2. **Un titre par zone.** L'en-tête d'une colonne nomme la **surface** — *le canal* (« Discussion »), *l'atelier* (« Mémoire »), *le plan* (« Plaidoirie ») (§4.6) — et rien d'autre ; les titres intérieurs nomment les **zones**. Un en-tête qui énumère ses zones les dit deux fois : *« Ce que tu retiens et ce que tu écris »* était exactement la concaténation des deux titres qu'il surplombait.
 3. **Ce qui ne change pas ne se répète pas.** Le locuteur ne s'affiche qu'au **changement** de locuteur — quatre bulles d'affilée de Maître Auber n'ont qu'un nom au-dessus ; la source d'un empan tient sur la ligne de sa citation au lieu d'en prendre une à elle ; un compteur ne dit pas ce que les puces qu'il compte disent déjà — *« 2/8 »* sous « Le dossier », les ✓ et les ● se chargent du reste ; et ce qui ne s'apprend qu'une fois par partie ne se dit qu'une fois. **Ce qui est déjà sous les yeux ne se répète pas non plus** *(31 juillet)* : depuis que le composeur est sous le fil, le rappel de la question ne s'affiche que lorsqu'elle a **cessé d'être le dernier mot** de l'avocat — tant qu'elle est la bulle juste au-dessus, la redire l'écrirait deux fois à quelques pixels d'écart. C'est la relecture à l'œil qui l'a attrapé, et aucune suite ne l'aurait vu.
 4. **Ce qui n'existe pas encore ne s'affiche pas** *(31 juillet)*. Une surface vide qui explique son vide est du chrome au pire moment : la première minute, quand tout est neuf. **Le plan reste entièrement caché tant que rien ne s'y inscrit** — pas de colonne, pas d'en-tête, pas de phrase d'attente ; l'écran s'ouvre sur deux colonnes au lieu de trois. Il apparaît de lui-même au premier moyen versé, et **c'est cette apparition qui l'enseigne** : le joueur n'a pas à lire ce qu'est le plan, il le voit se remplir du premier moyen qu'il vient d'envoyer. La règle vaut au-delà du plan : ce qui n'a rien à montrer ne prend pas de place pour dire qu'il n'a rien à montrer.
 
@@ -486,7 +488,7 @@ Six suites vivent dans le projet, sur un harnais jsdom commun (`harnais.js`), qu
 | `test_sauvegarde.js` (33) | le jeu | la partie survit au rechargement (mémoire, journal, plan, composition en cours, phrase close en attente, drapeaux) ; la signature jette une sauvegarde d'un autre contenu ; la fin efface |
 | `smoke_atelier.js` (79) | l'atelier + le couple atelier→jeu | `content.js` sans erreur et réexporté à l'identique ; le diagnostic au complet ; migration 2→3 idempotente ; renommage d'empans et de pièces ; le pas-à-pas tourne sur `regles.js` ; export `schema: 3` adopté et joué par le moteur ; autosave |
 
-**Six chaînes de chrome sont épinglées**, en revanche, et c'est autre chose : `Le dossier`, `Ce que tu retiens`, le `Maître Auber` du bouton d'envoi, `ce qu'il peut plaider`, `elle se lit`, `legende`. Ce n'est pas du contenu — ce sont les repères par lesquels une suite atteint une zone sans la nommer par sa structure. On les renomme si on veut, mais jamais sans toucher au test qui les nomme : c'est la seule laisse entre l'écran et les suites, et elle est courte exprès (§4.9).
+**Des chaînes de chrome sont épinglées**, en revanche, et c'est autre chose : `Le dossier`, `Ce que tu retiens`, le `Maître Auber` du bouton d'envoi, `ce qu'il peut plaider`. Ce n'est pas du contenu — ce sont les repères par lesquels une suite atteint une zone sans la nommer par sa structure. On les renomme si on veut, mais jamais sans toucher au test qui les nomme : c'est la seule laisse entre l'écran et les suites, et elle est courte exprès (§4.9).
 
 Règle d'or : **une évolution n'est finie que quand les six suites sont vertes** (330 contrôles). `tests/verifier_content_sync.js` n'existe plus : il surveillait l'écart entre deux exemplaires du contenu, et il n'y en a plus qu'un. (`grammaire/test_grammaire2.js` est un banc d'essai de démonstration : pas de code de sortie, pas dans `npm test`.)
 
@@ -505,3 +507,4 @@ Une ligne par étape, pour ne jamais rouvrir un débat déjà tranché sans savo
 - **30 juillet, second temps — le premier geste : lire, extraire, répondre.** La session 1 ancienne se scinde en deux ; un empan seul se clôt par sa citation ; une remise attend une liste d'attentes (§3, §4.5).
 - **31 juillet — le clic en trop, et le geste montré.** La confirmation disparaît quand une seule liaison non `imbrique` est offerte ; le tutoriel du premier geste apparaît (§4.5, §4.8).
 - **1ᵉʳ août — l'économie de l'écran.** Une voix par état, un titre par zone, le locuteur au changement ; les puces de mémoire passent de trois lignes à deux. Rien du contenu, des règles ni de la grammaire ne bouge (§4.9).
+- **2 août — les en-têtes des trois surfaces.** « Le canal », « L'atelier », « Le plan » deviennent à l'écran « Discussion », « Mémoire », « Plaidoirie » (§4.6) ; la légende des dimensions et les notes d'aide dans la modale de pièce disparaissent (§4.9).

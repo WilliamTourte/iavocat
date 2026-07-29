@@ -8,7 +8,7 @@
   :root{
     --bg:#0e1116; --panel:#161b22; --panel2:#1c232d; --line:#2b3440;
     --txt:#d7dde5; --muted:#8b97a6; --accent:#6fb3d6; --lock:#7bbf8a; --warn:#d6a96f;
-    --prive:#3a3242; --transmis:#23506e;
+  
     --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     /* Les couleurs de dimension. Fixes, attribuées par RANG dans
@@ -32,8 +32,7 @@
   /* Le compte du plan monte dans l'en-tête : une seule zone, un seul titre (§4.9) */
   .col > h2 .zcount{float:none;margin-left:auto}
   .col > h2 .tag{font-size:10.5px;letter-spacing:.4px;border-radius:4px;padding:1px 6px;font-weight:500}
-  .tag.prive{background:var(--prive);color:#cbb9dc}
-  .tag.transmis{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis)}
+
   .body{padding:12px 14px;overflow-y:auto;max-height:72vh}
   .col.demi .body{max-height:34vh}
   /* `.col` pose `display:flex`, qui BAT la règle `[hidden]{display:none}` du
@@ -233,13 +232,13 @@
     <div id="composeur"></div>
   </section>
   <section class="col">
-    <h2>Mémoire <span class="tag prive">privé</span></h2>
+    <h2>Mémoire</h2>
     <div class="body" id="atelier"></div>
   </section>
   <!-- Caché tant que rien ne s'y inscrit : ce qui n'existe pas encore ne
        s'affiche pas (§4.9). C'est `renderPlan` qui pose le `hidden`. -->
   <section class="col" id="colPlan" hidden>
-    <h2>Plaidoirie <span class="tag transmis">transmis</span><span class="zcount" id="planCount"></span></h2>
+    <h2>Plaidoirie<span class="zcount" id="planCount"></span></h2>
     <div class="body" id="plan"></div>
   </section>
   <div class="cloture">
@@ -640,12 +639,12 @@ function souffle(){
   const attendTerme=offerts.some(b=>b.type==="terme"&&b.source!=="note");
   if(!S.compo.length){
     if(!S.memoire.length) return "Ouvre une pièce et retiens un passage.";
-    return second ? "Désigne deux passages de ta mémoire…" : "Désigne le passage qui répond…";
+    return second ? "Désigne deux passages de ta mémoire…" : "Sélectionne un passage pour répondre à partir de ta mémoire";
   }
   const citation=offerts.some(b=>b.cite);
-  if(citation && second) return "Un second passage pour les mettre en rapport — ou cite celui-ci.";
-  if(citation) return "Un fait se cite : la phrase est finie dès que tu la clos.";
-  if(attendTerme) return "Clique un second passage, plus bas. Ce qui les lie se déduit tout seul.";
+  if(citation && second) return "Ajouter un second passage ?";
+  if(citation) return "Quel article citer pour appuyer la déclaration ?";
+  if(attendTerme) return "Clique sur un second passage pour le mettre en relation";
   /* LA RELANCE. Une comparaison n'est jamais terminée d'office : elle demande
      toujours « et donc ? ». C'est le composeur qui pose la question — l'avocat
      n'a plus à s'agacer d'une remarque nue, elle ne peut plus lui parvenir.

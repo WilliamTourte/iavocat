@@ -36,6 +36,11 @@ Neuf décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
    retirée** tant que rien ne s'y inscrit — l'écran s'ouvre à deux colonnes. Elle apparaît au premier
    moyen versé, et c'est cette apparition qui l'enseigne. La phrase d'attente *« Il n'inscrit ici que
    ce qu'il peut plaider »* a disparu avec elle : elle était devenue inatteignable.
+10. **Les en-têtes des trois surfaces** *(2 août)*. « Le canal », « L'atelier », « Le plan » s'affichent
+    désormais « Discussion », « Mémoire », « Plaidoirie » — les noms de rôle du §4.6 ne changent pas,
+    seul l'en-tête à l'écran change, et ne se confond pas avec `app/atelier_v3.html`, l'outil d'écriture
+    du contenu, qui garde son nom. Dans la même session, la légende des dimensions et les notes d'aide
+    de la modale de pièce (« Clique un passage… », « Rien à retenir ici… ») sont retirées.
 
 ## 2. Points de vigilance
 
@@ -56,10 +61,12 @@ Neuf décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
   contrôle.
 - La relecture à l'œil des phrases composées reste irremplaçable après toute retouche du contenu ou
   de la grammaire.
-- Cinq chaînes de **chrome** sont épinglées par les suites (`Le dossier`, `Ce que tu retiens`, le
-  `Maître Auber` du bouton d'envoi, `elle se lit`, `legende`) : les renommer sans toucher au test qui
-  les nomme casse une suite sans rien dire d'utile (§16). *`ce qu'il peut plaider` n'en fait plus
-  partie : la phrase et son assertion ont disparu avec la colonne vide (décision 9).*
+- Des chaînes de **chrome** sont épinglées par les suites (`Le dossier`, `Ce que tu retiens`, le
+  `Maître Auber` du bouton d'envoi) : les renommer sans toucher au test qui les nomme casse une suite
+  sans rien dire d'utile (§16). *`ce qu'il peut plaider` n'en fait plus partie : la phrase et son
+  assertion ont disparu avec la colonne vide (décision 9). `elle se lit` et `legende` n'en font plus
+  partie non plus : la légende des dimensions et les notes d'aide de la modale ont été retirées
+  (décision 10).*
 - **Trois ids sont des points d'ancrage, pas de la décoration** : `#zoneMemoire` (3ᵉ temps du
   tutoriel), `#composeur` (4ᵉ temps **et** lecture d'écran du harnais), `#colPlan` (ce que
   `planVisible` interroge). Les renommer casse le tutoriel en silence — `majTutoriel` teste

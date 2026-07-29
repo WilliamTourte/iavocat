@@ -338,7 +338,6 @@ console.log("\n=== La modale de pièce ===");
   const m = () => w.document.querySelector(".modal").innerHTML;
   check("le titre et le signataire s'affichent",
     m().includes(w.JEU.pieces[pid].titre) && m().includes(w.JEU.pieces[pid].qui));
-  check("une légende des dimensions présentes est offerte", m().includes("legende"));
   const eid = Object.keys(w.JEU.pieces[pid].empans)[0];
   w.surligner(pid, eid);
   check("l'empan surligné se marque « pris » dans la modale", m().includes("empan pris"));
@@ -348,7 +347,7 @@ console.log("\n=== La modale de pièce ===");
   const pidR = H.pidRegle(w);
   if (!Object.keys(w.JEU.pieces[pidR].empans || {}).length) {
     w.ouvrirPiece(pidR);
-    check("une règle sans empan le dit au lieu d'inviter à cliquer", m().includes("elle se lit"));
+    check("une règle sans empan s'affiche sans planter", m().includes(w.JEU.pieces[pidR].titre));
   } else check("(la règle testée porte des empans)", true);
 }
 
