@@ -3,7 +3,7 @@
 // drapeaux du vice, Manuels par type et par livraison, rejet du schéma 2.
 // Les mutations elles-mêmes sont dérivées du contenu (rien n'est nommé).
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, contenuLivre, canal, memoire } = H;
+const { check, bilan, contenuLivre, discussion, memoire } = H;
 const boot = contenu => H.boot({contenu});   // null = aucun contenu du tout
 const clone = o => JSON.parse(JSON.stringify(o));
 
@@ -88,7 +88,7 @@ console.log("\n=== piece.declenche ===");
   w.ouvrirPiece(pid); const n1 = w.S.fil.length;
   w.ouvrirPiece(pid);
   check("sans une_fois, la réplique repart", w.S.fil.length > n1);
-  check("le « qui » du contenu est respecté", canal(w).includes("Le stagiaire"));
+  check("le « qui » du contenu est respecté", discussion(w).includes("Le stagiaire"));
 }
 
 console.log("\n=== Les attentes d'une remise : l'avancement ===");
@@ -113,7 +113,7 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
   check("la dernière attente servie ferme la session et ouvre la suivante", w.S.remisesEnvoyees === 2);
   const fin = as[as.length - 1].apres;
   check("l'accusé de réception est dit",
-        !fin || canal(w).includes(fin.replique.slice(0, 30)));
+        !fin || discussion(w).includes(fin.replique.slice(0, 30)));
 }
 {
   // Chaque question posée arrive dans le canal quand son attente devient courante.
@@ -121,11 +121,11 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
   const w = boot(c);
   const as = w.R.attentesDe(c.remises[0]).filter(a => a.question);
   if (as.length) {
-    check("la première question est posée au démarrage", canal(w).includes(as[0].question));
+    check("la première question est posée au démarrage", discussion(w).includes(as[0].question));
     if (as.length > 1) {
-      check("la suivante ne l'est pas encore", !canal(w).includes(as[1].question));
+      check("la suivante ne l'est pas encore", !discussion(w).includes(as[1].question));
       w.envoyer(H.composerLien(w, H.lienTag(w, as[0].attend)));
-      check("elle est posée dès que la précédente est servie", canal(w).includes(as[1].question));
+      check("elle est posée dès que la précédente est servie", discussion(w).includes(as[1].question));
     }
   }
 }
@@ -143,7 +143,7 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
       w.S.satisfaits.includes(derniere.attend));
     check("mais ne ferme pas la session pour autant", w.S.remisesEnvoyees === 1);
     check("et la première question reste posée",
-      !as[0].question || canal(w).includes(as[0].question));
+      !as[0].question || discussion(w).includes(as[0].question));
     as.slice(0, -1).forEach(a => w.envoyer(H.composerLien(w, H.lienTag(w, a.attend))));
     check("le reste servi, la session passe enfin", w.S.remisesEnvoyees === 2);
   }
@@ -154,7 +154,7 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
   as[as.length-1].apres = { qui:"La greffière", replique:"Reçu." };
   const w = boot(c);
   H.instruire(w);
-  check("le « qui » de l'accusé de réception vient du contenu", canal(w).includes("La greffière"));
+  check("le « qui » de l'accusé de réception vient du contenu", discussion(w).includes("La greffière"));
 }
 {
   // une session de plus, sans pièce, écrite À L'ANCIENNE : le moteur ne s'en émeut pas

@@ -69,7 +69,7 @@
      non un seul enchaînement (le composeur et les autres `.zone` gardent le
      rendu simple, sans cadre — seuls ces deux-là le portent). Sans titre ni
      compteur pour l'instant : le cadre seul suffit à les distinguer. */
-  #zoneDossier,#zoneMemoire{border:1px solid var(--line);border-radius:8px;
+  #zoneDossier,#zoneRetenus{border:1px solid var(--line);border-radius:8px;
     background:var(--panel2);padding:10px 12px;margin-bottom:12px}
   /* Le cadre reprend celui des SURFACES (`.col > h2`) en plus discret : la
      zone se distingue du texte courant sans rivaliser avec l'en-tête de
@@ -178,7 +178,7 @@
   code{font-family:var(--mono);color:var(--accent)}
   /* --- l'index du dossier : les pièces d'abord, les règles ensuite --- */
   /* Deux natures, deux BANDES pleine largeur — et non deux colonnes : à
-     largeur de colonne d'atelier, une gouttière d'étiquette plus une demi-
+     largeur de colonne de Mémoire, une gouttière d'étiquette plus une demi-
      largeur ne laissait plus la place à deux puces côte à côte, et l'index
      s'empilait une ligne par pièce (§4.9). */
   .dossier{display:flex;flex-direction:column;gap:6px;padding:2px 0 4px}
@@ -229,9 +229,9 @@
        elles portent déjà leur titre, plus bas (§4.9). -->
   <section class="col">
     <h2>Discussion</h2>
-    <div class="body" id="canal"></div>
+    <div class="body" id="discussion"></div>
     <!-- On répond SOUS la question (§4.6). `#composeur` est le FRÈRE de
-         `#canal`, jamais son enfant : le fil défile et se recale en bas à
+         `#discussion`, jamais son enfant : le fil défile et se recale en bas à
          chaque message, la phrase qu'on écrit ne doit pas partir avec lui.
          Aucune étiquette « privé » ici — le statut se lit dans le fait que
          rien n'en sort, pas dans un en-tête (§4.6). -->
@@ -239,13 +239,13 @@
   </section>
   <section class="col">
     <h2>Mémoire</h2>
-    <div class="body" id="atelier"></div>
+    <div class="body" id="memoire"></div>
   </section>
   <!-- Caché tant que rien ne s'y inscrit : ce qui n'existe pas encore ne
-       s'affiche pas (§4.9). C'est `renderPlan` qui pose le `hidden`. -->
-  <section class="col" id="colPlan" hidden>
-    <h2>Plaidoirie<span class="zcount" id="planCount"></span></h2>
-    <div class="body" id="plan"></div>
+       s'affiche pas (§4.9). C'est `renderPlaidoirie` qui pose le `hidden`. -->
+  <section class="col" id="colPlaidoirie" hidden>
+    <h2>Plaidoirie<span class="zcount" id="plaidoirieCount"></span></h2>
+    <div class="body" id="plaidoirie"></div>
   </section>
   <div class="cloture">
     <button id="btnCloture" onclick="cloturer()" disabled>Clôturer l'instruction</button>
@@ -377,6 +377,12 @@ function restaurerPartie(){
     const brut=localStorage.getItem(CLE_PARTIE); if(!brut) return false;
     const d=JSON.parse(brut);
     if(d.sig!==signatureContenu()){ localStorage.removeItem(CLE_PARTIE); return false; }
+    /* Sauvegarde écrite avant que `S.memoire` ne devienne `S.retenus`
+       (docs/LEXIQUE.md). Le CONTENU, lui, n'a pas changé : la signature ne
+       jette donc pas cette partie, et sans cette reprise le joueur la
+       retrouverait avec zéro passage retenu, sans un mot. */
+    if(d.retenus===undefined && Array.isArray(d.memoire)) d.retenus=d.memoire;
+    delete d.memoire;
     delete d.sig; Object.assign(S,d); return true;
   }catch(e){ return false; }
 }
@@ -426,14 +432,14 @@ function tutoAttendu(){
 function tutoEtape(){
   if(S.remisesEnvoyees!==1 || S.satisfaits.length) return null;
   const veut=tutoAttendu();
-  if(veut ? !S.memoire.includes(veut) : !S.memoire.length){
+  if(veut ? !S.retenus.includes(veut) : !S.retenus.length){
     // Autre chose est retenu : ce n'est pas le passage demandé, et on le dit.
-    const rate = !!veut && S.memoire.length>0;
+    const rate = !!veut && S.retenus.length>0;
     return S.modalPiece
       ? {n:2, ou:"#modalRoot .piecetexte", alerte:rate,
             dit: rate ? "Ce n'est pas ce qu'il demande. Relis sa question, et prends le passage qui y répond."
                       : "Les passages soulignés se retiennent d'un clic. Prends celui qui répond."}
-      : {n:1, ou:"#canal .attach", alerte:rate,
+      : {n:1, ou:"#discussion .attach", alerte:rate,
             dit: rate ? "Ce n'est pas ce qu'il demande. Rouvre la pièce et relis sa question."
                       : "Ouvre la pièce : ce qu'il te demande est écrit dedans."};
   }
@@ -441,7 +447,7 @@ function tutoEtape(){
     return S.modalPiece
       ? {n:2, ou:"#modalRoot .close",
             dit:"Passage retenu. Referme la pièce."}
-      : {n:3, ou:"#zoneMemoire",
+      : {n:3, ou:"#zoneRetenus",
             dit:"Pour répondre, sélectionne le passage pertinent"};
   return  {n:4, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
@@ -481,12 +487,12 @@ function modal(html){
      </div>`;
 }
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function rendreTout(){ renderCanal(); renderComposeur(); renderAtelier(); renderPlan(); majCloture(); majTutoriel(); sauverPartie(); }
+function rendreTout(){ renderDiscussion(); renderComposeur(); renderMemoire(); renderPlaidoirie(); majCloture(); majTutoriel(); sauverPartie(); }
 
 /* ---- Le canal : un fil de messages ---- */
 function pousser(qui,texte,pieces,ia){ return R.pousser(S,qui,texte,pieces,ia); }
 function envoyerRemise(){ return R.envoyerRemise(S); }
-function renderCanal(){
+function renderDiscussion(){
   let h="", dernier=null;
   for(const m of S.fil){
     // Les textes de l'avocat viennent du contenu, écrits pour l'écran ; la
@@ -512,7 +518,7 @@ function renderCanal(){
       : `<div class="rnote vide">tu n'as écrit aucune phrase à y opposer</div>`
     }<button class="btn" onclick="avancerRepetition()">Ne rien envoyer — continuer</button></div>`;
   }
-  const el=$("canal");
+  const el=$("discussion");
   el.innerHTML=h;
   el.scrollTop=el.scrollHeight;
 }
@@ -529,7 +535,7 @@ function rendreTexte(pid){
     h+=esc(reste.slice(0,m.index));
     const eid=m[1], e=(p.empans||{})[eid];
     if(e){
-      const k=pid+"."+eid, pris=S.memoire.includes(k);
+      const k=pid+"."+eid, pris=S.retenus.includes(k);
       h+=`<span class="empan ${pris?'pris':''}" style="--dc:${couleurDim(e.dim)}"
             onclick="surligner('${pid}','${eid}')" title="${esc(e.dim)} — ${esc(e.qui||p.qui||'')}">${esc(e.texte)}</span>`;
     } else h+=esc(m[0]);
@@ -591,17 +597,17 @@ function modalPieceHTML(pid){
    quand un terme est attendu ; le « × » l'oublie, toujours.
    L'id de zone est la cible du 3ᵉ temps du tutoriel : il se visait autrefois
    par `:last-child`, ce qui dépendait de l'ordre des zones (§4.8). */
-function renderMemoire(){
+function renderRetenus(){
   const iT=indexTermeChamp();
-  let h=`<div class="zone" id="zoneMemoire">`;
-  if(!S.memoire.length){
+  let h=`<div class="zone" id="zoneRetenus">`;
+  if(!S.retenus.length){
     // Le geste, c'est le composeur qui le nomme (§4.9) ; ici, la seule chose
     // que la zone vide ait à dire est ce qu'elle est — une surface qui ne
     // transmet rien (§4.6).
     h+=`<div class="aide">Alimente ta mémoire en sélectionnant des passages du dossier .</div>`;
   } else {
     for(const d of JEU.dimensions||[]){
-      const ks=S.memoire.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
+      const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
       if(!ks.length) continue;
       h+=`<div class="dimgrp" style="--dc:${couleurDim(d)}"><div class="dnom">${esc(d)}</div>`;
       for(const {k,j} of ks){
@@ -643,7 +649,7 @@ function souffle(){
   const second=offerts.some(b=>b.type==="terme"&&b.deduit);
   const attendTerme=offerts.some(b=>b.type==="terme"&&b.source!=="note");
   if(!S.compo.length){
-    if(!S.memoire.length) return "Ouvre une pièce et retiens un passage.";
+    if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
     return second ? "Sélectionne deux passages depuis ta mémoire…" : "Depuis ta mémoire, sélectionne un passage pour répondre";
   }
   const citation=offerts.some(b=>b.cite);
@@ -749,17 +755,19 @@ function renderCompo(){
 }
 
 /* ============================================================
-   6) L'ATELIER (privé) ET LE PLAN DE PLAIDOIRIE (transmis).
-      L'avocat ne voit QUE le plan. Envoyer est le seul geste à
-      conséquence — donc le seul lieu possible du dilemme. Et il
-      n'inscrit au plan que les MOYENS : le reste, il le dit.
+   6) LA MÉMOIRE (privée) ET LA PLAIDOIRIE (transmise).
+      L'avocat ne voit QUE la Plaidoirie. Envoyer est le seul geste
+      à conséquence — donc le seul lieu possible du dilemme. Et il
+      n'y inscrit que les MOYENS : le reste, il le dit.
+      (« atelier » ne désigne plus que app/atelier_v3.html, l'outil
+       qui écrit les affaires — docs/LEXIQUE.md.)
    ============================================================ */
 /* La colonne de travail : le dossier et les empans retenus. La phrase, elle,
    s'écrit sous le canal depuis le 31 juillet (§4.6) — le clavier reste ici,
    c'est le prix accepté de l'arbitrage (§7). La liste d'empans ne figure
    toujours qu'une fois à l'écran. */
-function renderAtelier(){
-  $("atelier").innerHTML = renderDossier() + renderMemoire();
+function renderMemoire(){
+  $("memoire").innerHTML = renderDossier() + renderRetenus();
 }
 /* Le composeur, sous le fil : `renderCompo` rend déjà une zone autonome, avec
    son titre, le rappel de la question et le bouton d'envoi. Il n'a rien eu à
@@ -773,16 +781,16 @@ function estMoyen(L){ return R.estMoyen(L); }
 /* Un seul titre : celui de la colonne, qui nomme la surface (§4.9). Le compte
    monte le rejoindre dans le `<h2>` — le plan n'a qu'une zone, elle n'a pas à
    se renommer sous son propre en-tête. */
-function renderPlan(){
+function renderPlaidoirie(){
   const gardes=S.plaidoirie.filter(x=>S.brouillon[x.b] && estMoyen(S.brouillon[x.b].lien));
   /* Vide, la colonne n'existe pas : ce qui n'a rien à montrer ne prend pas de
      place pour dire qu'il n'a rien à montrer (§4.9). Elle apparaît d'elle-même
      au premier moyen versé, et c'est cette apparition qui l'enseigne — d'où
      l'absence de toute phrase d'attente ici : elle serait inatteignable. */
   const vide = !gardes.length;
-  { const c=$("colPlan"); if(c) c.hidden=vide; }
+  { const c=$("colPlaidoirie"); if(c) c.hidden=vide; }
   { const w=document.querySelector(".wrap"); if(w) w.classList.toggle("sansPlan",vide); }
-  { const c=$("planCount"); if(c) c.textContent=gardes.length||""; }
+  { const c=$("plaidoirieCount"); if(c) c.textContent=gardes.length||""; }
   let h=`<div class="zone">`;
   h+=`<ul class="liste plaid">${gardes.map(x=>
     `<li><span class="txt">${esc(S.brouillon[x.b].texte)}${
@@ -790,7 +798,7 @@ function renderPlan(){
         ? `<span class="contre">opposé à : ${esc(JEU.repetition.affirmations[x.contre].court)}</span>`:""
     }</span></li>`).join("")}</ul>`;
   h+=`</div>`;
-  $("plan").innerHTML=h;
+  $("plaidoirie").innerHTML=h;
 }
 /* LE GESTE. Le seul qui traverse la frontière — donc le seul lieu du dilemme.
    Ce qu'il déclenche (les drapeaux, la réplique, l'avancement de session) est

@@ -4,7 +4,7 @@
 // un vice dont la conclusion invoque une clause qui n'arrive qu'en session 3.
 // Si cette suite passe, le moteur et le harnais sont indépendants du cas.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, canal } = H;
+const { check, bilan, discussion } = H;
 
 const AFFAIRE = {
   schema:3,
@@ -115,7 +115,7 @@ console.log("\n=== Les trois sessions s'enchaînent par le versement ===");
   const i0 = H.composerLien(w, H.lienTag(w, "s1"));
   w.envoyer(i0);
   check("session 1 servie → session 2", w.S.remisesEnvoyees === 2);
-  check("l'accusé de réception est dit", canal(w).includes("Bien. Suite."));
+  check("l'accusé de réception est dit", discussion(w).includes("Bien. Suite."));
   const i1 = H.composerLien(w, H.lienTag(w, "s2"));
   w.envoyer(i1);
   check("session 2 servie → session 3", w.S.remisesEnvoyees === 3);
@@ -149,16 +149,16 @@ console.log("\n=== La chaîne en deux phrases, et les refus de catégorie ===");
   check("la comparaison ⚑ se compose", i >= 0);
   check("elle ne lève que le pressentiment", w.S.vice_pressenti && !w.S.vice_trouve);
   w.envoyer(i);
-  check("versée seule, elle reçoit sa propre réplique", canal(w).includes("dis-moi ça en droit"));
+  check("versée seule, elle reçoit sa propre réplique", discussion(w).includes("dis-moi ça en droit"));
   check("mais n'expose pas le vice", !w.S.vice_expose);
 }
 {
   const w = boot();
   w.ouvrirPiece("d1"); w.ouvrirPiece("d2");
   H.surligner(w, "d1.e1"); H.surligner(w, "d1.e2");
-  w.poserBloc(w.blocsOfferts().findIndex(b=>b.id==="b0"), w.S.memoire.indexOf("d1.e1"));
+  w.poserBloc(w.blocsOfferts().findIndex(b=>b.id==="b0"), w.S.retenus.indexOf("d1.e1"));
   w.poserBloc(w.blocsOfferts().findIndex(b=>b.id==="bv"));
-  w.poserBloc(w.blocsOfferts().findIndex(b=>b.id==="b2"), w.S.memoire.indexOf("d1.e2"));
+  w.poserBloc(w.blocsOfferts().findIndex(b=>b.id==="b2"), w.S.retenus.indexOf("d1.e2"));
   check("alpha « vaut » beta est refusé", !!w.S.refus);
   check("rien n'est tombé au brouillon", w.S.brouillon.length === 0);
   check("le bloc fautif est retiré, la phrase reste réparable", w.S.compo.length === 2);

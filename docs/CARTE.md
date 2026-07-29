@@ -17,8 +17,8 @@
 | `app/content.js` | 664 | **le contenu** — une affaire, en un seul exemplaire | aucune règle |
 | `app/regles.js` | 361 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
 | `app/moteur.js` | 182 | **la grammaire** — composer, valider, rendre | aucune donnée |
-| `app/index.html` | 866 | **le jeu** — l'affichage et les gestes d'écran | ne décide rien |
-| `app/atelier_v3.html` | 2170 | **l'atelier** — écrire et diagnostiquer une affaire | ne recopie rien (§12) |
+| `app/index.html` | 879 | **le jeu** — l'affichage et les gestes d'écran | ne décide rien |
+| `app/atelier_v3.html` | 2170 | **l'atelier** — écrire et diagnostiquer une affaire. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12) |
 
 `regles.js` et `moteur.js` sont en **mode double** — `require` (tests, banc) ou `<script src>` (jeu,
 atelier). Les deux exposent une **fabrique** : `creerRegles(JEU, M)` et `creerMoteur(GRAMMAIRE, CHAMPS, LIENS)`.
@@ -31,19 +31,19 @@ Se lit de haut en bas : c'est la boucle d'une session (§4.6). `index.html` n'y 
 
 | Le geste | La règle (`regles.js`) | La grammaire (`moteur.js`) | Le rendu (`index.html`) | § |
 |---|---|---|---|---|
-| l'avocat ouvre une session | `envoyerRemise` → `poserQuestion` | — | `renderCanal` | 4.6 |
+| l'avocat ouvre une session | `envoyerRemise` → `poserQuestion` | — | `renderDiscussion` | 4.6 |
 | ouvrir une pièce | `ouvrirPiece` (+ son `declenche`) | — | `modalPieceHTML`, `rendreTexte` | 4.3 |
 | l'index du dossier | `piecesLivrees` | — | `renderDossier` | 4.5 |
-| **surligner** (privé, gratuit) | `surligner` | — | `renderMemoire` | 4.6 |
+| **surligner** (privé, gratuit) | `surligner` | — | `renderRetenus` *(la zone)*, dans `renderMemoire` *(la surface)* | 4.6 |
 | ce que le composeur offre | `blocsOfferts`, `etatCompo`, `indexTermeChamp` | `offerts` | `renderCompo` | 4.5 |
 | ce que l'écran souffle — **une seule voix par état** | *(aucune — dérivé de `S`)* | — | `souffle` (dans le fantôme si la phrase est vide, dans l'aide sinon) | 4.9 |
 | le rappel de la question — **seulement si elle n'est plus le dernier mot** | `attenteCourante`, `remiseCourante` | — | `rappelQuestion` | 4.9 |
 | **poser un bloc** | `poserBloc`, `retirerBloc`, `viderCompo` | `reduire`, `deduire`, `ordonner` | `texteCompoPartiel` | 4.5 |
 | la clôture sans choix | `cloreSansChoix` (appelée par `poserBloc`) | — | *(rien : le bouton disparaît)* | 4.5 |
 | le pressentiment ⚑ | `majPressentiment`, `pressentir`, `sousLienVice` | `memeRed` | *(rien : privé)* | 4.7 |
-| **clore la phrase** | `clore` → `clorePhrase` | `valider`, `rendre`, `lienDe` | `renderCompo` → `renderComposeur` (`#composeur`, **sous le canal**) | 4.5 |
-| **envoyer** — le seul geste transmis | `envoyer` → `reponseAvocat` → `avancerSurAttente` | — | `renderPlan`, `renderCanal` | 4.6 |
-| ce qui entre au plan | `estMoyen` | — | `renderPlan` — **cache sa colonne** (`#colPlan`) tant que rien ne s'y inscrit | 4.6, 4.9 |
+| **clore la phrase** | `clore` → `clorePhrase` | `valider`, `rendre`, `lienDe` | `renderCompo` → `renderComposeur` (`#composeur`, **sous la Discussion**) | 4.5 |
+| **envoyer** — le seul geste transmis | `envoyer` → `reponseAvocat` → `avancerSurAttente` | — | `renderPlaidoirie`, `renderDiscussion` | 4.6 |
+| ce qui entre à la Plaidoirie | `estMoyen` | — | `renderPlaidoirie` — **cache sa colonne** (`#colPlaidoirie`) tant que rien ne s'y inscrit | 4.6, 4.9 |
 | clôturer, répétition | `instructionComplete`, `cloturer`, `verserContre`, `avancerRepetition` | — | `majCloture` | 5 |
 | la fin | `finir` | — | `finir` (modale) | 5 |
 | **le tutoriel du premier geste** | *(aucune — il ne décide rien)* | — | `tutoAttendu`, `tutoEtape`, `majTutoriel` | 4.8 |
@@ -67,6 +67,11 @@ le modifie **sur place** ; aucune ne rend de HTML ; celles qui « parlent » pou
 
 Les trois drapeaux (`vice_pressenti`, `vice_trouve`, `vice_expose`) et où ils se lèvent : §4.7.
 
+**Trois tableaux, trois rôles, trois noms** (`docs/LEXIQUE.md`) : `S.fil` (ce que la Discussion
+affiche), `S.retenus` (les empans surlignés — *seulement* eux), `S.plaidoirie` (ce qui est entré à la
+Plaidoirie). `S.retenus` s'appelait `S.memoire` avant le 2 août ; `restaurerPartie` reprend les
+sauvegardes écrites sous l'ancien nom.
+
 ## Le contenu — les clés de `content.js`
 
 `schema: 3`. Chaque clé et **tous ses attributs optionnels** sont décrits au **§11**, qui est la
@@ -87,14 +92,14 @@ L'**ancienne forme** `attend`/`apres` posée sur la remise se lit comme une list
 ## Les six suites
 
 Point d'entrée unique : `tests/harnais.js`, `creerHarnais(dossier)`. `npm test` les enchaîne dans
-l'ordre de `package.json` — **330 contrôles, tout vert ou ce n'est pas fini** (§16).
+l'ordre de `package.json` — **331 contrôles, tout vert ou ce n'est pas fini** (§16).
 
 Le harnais **inline** les trois `<script src>` au boot, parce que jsdom n'en charge aucun (§13) —
 c'est pourquoi `npm run vue` existe : il est le seul à éprouver le vrai chargement.
 
 Ce qu'il expose, et qui est le **contrat d'interaction** : `boot` / `bootAtelier`, les lectures
-d'écran (`canal`, `atelier`, **`composeur`** — il vit sous le canal depuis le 31 juillet —, `plan` et
-**`planVisible`**, qui dit si la colonne du plan existe), les désignations de contenu (`lienVice`, `lienConclusion`,
+d'écran — **une par surface, sous le nom que l'écran lui donne** (`discussion`, `memoire`,
+`composeur`, `plaidoirie`, plus `plaidoirieVisible` qui dit si la colonne existe) —, les désignations de contenu (`lienVice`, `lienConclusion`,
 `lienFaux`, `lienTag`, `citations`, `blocCite`, `comparaisons`, `attentesContenu`), et les chemins
 (`surligner`, `composerLien`, `poserComparaison`, `cheminVers`, `cloreSurPlace`, `livrerTout`,
 `instruire`, `terminer`). **Aucune suite ne nomme une pièce, un empan ou une valeur** : elles les
@@ -123,4 +128,6 @@ donc dépendant de la session ; le flag `cite` est porté par la **liaison**, ja
   de ce qui s'écrit sont des attributs `libelle` déclarés dans le contenu, et le §11 les nomme.
 - **Explorer pour trouver *où décide* quelque chose.** La réponse est toujours `regles.js` : les deux
   pages HTML ne décident rien (§9). Si une décision semble vivre dans une page, c'est un bug.
-- **Lire `ARCHITECTURE.md` en entier.** 480 lignes, et le tableau de `CLAUDE.md` dit lesquelles.
+- **Lire `ARCHITECTURE.md` en entier.** 510 lignes, et le tableau de `CLAUDE.md` dit lesquelles.
+- **Choisir un mot au jugé.** `docs/LEXIQUE.md` arbitre le vocabulaire — quel mot dire, à qui, pour
+  quelle chose. Les pièges y sont nommés (`lien`/`liaison`, `clore`/`clôturer`, `empan`/`passage`).

@@ -4,7 +4,7 @@
 // Aucune pièce, aucun empan, aucune valeur n'est nommée : tout est dérivé
 // de la forme du contenu.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, boot, canal, memoire } = H;
+const { check, bilan, boot, discussion, memoire } = H;
 
 console.log("\n=== L'index du dossier ===");
 {
@@ -38,13 +38,13 @@ console.log("\n=== Surligner : privé, gratuit, illimité ===");
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   const tous = w.CHAMPS.map(c => c.id);
   for (const k of tous) H.surligner(w, k);
-  check(`les ${tous.length} empans tiennent en mémoire — aucun plafond`, w.S.memoire.length === tous.length);
+  check(`les ${tous.length} empans tiennent en mémoire — aucun plafond`, w.S.retenus.length === tous.length);
   const avant = w.S.fil.length;
   H.surligner(w, tous[0]);
-  check("surligner deux fois ne double pas", w.S.memoire.filter(k => k === tous[0]).length === 1);
+  check("surligner deux fois ne double pas", w.S.retenus.filter(k => k === tous[0]).length === 1);
   const [pid, eid] = tous[0].split(".");
   w.surligner(pid, eid);
-  check("re-cliquer oublie", !w.S.memoire.includes(tous[0]));
+  check("re-cliquer oublie", !w.S.retenus.includes(tous[0]));
   check("rien n'a été transmis dans le canal", w.S.fil.length === avant);
   check("le plan de plaidoirie reste vide", w.S.plaidoirie.length === 0);
 }
@@ -107,7 +107,7 @@ console.log("\n=== Fin 1 — la conclusion versée ===");
   check("la composer lève vice_trouve, pas vice_expose", w.S.vice_trouve && !w.S.vice_expose);
   w.envoyer(i);
   check("la verser lève vice_expose", w.S.vice_expose);
-  check("l'avocat réagit au vice", canal(w).includes(w.JEU.avocat.rep_vice.slice(0, 30)));
+  check("l'avocat réagit au vice", discussion(w).includes(w.JEU.avocat.rep_vice.slice(0, 30)));
   check("→ Fin 1", H.numeroFin(H.terminer(w)) === "1");
 }
 
@@ -117,7 +117,7 @@ console.log("\n=== Fin 2 — comprendre et se taire ===");
   H.instruire(w);
   H.composerLien(w, H.lienConclusion(w));
   check("la conclusion reste au brouillon", w.S.vice_trouve && !w.S.vice_expose);
-  check("rien n'en sort dans le canal", !canal(w).includes(w.JEU.avocat.rep_vice.slice(0, 30)));
+  check("rien n'en sort dans le canal", !discussion(w).includes(w.JEU.avocat.rep_vice.slice(0, 30)));
   check("→ Fin 2", H.numeroFin(H.terminer(w)) === "2");
 }
 

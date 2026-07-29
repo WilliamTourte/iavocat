@@ -318,7 +318,7 @@ console.log("\n=== La simulation reflète le moteur ===");
   const feuilles = w.feuillesLien(SC.sousVice(w.CONTENU));
   for (const k of feuilles) w.simSurligner(k);
   check("surligner remplit la mémoire, pas le plan",
-    w.SIM.memoire.length === feuilles.length && w.SIM.plaidoirie.length === 0);
+    w.SIM.retenus.length === feuilles.length && w.SIM.plaidoirie.length === 0);
   w.simComparer(SC.sousVice(w.CONTENU));
   check("comparer sans qualifier lève vice_pressenti seul",
     w.SIM.vice_pressenti && !w.SIM.vice_trouve);

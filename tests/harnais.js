@@ -50,16 +50,17 @@ function creerHarnais(dossier){
      éprouvent le décâblage partent de lui et le mutent. */
   function contenuLivre(){ return JSON.parse(JSON.stringify(boot().JEU)); }
 
-  const canal    = w => w.document.getElementById("canal").textContent;
-  /* Quatre surfaces à lire. `atelier` et `memoire` pointent la même colonne —
-     le dossier et les empans retenus ; le COMPOSEUR a sa propre lecture depuis
-     qu'il vit sous le canal (§4.6). `plan` reste la surface transmise, et
-     `planVisible` dit si sa colonne existe : vide, elle est retirée (§4.9). */
-  const memoire  = w => w.document.getElementById("atelier").innerHTML;
-  const atelier  = w => w.document.getElementById("atelier").innerHTML;
+  /* Les quatre surfaces à lire, chacune sous le nom que l'écran lui donne
+     (docs/LEXIQUE.md) : Discussion, Mémoire, le composeur qui vit sous la
+     Discussion (§4.6), et la Plaidoirie — dont `plaidoirieVisible` dit si la
+     colonne existe, puisque vide elle est retirée (§4.9).
+     `atelier` ne désigne plus qu'une chose dans ce dépôt : `atelier_v3.html`,
+     l'outil qui écrit les affaires — voir `bootAtelier` plus haut. */
+  const discussion = w => w.document.getElementById("discussion").textContent;
+  const memoire  = w => w.document.getElementById("memoire").innerHTML;
   const composeur = w => w.document.getElementById("composeur").innerHTML;
-  const plan     = w => w.document.getElementById("plan").innerHTML;
-  const planVisible = w => !w.document.getElementById("colPlan").hidden;
+  const plaidoirie = w => w.document.getElementById("plaidoirie").innerHTML;
+  const plaidoirieVisible = w => !w.document.getElementById("colPlaidoirie").hidden;
 
   /* ---- Sélecteurs par PROPRIÉTÉ ------------------------------
      Aucune suite ne doit nommer une pièce, un empan ou une valeur
@@ -123,8 +124,8 @@ function creerHarnais(dossier){
 
   // --- composer : le geste du jeu, joué par les fonctions du moteur ---
   const idBloc = (w,id) => w.blocsOfferts().findIndex(b=>b.id===id);
-  const surligner = (w,k) => { const [pid,eid]=k.split("."); if(!w.S.memoire.includes(k)) w.surligner(pid,eid); };
-  const iMem = (w,k) => w.S.memoire.indexOf(k);
+  const surligner = (w,k) => { const [pid,eid]=k.split("."); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
+  const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
   /* Compose la phrase qui réalise un lien donné, quel qu'il soit : on
      surligne ce qu'il faut, puis on parcourt l'automate en choisissant, à
@@ -144,7 +145,7 @@ function creerHarnais(dossier){
         const k=(L.termes||[])[0];
         surligner(w,k);
         const bT=idBloc(w,blocChamp(w)); if(bT<0) return -1;
-        w.poserBloc(bT,iMem(w,k));
+        w.poserBloc(bT,iRetenu(w,k));
         /* L'automate a pu se refermer tout seul : une suite unique n'est pas un
            choix (§4.5). Là où le choix existe encore, la liaison se pose. */
         const deja=trouve(); if(deja>=0) return deja;
@@ -190,17 +191,17 @@ function creerHarnais(dossier){
        échoue ne doit rien laisser au journal : on note où l'on en était. */
     const n0=w.S.brouillon.length, p0=w.S.prete;
     const echec=()=>{ w.S.brouillon.length=n0; w.S.prete=p0; w.viderCompo(); return false; };
-    w.poserBloc(bT,iMem(w,t0));
+    w.poserBloc(bT,iRetenu(w,t0));
     // Grammaire à DÉDUCTION : le second terme clôt la paire, rien entre les deux.
     const bD=w.blocsOfferts().findIndex(x=>x.type==="terme"&&x.source!=="note"&&x.deduit);
-    if(bD>=0){ w.poserBloc(bD,iMem(w,t1)); return true; }
+    if(bD>=0){ w.poserBloc(bD,iRetenu(w,t1)); return true; }
     // Grammaire à liaisons explicites (à l'ancienne) : on parcourt l'automate.
     const chemin=cheminVers(w,L.forme);
     if(!chemin.length) return echec();
     for(const etape of chemin){
       const b=idBloc(w,etape); if(b<0) return echec();
       const bloc=G.blocs.find(x=>x.id===etape);
-      w.poserBloc(b, bloc.type==="terme" ? iMem(w,t1) : undefined);
+      w.poserBloc(b, bloc.type==="terme" ? iRetenu(w,t1) : undefined);
     }
     return true;
   }
@@ -372,12 +373,12 @@ function creerHarnais(dossier){
     }
   };
 
-  return { check, bilan, boot, bootAtelier, contenuLivre, canal, memoire, atelier,
-           composeur, planVisible,
+  return { check, bilan, boot, bootAtelier, contenuLivre,
+           discussion, memoire, composeur, plaidoirie, plaidoirieVisible,
            lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
-           plan, cloreSurPlace, poserComparaison, livrerTout,
-           surligner, iMem, composerLien, phrasesBruit, cheminVers,
+           cloreSurPlace, poserComparaison, livrerTout,
+           surligner, iRetenu, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
            instruire, terminer, numeroFin, surContenu };
