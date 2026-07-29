@@ -19,6 +19,7 @@ Ensuite, dans `docs/ARCHITECTURE.md` (680 lignes : on n'en lit que ce qu'il faut
 
 | Ce qu'on vient faire | Ce qu'on lit |
 |---|---|
+| **Trouver *où* vit une chose** | `docs/CARTE.md` — l'index geste → fonction → fichier. Il ne dit jamais pourquoi ; il évite d'avoir à chercher |
 | Se repérer, sans plus | **§9** (les quatre territoires), **§12** (où vit la vérité), **§17** (le résumé en trois phrases) |
 | Toucher au **sens** | **Partie I** en entier, et **§7** avant tout (invariants, arbitrages, points ouverts) |
 | Toucher au **contenu** | **§11** (le schéma 3, et tous les attributs optionnels) |
