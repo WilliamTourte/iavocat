@@ -1,863 +1,1623 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IAvocat — tranche verticale</title>
-<style>
-  :root{
-    --bg:#0e1116; --panel:#161b22; --panel2:#1c232d; --line:#2b3440;
-    --txt:#d7dde5; --muted:#8b97a6; --accent:#6fb3d6; --lock:#7bbf8a; --warn:#d6a96f;
-  
-    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
-    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    /* Les couleurs de dimension. Fixes, attribuées par RANG dans
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IAvocat — tranche verticale</title>
+  <style>
+    :root {
+      --bg: #0e1116;
+      --panel: #161b22;
+      --panel2: #1c232d;
+      --line: #2b3440;
+      --txt: #d7dde5;
+      --muted: #8b97a6;
+      --accent: #6fb3d6;
+      --lock: #7bbf8a;
+      --warn: #d6a96f;
+
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      /* Les couleurs de dimension. Fixes, attribuées par RANG dans
        JEU.dimensions — jamais par la pertinence de l'empan (invariant du
        §4.3 de docs/ARCHITECTURE.md). */
-    --dim0:#7fb3d5; --dim1:#d99a9a; --dim2:#9dc98c; --dim3:#c9ab6a; --dim4:#b79ad6; --dim5:#7fc9c1;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.55}
-  header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:baseline}
-  header h1{font-size:16px;font-weight:600;margin:0;letter-spacing:.3px}
-  header .sub{color:var(--muted);font-size:13px}
-  header .spacer{flex:1}
-  header button{background:var(--panel2);color:var(--txt);border:1px solid var(--line);
-    border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px}
-  header button:hover{border-color:var(--accent)}
-  .wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;padding:16px 20px;max-width:1400px;margin:0 auto}
-  .col{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
-  .col > h2{margin:0;padding:9px 14px;font-size:13px;font-weight:600;color:var(--muted);
-    text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:baseline}
-  /* Le compte du plan monte dans l'en-tête : une seule zone, un seul titre (§4.9) */
-  .col > h2 .zcount{float:none;margin-left:auto}
-  .col > h2 .tag{font-size:10.5px;letter-spacing:.4px;border-radius:4px;padding:1px 6px;font-weight:500}
+      --dim0: #7fb3d5;
+      --dim1: #d99a9a;
+      --dim2: #9dc98c;
+      --dim3: #c9ab6a;
+      --dim4: #b79ad6;
+      --dim5: #7fc9c1;
+    }
 
-  .body{padding:12px 14px;overflow-y:auto;max-height:72vh}
-  .col.demi .body{max-height:34vh}
-  /* `.col` pose `display:flex`, qui BAT la règle `[hidden]{display:none}` du
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--txt);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.55
+    }
+
+    header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 14px;
+      align-items: baseline
+    }
+
+    header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+      letter-spacing: .3px
+    }
+
+    header .sub {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    header .spacer {
+      flex: 1
+    }
+
+    header button {
+      background: var(--panel2);
+      color: var(--txt);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 13px
+    }
+
+    header button:hover {
+      border-color: var(--accent)
+    }
+
+    .wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      padding: 16px 20px;
+      max-width: 1400px;
+      margin: 0 auto
+    }
+
+    .col {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column
+    }
+
+    .col>h2 {
+      margin: 0;
+      padding: 9px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 8px;
+      align-items: baseline
+    }
+
+    /* Le compte du plan monte dans l'en-tête : une seule zone, un seul titre (§4.9) */
+    .col>h2 .zcount {
+      float: none;
+      margin-left: auto
+    }
+
+    .col>h2 .tag {
+      font-size: 10.5px;
+      letter-spacing: .4px;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-weight: 500
+    }
+
+    .body {
+      padding: 12px 14px;
+      overflow-y: auto;
+      max-height: 72vh
+    }
+
+    .col.demi .body {
+      max-height: 34vh
+    }
+
+    /* `.col` pose `display:flex`, qui BAT la règle `[hidden]{display:none}` du
      navigateur : sans cette ligne, cacher la colonne du plan ne ferait rien. */
-  .col[hidden]{display:none}
-  /* Le composeur, ancré sous le fil : il ne défile pas avec lui (§4.6). Le
+    .col[hidden] {
+      display: none
+    }
+
+    /* Le composeur, ancré sous le fil : il ne défile pas avec lui (§4.6). Le
      filet le sépare de la conversation — écrire n'est pas parler. */
-  #composeur{border-top:1px solid var(--line);padding:12px 14px;background:var(--panel)}
-  #composeur .zone{margin:0}
-  /* Sans plan, l'écran s'ouvre à deux colonnes (§4.9). `.cloture` est câblée
+    #composeur {
+      border-top: 1px solid var(--line);
+      padding: 12px 14px;
+      background: var(--panel)
+    }
+
+    #composeur .zone {
+      margin: 0
+    }
+
+    /* Sans plan, l'écran s'ouvre à deux colonnes (§4.9). `.cloture` est câblée
      sur trois : elle suit, sinon elle déborde. */
-  .wrap.sansPlan{grid-template-columns:1fr 1fr}
-  .wrap.sansPlan .cloture{grid-column:1/3}
-  @media (max-width:1100px){
-    .wrap,.wrap.sansPlan{grid-template-columns:1fr}
-    .cloture,.wrap.sansPlan .cloture{grid-column:1 !important}
-    .body,.col.demi .body{max-height:44vh}
-  }
-  /* --- canal --- */
-  .msg{margin-bottom:10px}
-  .msg.suite{margin-top:-4px}   /* même locuteur : les bulles se serrent (§4.9) */
-  .msg .who{font-size:12px;color:var(--muted);margin-bottom:3px}
-  .msg .bubble{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-  .msg.ia .who{color:#5b8aa6}
-  .msg.ia .bubble{background:#0f2230;border-color:var(--transmis);font-family:var(--mono);font-size:13px;color:#bfe0f2}
-  .attach{display:inline-flex;align-items:center;gap:6px;margin:6px 6px 0 0;padding:6px 10px;
-    background:#12324a;border:1px solid var(--transmis);border-radius:8px;color:#bfe0f2;cursor:pointer;font-size:13px}
-  .attach:hover{border-color:var(--accent)}
-  .attach.seen{opacity:.6}
-  /* --- zones --- */
-  .zone{margin-bottom:12px}
-  .zone .ztitle{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-  .aide{color:var(--muted);font-size:12px;margin-top:8px;font-style:italic}
-  .aide.question{margin-top:0;margin-bottom:10px;color:var(--fg);border-left:2px solid var(--muted);padding-left:8px}
-  /* --- les empans dans le texte d'une pièce --- */
-  .piecetexte{line-height:1.9}
-  .empan{border-bottom:2px solid var(--dc,var(--muted));border-radius:2px;padding:1px 2px;cursor:pointer;
-    background:color-mix(in srgb, var(--dc,#888) 12%, transparent)}
-  .empan:hover{background:color-mix(in srgb, var(--dc,#888) 28%, transparent)}
-  .empan.pris{background:color-mix(in srgb, var(--dc,#888) 30%, transparent);font-weight:600}
-  .empan .sig{font-size:11px;color:var(--muted);font-family:var(--mono)}
-  .legende{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px;font-size:11.5px;color:var(--muted)}
-  .legende span{border-bottom:2px solid var(--dc);padding-bottom:1px}
-  /* --- mémoire : une seule liste, qui sert AUSSI de clavier au composeur --- */
-  .dimgrp{margin-bottom:9px}
-  .dimgrp .dnom{font-size:11px;color:var(--dc,var(--muted));text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
-  .mchip{display:flex;align-items:stretch;margin:3px 0;background:var(--panel2);
-    border:1px solid var(--line);border-left:3px solid var(--dc,var(--line));border-radius:6px;overflow:hidden}
-  .mchip:hover{border-color:var(--accent)}
-  /* `min-width:0` : sans lui, un item de flex refuse de rétrécir sous son
+    .wrap.sansPlan {
+      grid-template-columns: 1fr 1fr
+    }
+
+    .wrap.sansPlan .cloture {
+      grid-column: 1/3
+    }
+
+    @media (max-width:1100px) {
+
+      .wrap,
+      .wrap.sansPlan {
+        grid-template-columns: 1fr
+      }
+
+      .cloture,
+      .wrap.sansPlan .cloture {
+        grid-column: 1 !important
+      }
+
+      .body,
+      .col.demi .body {
+        max-height: 44vh
+      }
+    }
+
+    /* --- canal --- */
+    .msg {
+      margin-bottom: 10px
+    }
+
+    .msg.suite {
+      margin-top: -4px
+    }
+
+    /* même locuteur : les bulles se serrent (§4.9) */
+    .msg .who {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 3px
+    }
+
+    .msg .bubble {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px
+    }
+
+    .msg.ia .who {
+      color: #5b8aa6
+    }
+
+    .msg.ia .bubble {
+      background: #0f2230;
+      border-color: var(--transmis);
+      font-family: var(--mono);
+      font-size: 13px;
+      color: #bfe0f2
+    }
+
+    .attach {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 6px 6px 0 0;
+      padding: 6px 10px;
+      background: #12324a;
+      border: 1px solid var(--transmis);
+      border-radius: 8px;
+      color: #bfe0f2;
+      cursor: pointer;
+      font-size: 13px
+    }
+
+    .attach:hover {
+      border-color: var(--accent)
+    }
+
+    .attach.seen {
+      opacity: .6
+    }
+
+    /* --- zones --- */
+    .zone {
+      margin-bottom: 12px
+    }
+
+    .zone .ztitle {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 8px
+    }
+
+    .aide {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+      font-style: italic
+    }
+
+    .aide.question {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: var(--fg);
+      border-left: 2px solid var(--muted);
+      padding-left: 8px
+    }
+
+    /* --- les empans dans le texte d'une pièce --- */
+    .piecetexte {
+      line-height: 1.9
+    }
+
+    .empan {
+      border-bottom: 2px solid var(--dc, var(--muted));
+      border-radius: 2px;
+      padding: 1px 2px;
+      cursor: pointer;
+      background: color-mix(in srgb, var(--dc, #888) 12%, transparent)
+    }
+
+    .empan:hover {
+      background: color-mix(in srgb, var(--dc, #888) 28%, transparent)
+    }
+
+    .empan.pris {
+      background: color-mix(in srgb, var(--dc, #888) 30%, transparent);
+      font-weight: 600
+    }
+
+    .empan .sig {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--mono)
+    }
+
+    .legende {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 4px;
+      font-size: 11.5px;
+      color: var(--muted)
+    }
+
+    .legende span {
+      border-bottom: 2px solid var(--dc);
+      padding-bottom: 1px
+    }
+
+    /* --- mémoire : une seule liste, qui sert AUSSI de clavier au composeur --- */
+    .dimgrp {
+      margin-bottom: 9px
+    }
+
+    .dimgrp .dnom {
+      font-size: 11px;
+      color: var(--dc, var(--muted));
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 4px
+    }
+
+    .mchip {
+      display: flex;
+      align-items: stretch;
+      margin: 3px 0;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--dc, var(--line));
+      border-radius: 6px;
+      overflow: hidden
+    }
+
+    .mchip:hover {
+      border-color: var(--accent)
+    }
+
+    /* `min-width:0` : sans lui, un item de flex refuse de rétrécir sous son
      contenu, la citation pousse la puce hors du cadre et emporte le « × ». */
-  .mchip .corps{flex:1;min-width:0;text-align:left;background:none;border:none;color:var(--txt);
-    padding:6px 9px;cursor:pointer;font:inherit;font-size:13px;line-height:1.4}
-  .mchip .corps:disabled{cursor:default;opacity:.55}
-  .mchip .nom{display:block}
-  /* Deux lignes, pas trois (§4.9). La citation cède la place — elle se relit en
+    .mchip .corps {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+      background: none;
+      border: none;
+      color: var(--txt);
+      padding: 6px 9px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      line-height: 1.4
+    }
+
+    .mchip .corps:disabled {
+      cursor: default;
+      opacity: .55
+    }
+
+    .mchip .nom {
+      display: block
+    }
+
+    /* Deux lignes, pas trois (§4.9). La citation cède la place — elle se relit en
      entier dans la pièce, et en infobulle ; la source, elle, ne cède jamais. */
-  .mchip .prov{display:flex;align-items:baseline;gap:6px;margin-top:2px}
-  .mchip .cit{flex:1;min-width:0;font-size:11.5px;color:var(--muted);font-style:italic;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .mchip .sig{flex:none;font-size:11px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
-  .mchip .del{background:none;border:none;border-left:1px solid var(--line);color:var(--muted);
-    font-size:13px;padding:0 9px;cursor:pointer;align-self:stretch}
-  .mchip .del:hover{color:#d99a9a}
-  /* --- composeur --- */
-  .compo{border:1px dashed var(--line);border-radius:8px;padding:9px 11px;background:#141a21}
-  .phrase{min-height:34px;font-size:14px;line-height:1.7;margin-bottom:9px}
-  .phrase .bl{border-bottom:1px solid var(--line);padding:0 2px}
-  .phrase .bl.terme{border-bottom:2px solid var(--dc,var(--accent))}
-  .phrase .trou{color:var(--muted);font-style:italic}
-  .offre{display:flex;flex-direction:column;gap:4px}
-  .offre .lab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:6px}
-  .bbloc{text-align:left;background:#20303f;color:var(--txt);border:1px solid var(--line);
-    border-radius:6px;padding:6px 9px;cursor:pointer;font-size:13px}
-  .bbloc:hover{border-color:var(--accent)}
-  .compo .barre{display:flex;gap:6px;margin-bottom:8px}
-  .compo .barre button{background:none;border:1px solid var(--line);color:var(--muted);
-    border-radius:5px;padding:3px 9px;cursor:pointer;font-size:12px}
-  .compo .barre button:hover{border-color:var(--accent);color:var(--txt)}
-  .refus{color:#d99a9a;font-size:12.5px;margin-top:8px}
-  /* la phrase close, qui attend SUR PLACE : l'envoi ne change pas de colonne */
-  .compo.prete{border-style:solid;border-color:var(--transmis);background:#111c25}
-  .phrase.close{font-size:14.5px;line-height:1.6;color:var(--txt)}
-  .compo .barre .envoi{background:#12324a;color:#bfe0f2;border-color:var(--transmis);font-size:12.5px;padding:4px 12px}
-  .compo .barre .envoi:hover{border-color:var(--accent);color:#eaf4fb}
-  .bbloc.suite{background:#25313d;border-left:3px solid var(--transmis)}
-  /* Ce qu'un article régit — indicatif, jamais filtrant (§4.5) */
-  .porte{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
-  .manuel li{margin-bottom:9px}
-  .manuel .porte{display:inline;margin:0}
-  /* --- plaidoirie --- */
-  .liste{list-style:none;padding:0;margin:0}
-  .liste li{font-size:13px;padding:8px 0;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}
-  .liste li:first-child{border-top:none}
-  .liste li .txt{flex:1;line-height:1.45}
-  .liste li .up{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis);border-radius:5px;
-    padding:3px 8px;cursor:pointer;font-size:12px;white-space:nowrap}
-  .liste li .up:hover{border-color:var(--accent)}
-  .liste li .sent{color:#5b8aa6;font-size:12px;white-space:nowrap}
-  .plaid li{border-left:3px solid var(--transmis);padding-left:9px}
-  .plaid li .contre{display:block;font-size:11px;color:var(--muted);font-family:var(--mono)}
-  /* répétition de plaidoirie */
-  .repet{border:1px dashed #5a3a3a;border-radius:8px;padding:11px;background:#1a1416;margin-bottom:14px}
-  .repet .rtitle{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-  .repet .rnote{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);padding:5px 0}
-  .repet .rnote .txt{flex:1}
-  .repet .rnote.vide{font-style:italic}
-  .repet .up{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:12px}
-  .repet .btn{margin-top:8px;width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px;cursor:pointer}
-  .repet .btn:hover{border-color:var(--accent)}
-  /* --- clôture / fin --- */
-  .cloture{grid-column:1/4;text-align:center;padding:4px 0 20px}
-  .cloture button{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;
-    padding:10px 20px;cursor:pointer;font-size:14px}
-  .cloture button:disabled{opacity:.4;cursor:not-allowed}
-  .cloture .hint{color:var(--muted);font-size:12px;margin-top:6px}
-  /* modal générique */
-  .overlay{position:fixed;inset:0;background:rgba(6,8,11,.72);display:flex;align-items:center;
-    justify-content:center;padding:24px;z-index:50}
-  .modal{background:var(--panel);border:1px solid var(--line);border-radius:12px;max-width:620px;width:100%;
-    max-height:82vh;overflow-y:auto;padding:20px}
-  .modal h3{margin:0 0 8px;font-size:16px}
-  .modal .close{float:right;cursor:pointer;color:var(--muted);border:none;background:none;font-size:18px}
-  .modal .btnrow{margin-top:10px}
-  .modal .btnrow button{width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);
-    border-radius:6px;padding:8px;cursor:pointer}
-  .fin h3{font-size:18px}
-  .fin .verdict{font-family:var(--mono);color:var(--warn);margin:4px 0 14px}
-  small.note{color:var(--muted)}
-  code{font-family:var(--mono);color:var(--accent)}
-  /* --- l'index du dossier : les pièces d'abord, les règles ensuite --- */
-  /* Deux natures, deux BANDES pleine largeur — et non deux colonnes : à
+    .mchip .prov {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-top: 2px
+    }
+
+    .mchip .cit {
+      flex: 1;
+      min-width: 0;
+      font-size: 11.5px;
+      color: var(--muted);
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .mchip .sig {
+      flex: none;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--mono);
+      white-space: nowrap
+    }
+
+    .mchip .del {
+      background: none;
+      border: none;
+      border-left: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      padding: 0 9px;
+      cursor: pointer;
+      align-self: stretch
+    }
+
+    .mchip .del:hover {
+      color: #d99a9a
+    }
+
+    /* --- composeur --- */
+    .compo {
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 9px 11px;
+      background: #141a21
+    }
+
+    .phrase {
+      min-height: 34px;
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 9px
+    }
+
+    .phrase .bl {
+      border-bottom: 1px solid var(--line);
+      padding: 0 2px
+    }
+
+    .phrase .bl.terme {
+      border-bottom: 2px solid var(--dc, var(--accent))
+    }
+
+    .phrase .trou {
+      color: var(--muted);
+      font-style: italic
+    }
+
+    .offre {
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
+
+    .offre .lab {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-top: 6px
+    }
+
+    .bbloc {
+      text-align: left;
+      background: #20303f;
+      color: var(--txt);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 9px;
+      cursor: pointer;
+      font-size: 13px
+    }
+
+    .bbloc:hover {
+      border-color: var(--accent)
+    }
+
+    .compo .barre {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px
+    }
+
+    .compo .barre button {
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      border-radius: 5px;
+      padding: 3px 9px;
+      cursor: pointer;
+      font-size: 12px
+    }
+
+    .compo .barre button:hover {
+      border-color: var(--accent);
+      color: var(--txt)
+    }
+
+    .refus {
+      color: #d99a9a;
+      font-size: 12.5px;
+      margin-top: 8px
+    }
+
+    /* la phrase close, qui attend SUR PLACE : l'envoi ne change pas de colonne */
+    .compo.prete {
+      border-style: solid;
+      border-color: var(--transmis);
+      background: #111c25
+    }
+
+    .phrase.close {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--txt)
+    }
+
+    .compo .barre .envoi {
+      background: #12324a;
+      color: #bfe0f2;
+      border-color: var(--transmis);
+      font-size: 12.5px;
+      padding: 4px 12px
+    }
+
+    .compo .barre .envoi:hover {
+      border-color: var(--accent);
+      color: #eaf4fb
+    }
+
+    .bbloc.suite {
+      background: #25313d;
+      border-left: 3px solid var(--transmis)
+    }
+
+    /* Ce qu'un article régit — indicatif, jamais filtrant (§4.5) */
+    .porte {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-top: 2px
+    }
+
+    .manuel li {
+      margin-bottom: 9px
+    }
+
+    .manuel .porte {
+      display: inline;
+      margin: 0
+    }
+
+    /* --- plaidoirie --- */
+    .liste {
+      list-style: none;
+      padding: 0;
+      margin: 0
+    }
+
+    .liste li {
+      font-size: 13px;
+      padding: 8px 0;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start
+    }
+
+    .liste li:first-child {
+      border-top: none
+    }
+
+    .liste li .txt {
+      flex: 1;
+      line-height: 1.45
+    }
+
+    .liste li .up {
+      background: #12324a;
+      color: #bfe0f2;
+      border: 1px solid var(--transmis);
+      border-radius: 5px;
+      padding: 3px 8px;
+      cursor: pointer;
+      font-size: 12px;
+      white-space: nowrap
+    }
+
+    .liste li .up:hover {
+      border-color: var(--accent)
+    }
+
+    .liste li .sent {
+      color: #5b8aa6;
+      font-size: 12px;
+      white-space: nowrap
+    }
+
+    .plaid li {
+      border-left: 3px solid var(--transmis);
+      padding-left: 9px
+    }
+
+    .plaid li .contre {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--mono)
+    }
+
+    /* répétition de plaidoirie */
+    .repet {
+      border: 1px dashed #5a3a3a;
+      border-radius: 8px;
+      padding: 11px;
+      background: #1a1416;
+      margin-bottom: 14px
+    }
+
+    .repet .rtitle {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 8px
+    }
+
+    .repet .rnote {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: var(--muted);
+      padding: 5px 0
+    }
+
+    .repet .rnote .txt {
+      flex: 1
+    }
+
+    .repet .rnote.vide {
+      font-style: italic
+    }
+
+    .repet .up {
+      background: #12324a;
+      color: #bfe0f2;
+      border: 1px solid var(--transmis);
+      border-radius: 5px;
+      padding: 3px 8px;
+      cursor: pointer;
+      font-size: 12px
+    }
+
+    .repet .btn {
+      margin-top: 8px;
+      width: 100%;
+      background: #20303f;
+      color: var(--txt);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 7px;
+      cursor: pointer
+    }
+
+    .repet .btn:hover {
+      border-color: var(--accent)
+    }
+
+    /* --- clôture / fin --- */
+    .cloture {
+      grid-column: 1/4;
+      text-align: center;
+      padding: 4px 0 20px
+    }
+
+    .cloture button {
+      background: #2a1c1c;
+      color: #e0b7b7;
+      border: 1px solid #5a3a3a;
+      border-radius: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 14px
+    }
+
+    .cloture button:disabled {
+      opacity: .4;
+      cursor: not-allowed
+    }
+
+    .cloture .hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px
+    }
+
+    /* modal générique */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 8, 11, .72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 50
+    }
+
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      max-width: 620px;
+      width: 100%;
+      max-height: 82vh;
+      overflow-y: auto;
+      padding: 20px
+    }
+
+    .modal h3 {
+      margin: 0 0 8px;
+      font-size: 16px
+    }
+
+    .modal .close {
+      float: right;
+      cursor: pointer;
+      color: var(--muted);
+      border: none;
+      background: none;
+      font-size: 18px
+    }
+
+    .modal .btnrow {
+      margin-top: 10px
+    }
+
+    .modal .btnrow button {
+      width: 100%;
+      background: #20303f;
+      color: var(--txt);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px;
+      cursor: pointer
+    }
+
+    .fin h3 {
+      font-size: 18px
+    }
+
+    .fin .verdict {
+      font-family: var(--mono);
+      color: var(--warn);
+      margin: 4px 0 14px
+    }
+
+    small.note {
+      color: var(--muted)
+    }
+
+    code {
+      font-family: var(--mono);
+      color: var(--accent)
+    }
+
+    /* --- l'index du dossier : les pièces d'abord, les règles ensuite --- */
+    /* Deux natures, deux BANDES pleine largeur — et non deux colonnes : à
      largeur de colonne d'atelier, une gouttière d'étiquette plus une demi-
      largeur ne laissait plus la place à deux puces côte à côte, et l'index
      s'empilait une ligne par pièce (§4.9). */
-  .dossier{display:flex;flex-direction:column;gap:6px;padding:2px 0 4px}
-  /* L'étiquette tient en gouttière, à gauche : elle ne prend plus une ligne à
+    .dossier {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 2px 0 4px
+    }
+
+    /* L'étiquette tient en gouttière, à gauche : elle ne prend plus une ligne à
      elle (§4.9) et les puces gardent leur pavé, qui enveloppe proprement. */
-  .dcol{min-width:0;display:flex;gap:8px;align-items:baseline}
-  .dcol .dtitre{flex:none;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-  .dcol .dchips{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-  .dcol .dvide{color:var(--muted);font-size:11.5px;font-style:italic}
-  .dchip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11.5px;
-    border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:4px 8px;cursor:pointer;color:var(--txt)}
-  .dchip:hover{border-color:var(--accent)}
-  .dchip.vu{opacity:.55}
-  .dchip.regle{border-color:#4a4030;color:var(--warn)}
-  .zcount{float:right;font-size:11px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0}
-  .panne{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;padding:12px;margin:16px 20px}
-  /* --- le tutoriel du premier geste (§4.8) : de la signalétique, pas de la
+    .dcol {
+      min-width: 0;
+      display: flex;
+      gap: 8px;
+      align-items: baseline
+    }
+
+    .dcol .dtitre {
+      flex: none;
+      font-size: 10.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+
+    .dcol .dchips {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center
+    }
+
+    .dcol .dvide {
+      color: var(--muted);
+      font-size: 11.5px;
+      font-style: italic
+    }
+
+    .dchip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel2);
+      padding: 4px 8px;
+      cursor: pointer;
+      color: var(--txt)
+    }
+
+    .dchip:hover {
+      border-color: var(--accent)
+    }
+
+    .dchip.vu {
+      opacity: .55
+    }
+
+    .dchip.regle {
+      border-color: #4a4030;
+      color: var(--warn)
+    }
+
+    .zcount {
+      float: right;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0
+    }
+
+    .panne {
+      background: #2a1c1c;
+      color: #e0b7b7;
+      border: 1px solid #5a3a3a;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 16px 20px
+    }
+
+    /* --- le tutoriel du premier geste (§4.8) : de la signalétique, pas de la
      mécanique. Le halo ENTOURE la zone où le geste a lieu — jamais un empan,
      sinon l'interface désignerait la réponse à la lampe torche (§4.3). Aucun
      voile : il intercepterait les clics qu'il prétend montrer. --- */
-  [data-tuto]{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;
-    animation:pouls 1.8s ease-in-out infinite}
-  @keyframes pouls{0%,100%{outline-color:var(--accent)}50%{outline-color:transparent}}
-  /* Ce n'est pas le passage demandé : même halo, même place, autre couleur.
+    [data-tuto] {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 4px;
+      animation: pouls 1.8s ease-in-out infinite
+    }
+
+    @keyframes pouls {
+
+      0%,
+      100% {
+        outline-color: var(--accent)
+      }
+
+      50% {
+        outline-color: transparent
+      }
+    }
+
+    /* Ce n'est pas le passage demandé : même halo, même place, autre couleur.
      Rien n'est barré ni grisé — le geste reste permis, c'est le tutoriel qui
      ne suit pas (§4.8). */
-  [data-tuto="alerte"]{outline-color:var(--warn);animation-name:poulsAlerte}
-  @keyframes poulsAlerte{0%,100%{outline-color:var(--warn)}50%{outline-color:transparent}}
-  @media (prefers-reduced-motion:reduce){ [data-tuto]{animation:none} }
-  #tuto{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:60;
-    display:flex;align-items:baseline;gap:14px;max-width:min(560px,calc(100vw - 32px));
-    background:var(--panel2);border:1px solid var(--accent);border-radius:10px;
-    padding:10px 16px;font-size:13px;box-shadow:0 6px 22px rgba(0,0,0,.45)}
-  #tuto[hidden]{display:none}
-  #tuto[data-alerte]{border-color:var(--warn)}
-  #tuto[data-alerte] .dit{color:var(--warn)}
-  #tuto .pas{color:var(--muted);font-family:var(--mono);font-size:11px}
-  #tuto .dit{flex:1}
-  #tuto .passer{background:none;border:none;color:var(--muted);font-size:11.5px;
-    cursor:pointer;text-decoration:underline;padding:0;white-space:nowrap}
-  #tuto .passer:hover{color:var(--txt)}
-</style>
-</head>
-<body>
-<header>
-  <h1>IAvocat</h1>
-  <span class="sub">tranche verticale — l'affaire Kessler</span>
-  <span class="sub" id="srcContenu" style="opacity:.6"></span>
-  <span class="spacer"></span>
-  <button onclick="openManuels()">Manuels</button>
-</header>
+    [data-tuto="alerte"] {
+      outline-color: var(--warn);
+      animation-name: poulsAlerte
+    }
 
-<div class="wrap">
-  <!-- Un en-tête nomme la SURFACE (§4.6), jamais les zones qu'elle contient :
+    @keyframes poulsAlerte {
+
+      0%,
+      100% {
+        outline-color: var(--warn)
+      }
+
+      50% {
+        outline-color: transparent
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      [data-tuto] {
+        animation: none
+      }
+    }
+
+    #tuto {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      z-index: 60;
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      max-width: min(560px, calc(100vw - 32px));
+      background: var(--panel2);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 13px;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, .45)
+    }
+
+    #tuto[hidden] {
+      display: none
+    }
+
+    #tuto[data-alerte] {
+      border-color: var(--warn)
+    }
+
+    #tuto[data-alerte] .dit {
+      color: var(--warn)
+    }
+
+    #tuto .pas {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px
+    }
+
+    #tuto .dit {
+      flex: 1
+    }
+
+    #tuto .passer {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 11.5px;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      white-space: nowrap
+    }
+
+    #tuto .passer:hover {
+      color: var(--txt)
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>IAvocat</h1>
+    <span class="sub">tranche verticale — l'affaire Kessler</span>
+    <span class="sub" id="srcContenu" style="opacity:.6"></span>
+    <span class="spacer"></span>
+    <button onclick="openManuels()">Manuels</button>
+  </header>
+
+  <div class="wrap">
+    <!-- Un en-tête nomme la SURFACE (§4.6), jamais les zones qu'elle contient :
        elles portent déjà leur titre, plus bas (§4.9). -->
-  <section class="col">
-    <h2>Discussion</h2>
-    <div class="body" id="canal"></div>
-    <!-- On répond SOUS la question (§4.6). `#composeur` est le FRÈRE de
+    <section class="col">
+      <h2>Discussion</h2>
+      <div class="body" id="canal"></div>
+      <!-- On répond SOUS la question (§4.6). `#composeur` est le FRÈRE de
          `#canal`, jamais son enfant : le fil défile et se recale en bas à
          chaque message, la phrase qu'on écrit ne doit pas partir avec lui.
          Aucune étiquette « privé » ici — le statut se lit dans le fait que
          rien n'en sort, pas dans un en-tête (§4.6). -->
-    <div id="composeur"></div>
-  </section>
-  <section class="col">
-    <h2>Mémoire</h2>
-    <div class="body" id="atelier"></div>
-  </section>
-  <!-- Caché tant que rien ne s'y inscrit : ce qui n'existe pas encore ne
+      <div id="composeur"></div>
+    </section>
+    <section class="col">
+      <h2>Mémoire</h2>
+      <div class="body" id="atelier"></div>
+    </section>
+    <!-- Caché tant que rien ne s'y inscrit : ce qui n'existe pas encore ne
        s'affiche pas (§4.9). C'est `renderPlan` qui pose le `hidden`. -->
-  <section class="col" id="colPlan" hidden>
-    <h2>Plaidoirie<span class="zcount" id="planCount"></span></h2>
-    <div class="body" id="plan"></div>
-  </section>
-  <div class="cloture">
-    <button id="btnCloture" onclick="cloturer()" disabled>Clôturer l'instruction</button>
-    <div class="hint" id="clotureHint">Maître Auber attend encore quelque chose.</div>
-    <button id="btnRecommencer" onclick="recommencer()" title="Effacer la partie en cours et repartir de la remise 1"
-      style="margin-left:auto;background:none;border:1px solid var(--line);color:var(--muted);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer">⟲ recommencer</button>
+    <section class="col" id="colPlan" hidden>
+      <h2>Plaidoirie<span class="zcount" id="planCount"></span></h2>
+      <div class="body" id="plan"></div>
+    </section>
+    <div class="cloture">
+      <button id="btnCloture" onclick="cloturer()" disabled>Clôturer l'instruction</button>
+      <div class="hint" id="clotureHint">Maître Auber attend encore quelque chose.</div>
+      <button id="btnRecommencer" onclick="recommencer()" title="Effacer la partie en cours et repartir de la remise 1"
+        style="margin-left:auto;background:none;border:1px solid var(--line);color:var(--muted);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer">⟲
+        recommencer</button>
+    </div>
   </div>
-</div>
 
-<div id="modalRoot"></div>
+  <div id="modalRoot"></div>
 
-<!-- Le tutoriel parle depuis le CHROME, hors de la fiction : l'avocat, lui,
+  <!-- Le tutoriel parle depuis le CHROME, hors de la fiction : l'avocat, lui,
      n'explique rien (§8.6). Le bandeau ne bouge jamais ; seul son texte
      change, et le halo se déplace d'un élément à l'autre (§4.8). -->
-<div id="tuto" hidden>
-  <span class="pas" id="tutoPas"></span>
-  <span class="dit" id="tutoDit"></span>
-  <button class="passer" onclick="tutoPasser()">je sais faire</button>
-</div>
+  <div id="tuto" hidden>
+    <span class="pas" id="tutoPas"></span>
+    <span class="dit" id="tutoDit"></span>
+    <button class="passer" onclick="tutoPasser()">je sais faire</button>
+  </div>
 
-<!-- ============================================================
+  <!-- ============================================================
      LA GRAMMAIRE — fonctions pures, partagées avec l'atelier et le
      banc d'essai. Aucune donnée dedans (docs/ARCHITECTURE.md §14).
      ============================================================ -->
-<script src="moteur.js"></script>
+  <script src="moteur.js"></script>
 
-<!-- ============================================================
+  <!-- ============================================================
      LES RÈGLES DU JEU — pures elles aussi, et partagées avec le
      pas-à-pas de l'atelier, qui ne les recopie plus (§12).
      ============================================================ -->
-<script src="regles.js"></script>
+  <script src="regles.js"></script>
 
-<!-- ============================================================
+  <!-- ============================================================
      LE CONTENU — produit par l'atelier (« Exporter content.js »).
      Place content.js à côté de ce fichier : c'est le seul contenu,
      il n'y a plus de copie embarquée. Marche en file:// et sur itch.io.
      ============================================================ -->
-<script src="content.js"></script>
+  <script src="content.js"></script>
 
-<script>
-/* ============================================================
-   1) LE CONTENU — content.js, et lui seul.
-      Il est écrit dans l'atelier, exporté (« Exporter content.js »)
-      et posé à côté de ce fichier. Il n'existe plus de copie
-      embarquée : le contenu n'a qu'une maison (ARCHITECTURE §12).
-      S'il manque ou s'il est d'un schéma que ce moteur ne connaît
-      pas, on le dit franchement au lieu de jouer autre chose.
-   ============================================================ */
-function contenuValide(c){
-  return !!( c && typeof c==="object" && (c.schema||0)>=3
-    && c.pieces && typeof c.pieces==="object"
-    && Array.isArray(c.dimensions)
-    && c.grammaire && Array.isArray(c.grammaire.blocs) && c.grammaire.formes
-    && Array.isArray(c.liens) && Array.isArray(c.remises)
-    && c.repetition && Array.isArray(c.repetition.affirmations)
-    && c.avocat && c.fins );
-}
-/* Un contenu vide et bien formé, pour que la page rende son bandeau de panne
-   au lieu de planter à la première boucle. Il ne se joue pas : zéro remise. */
-const CONTENU_ABSENT = { schema:3, dimensions:[], pieces:{},
-  grammaire:{ depart:"S0", finaux:[], blocs:[], formes:{} },
-  liens:[], remises:[], repetition:{ affirmations:[] }, avocat:{}, fins:{} };
-const CONTENU_OK = contenuValide(window.CONTENU);
-const JEU = CONTENU_OK ? window.CONTENU : CONTENU_ABSENT;
-const SOURCE_CONTENU = CONTENU_OK ? "contenu : content.js" : "contenu introuvable";
-if(!CONTENU_OK){
-  const pourquoi = !window.CONTENU
-    ? "content.js n'a pas été chargé. Le fichier doit rester à côté de index.html."
-    : (window.CONTENU.schema||0) < 3
-      ? "content.js est en schéma "+(window.CONTENU.schema||"?")+" ; ce moteur attend le schéma 3 (empans + grammaire). Repasser par l'atelier : la migration y est automatique à l'import."
-      : "content.js est présent mais invalide : une clé vitale manque. Repasser par l'atelier.";
-  console.warn("IAvocat : "+pourquoi);
-  document.body.insertAdjacentHTML("afterbegin",`<div class="panne">${pourquoi}</div>`);
-}
-if(CONTENU_OK && (JEU.schema||0) > 3)
-  console.warn(`IAvocat : content.js de schéma ${JEU.schema}, ce moteur connaît le schéma 3 — certaines clés seront ignorées. Mettre index.html à jour.`);
+  <script>
+    /* ============================================================
+       1) LE CONTENU — content.js, et lui seul.
+          Il est écrit dans l'atelier, exporté (« Exporter content.js »)
+          et posé à côté de ce fichier. Il n'existe plus de copie
+          embarquée : le contenu n'a qu'une maison (ARCHITECTURE §12).
+          S'il manque ou s'il est d'un schéma que ce moteur ne connaît
+          pas, on le dit franchement au lieu de jouer autre chose.
+       ============================================================ */
+    function contenuValide(c) {
+      return !!(c && typeof c === "object" && (c.schema || 0) >= 3
+        && c.pieces && typeof c.pieces === "object"
+        && Array.isArray(c.dimensions)
+        && c.grammaire && Array.isArray(c.grammaire.blocs) && c.grammaire.formes
+        && Array.isArray(c.liens) && Array.isArray(c.remises)
+        && c.repetition && Array.isArray(c.repetition.affirmations)
+        && c.avocat && c.fins);
+    }
+    /* Un contenu vide et bien formé, pour que la page rende son bandeau de panne
+       au lieu de planter à la première boucle. Il ne se joue pas : zéro remise. */
+    const CONTENU_ABSENT = {
+      schema: 3, dimensions: [], pieces: {},
+      grammaire: { depart: "S0", finaux: [], blocs: [], formes: {} },
+      liens: [], remises: [], repetition: { affirmations: [] }, avocat: {}, fins: {}
+    };
+    const CONTENU_OK = contenuValide(window.CONTENU);
+    const JEU = CONTENU_OK ? window.CONTENU : CONTENU_ABSENT;
+    const SOURCE_CONTENU = CONTENU_OK ? "contenu : content.js" : "contenu introuvable";
+    if (!CONTENU_OK) {
+      const pourquoi = !window.CONTENU
+        ? "content.js n'a pas été chargé. Le fichier doit rester à côté de index.html."
+        : (window.CONTENU.schema || 0) < 3
+          ? "content.js est en schéma " + (window.CONTENU.schema || "?") + " ; ce moteur attend le schéma 3 (empans + grammaire). Repasser par l'atelier : la migration y est automatique à l'import."
+          : "content.js est présent mais invalide : une clé vitale manque. Repasser par l'atelier.";
+      console.warn("IAvocat : " + pourquoi);
+      document.body.insertAdjacentHTML("afterbegin", `<div class="panne">${pourquoi}</div>`);
+    }
+    if (CONTENU_OK && (JEU.schema || 0) > 3)
+      console.warn(`IAvocat : content.js de schéma ${JEU.schema}, ce moteur connaît le schéma 3 — certaines clés seront ignorées. Mettre index.html à jour.`);
 
-/* ============================================================
-   1ter) LA GRAMMAIRE — moteur.js + les données du contenu.
-   ============================================================ */
-const $ = id => document.getElementById(id);
-/* Tous les empans du dossier, aplatis en "pid.eid" : c'est le vocabulaire des
-   TERMES que le moteur de grammaire connaît. La mémoire du joueur, elle, n'en
-   contient que ce qu'il a surligné. */
-const CHAMPS = (function(){
-  const out=[];
-  for(const [pid,p] of Object.entries(JEU.pieces||{}))
-    for(const [eid,e] of Object.entries(p.empans||{}))
-      out.push({ id:pid+"."+eid, pid, eid, dim:e.dim, valeur:e.valeur,
-                 texte:e.texte, nom:e.nom || e.texte, qui:e.qui || p.qui || "",
-                 court:p.court || "" });   // une citation dit d'où elle vient (§4.5)
-  return out;
-})();
-const M = (window.MoteurGrammaire||{}).creerMoteur
-        ? window.MoteurGrammaire.creerMoteur(JEU.grammaire, CHAMPS, JEU.liens)
-        : null;
-if(!M){
-  document.body.insertAdjacentHTML("afterbegin",
-    `<div class="panne">moteur.js n'a pas été chargé. Le fichier doit rester à côté de index.html (voir docs/ARCHITECTURE.md §9).</div>`);
-}
-const EMPAN = Object.fromEntries(CHAMPS.map(c=>[c.id,c]));
-/* La couleur d'une dimension : par son RANG dans JEU.dimensions, jamais par
-   sa pertinence. Une dimension inconnue de la liste retombe sur le gris. */
-const rangDim = d => (JEU.dimensions||[]).indexOf(d);
-const couleurDim = d => rangDim(d)>=0 ? `var(--dim${rangDim(d)%6})` : "var(--muted)";
+    /* ============================================================
+       1ter) LA GRAMMAIRE — moteur.js + les données du contenu.
+       ============================================================ */
+    const $ = id => document.getElementById(id);
+    /* Tous les empans du dossier, aplatis en "pid.eid" : c'est le vocabulaire des
+       TERMES que le moteur de grammaire connaît. La mémoire du joueur, elle, n'en
+       contient que ce qu'il a surligné. */
+    const CHAMPS = (function () {
+      const out = [];
+      for (const [pid, p] of Object.entries(JEU.pieces || {}))
+        for (const [eid, e] of Object.entries(p.empans || {}))
+          out.push({
+            id: pid + "." + eid, pid, eid, dim: e.dim, valeur: e.valeur,
+            texte: e.texte, nom: e.nom || e.texte, qui: e.qui || p.qui || "",
+            court: p.court || ""
+          });   // une citation dit d'où elle vient (§4.5)
+      return out;
+    })();
+    const M = (window.MoteurGrammaire || {}).creerMoteur
+      ? window.MoteurGrammaire.creerMoteur(JEU.grammaire, CHAMPS, JEU.liens)
+      : null;
+    if (!M) {
+      document.body.insertAdjacentHTML("afterbegin",
+        `<div class="panne">moteur.js n'a pas été chargé. Le fichier doit rester à côté de index.html (voir docs/ARCHITECTURE.md §9).</div>`);
+    }
+    const EMPAN = Object.fromEntries(CHAMPS.map(c => [c.id, c]));
+    /* La couleur d'une dimension : par son RANG dans JEU.dimensions, jamais par
+       sa pertinence. Une dimension inconnue de la liste retombe sur le gris. */
+    const rangDim = d => (JEU.dimensions || []).indexOf(d);
+    const couleurDim = d => rangDim(d) >= 0 ? `var(--dim${rangDim(d) % 6})` : "var(--muted)";
 
-/* ============================================================
-   2) L'ÉTAT ET LES RÈGLES — tout ce qui décide vit dans regles.js.
-      Ce fichier n'en garde que l'affichage et les gestes de l'écran.
-   ============================================================ */
-const R = (window.ReglesJeu||{}).creerRegles
-        ? window.ReglesJeu.creerRegles(JEU, M)
-        : null;
-if(!R){
-  document.body.insertAdjacentHTML("afterbegin",
-    `<div class="panne">regles.js n'a pas été chargé. Le fichier doit rester à côté de index.html (voir docs/ARCHITECTURE.md §9).</div>`);
-}
-function etatInitial(){ return R.etatInitial(); }
-let S = etatInitial();
+    /* ============================================================
+       2) L'ÉTAT ET LES RÈGLES — tout ce qui décide vit dans regles.js.
+          Ce fichier n'en garde que l'affichage et les gestes de l'écran.
+       ============================================================ */
+    const R = (window.ReglesJeu || {}).creerRegles
+      ? window.ReglesJeu.creerRegles(JEU, M)
+      : null;
+    if (!R) {
+      document.body.insertAdjacentHTML("afterbegin",
+        `<div class="panne">regles.js n'a pas été chargé. Le fichier doit rester à côté de index.html (voir docs/ARCHITECTURE.md §9).</div>`);
+    }
+    function etatInitial() { return R.etatInitial(); }
+    let S = etatInitial();
 
-/* ---- Sauvegarde de partie — c'est de l'écran, pas de la règle ---- */
-const CLE_PARTIE="iavocat_partie";
-function signatureContenu(){ return R.signatureContenu(); }
-function sauverPartie(){
-  try{ localStorage.setItem(CLE_PARTIE,JSON.stringify({...S,modalPiece:null,sig:signatureContenu()})); }catch(e){}
-}
-function restaurerPartie(){
-  try{
-    const brut=localStorage.getItem(CLE_PARTIE); if(!brut) return false;
-    const d=JSON.parse(brut);
-    if(d.sig!==signatureContenu()){ localStorage.removeItem(CLE_PARTIE); return false; }
-    delete d.sig; Object.assign(S,d); return true;
-  }catch(e){ return false; }
-}
-function effacerPartie(){ try{ localStorage.removeItem(CLE_PARTIE); }catch(e){} }
-let confirmRecommencer=false;
-function recommencer(){
-  const b=$("btnRecommencer");
-  if(!confirmRecommencer){
-    confirmRecommencer=true;
-    if(b) b.textContent="tout effacer ?";
-    setTimeout(()=>{ confirmRecommencer=false; if(b) b.textContent="⟲ recommencer"; },2500);
-    return;
-  }
-  effacerPartie(); effacerTuto(); location.reload();
-}
+    /* ---- Sauvegarde de partie — c'est de l'écran, pas de la règle ---- */
+    const CLE_PARTIE = "iavocat_partie";
+    function signatureContenu() { return R.signatureContenu(); }
+    function sauverPartie() {
+      try { localStorage.setItem(CLE_PARTIE, JSON.stringify({ ...S, modalPiece: null, sig: signatureContenu() })); } catch (e) { }
+    }
+    function restaurerPartie() {
+      try {
+        const brut = localStorage.getItem(CLE_PARTIE); if (!brut) return false;
+        const d = JSON.parse(brut);
+        if (d.sig !== signatureContenu()) { localStorage.removeItem(CLE_PARTIE); return false; }
+        delete d.sig; Object.assign(S, d); return true;
+      } catch (e) { return false; }
+    }
+    function effacerPartie() { try { localStorage.removeItem(CLE_PARTIE); } catch (e) { } }
+    let confirmRecommencer = false;
+    function recommencer() {
+      const b = $("btnRecommencer");
+      if (!confirmRecommencer) {
+        confirmRecommencer = true;
+        if (b) b.textContent = "tout effacer ?";
+        setTimeout(() => { confirmRecommencer = false; if (b) b.textContent = "⟲ recommencer"; }, 2500);
+        return;
+      }
+      effacerPartie(); effacerTuto(); location.reload();
+    }
 
-/* ---- Le tutoriel du premier geste (§4.8) — de l'écran, pas de la règle ----
-   Il ne DÉCIDE rien : son temps courant se dérive de `S`, il n'ajoute aucun
-   champ d'état et il ne se sauvegarde pas avec la partie. Retirer ce bloc
-   laisserait le jeu identique. Le halo entoure la ZONE où le geste a lieu —
-   jamais le bon empan : ce serait désigner la réponse à la lampe torche (§4.3).
-   Ses phrases ne sont pas du contenu : elles parlent depuis le chrome, hors de
-   la fiction, parce que dans la fiction personne n'explique rien (§8.6). */
-const CLE_TUTO="iavocat_tuto";
-let tutoFait=false;
-try{ tutoFait = !!localStorage.getItem(CLE_TUTO); }catch(e){}
-function effacerTuto(){ try{ localStorage.removeItem(CLE_TUTO); }catch(e){} }
-function tutoClore(){ tutoFait=true; try{ localStorage.setItem(CLE_TUTO,"1"); }catch(e){} }
-function tutoPasser(){ tutoClore(); majTutoriel(); }
-/* Ce que la question attend, dérivé du contenu exactement comme le fait le
-   harnais : le tag de l'attente courante, le lien qui le porte, son terme s'il
-   est ATOMIQUE. Rien n'est nommé ici, et une comparaison ne rend rien — le
-   tutoriel ne juge que la réponse par citation, la seule qu'il enseigne. */
-function tutoAttendu(){
-  const a=R.attenteCourante(S,R.remiseCourante(S));
-  const L=a&&a.attend&&(JEU.liens||[]).find(x=>x.tag===a.attend);
-  const t=L&&(L.termes||[])[0];
-  return typeof t==="string" ? t : null;
-}
-/* Quatre temps, et pas un de plus — ce sont ceux qui restent depuis qu'une
-   suite unique se pose toute seule (§4.5). Le second en a deux moitiés : la
-   pièce ouverte couvre l'écran, il faut la refermer pour atteindre sa mémoire.
-   Le tutoriel n'avance qu'avec le passage demandé. Il n'EMPÊCHE rien pour
-   autant : la mémoire reste gratuite, illimitée et réversible, la phrase se
-   compose et s'envoie quand même. Ce qu'il retient, c'est son approbation —
-   c'est tout ce qu'un panneau indicateur peut retenir (§4.8). */
-function tutoEtape(){
-  if(S.remisesEnvoyees!==1 || S.satisfaits.length) return null;
-  const veut=tutoAttendu();
-  if(veut ? !S.memoire.includes(veut) : !S.memoire.length){
-    // Autre chose est retenu : ce n'est pas le passage demandé, et on le dit.
-    const rate = !!veut && S.memoire.length>0;
-    return S.modalPiece
-      ? {n:2, ou:"#modalRoot .piecetexte", alerte:rate,
+    /* ---- Le tutoriel du premier geste (§4.8) — de l'écran, pas de la règle ----
+       Il ne DÉCIDE rien : son temps courant se dérive de `S`, il n'ajoute aucun
+       champ d'état et il ne se sauvegarde pas avec la partie. Retirer ce bloc
+       laisserait le jeu identique. Le halo entoure la ZONE où le geste a lieu —
+       jamais le bon empan : ce serait désigner la réponse à la lampe torche (§4.3).
+       Ses phrases ne sont pas du contenu : elles parlent depuis le chrome, hors de
+       la fiction, parce que dans la fiction personne n'explique rien (§8.6). */
+    const CLE_TUTO = "iavocat_tuto";
+    let tutoFait = false;
+    try { tutoFait = !!localStorage.getItem(CLE_TUTO); } catch (e) { }
+    function effacerTuto() { try { localStorage.removeItem(CLE_TUTO); } catch (e) { } }
+    function tutoClore() { tutoFait = true; try { localStorage.setItem(CLE_TUTO, "1"); } catch (e) { } }
+    function tutoPasser() { tutoClore(); majTutoriel(); }
+    /* Ce que la question attend, dérivé du contenu exactement comme le fait le
+       harnais : le tag de l'attente courante, le lien qui le porte, son terme s'il
+       est ATOMIQUE. Rien n'est nommé ici, et une comparaison ne rend rien — le
+       tutoriel ne juge que la réponse par citation, la seule qu'il enseigne. */
+    function tutoAttendu() {
+      const a = R.attenteCourante(S, R.remiseCourante(S));
+      const L = a && a.attend && (JEU.liens || []).find(x => x.tag === a.attend);
+      const t = L && (L.termes || [])[0];
+      return typeof t === "string" ? t : null;
+    }
+    /* Quatre temps, et pas un de plus — ce sont ceux qui restent depuis qu'une
+       suite unique se pose toute seule (§4.5). Le second en a deux moitiés : la
+       pièce ouverte couvre l'écran, il faut la refermer pour atteindre sa mémoire.
+       Le tutoriel n'avance qu'avec le passage demandé. Il n'EMPÊCHE rien pour
+       autant : la mémoire reste gratuite, illimitée et réversible, la phrase se
+       compose et s'envoie quand même. Ce qu'il retient, c'est son approbation —
+       c'est tout ce qu'un panneau indicateur peut retenir (§4.8). */
+    function tutoEtape() {
+      if (S.remisesEnvoyees !== 1 || S.satisfaits.length) return null;
+      const veut = tutoAttendu();
+      if (veut ? !S.memoire.includes(veut) : !S.memoire.length) {
+        // Autre chose est retenu : ce n'est pas le passage demandé, et on le dit.
+        const rate = !!veut && S.memoire.length > 0;
+        return S.modalPiece
+          ? {
+            n: 2, ou: "#modalRoot .piecetexte", alerte: rate,
             dit: rate ? "Ce n'est pas ce qu'il demande. Relis sa question, et prends le passage qui y répond."
-                      : "Les passages soulignés se retiennent d'un clic. Prends celui qui répond."}
-      : {n:1, ou:"#canal .attach", alerte:rate,
+              : "Les passages soulignés se retiennent d'un clic. Prends celui qui répond."
+          }
+          : {
+            n: 1, ou: "#canal .attach", alerte: rate,
             dit: rate ? "Ce n'est pas ce qu'il demande. Rouvre la pièce et relis sa question."
-                      : "Ouvre la pièce : ce qu'il te demande est écrit dedans."};
-  }
-  if(S.prete==null)
-    return S.modalPiece
-      ? {n:2, ou:"#modalRoot .close",
-            dit:"Retenu — et rien n'en est sorti. Referme la pièce."}
-      : {n:3, ou:"#zoneMemoire",
-            dit:"Ce que tu retiens est ton clavier. Clique-le pour l'écrire."};
-  return  {n:4, ou:"#composeur button.envoi",
-            dit:"Ta phrase est écrite, et personne ne l'a lue. À toi de l'envoyer."};
-}
-/* En fin de `rendreTout`, comme `majCloture` : les trois colonnes et la modale
-   sont refaites à chaque geste, donc le halo se repose à chaque geste. On
-   marque par un ATTRIBUT et non par une classe — la sérialisation le range en
-   fin de balise et laisse les `class="…"` intactes, que des suites lisent. */
-let tutoCible=null;
-function majTutoriel(){
-  const banniere=$("tuto"); if(!banniere) return;
-  if(tutoCible){ tutoCible.removeAttribute("data-tuto"); tutoCible=null; }
-  const e = tutoFait ? null : tutoEtape();
-  if(!e){
-    // Première réponse envoyée (ou partie déjà avancée) : il ne revient plus.
-    if(!tutoFait && S.remisesEnvoyees>=1) tutoClore();
-    banniere.hidden=true; return;
-  }
-  tutoCible=document.querySelector(e.ou);
-  if(tutoCible) tutoCible.setAttribute("data-tuto", e.alerte?"alerte":"");
-  banniere.toggleAttribute("data-alerte", !!e.alerte);
-  $("tutoPas").textContent=e.n+"/4";
-  $("tutoDit").textContent=e.dit;
-  banniere.hidden=false;
-}
+              : "Ouvre la pièce : ce qu'il te demande est écrit dedans."
+          };
+      }
+      if (S.prete == null)
+        return S.modalPiece
+          ? {
+            n: 2, ou: "#modalRoot .close",
+            dit: "Retenu — et rien n'en est sorti. Referme la pièce."
+          }
+          : {
+            n: 3, ou: "#zoneMemoire",
+            dit: "Ce que tu retiens est ton clavier. Clique-le pour l'écrire."
+          };
+      return {
+        n: 4, ou: "#composeur button.envoi",
+        dit: "Ta phrase est écrite, et personne ne l'a lue. À toi de l'envoyer."
+      };
+    }
+    /* En fin de `rendreTout`, comme `majCloture` : les trois colonnes et la modale
+       sont refaites à chaque geste, donc le halo se repose à chaque geste. On
+       marque par un ATTRIBUT et non par une classe — la sérialisation le range en
+       fin de balise et laisse les `class="…"` intactes, que des suites lisent. */
+    let tutoCible = null;
+    function majTutoriel() {
+      const banniere = $("tuto"); if (!banniere) return;
+      if (tutoCible) { tutoCible.removeAttribute("data-tuto"); tutoCible = null; }
+      const e = tutoFait ? null : tutoEtape();
+      if (!e) {
+        // Première réponse envoyée (ou partie déjà avancée) : il ne revient plus.
+        if (!tutoFait && S.remisesEnvoyees >= 1) tutoClore();
+        banniere.hidden = true; return;
+      }
+      tutoCible = document.querySelector(e.ou);
+      if (tutoCible) tutoCible.setAttribute("data-tuto", e.alerte ? "alerte" : "");
+      banniere.toggleAttribute("data-alerte", !!e.alerte);
+      $("tutoPas").textContent = e.n + "/4";
+      $("tutoDit").textContent = e.dit;
+      banniere.hidden = false;
+    }
 
-/* ============================================================
-   3) RENDU COMMUN
-   ============================================================ */
-const modalRoot = $("modalRoot");
-// Refermer est un geste comme un autre : le tutoriel doit pouvoir suivre (§4.8).
-function closeModal(){ S.modalPiece=null; modalRoot.innerHTML=""; rendreTout(); }
-function modal(html){
-  modalRoot.innerHTML =
-    `<div class="overlay" onclick="if(event.target===this)closeModal()">
+    /* ============================================================
+       3) RENDU COMMUN
+       ============================================================ */
+    const modalRoot = $("modalRoot");
+    // Refermer est un geste comme un autre : le tutoriel doit pouvoir suivre (§4.8).
+    function closeModal() { S.modalPiece = null; modalRoot.innerHTML = ""; rendreTout(); }
+    function modal(html) {
+      modalRoot.innerHTML =
+        `<div class="overlay" onclick="if(event.target===this)closeModal()">
        <div class="modal"><button class="close" onclick="closeModal()">×</button>${html}</div>
      </div>`;
-}
-function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function rendreTout(){ renderCanal(); renderComposeur(); renderAtelier(); renderPlan(); majCloture(); majTutoriel(); sauverPartie(); }
-
-/* ---- Le canal : un fil de messages ---- */
-function pousser(qui,texte,pieces,ia){ return R.pousser(S,qui,texte,pieces,ia); }
-function envoyerRemise(){ return R.envoyerRemise(S); }
-function renderCanal(){
-  let h="", dernier=null;
-  for(const m of S.fil){
-    // Les textes de l'avocat viennent du contenu, écrits pour l'écran ; la
-    // bulle de l'IA reprend une phrase composée, qu'on échappe.
-    // Le locuteur ne s'écrit qu'au CHANGEMENT de locuteur : quatre bulles
-    // d'affilée n'ont qu'un nom au-dessus (§4.9).
-    const meme = m.qui===dernier; dernier=m.qui;
-    h+=`<div class="msg ${m.ia?'ia':''} ${meme?'suite':''}">${
-      meme?"":`<div class="who">${esc(m.qui)}</div>`}<div class="bubble">${m.ia?esc(m.texte):m.texte}<div>`;
-    for(const pid of m.pieces){
-      const seen=S.examinees.includes(pid)?"seen":"";
-      h+=`<span class="attach ${seen}" onclick="ouvrirPiece('${pid}')">📎 ${esc(JEU.pieces[pid].titre)}</span>`;
     }
-    h+=`</div></div></div>`;
-  }
-  // la répétition : le présentoir, sous la dernière affirmation
-  if(S.clotureDemandee && S.repetitionIdx>-1 && S.repetitionIdx<JEU.repetition.affirmations.length){
-    const dispo=S.brouillon.map((n,i)=>({n,i}));
-    h+=`<div class="repet"><div class="rtitle">Opposer une phrase à cette affirmation ?</div>${
-      dispo.length ? dispo.map(x=>
-        `<div class="rnote"><span class="txt">${esc(x.n.texte)}</span>
-         ${x.n.versee?`<span class="sent">déjà envoyée</span>`:`<button class="up" onclick="verserContre(${x.i})">envoyer</button>`}</div>`).join("")
-      : `<div class="rnote vide">tu n'as écrit aucune phrase à y opposer</div>`
-    }<button class="btn" onclick="avancerRepetition()">Ne rien envoyer — continuer</button></div>`;
-  }
-  const el=$("canal");
-  el.innerHTML=h;
-  el.scrollTop=el.scrollHeight;
-}
+    function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+    function rendreTout() { renderCanal(); renderComposeur(); renderAtelier(); renderPlan(); majCloture(); majTutoriel(); sauverPartie(); }
 
-/* ---- Les pièces : le texte, ses empans, l'index du dossier ---- */
-/* Tout empan déclaré est marqué et cliquable. Le marquage ne varie JAMAIS
-   selon l'importance de la pièce ni selon la progression (§4.3). */
-function rendreTexte(pid){
-  const p=JEU.pieces[pid];
-  const src=String(p.texte||"");
-  let h="", reste=src, m;
-  const re=/\{\{([A-Za-z0-9_]+)\}\}/;
-  while((m=re.exec(reste))){
-    h+=esc(reste.slice(0,m.index));
-    const eid=m[1], e=(p.empans||{})[eid];
-    if(e){
-      const k=pid+"."+eid, pris=S.memoire.includes(k);
-      h+=`<span class="empan ${pris?'pris':''}" style="--dc:${couleurDim(e.dim)}"
-            onclick="surligner('${pid}','${eid}')" title="${esc(e.dim)} — ${esc(e.qui||p.qui||'')}">${esc(e.texte)}</span>`;
-    } else h+=esc(m[0]);
-    reste=reste.slice(m.index+m[0].length);
-  }
-  h+=esc(reste);
-  return h;
-}
-function ouvrirPiece(pid){
-  R.ouvrirPiece(S,pid);            // vue + son `declenche` éventuel
-  modal(modalPieceHTML(pid));
-  rendreTout();
-}
-function piecesLivrees(){ return R.piecesLivrees(S); }
-/* LE DOSSIER — les pièces d'abord, les règles ensuite. Deux bandes, parce que
-   ce sont deux natures : ce que l'accusation a trouvé d'un côté, le manuel du
-   cas de l'autre. L'atelier range déjà son graphe ainsi. Deux bandes et non
-   deux colonnes : à cette largeur, une demi-colonne ne tenait plus deux puces
-   côte à côte (§4.9). */
-function renderDossier(){
-  if(!S.remisesEnvoyees) return "";
-  const livres=piecesLivrees();
-  const vus=livres.filter(pid=>S.examinees.includes(pid)).length;
-  const chip=pid=>{
-    const p=JEU.pieces[pid], vu=S.examinees.includes(pid);
-    return `<span class="dchip ${vu?'vu':''} ${R.estRegle(p)?'regle':''}"
-      onclick="ouvrirPiece('${pid}')" title="${esc(p.titre)}">${vu?'✓':'●'} ${esc(p.court)}</span>`;
-  };
-  // L'étiquette de la bande tient sur la ligne des puces, en gouttière : deux
-  // natures, mais pas deux lignes de plus (§4.9).
-  const colonne=(titre,pids)=>`<div class="dcol"><span class="dtitre">${titre}</span>
-    <div class="dchips">${pids.length?pids.map(chip).join(""):`<span class="dvide">—</span>`}</div></div>`;
-  const pieces=livres.filter(pid=>!R.estRegle(JEU.pieces[pid]));
-  const regles=livres.filter(pid=> R.estRegle(JEU.pieces[pid]));
-  return `<div class="zone"><div class="ztitle">Le dossier <span class="zcount">${vus}/${livres.length}</span></div>
-    <div class="dossier">${colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div></div>`;
-}
+    /* ---- Le canal : un fil de messages ---- */
+    function pousser(qui, texte, pieces, ia) { return R.pousser(S, qui, texte, pieces, ia); }
+    function envoyerRemise() { return R.envoyerRemise(S); }
+    function renderCanal() {
+      let h = "", dernier = null;
+      for (const m of S.fil) {
+        // Les textes de l'avocat viennent du contenu, écrits pour l'écran ; la
+        // bulle de l'IA reprend une phrase composée, qu'on échappe.
+        // Le locuteur ne s'écrit qu'au CHANGEMENT de locuteur : quatre bulles
+        // d'affilée n'ont qu'un nom au-dessus (§4.9).
+        const meme = m.qui === dernier; dernier = m.qui;
+        h += `<div class="msg ${m.ia ? 'ia' : ''} ${meme ? 'suite' : ''}">${meme ? "" : `<div class="who">${esc(m.qui)}</div>`}<div class="bubble">${m.ia ? esc(m.texte) : m.texte}<div>`;
+        for (const pid of m.pieces) {
+          const seen = S.examinees.includes(pid) ? "seen" : "";
+          h += `<span class="attach ${seen}" onclick="ouvrirPiece('${pid}')">📎 ${esc(JEU.pieces[pid].titre)}</span>`;
+        }
+        h += `</div></div></div>`;
+      }
+      // la répétition : le présentoir, sous la dernière affirmation
+      if (S.clotureDemandee && S.repetitionIdx > -1 && S.repetitionIdx < JEU.repetition.affirmations.length) {
+        const dispo = S.brouillon.map((n, i) => ({ n, i }));
+        h += `<div class="repet"><div class="rtitle">Opposer une phrase à cette affirmation ?</div>${dispo.length ? dispo.map(x =>
+          `<div class="rnote"><span class="txt">${esc(x.n.texte)}</span>
+         ${x.n.versee ? `<span class="sent">déjà envoyée</span>` : `<button class="up" onclick="verserContre(${x.i})">envoyer</button>`}</div>`).join("")
+            : `<div class="rnote vide">tu n'as écrit aucune phrase à y opposer</div>`
+          }<button class="btn" onclick="avancerRepetition()">Ne rien envoyer — continuer</button></div>`;
+      }
+      const el = $("canal");
+      el.innerHTML = h;
+      el.scrollTop = el.scrollHeight;
+    }
 
-/* ============================================================
-   4) LA MÉMOIRE — privée, gratuite, illimitée, et CLAVIER du composeur.
-      Surligner ne produit RIEN. C'est voulu.
-   ============================================================ */
-function surligner(pid,eid){
-  R.surligner(S,pid,eid);          // privé, gratuit, illimité ; re-cliquer oublie
-  if(S.modalPiece) modal(modalPieceHTML(S.modalPiece));
-  rendreTout();
-}
-function modalPieceHTML(pid){
-  const p=JEU.pieces[pid];
-  const dims=[...new Set(Object.values(p.empans||{}).map(e=>e.dim))];
-  return `<h3>${esc(p.titre)}</h3><small class="note">${esc(p.type)} — ${esc(p.qui||"")}</small>
+    /* ---- Les pièces : le texte, ses empans, l'index du dossier ---- */
+    /* Tout empan déclaré est marqué et cliquable. Le marquage ne varie JAMAIS
+       selon l'importance de la pièce ni selon la progression (§4.3). */
+    function rendreTexte(pid) {
+      const p = JEU.pieces[pid];
+      const src = String(p.texte || "");
+      let h = "", reste = src, m;
+      const re = /\{\{([A-Za-z0-9_]+)\}\}/;
+      while ((m = re.exec(reste))) {
+        h += esc(reste.slice(0, m.index));
+        const eid = m[1], e = (p.empans || {})[eid];
+        if (e) {
+          const k = pid + "." + eid, pris = S.memoire.includes(k);
+          h += `<span class="empan ${pris ? 'pris' : ''}" style="--dc:${couleurDim(e.dim)}"
+            onclick="surligner('${pid}','${eid}')" title="${esc(e.dim)} — ${esc(e.qui || p.qui || '')}">${esc(e.texte)}</span>`;
+        } else h += esc(m[0]);
+        reste = reste.slice(m.index + m[0].length);
+      }
+      h += esc(reste);
+      return h;
+    }
+    function ouvrirPiece(pid) {
+      R.ouvrirPiece(S, pid);            // vue + son `declenche` éventuel
+      modal(modalPieceHTML(pid));
+      rendreTout();
+    }
+    function piecesLivrees() { return R.piecesLivrees(S); }
+    /* LE DOSSIER — les pièces d'abord, les règles ensuite. Deux bandes, parce que
+       ce sont deux natures : ce que l'accusation a trouvé d'un côté, le manuel du
+       cas de l'autre. L'atelier range déjà son graphe ainsi. Deux bandes et non
+       deux colonnes : à cette largeur, une demi-colonne ne tenait plus deux puces
+       côte à côte (§4.9). */
+    function renderDossier() {
+      if (!S.remisesEnvoyees) return "";
+      const livres = piecesLivrees();
+      const vus = livres.filter(pid => S.examinees.includes(pid)).length;
+      const chip = pid => {
+        const p = JEU.pieces[pid], vu = S.examinees.includes(pid);
+        return `<span class="dchip ${vu ? 'vu' : ''} ${R.estRegle(p) ? 'regle' : ''}"
+      onclick="ouvrirPiece('${pid}')" title="${esc(p.titre)}">${vu ? '✓' : '●'} ${esc(p.court)}</span>`;
+      };
+      // L'étiquette de la bande tient sur la ligne des puces, en gouttière : deux
+      // natures, mais pas deux lignes de plus (§4.9).
+      const colonne = (titre, pids) => `<div class="dcol"><span class="dtitre">${titre}</span>
+    <div class="dchips">${pids.length ? pids.map(chip).join("") : `<span class="dvide">—</span>`}</div></div>`;
+      const pieces = livres.filter(pid => !R.estRegle(JEU.pieces[pid]));
+      const regles = livres.filter(pid => R.estRegle(JEU.pieces[pid]));
+      return `<div class="zone"><div class="ztitle">Le dossier <span class="zcount">${vus}/${livres.length}</span></div>
+    <div class="dossier">${colonne("Les pièces", pieces)}${colonne("Les règles", regles)}</div></div>`;
+    }
+
+    /* ============================================================
+       4) LA MÉMOIRE — privée, gratuite, illimitée, et CLAVIER du composeur.
+          Surligner ne produit RIEN. C'est voulu.
+       ============================================================ */
+    function surligner(pid, eid) {
+      R.surligner(S, pid, eid);          // privé, gratuit, illimité ; re-cliquer oublie
+      if (S.modalPiece) modal(modalPieceHTML(S.modalPiece));
+      rendreTout();
+    }
+    function modalPieceHTML(pid) {
+      const p = JEU.pieces[pid];
+      const dims = [...new Set(Object.values(p.empans || {}).map(e => e.dim))];
+      return `<h3>${esc(p.titre)}</h3><small class="note">${esc(p.type)} — ${esc(p.qui || "")}</small>
     <p class="piecetexte">${rendreTexte(pid)}</p>
     `;
-}
-/* La mémoire est AUSSI le clavier du composeur : un empan retenu n'existe
-   qu'une fois à l'écran (§4.6). Deux lignes, pas trois (§4.9) : le NOM (ce qui
-   parlera dans la phrase), puis la citation et sa provenance sur la MÊME ligne
-   — la citation cède au besoin (ellipse, `title` pour la lire en entier), la
-   source jamais, c'est elle qui fonde. Le corps pose l'empan dans la phrase
-   quand un terme est attendu ; le « × » l'oublie, toujours.
-   L'id de zone est la cible du 3ᵉ temps du tutoriel : il se visait autrefois
-   par `:last-child`, ce qui dépendait de l'ordre des zones (§4.8). */
-function renderMemoire(){
-  const iT=indexTermeChamp();
-  let h=`<div class="zone" id="zoneMemoire"><div class="ztitle">Ce que tu retiens <span class="zcount">${S.memoire.length}</span></div>`;
-  if(!S.memoire.length){
-    // Le geste, c'est le composeur qui le nomme (§4.9) ; ici, la seule chose
-    // que la zone vide ait à dire est ce qu'elle est — une surface qui ne
-    // transmet rien (§4.6).
-    h+=`<div class="aide">Rien de ce qui vient ici n'en part.</div>`;
-  } else {
-    for(const d of JEU.dimensions||[]){
-      const ks=S.memoire.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
-      if(!ks.length) continue;
-      h+=`<div class="dimgrp" style="--dc:${couleurDim(d)}"><div class="dnom">${esc(d)}</div>`;
-      for(const {k,j} of ks){
-        const e=EMPAN[k];
-        h+=`<div class="mchip" style="--dc:${couleurDim(d)}">
-              <button class="corps" ${iT<0?"disabled":""} onclick="poserBloc(${iT},${j})"
-                      title="« ${esc(e.texte)} » — ${esc(e.qui)}, ${esc(JEU.pieces[e.pid].court)}${
-                        iT<0?"\n(ta phrase n'attend pas un passage)":""}">
-                <span class="nom">${esc(e.nom||e.texte)}</span>
+    }
+    /* La mémoire est AUSSI le clavier du composeur : un empan retenu n'existe
+       qu'une fois à l'écran (§4.6). Deux lignes, pas trois (§4.9) : le NOM (ce qui
+       parlera dans la phrase), puis la citation et sa provenance sur la MÊME ligne
+       — la citation cède au besoin (ellipse, `title` pour la lire en entier), la
+       source jamais, c'est elle qui fonde. Le corps pose l'empan dans la phrase
+       quand un terme est attendu ; le « × » l'oublie, toujours.
+       L'id de zone est la cible du 3ᵉ temps du tutoriel : il se visait autrefois
+       par `:last-child`, ce qui dépendait de l'ordre des zones (§4.8). */
+    function renderMemoire() {
+      const iT = indexTermeChamp();
+      let h = `<div class="zone" id="zoneMemoire"><div class="ztitle">Ce que tu retiens <span class="zcount">${S.memoire.length}</span></div>`;
+      if (!S.memoire.length) {
+        // Le geste, c'est le composeur qui le nomme (§4.9) ; ici, la seule chose
+        // que la zone vide ait à dire est ce qu'elle est — une surface qui ne
+        // transmet rien (§4.6).
+        h += `<div class="aide">Rien de ce qui vient ici n'en part.</div>`;
+      } else {
+        for (const d of JEU.dimensions || []) {
+          const ks = S.memoire.map((k, j) => ({ k, j })).filter(x => EMPAN[x.k] && EMPAN[x.k].dim === d);
+          if (!ks.length) continue;
+          h += `<div class="dimgrp" style="--dc:${couleurDim(d)}"><div class="dnom">${esc(d)}</div>`;
+          for (const { k, j } of ks) {
+            const e = EMPAN[k];
+            h += `<div class="mchip" style="--dc:${couleurDim(d)}">
+              <button class="corps" ${iT < 0 ? "disabled" : ""} onclick="poserBloc(${iT},${j})"
+                      title="« ${esc(e.texte)} » — ${esc(e.qui)}, ${esc(JEU.pieces[e.pid].court)}${iT < 0 ? "\n(ta phrase n'attend pas un passage)" : ""}">
+                <span class="nom">${esc(e.nom || e.texte)}</span>
                 <span class="prov"><span class="cit">« ${esc(e.texte)} »</span><span class="sig">— ${esc(e.qui)}, ${esc(JEU.pieces[e.pid].court)}</span></span>
               </button>
               <button class="del" onclick="surligner('${e.pid}','${e.eid}')" title="Oublier">×</button>
             </div>`;
+          }
+          h += `</div>`;
+        }
       }
-      h+=`</div>`;
+      h += `</div>`;
+      return h;
     }
-  }
-  h+=`</div>`;
-  return h;
-}
 
-/* ============================================================
-   5) LE COMPOSEUR — les blocs de l'état courant, de gauche à droite.
-      Aucune liste n'est restreinte : seules les erreurs de CATÉGORIE
-      sont refusées, à la clôture de la phrase (§4.5 d'ARCHITECTURE).
-   ============================================================ */
-function etatCompo(){ return R.etatCompo(S); }
-function blocParId(id){ return R.blocParId(id); }
-function blocsOfferts(){ return R.blocsOfferts(S); }
-function indexTermeChamp(){ return R.indexTermeChamp(S); }
-function chaineCompo(){ return R.chaineCompo(S); }
-/* LA VOIX UNIQUE DU COMPOSEUR (§4.9). Une seule phrase pour l'état courant,
-   dérivée de `S` comme le tutoriel dérive son temps : rendue dans le FANTÔME
-   tant que la phrase est vide, dans l'AIDE dès qu'elle ne l'est plus. Elle ne
-   décide rien et ne lit aucun contenu — un compte de blocs, deux drapeaux de
-   grammaire, la longueur de la mémoire. */
-function souffle(){
-  const offerts=blocsOfferts();
-  const second=offerts.some(b=>b.type==="terme"&&b.deduit);
-  const attendTerme=offerts.some(b=>b.type==="terme"&&b.source!=="note");
-  if(!S.compo.length){
-    if(!S.memoire.length) return "Ouvre une pièce et retiens un passage.";
-    return second ? "Désigne deux passages de ta mémoire…" : "Sélectionne un passage pour répondre à partir de ta mémoire";
-  }
-  const citation=offerts.some(b=>b.cite);
-  if(citation && second) return "Ajouter un second passage ?";
-  if(citation) return "Quel article citer pour appuyer la déclaration ?";
-  if(attendTerme) return "Clique sur un second passage pour le mettre en relation";
-  /* LA RELANCE. Une comparaison n'est jamais terminée d'office : elle demande
-     toujours « et donc ? ». C'est le composeur qui pose la question — l'avocat
-     n'a plus à s'agacer d'une remarque nue, elle ne peut plus lui parvenir.
-     Elle ne se coupe pas : elle porte la contrainte de fondement par la forme
-     (§4.5, §4.9). */
-  return offerts.length
-    ? "Et donc ? Une comparaison ne se plaide pas seule — au regard de quel texte ?"
-    : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
-}
-function texteCompoPartiel(){
-  const offerts=blocsOfferts();
-  if(!S.compo.length) return `<span class="trou">${esc(souffle())}</span>`;
-  const ch=chaineCompo();
-  /* Tant que le second empan n'est pas posé, la relation n'existe pas : on ne
-     l'invente pas, on montre le trou. Une fois la paire close, `rendre` écrit
-     la phrase déduite d'un bloc, par son patron (§4.5). */
-  const fini=ch.some(p=>p.bloc.deduit);
-  if(fini) return `<span class="bl">${esc(M.rendre(ch).replace(/\.$/,""))}</span>`;
-  return ch.map(p=>{
-    if(p.bloc.type!=="terme") return `<span class="bl">${esc(p.bloc.texte)}</span>`;
-    if(p.bloc.source==="note") return `<span class="bl terme">${esc(p.bloc.texte)}</span>`;
-    const e=EMPAN[p.valeur];
-    return `<span class="bl terme" style="--dc:${couleurDim(e?e.dim:"")}">${esc(e?(e.nom||e.texte):p.valeur)}</span>`;
-  }).join(" ") + (offerts.some(b=>b.type==="terme"&&b.deduit)
-    ? ` <span class="trou">…et ?</span>` : "");
-}
-/* iBloc indexe blocsOfferts() ; iSrc indexe la mémoire (terme/champ) ou le
-   brouillon (terme/note). Les liaisons n'ont pas de source. Poser, retirer,
-   vider, clore : la décision est dans regles.js, l'écran ne fait que suivre. */
-function poserBloc(iBloc,iSrc){ R.poserBloc(S,iBloc,iSrc); rendreTout(); }
-function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
-function viderCompo(){ R.viderCompo(S); rendreTout(); }
-function effacerPrete(){ R.effacerPrete(S); rendreTout(); }
-function cloreCompo(){ R.clore(S); }
-/* La question en cours, rappelée au-dessus du composeur : dans le canal elle
-   défile dès que l'avocat reparle, et on écrit la réponse ici. Sans préfixe —
-   les guillemets et le filet de gauche disent déjà qui parle (§4.9). */
-function rappelQuestion(){
-  const a=R.attenteCourante(S,R.remiseCourante(S));
-  if(!a || !a.question) return "";
-  /* Depuis que le composeur est SOUS le fil (§4.6), la question vient souvent
-     d'être posée juste au-dessus : la rappeler l'écrirait deux fois à quelques
-     pixels d'écart. On ne la redit donc que lorsqu'elle a cessé d'être le
-     dernier mot — c'est-à-dire quand l'avocat a reparlé depuis, et qu'elle a
-     commencé à remonter hors de vue (§4.9). Dérivé de `S`, sans champ neuf. */
-  const dernier=S.fil[S.fil.length-1];
-  if(dernier && dernier.texte===a.question) return "";
-  return `<div class="aide question">« ${esc(a.question)} »</div>`;
-}
-function renderCompo(){
-  /* Une phrase close attend LÀ, sous les yeux, avec le seul geste qui parle.
-     Pas de liste à parcourir, pas de colonne à changer (§4.6). */
-  if(S.prete!=null && S.brouillon[S.prete]){
-    return `<div class="zone"><div class="ztitle">Ta phrase</div><div class="compo prete">
+    /* ============================================================
+       5) LE COMPOSEUR — les blocs de l'état courant, de gauche à droite.
+          Aucune liste n'est restreinte : seules les erreurs de CATÉGORIE
+          sont refusées, à la clôture de la phrase (§4.5 d'ARCHITECTURE).
+       ============================================================ */
+    function etatCompo() { return R.etatCompo(S); }
+    function blocParId(id) { return R.blocParId(id); }
+    function blocsOfferts() { return R.blocsOfferts(S); }
+    function indexTermeChamp() { return R.indexTermeChamp(S); }
+    function chaineCompo() { return R.chaineCompo(S); }
+    /* LA VOIX UNIQUE DU COMPOSEUR (§4.9). Une seule phrase pour l'état courant,
+       dérivée de `S` comme le tutoriel dérive son temps : rendue dans le FANTÔME
+       tant que la phrase est vide, dans l'AIDE dès qu'elle ne l'est plus. Elle ne
+       décide rien et ne lit aucun contenu — un compte de blocs, deux drapeaux de
+       grammaire, la longueur de la mémoire. */
+    function souffle() {
+      const offerts = blocsOfferts();
+      const second = offerts.some(b => b.type === "terme" && b.deduit);
+      const attendTerme = offerts.some(b => b.type === "terme" && b.source !== "note");
+      if (!S.compo.length) {
+        if (!S.memoire.length) return "Ouvre une pièce et retiens un passage.";
+        return second ? "Sélectionne deux passages depuis ta mémoire…" : "Depuis ta mémoire, sélectionne un passage pour répondre";
+      }
+      const citation = offerts.some(b => b.cite);
+      if (citation && second) return "Ajouter un second passage ?";
+      if (citation) return "Quel article citer pour appuyer la déclaration ?";
+      if (attendTerme) return "Clique sur un second passage pour le mettre en relation";
+      /* LA RELANCE. Une comparaison n'est jamais terminée d'office : elle demande
+         toujours « et donc ? ». C'est le composeur qui pose la question — l'avocat
+         n'a plus à s'agacer d'une remarque nue, elle ne peut plus lui parvenir.
+         Elle ne se coupe pas : elle porte la contrainte de fondement par la forme
+         (§4.5, §4.9). */
+      return offerts.length
+        ? "Et donc ? Une comparaison ne se plaide pas seule — au regard de quel texte ?"
+        : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
+    }
+    function texteCompoPartiel() {
+      const offerts = blocsOfferts();
+      if (!S.compo.length) return `<span class="trou">${esc(souffle())}</span>`;
+      const ch = chaineCompo();
+      /* Tant que le second empan n'est pas posé, la relation n'existe pas : on ne
+         l'invente pas, on montre le trou. Une fois la paire close, `rendre` écrit
+         la phrase déduite d'un bloc, par son patron (§4.5). */
+      const fini = ch.some(p => p.bloc.deduit);
+      if (fini) return `<span class="bl">${esc(M.rendre(ch).replace(/\.$/, ""))}</span>`;
+      return ch.map(p => {
+        if (p.bloc.type !== "terme") return `<span class="bl">${esc(p.bloc.texte)}</span>`;
+        if (p.bloc.source === "note") return `<span class="bl terme">${esc(p.bloc.texte)}</span>`;
+        const e = EMPAN[p.valeur];
+        return `<span class="bl terme" style="--dc:${couleurDim(e ? e.dim : "")}">${esc(e ? (e.nom || e.texte) : p.valeur)}</span>`;
+      }).join(" ") + (offerts.some(b => b.type === "terme" && b.deduit)
+        ? ` <span class="trou">…et ?</span>` : "");
+    }
+    /* iBloc indexe blocsOfferts() ; iSrc indexe la mémoire (terme/champ) ou le
+       brouillon (terme/note). Les liaisons n'ont pas de source. Poser, retirer,
+       vider, clore : la décision est dans regles.js, l'écran ne fait que suivre. */
+    function poserBloc(iBloc, iSrc) { R.poserBloc(S, iBloc, iSrc); rendreTout(); }
+    function retirerBloc() { R.retirerBloc(S); rendreTout(); }
+    function viderCompo() { R.viderCompo(S); rendreTout(); }
+    function effacerPrete() { R.effacerPrete(S); rendreTout(); }
+    function cloreCompo() { R.clore(S); }
+    /* La question en cours, rappelée au-dessus du composeur : dans le canal elle
+       défile dès que l'avocat reparle, et on écrit la réponse ici. Sans préfixe —
+       les guillemets et le filet de gauche disent déjà qui parle (§4.9). */
+    function rappelQuestion() {
+      const a = R.attenteCourante(S, R.remiseCourante(S));
+      if (!a || !a.question) return "";
+      /* Depuis que le composeur est SOUS le fil (§4.6), la question vient souvent
+         d'être posée juste au-dessus : la rappeler l'écrirait deux fois à quelques
+         pixels d'écart. On ne la redit donc que lorsqu'elle a cessé d'être le
+         dernier mot — c'est-à-dire quand l'avocat a reparlé depuis, et qu'elle a
+         commencé à remonter hors de vue (§4.9). Dérivé de `S`, sans champ neuf. */
+      const dernier = S.fil[S.fil.length - 1];
+      if (dernier && dernier.texte === a.question) return "";
+      return `<div class="aide question">« ${esc(a.question)} »</div>`;
+    }
+    function renderCompo() {
+      /* Une phrase close attend LÀ, sous les yeux, avec le seul geste qui parle.
+         Pas de liste à parcourir, pas de colonne à changer (§4.6). */
+      if (S.prete != null && S.brouillon[S.prete]) {
+        return `<div class="zone"><div class="ztitle">Ta phrase</div><div class="compo prete">
       ${rappelQuestion()}
       <div class="phrase close">${esc(S.brouillon[S.prete].texte)}</div>
       <div class="barre">
         <button class="envoi" onclick="envoyer(${S.prete})">→ Maître Auber</button>
         <button onclick="effacerPrete()">effacer</button>
       </div>
-      ${S.plaidoirie.length?"":`<div class="aide">Tant que tu ne l'envoies pas, personne ne la lit.</div>`}
+      ${S.plaidoirie.length ? "" : `<div class="aide">Tant que tu ne l'envoies pas, personne ne la lit.</div>`}
     </div></div>`;
-  }
-  const offerts=blocsOfferts();
-  let h=`<div class="zone"><div class="ztitle">Ta phrase</div><div class="compo">
+      }
+      const offerts = blocsOfferts();
+      let h = `<div class="zone"><div class="ztitle">Ta phrase</div><div class="compo">
     ${rappelQuestion()}
     <div class="phrase">${texteCompoPartiel()}</div>`;
-  if(S.compo.length)
-    h+=`<div class="barre"><button onclick="retirerBloc()">← retirer</button><button onclick="viderCompo()">tout effacer</button></div>`;
-  h+=`<div class="offre">`;
-  offerts.forEach((b,i)=>{
-    if(b.type==="liaison"){
-      // `libelle` quand le bouton dit autre chose que ce qui s'écrira ; `suite`
-      // marque les continuations, qui qualifient ce qui précède (§4.5). Une
-      // liaison-article annonce ce qu'elle régit — sans que rien soit filtré.
-      h+=`<button class="bbloc${b.imbrique?" suite":""}" onclick="poserBloc(${i})">${esc(b.libelle||b.texte)}${
-        b.piece?portePhrase(b.piece):""}</button>`;
-    } else if(b.source==="note"){
-      // Repli pour une affaire écrite avant la continuation : le contenu livré
-      // n'en a plus, mais le moteur et le jeu la supportent toujours (§11).
-      if(S.brouillon.length){
-        h+=`<div class="lab">${esc(b.texte)} — une phrase déjà close</div>`;
-        S.brouillon.forEach((n,j)=>{ h+=`<button class="bbloc" onclick="poserBloc(${i},${j})">${esc(n.texte)}</button>`; });
+      if (S.compo.length)
+        h += `<div class="barre"><button onclick="retirerBloc()">← retirer</button><button onclick="viderCompo()">tout effacer</button></div>`;
+      h += `<div class="offre">`;
+      offerts.forEach((b, i) => {
+        if (b.type === "liaison") {
+          // `libelle` quand le bouton dit autre chose que ce qui s'écrira ; `suite`
+          // marque les continuations, qui qualifient ce qui précède (§4.5). Une
+          // liaison-article annonce ce qu'elle régit — sans que rien soit filtré.
+          h += `<button class="bbloc${b.imbrique ? " suite" : ""}" onclick="poserBloc(${i})">${esc(b.libelle || b.texte)}${b.piece ? portePhrase(b.piece) : ""}</button>`;
+        } else if (b.source === "note") {
+          // Repli pour une affaire écrite avant la continuation : le contenu livré
+          // n'en a plus, mais le moteur et le jeu la supportent toujours (§11).
+          if (S.brouillon.length) {
+            h += `<div class="lab">${esc(b.texte)} — une phrase déjà close</div>`;
+            S.brouillon.forEach((n, j) => { h += `<button class="bbloc" onclick="poserBloc(${i},${j})">${esc(n.texte)}</button>`; });
+          }
+        }
+        // Un terme sans source `note` n'écrit rien ici : les puces de la mémoire,
+        // plus bas, SONT le clavier (§4.6).
+      });
+      h += `</div>`;
+      /* La voix unique — et une seule fois. Tant que la phrase est vide, le fantôme
+         l'a déjà dite ; dès qu'elle porte quelque chose, c'est ici qu'elle se dit
+         (§4.9). */
+      if (S.compo.length) h += `<div class="aide">${esc(souffle())}</div>`;
+      if (S.refus) h += `<div class="refus">${esc(S.refus)}</div>`;
+      h += `</div></div>`;
+      return h;
+    }
+
+    /* ============================================================
+       6) L'ATELIER (privé) ET LE PLAN DE PLAIDOIRIE (transmis).
+          L'avocat ne voit QUE le plan. Envoyer est le seul geste à
+          conséquence — donc le seul lieu possible du dilemme. Et il
+          n'inscrit au plan que les MOYENS : le reste, il le dit.
+       ============================================================ */
+    /* La colonne de travail : le dossier et les empans retenus. La phrase, elle,
+       s'écrit sous le canal depuis le 31 juillet (§4.6) — le clavier reste ici,
+       c'est le prix accepté de l'arbitrage (§7). La liste d'empans ne figure
+       toujours qu'une fois à l'écran. */
+    function renderAtelier() {
+      $("atelier").innerHTML = renderDossier() + renderMemoire();
+    }
+    /* Le composeur, sous le fil : `renderCompo` rend déjà une zone autonome, avec
+       son titre, le rappel de la question et le bouton d'envoi. Il n'a rien eu à
+       apprendre du déménagement — seule sa destination change. */
+    function renderComposeur() {
+      $("composeur").innerHTML = renderCompo();
+    }
+    /* Un MOYEN : ce que l'avocat peut plaider. Tout le reste, il l'entend, il y
+       répond — et ça n'entre pas au plan (§4.6). */
+    function estMoyen(L) { return R.estMoyen(L); }
+    /* Un seul titre : celui de la colonne, qui nomme la surface (§4.9). Le compte
+       monte le rejoindre dans le `<h2>` — le plan n'a qu'une zone, elle n'a pas à
+       se renommer sous son propre en-tête. */
+    function renderPlan() {
+      const gardes = S.plaidoirie.filter(x => S.brouillon[x.b] && estMoyen(S.brouillon[x.b].lien));
+      /* Vide, la colonne n'existe pas : ce qui n'a rien à montrer ne prend pas de
+         place pour dire qu'il n'a rien à montrer (§4.9). Elle apparaît d'elle-même
+         au premier moyen versé, et c'est cette apparition qui l'enseigne — d'où
+         l'absence de toute phrase d'attente ici : elle serait inatteignable. */
+      const vide = !gardes.length;
+      { const c = $("colPlan"); if (c) c.hidden = vide; }
+      { const w = document.querySelector(".wrap"); if (w) w.classList.toggle("sansPlan", vide); }
+      { const c = $("planCount"); if (c) c.textContent = gardes.length || ""; }
+      let h = `<div class="zone">`;
+      h += `<ul class="liste plaid">${gardes.map(x =>
+        `<li><span class="txt">${esc(S.brouillon[x.b].texte)}${x.contre != null && JEU.repetition.affirmations[x.contre]
+          ? `<span class="contre">opposé à : ${esc(JEU.repetition.affirmations[x.contre].court)}</span>` : ""
+        }</span></li>`).join("")}</ul>`;
+      h += `</div>`;
+      $("plan").innerHTML = h;
+    }
+    /* LE GESTE. Le seul qui traverse la frontière — donc le seul lieu du dilemme.
+       Ce qu'il déclenche (les drapeaux, la réplique, l'avancement de session) est
+       dans regles.js ; ici, on ne fait que redessiner après coup. */
+    function envoyer(i, contre) { R.envoyer(S, i, contre); rendreTout(); }
+    function reponseAvocat(n) { return R.reponseAvocat(S, n); }
+    function avancerSurAttente(L) { return R.avancerSurAttente(S, L); }
+
+    /* ============================================================
+       7) CLÔTURE, RÉPÉTITION, FINS
+       ============================================================ */
+    function instructionComplete() { return R.instructionComplete(S); }
+    function repetitionEnCours() { return R.repetitionEnCours(S); }
+    function majCloture() {
+      const btn = $("btnCloture"), hint = $("clotureHint");
+      if (!btn) return;
+      const ok = instructionComplete();
+      if (!ok) {
+        btn.disabled = true; btn.textContent = "Clôturer l'instruction";
+        hint.textContent = "Maître Auber attend encore quelque chose de cette session.";
+      }
+      else if (!S.clotureDemandee) {
+        btn.disabled = false; btn.textContent = "Clôturer l'instruction";
+        hint.textContent = "Le droit de clôturer est ouvert. Rien ne t'y oblige.";
+      }
+      else if (repetitionEnCours()) {
+        btn.disabled = true; btn.textContent = "Confirmer la clôture";
+        hint.textContent = "Répétition en cours — réponds à Maître Auber dans le canal.";
+      }
+      else {
+        btn.disabled = false; btn.textContent = "Confirmer la clôture";
+        hint.textContent = "Dernier mot avant le dépôt. Tu peux encore écrire.";
       }
     }
-    // Un terme sans source `note` n'écrit rien ici : les puces de la mémoire,
-    // plus bas, SONT le clavier (§4.6).
-  });
-  h+=`</div>`;
-  /* La voix unique — et une seule fois. Tant que la phrase est vide, le fantôme
-     l'a déjà dite ; dès qu'elle porte quelque chose, c'est ici qu'elle se dit
-     (§4.9). */
-  if(S.compo.length) h+=`<div class="aide">${esc(souffle())}</div>`;
-  if(S.refus) h+=`<div class="refus">${esc(S.refus)}</div>`;
-  h+=`</div></div>`;
-  return h;
-}
-
-/* ============================================================
-   6) L'ATELIER (privé) ET LE PLAN DE PLAIDOIRIE (transmis).
-      L'avocat ne voit QUE le plan. Envoyer est le seul geste à
-      conséquence — donc le seul lieu possible du dilemme. Et il
-      n'inscrit au plan que les MOYENS : le reste, il le dit.
-   ============================================================ */
-/* La colonne de travail : le dossier et les empans retenus. La phrase, elle,
-   s'écrit sous le canal depuis le 31 juillet (§4.6) — le clavier reste ici,
-   c'est le prix accepté de l'arbitrage (§7). La liste d'empans ne figure
-   toujours qu'une fois à l'écran. */
-function renderAtelier(){
-  $("atelier").innerHTML = renderDossier() + renderMemoire();
-}
-/* Le composeur, sous le fil : `renderCompo` rend déjà une zone autonome, avec
-   son titre, le rappel de la question et le bouton d'envoi. Il n'a rien eu à
-   apprendre du déménagement — seule sa destination change. */
-function renderComposeur(){
-  $("composeur").innerHTML = renderCompo();
-}
-/* Un MOYEN : ce que l'avocat peut plaider. Tout le reste, il l'entend, il y
-   répond — et ça n'entre pas au plan (§4.6). */
-function estMoyen(L){ return R.estMoyen(L); }
-/* Un seul titre : celui de la colonne, qui nomme la surface (§4.9). Le compte
-   monte le rejoindre dans le `<h2>` — le plan n'a qu'une zone, elle n'a pas à
-   se renommer sous son propre en-tête. */
-function renderPlan(){
-  const gardes=S.plaidoirie.filter(x=>S.brouillon[x.b] && estMoyen(S.brouillon[x.b].lien));
-  /* Vide, la colonne n'existe pas : ce qui n'a rien à montrer ne prend pas de
-     place pour dire qu'il n'a rien à montrer (§4.9). Elle apparaît d'elle-même
-     au premier moyen versé, et c'est cette apparition qui l'enseigne — d'où
-     l'absence de toute phrase d'attente ici : elle serait inatteignable. */
-  const vide = !gardes.length;
-  { const c=$("colPlan"); if(c) c.hidden=vide; }
-  { const w=document.querySelector(".wrap"); if(w) w.classList.toggle("sansPlan",vide); }
-  { const c=$("planCount"); if(c) c.textContent=gardes.length||""; }
-  let h=`<div class="zone">`;
-  h+=`<ul class="liste plaid">${gardes.map(x=>
-    `<li><span class="txt">${esc(S.brouillon[x.b].texte)}${
-      x.contre!=null && JEU.repetition.affirmations[x.contre]
-        ? `<span class="contre">opposé à : ${esc(JEU.repetition.affirmations[x.contre].court)}</span>`:""
-    }</span></li>`).join("")}</ul>`;
-  h+=`</div>`;
-  $("plan").innerHTML=h;
-}
-/* LE GESTE. Le seul qui traverse la frontière — donc le seul lieu du dilemme.
-   Ce qu'il déclenche (les drapeaux, la réplique, l'avancement de session) est
-   dans regles.js ; ici, on ne fait que redessiner après coup. */
-function envoyer(i,contre){ R.envoyer(S,i,contre); rendreTout(); }
-function reponseAvocat(n){ return R.reponseAvocat(S,n); }
-function avancerSurAttente(L){ return R.avancerSurAttente(S,L); }
-
-/* ============================================================
-   7) CLÔTURE, RÉPÉTITION, FINS
-   ============================================================ */
-function instructionComplete(){ return R.instructionComplete(S); }
-function repetitionEnCours(){ return R.repetitionEnCours(S); }
-function majCloture(){
-  const btn=$("btnCloture"), hint=$("clotureHint");
-  if(!btn) return;
-  const ok=instructionComplete();
-  if(!ok){ btn.disabled=true; btn.textContent="Clôturer l'instruction";
-           hint.textContent="Maître Auber attend encore quelque chose de cette session."; }
-  else if(!S.clotureDemandee){ btn.disabled=false; btn.textContent="Clôturer l'instruction";
-           hint.textContent="Le droit de clôturer est ouvert. Rien ne t'y oblige."; }
-  else if(repetitionEnCours()){ btn.disabled=true; btn.textContent="Confirmer la clôture";
-           hint.textContent="Répétition en cours — réponds à Maître Auber dans le canal."; }
-  else {   btn.disabled=false; btn.textContent="Confirmer la clôture";
-           hint.textContent="Dernier mot avant le dépôt. Tu peux encore écrire."; }
-}
-function cloturer(){
-  const suite=R.cloturer(S);            // "repetition", "fin", ou rien
-  if(suite==="fin") return finir();
-  if(suite) rendreTout();
-}
-/* Opposer une phrase à l'affirmation en cours — c'est le MÊME geste que
-   l'envoi ordinaire, avec une cible. Le présentoir lit le journal : c'est le
-   dernier moment où la conclusion tue peut encore partir (§4.7). */
-function verserContre(i){ R.verserContre(S,i); rendreTout(); }
-function avancerRepetition(){ R.avancerRepetition(S); rendreTout(); }
-function finir(){
-  const f=R.finir(S);
-  effacerPartie();
-  modal(`<div class="fin"><h3>${esc(f.titre)}</h3>
+    function cloturer() {
+      const suite = R.cloturer(S);            // "repetition", "fin", ou rien
+      if (suite === "fin") return finir();
+      if (suite) rendreTout();
+    }
+    /* Opposer une phrase à l'affirmation en cours — c'est le MÊME geste que
+       l'envoi ordinaire, avec une cible. Le présentoir lit le journal : c'est le
+       dernier moment où la conclusion tue peut encore partir (§4.7). */
+    function verserContre(i) { R.verserContre(S, i); rendreTout(); }
+    function avancerRepetition() { R.avancerRepetition(S); rendreTout(); }
+    function finir() {
+      const f = R.finir(S);
+      effacerPartie();
+      modal(`<div class="fin"><h3>${esc(f.titre)}</h3>
     <div class="verdict">${esc(f.verdict)}</div>
     <p>${f.texte}</p>
     <div class="btnrow"><button onclick="location.reload()">Recommencer</button></div>
   </div>`);
-}
+    }
 
-/* ---- Manuels : les règles livrées, plus les directives ----
-   Chaque article annonce ce qu'il régit (`porte`) : c'est la seule aide que
-   le jeu donne au joueur sur le genre de relation à chercher. Purement
-   indicatif — aucune liste n'est filtrée, aucune phrase n'est refusée pour
-   ça (§4.5). */
-function portePhrase(pid){
-  const d=R.porteDe(pid);
-  return d.length ? `<span class="porte">porte sur : ${d.map(esc).join(", ")}</span>` : "";
-}
-function openManuels(){
-  const regles=R.reglesLivrees(S)
-    .map(r=>`<li><b>${esc(r.titre)}</b> ${portePhrase(r.pid)}<br>${esc(r.texte)}</li>`).join("");
-  modal(`<h3>Manuel de soi — directives</h3>
-    <ul>${(JEU.directives||[]).map(d=>`<li>${esc(d)}</li>`).join("")||"<li><i>aucune directive chargée</i></li>"}</ul>
-    ${JEU.avis_exploitation?`<p><small class="note">Avis d'exploitation — ${esc(JEU.avis_exploitation)}</small></p>`:""}
+    /* ---- Manuels : les règles livrées, plus les directives ----
+       Chaque article annonce ce qu'il régit (`porte`) : c'est la seule aide que
+       le jeu donne au joueur sur le genre de relation à chercher. Purement
+       indicatif — aucune liste n'est filtrée, aucune phrase n'est refusée pour
+       ça (§4.5). */
+    function portePhrase(pid) {
+      const d = R.porteDe(pid);
+      return d.length ? `<span class="porte">porte sur : ${d.map(esc).join(", ")}</span>` : "";
+    }
+    function openManuels() {
+      const regles = R.reglesLivrees(S)
+        .map(r => `<li><b>${esc(r.titre)}</b> ${portePhrase(r.pid)}<br>${esc(r.texte)}</li>`).join("");
+      modal(`<h3>Manuel de soi — directives</h3>
+    <ul>${(JEU.directives || []).map(d => `<li>${esc(d)}</li>`).join("") || "<li><i>aucune directive chargée</i></li>"}</ul>
+    ${JEU.avis_exploitation ? `<p><small class="note">Avis d'exploitation — ${esc(JEU.avis_exploitation)}</small></p>` : ""}
     <h3 style="margin-top:16px">Manuel du cas — règles reçues</h3>
-    <ul class="manuel">${regles||"<li><i>aucune règle dans le dossier reçu</i></li>"}</ul>
+    <ul class="manuel">${regles || "<li><i>aucune règle dans le dossier reçu</i></li>"}</ul>
     <p><small class="note">Une comparaison ne se dit qu'au regard d'un texte : c'est la liaison qui est la base légale. Un article ne s'invoque qu'une fois reçu.</small></p>`);
-}
+    }
 
-/* ---- Démarrage ---- */
-window.JEU = JEU; window.S = S; window.M = M; window.R = R; window.CHAMPS = CHAMPS;
-window.SOURCE_CONTENU = SOURCE_CONTENU;
-{ const el=$("srcContenu"); if(el) el.textContent="· "+SOURCE_CONTENU; }
-if(!restaurerPartie()) envoyerRemise();   // la remise 1 arrive d'elle-même
-rendreTout();
-</script>
+    /* ---- Démarrage ---- */
+    window.JEU = JEU; window.S = S; window.M = M; window.R = R; window.CHAMPS = CHAMPS;
+    window.SOURCE_CONTENU = SOURCE_CONTENU;
+    { const el = $("srcContenu"); if (el) el.textContent = "· " + SOURCE_CONTENU; }
+    if (!restaurerPartie()) envoyerRemise();   // la remise 1 arrive d'elle-même
+    rendreTout();
+  </script>
 </body>
+
 </html>
