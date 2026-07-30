@@ -17,7 +17,7 @@ function creerRegles(JEU, M) {
     fil: [],                      // le canal : {qui, texte, pieces[], ia}
     examinees: [],                // pièces ouvertes au moins une fois
     remisesEnvoyees: 0,
-    memoire: [],                  // PRIVÉ — ["pid.eid"] dans l'ordre de surlignage
+    retenus: [],                  // PRIVÉ — ["pid.eid"] dans l'ordre de surlignage
     compo: [],                    // la phrase en cours — [{bloc:id, valeur}]
     refus: null,                  // le dernier refus de catégorie, à afficher
     brouillon: [],                // PRIVÉ — le JOURNAL des phrases closes, sans zone
@@ -100,8 +100,8 @@ function creerRegles(JEU, M) {
   /* ---- LA MÉMOIRE — privée, gratuite, illimitée --------------------- */
   // Surligner ne produit RIEN. Re-cliquer oublie.
   function surligner(S, pid, eid) {
-    const k = pid + "." + eid, i = S.memoire.indexOf(k);
-    if (i >= 0) S.memoire.splice(i, 1); else S.memoire.push(k);
+    const k = pid + "." + eid, i = S.retenus.indexOf(k);
+    if (i >= 0) S.retenus.splice(i, 1); else S.retenus.push(k);
   }
 
   /* ---- LE COMPOSEUR -------------------------------------------------- */
@@ -160,7 +160,7 @@ function creerRegles(JEU, M) {
         const n = S.brouillon[iSrc]; if (!n) return;
         valeur = n.reduite;
       } else {
-        const k = S.memoire[iSrc]; if (!k) return;
+        const k = S.retenus[iSrc]; if (!k) return;
         valeur = k;
       }
     }

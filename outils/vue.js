@@ -88,7 +88,7 @@ const UN_PAS = `(() => {
   return { tag: a.attend, question: a.question || null, phrase, remise: S.remisesEnvoyees };
 })();`;
 
-const CANAL = `document.getElementById("canal").innerText.trim()`;
+const CANAL = `document.getElementById("discussion").innerText.trim()`;
 
 async function main() {
   const exe = trouverNavigateur();

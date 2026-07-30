@@ -1,10 +1,10 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 1ᵉʳ août 2026, après la session « on répond sous la question ».*
+*À lire en tête d'une nouvelle conversation. État au 2 août 2026, après la session « un mot, une chose ».*
 
 ## 1. Où en est le jeu
 
-Neuf décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9.
+Onze décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
 
 1. **Trois sessions.** R1 lire/extraire/répondre (`p_pv`, `t_voisin`, aucun article) ; R2 comparer
    (`r_temoin`, l'article 3) ; R3 l'ADN et le vice.
@@ -27,12 +27,12 @@ Neuf décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
    plus. Un titre par zone, le locuteur au seul changement de locuteur, la puce de mémoire sur deux
    lignes. Trois phrases ne se coupent pas, parce qu'elles *sont* le jeu : « Rien n'en sort »,
    « → Maître Auber », « Et donc ? ».
-8. **On répond sous la question** *(31 juillet)*. Le composeur quitte la colonne de l'atelier pour
-   s'ancrer **sous le fil du canal**, à la place d'une zone de saisie de messagerie. La mémoire, elle,
-   **reste dans l'atelier** — c'est un arbitrage pris avec l'auteur, pas un oubli : on rend la
-   co-location du 28 juillet pour gagner l'évidence du geste (§7). Le composeur ne porte **aucune
+8. **On répond sous la question** *(31 juillet)*. Le composeur quitte la colonne du milieu pour
+   s'ancrer **sous le fil de la Discussion**, à la place d'une zone de saisie de messagerie. Les
+   passages retenus, eux, **restent dans la Mémoire** — c'est un arbitrage pris avec l'auteur, pas un
+   oubli : on rend la co-location du 28 juillet pour gagner l'évidence du geste (§7). Le composeur ne porte **aucune
    étiquette « privé »** : son statut se lit dans le fait que rien n'en sort.
-9. **Ce qui n'existe pas encore ne s'affiche pas** *(31 juillet)*. La colonne du plan est **entièrement
+9. **Ce qui n'existe pas encore ne s'affiche pas** *(31 juillet)*. La colonne de Plaidoirie est **entièrement
    retirée** tant que rien ne s'y inscrit — l'écran s'ouvre à deux colonnes. Elle apparaît au premier
    moyen versé, et c'est cette apparition qui l'enseigne. La phrase d'attente *« Il n'inscrit ici que
    ce qu'il peut plaider »* a disparu avec elle : elle était devenue inatteignable.
@@ -41,6 +41,16 @@ Neuf décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
     seul l'en-tête à l'écran change, et ne se confond pas avec `app/atelier_v3.html`, l'outil d'écriture
     du contenu, qui garde son nom. Dans la même session, la légende des dimensions et les notes d'aide
     de la modale de pièce (« Clique un passage… », « Rien à retenir ici… ») sont retirées.
+
+11. **Un mot, une chose — jusque dans le code** *(2 août)*. `docs/LEXIQUE.md` arbitre désormais le
+    vocabulaire, et le code s'y conforme. Les trois surfaces portent **le même nom partout**, du DOM
+    au harnais : `discussion`, `memoire`, `plaidoirie`. `S.memoire` devient **`S.retenus`** (la
+    surface *contient* le dossier et les retenus ; le tableau ne compte que les seconds).
+    Et surtout : **`atelier` ne désigne plus qu'une chose** — `app/atelier_v3.html`, l'outil qui écrit
+    les affaires. Il nommait aussi la surface du milieu du jeu, au point que `bootAtelier()` et
+    `atelier(w)` voulaient dire le contraire l'un de l'autre à quinze lignes d'écart dans le harnais.
+    C'était la seule vraie collision du dépôt, et la seule que le lexique avait manquée.
+    **La frontière `empan` / `passage` reste**, elle : c'est la seule qui protège la fiction (§8.6).
 
 ## 2. Points de vigilance
 
@@ -67,16 +77,21 @@ Neuf décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
   assertion ont disparu avec la colonne vide (décision 9). `elle se lit` et `legende` n'en font plus
   partie non plus : la légende des dimensions et les notes d'aide de la modale ont été retirées
   (décision 10).*
-- **Trois ids sont des points d'ancrage, pas de la décoration** : `#zoneMemoire` (3ᵉ temps du
-  tutoriel), `#composeur` (4ᵉ temps **et** lecture d'écran du harnais), `#colPlan` (ce que
-  `planVisible` interroge). Les renommer casse le tutoriel en silence — `majTutoriel` teste
-  `if(tutoCible)` et ne se plaint pas d'une cible introuvable.
-- **`#composeur` est le frère de `#canal`, jamais son enfant.** `renderCanal` finit par
+- **Quatre ids sont des points d'ancrage, pas de la décoration** : `#discussion` (1ᵉʳ temps du
+  tutoriel, et `outils/vue.js` le lit), `#zoneRetenus` (3ᵉ temps), `#composeur` (4ᵉ temps **et**
+  lecture d'écran du harnais), `#colPlaidoirie` (ce que `plaidoirieVisible` interroge). Les renommer
+  casse le tutoriel **en silence** — `majTutoriel` teste `if(tutoCible)` et ne se plaint jamais d'une
+  cible introuvable. Seule la capture `00-depart.png` prouve que le halo vise encore quelque chose.
+- **`#composeur` est le frère de `#discussion`, jamais son enfant.** `renderDiscussion` finit par
   `el.scrollTop=el.scrollHeight` : glissé dedans, le composeur partirait au défilement à chaque
   message.
-- **`.col{display:flex}` bat `[hidden]{display:none}`.** Cacher la colonne du plan par le seul
+- **`.col{display:flex}` bat `[hidden]{display:none}`.** Cacher la colonne de Plaidoirie par le seul
   attribut `hidden` ne ferait rien sans la règle explicite `.col[hidden]{display:none}` — et
   `.cloture` est câblée sur trois colonnes (`grid-column:1/4`), d'où la variante `.wrap.sansPlan`.
+- **`S.retenus` est sérialisé dans `localStorage`.** Il s'appelait `S.memoire` avant le 2 août, et la
+  signature de contenu **ne protège pas** d'un renommage d'état : le contenu, lui, n'a pas changé.
+  `restaurerPartie` porte donc une reprise explicite. Tout futur renommage de champ d'état a le même
+  devoir — sinon le joueur retrouve sa partie amputée, sans un mot.
 
 ## 3. Ce qui reste ouvert
 
@@ -86,8 +101,8 @@ Neuf décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
 | La compréhension est-elle encore *exprimée* ? | Depuis que la relation se déduit, un joueur peut rapprocher deux empans au hasard et obtenir une phrase bien formée. **Non éprouvé** |
 | Le critère qui décide de tout : pensée ou formulaire ? | Les phrases se lisent bien à l'écrit ; reste à juger en jouant |
 | La marge de bruit | Mesurée par la suite de test, pas figée dans un nombre |
-| **Le va-et-vient entre les deux colonnes** | **Le point ouvert le plus concret, et le prix de la décision 8.** On clique une puce dans l'atelier, la phrase s'écrit sous le canal. Deux symptômes à guetter en jouant **une session entière** : le regard qui cherche où le texte est parti, la main qui repose un empan parce qu'elle a perdu le fil. Repli : faire descendre la mémoire aussi — **pas** remonter le composeur. **Non éprouvé** |
-| Le rythme des zones | L'atelier ne porte plus que le dossier et les empans ; le canal porte le fil et la phrase ; l'écran s'ouvre à deux colonnes. **À juger en jouant**, pas sur capture |
+| **Le va-et-vient entre les deux colonnes** | **Le point ouvert le plus concret, et le prix de la décision 8.** On clique une puce dans la Mémoire, la phrase s'écrit sous la Discussion. Deux symptômes à guetter en jouant **une session entière** : le regard qui cherche où le texte est parti, la main qui repose un empan parce qu'elle a perdu le fil. Repli : faire descendre la mémoire aussi — **pas** remonter le composeur. **Non éprouvé** |
+| Le rythme des zones | La Mémoire ne porte plus que le dossier et les retenus ; la Discussion porte le fil et la phrase ; l'écran s'ouvre à deux colonnes. **À juger en jouant**, pas sur capture |
 | L'aide unique en dit-elle assez ? | Le composeur ne nomme plus le geste suivant qu'une fois. **Non éprouvé** : c'est le repli le plus simple si un joueur se perd — remettre l'aide sous le composeur, elle est à un `if` près |
 | La majuscule en tête de phrase composée | Non traité |
 | La progression : portes, place de la Fin 3 | Trois sessions actées ; la porte de la Fin 3 reste à placer |

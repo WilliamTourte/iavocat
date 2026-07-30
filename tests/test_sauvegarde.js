@@ -2,7 +2,7 @@
 // le contenu. Deux fenêtres jsdom simulent le rechargement en se passant
 // le localStorage via beforeParse.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, canal, memoire } = H;
+const { check, bilan, discussion, memoire } = H;
 const boot = graine => H.boot({graine, url:"http://localhost/"});
 const bootContenu = (contenu,graine) => H.boot({contenu, graine, url:"http://localhost/"});
 const sauvegarde = w => w.localStorage.getItem("iavocat_partie");
@@ -17,14 +17,14 @@ console.log("\n=== Les quatre surfaces survivent au rechargement ===");
   w1.envoyer(i);
   H.phrasesBruit(w1, 2);
   const avant = {
-    memoire: [...w1.S.memoire], brouillon: w1.S.brouillon.length,
+    retenus: [...w1.S.retenus], brouillon: w1.S.brouillon.length,
     plaidoirie: w1.S.plaidoirie.length, examinees: [...w1.S.examinees],
     fil: w1.S.fil.length, remises: w1.S.remisesEnvoyees
   };
   check("la partie est écrite dans localStorage", !!sauvegarde(w1));
 
   const w2 = boot({[CLE]: sauvegarde(w1)});
-  check("la mémoire est restaurée à l'identique", w2.S.memoire.join() === avant.memoire.join());
+  check("la mémoire est restaurée à l'identique", w2.S.retenus.join() === avant.retenus.join());
   check("le brouillon aussi", w2.S.brouillon.length === avant.brouillon);
   check("le plan de plaidoirie aussi", w2.S.plaidoirie.length === avant.plaidoirie);
   check("les pièces consultées aussi", w2.S.examinees.join() === avant.examinees.join());
@@ -102,13 +102,36 @@ console.log("\n=== La signature du contenu ===");
   autre.remises[0].texte += " (retouché)";
   const w2 = bootContenu(autre, {[CLE]: sauv});
   check("un contenu modifié jette la sauvegarde", w2.S.remisesEnvoyees === 1 && w2.S.plaidoirie.length === 0);
-  check("la partie repart proprement de la session 1", w2.S.brouillon.length === 0 && w2.S.memoire.length === 0);
+  check("la partie repart proprement de la session 1", w2.S.brouillon.length === 0 && w2.S.retenus.length === 0);
   check("et la sauvegarde réécrite porte la nouvelle signature",
     JSON.parse(w2.localStorage.getItem(CLE)).sig !== JSON.parse(sauv).sig);
 }
 {
   const w = boot({[CLE]: "{ceci n'est pas du JSON"});
   check("une sauvegarde illisible ne fait pas planter le jeu", w.S.remisesEnvoyees === 1);
+}
+
+console.log("\n=== Une sauvegarde d'avant le renommage se reprend ===");
+{
+  /* `S.memoire` est devenu `S.retenus` (docs/LEXIQUE.md). Le contenu n'ayant
+     pas changé, la signature ne jette PAS ces parties : sans reprise, le joueur
+     retrouverait la sienne avec zéro passage retenu et aucun message. */
+  const w1 = boot();
+  const pid = H.pidPremiereRemise(w1);
+  w1.ouvrirPiece(pid);
+  for (const k of H.empansDe(w1, pid).slice(0, 2)) H.surligner(w1, k);
+  const attendus = [...w1.S.retenus];
+  check("des passages sont retenus", attendus.length > 0);
+
+  // on rétrograde la sauvegarde à l'ancien nom, tout le reste identique
+  const ancienne = JSON.parse(sauvegarde(w1));
+  ancienne.memoire = ancienne.retenus; delete ancienne.retenus;
+  check("la sauvegarde rétrogradée ne porte plus `retenus`", ancienne.retenus === undefined);
+
+  const w2 = boot({[CLE]: JSON.stringify(ancienne)});
+  check("les passages retenus sont repris sous leur nom neuf",
+    w2.S.retenus.join() === attendus.join());
+  check("et l'ancien champ ne traîne pas dans l'état", w2.S.memoire === undefined);
 }
 
 console.log("\n=== La fin efface, recommencer confirme ===");

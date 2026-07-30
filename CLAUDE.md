@@ -15,7 +15,7 @@ test. **Zéro build, zéro serveur, zéro dépendance à l'exécution** : `app/i
 **Toujours d'abord `docs/PASSATION.md`** — l'état du jour, les décisions prises avec l'auteur, et la
 prochaine étape. C'est court et c'est daté.
 
-Ensuite, dans `docs/ARCHITECTURE.md` (480 lignes : on n'en lit que ce qu'il faut) —
+Ensuite, dans `docs/ARCHITECTURE.md` (510 lignes : on n'en lit que ce qu'il faut) —
 
 | Ce qu'on vient faire | Ce qu'on lit |
 |---|---|
@@ -30,7 +30,7 @@ Ensuite, dans `docs/ARCHITECTURE.md` (480 lignes : on n'en lit que ce qu'il faut
 ## Les commandes
 
 ```sh
-npm test               # les six suites — 330 contrôles. La règle d'or : tout vert, ou ce n'est pas fini (§16)
+npm test               # les six suites — 331 contrôles. La règle d'or : tout vert, ou ce n'est pas fini (§16)
 npm run vue            # ouvre le jeu dans un VRAI navigateur, joue, capture. Voir ci-dessous
 npm run demo:grammaire # banc d'essai de la grammaire. Hors `npm test` : pas de code de sortie
 ```

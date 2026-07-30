@@ -1623,7 +1623,7 @@ function RG(){
 }
 function simReset(){
   const R=RG();
-  SIM = R ? R.etatInitial() : { fil:[], brouillon:[], memoire:[], plaidoirie:[] };
+  SIM = R ? R.etatInitial() : { fil:[], brouillon:[], retenus:[], plaidoirie:[] };
   SIM.finie=null;                   // propre à l'atelier : la fin retenue
   window.SIM=SIM;                   // exposé pour la console et les tests
   if(R) R.envoyerRemise(SIM);       // la session 1 part au démarrage
@@ -1657,20 +1657,20 @@ function simComposable(L){
     if(bloc && bloc.piece && !simLivrees().has(bloc.piece)) return false;
     /* UNE CITATION : le terme est atomique. Un fait se cite — il suffit de
        l'avoir en mémoire, aucun article n'est requis (§4.5). */
-    if(typeof sous==="string") return SIM.memoire.includes(sous);
+    if(typeof sous==="string") return SIM.retenus.includes(sous);
     if(!sous || typeof sous!=="object") return false;
-    return feuillesLien(sous).every(k=>SIM.memoire.includes(k))
+    return feuillesLien(sous).every(k=>SIM.retenus.includes(k))
         || SIM.brouillon.some(n=>n.reduite && R && R.estRegle && memeReduite(n.reduite,sous));
   }
-  return feuillesLien(L).every(k=>SIM.memoire.includes(k));
+  return feuillesLien(L).every(k=>SIM.retenus.includes(k));
 }
 const memeReduite = (a,b) => { const m=MG(); return !!m && m.memeRed(a,b); };
 function simSurligner(k){
   const [pid,eid]=k.split(".");
-  const avant=SIM.memoire.includes(k);
+  const avant=SIM.retenus.includes(k);
   RG().surligner(SIM,pid,eid);
   simMsg({sys:true,texte:avant?`oublie ${cflabel(k)}.`
-                             :`surligne ${cflabel(k)} — en mémoire, privé. Rien ne part.`});
+                             :`surligne ${cflabel(k)} — retenu, privé. Rien ne part.`});
   renderEtapes();
 }
 /* Composer, au grain du lien : on arrive avec la forme réduite déjà faite et
@@ -1739,12 +1739,12 @@ function simActions(){
 
   // surligner : gratuit, illimité, toujours disponible sur les pièces reçues
   for(const e of empansPlats()){
-    if(!livrees.has(e.pid) || SIM.memoire.includes(e.id)) continue;
+    if(!livrees.has(e.pid) || SIM.retenus.includes(e.id)) continue;
     A.push({t:`Surligner : ${cflabel(e.id)} — « ${String(e.texte||"").slice(0,42)} »`, cls:"ghost", f:()=>simSurligner(e.id)});
   }
   // comparer : désigner deux empans, voir ce qui les lie — et s'arrêter là
   for(const r of sousComparaisons()){
-    if(!feuillesLien(r).every(k=>SIM.memoire.includes(k))) continue;
+    if(!feuillesLien(r).every(k=>SIM.retenus.includes(k))) continue;
     A.push({t:`Comparer (sans qualifier) : ${labelLien(r)}`, cls:"ghost", f:()=>simComparer(r)});
   }
   /* composer : les phrases que la mémoire rend atteignables. Deux voies, deux
@@ -1799,7 +1799,7 @@ function renderSim(){
   const prev = SIM.vice_trouve ? (SIM.vice_expose ? 1 : 2) : 3;
   const auPlan = R ? SIM.plaidoirie.filter(x=>SIM.brouillon[x.b] && R.estMoyen(SIM.brouillon[x.b].lien)).length : 0;
   $("simflags").innerHTML=
-    `<span class="flagpill">mémoire : ${SIM.memoire.length}</span>
+    `<span class="flagpill">retenus : ${SIM.retenus.length}</span>
      <span class="flagpill" title="le journal des phrases closes — sans zone à lui">écrites : ${SIM.brouillon.length}</span>
      <span class="flagpill prev" title="le plan ne retient que les moyens">plan : ${auPlan}</span>
      <span class="flagpill ${SIM.vice_pressenti?'on':''}" title="la comparaison ⚑ s'est formée">vice_pressenti : ${SIM.vice_pressenti}</span>

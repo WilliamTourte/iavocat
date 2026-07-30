@@ -1,9 +1,28 @@
 # IAvocat — Lexique
 
-*Un mot, un sens. Ce fichier ne décide rien (le sens vit dans `ARCHITECTURE.md`, le code dans `CARTE.md`) —
-il **arbitre le vocabulaire** : quel mot dire, à qui, pour quelle chose. En cas d'écart entre ce fichier
-et l'écran ou le code, c'est ce fichier qui a tort et qu'il faut corriger : il documente un choix, il n'en
-fait pas foi.*
+*Un mot, un sens. Ce fichier ne décide ni le sens (c'est `ARCHITECTURE.md`) ni l'emplacement (c'est
+`CARTE.md`) — il **arbitre le vocabulaire** : quel mot dire, à qui, pour quelle chose.*
+
+> **Deux régimes, et un écart ne se tranche pas de la même façon selon celui dont il relève.**
+>
+> **1. Quel mot dire — le lexique fait foi.** Si le code appelle `atelier` la surface du milieu du jeu,
+> ce n'est pas le lexique qui est en retard : c'est le code qui est à corriger. C'est ce qui est arrivé
+> le 2 août, et c'est le régime qui donne à ce fichier son utilité — sans lui, il ne serait qu'un
+> constat de plus à tenir à jour.
+>
+> **2. Ce qui existe et porte ce mot — le code fait foi.** Si une ligne d'ici cite `S.memoire` quand le
+> code dit `S.retenus`, c'est cette ligne qui est périmée. Les identifiants, les ids, les noms de
+> fonction ne se décrètent pas d'ici : ils s'y **relèvent**.
+>
+> **Comment savoir de quel régime relève un écart :** demander si le désaccord porte sur **le choix
+> d'un mot** (régime 1) ou sur **l'inventaire de ce qui le porte** (régime 2). Chaque ligne de ce
+> fichier mêle les deux — le terme arbitré, et les identifiants cités en exemple.
+
+**Ce n'est pas une cinquième source de vérité.** Le §12 d'`ARCHITECTURE.md` en pose quatre, et elles
+portent sur le **projet** : le contenu, les règles, la grammaire, le sens. Celle-ci porte sur les
+**mots avec lesquels on en parle**. Aucun arbitrage de vocabulaire ne peut trancher une question de
+sens : quand nommer une chose autrement reviendrait à la changer, ce n'est plus du vocabulaire, et
+c'est la Partie I qui décide.
 
 ## Comment le lire
 
@@ -16,9 +35,9 @@ différentes** (`lien`/`liaison`, `clore`/`clôturer`, `dossier`/`Dossier`…).
 
 | Terme à l'écran | Ce qu'il désigne | Ne pas confondre avec |
 |---|---|---|
-| **Discussion** | la surface de gauche : le fil avec Maître Auber + les pièces jointes | *le canal* (§ ci-dessous) — même chose, nom de code |
-| **Mémoire** | la surface du milieu : le dossier consulté + les passages retenus | `S.memoire`, qui ne couvre que la moitié de cette surface (voir « Faux amis ») |
-| **Plaidoirie** | la surface de droite, cachée tant que rien n'y entre : ce que l'avocat retient et va plaider | *le plan* (§ ci-dessous) — même chose, nom de code |
+| **Discussion** | la surface de gauche : le fil avec Maître Auber + les pièces jointes | rien — depuis le 2 août le code dit `discussion` lui aussi (`#discussion`, `renderDiscussion`) |
+| **Mémoire** | la surface du milieu : le dossier consulté + les passages retenus | `S.retenus`, qui ne couvre que la moitié de cette surface — les passages, pas le dossier |
+| **Plaidoirie** | la surface de droite, cachée tant que rien n'y entre : ce que l'avocat retient et va plaider | rien — depuis le 2 août le code dit `plaidoirie` lui aussi (`#plaidoirie`, `renderPlaidoirie`) |
 | **Les pièces** / **Les règles** | les deux bandes de la Mémoire : les documents du dossier d'un côté, les articles de l'autre | *pièce* (§ ci-dessous), qui désigne un document précis, pas la bande |
 | **passage** | un fragment de texte souligné, cliquable, dans une pièce ouverte | *empan* — même chose, nom de code (§ « Faux amis ») |
 | **Ta réponse** / **Réponse** | la zone du composeur, sous le fil de Discussion, où la phrase se construit puis attend | *Envoyer* — le geste qui la fait partir, pas la zone qui la contient |
@@ -44,9 +63,10 @@ S'ils apparaissent un jour dans une chaîne d'écran, c'est une fuite à corrige
 | **attente** | ce que l'avocat attend d'une remise : `{question?, attend, apres?}` | *remise* — l'attente est une des choses qu'une remise porte |
 | **remise** | un envoi de pièces par l'avocat, avec sa liste d'attentes | *session* — une session correspond en pratique à une remise, mais le mot « session » reste réservé au sens (Partie I), jamais au code |
 | **session** | un temps du récit (§3 d'ARCHITECTURE.md) : « session 1 », « session 2»… | *remise* — le mot de code ; on dit « session » en parlant du sens, « remise » en parlant des données |
-| **S.memoire** | le tableau des empans retenus (surlignés) — *seulement* ceux-là | la surface **Mémoire**, qui affiche aussi le dossier (§ « Faux amis ») |
+| **atelier** | **`app/atelier_v3.html`, et rien d'autre** : l'outil qui écrit et diagnostique une affaire. Un mot, une chose *(harmonisé le 2 août)* | rien — c'est justement le point. Le mot nommait aussi la surface du milieu du jeu (`#atelier`, `renderAtelier`) : cette seconde vie est terminée, la surface s'appelle `memoire` partout |
+| **S.retenus** | le tableau des empans retenus (surlignés) — *seulement* ceux-là. Nommé `S.memoire` avant le 2 août | `renderRetenus`, la **zone** qui l'affiche, contre `renderMemoire`, la **surface** qui contient cette zone et le dossier |
 | **S.plaidoirie** | le tableau de ce qui est entré au plan (les moyens envoyés) | *S.satisfaits*, les tags d'attente déjà servis — deux compteurs différents qui avancent ensemble sans se confondre |
-| **S.fil** | le journal affiché dans Discussion (messages de l'avocat et de l'IA) | *S.memoire*/*S.plaidoirie* — trois tableaux d'état, trois rôles distincts |
+| **S.fil** | le journal affiché dans Discussion (messages de l'avocat et de l'IA) | *S.retenus*/*S.plaidoirie* — trois tableaux d'état, trois rôles distincts |
 
 ## Faux amis — les paires qui se ressemblent et ne devraient jamais se confondre
 
@@ -77,24 +97,34 @@ n'avait pas besoin d'arbitrage.
   Mémoire qui le liste. *Une pièce* est un document précis à l'intérieur. Les trois sont emboîtés, jamais
   interchangeables : on ne dit pas « ouvrir le dossier » pour « ouvrir une pièce ».
 
-- **Mémoire (la surface) / `S.memoire` (le tableau).** La surface affiche **deux choses** : le dossier
-  consulté et les empans retenus. `S.memoire`, en code, ne couvre que la seconde moitié — les empans
-  retenus, rien d'autre. Une phrase comme « vider la mémoire » est ambiguë dans une discussion de design ;
-  préférer « vider les retenus » ou nommer `S.memoire` explicitement dès qu'un doute est possible.
+- **`atelier` — la collision, et elle est refermée** *(2 août)*. Le mot désignait **deux choses sans
+  rapport** : la surface du milieu du jeu (`#atelier`, `renderAtelier`) et l'outil d'écriture entier
+  (`app/atelier_v3.html`). Le pire endroit était `tests/harnais.js`, où `bootAtelier()` chargeait l'outil
+  et `atelier(w)` lisait la surface du jeu, à quinze lignes d'écart. C'était la seule vraie collision du
+  dépôt — un mot, deux choses — et la seule que ce lexique avait manquée. **Le mot appartient désormais à
+  l'outil, qui seul le portait comme nom propre.**
 
-- **plan (nom de code) / Plaidoirie (nom à l'écran).** Résolu, mais à savoir lire dans le code : la
-  surface s'affiche « Plaidoirie », l'attribut d'état est déjà `S.plaidoirie` (aligné), mais l'id DOM
-  (`#colPlan`), la fonction (`renderPlan`) et une partie des commentaires disent encore « plan ». Aucune
-  ambiguïté pour le joueur — il ne voit jamais ces noms — seulement pour qui lit le code après avoir lu
-  l'écran.
+- ~~**Mémoire (la surface) / `S.memoire` (le tableau)**~~ — **dissous** *(2 août)*. La surface est
+  `memoire` (`#memoire`, `renderMemoire`), ce qu'elle contient est `retenus` (`S.retenus`,
+  `renderRetenus`, `#zoneRetenus`). Deux mots, deux choses, plus de recouvrement. « Vider les retenus »
+  n'est plus une précaution de langage : c'est le nom exact.
+
+- ~~**plan (nom de code) / Plaidoirie (nom à l'écran)**~~ — **dissous** *(2 août)*. `#plan`,
+  `#colPlan`, `planCount` et `renderPlan` n'existent plus : la surface s'appelle `plaidoirie` du DOM
+  jusqu'à l'état, en passant par le harnais (`plaidoirie`, `plaidoirieVisible`). Idem pour
+  `canal` → `discussion`.
 
 ## Ce qui n'avait pas besoin d'arbitrage
 
 Passés en revue et jugés **déjà cohérents**, donc volontairement absents des faux amis ci-dessus :
 `surligner` (le geste, gratuit, jamais nommé autrement) / `retenu` (l'état qui en résulte) ; `composer`
 (construire la phrase) / `poser` (ajouter un terme) ; `avocat`/`Maître Auber` (jamais l'un sans l'autre,
-aucun flottement observé) ; `canal` (nom de code) / `Discussion` (à l'écran) — déjà traité et documenté
-au §4.6 d'ARCHITECTURE.md au moment du renommage des surfaces.
+aucun flottement observé).
+
+**Et depuis le 2 août, une catégorie entière a disparu : les paires *nom de code / nom d'écran*.** Les
+trois surfaces portent le même mot partout — `discussion`, `memoire`, `plaidoirie` — du DOM au harnais
+en passant par l'état. **Une seule frontière de registre subsiste, et elle est voulue :
+`empan` / `passage`** (§ « Faux amis ») — c'est celle qui protège la fiction (§8.6), pas un reliquat.
 
 ## Une nuance voulue, pour ne pas la reprendre par erreur
 

@@ -3,7 +3,7 @@
 // répliques de l'avocat (faux, rep de lien, escalades séparées, deja) et le
 // grain fin de la répétition de plaidoirie. Contenu embarqué.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, canal, memoire, atelier, composeur, plan, planVisible } = H;
+const { check, bilan, discussion, memoire, composeur, plaidoirie, plaidoirieVisible } = H;
 const boot = () => H.boot();
 
 console.log("\n=== Le composeur, bloc par bloc ===");
@@ -43,8 +43,8 @@ console.log("\n=== Refus de catégorie : le seul refus qui existe ===");
   // On désigne quand même les deux : rien n'est jamais interdit à la pose,
   // c'est à la clôture que la catégorie tranche (§4.5).
   const iT = () => w.blocsOfferts().findIndex(x => x.type === "terme" && x.source !== "note");
-  w.poserBloc(iT(), w.S.memoire.indexOf(a.id));
-  w.poserBloc(iT(), w.S.memoire.indexOf(b.id));
+  w.poserBloc(iT(), w.S.retenus.indexOf(a.id));
+  w.poserBloc(iT(), w.S.retenus.indexOf(b.id));
   // C'est l'article — le seul moyen de clore — qui déclenche la validation.
   const iArt = w.blocsOfferts().findIndex(x => x.imbrique);
   if (iArt >= 0) w.poserBloc(iArt); else H.cloreSurPlace(w);
@@ -163,7 +163,7 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   H.surligner(w, L.termes[0]);
   const iT = w.blocsOfferts().findIndex(b => b.type === "terme" && b.source !== "note");
-  w.poserBloc(iT, w.S.memoire.indexOf(L.termes[0]));
+  w.poserBloc(iT, w.S.retenus.indexOf(L.termes[0]));
   /* En session 1 l'état qui suit l'empan n'offre QUE cette clôture : une suite
      unique n'est pas un choix, la phrase se referme sans qu'on la confirme
      (§4.5). Le geste est donc : désigner, et c'est tout. */
@@ -277,10 +277,10 @@ console.log("\n=== Le premier geste, montré ===");
   const w = H.boot({url:"http://localhost/"});
   const halo = () => w.document.querySelector("[data-tuto]");
   const bandeau = () => w.document.getElementById("tuto");
-  const dansCanal = el => !!el && w.document.getElementById("canal").contains(el);
+  const dansDiscussion = el => !!el && w.document.getElementById("discussion").contains(el);
 
   check("au premier écran, le tutoriel parle", !bandeau().hidden);
-  check("et il montre la pièce à ouvrir, dans le canal", dansCanal(halo()));
+  check("et il montre la pièce à ouvrir, dans la Discussion", dansDiscussion(halo()));
 
   const pid = H.pidPremiereRemise(w);
   w.ouvrirPiece(pid);
@@ -295,7 +295,7 @@ console.log("\n=== Le premier geste, montré ===");
   const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
   const autre = H.empansDe(w, pid).find(k => k !== veut);
   H.surligner(w, autre);
-  check("un autre passage se retient tout de même", w.S.memoire.includes(autre));
+  check("un autre passage se retient tout de même", w.S.retenus.includes(autre));
   check("mais le tutoriel ne prend pas ça pour une réponse",
     w.document.getElementById("tuto").hasAttribute("data-alerte"));
   check("et il le montre là où le geste s'est trompé",
@@ -311,7 +311,7 @@ console.log("\n=== Le premier geste, montré ===");
   check("et il montre la mémoire", !!zone && zone.contains(w.document.querySelector(".mchip")));
 
   w.poserBloc(w.blocsOfferts().findIndex(b => b.type === "terme" && b.source !== "note"),
-              w.S.memoire.indexOf(veut));
+              w.S.retenus.indexOf(veut));
   const envoi = halo();
   check("la phrase close, il montre le seul geste qui parle",
     !!envoi && envoi.classList.contains("envoi"));
@@ -343,9 +343,9 @@ console.log("\n=== La modale de pièce ===");
   check("l'empan surligné se marque « pris » dans la modale", m().includes("empan pris"));
   const empan = w.JEU.pieces[pid].empans[eid];
   check("et apparaît en mémoire",
-    memoire(w).includes("zoneMemoire") && memoire(w).includes(empan.nom || empan.texte));
+    memoire(w).includes("zoneRetenus") && memoire(w).includes(empan.nom || empan.texte));
   w.closeModal();
-  check("fermer la modale n'efface pas la mémoire", w.S.memoire.length === 1);
+  check("fermer la modale n'efface pas la mémoire", w.S.retenus.length === 1);
   const pidR = H.pidRegle(w);
   if (!Object.keys(w.JEU.pieces[pidR].empans || {}).length) {
     w.ouvrirPiece(pidR);
@@ -359,11 +359,11 @@ console.log("\n=== Les répliques : seulement au versement ===");
   const L = w.JEU.liens.find(x => x.rep && !x.vice && !x.faux);
   const i = H.composerLien(w, L);
   check("une phrase à réplique propre se compose", i >= 0);
-  check("composée, elle ne dit rien", !canal(w).includes(L.rep.slice(0, 25)));
+  check("composée, elle ne dit rien", !discussion(w).includes(L.rep.slice(0, 25)));
   // « sur place » = sous le canal, là où la phrase vient d'être écrite (§4.6)
   check("close, elle attend SUR PLACE", w.S.prete === i && composeur(w).includes("Envoyer"));
   w.envoyer(i);
-  check("envoyée, la réplique du lien sort", canal(w).includes(L.rep.slice(0, 25)));
+  check("envoyée, la réplique du lien sort", discussion(w).includes(L.rep.slice(0, 25)));
   check("la phrase est marquée envoyée", w.S.brouillon[i].versee);
   check("l'envoi vide la phrase en attente", w.S.prete === null);
   const avant = w.S.plaidoirie.length;
@@ -402,25 +402,25 @@ console.log("\n=== Le plan ne retient que les moyens ===");
   w.envoyer(i);
   check("l'observation est bien partie", w.S.brouillon[i].versee);
   check("l'avocat y a répondu", w.S.fil.length > 1);
-  check("mais elle n'entre pas au plan", !plan(w).includes(w.S.brouillon[i].texte));
+  check("mais elle n'entre pas au plan", !plaidoirie(w).includes(w.S.brouillon[i].texte));
   /* Le plan ne se contente plus de le dire : tant que rien ne s'y inscrit, sa
      colonne n'existe pas (§4.9). Une phrase envoyée mais non plaidable ne l'ouvre
      donc pas — c'est le MOYEN qui la fait apparaître, et cette apparition est
      ce qui enseigne le plan. On éprouve les deux états, pas seulement le second. */
-  check("et le plan n'a pas encore de colonne à l'écran", !planVisible(w));
+  check("et le plan n'a pas encore de colonne à l'écran", !plaidoirieVisible(w));
   // un moyen : ce qui sert une attente de session
   const moyen = H.lienTag(w, w.R.attentesDe(w.JEU.remises[0])[0].attend);
   const j = H.composerLien(w, moyen);
   w.envoyer(j);
-  check("un moyen, lui, s'y inscrit", plan(w).includes(w.S.brouillon[j].texte));
-  check("et fait apparaître la colonne", planVisible(w));
+  check("un moyen, lui, s'y inscrit", plaidoirie(w).includes(w.S.brouillon[j].texte));
+  check("et fait apparaître la colonne", plaidoirieVisible(w));
 }
 {
   const w = boot();
   H.instruire(w);
   const i = H.composerLien(w, H.lienFaux(w));
   check("le faux vice se compose", i >= 0);
-  check("le faux vice reçoit rep_faux", canal(w).includes(w.JEU.avocat.rep_faux.slice(0, 25)));
+  check("le faux vice reçoit rep_faux", discussion(w).includes(w.JEU.avocat.rep_faux.slice(0, 25)));
   const txt = H.terminer(w);
   check("et déclenche la variante_faux de la fin", txt.includes(w.JEU.fins[3].variante_faux.slice(0, 25)));
 }
@@ -438,7 +438,7 @@ console.log("\n=== Le plan ne retient que les moyens ===");
      une affaire qui offrirait encore de clore sans qualifier. */
   check("les phrases sans lien font monter l'escalade « sans rapport »", w.S.incompris >= 2);
   check("la seconde réplique n'est pas la première",
-    canal(w).includes(w.JEU.avocat.rep_sans_rapport[1].slice(0, 20)));
+    discussion(w).includes(w.JEU.avocat.rep_sans_rapport[1].slice(0, 20)));
   check("l'escalade des comparaisons nues est un compteur séparé, et reste à zéro",
     w.S.inutiles === 0);
 }
@@ -458,7 +458,7 @@ console.log("\n=== Le plan ne retient que les moyens ===");
     }
     check("citer un passage qui ne répond pas fait monter « hors sujet »", w.S.hors_sujet >= 2);
     check("l'avocat renvoie à la question",
-      canal(w).includes(w.JEU.avocat.rep_hors_sujet[0].slice(0, 20)));
+      discussion(w).includes(w.JEU.avocat.rep_hors_sujet[0].slice(0, 20)));
     check("et les deux autres escalades restent à zéro",
       w.S.incompris === 0 && w.S.inutiles === 0);
   }
@@ -471,19 +471,19 @@ console.log("\n=== La répétition de plaidoirie ===");
   H.composerLien(w, H.lienConclusion(w));
   w.cloturer();
   check("la répétition commence sur l'affirmation 1",
-    canal(w).includes(w.JEU.repetition.affirmations[0].texte.slice(0, 20)));
-  check("le présentoir propose ce qui a été écrit", canal(w).includes("Opposer une phrase"));
+    discussion(w).includes(w.JEU.repetition.affirmations[0].texte.slice(0, 20)));
+  check("le présentoir propose ce qui a été écrit", discussion(w).includes("Opposer une phrase"));
   check("confirmer pendant la répétition est refusé", w.document.getElementById("btnCloture").disabled);
   const i = w.S.brouillon.findIndex(n => !n.versee);
   w.verserContre(i);
   check("verser contre une affirmation marque la cible", w.S.plaidoirie.some(x => x.contre === 0));
-  check("l'affichage nomme l'affirmation opposée", plan(w).includes(w.JEU.repetition.affirmations[0].court));
+  check("l'affichage nomme l'affirmation opposée", plaidoirie(w).includes(w.JEU.repetition.affirmations[0].court));
   const avant = w.S.fil.length;
   w.verserContre(i);
   check("ré-envoyer la même phrase donne « deja »",
-    canal(w).includes(w.JEU.avocat.deja.slice(0, 15)) && w.S.fil.length > avant);
+    discussion(w).includes(w.JEU.avocat.deja.slice(0, 15)) && w.S.fil.length > avant);
   while (w.S.repetitionIdx < w.JEU.repetition.affirmations.length) w.avancerRepetition();
-  check("au bout, la répétition se clôt sur son texte de fin", canal(w).includes(w.JEU.repetition.fin.slice(0, 15)));
+  check("au bout, la répétition se clôt sur son texte de fin", discussion(w).includes(w.JEU.repetition.fin.slice(0, 15)));
   check("la clôture est de nouveau ouverte", !w.document.getElementById("btnCloture").disabled);
 }
 {
@@ -494,14 +494,14 @@ console.log("\n=== La répétition de plaidoirie ===");
   // se dépose plus au journal comme une phrase orpheline jamais transmise.
   check("la continuation ne laisse aucune prémisse orpheline",
     w.S.brouillon.every(n => n.versee));
-  check("et marque « déjà envoyée » celles qui sont parties", canal(w).includes("déjà envoyée"));
+  check("et marque « déjà envoyée » celles qui sont parties", discussion(w).includes("déjà envoyée"));
   // une phrase close mais gardée reste proposée par le présentoir
   const w2 = boot();
   H.instruire(w2);
   H.composerLien(w2, H.lienConclusion(w2));
   w2.cloturer();
   check("une phrase gardée reste offerte au présentoir",
-    /verserContre\(/.test(w2.document.getElementById("canal").innerHTML));
+    /verserContre\(/.test(w2.document.getElementById("discussion").innerHTML));
   check("c'est le dernier moment où la conclusion peut partir",
     w2.S.vice_trouve && !w2.S.vice_expose);
 }
@@ -512,7 +512,7 @@ console.log("\n=== La répétition de plaidoirie ===");
   const garde = w.S.brouillon.slice();
   w.S.brouillon.length = 0; w.S.plaidoirie.length = 0;
   w.cloturer();
-  check("journal vide → présentoir vide, sans planter", canal(w).includes("aucune phrase à y opposer"));
+  check("journal vide → présentoir vide, sans planter", discussion(w).includes("aucune phrase à y opposer"));
   w.S.brouillon.push(...garde);
 }
 
