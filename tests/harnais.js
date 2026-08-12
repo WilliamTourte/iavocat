@@ -17,14 +17,17 @@ function creerHarnais(dossier){
   function check(l,c){ if(c){pass++;console.log("  ok — "+l);} else {fail++;console.log("  ÉCHEC — "+l);} }
   function bilan(){ console.log(`\n${pass} ok, ${fail} échec(s)`); process.exit(fail?1:0); }
 
-  /* jsdom ne charge aucun <script src> : on inline les trois fichiers voisins
-     — la grammaire, les règles, le contenu. Ce ne sont pas des copies : ce
-     sont les fichiers mêmes, relus sur le disque à chaque boot. C'est ce qui
-     permet au contenu de n'exister qu'en un exemplaire (§12). */
-  const injecter = h => h
-    .replace('<script src="moteur.js"></script>', `<script>${lire("moteur.js")}</script>`)
-    .replace('<script src="regles.js"></script>', `<script>${lire("regles.js")}</script>`)
-    .replace('<script src="content.js"></script>', `<script>${lire("content.js")}</script>`);
+  /* jsdom ne charge aucun <script src> : on inline TOUS les fichiers voisins
+     qu'une page réclame — la grammaire, les règles, le contenu, et les modules
+     d'atelier. Ce ne sont pas des copies : ce sont les fichiers mêmes, relus
+     sur le disque à chaque boot. C'est ce qui permet au contenu de n'exister
+     qu'en un exemplaire (§12).
+     Générique exprès : trois `replace` codés en dur obligeaient à revenir ici
+     à chaque fichier ajouté, et un oubli ne se serait vu qu'en `ReferenceError`
+     au milieu d'une suite. L'ORDRE des balises est préservé, et il compte —
+     les modules de l'atelier se lisent de haut en bas (§13). */
+  const injecter = h => h.replace(/<script src="([^"]+)"><\/script>/g,
+    (_, f) => `<script>${lire(f)}</script>`);
 
   /* boot({contenu, graine, url}) :
      - contenu : objet → injecté inline à la place de content.js ;
