@@ -8,6 +8,14 @@
 :root{
   --bg:#0e1116; --panel:#161b22; --panel2:#1c232d; --line:#2b3440;
   --txt:#d7dde5; --muted:#8b97a6; --accent:#6fb3d6; --lock:#7bbf8a; --warn:#d6a96f;
+  /* LE BLEU DU TRANSMIS. Il cerne tout ce qui a franchi la frontière ou
+     s'apprête à la franchir (§4.6) : la bulle de l'IA, les pièces jointes, le
+     bouton d'envoi, la phrase close, la liste du plan. Il était employé huit
+     fois et défini nulle part — `border-color` n'héritant pas, les huit règles
+     retombaient sur `currentColor`, et le filet prenait la couleur du texte
+     qu'il entourait. C'est le bleu que l'atelier emploie déjà avec exactement
+     les mêmes fonds (#0f2230 pour la bulle IA, #12324a pour les boutons). */
+  --transmis:#23506e;
 
   --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -79,7 +87,10 @@ header button:hover{border-color:var(--accent)}
   background:var(--panel2);display:flex;align-items:baseline;gap:8px}
 .zone .ztitle .zcount{float:none;margin-left:auto}
 .aide{color:var(--muted);font-size:12px;margin-top:8px;font-style:italic}
-.aide.question{margin-top:0;margin-bottom:10px;color:var(--fg);border-left:2px solid var(--muted);padding-left:8px}
+/* `--fg` était une coquille pour `--txt` : `color` héritant, la règle rendait
+   déjà la couleur du texte. On corrige l'emploi plutôt que d'ajouter un alias
+   — un mot, une chose (docs/LEXIQUE.md). Rien ne bouge à l'écran. */
+.aide.question{margin-top:0;margin-bottom:10px;color:var(--txt);border-left:2px solid var(--muted);padding-left:8px}
 /* --- les empans dans le texte d'une pièce --- */
 .piecetexte{line-height:1.9}
 .empan{border-bottom:2px solid var(--dc,var(--muted));border-radius:2px;padding:1px 2px;cursor:pointer;
