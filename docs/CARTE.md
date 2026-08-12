@@ -15,19 +15,34 @@
 | Fichier | ~lignes | Ce qu'il porte | Ce qu'il ne porte jamais |
 |---|---|---|---|
 | `app/content.js` | 664 | **le contenu** — une affaire, en un seul exemplaire | aucune règle |
-| `app/regles.js` | 361 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
-| `app/moteur.js` | 182 | **la grammaire** — composer, valider, rendre | aucune donnée |
-| `app/index.html` | 879 | **le jeu** — l'affichage et les gestes d'écran | ne décide rien |
-| `app/atelier_v3.html` | 2170 | **l'atelier** — écrire et diagnostiquer une affaire. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12) |
+| `app/regles.js` | 366 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
+| `app/moteur.js` | 236 | **la grammaire** — composer, valider, rendre — **et les projections du contenu** (§14) | aucune donnée |
+| `app/index.html` | 838 | **le jeu** — l'affichage et les gestes d'écran | ne décide rien ; n'enveloppe plus les lectures |
+| `app/atelier_v3.html` + `app/atelier/*.js` | 406 + 1808 | **l'atelier** — écrire et diagnostiquer une affaire, **un fichier par outil**. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12) |
 
 `regles.js` et `moteur.js` sont en **mode double** — `require` (tests, banc) ou `<script src>` (jeu,
 atelier). Les deux exposent une **fabrique** : `creerRegles(JEU, M)` et `creerMoteur(GRAMMAIRE, CHAMPS, LIENS)`.
+Ils exposent aussi, **hors fabrique**, ce qui ne dépend d'aucun état : `MoteurGrammaire.champsDe`,
+`.comparaisonsDe`, `.couleurDim` et `ReglesJeu.estRegle` — les projections d'un contenu, en un seul
+exemplaire (§12, §14). Elles sont **cloîtrées** dans une fermeture : un nom de haut niveau y serait un
+nom pris dans la page qui charge le fichier.
+
+**Les huit modules de l'atelier** se chargent en portée globale classique, dans l'ordre : `noyau.js`
+(le contenu, les outils, l'état d'interface, l'annulation, les onglets, l'échappement — **en premier**,
+c'est le seul dont le corps s'exécute au chargement), puis `graphe.js`, `diagnostic.js`,
+`inspecteur.js`, `frise.js`, `pasapas.js`, `contenu-io.js`, `grammaire.js`. La page ne garde que son
+HTML, son CSS et six lignes de démarrage.
 
 ## Le geste du joueur, de bout en bout
 
 Se lit de haut en bas : c'est la boucle d'une session (§4.6). `index.html` n'y apparaît que comme
-**rendu** et comme **relais** — chacune de ses fonctions homonymes est un `R.xxx(S, …)` suivi d'un
-`rendreTout()`.
+**rendu**, et comme relais pour les seuls **gestes**.
+
+> **La ligne de partage, à tenir :** ce qui *redessine* est une fonction d'`index.html` — un
+> `R.xxx(S, …)` suivi d'un `rendreTout()`, et c'est une cible de `onclick`. Ce qui *lit* n'a pas
+> d'enveloppe : ça s'écrit `R.xxx(S)` sur place, et les suites l'appellent pareil, en `w.R.xxx(w.S)`.
+> Les colonnes « règle » ci-dessous nomment donc souvent une fonction qu'`index.html` appelle
+> directement, sans homonyme.
 
 | Le geste | La règle (`regles.js`) | La grammaire (`moteur.js`) | Le rendu (`index.html`) | § |
 |---|---|---|---|---|

@@ -1,6 +1,6 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 2 août 2026, après la session « un mot, une chose ».*
+*À lire en tête d'une nouvelle conversation. État au 3 août 2026, après la session « dégraisser ».*
 
 ## 1. Où en est le jeu
 
@@ -52,6 +52,16 @@ Onze décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
     C'était la seule vraie collision du dépôt, et la seule que le lexique avait manquée.
     **La frontière `empan` / `passage` reste**, elle : c'est la seule qui protège la fiction (§8.6).
 
+12. **Dégraisser, sans toucher au sens** *(3 août)*. Aucune règle, aucun texte de contenu, aucun
+    invariant n'a changé — le critère de la session était : zéro comportement observable modifié.
+    Trois choses ont bougé. **`index.html` n'enveloppe plus `regles.js`** : ce qui redessine reste une
+    fonction d'écran (les cibles de `onclick`), ce qui lit s'écrit `R.x(S)` sur place, et les suites
+    lisent pareil, en `w.R.x(w.S)` — seize enveloppes sont tombées, dont cinq que personne
+    n'appelait. **Les projections du contenu vivent dans `moteur.js`** (`champsDe`,
+    `comparaisonsDe`, `couleurDim`) : l'aplatissement des empans existait en trois exemplaires, dont
+    deux identiques au caractère près. **L'atelier est un dossier** : `app/atelier/`, un fichier par
+    outil, la page retombe de 2 170 à 406 lignes. Et `openManuels()` est retirée (voir §3).
+
 ## 2. Points de vigilance
 
 - `test_autre_affaire.js` n'a pas bougé d'une ligne depuis le découpage en trois sessions ni depuis
@@ -62,6 +72,21 @@ Onze décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
 - L'index `iBloc` de `poserBloc` est **positionnel dans la liste filtrée**, donc dépendant de la
   session.
 - Les `const` de haut niveau ne sont pas des propriétés de `window`.
+- **…mais ils occupent quand même le nom.** C'est le piège symétrique, et il a mordu : chargé par
+  `<script src>`, `moteur.js` partage la portée globale de la page. Un `function couleurDim` de haut
+  niveau y heurtait le `const couleurDim` d'`index.html` — en jsdom **comme en vrai navigateur**. Les
+  projections et `estRegle` sont donc cloîtrées dans une fermeture, et ne sortent que par
+  `MoteurGrammaire.x` / `ReglesJeu.x`. Toute fonction ajoutée hors fabrique a le même devoir.
+- **Les suites lisent le jeu en `w.R.x(w.S)`, jamais `w.x()`.** Ce que la fenêtre expose en propre,
+  ce sont les gestes — ceux qui redessinent. Écrire `w.blocsOfferts()` remarche le jour où quelqu'un
+  remet une enveloppe, et c'est exactement ce qu'on ne veut plus.
+- **L'ordre des `<script src>` de l'atelier compte** — `noyau.js` en premier, c'est le seul dont le
+  corps s'exécute au chargement. Le reste se voit par *hoisting*, résolu à l'appel. Et les
+  `window.X = X` explicites (`undo`, `adopter`, `demanderExemple`, `simReset`) ne sont pas
+  décoratifs : c'est par eux que `smoke_atelier.js` lit l'atelier.
+- **Le harnais inline TOUT `<script src>`**, par regex et dans l'ordre. Ajouter un module ne demande
+  plus d'y revenir — mais un module mal ordonné se verra en `ReferenceError` au milieu d'une suite,
+  pas à l'ouverture.
 - La règle de clôture automatique (point 5) se déclenche sur un **compte** de blocs offerts : ajouter
   ou retirer un bloc de grammaire peut changer le nombre de clics ailleurs dans l'affaire.
 - Une sonde du harnais (`poserComparaison`) ne doit rien laisser au journal si elle échoue en chemin.
@@ -108,7 +133,7 @@ Onze décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
 | La progression : portes, place de la Fin 3 | Trois sessions actées ; la porte de la Fin 3 reste à placer |
 | `comment` en sixième dimension | Écarté, réintégrable sans coût |
 | Le canal de révélation de la culpabilité | Non tranché |
-| `openManuels()` orpheline | Le `<header>` qui l'appelait a été retiré ; la fonction reste, sans bouton. Laissée en l'état : à rebrancher ou retirer plus tard, pas maintenant |
+| Les Manuels | **Tranché le 3 août : `openManuels()` est retirée**, avec les sept contrôles qui la maintenaient seule en vie — on éprouvait un chemin injouable. La **règle** reste dans `regles.js` (`reglesLivrees`, `porteDe`) : rebrancher les Manuels reste une décision de design, et ne coûtera pas une ligne de moteur. **Conséquence à garder en tête** : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par le jeu, alors que la frise les édite toujours et que le diagnostic avertit encore de leur absence |
 
 ## 4. Prochaine étape
 
