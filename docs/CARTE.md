@@ -105,13 +105,17 @@ source de vérité du schéma. Ici, seulement qui les lit :
 | `remises` (`attentes: [{question, attend, apres}]`) | `attentesDe`, `attenteCourante`, `avancerSurAttente` |
 | `repetition`, `fins`, `avocat` | `cloturer`, `finir`, `reponseAvocat` |
 
-L'**ancienne forme** `attend`/`apres` posée sur la remise se lit comme une liste à un élément :
-`attentesDe` la normalise, en un seul exemplaire.
+L'**ancienne forme** `attend`/`apres` posée sur la remise se lit comme une liste à un élément, et
+**deux fonctions la normalisent — c'est voulu, ce n'est pas une copie oubliée** : `attentesDe`
+(`regles.js`, dans la fabrique) rend une paire `{attend, apres}` fabriquée ; `attentesDeRemise`
+(`app/atelier/noyau.js`) rend **la remise elle-même**, pour que l'inspecteur l'édite en place. Sur une
+affaire au schéma 3, les deux rendent le même `r.attentes`. L'arbitrage est écrit sur la seconde : *on
+ne les fusionne pas, on dit lequel est lequel.*
 
 ## Les six suites
 
 Point d'entrée unique : `tests/harnais.js`, `creerHarnais(dossier)`. `npm test` les enchaîne dans
-l'ordre de `package.json` — **331 contrôles, tout vert ou ce n'est pas fini** (§16).
+l'ordre de `package.json` — **325 contrôles, tout vert ou ce n'est pas fini** (§16).
 
 Le harnais **inline** les trois `<script src>` au boot, parce que jsdom n'en charge aucun (§13) —
 c'est pourquoi `npm run vue` existe : il est le seul à éprouver le vrai chargement.

@@ -137,7 +137,7 @@ function inspEmpan(s){
     <button class="danger ${pendingDel===delKey?'arm':''}" onclick="demanderSupprChamp('${s.pid}','${s.champ}')">${pendingDel===delKey?'Confirmer la suppression (liens compris)':'Supprimer cet empan'}</button>`;
 }
 function inspPaire(){
-  const da=dimDe(selA.pid,selA.champ), db=dimDe(selB.pid,selB.champ);
+  const da=dimEmpan(selA.pid,selA.champ), db=dimEmpan(selB.pid,selB.champ);
   const md=da&&da===db;
   return `<label>Nouveau lien</label>
     <div class="ipath">${escapeH(cflabel(K(selA.pid,selA.champ)))}  ⟷  ${escapeH(cflabel(K(selB.pid,selB.champ)))}</div>

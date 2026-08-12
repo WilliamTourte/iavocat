@@ -62,9 +62,13 @@ function attentesDeRemise(r){
 }
 function empanDe(pid,eid){ const p=CONTENU.pieces[pid]; return p && p.empans && p.empans[eid]; }
 function empanExiste(pid,eid){ return !!empanDe(pid,eid); }
-/* La dimension d'un empan est écrite SUR l'empan — il n'y a plus de table
-   globale ni de surcharge par pièce (schéma 3). */
-function dimDe(pid,eid){ const e=empanDe(pid,eid); return e && e.dim; }
+/* La dimension d'un EMPAN — écrite sur l'empan, il n'y a plus de table globale
+   ni de surcharge par pièce (schéma 3). ELLE NE S'APPELLE PLUS `dimDe` : c'est
+   le nom que `moteur.js` donne à la dimension d'un TERME RÉDUIT, qui répond
+   « affirmation » pour un terme emboîté là où celle-ci ne répond jamais ça.
+   Deux questions, deux noms — comme `toutesPiecesLivrees` ci-dessous
+   (docs/LEXIQUE.md). */
+function dimEmpan(pid,eid){ const e=empanDe(pid,eid); return e && e.dim; }
 function toutesDims(){ return [...(CONTENU.dimensions||[])]; }
 function estBruit(pid,eid){ return (CONTENU._bruit||[]).includes(K(pid,eid)); }
 /* TOUTES les pièces qu'une remise livre, à un moment ou à un autre — l'atelier
@@ -188,5 +192,10 @@ function appliquerJson(){
 /* ============================================================
    11) L'ÉCHAPPEMENT — le même couple de noms que le jeu (docs/LEXIQUE.md)
    ============================================================ */
-function escapeH(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+/* Le même échappement que le `esc` du jeu, sous un autre nom : deux documents
+   indépendants, aucun fichier partagé où poser la fonction commune. Doublet
+   assumé — deux noms pour une chose se remarquent, un nom pour deux choses se
+   subit (docs/LEXIQUE.md). Ce qui n'était pas assumé, c'est que `escapeH(null)`
+   écrivait « null » là où `esc(null)` écrit « » : aligné. */
+function escapeH(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function escapeAttr(s){ return escapeH(s).replace(/"/g,"&quot;"); }

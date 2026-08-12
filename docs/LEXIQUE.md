@@ -100,9 +100,32 @@ n'avait pas besoin d'arbitrage.
 - **`atelier` — la collision, et elle est refermée** *(2 août)*. Le mot désignait **deux choses sans
   rapport** : la surface du milieu du jeu (`#atelier`, `renderAtelier`) et l'outil d'écriture entier
   (`app/atelier_v3.html`). Le pire endroit était `tests/harnais.js`, où `bootAtelier()` chargeait l'outil
-  et `atelier(w)` lisait la surface du jeu, à quinze lignes d'écart. C'était la seule vraie collision du
-  dépôt — un mot, deux choses — et la seule que ce lexique avait manquée. **Le mot appartient désormais à
-  l'outil, qui seul le portait comme nom propre.**
+  et `atelier(w)` lisait la surface du jeu, à quinze lignes d'écart. C'était la seule collision de
+  **prose** du dépôt — un mot, deux choses — et la seule que ce lexique avait manquée. **Le mot appartient
+  désormais à l'outil, qui seul le portait comme nom propre.**
+
+- **Les collisions d'IDENTIFIANTS, refermées à leur tour.** Le 2 août cherchait dans le **vocabulaire**
+  et n'a pas relu l'**inventaire des noms de fonction**, où il en restait. Elles ont ceci de particulier
+  que les deux sens sont *incompatibles* : croire lire l'un quand on lit l'autre ne donne pas une nuance
+  fausse, ça donne un raisonnement faux. Et elles vivent dans des fichiers que **la même page charge
+  ensemble**, donc dans une seule portée globale.
+
+  | Identifiant | Ce qu'il désignait ici | …et là | Tranché |
+  |---|---|---|---|
+  | `piecesLivrees` | `regles.js` : les pièces livrées **à ce stade** (bornées par `S.remisesEnvoyees`) | l'atelier : celles que **n'importe quelle** remise livre — donc toujours plus nombreuses | l'atelier dit `toutesPiecesLivrees()` |
+  | `dimDe` | `moteur.js` : la dimension d'un **terme réduit**, qui répond `"affirmation"` pour un terme emboîté | l'atelier : la dimension d'un **empan**, qui ne répond jamais ça | l'atelier dit `dimEmpan(pid, eid)` |
+  | `valider` | `moteur.js` : la raison du refus d'**une phrase**, ou `null` | l'atelier : la liste des anomalies **du contenu entier** | l'atelier dit `diagnostiquer()` |
+
+  La dernière est la plus instructive, et c'est pour ça qu'elle avait tenu si longtemps : **les deux
+  rendent « rien » quand tout va bien** — `null` d'un côté, un tableau vide de l'autre. Une collision
+  qui ne se voit que le jour où quelque chose ne va pas.
+
+- **`esc` / `escapeH` — deux mots pour une chose, et c'est accepté.** L'inverse du défaut ci-dessus :
+  l'échappement HTML s'appelle `esc` dans le jeu et `escapeH` (plus `escapeAttr`) dans l'atelier. Les
+  unifier coûterait des dizaines de retouches pour aucun gain de sens, et il n'existe aucun fichier
+  chargé par les deux pages où poser la fonction commune. **Deux noms pour une chose se remarquent ; un
+  nom pour deux choses se subit.** Seul l'écart réel de comportement a été corrigé : `escapeH(null)`
+  écrivait « null » là où `esc(null)` écrit « ».
 
 - ~~**Mémoire (la surface) / `S.memoire` (le tableau)**~~ — **dissous** *(2 août)*. La surface est
   `memoire` (`#memoire`, `renderMemoire`), ce qu'elle contient est `retenus` (`S.retenus`,

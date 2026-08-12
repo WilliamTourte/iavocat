@@ -7,14 +7,29 @@
    ============================================================ */
 :root{
   --bg:#0e1116; --panel:#161b22; --panel2:#1c232d; --line:#2b3440;
-  --txt:#d7dde5; --muted:#8b97a6; --accent:#6fb3d6; --lock:#7bbf8a; --warn:#d6a96f;
+  --txt:#d7dde5; --muted:#8b97a6; --accent:#6fb3d6; --warn:#d6a96f;
   /* LE BLEU DU TRANSMIS. Il cerne tout ce qui a franchi la frontière ou
      s'apprête à la franchir (§4.6) : la bulle de l'IA, les pièces jointes, le
      bouton d'envoi, la phrase close, la liste du plan. Il était employé huit
-     fois et défini nulle part — `border-color` n'héritant pas, les huit règles
-     retombaient sur `currentColor`, et le filet prenait la couleur du texte
-     qu'il entourait. C'est le bleu que l'atelier emploie déjà avec exactement
-     les mêmes fonds (#0f2230 pour la bulle IA, #12324a pour les boutons). */
+     fois et défini nulle part. C'est le bleu que l'atelier emploie déjà avec
+     exactement les mêmes fonds (#0f2230 pour la bulle IA, #12324a pour les
+     boutons).
+
+     LE MÉCANISME, MESURÉ — parce que les huit règles ne tombaient PAS de la
+     même façon, et que la moitié tombait plus bas qu'on ne le croyait. Une
+     `var()` introuvable rend la déclaration *invalide au calcul* : la propriété
+     passe à `unset`, ce qui pour un RACCOURCI vide TOUTES ses longhands.
+     Relevé au navigateur sur `.attach{border:1px solid var(--transmis)}` :
+
+         sans la variable   border-top: none / 0px
+         avec la variable   border-top: solid / 1px / rgb(35,80,110)
+
+     Ce n'était donc pas un filet de la mauvaise couleur : il n'y avait pas de
+     filet du tout. Même chose pour `.liste li .up` et `.repet .up`. Les trois
+     règles qui posent `border-color` seul (bulle de l'IA, `.compo.prete`, le
+     bouton d'envoi) sont le cas doux : elles, oui, retombaient sur
+     `currentColor`. Aucune suite ne voit ni l'un ni l'autre — elles lisent
+     `innerHTML`, jamais le style calculé (§2 de la passation). */
   --transmis:#23506e;
 
   --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
@@ -26,23 +41,14 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.55}
-header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:baseline}
-header h1{font-size:16px;font-weight:600;margin:0;letter-spacing:.3px}
-header .sub{color:var(--muted);font-size:13px}
-header .spacer{flex:1}
-header button{background:var(--panel2);color:var(--txt);border:1px solid var(--line);
-  border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px}
-header button:hover{border-color:var(--accent)}
 .wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;padding:16px 20px;max-width:1400px;margin:0 auto}
 .col{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
 .col > h2{margin:0;padding:9px 14px;font-size:13px;font-weight:600;color:var(--muted);
   text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:baseline}
 /* Le compte du plan monte dans l'en-tête : une seule zone, un seul titre (§4.9) */
 .col > h2 .zcount{float:none;margin-left:auto}
-.col > h2 .tag{font-size:10.5px;letter-spacing:.4px;border-radius:4px;padding:1px 6px;font-weight:500}
 
 .body{padding:12px 14px;overflow-y:auto;max-height:72vh}
-.col.demi .body{max-height:34vh}
 /* `.col` pose `display:flex`, qui BAT la règle `[hidden]{display:none}` du
    navigateur : sans cette ligne, cacher la colonne du plan ne ferait rien. */
 .col[hidden]{display:none}
@@ -57,7 +63,7 @@ header button:hover{border-color:var(--accent)}
 @media (max-width:1100px){
   .wrap,.wrap.sansPlan{grid-template-columns:1fr}
   .cloture,.wrap.sansPlan .cloture{grid-column:1 !important}
-  .body,.col.demi .body{max-height:44vh}
+  .body{max-height:44vh}
 }
 /* --- canal --- */
 .msg{margin-bottom:10px}
@@ -98,8 +104,6 @@ header button:hover{border-color:var(--accent)}
 .empan:hover{background:color-mix(in srgb, var(--dc,#888) 28%, transparent)}
 .empan.pris{background:color-mix(in srgb, var(--dc,#888) 30%, transparent);font-weight:600}
 .empan .sig{font-size:11px;color:var(--muted);font-family:var(--mono)}
-.legende{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px;font-size:11.5px;color:var(--muted)}
-.legende span{border-bottom:2px solid var(--dc);padding-bottom:1px}
 /* --- mémoire : une seule liste, qui sert AUSSI de clavier au composeur --- */
 .dimgrp{margin-bottom:9px}
 .dimgrp .dnom{font-size:11px;color:var(--dc,var(--muted));text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}

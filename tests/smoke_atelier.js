@@ -4,8 +4,10 @@
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, surContenu:SC } = H;
 const neuf = () => { const w = H.bootAtelier(); w.demanderExemple(); w.demanderExemple(); return w; };
-const err = w => w.valider().filter(i => i.niveau === "erreur");
-const msgs = w => w.valider().map(i => i.msg).join(" | ");
+// `diagnostiquer()` — le diagnostic du contenu entier. Ce n'est pas le
+// `valider(r)` de moteur.js, qui juge une phrase (docs/LEXIQUE.md).
+const err = w => w.diagnostiquer().filter(i => i.niveau === "erreur");
+const msgs = w => w.diagnostiquer().map(i => i.msg).join(" | ");
 
 /* L'atelier ne porte plus de copie du contenu : il ÉDITE content.js. Ce bloc
    remplace donc l'ancien garde-fou de synchronisation — il ne compare plus

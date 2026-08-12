@@ -575,7 +575,11 @@ function portePhrase(pid){
 
 /* ---- Démarrage ---- */
 window.JEU = JEU; window.S = S; window.M = M; window.R = R; window.CHAMPS = CHAMPS;
+/* `SOURCE_CONTENU` reste exposé — quatre suites le lisent pour savoir QUEL
+   contenu a été adopté (§13). Ce qui a disparu, c'est son affichage : il
+   s'écrivait dans un `#srcContenu` du `<header>`, retiré depuis. La ligne qui
+   le cherchait ne faisait donc plus rien, et son `if(el)` l'empêchait de le
+   dire — même silence que les cibles du tutoriel (§2 de la passation). */
 window.SOURCE_CONTENU = SOURCE_CONTENU;
-{ const el=$("srcContenu"); if(el) el.textContent="· "+SOURCE_CONTENU; }
 if(!restaurerPartie()) R.envoyerRemise(S);   // la remise 1 arrive d'elle-même
 rendreTout();
