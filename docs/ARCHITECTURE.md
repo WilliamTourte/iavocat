@@ -339,12 +339,16 @@ Règle : **un inerte doit être inerte par construction, pas par oubli** — auc
 
 ```
 app/        LE JEU LIVRABLE — c'est ce dossier, et lui seul, qu'on zippe
-  index.html      l'INTERFACE du jeu : CSS, rendu, gestes, sauvegarde, tutoriel. Aucune règle.
+  index.html      LA STRUCTURE du jeu, et rien d'autre : trois surfaces, la clôture,
+                  la modale, le bandeau du tutoriel. 85 lignes.
+  jeu.css         LA MISE EN FORME du jeu — les jetons, les surfaces, le tutoriel
+  jeu.js          L'ÉCRAN ET LES GESTES : rendu, sauvegarde de partie, tutoriel. Ne décide rien.
   regles.js       LES RÈGLES du jeu, pures, sans DOM  (§12)
   moteur.js       LA GRAMMAIRE + LES PROJECTIONS du contenu, pures, sans données (§14)
   content.js      LE CONTENU de l'affaire — l'unique exemplaire
-  atelier_v3.html L'ATELIER : le HTML, le CSS, le démarrage. Charge ses modules et les trois voisins.
-  atelier/        … un fichier par outil :
+  atelier_v3.html LA STRUCTURE de l'atelier + six lignes de démarrage. 156 lignes.
+  atelier/        … la feuille de style, puis un fichier par outil :
+    atelier.css     la mise en forme — et les JETONS que `getCSS()` relit (voir §13)
     noyau.js        le contenu chargé, les outils, l'état d'interface, l'annulation, les onglets
     graphe.js       le canevas, les traits, le clic dessus — l'ESPACE du dossier
     diagnostic.js   « le dossier tient-il ? » — la plus grosse pièce, et c'est normal
@@ -359,6 +363,8 @@ grammaire/  grammaire2.js (jeu de données de démonstration) + test_grammaire2.
 ```
 
 **La règle de rangement, en une phrase :** *le contenu ne contient aucune règle, les règles ne contiennent aucun contenu, l'interface ne décide rien, et l'atelier ne recopie rien.* `index.html` et `atelier_v3.html` chargent les mêmes trois voisins par `<script src>` — aucune étape de build, aucun serveur, tout marche en `file://`.
+
+**Une page ne porte plus que sa structure.** Ni `<style>`, ni `<script>` en ligne : le CSS part en `<link>`, le JS en `<script src>`. Ça ne change rien à l'exécution — un script classique externe partage la même portée globale qu'un script en ligne, et les déclarations de fonction restent des propriétés de `window`, ce dont dépendent tous les `onclick=` du HTML engendré. Ça change ce qu'on ouvre quand on cherche quelque chose.
 
 **Pourquoi l'atelier est un dossier et pas un fichier.** Il portait cinq outils dans 2 170 lignes ; chacun a maintenant le sien, et la page ne garde que son HTML, son CSS et six lignes de démarrage. Les modules se chargent en **portée globale classique**, jamais en modules ES : c'est ce qui laisse intacts les cinquante-neuf `onclick=`/`onchange=` du HTML — les réécrire aurait été le vrai coût du découpage — et ce qui préserve le « zéro build ». **L'ordre des balises compte**, mais moins qu'il n'y paraît : les fonctions se voient entre fichiers par *hoisting*, résolues à l'appel ; seul `noyau.js` exécute son corps au chargement (son `let CONTENU = contenuLivre()`), il vient donc en premier.
 
@@ -452,9 +458,13 @@ Une seule différence subsiste, et elle est de nature, pas de règle : le pas-à
 
 ## 13. Ce qui se passe quand `content.js` manque
 
-Il n'y a pas de repli : c'est le prix de l'exemplaire unique, et un bon prix, parce qu'un repli silencieux fait *jouer autre chose* sans le dire. Fichier absent, schéma antérieur à 3, ou clé vitale manquante → le jeu affiche un **bandeau** qui nomme le cas, ne livre aucune session, et laisse l'écran vide ; `contenuValide()` reste le juge. **La sauvegarde de partie est signée par le contenu** (`localStorage`, clé `iavocat_partie`) : livrer un nouveau `content.js` invalide les parties en cours, qui repartent de la session 1. Le harnais de test **inline tout `<script src>`** au boot, parce que jsdom n'en charge aucun — ce sont les fichiers mêmes, relus sur le disque à chaque boot, ce qui permet au contenu de n'exister qu'en un exemplaire tout en restant testable. L'injection est **générique** (une regex sur les balises, dans l'ordre) et non une liste de chemins : ajouter un module ne demande plus d'y revenir, et un oubli ne se serait vu qu'en `ReferenceError` au milieu d'une suite.
+Il n'y a pas de repli : c'est le prix de l'exemplaire unique, et un bon prix, parce qu'un repli silencieux fait *jouer autre chose* sans le dire. Fichier absent, schéma antérieur à 3, ou clé vitale manquante → le jeu affiche un **bandeau** qui nomme le cas, ne livre aucune session, et laisse l'écran vide ; `contenuValide()` reste le juge. **La sauvegarde de partie est signée par le contenu** (`localStorage`, clé `iavocat_partie`) : livrer un nouveau `content.js` invalide les parties en cours, qui repartent de la session 1. Le harnais de test **inline tout `<script src>` ET tout `<link rel=stylesheet>`** au boot, parce que jsdom n'en charge aucun — ce sont les fichiers mêmes, relus sur le disque à chaque boot, ce qui permet au contenu de n'exister qu'en un exemplaire tout en restant testable. L'injection est **générique** (une regex sur les balises, dans l'ordre) et non une liste de chemins : ajouter un module ne demande plus d'y revenir, et un oubli ne se serait vu qu'en `ReferenceError` au milieu d'une suite.
 
-**Ce que le harnais ne prouve jamais, du coup :** que les balises se chargent pour de vrai. C'est le seul emploi de `npm run vue` pour le jeu, et, pour l'atelier découpé, d'une ouverture en `file://` — l'onglet Grammaire n'a même de moteur que là.
+**Pourquoi le CSS aussi**, alors qu'aucune suite ne lit jamais une couleur : parce que `getCSS()` en lit, lui. Les couleurs de trait du graphe (`app/atelier/graphe.js`) sortent de `getComputedStyle` sur `:root` — c'est le seul endroit du dépôt où du CSS traverse vers du JS. Or jsdom résout les variables d'un `<style>` en ligne et rend `""` pour un `<link>`. Sortir le CSS du HTML aurait donc changé ce que le graphe dessine sous test **sans qu'aucun contrôle ne bronche**. Le filet coûte trois lignes, et il a été posé *avant* le déplacement.
+
+**Trois règles sur la balise de `jeu.js`**, portées en commentaire dans `index.html` parce qu'aucune n'est cosmétique : sur **une ligne, sans attribut** (la forme exacte que la regex reconnaît — une variante n'est pas inlinée, et les six suites meurent en `ReferenceError`) ; **ni `defer` ni `async`, jamais** (le harnais *inline* : un attribut de timing ferait diverger le test du navigateur, et le test resterait vert pendant que la page casse) ; **après `content.js`**.
+
+**Ce que le harnais ne prouve jamais, du coup :** que les balises se chargent pour de vrai. C'est le seul emploi de `npm run vue` pour le jeu, et, pour l'atelier, d'une ouverture en `file://` — l'onglet Grammaire n'a même de moteur que là. Pour le CSS, la preuve doit être **explicite**, sinon une page sans style passe pour une page qui marche : on vérifie que `body` a bien son fond (`rgb(14, 17, 22)`) **et** que la *dernière* règle du fichier s'applique. (Lire `cssRules` d'une feuille `file://` lève une `SecurityError` : la complétude ne se mesure pas comme ça.)
 
 ## 14. La grammaire — branchée
 

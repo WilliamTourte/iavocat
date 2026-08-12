@@ -4,7 +4,8 @@ Un jeu à dominante textuelle : on incarne une **IA** qu'un **avocat de la défe
 après session, pour lui préparer de quoi réfuter l'accusation. Le vrai sujet est un cas de conscience.
 Le dépôt porte le **jeu** (`app/`), l'**atelier** qui l'écrit (`app/atelier_v3.html` + `app/atelier/`,
 un fichier par outil) et six suites de test. **Zéro build, zéro serveur, zéro dépendance à l'exécution** : `app/index.html` s'ouvre en
-`file://` et joue.
+`file://` et joue. Une page ne porte que sa **structure** — le CSS entre par `<link>`, le JS par
+`<script src>`.
 
 > **Ce fichier n'est pas une source de vérité.** Le §12 de `docs/ARCHITECTURE.md` en pose exactement
 > quatre — le contenu, les règles, la grammaire, et la Partie I pour le sens. Ce qui suit ne fait
@@ -43,7 +44,7 @@ Rien d'autre à préparer : pas de build, pas de service, pas de base. En sessio
 `outils/vue.js` ouvre `app/index.html` en **`file://`** dans Chromium, joue le chemin docile et dépose
 des captures dans `captures/` (ignoré par git), en versant le fil de l'avocat sur la sortie standard.
 
-Deux choses qu'il est le seul à faire : il éprouve le **vrai** chargement des trois `<script src>`,
+Deux choses qu'il est le seul à faire : il éprouve le **vrai** chargement des quatre `<script src>` et de la feuille de style,
 là où le harnais de test les inline (§13) ; et il permet la **relecture à l'œil**, que le §2 de la
 passation rappelle irremplaçable. Il ne réimplémente rien — il injecte `tests/harnais.js` dans la page
 et appelle son `instruire`, donc il joue exactement le chemin que jouent les suites.

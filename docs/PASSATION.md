@@ -1,6 +1,6 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 3 août 2026, après la session « dégraisser ».*
+*À lire en tête d'une nouvelle conversation. État au 4 août 2026, après la session « sortir le CSS et le JS du HTML ».*
 
 ## 1. Où en est le jeu
 
@@ -62,6 +62,13 @@ Onze décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
     deux identiques au caractère près. **L'atelier est un dossier** : `app/atelier/`, un fichier par
     outil, la page retombe de 2 170 à 406 lignes. Et `openManuels()` est retirée (voir §3).
 
+13. **Une page ne porte plus que sa structure** *(4 août)*. `app/jeu.css`, `app/jeu.js`,
+    `app/atelier/atelier.css` : plus aucun `<style>` ni `<script>` en ligne. `index.html` passe de
+    859 lignes à **85**, l'atelier de 406 à **156**. Rien n'a eu à changer dans le code déplacé — un
+    script classique externe partage la même portée globale qu'un script en ligne. **Un seul
+    changement d'écran**, isolé dans son commit : `--transmis` était employée huit fois et définie
+    nulle part (voir §2), elle vaut désormais `#23506e`.
+
 ## 2. Points de vigilance
 
 - `test_autre_affaire.js` n'a pas bougé d'une ligne depuis le découpage en trois sessions ni depuis
@@ -84,9 +91,28 @@ Onze décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
   corps s'exécute au chargement. Le reste se voit par *hoisting*, résolu à l'appel. Et les
   `window.X = X` explicites (`undo`, `adopter`, `demanderExemple`, `simReset`) ne sont pas
   décoratifs : c'est par eux que `smoke_atelier.js` lit l'atelier.
-- **Le harnais inline TOUT `<script src>`**, par regex et dans l'ordre. Ajouter un module ne demande
-  plus d'y revenir — mais un module mal ordonné se verra en `ReferenceError` au milieu d'une suite,
-  pas à l'ouverture.
+- **Le harnais inline TOUT `<script src>` et TOUT `<link rel=stylesheet>`**, par regex et dans
+  l'ordre. Ajouter un fichier ne demande plus d'y revenir — mais un module mal ordonné se verra en
+  `ReferenceError` au milieu d'une suite, pas à l'ouverture.
+- **La regex du harnais est stricte, et c'est le piège du CSS/JS sorti du HTML.** Une balise doit
+  s'écrire `<script src="x.js"></script>` sur UNE ligne, sans attribut. Une variante n'est pas
+  inlinée : jsdom ne charge rien, les six suites meurent en `ReferenceError`.
+- **Ni `defer` ni `async` sur ces balises, jamais.** Le harnais *inline* : un attribut qui change le
+  moment d'exécution ferait **diverger le test du navigateur**, et le test resterait vert pendant
+  que la page casse. C'est le seul piège de la série qui soit silencieux du mauvais côté.
+- **Le CSS est inliné parce que `getCSS()` le lit.** Les couleurs de trait du graphe
+  (`app/atelier/graphe.js`) sortent de `getComputedStyle` sur `:root` — seul endroit du dépôt où du
+  CSS traverse vers du JS. jsdom résout les variables d'un `<style>` en ligne et rend `""` pour un
+  `<link>` : sans le filet, le graphe aurait changé sous test sans qu'un contrôle ne bronche, aucune
+  suite ne lisant jamais une couleur.
+- **Prouver qu'un CSS externe est chargé demande une assertion explicite** — une page sans style
+  passe pour une page qui marche. On vérifie le fond du `body` **et** que la *dernière* règle du
+  fichier s'applique. Lire `cssRules` d'une feuille `file://` lève une `SecurityError` : ça ne se
+  mesure pas comme ça.
+- **`--transmis` (`#23506e`) est le bleu de ce qui a franchi la frontière** (§4.6) : bulle de l'IA,
+  pièces jointes, bouton d'envoi, phrase close, liste du plan. Elle était employée huit fois et
+  définie nulle part — `border-color` n'héritant pas, les huit règles retombaient sur
+  `currentColor`. Corrigé le 4 août ; c'est la seule chose de cette série qui ait changé l'écran.
 - La règle de clôture automatique (point 5) se déclenche sur un **compte** de blocs offerts : ajouter
   ou retirer un bloc de grammaire peut changer le nombre de clics ailleurs dans l'affaire.
 - Une sonde du harnais (`poserComparaison`) ne doit rien laisser au journal si elle échoue en chemin.

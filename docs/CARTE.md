@@ -17,8 +17,10 @@
 | `app/content.js` | 664 | **le contenu** — une affaire, en un seul exemplaire | aucune règle |
 | `app/regles.js` | 366 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
 | `app/moteur.js` | 236 | **la grammaire** — composer, valider, rendre — **et les projections du contenu** (§14) | aucune donnée |
-| `app/index.html` | 838 | **le jeu** — l'affichage et les gestes d'écran | ne décide rien ; n'enveloppe plus les lectures |
-| `app/atelier_v3.html` + `app/atelier/*.js` | 406 + 1808 | **l'atelier** — écrire et diagnostiquer une affaire, **un fichier par outil**. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12) |
+| `app/index.html` | 85 | **la structure du jeu** — trois surfaces, la clôture, la modale, le bandeau du tutoriel | aucun style, aucun script en ligne |
+| `app/jeu.css` | 238 | **la mise en forme du jeu** — les jetons, les surfaces, le tutoriel | rien que le JS relise |
+| `app/jeu.js` | 581 | **l'écran et les gestes** — rendu, sauvegarde de partie, tutoriel | ne décide rien ; n'enveloppe plus les lectures |
+| `app/atelier_v3.html` + `app/atelier/` | 156 + 257 (css) + 1808 (js) | **l'atelier** — écrire et diagnostiquer une affaire, **un fichier par outil**. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12) |
 
 `regles.js` et `moteur.js` sont en **mode double** — `require` (tests, banc) ou `<script src>` (jeu,
 atelier). Les deux exposent une **fabrique** : `creerRegles(JEU, M)` et `creerMoteur(GRAMMAIRE, CHAMPS, LIENS)`.
@@ -26,6 +28,8 @@ Ils exposent aussi, **hors fabrique**, ce qui ne dépend d'aucun état : `Moteur
 `.comparaisonsDe`, `.couleurDim` et `ReglesJeu.estRegle` — les projections d'un contenu, en un seul
 exemplaire (§12, §14). Elles sont **cloîtrées** dans une fermeture : un nom de haut niveau y serait un
 nom pris dans la page qui charge le fichier.
+
+**Une page ne porte que sa structure** : le CSS entre par `<link>`, le JS par `<script src>`. Un script classique externe partage la même portée globale qu'un script en ligne — c'est ce qui laisse les `onclick=` du HTML engendré trouver leurs fonctions.
 
 **Les huit modules de l'atelier** se chargent en portée globale classique, dans l'ordre : `noyau.js`
 (le contenu, les outils, l'état d'interface, l'annulation, les onglets, l'échappement — **en premier**,
