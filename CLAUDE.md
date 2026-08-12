@@ -2,9 +2,10 @@
 
 Un jeu à dominante textuelle : on incarne une **IA** qu'un **avocat de la défense** interroge session
 après session, pour lui préparer de quoi réfuter l'accusation. Le vrai sujet est un cas de conscience.
-Le dépôt porte le **jeu** (`app/`), l'**atelier** qui l'écrit (`app/atelier_v3.html`) et six suites de
-test. **Zéro build, zéro serveur, zéro dépendance à l'exécution** : `app/index.html` s'ouvre en
-`file://` et joue.
+Le dépôt porte le **jeu** (`app/`), l'**atelier** qui l'écrit (`app/atelier_v3.html` + `app/atelier/`,
+un fichier par outil) et six suites de test. **Zéro build, zéro serveur, zéro dépendance à l'exécution** : `app/index.html` s'ouvre en
+`file://` et joue. Une page ne porte que sa **structure** — le CSS entre par `<link>`, le JS par
+`<script src>`.
 
 > **Ce fichier n'est pas une source de vérité.** Le §12 de `docs/ARCHITECTURE.md` en pose exactement
 > quatre — le contenu, les règles, la grammaire, et la Partie I pour le sens. Ce qui suit ne fait
@@ -15,7 +16,7 @@ test. **Zéro build, zéro serveur, zéro dépendance à l'exécution** : `app/i
 **Toujours d'abord `docs/PASSATION.md`** — l'état du jour, les décisions prises avec l'auteur, et la
 prochaine étape. C'est court et c'est daté.
 
-Ensuite, dans `docs/ARCHITECTURE.md` (510 lignes : on n'en lit que ce qu'il faut) —
+Ensuite, dans `docs/ARCHITECTURE.md` (on n'en lit que ce qu'il faut) —
 
 | Ce qu'on vient faire | Ce qu'on lit |
 |---|---|
@@ -30,7 +31,7 @@ Ensuite, dans `docs/ARCHITECTURE.md` (510 lignes : on n'en lit que ce qu'il faut
 ## Les commandes
 
 ```sh
-npm test               # les six suites — 331 contrôles. La règle d'or : tout vert, ou ce n'est pas fini (§16)
+npm test               # les six suites — 325 contrôles. La règle d'or : tout vert, ou ce n'est pas fini (§16)
 npm run vue            # ouvre le jeu dans un VRAI navigateur, joue, capture. Voir ci-dessous
 npm run demo:grammaire # banc d'essai de la grammaire. Hors `npm test` : pas de code de sortie
 ```
@@ -43,7 +44,7 @@ Rien d'autre à préparer : pas de build, pas de service, pas de base. En sessio
 `outils/vue.js` ouvre `app/index.html` en **`file://`** dans Chromium, joue le chemin docile et dépose
 des captures dans `captures/` (ignoré par git), en versant le fil de l'avocat sur la sortie standard.
 
-Deux choses qu'il est le seul à faire : il éprouve le **vrai** chargement des trois `<script src>`,
+Deux choses qu'il est le seul à faire : il éprouve le **vrai** chargement des quatre `<script src>` et de la feuille de style,
 là où le harnais de test les inline (§13) ; et il permet la **relecture à l'œil**, que le §2 de la
 passation rappelle irremplaçable. Il ne réimplémente rien — il injecte `tests/harnais.js` dans la page
 et appelle son `instruire`, donc il joue exactement le chemin que jouent les suites.
@@ -58,14 +59,19 @@ Sans navigateur trouvé, il le dit et sort en 0. Il ne sort en 1 que sur une err
 > rien, et l'atelier ne recopie rien.*
 
 Concrètement : le contenu vit **en un seul exemplaire** dans `app/content.js`, les règles dans
-`app/regles.js` (pur, sans DOM), la grammaire dans `app/moteur.js` (pur, sans données). Les deux pages
-HTML ne font que *montrer*. Le pas-à-pas de l'atelier **appelle** les règles du jeu, il ne les rejoue
+`app/regles.js` (pur, sans DOM), la grammaire dans `app/moteur.js` (pur, sans données) — qui porte
+aussi, hors fabrique, les **projections du contenu** (`champsDe`, `comparaisonsDe`, `couleurDim`),
+parce qu'elles vivaient en deux ou trois copies. Les deux pages HTML ne font que *montrer*, et
+`index.html` **n'enveloppe plus** les lectures de `regles.js` : ce qui redessine est une fonction
+d'écran, ce qui lit s'écrit `R.x(S)` — les suites lisent pareil, en `w.R.x(w.S)`. Le pas-à-pas de l'atelier **appelle** les règles du jeu, il ne les rejoue
 pas — c'est ce qui a permis de supprimer une checklist de resynchronisation de dix-sept lignes (§12).
 
 Les **pièges déjà payés** sont listés au §2 de `docs/PASSATION.md` — les lire avant de toucher au
-moteur ou à la grammaire. Les trois qui reviennent : les `const` de haut niveau ne sont pas des
-propriétés de `window` ; l'index `iBloc` de `poserBloc` est **positionnel dans la liste filtrée**, donc
-dépendant de la session ; le flag `cite` est porté par la **liaison**, jamais par le terme.
+moteur ou à la grammaire. Les quatre qui reviennent : les `const` de haut niveau ne sont pas des
+propriétés de `window` — **mais ils occupent quand même le nom**, et un module chargé par
+`<script src>` partage la portée globale de la page ; l'index `iBloc` de `poserBloc` est
+**positionnel dans la liste filtrée**, donc dépendant de la session ; le flag `cite` est porté par la
+**liaison**, jamais par le terme.
 
 ## La méthode, demandée par l'auteur
 

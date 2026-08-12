@@ -15,17 +15,17 @@ console.log("\n=== Le composeur, bloc par bloc ===");
   const w = boot();
   H.livrerTout(w);
   check("au départ, la phrase est vide", w.S.compo.length === 0);
-  check("l'état de départ offre au moins un bloc", w.blocsOfferts().length > 0);
+  check("l'état de départ offre au moins un bloc", w.R.blocsOfferts(w.S).length > 0);
   const emp = w.CHAMPS.filter(c => c.dim === w.CHAMPS[0].dim).slice(0, 2);
   for (const pid of new Set(emp.map(e => e.pid))) w.ouvrirPiece(pid);
   for (const e of emp) H.surligner(w, e.id);
-  const iT = w.blocsOfferts().findIndex(b => b.type === "terme" && b.source !== "note");
+  const iT = w.R.blocsOfferts(w.S).findIndex(b => b.type === "terme" && b.source !== "note");
   w.poserBloc(iT, 0);
   check("poser un terme fait avancer l'automate", w.S.compo.length === 1);
-  check("l'état a changé", w.etatCompo() !== w.JEU.grammaire.depart);
+  check("l'état a changé", w.R.etatCompo(w.S) !== w.JEU.grammaire.depart);
   w.retirerBloc();
   check("← retirer revient en arrière", w.S.compo.length === 0);
-  check("et l'état repart du départ", w.etatCompo() === w.JEU.grammaire.depart);
+  check("et l'état repart du départ", w.R.etatCompo(w.S) === w.JEU.grammaire.depart);
   w.poserBloc(iT, 0);
   w.viderCompo();
   check("tout effacer vide la phrase", w.S.compo.length === 0 && !w.S.refus);
@@ -42,11 +42,11 @@ console.log("\n=== Refus de catégorie : le seul refus qui existe ===");
   check("aucune relation ne se déduit entre deux dimensions", w.M.deduire(a.id, b.id) === null);
   // On désigne quand même les deux : rien n'est jamais interdit à la pose,
   // c'est à la clôture que la catégorie tranche (§4.5).
-  const iT = () => w.blocsOfferts().findIndex(x => x.type === "terme" && x.source !== "note");
+  const iT = () => w.R.blocsOfferts(w.S).findIndex(x => x.type === "terme" && x.source !== "note");
   w.poserBloc(iT(), w.S.retenus.indexOf(a.id));
   w.poserBloc(iT(), w.S.retenus.indexOf(b.id));
   // C'est l'article — le seul moyen de clore — qui déclenche la validation.
-  const iArt = w.blocsOfferts().findIndex(x => x.imbrique);
+  const iArt = w.R.blocsOfferts(w.S).findIndex(x => x.imbrique);
   if (iArt >= 0) w.poserBloc(iArt); else H.cloreSurPlace(w);
   check("deux dimensions différentes : la phrase est refusée", !!w.S.refus);
   check("le message ne dit rien de plus que la catégorie",
@@ -86,7 +86,7 @@ console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
     const nom = id => (w.M.C[id] || {}).nom;
     const ord = w.M.ordonner(L.forme, L.termes);
     const attendu = f.patron.replace("{a}", nom(ord[0])).replace("{b}", nom(ord[1]));
-    if (!w.M.rendre(w.chaineCompo()).startsWith(attendu)) patronsOk = false;
+    if (!w.M.rendre(w.R.chaineCompo(w.S)).startsWith(attendu)) patronsOk = false;
   }
   w.viderCompo();
   check(`les ${vus} phrases déduites s'écrivent par leur patron, verbe compris`, vus > 0 && patronsOk);
@@ -127,24 +127,24 @@ console.log("\n=== On n'invoque pas un texte qu'on n'a pas reçu ===");
   const C = H.lienConclusion(w);
   H.livrerTout(w);
   H.poserComparaison(w, C.termes[0]);
-  const offerts = w.blocsOfferts();
+  const offerts = w.R.blocsOfferts(w.S);
   check("tout ce qui est offert a sa pièce",
-    offerts.every(b => !b.piece || new Set(w.piecesLivrees()).has(b.piece)));
+    offerts.every(b => !b.piece || new Set(w.R.piecesLivrees(w.S)).has(b.piece)));
 
   // Le même, sans rien livrer : l'article du vice n'est pas encore là.
   const w0 = boot();
-  const livrees0 = new Set(w0.piecesLivrees());
+  const livrees0 = new Set(w0.R.piecesLivrees(w0.S));
   const manquant = avecPiece.find(b => b.imbrique && !livrees0.has(b.piece));
   check("l'article du vice n'est pas encore là", !!manquant);
   check("il n'est donc offert nulle part",
     !H.cheminVers(w0, (manquant||{}).forme).length
-    || !w0.blocsOfferts().some(b => b.id === (manquant||{}).id));
+    || !w0.R.blocsOfferts(w0.S).some(b => b.id === (manquant||{}).id));
 
   // une fois la pièce livrée, la même liaison apparaît
   const w2 = boot();
   H.livrerTout(w2);
   H.poserComparaison(w2, C.termes[0]);
-  check("livré, il est offert", w2.blocsOfferts().some(b => b.id === (manquant||{}).id));
+  check("livré, il est offert", w2.R.blocsOfferts(w2.S).some(b => b.id === (manquant||{}).id));
   check("et la conclusion devient composable", H.composerLien(w2, C) >= 0);
 }
 
@@ -162,7 +162,7 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
   const L = cits[0];
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   H.surligner(w, L.termes[0]);
-  const iT = w.blocsOfferts().findIndex(b => b.type === "terme" && b.source !== "note");
+  const iT = w.R.blocsOfferts(w.S).findIndex(b => b.type === "terme" && b.source !== "note");
   w.poserBloc(iT, w.S.retenus.indexOf(L.termes[0]));
   /* En session 1 l'état qui suit l'empan n'offre QUE cette clôture : une suite
      unique n'est pas un choix, la phrase se referme sans qu'on la confirme
@@ -204,20 +204,20 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
   const second = (G.blocs || []).find(b => b.type === "terme" && b.deduit);
   if (second && second.piece) {
     check("le second empan est conditionné à une pièce",
-      !new Set(w.piecesLivrees()).has(second.piece));
+      !new Set(w.R.piecesLivrees(w.S)).has(second.piece));
     for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
     const e = w.CHAMPS[0];
     H.surligner(w, e.id);
     /* Ce que l'état suivant offre ne s'observe plus APRÈS la pose : il n'offre
        qu'une clôture, donc la phrase se referme (§4.5). On le lit donc sur la
        grammaire, filtrée par ce qui est livré — comme le fait le jeu. */
-    const livrees = new Set(w.piecesLivrees());
+    const livrees = new Set(w.R.piecesLivrees(w.S));
     const apres = (G.blocs || []).filter(b => b.de === second.de && (!b.piece || livrees.has(b.piece)));
     check("un empan posé, aucun second n'est offert",
       !apres.some(b => b.type === "terme" && b.deduit));
     check("seule la citation reste, donc la session 1 ne compare pas",
       apres.length === 1 && apres[0].cite);
-    w.poserBloc(w.blocsOfferts().findIndex(b => b.type === "terme"), 0);
+    w.poserBloc(w.R.blocsOfferts(w.S).findIndex(b => b.type === "terme"), 0);
     check("et le geste s'arrête là : la phrase s'est close toute seule",
       w.S.compo.length === 0 && w.S.prete !== null);
     // livrée, elle s'ouvre — et pour tous les empans, sans préférence
@@ -225,11 +225,11 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
     H.livrerTout(w2);
     for (const pid of Object.keys(w2.JEU.pieces)) w2.ouvrirPiece(pid);
     H.surligner(w2, e.id);
-    w2.poserBloc(w2.blocsOfferts().findIndex(b => b.type === "terme"), 0);
+    w2.poserBloc(w2.R.blocsOfferts(w2.S).findIndex(b => b.type === "terme"), 0);
     check("une fois la pièce livrée, le second empan est offert",
-      w2.blocsOfferts().some(b => b.type === "terme" && b.deduit));
+      w2.R.blocsOfferts(w2.S).some(b => b.type === "terme" && b.deduit));
     check("et la citation reste offerte à côté : deux voies, pas une bascule",
-      w2.blocsOfferts().some(b => b.cite));
+      w2.R.blocsOfferts(w2.S).some(b => b.cite));
   }
 }
 
@@ -241,7 +241,7 @@ console.log("\n=== La continuation : une comparaison demande toujours « et donc
   const sous = C.termes[0];                   // la comparaison qu'elle emboîte
   H.poserComparaison(w, sous);
   check("la comparaison est posée mais PAS close", w.S.compo.length > 0 && w.S.brouillon.length === 0);
-  const offerts = w.blocsOfferts();
+  const offerts = w.R.blocsOfferts(w.S);
   check("l'automate offre de continuer", offerts.some(b => b.imbrique));
   check("toutes les liaisons-articles sont offertes, pas seulement la bonne",
     offerts.filter(b => b.imbrique).length > 1);
@@ -310,7 +310,7 @@ console.log("\n=== Le premier geste, montré ===");
   const zone = halo();
   check("et il montre la mémoire", !!zone && zone.contains(w.document.querySelector(".mchip")));
 
-  w.poserBloc(w.blocsOfferts().findIndex(b => b.type === "terme" && b.source !== "note"),
+  w.poserBloc(w.R.blocsOfferts(w.S).findIndex(b => b.type === "terme" && b.source !== "note"),
               w.S.retenus.indexOf(veut));
   const envoi = halo();
   check("la phrase close, il montre le seul geste qui parle",

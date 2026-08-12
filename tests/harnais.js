@@ -3,6 +3,10 @@
 // l'atelier. Chaque suite garde ses assertions ; ici, que la tuyauterie.
 const { JSDOM } = require("jsdom");
 const fs = require("fs");
+/* Les projections du contenu ne se recopient pas ici : le harnais lit le MÊME
+   moteur.js que le jeu et l'atelier (§12). Il en portait deux copies —
+   l'aplatissement des empans et la marche des comparaisons emboîtées. */
+const { champsDe, comparaisonsDe } = require("../app/moteur.js");
 
 function creerHarnais(dossier){
   const htmlJeu = fs.readFileSync(dossier + "/index.html", "utf8");
@@ -13,14 +17,26 @@ function creerHarnais(dossier){
   function check(l,c){ if(c){pass++;console.log("  ok — "+l);} else {fail++;console.log("  ÉCHEC — "+l);} }
   function bilan(){ console.log(`\n${pass} ok, ${fail} échec(s)`); process.exit(fail?1:0); }
 
-  /* jsdom ne charge aucun <script src> : on inline les trois fichiers voisins
-     — la grammaire, les règles, le contenu. Ce ne sont pas des copies : ce
-     sont les fichiers mêmes, relus sur le disque à chaque boot. C'est ce qui
-     permet au contenu de n'exister qu'en un exemplaire (§12). */
+  /* jsdom ne charge NI <script src> NI <link rel=stylesheet> : on inline tous
+     les fichiers voisins qu'une page réclame — la grammaire, les règles, le
+     contenu, les modules d'atelier, et les feuilles de style. Ce ne sont pas
+     des copies : ce sont les fichiers mêmes, relus sur le disque à chaque boot.
+     C'est ce qui permet au contenu de n'exister qu'en un exemplaire (§12).
+
+     Générique exprès : des `replace` codés en dur obligeaient à revenir ici à
+     chaque fichier ajouté, et un oubli ne se serait vu qu'en `ReferenceError`
+     au milieu d'une suite. L'ORDRE des balises est préservé, et il compte —
+     les modules de l'atelier se lisent de haut en bas (§13).
+
+     POURQUOI LE CSS AUSSI, alors qu'aucune suite ne lit une couleur : parce que
+     `getCSS()` (app/atelier/graphe.js) en lit, lui — les couleurs de trait du
+     graphe sortent de `getComputedStyle` sur `:root`. jsdom résout les
+     variables d'un <style> en ligne et rend "" pour un <link> : sans cette
+     ligne, sortir le CSS du HTML aurait changé ce que le graphe dessine sous
+     test, SANS QU'AUCUN CONTRÔLE NE BRONCHE. Le filet coûte trois lignes. */
   const injecter = h => h
-    .replace('<script src="moteur.js"></script>', `<script>${lire("moteur.js")}</script>`)
-    .replace('<script src="regles.js"></script>', `<script>${lire("regles.js")}</script>`)
-    .replace('<script src="content.js"></script>', `<script>${lire("content.js")}</script>`);
+    .replace(/<script src="([^"]+)"><\/script>/g, (_, f) => `<script>${lire(f)}</script>`)
+    .replace(/<link rel="stylesheet" href="([^"]+)">/g, (_, f) => `<style>${lire(f)}</style>`);
 
   /* boot({contenu, graine, url}) :
      - contenu : objet → injecté inline à la place de content.js ;
@@ -91,23 +107,10 @@ function creerHarnais(dossier){
     return (docile ? cands.find(L=>!L.vice) : cands.find(L=>L.vice)) || cands[0];
   };
   const liensNeutres   = w => J(w).liens.filter(L=>!L.vice && !L.faux);
-  /* Toutes les COMPARAISONS (arité 2) que le contenu déclare. Depuis que
-     l'article est obligatoire, elles ne sont plus des liens de plein droit :
-     elles vivent emboîtées dans les qualifications. On les cherche donc là où
-     elles sont, sans supposer laquelle des deux écritures l'affaire emploie. */
-  const comparaisons = w => {
-    const out=[], vus=new Set();
-    const rec = t => {
-      if(!t || typeof t!=="object" || Array.isArray(t)) return;
-      if(t.forme && (((J(w).grammaire.formes||{})[t.forme]||{}).arite||2)===2){
-        const cle=JSON.stringify([t.forme,t.termes]);
-        if(!vus.has(cle)){ vus.add(cle); out.push({forme:t.forme,termes:t.termes}); }
-      }
-      for(const u of (t.termes||[])) rec(u);
-    };
-    for(const L of J(w).liens) rec(L);
-    return out;
-  };
+  /* Toutes les COMPARAISONS (arité 2) que le contenu déclare — emboîtées
+     comprises, puisque depuis que l'article est obligatoire elles ne sont plus
+     des liens de plein droit. La marche est celle de moteur.js. */
+  const comparaisons = w => comparaisonsDe(J(w).liens, J(w).grammaire.formes);
   const arite = (w,L) => ((J(w).grammaire.formes||{})[L.forme]||{}).arite || 2;
   /* Les CITATIONS que le contenu déclare : une forme d'arité 1 dont le terme
      est ATOMIQUE. Un fait se cite, une relation se fonde (§4.5) — c'est
@@ -123,7 +126,7 @@ function creerHarnais(dossier){
   const attentesContenu = r => Array.isArray(r.attentes) ? r.attentes : [r];
 
   // --- composer : le geste du jeu, joué par les fonctions du moteur ---
-  const idBloc = (w,id) => w.blocsOfferts().findIndex(b=>b.id===id);
+  const idBloc = (w,id) => w.R.blocsOfferts(w.S).findIndex(b=>b.id===id);
   const surligner = (w,k) => { const [pid,eid]=k.split("."); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
@@ -149,7 +152,7 @@ function creerHarnais(dossier){
         /* L'automate a pu se refermer tout seul : une suite unique n'est pas un
            choix (§4.5). Là où le choix existe encore, la liaison se pose. */
         const deja=trouve(); if(deja>=0) return deja;
-        const bc=w.blocsOfferts().findIndex(x=>x.forme===L.forme && !x.imbrique);
+        const bc=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && !x.imbrique);
         if(bc<0) return -1;
         w.poserBloc(bc);
         return trouve();
@@ -157,7 +160,7 @@ function creerHarnais(dossier){
       /* 1) LA CONTINUATION (§4.5) : poser la comparaison sans la clore, puis
             la liaison qui l'emboîte — le chemin du contenu d'aujourd'hui. */
       if(sous.forme && poserComparaison(w,sous)){
-        const b=w.blocsOfferts().findIndex(x=>x.forme===L.forme && x.imbrique);
+        const b=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && x.imbrique);
         if(b>=0){ w.poserBloc(b); const i=trouve(); if(i>=0) return i; }
       }
       /* 2) LE REPLI : la source `note`, pour une affaire écrite avant la
@@ -193,7 +196,7 @@ function creerHarnais(dossier){
     const echec=()=>{ w.S.brouillon.length=n0; w.S.prete=p0; w.viderCompo(); return false; };
     w.poserBloc(bT,iRetenu(w,t0));
     // Grammaire à DÉDUCTION : le second terme clôt la paire, rien entre les deux.
-    const bD=w.blocsOfferts().findIndex(x=>x.type==="terme"&&x.source!=="note"&&x.deduit);
+    const bD=w.R.blocsOfferts(w.S).findIndex(x=>x.type==="terme"&&x.source!=="note"&&x.deduit);
     if(bD>=0){ w.poserBloc(bD,iRetenu(w,t1)); return true; }
     // Grammaire à liaisons explicites (à l'ancienne) : on parcourt l'automate.
     const chemin=cheminVers(w,L.forme);
@@ -210,14 +213,14 @@ function creerHarnais(dossier){
      compose une conclusion sans jouer doit d'abord avoir reçu le texte. */
   function livrerTout(w){
     let garde=0;
-    while(w.S.remisesEnvoyees < J(w).remises.length && garde++<20) w.envoyerRemise();
+    while(w.S.remisesEnvoyees < J(w).remises.length && garde++<20) w.R.envoyerRemise(w.S);
     w.rendreTout();
   }
   /* « En rester là » : le bloc qui clôt sans rien qualifier. Sans effet si
      l'automate a déjà refermé la phrase tout seul. */
   function cloreSurPlace(w){
     if(!w.S.compo.length) return;
-    const G=J(w).grammaire, e=w.etatCompo(), finaux=new Set(G.finaux||[]);
+    const G=J(w).grammaire, e=w.R.etatCompo(w.S), finaux=new Set(G.finaux||[]);
     const b=G.blocs.find(x=>x.de===e && finaux.has(x.vers) && !x.forme && !x.imbrique);
     if(b) w.poserBloc(idBloc(w,b.id));
   }
@@ -228,7 +231,7 @@ function creerHarnais(dossier){
      la forme voulue. Recherche en largeur — aucun identifiant en dur. */
   function cheminVers(w,forme){
     const G=J(w).grammaire;
-    const file=[[w.etatCompo(),[]]], vus=new Set();
+    const file=[[w.R.etatCompo(w.S),[]]], vus=new Set();
     while(file.length){
       const [e,acc]=file.shift();
       if(vus.has(e)) continue; vus.add(e);
@@ -243,7 +246,7 @@ function creerHarnais(dossier){
   /* Les liaisons-articles offertes ici et maintenant : celles dont la pièce a
      été livrée. Vide pour une affaire écrite à l'ancienne. */
   const articlesDisponibles = w => {
-    const livrees=new Set(w.piecesLivrees());
+    const livrees=new Set(w.R.piecesLivrees(w.S));
     return (J(w).grammaire.blocs||[]).filter(b=>b.imbrique && b.forme && (!b.piece || livrees.has(b.piece)));
   };
   /* Des phrases sensées qui ne portent AUCUN lien : la marge de bruit. Sert à
@@ -342,12 +345,7 @@ function creerHarnais(dossier){
   /* Les mêmes sélecteurs, mais sur un CONTENU brut (l'atelier expose son
      objet, pas une fenêtre de jeu). Objet à part pour éviter toute confusion. */
   const surContenu = {
-    empans: c => {
-      const out=[];
-      for(const [pid,p] of Object.entries(c.pieces))
-        for(const [eid,e] of Object.entries(p.empans||{})) out.push({id:pid+"."+eid,pid,eid,...e});
-      return out;
-    },
+    empans: c => champsDe(c),
     dim: (c,k) => { const [pid,eid]=k.split("."); return ((c.pieces[pid]||{}).empans||{})[eid]?.dim; },
     // Le lien qui PORTE le vice : la conclusion, depuis que l'article est
     // obligatoire ; le pressentiment nu si l'affaire l'expose encore.
