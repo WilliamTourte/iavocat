@@ -110,8 +110,6 @@ main.jsonmode #stage, main.jsonmode #right{display:none}
 #insp input[type=text],#insp select,#insp textarea{width:100%;background:var(--panel2);color:var(--txt);
   border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-family:var(--mono);font-size:12px}
 #insp textarea{resize:vertical;min-height:52px;line-height:1.4}
-#insp .row{display:flex;gap:7px}
-#insp .row>*{flex:1}
 .relbtns{display:flex;gap:7px;margin-top:8px}
 .relbtns button{flex:1;background:#20303f;color:var(--txt);border:1px solid var(--line);border-radius:6px;
   padding:8px;cursor:pointer;font-size:12px}
@@ -207,8 +205,6 @@ main.etapesmode #etapes{display:grid;grid-template-columns:1fr 430px;min-height:
 .steprow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 /* une attente de session : l'avocat pose, attend, accuse réception, repose */
 .attente{border-left:2px solid var(--line);padding-left:10px;margin:8px 0 12px}
-.caseline{display:flex;gap:8px;align-items:center;font-size:12.5px;margin-top:5px;flex-wrap:wrap}
-.caseline .cl{font-family:var(--mono);color:var(--ok)}
 .affrow{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:8px;background:var(--panel2)}
 .affrow .steprow input{flex:1}
 .xsmall{background:none;border:1px dashed var(--line2);color:var(--dim);border-radius:6px;

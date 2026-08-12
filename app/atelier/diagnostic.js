@@ -3,10 +3,14 @@
    C'est la plus grosse pièce de l'atelier, et c'est normal — elle porte
    tout ce qu'aucune suite ne peut attraper à la place de l'auteur.
    ============================================================ */
-/* ============================================================
-   5) DIAGNOSTIC
-   ============================================================ */
-function valider(){
+/* Rend la liste des anomalies du CONTENU ENTIER.
+   ELLE NE S'APPELLE PLUS `valider` : `moteur.js` a un `valider(r)` qui juge UNE
+   phrase et rend la raison de son refus. Les deux fichiers sont chargés par la
+   même page, et les deux rendaient « rien » quand tout va bien — l'un par
+   `null`, l'autre par un tableau vide. C'est la pire forme de collision : celle
+   où se tromper de fonction ne se voit pas tant que rien ne va mal
+   (docs/LEXIQUE.md). Le `m.valider(…)` appelé plus bas est bien celui du moteur. */
+function diagnostiquer(){
   const out=[]; const P=CONTENU.pieces||{}, LI=CONTENU.liens||[];
   const add=(niveau,msg,detail,ref)=>out.push({niveau,msg,detail,ref});
   const livrees=toutesPiecesLivrees();
@@ -306,7 +310,7 @@ function cflabel(k){
 }
 
 function renderDiag(){
-  const issues=valider();
+  const issues=diagnostiquer();
   const nE=issues.filter(i=>i.niveau==="erreur").length;
   const nA=issues.filter(i=>i.niveau==="avert").length;
   const nI=issues.filter(i=>i.niveau==="info").length;
@@ -328,7 +332,14 @@ function pointer(ref){
   flagged.clear(); selEdge=null; formPiece=formChamp=null; pendingDel=null;
   if(!ref) return render();
   if(ref.edge!=null){ selEdge=ref.edge; }
-  if(ref.edges){ ref.edges.forEach(i=>{const l=CONTENU.liens[i]; if(!l)return; flagged.add(K(l.a[0],l.a[1])); flagged.add(K(l.b[0],l.b[1]));}); }
+  /* Les empans à surligner d'un LOT de liens. Cette ligne dépliait encore
+     `l.a`/`l.b`, le format du SCHÉMA 2 : en schéma 3 un lien porte
+     `forme`/`termes`, et sur le contenu livré `liens[7].a` vaut `undefined` —
+     cliquer l'avertissement « le vice a N canaux indépendants », son seul
+     émetteur, levait une TypeError. `feuillesLien` rend les empans-feuilles
+     quel que soit l'emboîtement, et il est déjà employé partout ailleurs ici. */
+  if(ref.edges){ ref.edges.forEach(i=>{ const l=CONTENU.liens[i]; if(!l) return;
+    for(const k of feuillesLien(l)) flagged.add(k); }); }
   if(ref.champ){ flagged.add(K(ref.champ[0],ref.champ[1])); scrollVers(ref.champ[0]); }
   if(ref.piece){ scrollVers(ref.piece); }
   render();

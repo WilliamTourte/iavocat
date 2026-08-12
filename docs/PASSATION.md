@@ -1,10 +1,11 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 4 août 2026, après la session « sortir le CSS et le JS du HTML ».*
+*À lire en tête d'une nouvelle conversation. État au 5 août 2026, après la session « un nom pour deux
+choses ».*
 
 ## 1. Où en est le jeu
 
-Onze décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
+**Quatorze** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
 
 1. **Trois sessions.** R1 lire/extraire/répondre (`p_pv`, `t_voisin`, aucun article) ; R2 comparer
    (`r_temoin`, l'article 3) ; R3 l'ADN et le vice.
@@ -69,6 +70,18 @@ Onze décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
     changement d'écran**, isolé dans son commit : `--transmis` était employée huit fois et définie
     nulle part (voir §2), elle vaut désormais `#23506e`.
 
+14. **Un nom pour deux choses** *(5 août)*. Suite directe de la 12, et même discipline : aucun sens,
+    aucune règle, aucun contenu ne bouge. Le 2 août avait cherché les collisions dans le
+    **vocabulaire** ; la 12 en a refermé deux dans l'**inventaire des noms de fonction**
+    (`toutesPiecesLivrees`, `estRegle`). Il en restait **deux**, et ce sont les plus sournoises parce
+    que les deux sens y sont *incompatibles* : `dimDe` devient **`dimEmpan`** dans l'atelier (celui de
+    `moteur.js` répond « affirmation » pour un terme emboîté, celui-ci jamais), et `valider` devient
+    **`diagnostiquer()`** (celui de `moteur.js` juge UNE phrase ; les deux rendaient « rien » quand
+    tout va bien, ce qui est exactement pourquoi la collision a tenu si longtemps). `docs/LEXIQUE.md`
+    porte le tableau. Avec, dans la même passe : le dernier `$("srcContenu")` mort, quatre familles de
+    CSS sans porteur, `escapeH(null)` qui écrivait « null », et **un vrai défaut** — `pointer()` lisait
+    encore le **schéma 2** (voir §2).
+
 ## 2. Points de vigilance
 
 - `test_autre_affaire.js` n'a pas bougé d'une ligne depuis le découpage en trois sessions ni depuis
@@ -111,8 +124,21 @@ Onze décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE
   mesure pas comme ça.
 - **`--transmis` (`#23506e`) est le bleu de ce qui a franchi la frontière** (§4.6) : bulle de l'IA,
   pièces jointes, bouton d'envoi, phrase close, liste du plan. Elle était employée huit fois et
-  définie nulle part — `border-color` n'héritant pas, les huit règles retombaient sur
-  `currentColor`. Corrigé le 4 août ; c'est la seule chose de cette série qui ait changé l'écran.
+  définie nulle part. Corrigé le 4 août ; c'est la seule chose de cette série qui ait changé l'écran.
+  **Le mécanisme, remesuré le 5 août — les huit règles ne tombaient pas de la même façon, et la moitié
+  tombait plus bas qu'on ne l'a écrit.** Une `var()` introuvable rend la déclaration *invalide au
+  calcul* : la propriété passe à `unset`, ce qui pour un **raccourci** vide toutes ses longhands.
+  Relevé au navigateur sur `.attach{border:1px solid var(--transmis)}` — sans la variable,
+  `border-top: none / 0px` : **pas un filet de la mauvaise couleur, pas de filet du tout**. Les trois
+  règles qui posent `border-color` seul (bulle de l'IA, `.compo.prete`, bouton d'envoi) sont le cas
+  doux, et pour elles le `currentColor` d'hier était juste. À retenir avant de retirer une variable de
+  `:root` : compter ses usages, et regarder si ce sont des raccourcis. **Aucune suite ne voit ni l'un
+  ni l'autre** — elles lisent `innerHTML`, jamais le style calculé.
+- **Le diagnostic de l'atelier lisait encore le schéma 2** *(corrigé le 5 août)*. `pointer()` dépliait
+  `l.a[0]`/`l.b[0]` — le format d'avant le schéma 3. Sur le contenu livré, `liens[7].a` vaut
+  `undefined` : cliquer l'avertissement « le vice a N canaux indépendants », son seul émetteur, levait
+  une `TypeError`. **Aucune suite ne couvre ce chemin.** La leçon vaut au-delà : la migration 2→3 a été
+  faite dans l'import, pas partout — chercher `\.a\[|\.b\[` avant de croire qu'il n'en reste plus.
 - La règle de clôture automatique (point 5) se déclenche sur un **compte** de blocs offerts : ajouter
   ou retirer un bloc de grammaire peut changer le nombre de clics ailleurs dans l'affaire.
 - Une sonde du harnais (`poserComparaison`) ne doit rien laisser au journal si elle échoue en chemin.
