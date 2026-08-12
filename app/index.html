@@ -363,20 +363,23 @@ if(!R){
   document.body.insertAdjacentHTML("afterbegin",
     `<div class="panne">regles.js n'a pas été chargé. Le fichier doit rester à côté de index.html (voir docs/ARCHITECTURE.md §9).</div>`);
 }
-function etatInitial(){ return R.etatInitial(); }
-let S = etatInitial();
+let S = R.etatInitial();
+
+/* Ce fichier n'enveloppe PAS `regles.js`. Il appelle `R.x(S, …)` là où il lit,
+   et ne garde de fonction homonyme que pour les gestes de l'écran — celles que
+   le HTML engendré vise par `onclick`, et qui redessinent après coup. Lire,
+   c'est `R.` ; agir, c'est une fonction d'ici (docs/CARTE.md). */
 
 /* ---- Sauvegarde de partie — c'est de l'écran, pas de la règle ---- */
 const CLE_PARTIE="iavocat_partie";
-function signatureContenu(){ return R.signatureContenu(); }
 function sauverPartie(){
-  try{ localStorage.setItem(CLE_PARTIE,JSON.stringify({...S,modalPiece:null,sig:signatureContenu()})); }catch(e){}
+  try{ localStorage.setItem(CLE_PARTIE,JSON.stringify({...S,modalPiece:null,sig:R.signatureContenu()})); }catch(e){}
 }
 function restaurerPartie(){
   try{
     const brut=localStorage.getItem(CLE_PARTIE); if(!brut) return false;
     const d=JSON.parse(brut);
-    if(d.sig!==signatureContenu()){ localStorage.removeItem(CLE_PARTIE); return false; }
+    if(d.sig!==R.signatureContenu()){ localStorage.removeItem(CLE_PARTIE); return false; }
     /* Sauvegarde écrite avant que `S.memoire` ne devienne `S.retenus`
        (docs/LEXIQUE.md). Le CONTENU, lui, n'a pas changé : la signature ne
        jette donc pas cette partie, et sans cette reprise le joueur la
@@ -490,8 +493,6 @@ function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,
 function rendreTout(){ renderDiscussion(); renderComposeur(); renderMemoire(); renderPlaidoirie(); majCloture(); majTutoriel(); sauverPartie(); }
 
 /* ---- Le canal : un fil de messages ---- */
-function pousser(qui,texte,pieces,ia){ return R.pousser(S,qui,texte,pieces,ia); }
-function envoyerRemise(){ return R.envoyerRemise(S); }
 function renderDiscussion(){
   let h="", dernier=null;
   for(const m of S.fil){
@@ -549,7 +550,6 @@ function ouvrirPiece(pid){
   modal(modalPieceHTML(pid));
   rendreTout();
 }
-function piecesLivrees(){ return R.piecesLivrees(S); }
 /* LE DOSSIER — les pièces d'abord, les règles ensuite. Deux bandes, parce que
    ce sont deux natures : ce que l'accusation a trouvé d'un côté, le manuel du
    cas de l'autre. L'atelier range déjà son graphe ainsi. Deux bandes et non
@@ -557,7 +557,7 @@ function piecesLivrees(){ return R.piecesLivrees(S); }
    côte à côte (§4.9). */
 function renderDossier(){
   if(!S.remisesEnvoyees) return "";
-  const livres=piecesLivrees();
+  const livres=R.piecesLivrees(S);
   const chip=pid=>{
     const p=JEU.pieces[pid], vu=S.examinees.includes(pid);
     return `<span class="dchip ${vu?'vu':''} ${R.estRegle(p)?'regle':''}"
@@ -598,7 +598,7 @@ function modalPieceHTML(pid){
    L'id de zone est la cible du 3ᵉ temps du tutoriel : il se visait autrefois
    par `:last-child`, ce qui dépendait de l'ordre des zones (§4.8). */
 function renderRetenus(){
-  const iT=indexTermeChamp();
+  const iT=R.indexTermeChamp(S);
   let h=`<div class="zone" id="zoneRetenus">`;
   if(!S.retenus.length){
     // Le geste, c'est le composeur qui le nomme (§4.9) ; ici, la seule chose
@@ -634,18 +634,13 @@ function renderRetenus(){
       Aucune liste n'est restreinte : seules les erreurs de CATÉGORIE
       sont refusées, à la clôture de la phrase (§4.5 d'ARCHITECTURE).
    ============================================================ */
-function etatCompo(){ return R.etatCompo(S); }
-function blocParId(id){ return R.blocParId(id); }
-function blocsOfferts(){ return R.blocsOfferts(S); }
-function indexTermeChamp(){ return R.indexTermeChamp(S); }
-function chaineCompo(){ return R.chaineCompo(S); }
 /* LA VOIX UNIQUE DU COMPOSEUR (§4.9). Une seule phrase pour l'état courant,
    dérivée de `S` comme le tutoriel dérive son temps : rendue dans le FANTÔME
    tant que la phrase est vide, dans l'AIDE dès qu'elle ne l'est plus. Elle ne
    décide rien et ne lit aucun contenu — un compte de blocs, deux drapeaux de
    grammaire, la longueur de la mémoire. */
 function souffle(){
-  const offerts=blocsOfferts();
+  const offerts=R.blocsOfferts(S);
   const second=offerts.some(b=>b.type==="terme"&&b.deduit);
   const attendTerme=offerts.some(b=>b.type==="terme"&&b.source!=="note");
   if(!S.compo.length){
@@ -666,9 +661,9 @@ function souffle(){
     : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
 }
 function texteCompoPartiel(){
-  const offerts=blocsOfferts();
+  const offerts=R.blocsOfferts(S);
   if(!S.compo.length) return `<span class="trou">${esc(souffle())}</span>`;
-  const ch=chaineCompo();
+  const ch=R.chaineCompo(S);
   /* Tant que le second empan n'est pas posé, la relation n'existe pas : on ne
      l'invente pas, on montre le trou. Une fois la paire close, `rendre` écrit
      la phrase déduite d'un bloc, par son patron (§4.5). */
@@ -682,14 +677,14 @@ function texteCompoPartiel(){
   }).join(" ") + (offerts.some(b=>b.type==="terme"&&b.deduit)
     ? ` <span class="trou">…et ?</span>` : "");
 }
-/* iBloc indexe blocsOfferts() ; iSrc indexe la mémoire (terme/champ) ou le
+/* iBloc indexe R.blocsOfferts(S) ; iSrc indexe la mémoire (terme/champ) ou le
    brouillon (terme/note). Les liaisons n'ont pas de source. Poser, retirer,
-   vider, clore : la décision est dans regles.js, l'écran ne fait que suivre. */
+   vider : la décision est dans regles.js, l'écran ne fait que suivre — c'est
+   pour ça que ces quatre-là existent encore, et pas les lectures. */
 function poserBloc(iBloc,iSrc){ R.poserBloc(S,iBloc,iSrc); rendreTout(); }
 function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
 function viderCompo(){ R.viderCompo(S); rendreTout(); }
 function effacerPrete(){ R.effacerPrete(S); rendreTout(); }
-function cloreCompo(){ R.clore(S); }
 /* La question en cours, rappelée au-dessus du composeur : dans le canal elle
    défile dès que l'avocat reparle, et on écrit la réponse ici. Sans préfixe —
    les guillemets et le filet de gauche disent déjà qui parle (§4.9). */
@@ -719,7 +714,7 @@ function renderCompo(){
       ${S.plaidoirie.length?"":`<div class="aide">Tant que tu ne l'envoies pas, personne ne la lit.</div>`}
     </div></div>`;
   }
-  const offerts=blocsOfferts();
+  const offerts=R.blocsOfferts(S);
   let h=`<div class="zone"><div class="ztitle">Ta réponse</div><div class="compo">
     ${rappelQuestion()}
     <div class="phrase">${texteCompoPartiel()}</div>`;
@@ -775,14 +770,11 @@ function renderMemoire(){
 function renderComposeur(){
   $("composeur").innerHTML = renderCompo();
 }
-/* Un MOYEN : ce que l'avocat peut plaider. Tout le reste, il l'entend, il y
-   répond — et ça n'entre pas au plan (§4.6). */
-function estMoyen(L){ return R.estMoyen(L); }
 /* Un seul titre : celui de la colonne, qui nomme la surface (§4.9). Le compte
    monte le rejoindre dans le `<h2>` — le plan n'a qu'une zone, elle n'a pas à
    se renommer sous son propre en-tête. */
 function renderPlaidoirie(){
-  const gardes=S.plaidoirie.filter(x=>S.brouillon[x.b] && estMoyen(S.brouillon[x.b].lien));
+  const gardes=S.plaidoirie.filter(x=>S.brouillon[x.b] && R.estMoyen(S.brouillon[x.b].lien));
   /* Vide, la colonne n'existe pas : ce qui n'a rien à montrer ne prend pas de
      place pour dire qu'il n'a rien à montrer (§4.9). Elle apparaît d'elle-même
      au premier moyen versé, et c'est cette apparition qui l'enseigne — d'où
@@ -804,23 +796,19 @@ function renderPlaidoirie(){
    Ce qu'il déclenche (les drapeaux, la réplique, l'avancement de session) est
    dans regles.js ; ici, on ne fait que redessiner après coup. */
 function envoyer(i,contre){ R.envoyer(S,i,contre); rendreTout(); }
-function reponseAvocat(n){ return R.reponseAvocat(S,n); }
-function avancerSurAttente(L){ return R.avancerSurAttente(S,L); }
 
 /* ============================================================
    7) CLÔTURE, RÉPÉTITION, FINS
    ============================================================ */
-function instructionComplete(){ return R.instructionComplete(S); }
-function repetitionEnCours(){ return R.repetitionEnCours(S); }
 function majCloture(){
   const btn=$("btnCloture"), hint=$("clotureHint");
   if(!btn) return;
-  const ok=instructionComplete();
+  const ok=R.instructionComplete(S);
   if(!ok){ btn.disabled=true; btn.textContent="Clôturer l'instruction";
            hint.textContent="Maître Auber attend encore quelque chose de cette session."; }
   else if(!S.clotureDemandee){ btn.disabled=false; btn.textContent="Clôturer l'instruction";
            hint.textContent="Le droit de clôturer est ouvert. Rien ne t'y oblige."; }
-  else if(repetitionEnCours()){ btn.disabled=true; btn.textContent="Confirmer la clôture";
+  else if(R.repetitionEnCours(S)){ btn.disabled=true; btn.textContent="Confirmer la clôture";
            hint.textContent="Répétition en cours — réponds à Maître Auber dans le canal."; }
   else {   btn.disabled=false; btn.textContent="Confirmer la clôture";
            hint.textContent="Dernier mot avant le dépôt. Tu peux encore écrire."; }
@@ -845,34 +833,28 @@ function finir(){
   </div>`);
 }
 
-/* ---- Manuels : les règles livrées, plus les directives ----
+/* ---- Ce qu'un article régit ----
    Chaque article annonce ce qu'il régit (`porte`) : c'est la seule aide que
    le jeu donne au joueur sur le genre de relation à chercher. Purement
    indicatif — aucune liste n'est filtrée, aucune phrase n'est refusée pour
-   ça (§4.5). */
+   ça (§4.5). Le composeur l'écrit sous la liaison-article.
+
+   LES MANUELS ONT ÉTÉ RETIRÉS. `openManuels()` vivait ici sans qu'aucun bouton
+   ne l'appelle depuis le retrait du <header> : seules quatre assertions de test
+   la maintenaient en vie, c'est-à-dire qu'on éprouvait un chemin que le joueur
+   ne pouvait pas prendre. La RÈGLE, elle, reste disponible dans regles.js
+   (`reglesLivrees`, `porteDe`) : rebrancher les Manuels est une décision de
+   design, et elle ne coûtera pas une ligne de moteur. */
 function portePhrase(pid){
   const d=R.porteDe(pid);
   return d.length ? `<span class="porte">porte sur : ${d.map(esc).join(", ")}</span>` : "";
-}
-/* ORPHELINE depuis le retrait du <header> : plus aucun bouton à l'écran ne
-   l'appelle. Laissée en l'état exprès — à rebrancher ou à retirer plus tard,
-   pas maintenant (docs/PASSATION.md §3). */
-function openManuels(){
-  const regles=R.reglesLivrees(S)
-    .map(r=>`<li><b>${esc(r.titre)}</b> ${portePhrase(r.pid)}<br>${esc(r.texte)}</li>`).join("");
-  modal(`<h3>Manuel de soi — directives</h3>
-    <ul>${(JEU.directives||[]).map(d=>`<li>${esc(d)}</li>`).join("")||"<li><i>aucune directive chargée</i></li>"}</ul>
-    ${JEU.avis_exploitation?`<p><small class="note">Avis d'exploitation — ${esc(JEU.avis_exploitation)}</small></p>`:""}
-    <h3 style="margin-top:16px">Manuel du cas — règles reçues</h3>
-    <ul class="manuel">${regles||"<li><i>aucune règle dans le dossier reçu</i></li>"}</ul>
-    <p><small class="note">Une comparaison ne se dit qu'au regard d'un texte : c'est la liaison qui est la base légale. Un article ne s'invoque qu'une fois reçu.</small></p>`);
 }
 
 /* ---- Démarrage ---- */
 window.JEU = JEU; window.S = S; window.M = M; window.R = R; window.CHAMPS = CHAMPS;
 window.SOURCE_CONTENU = SOURCE_CONTENU;
 { const el=$("srcContenu"); if(el) el.textContent="· "+SOURCE_CONTENU; }
-if(!restaurerPartie()) envoyerRemise();   // la remise 1 arrive d'elle-même
+if(!restaurerPartie()) R.envoyerRemise(S);   // la remise 1 arrive d'elle-même
 rendreTout();
 </script>
 </body>

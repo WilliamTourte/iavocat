@@ -510,9 +510,13 @@ document.addEventListener("keydown",e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){ e.preventDefault(); undo(); }
 });
 
+/* L'aide par défaut est celle que le HTML porte déjà : on la retient au premier
+   passage plutôt que de la réécrire ici — une phrase, un exemplaire. */
+let _hintDefaut=null;
 function hint(msg,err){
   const el=$("tbHint");
-  el.textContent=msg||"Clique un empan, puis un second, puis choisis la liaison dans l'inspecteur. Glisse l'en-tête d'une carte pour la déplacer.";
+  if(_hintDefaut===null) _hintDefaut=el.textContent;
+  el.textContent=msg||_hintDefaut;
   el.classList.toggle("err",!!err);
 }
 
@@ -1565,21 +1569,9 @@ function retirerAttente(i,j){
   if(as.length>1) as.splice(j,1);
   autosave(); render();
 }
-/* les accusés de réception vivent désormais sur la SESSION, pas sur une case */
-function majRemiseApres(i,v){
-  pushUndo();
-  const r=CONTENU.remises[i];
-  if(String(v).trim()) r.apres={...(r.apres||{}),replique:v};
-  else delete r.apres;
-  autosave(); render();
-}
-function majRemiseApresQui(i,v){
-  pushUndo();
-  const r=CONTENU.remises[i];
-  if(!r.apres) return;
-  if(String(v).trim()) r.apres.qui=v.trim(); else delete r.apres.qui;
-  autosave(); render();
-}
+/* Les accusés de réception vivent sur l'ATTENTE, pas sur la session ni sur une
+   case (§3) : `majAttenteApres` / `majAttenteApresQui`, plus haut. Les deux
+   fonctions de session qui vivaient ici n'avaient plus d'appelant. */
 function majDeclenche(pid,v){ pushUndo(); CONTENU.pieces[pid].declenche={...(CONTENU.pieces[pid].declenche||{une_fois:true}),replique:v}; autosave(); render(); }
 function majDeclencheQui(pid,v){ pushUndo(); const d=CONTENU.pieces[pid].declenche||{}; if(String(v).trim()) d.qui=v.trim(); else delete d.qui; CONTENU.pieces[pid].declenche=d; autosave(); render(); }
 function majDeclencheFois(pid,b){ pushUndo(); const d=CONTENU.pieces[pid].declenche||{}; if(b)d.une_fois=true; else delete d.une_fois; CONTENU.pieces[pid].declenche=d; autosave(); render(); }
@@ -1682,7 +1674,6 @@ function simComposer(i){
   simMsg({sys:true,texte:`écrit : ${labelLien(L)} — elle attend sur place, privée. Rien ne part.`});
   renderEtapes();
 }
-const simMoyen = L => RG().estMoyen(L);
 /* COMPARER SANS QUALIFIER — le geste que le « cf article » obligatoire a
    rendu distinct : les deux empans sont sous les yeux, la relation s'affiche,
    et rien n'est écrit. C'est là, et là seulement, que naît le pressentiment. */
@@ -2108,7 +2099,6 @@ function renderGrammaire(){
     if(!raison){
       if(lien){
         pills.push(`<span class="gpill lien">lien reconnu du contenu</span>`);
-        if(lien.leve) pills.push(`<span class="gpill leve">lève « ${escapeH(lien.leve)} »</span>`);
       } else pills.push(`<span class="gpill bruit">bruit sensé (aucun lien) — la marge qui empêche « sensé » de valoir « correct »</span>`);
     }
     verdict=`<div class="gverdict">${pills.join("")}</div>`;

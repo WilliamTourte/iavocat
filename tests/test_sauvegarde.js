@@ -46,16 +46,16 @@ console.log("\n=== Une composition en cours survit aussi ===");
   w1.ouvrirPiece(pid);
   const k = H.empansDe(w1, pid)[0];
   H.surligner(w1, k);
-  const iT = w1.blocsOfferts().findIndex(b => b.type === "terme" && b.source !== "note");
+  const iT = w1.R.blocsOfferts(w1.S).findIndex(b => b.type === "terme" && b.source !== "note");
   w1.poserBloc(iT, 0);
   check("un bloc est posé", w1.S.compo.length === 1);
-  const etat = w1.etatCompo();
+  const etat = w1.R.etatCompo(w1.S);
 
   const w2 = boot({[CLE]: sauvegarde(w1)});
   check("la phrase en cours est reprise", w2.S.compo.length === 1);
-  check("et l'automate repart du bon état", w2.etatCompo() === etat);
+  check("et l'automate repart du bon état", w2.R.etatCompo(w2.S) === etat);
   check("les blocs offerts sont les mêmes",
-    w2.blocsOfferts().map(b=>b.id).join() === w1.blocsOfferts().map(b=>b.id).join());
+    w2.R.blocsOfferts(w2.S).map(b=>b.id).join() === w1.R.blocsOfferts(w1.S).map(b=>b.id).join());
 }
 {
   // La phrase close qui attend SUR PLACE : c'est l'écart entre comprendre et

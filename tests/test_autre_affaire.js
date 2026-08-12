@@ -105,7 +105,7 @@ console.log("\n=== L'affaire abstraite est adoptée telle quelle ===");
   check("le vocabulaire des empans est construit", w.CHAMPS.length === 14);
   check("l'automate propre à cette affaire est celui qui tourne", w.M.squelettes().length === 4);
   check("les blocs offerts au départ sont ceux du contenu",
-    w.blocsOfferts().map(b=>b.id).join(",") === "b0,bn");
+    w.R.blocsOfferts(w.S).map(b=>b.id).join(",") === "b0,bn");
 }
 
 console.log("\n=== Les trois sessions s'enchaînent par le versement ===");
@@ -156,9 +156,9 @@ console.log("\n=== La chaîne en deux phrases, et les refus de catégorie ===");
   const w = boot();
   w.ouvrirPiece("d1"); w.ouvrirPiece("d2");
   H.surligner(w, "d1.e1"); H.surligner(w, "d1.e2");
-  w.poserBloc(w.blocsOfferts().findIndex(b=>b.id==="b0"), w.S.retenus.indexOf("d1.e1"));
-  w.poserBloc(w.blocsOfferts().findIndex(b=>b.id==="bv"));
-  w.poserBloc(w.blocsOfferts().findIndex(b=>b.id==="b2"), w.S.retenus.indexOf("d1.e2"));
+  w.poserBloc(w.R.blocsOfferts(w.S).findIndex(b=>b.id==="b0"), w.S.retenus.indexOf("d1.e1"));
+  w.poserBloc(w.R.blocsOfferts(w.S).findIndex(b=>b.id==="bv"));
+  w.poserBloc(w.R.blocsOfferts(w.S).findIndex(b=>b.id==="b2"), w.S.retenus.indexOf("d1.e2"));
   check("alpha « vaut » beta est refusé", !!w.S.refus);
   check("rien n'est tombé au brouillon", w.S.brouillon.length === 0);
   check("le bloc fautif est retiré, la phrase reste réparable", w.S.compo.length === 2);

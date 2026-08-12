@@ -194,42 +194,12 @@ console.log("\n=== Les trois drapeaux du vice ===");
   check("→ Fin 1", H.numeroFin(H.terminer(w)) === "1");
 }
 
-console.log("\n=== Les Manuels : par type, et seulement une fois livrés ===");
-{
-  const w = boot(contenuLivre());
-  const pidR = H.pidRegle(w);
-  const livreeEn1 = (w.JEU.remises[0].pieces||[]).includes(pidR);
-  w.openManuels();
-  const txt = w.document.querySelector(".modal").textContent;
-  check("les directives sont au Manuel de soi", txt.includes(w.JEU.directives[0].slice(0, 12)));
-  check("l'avis d'exploitation y est", txt.includes(w.JEU.avis_exploitation.slice(0, 20)));
-  const regleTardive = Object.entries(w.JEU.pieces)
-    .find(([pid,p]) => (p.type||"").includes("règle") && !(w.JEU.remises[0].pieces||[]).includes(pid));
-  if (regleTardive) check("une règle non encore livrée n'est pas au Manuel", !txt.includes(regleTardive[1].titre));
-  else check("(toutes les règles arrivent à la session 1)", livreeEn1);
-  w.closeModal();
-  H.instruire(w);
-  w.openManuels();
-  check("livrées, elles y sont toutes",
-    Object.values(w.JEU.pieces).filter(p=>(p.type||"").includes("règle"))
-      .every(p => w.document.querySelector(".modal").textContent.includes(p.titre)));
-}
-{
-  const c = contenuLivre();
-  delete c.directives;
-  const w = boot(c);
-  w.openManuels();
-  check("sans directives, le Manuel de soi le dit sans planter",
-    w.document.querySelector(".modal").textContent.includes("aucune directive"));
-}
-{
-  const c = contenuLivre();
-  for (const p of Object.values(c.pieces)) if ((p.type||"").includes("règle")) p.type = "note";
-  const w = boot(c);
-  w.openManuels();
-  check("sans pièce de type « règle », le Manuel du cas le dit",
-    w.document.querySelector(".modal").textContent.includes("aucune règle"));
-}
+/* LES MANUELS N'ONT PLUS DE SUITE. Sept contrôles éprouvaient `openManuels()`,
+   orpheline à l'écran depuis le retrait du <header> : ils étaient la seule
+   chose qui la maintenait en vie, c'est-à-dire qu'on éprouvait un chemin que le
+   joueur ne pouvait pas prendre. La fonction d'écran est retirée ; la règle
+   reste dans regles.js (`reglesLivrees`, `porteDe`). Le jour où les Manuels se
+   rebranchent, ces contrôles reviennent avec eux — et pas avant. */
 
 console.log("\n=== Les dimensions viennent du contenu, pas du moteur ===");
 {

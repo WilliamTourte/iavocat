@@ -123,7 +123,7 @@ function creerHarnais(dossier){
   const attentesContenu = r => Array.isArray(r.attentes) ? r.attentes : [r];
 
   // --- composer : le geste du jeu, joué par les fonctions du moteur ---
-  const idBloc = (w,id) => w.blocsOfferts().findIndex(b=>b.id===id);
+  const idBloc = (w,id) => w.R.blocsOfferts(w.S).findIndex(b=>b.id===id);
   const surligner = (w,k) => { const [pid,eid]=k.split("."); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
@@ -149,7 +149,7 @@ function creerHarnais(dossier){
         /* L'automate a pu se refermer tout seul : une suite unique n'est pas un
            choix (§4.5). Là où le choix existe encore, la liaison se pose. */
         const deja=trouve(); if(deja>=0) return deja;
-        const bc=w.blocsOfferts().findIndex(x=>x.forme===L.forme && !x.imbrique);
+        const bc=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && !x.imbrique);
         if(bc<0) return -1;
         w.poserBloc(bc);
         return trouve();
@@ -157,7 +157,7 @@ function creerHarnais(dossier){
       /* 1) LA CONTINUATION (§4.5) : poser la comparaison sans la clore, puis
             la liaison qui l'emboîte — le chemin du contenu d'aujourd'hui. */
       if(sous.forme && poserComparaison(w,sous)){
-        const b=w.blocsOfferts().findIndex(x=>x.forme===L.forme && x.imbrique);
+        const b=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && x.imbrique);
         if(b>=0){ w.poserBloc(b); const i=trouve(); if(i>=0) return i; }
       }
       /* 2) LE REPLI : la source `note`, pour une affaire écrite avant la
@@ -193,7 +193,7 @@ function creerHarnais(dossier){
     const echec=()=>{ w.S.brouillon.length=n0; w.S.prete=p0; w.viderCompo(); return false; };
     w.poserBloc(bT,iRetenu(w,t0));
     // Grammaire à DÉDUCTION : le second terme clôt la paire, rien entre les deux.
-    const bD=w.blocsOfferts().findIndex(x=>x.type==="terme"&&x.source!=="note"&&x.deduit);
+    const bD=w.R.blocsOfferts(w.S).findIndex(x=>x.type==="terme"&&x.source!=="note"&&x.deduit);
     if(bD>=0){ w.poserBloc(bD,iRetenu(w,t1)); return true; }
     // Grammaire à liaisons explicites (à l'ancienne) : on parcourt l'automate.
     const chemin=cheminVers(w,L.forme);
@@ -210,14 +210,14 @@ function creerHarnais(dossier){
      compose une conclusion sans jouer doit d'abord avoir reçu le texte. */
   function livrerTout(w){
     let garde=0;
-    while(w.S.remisesEnvoyees < J(w).remises.length && garde++<20) w.envoyerRemise();
+    while(w.S.remisesEnvoyees < J(w).remises.length && garde++<20) w.R.envoyerRemise(w.S);
     w.rendreTout();
   }
   /* « En rester là » : le bloc qui clôt sans rien qualifier. Sans effet si
      l'automate a déjà refermé la phrase tout seul. */
   function cloreSurPlace(w){
     if(!w.S.compo.length) return;
-    const G=J(w).grammaire, e=w.etatCompo(), finaux=new Set(G.finaux||[]);
+    const G=J(w).grammaire, e=w.R.etatCompo(w.S), finaux=new Set(G.finaux||[]);
     const b=G.blocs.find(x=>x.de===e && finaux.has(x.vers) && !x.forme && !x.imbrique);
     if(b) w.poserBloc(idBloc(w,b.id));
   }
@@ -228,7 +228,7 @@ function creerHarnais(dossier){
      la forme voulue. Recherche en largeur — aucun identifiant en dur. */
   function cheminVers(w,forme){
     const G=J(w).grammaire;
-    const file=[[w.etatCompo(),[]]], vus=new Set();
+    const file=[[w.R.etatCompo(w.S),[]]], vus=new Set();
     while(file.length){
       const [e,acc]=file.shift();
       if(vus.has(e)) continue; vus.add(e);
@@ -243,7 +243,7 @@ function creerHarnais(dossier){
   /* Les liaisons-articles offertes ici et maintenant : celles dont la pièce a
      été livrée. Vide pour une affaire écrite à l'ancienne. */
   const articlesDisponibles = w => {
-    const livrees=new Set(w.piecesLivrees());
+    const livrees=new Set(w.R.piecesLivrees(w.S));
     return (J(w).grammaire.blocs||[]).filter(b=>b.imbrique && b.forme && (!b.piece || livrees.has(b.piece)));
   };
   /* Des phrases sensées qui ne portent AUCUN lien : la marge de bruit. Sert à

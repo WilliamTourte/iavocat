@@ -345,10 +345,15 @@ function creerRegles(JEU, M) {
   }
   const porteDe = pid => ((JEU.pieces[pid] || {}).porte) || [];
 
+  // Ce qui n'est pas ici reste INTERNE au module : `sousLienVice`,
+  // `estPressentiment` et `majPressentiment` servent le pressentiment de
+  // l'intérieur (§4.7) — personne au dehors n'a à les connaître. `pressentir`,
+  // lui, sort : le pas-à-pas de l'atelier joue le geste « comparer sans
+  // qualifier », et c'est exactement ce qu'il appelle.
   return { etatInitial, signatureContenu, pousser, envoyerRemise, ouvrirPiece,
            piecesLivrees, estRegle, reglesLivrees, porteDe,
            surligner, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
-           chaineCompo, sousLienVice, estPressentiment, pressentir, majPressentiment,
+           chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            estMoyen, envoyer, reponseAvocat, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
