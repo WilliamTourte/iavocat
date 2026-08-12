@@ -17,17 +17,26 @@ function creerHarnais(dossier){
   function check(l,c){ if(c){pass++;console.log("  ok — "+l);} else {fail++;console.log("  ÉCHEC — "+l);} }
   function bilan(){ console.log(`\n${pass} ok, ${fail} échec(s)`); process.exit(fail?1:0); }
 
-  /* jsdom ne charge aucun <script src> : on inline TOUS les fichiers voisins
-     qu'une page réclame — la grammaire, les règles, le contenu, et les modules
-     d'atelier. Ce ne sont pas des copies : ce sont les fichiers mêmes, relus
-     sur le disque à chaque boot. C'est ce qui permet au contenu de n'exister
-     qu'en un exemplaire (§12).
-     Générique exprès : trois `replace` codés en dur obligeaient à revenir ici
-     à chaque fichier ajouté, et un oubli ne se serait vu qu'en `ReferenceError`
+  /* jsdom ne charge NI <script src> NI <link rel=stylesheet> : on inline tous
+     les fichiers voisins qu'une page réclame — la grammaire, les règles, le
+     contenu, les modules d'atelier, et les feuilles de style. Ce ne sont pas
+     des copies : ce sont les fichiers mêmes, relus sur le disque à chaque boot.
+     C'est ce qui permet au contenu de n'exister qu'en un exemplaire (§12).
+
+     Générique exprès : des `replace` codés en dur obligeaient à revenir ici à
+     chaque fichier ajouté, et un oubli ne se serait vu qu'en `ReferenceError`
      au milieu d'une suite. L'ORDRE des balises est préservé, et il compte —
-     les modules de l'atelier se lisent de haut en bas (§13). */
-  const injecter = h => h.replace(/<script src="([^"]+)"><\/script>/g,
-    (_, f) => `<script>${lire(f)}</script>`);
+     les modules de l'atelier se lisent de haut en bas (§13).
+
+     POURQUOI LE CSS AUSSI, alors qu'aucune suite ne lit une couleur : parce que
+     `getCSS()` (app/atelier/graphe.js) en lit, lui — les couleurs de trait du
+     graphe sortent de `getComputedStyle` sur `:root`. jsdom résout les
+     variables d'un <style> en ligne et rend "" pour un <link> : sans cette
+     ligne, sortir le CSS du HTML aurait changé ce que le graphe dessine sous
+     test, SANS QU'AUCUN CONTRÔLE NE BRONCHE. Le filet coûte trois lignes. */
+  const injecter = h => h
+    .replace(/<script src="([^"]+)"><\/script>/g, (_, f) => `<script>${lire(f)}</script>`)
+    .replace(/<link rel="stylesheet" href="([^"]+)">/g, (_, f) => `<style>${lire(f)}</style>`);
 
   /* boot({contenu, graine, url}) :
      - contenu : objet → injecté inline à la place de content.js ;
