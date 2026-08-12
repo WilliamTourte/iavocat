@@ -3,6 +3,10 @@
 // l'atelier. Chaque suite garde ses assertions ; ici, que la tuyauterie.
 const { JSDOM } = require("jsdom");
 const fs = require("fs");
+/* Les projections du contenu ne se recopient pas ici : le harnais lit le MÊME
+   moteur.js que le jeu et l'atelier (§12). Il en portait deux copies —
+   l'aplatissement des empans et la marche des comparaisons emboîtées. */
+const { champsDe, comparaisonsDe } = require("../app/moteur.js");
 
 function creerHarnais(dossier){
   const htmlJeu = fs.readFileSync(dossier + "/index.html", "utf8");
@@ -91,23 +95,10 @@ function creerHarnais(dossier){
     return (docile ? cands.find(L=>!L.vice) : cands.find(L=>L.vice)) || cands[0];
   };
   const liensNeutres   = w => J(w).liens.filter(L=>!L.vice && !L.faux);
-  /* Toutes les COMPARAISONS (arité 2) que le contenu déclare. Depuis que
-     l'article est obligatoire, elles ne sont plus des liens de plein droit :
-     elles vivent emboîtées dans les qualifications. On les cherche donc là où
-     elles sont, sans supposer laquelle des deux écritures l'affaire emploie. */
-  const comparaisons = w => {
-    const out=[], vus=new Set();
-    const rec = t => {
-      if(!t || typeof t!=="object" || Array.isArray(t)) return;
-      if(t.forme && (((J(w).grammaire.formes||{})[t.forme]||{}).arite||2)===2){
-        const cle=JSON.stringify([t.forme,t.termes]);
-        if(!vus.has(cle)){ vus.add(cle); out.push({forme:t.forme,termes:t.termes}); }
-      }
-      for(const u of (t.termes||[])) rec(u);
-    };
-    for(const L of J(w).liens) rec(L);
-    return out;
-  };
+  /* Toutes les COMPARAISONS (arité 2) que le contenu déclare — emboîtées
+     comprises, puisque depuis que l'article est obligatoire elles ne sont plus
+     des liens de plein droit. La marche est celle de moteur.js. */
+  const comparaisons = w => comparaisonsDe(J(w).liens, J(w).grammaire.formes);
   const arite = (w,L) => ((J(w).grammaire.formes||{})[L.forme]||{}).arite || 2;
   /* Les CITATIONS que le contenu déclare : une forme d'arité 1 dont le terme
      est ATOMIQUE. Un fait se cite, une relation se fonde (§4.5) — c'est
@@ -342,12 +333,7 @@ function creerHarnais(dossier){
   /* Les mêmes sélecteurs, mais sur un CONTENU brut (l'atelier expose son
      objet, pas une fenêtre de jeu). Objet à part pour éviter toute confusion. */
   const surContenu = {
-    empans: c => {
-      const out=[];
-      for(const [pid,p] of Object.entries(c.pieces))
-        for(const [eid,e] of Object.entries(p.empans||{})) out.push({id:pid+"."+eid,pid,eid,...e});
-      return out;
-    },
+    empans: c => champsDe(c),
     dim: (c,k) => { const [pid,eid]=k.split("."); return ((c.pieces[pid]||{}).empans||{})[eid]?.dim; },
     // Le lien qui PORTE le vice : la conclusion, depuis que l'article est
     // obligatoire ; le pressentiment nu si l'affaire l'expose encore.

@@ -11,10 +11,10 @@
   
     --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    /* Les couleurs de dimension. Fixes, attribuées par RANG dans
-       JEU.dimensions — jamais par la pertinence de l'empan (invariant du
-       §4.3 de docs/ARCHITECTURE.md). */
-    --dim0:#7fb3d5; --dim1:#d99a9a; --dim2:#9dc98c; --dim3:#c9ab6a; --dim4:#b79ad6; --dim5:#7fc9c1;
+    /* Les couleurs de dimension ne sont plus ici : la palette et la règle du
+       RANG (jamais la pertinence — §4.3) vivent dans app/moteur.js, en un seul
+       exemplaire, parce que l'atelier en portait la copie. `--dc` est posé
+       en style inline sur chaque élément par `couleurDim`. */
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.55}
@@ -327,20 +327,16 @@ if(CONTENU_OK && (JEU.schema||0) > 3)
    1ter) LA GRAMMAIRE — moteur.js + les données du contenu.
    ============================================================ */
 const $ = id => document.getElementById(id);
+/* `MoteurAPI` est le MODULE (moteur.js) ; `M` sera l'instance liée à cette
+   affaire. Deux choses, deux noms — l'atelier appelle son instance `MG()`. */
+const MoteurAPI = window.MoteurGrammaire || {};
 /* Tous les empans du dossier, aplatis en "pid.eid" : c'est le vocabulaire des
    TERMES que le moteur de grammaire connaît. La mémoire du joueur, elle, n'en
-   contient que ce qu'il a surligné. */
-const CHAMPS = (function(){
-  const out=[];
-  for(const [pid,p] of Object.entries(JEU.pieces||{}))
-    for(const [eid,e] of Object.entries(p.empans||{}))
-      out.push({ id:pid+"."+eid, pid, eid, dim:e.dim, valeur:e.valeur,
-                 texte:e.texte, nom:e.nom || e.texte, qui:e.qui || p.qui || "",
-                 court:p.court || "" });   // une citation dit d'où elle vient (§4.5)
-  return out;
-})();
-const M = (window.MoteurGrammaire||{}).creerMoteur
-        ? window.MoteurGrammaire.creerMoteur(JEU.grammaire, CHAMPS, JEU.liens)
+   contient que ce qu'il a surligné. L'aplatissement vit dans moteur.js, en un
+   seul exemplaire — c'est l'argument que `creerMoteur` attend (§12). */
+const CHAMPS = MoteurAPI.champsDe ? MoteurAPI.champsDe(JEU) : [];
+const M = MoteurAPI.creerMoteur
+        ? MoteurAPI.creerMoteur(JEU.grammaire, CHAMPS, JEU.liens)
         : null;
 if(!M){
   document.body.insertAdjacentHTML("afterbegin",
@@ -348,9 +344,11 @@ if(!M){
 }
 const EMPAN = Object.fromEntries(CHAMPS.map(c=>[c.id,c]));
 /* La couleur d'une dimension : par son RANG dans JEU.dimensions, jamais par
-   sa pertinence. Une dimension inconnue de la liste retombe sur le gris. */
-const rangDim = d => (JEU.dimensions||[]).indexOf(d);
-const couleurDim = d => rangDim(d)>=0 ? `var(--dim${rangDim(d)%6})` : "var(--muted)";
+   sa pertinence (§4.3). La règle et la palette vivent dans moteur.js, en un
+   seul exemplaire ; ici on ne choisit que le repli — une dimension inconnue de
+   la liste retombe sur le gris (l'atelier, lui, la signale en rouge). */
+const couleurDim = d =>
+  (MoteurAPI.couleurDim ? MoteurAPI.couleurDim(JEU.dimensions,d) : null) || "var(--muted)";
 
 /* ============================================================
    2) L'ÉTAT ET LES RÈGLES — tout ce qui décide vit dans regles.js.
@@ -489,7 +487,7 @@ function modal(html){
        <div class="modal"><button class="close" onclick="closeModal()">×</button>${html}</div>
      </div>`;
 }
-function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function escapeAttr(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function rendreTout(){ renderDiscussion(); renderComposeur(); renderMemoire(); renderPlaidoirie(); majCloture(); majTutoriel(); sauverPartie(); }
 
 /* ---- Le canal : un fil de messages ---- */
@@ -502,10 +500,10 @@ function renderDiscussion(){
     // d'affilée n'ont qu'un nom au-dessus (§4.9).
     const meme = m.qui===dernier; dernier=m.qui;
     h+=`<div class="msg ${m.ia?'ia':''} ${meme?'suite':''}">${
-      meme?"":`<div class="who">${esc(m.qui)}</div>`}<div class="bubble">${m.ia?esc(m.texte):m.texte}<div>`;
+      meme?"":`<div class="who">${escapeAttr(m.qui)}</div>`}<div class="bubble">${m.ia?escapeAttr(m.texte):m.texte}<div>`;
     for(const pid of m.pieces){
       const seen=S.examinees.includes(pid)?"seen":"";
-      h+=`<span class="attach ${seen}" onclick="ouvrirPiece('${pid}')">📎 ${esc(JEU.pieces[pid].titre)}</span>`;
+      h+=`<span class="attach ${seen}" onclick="ouvrirPiece('${pid}')">📎 ${escapeAttr(JEU.pieces[pid].titre)}</span>`;
     }
     h+=`</div></div></div>`;
   }
@@ -514,7 +512,7 @@ function renderDiscussion(){
     const dispo=S.brouillon.map((n,i)=>({n,i}));
     h+=`<div class="repet"><div class="rtitle">Opposer une phrase à cette affirmation ?</div>${
       dispo.length ? dispo.map(x=>
-        `<div class="rnote"><span class="txt">${esc(x.n.texte)}</span>
+        `<div class="rnote"><span class="txt">${escapeAttr(x.n.texte)}</span>
          ${x.n.versee?`<span class="sent">déjà envoyée</span>`:`<button class="up" onclick="verserContre(${x.i})">envoyer</button>`}</div>`).join("")
       : `<div class="rnote vide">tu n'as écrit aucune phrase à y opposer</div>`
     }<button class="btn" onclick="avancerRepetition()">Ne rien envoyer — continuer</button></div>`;
@@ -533,16 +531,16 @@ function rendreTexte(pid){
   let h="", reste=src, m;
   const re=/\{\{([A-Za-z0-9_]+)\}\}/;
   while((m=re.exec(reste))){
-    h+=esc(reste.slice(0,m.index));
+    h+=escapeAttr(reste.slice(0,m.index));
     const eid=m[1], e=(p.empans||{})[eid];
     if(e){
       const k=pid+"."+eid, pris=S.retenus.includes(k);
       h+=`<span class="empan ${pris?'pris':''}" style="--dc:${couleurDim(e.dim)}"
-            onclick="surligner('${pid}','${eid}')" title="${esc(e.dim)} — ${esc(e.qui||p.qui||'')}">${esc(e.texte)}</span>`;
-    } else h+=esc(m[0]);
+            onclick="surligner('${pid}','${eid}')" title="${escapeAttr(e.dim)} — ${escapeAttr(e.qui||p.qui||'')}">${escapeAttr(e.texte)}</span>`;
+    } else h+=escapeAttr(m[0]);
     reste=reste.slice(m.index+m[0].length);
   }
-  h+=esc(reste);
+  h+=escapeAttr(reste);
   return h;
 }
 function ouvrirPiece(pid){
@@ -561,7 +559,7 @@ function renderDossier(){
   const chip=pid=>{
     const p=JEU.pieces[pid], vu=S.examinees.includes(pid);
     return `<span class="dchip ${vu?'vu':''} ${R.estRegle(p)?'regle':''}"
-      onclick="ouvrirPiece('${pid}')" title="${esc(p.titre)}">${vu?'✓':'●'} ${esc(p.court)}</span>`;
+      onclick="ouvrirPiece('${pid}')" title="${escapeAttr(p.titre)}">${vu?'✓':'●'} ${escapeAttr(p.court)}</span>`;
   };
   // L'étiquette de la bande tient sur la ligne des puces, en gouttière : deux
   // natures, mais pas deux lignes de plus (§4.9).
@@ -585,7 +583,7 @@ function surligner(pid,eid){
 function modalPieceHTML(pid){
   const p=JEU.pieces[pid];
   const dims=[...new Set(Object.values(p.empans||{}).map(e=>e.dim))];
-  return `<h3>${esc(p.titre)}</h3><small class="note">${esc(p.type)} — ${esc(p.qui||"")}</small>
+  return `<h3>${escapeAttr(p.titre)}</h3><small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
     <p class="piecetexte">${rendreTexte(pid)}</p>
     `;
 }
@@ -609,15 +607,15 @@ function renderRetenus(){
     for(const d of JEU.dimensions||[]){
       const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
       if(!ks.length) continue;
-      h+=`<div class="dimgrp" style="--dc:${couleurDim(d)}"><div class="dnom">${esc(d)}</div>`;
+      h+=`<div class="dimgrp" style="--dc:${couleurDim(d)}"><div class="dnom">${escapeAttr(d)}</div>`;
       for(const {k,j} of ks){
         const e=EMPAN[k];
         h+=`<div class="mchip" style="--dc:${couleurDim(d)}">
               <button class="corps" ${iT<0?"disabled":""} onclick="poserBloc(${iT},${j})"
-                      title="« ${esc(e.texte)} » — ${esc(e.qui)}, ${esc(JEU.pieces[e.pid].court)}${
+                      title="« ${escapeAttr(e.texte)} » — ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}${
                         iT<0?"\n(ta phrase n'attend pas un passage)":""}">
-                <span class="nom">${esc(e.nom||e.texte)}</span>
-                <span class="prov"><span class="cit">« ${esc(e.texte)} »</span><span class="sig">— ${esc(e.qui)}, ${esc(JEU.pieces[e.pid].court)}</span></span>
+                <span class="nom">${escapeAttr(e.nom||e.texte)}</span>
+                <span class="prov"><span class="cit">« ${escapeAttr(e.texte)} »</span><span class="sig">— ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}</span></span>
               </button>
               <button class="del" onclick="surligner('${e.pid}','${e.eid}')" title="Oublier">×</button>
             </div>`;
@@ -662,18 +660,18 @@ function souffle(){
 }
 function texteCompoPartiel(){
   const offerts=R.blocsOfferts(S);
-  if(!S.compo.length) return `<span class="trou">${esc(souffle())}</span>`;
+  if(!S.compo.length) return `<span class="trou">${escapeAttr(souffle())}</span>`;
   const ch=R.chaineCompo(S);
   /* Tant que le second empan n'est pas posé, la relation n'existe pas : on ne
      l'invente pas, on montre le trou. Une fois la paire close, `rendre` écrit
      la phrase déduite d'un bloc, par son patron (§4.5). */
   const fini=ch.some(p=>p.bloc.deduit);
-  if(fini) return `<span class="bl">${esc(M.rendre(ch).replace(/\.$/,""))}</span>`;
+  if(fini) return `<span class="bl">${escapeAttr(M.rendre(ch).replace(/\.$/,""))}</span>`;
   return ch.map(p=>{
-    if(p.bloc.type!=="terme") return `<span class="bl">${esc(p.bloc.texte)}</span>`;
-    if(p.bloc.source==="note") return `<span class="bl terme">${esc(p.bloc.texte)}</span>`;
+    if(p.bloc.type!=="terme") return `<span class="bl">${escapeAttr(p.bloc.texte)}</span>`;
+    if(p.bloc.source==="note") return `<span class="bl terme">${escapeAttr(p.bloc.texte)}</span>`;
     const e=EMPAN[p.valeur];
-    return `<span class="bl terme" style="--dc:${couleurDim(e?e.dim:"")}">${esc(e?(e.nom||e.texte):p.valeur)}</span>`;
+    return `<span class="bl terme" style="--dc:${couleurDim(e?e.dim:"")}">${escapeAttr(e?(e.nom||e.texte):p.valeur)}</span>`;
   }).join(" ") + (offerts.some(b=>b.type==="terme"&&b.deduit)
     ? ` <span class="trou">…et ?</span>` : "");
 }
@@ -698,7 +696,7 @@ function rappelQuestion(){
      commencé à remonter hors de vue (§4.9). Dérivé de `S`, sans champ neuf. */
   const dernier=S.fil[S.fil.length-1];
   if(dernier && dernier.texte===a.question) return "";
-  return `<div class="aide question">« ${esc(a.question)} »</div>`;
+  return `<div class="aide question">« ${escapeAttr(a.question)} »</div>`;
 }
 function renderCompo(){
   /* Une phrase close attend LÀ, sous les yeux, avec le seul geste qui parle.
@@ -706,7 +704,7 @@ function renderCompo(){
   if(S.prete!=null && S.brouillon[S.prete]){
     return `<div class="zone"><div class="ztitle">Réponse</div><div class="compo prete">
       ${rappelQuestion()}
-      <div class="phrase close">${esc(S.brouillon[S.prete].texte)}</div>
+      <div class="phrase close">${escapeAttr(S.brouillon[S.prete].texte)}</div>
       <div class="barre">
         <button class="envoi" onclick="envoyer(${S.prete})">→ Envoyer</button>
         <button onclick="effacerPrete()">effacer</button>
@@ -726,14 +724,14 @@ function renderCompo(){
       // `libelle` quand le bouton dit autre chose que ce qui s'écrira ; `suite`
       // marque les continuations, qui qualifient ce qui précède (§4.5). Une
       // liaison-article annonce ce qu'elle régit — sans que rien soit filtré.
-      h+=`<button class="bbloc${b.imbrique?" suite":""}" onclick="poserBloc(${i})">${esc(b.libelle||b.texte)}${
+      h+=`<button class="bbloc${b.imbrique?" suite":""}" onclick="poserBloc(${i})">${escapeAttr(b.libelle||b.texte)}${
         b.piece?portePhrase(b.piece):""}</button>`;
     } else if(b.source==="note"){
       // Repli pour une affaire écrite avant la continuation : le contenu livré
       // n'en a plus, mais le moteur et le jeu la supportent toujours (§11).
       if(S.brouillon.length){
-        h+=`<div class="lab">${esc(b.texte)} — une phrase déjà close</div>`;
-        S.brouillon.forEach((n,j)=>{ h+=`<button class="bbloc" onclick="poserBloc(${i},${j})">${esc(n.texte)}</button>`; });
+        h+=`<div class="lab">${escapeAttr(b.texte)} — une phrase déjà close</div>`;
+        S.brouillon.forEach((n,j)=>{ h+=`<button class="bbloc" onclick="poserBloc(${i},${j})">${escapeAttr(n.texte)}</button>`; });
       }
     }
     // Un terme sans source `note` n'écrit rien ici : les puces de la mémoire,
@@ -743,8 +741,8 @@ function renderCompo(){
   /* La voix unique — et une seule fois. Tant que la phrase est vide, le fantôme
      l'a déjà dite ; dès qu'elle porte quelque chose, c'est ici qu'elle se dit
      (§4.9). */
-  if(S.compo.length) h+=`<div class="aide">${esc(souffle())}</div>`;
-  if(S.refus) h+=`<div class="refus">${esc(S.refus)}</div>`;
+  if(S.compo.length) h+=`<div class="aide">${escapeAttr(souffle())}</div>`;
+  if(S.refus) h+=`<div class="refus">${escapeAttr(S.refus)}</div>`;
   h+=`</div></div>`;
   return h;
 }
@@ -785,9 +783,9 @@ function renderPlaidoirie(){
   { const c=$("plaidoirieCount"); if(c) c.textContent=gardes.length||""; }
   let h=`<div class="zone">`;
   h+=`<ul class="liste plaid">${gardes.map(x=>
-    `<li><span class="txt">${esc(S.brouillon[x.b].texte)}${
+    `<li><span class="txt">${escapeAttr(S.brouillon[x.b].texte)}${
       x.contre!=null && JEU.repetition.affirmations[x.contre]
-        ? `<span class="contre">opposé à : ${esc(JEU.repetition.affirmations[x.contre].court)}</span>`:""
+        ? `<span class="contre">opposé à : ${escapeAttr(JEU.repetition.affirmations[x.contre].court)}</span>`:""
     }</span></li>`).join("")}</ul>`;
   h+=`</div>`;
   $("plaidoirie").innerHTML=h;
@@ -826,8 +824,8 @@ function avancerRepetition(){ R.avancerRepetition(S); rendreTout(); }
 function finir(){
   const f=R.finir(S);
   effacerPartie();
-  modal(`<div class="fin"><h3>${esc(f.titre)}</h3>
-    <div class="verdict">${esc(f.verdict)}</div>
+  modal(`<div class="fin"><h3>${escapeAttr(f.titre)}</h3>
+    <div class="verdict">${escapeAttr(f.verdict)}</div>
     <p>${f.texte}</p>
     <div class="btnrow"><button onclick="location.reload()">Recommencer</button></div>
   </div>`);
@@ -847,7 +845,7 @@ function finir(){
    design, et elle ne coûtera pas une ligne de moteur. */
 function portePhrase(pid){
   const d=R.porteDe(pid);
-  return d.length ? `<span class="porte">porte sur : ${d.map(esc).join(", ")}</span>` : "";
+  return d.length ? `<span class="porte">porte sur : ${d.map(escapeAttr).join(", ")}</span>` : "";
 }
 
 /* ---- Démarrage ---- */

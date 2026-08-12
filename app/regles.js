@@ -95,7 +95,9 @@ function creerRegles(JEU, M) {
       for (const pid of (JEU.remises[i].pieces || [])) out.push(pid);
     return out;
   }
-  const estRegle = p => ((p || {}).type || "").includes("règle");
+  // Le prédicat vit dans l'API du module (voir tout en bas) : un seul
+  // exemplaire, et l'atelier peut le poser sans `JEU` lié.
+  const estRegle = p => _apiRegles.estRegle(p);
 
   /* ---- LA MÉMOIRE — privée, gratuite, illimitée --------------------- */
   // Surligner ne produit RIEN. Re-cliquer oublie.
@@ -361,6 +363,17 @@ function creerRegles(JEU, M) {
            avancerRepetition, finir };
 }
 
-const _apiRegles = { creerRegles };
+/* Une pièce est-elle un article du manuel ? La question ne dépend d'aucun état
+   ni d'aucune affaire : elle sort donc de la fabrique, pour que l'atelier puisse
+   la poser sans `JEU` lié — son `RG()` rend `null` tant que le moteur n'est pas
+   chargé, et le diagnostic, lui, doit répondre quand même. Un seul exemplaire
+   (l'atelier en portait une copie).
+   Cloîtrée, comme les projections de moteur.js : chargé par `<script src>`, ce
+   fichier partage la portée globale de la page, et un nom de haut niveau ici
+   serait un nom pris là-bas. */
+const _apiRegles = (function () {
+  const estRegle = p => ((p || {}).type || "").includes("règle");
+  return { creerRegles, estRegle };
+})();
 if (typeof module !== "undefined" && module.exports) module.exports = _apiRegles;
 if (typeof window !== "undefined") window.ReglesJeu = _apiRegles;

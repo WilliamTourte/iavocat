@@ -409,11 +409,15 @@ const $ = id => document.getElementById(id);
 const joli = k => k.replace(/_/g," ");
 const K = (pid,ch) => pid+"."+ch;
 function sanId(s){ return String(s||"").trim().replace(/[^\p{L}\p{N}_]/gu,"_").replace(/_+/g,"_").replace(/^_|_$/g,""); }
-function estRegle(p){ return (p.type||"").includes("règle"); }
-/* La liste d'attentes d'une remise (§3). La normalisation vit dans regles.js —
-   on l'appelle plutôt que de la recopier ; le repli ne sert que si regles.js
-   n'a pas pu être chargé. Les objets rendus sont ceux du contenu, si bien que
-   l'inspecteur les édite en place. */
+/* Un seul exemplaire, dans regles.js : c'est une règle, pas une commodité
+   d'atelier. Export statique, donc disponible même sans `JEU` lié (§12). */
+const estRegle = p => window.ReglesJeu.estRegle(p);
+/* La liste d'attentes d'une remise (§3). ATTENTION — ce n'est PAS le
+   `attentesDe` de regles.js, et la différence est voulue : celui-ci rend, pour
+   une remise écrite à l'ancienne, la remise ELLE-MÊME (`[r]`) et non une paire
+   recopiée, pour que l'inspecteur l'édite en place. Sur une affaire au schéma 3
+   les deux rendent le même tableau `r.attentes`. Deux fonctions, deux emplois :
+   on ne les fusionne pas, on dit lequel est lequel (docs/LEXIQUE.md). */
 function attentesDeRemise(r){
   if(!r) return [];
   if(Array.isArray(r.attentes)) return r.attentes;
@@ -426,23 +430,20 @@ function empanExiste(pid,eid){ return !!empanDe(pid,eid); }
 function dimDe(pid,eid){ const e=empanDe(pid,eid); return e && e.dim; }
 function toutesDims(){ return [...(CONTENU.dimensions||[])]; }
 function estBruit(pid,eid){ return (CONTENU._bruit||[]).includes(K(pid,eid)); }
-function piecesLivrees(){
+/* TOUTES les pièces qu'une remise livre, à un moment ou à un autre — l'atelier
+   regarde le dossier fini. À ne pas confondre avec `piecesLivrees(S)` de
+   regles.js, qui est PROGRESSIF (jusqu'à `S.remisesEnvoyees`) : deux questions
+   différentes, donc deux noms (docs/LEXIQUE.md). */
+function toutesPiecesLivrees(){
   const s=new Set(); for(const r of CONTENU.remises||[]) for(const p of r.pieces||[]) s.add(p); return s;
 }
-/* Tous les empans du dossier, aplatis en "pid.eid" — le vocabulaire des
-   TERMES, exactement comme le jeu le construit (§14 d'ARCHITECTURE). */
+/* Tous les empans du dossier, aplatis en "pid.eid" — le vocabulaire des TERMES.
+   L'aplatissement vit dans moteur.js : l'atelier en portait une copie identique
+   à celle du jeu au caractère près, et deux exemplaires divergent en silence
+   (§12). Sans moteur chargé (file:// incomplet), le dossier n'a pas de
+   vocabulaire — le diagnostic et l'onglet Grammaire le disent déjà. */
 function empansPlats(){
-  const out=[];
-  for(const [pid,p] of Object.entries(CONTENU.pieces||{}))
-    for(const [eid,e] of Object.entries(p.empans||{}))
-      /* `nom` et `court` comptent : sans `nom`, le banc d'essai écrirait les
-         phrases par leur citation quand le jeu les écrit par leur nom (§4.1) —
-         deux exemplaires qui divergent en silence. `court` dit d'où sort une
-         citation (§4.5). Même aplatissement que index.html, à la ligne près. */
-      out.push({ id:pid+"."+eid, pid, eid, dim:e.dim, valeur:e.valeur,
-                 texte:e.texte, nom:e.nom || e.texte, qui:e.qui || p.qui || "",
-                 court:p.court || "" });
-  return out;
+  return window.MoteurGrammaire ? window.MoteurGrammaire.champsDe(CONTENU) : [];
 }
 /* Le moteur de grammaire, appliqué au contenu courant. Reconstruit seulement
    quand le contenu change. null si moteur.js n'a pas pu être chargé. */
@@ -601,12 +602,14 @@ function empanRelie(pid,eid){
   const k=K(pid,eid);
   return (CONTENU.liens||[]).some(L=>feuillesLien(L).includes(k));
 }
-/* Comme dans le jeu : la couleur d'une dimension vient de son RANG dans
-   CONTENU.dimensions, jamais de sa pertinence (invariant du §4.3). */
+/* Le RANG dans CONTENU.dimensions, jamais la pertinence (§4.3). La règle et la
+   palette vivent dans moteur.js, en un seul exemplaire — l'atelier en portait
+   les six mêmes hexadécimaux que le jeu. Ici on ne choisit que le repli : une
+   dimension inconnue est une ERREUR d'écriture, on la montre en rouge (le jeu,
+   lui, la grise et continue). */
 function couleurDim(d){
-  const pal=["#7fb3d5","#d99a9a","#9dc98c","#c9ab6a","#b79ad6","#7fc9c1"];
-  const i=toutesDims().indexOf(d);
-  return i<0 ? "var(--err)" : pal[i%pal.length];
+  const api=window.MoteurGrammaire;
+  return (api ? api.couleurDim(toutesDims(),d) : null) || "var(--err)";
 }
 
 function chipCenter(pid,ch){
@@ -725,7 +728,7 @@ function formesParArite(n){
 function valider(){
   const out=[]; const P=CONTENU.pieces||{}, LI=CONTENU.liens||[];
   const add=(niveau,msg,detail,ref)=>out.push({niveau,msg,detail,ref});
-  const livrees=piecesLivrees();
+  const livrees=toutesPiecesLivrees();
   const dims=toutesDims();
   const m=MG();
 
@@ -1361,7 +1364,7 @@ const BANNIERE_MIROIR = `<div class="mirbanner"><b>⚙ Les règles du jeu.</b> L
 function renderFrise(){
   const el=$("frise"); if(!el) return;
   const R=CONTENU.remises||[], A=CONTENU.avocat||{}, REP=CONTENU.repetition||{};
-  const livrees=piecesLivrees();
+  const livrees=toutesPiecesLivrees();
   const nonLivrees=Object.keys(CONTENU.pieces).filter(pid=>!livrees.has(pid));
   const tags=[...new Set((CONTENU.liens||[]).map(l=>l.tag).filter(Boolean))];
   let h=BANNIERE_MIROIR;
@@ -1677,19 +1680,11 @@ function simComposer(i){
 /* COMPARER SANS QUALIFIER — le geste que le « cf article » obligatoire a
    rendu distinct : les deux empans sont sous les yeux, la relation s'affiche,
    et rien n'est écrit. C'est là, et là seulement, que naît le pressentiment. */
+/* La marche récursive vit dans moteur.js : le harnais en portait la copie
+   exacte, même clé de dédoublonnage comprise (§12). */
 function sousComparaisons(){
-  const out=[], vus=new Set();
-  const rec = t => {
-    if(!t || typeof t!=="object" || Array.isArray(t)) return;
-    const f=formeDe(t.forme);
-    if(f && (f.arite||2)===2){
-      const cle=JSON.stringify([t.forme,t.termes]);
-      if(!vus.has(cle)){ vus.add(cle); out.push({forme:t.forme,termes:t.termes}); }
-    }
-    for(const u of (t.termes||[])) rec(u);
-  };
-  for(const L of (CONTENU.liens||[])) rec(L);
-  return out;
+  const api=window.MoteurGrammaire;
+  return api ? api.comparaisonsDe(CONTENU.liens,(CONTENU.grammaire||{}).formes) : [];
 }
 function simComparer(r){
   RG().pressentir(SIM,r);

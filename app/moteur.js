@@ -177,6 +177,69 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
            squelettes, comparer, deduire, ordonner };
 }
 
-const _api = { creerMoteur };
+/* ============================================================
+   LES PROJECTIONS DU CONTENU — pures, sans fabrique
+   ------------------------------------------------------------
+   Ce qui suit ne se lie à rien : on passe un objet de contenu, on reçoit une
+   vue. C'est leur seule maison. Elles vivaient auparavant en deux ou trois
+   exemplaires (le jeu, l'atelier, le harnais), dont deux identiques au
+   caractère près — exactement ce que le §12 interdit. Ce ne sont pas des
+   DONNÉES : l'en-tête de ce fichier tient toujours.
+
+   ELLES SONT CLOÎTRÉES, et il le faut. Chargé par `<script src>`, ce fichier
+   partage la portée globale de la page : un nom de haut niveau ici est un nom
+   pris là-bas. `couleurDim` heurtait celui d'index.html — en jsdom comme en
+   vrai navigateur. On ne sort donc que par `MoteurGrammaire.x`.
+   ============================================================ */
+const _projections = (function () {
+
+/* Tous les empans d'un contenu, aplatis en « pid.eid » : c'est le vocabulaire
+   des TERMES, et c'est précisément l'argument CHAMPS que `creerMoteur` attend.
+   `nom` et `court` comptent : sans `nom`, une phrase composée s'écrirait par la
+   citation là où le jeu l'écrit par le nom (§4.1) ; `court` dit d'où sort une
+   citation (§4.5). */
+function champsDe(contenu) {
+  const out = [];
+  for (const [pid, p] of Object.entries((contenu || {}).pieces || {}))
+    for (const [eid, e] of Object.entries(p.empans || {}))
+      out.push({ id: pid + "." + eid, pid, eid, dim: e.dim, valeur: e.valeur,
+                 texte: e.texte, nom: e.nom || e.texte, qui: e.qui || p.qui || "",
+                 court: p.court || "" });
+  return out;
+}
+
+/* Toutes les COMPARAISONS (arité 2) qu'un jeu de liens déclare, emboîtées
+   comprises. Depuis que l'article est obligatoire, elles ne sont plus des liens
+   de plein droit : elles vivent en terme emboîté dans les qualifications. On
+   les cherche donc là où elles sont, sans supposer laquelle des deux écritures
+   l'affaire emploie. Dédoublonnées par forme+termes. */
+function comparaisonsDe(liens, formes) {
+  const out = [], vus = new Set();
+  const rec = t => {
+    if (!t || typeof t !== "object" || Array.isArray(t)) return;
+    if (t.forme && (((formes || {})[t.forme] || {}).arite || 2) === 2) {
+      const cle = JSON.stringify([t.forme, t.termes]);
+      if (!vus.has(cle)) { vus.add(cle); out.push({ forme: t.forme, termes: t.termes }); }
+    }
+    for (const u of (t.termes || [])) rec(u);
+  };
+  for (const L of (liens || [])) rec(L);
+  return out;
+}
+
+/* La couleur d'une dimension : par son RANG dans la liste déclarée, jamais par
+   sa pertinence (invariant du §4.3). Rend `null` pour une dimension inconnue —
+   c'est à l'appelant de choisir ce qu'il en fait : le jeu la grise, l'atelier
+   la signale en rouge. Le §4.3 tient à la RÈGLE, pas au repli. */
+const PALETTE_DIM = ["#7fb3d5", "#d99a9a", "#9dc98c", "#c9ab6a", "#b79ad6", "#7fc9c1"];
+function couleurDim(dimensions, d) {
+  const i = (dimensions || []).indexOf(d);
+  return i < 0 ? null : PALETTE_DIM[i % PALETTE_DIM.length];
+}
+
+  return { champsDe, comparaisonsDe, couleurDim, PALETTE_DIM };
+})();
+
+const _api = { creerMoteur, ..._projections };
 if (typeof module !== "undefined" && module.exports) module.exports = _api;
 if (typeof window !== "undefined") window.MoteurGrammaire = _api;
