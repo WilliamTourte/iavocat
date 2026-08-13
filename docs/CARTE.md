@@ -197,6 +197,9 @@ donc dépendant de la session ; le flag `cite` est porté par la **liaison**, ja
   de ce qui s'écrit sont des attributs `libelle` déclarés dans le contenu, et le §11 les nomme.
 - **Explorer pour trouver *où décide* quelque chose.** La réponse est toujours `regles.js` : les deux
   pages HTML ne décident rien (§9). Si une décision semble vivre dans une page, c'est un bug.
-- **Lire `ARCHITECTURE.md` en entier.** 618 lignes, et le tableau de `CLAUDE.md` dit lesquelles.
+- **Lire `ARCHITECTURE.md` en entier.** C'est de loin le plus long document du dépôt, et le tableau
+  de `CLAUDE.md` dit quelles sections lire selon ce qu'on vient faire. Le §4.5 est découpé en sept
+  pour qu'on puisse n'en ouvrir qu'un septième. *(Cette ligne annonçait « 618 lignes » : un compte
+  qu'aucune règle ne tient dérive à la première retouche — on ne le remet pas.)*
 - **Choisir un mot au jugé.** `docs/LEXIQUE.md` arbitre le vocabulaire — quel mot dire, à qui, pour
   quelle chose. Les pièges y sont nommés (`lien`/`liaison`, `clore`/`clôturer`, `empan`/`passage`).
