@@ -4,11 +4,17 @@
   "private": true,
   "description": "IAvocat — atelier d'écriture et moteur de jeu d'enquête (tranche verticale : l'affaire ADN)",
   "scripts": {
-    "test": "node tests/test_o5.js && node tests/test_declencheurs.js && node tests/test_autre_affaire.js && node tests/test_parcours.js && node tests/test_sauvegarde.js && node tests/smoke_atelier.js",
+    "test": "npm run suites && npm run gardien && npm run lint",
+    "suites": "node tests/test_o5.js && node tests/test_declencheurs.js && node tests/test_autre_affaire.js && node tests/test_parcours.js && node tests/test_sauvegarde.js && node tests/smoke_atelier.js",
+    "gardien": "node outils/gardien.js",
+    "lint": "eslint .",
     "demo:grammaire": "node grammaire/test_grammaire2.js",
     "vue": "node outils/vue.js"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.1",
+    "globals": "^17.11.0",
     "jsdom": "^24.0.0",
     "playwright-core": "^1.49.0"
   },

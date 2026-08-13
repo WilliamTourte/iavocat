@@ -1,11 +1,11 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 5 août 2026, après la session « un nom pour deux
-choses ».*
+*À lire en tête d'une nouvelle conversation. État au 13 août 2026, après la session « un gardien pour
+les pièges déjà payés ».*
 
 ## 1. Où en est le jeu
 
-**Quatorze** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
+**Quinze** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
 
 1. **Trois sessions.** R1 lire/extraire/répondre (`p_pv`, `t_voisin`, aucun article) ; R2 comparer
    (`r_temoin`, l'article 3) ; R3 l'ADN et le vice.
@@ -82,7 +82,32 @@ choses ».*
     CSS sans porteur, `escapeH(null)` qui écrivait « null », et **un vrai défaut** — `pointer()` lisait
     encore le **schéma 2** (voir §2).
 
+15. **Un gardien pour les pièges déjà payés** *(13 août)*. Les trois sessions précédentes convergent
+    vers un constat : **les pannes qui coûtent cher ici ne sont pas des bugs de logique, ce sont des
+    ruptures de convention que rien ne surveille.** Les suites lisent `innerHTML` — jamais un style
+    calculé, jamais la forme d'une balise, jamais l'inventaire des noms globaux. Ce §2 tenait donc la
+    liste à la main, depuis un an. `outils/gardien.js` la rend **opposable** : huit règles, huit
+    pannes réellement vécues, chacune citant le § qui la tranche (§16 bis). Il entre dans `npm test`,
+    **après** les suites — le sens avant la forme. Avec lui, `eslint.config.js`, le filet générique,
+    dont la liste de globals ne s'écrit pas : elle se **calcule**, en demandant au gardien
+    l'inventaire de chaque page (§12 — pas de copie).
+
+    Ce qu'il a trouvé le jour même : **`.manuel`** dans `jeu.css` (orpheline depuis le retrait
+    d'`openManuels()` le 3 août), **`.gpill.leve`** dans l'atelier (jamais posée depuis l'onglet
+    « Grammaire »), **six des sept lignes** du tableau des territoires de `docs/CARTE.md`, et — par
+    ESLint — sept variables mortes, dont la liste des dimensions de `modalPieceHTML`, restée après le
+    retrait de la légende (décision 10). **Et un défaut dans le gardien lui-même**, dit par ESLint :
+    son relevé de déclarations ne voyait que le premier nom de `let selA=null, selB=null` — un nom
+    manquant à l'inventaire, c'est une collision que R2 ne verrait pas. Les deux filets se sont
+    attrapés l'un l'autre, ce qui est le meilleur argument pour les avoir tous les deux.
+
+    Enfin, une chose **remesurée** : le §13 se trompait à moitié sur `defer` (voir §2).
+
 ## 2. Points de vigilance
+
+*Les points marqués **[Rn]** sont désormais tenus par une règle d'`outils/gardien.js` : ils restent
+écrits ici — le § reste l'arbitre, le gardien n'est qu'un bras (§16 bis) — mais on n'a plus à y
+penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
 
 - `test_autre_affaire.js` n'a pas bougé d'une ligne depuis le découpage en trois sessions ni depuis
   le tutoriel : c'est le contrôle qui prouve que la liste d'attentes et la clôture automatique sont
@@ -92,7 +117,7 @@ choses ».*
 - L'index `iBloc` de `poserBloc` est **positionnel dans la liste filtrée**, donc dépendant de la
   session.
 - Les `const` de haut niveau ne sont pas des propriétés de `window`.
-- **…mais ils occupent quand même le nom.** C'est le piège symétrique, et il a mordu : chargé par
+- **[R2] …mais ils occupent quand même le nom.** C'est le piège symétrique, et il a mordu : chargé par
   `<script src>`, `moteur.js` partage la portée globale de la page. Un `function couleurDim` de haut
   niveau y heurtait le `const couleurDim` d'`index.html` — en jsdom **comme en vrai navigateur**. Les
   projections et `estRegle` sont donc cloîtrées dans une fermeture, et ne sortent que par
@@ -107,12 +132,20 @@ choses ».*
 - **Le harnais inline TOUT `<script src>` et TOUT `<link rel=stylesheet>`**, par regex et dans
   l'ordre. Ajouter un fichier ne demande plus d'y revenir — mais un module mal ordonné se verra en
   `ReferenceError` au milieu d'une suite, pas à l'ouverture.
-- **La regex du harnais est stricte, et c'est le piège du CSS/JS sorti du HTML.** Une balise doit
+- **[R1] La regex du harnais est stricte, et c'est le piège du CSS/JS sorti du HTML.** Une balise doit
   s'écrire `<script src="x.js"></script>` sur UNE ligne, sans attribut. Une variante n'est pas
   inlinée : jsdom ne charge rien, les six suites meurent en `ReferenceError`.
-- **Ni `defer` ni `async` sur ces balises, jamais.** Le harnais *inline* : un attribut qui change le
-  moment d'exécution ferait **diverger le test du navigateur**, et le test resterait vert pendant
-  que la page casse. C'est le seul piège de la série qui soit silencieux du mauvais côté.
+- **[R1] Ni `defer` ni `async` sur ces balises, jamais** — mais **pas pour la raison qu'on croyait**.
+  Cette liste disait : « le harnais inline, donc un attribut de timing ferait diverger le test du
+  navigateur, et le test resterait vert pendant que la page casse ; c'est le seul piège de la série
+  qui soit silencieux du mauvais côté. » **Mesuré le 13 août, ce n'est pas vrai** : on pose `defer`,
+  on lance les six suites, et quatre contrôles tombent — la regex est si stricte que la balise n'est
+  pas inlinée *du tout*. Idem pour une balise mise en commentaire. Le danger décrit est celui qu'on
+  courrait si la regex était **relâchée** : c'est un argument pour la garder stricte, pas une
+  description de ce qui se passe. Ce qui reste vrai, et que R1 tient : l'écart se dit sur la balise,
+  pas en `ReferenceError` au milieu d'une suite. *À retenir au-delà : une menace qu'on croit courir
+  est du même genre qu'une laisse qu'on croit tendue (§16) — elle fait craindre le mauvais geste.
+  Éprouver coûte deux minutes.*
 - **Le CSS est inliné parce que `getCSS()` le lit.** Les couleurs de trait du graphe
   (`app/atelier/graphe.js`) sortent de `getComputedStyle` sur `:root` — seul endroit du dépôt où du
   CSS traverse vers du JS. jsdom résout les variables d'un `<style>` en ligne et rend `""` pour un
@@ -122,7 +155,7 @@ choses ».*
   passe pour une page qui marche. On vérifie le fond du `body` **et** que la *dernière* règle du
   fichier s'applique. Lire `cssRules` d'une feuille `file://` lève une `SecurityError` : ça ne se
   mesure pas comme ça.
-- **`--transmis` (`#23506e`) est le bleu de ce qui a franchi la frontière** (§4.6) : bulle de l'IA,
+- **[R3] `--transmis` (`#23506e`) est le bleu de ce qui a franchi la frontière** (§4.6) : bulle de l'IA,
   pièces jointes, bouton d'envoi, phrase close, liste du plan. Elle était employée huit fois et
   définie nulle part. Corrigé le 4 août ; c'est la seule chose de cette série qui ait changé l'écran.
   **Le mécanisme, remesuré le 5 août — les huit règles ne tombaient pas de la même façon, et la moitié
@@ -134,7 +167,7 @@ choses ».*
   doux, et pour elles le `currentColor` d'hier était juste. À retenir avant de retirer une variable de
   `:root` : compter ses usages, et regarder si ce sont des raccourcis. **Aucune suite ne voit ni l'un
   ni l'autre** — elles lisent `innerHTML`, jamais le style calculé.
-- **Le diagnostic de l'atelier lisait encore le schéma 2** *(corrigé le 5 août)*. `pointer()` dépliait
+- **[R7] Le diagnostic de l'atelier lisait encore le schéma 2** *(corrigé le 5 août)*. `pointer()` dépliait
   `l.a[0]`/`l.b[0]` — le format d'avant le schéma 3. Sur le contenu livré, `liens[7].a` vaut
   `undefined` : cliquer l'avertissement « le vice a N canaux indépendants », son seul émetteur, levait
   une `TypeError`. **Aucune suite ne couvre ce chemin.** La leçon vaut au-delà : la migration 2→3 a été
@@ -154,11 +187,20 @@ choses ».*
   assertion ont disparu avec la colonne vide (décision 9). `elle se lit` et `legende` n'en font plus
   partie non plus : la légende des dimensions et les notes d'aide de la modale ont été retirées
   (décision 10).*
-- **Quatre ids sont des points d'ancrage, pas de la décoration** : `#discussion` (1ᵉʳ temps du
+- **[R6] Quatre ids sont des points d'ancrage, pas de la décoration** : `#discussion` (1ᵉʳ temps du
   tutoriel, et `outils/vue.js` le lit), `#zoneRetenus` (3ᵉ temps), `#composeur` (4ᵉ temps **et**
   lecture d'écran du harnais), `#colPlaidoirie` (ce que `plaidoirieVisible` interroge). Les renommer
   casse le tutoriel **en silence** — `majTutoriel` teste `if(tutoCible)` et ne se plaint jamais d'une
-  cible introuvable. Seule la capture `00-depart.png` prouve que le halo vise encore quelque chose.
+  cible introuvable. C'était l'un des points les plus mal tenus du dépôt : jusqu'au 13 août, seule la
+  capture `00-depart.png` prouvait que le halo visait encore quelque chose. R6 lit maintenant les
+  sélecteurs mêmes que `tutoEtape` écrit — l'id **et** les classes.
+- **Les captures de `npm run vue` ne se comparent PAS à l'octet — et `00-depart.png` moins que les
+  autres** *(mesuré le 13 août)*. Le halo du tutoriel **pulse** (`animation:pouls 1.8s infinite`) :
+  cette capture-là tombe à une phase quelconque de l'animation, si bien que deux passes sur le
+  **même** code rendent deux fichiers différents. Les six autres, elles, sont reproductibles à
+  l'octet — c'est ainsi qu'on a prouvé que retirer `.manuel` ne déplaçait pas un pixel. À savoir
+  avant de conclure d'un `diff` de captures : la seule qui porte le halo est la seule qu'on ne peut
+  pas comparer ainsi, et c'est aussi la seule qui prouve que le halo vise quelque chose.
 - **`#composeur` est le frère de `#discussion`, jamais son enfant.** `renderDiscussion` finit par
   `el.scrollTop=el.scrollHeight` : glissé dedans, le composeur partirait au défilement à chaque
   message.

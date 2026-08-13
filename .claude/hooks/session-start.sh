@@ -19,4 +19,5 @@ cd "$CLAUDE_PROJECT_DIR"
 npm install --no-audit --no-fund
 
 # Les six suites tournent sous jsdom, qui lit les fichiers de `app/` sur le
-# disque. Rien d'autre à préparer : pas de build, pas de service, pas de base.
+# disque ; le gardien et ESLint les suivent dans `npm test`. Rien d'autre à
+# préparer : pas de build, pas de service, pas de base.

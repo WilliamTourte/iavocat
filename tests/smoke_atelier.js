@@ -327,7 +327,6 @@ console.log("\n=== La simulation reflète le moteur ===");
   check("et n'écrit rien", w.SIM.brouillon.length === 0);
   w.simComposer(SC.iLienConclusion(w.CONTENU));
   check("composer la conclusion lève vice_trouve", w.SIM.vice_trouve && !w.SIM.vice_expose);
-  const conc = w.CONTENU.liens[SC.iLienConclusion(w.CONTENU)];
   const iConc = w.SIM.brouillon.findIndex(n => n.lien && n.lien.conclusion);
   w.simEnvoyer(iConc);
   check("la verser lève vice_expose", w.SIM.vice_expose);

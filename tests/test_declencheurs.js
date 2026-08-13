@@ -3,9 +3,8 @@
 // drapeaux du vice, Manuels par type et par livraison, rejet du schéma 2.
 // Les mutations elles-mêmes sont dérivées du contenu (rien n'est nommé).
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, contenuLivre, discussion, memoire } = H;
+const { check, bilan, contenuLivre, discussion } = H;
 const boot = contenu => H.boot({contenu});   // null = aucun contenu du tout
-const clone = o => JSON.parse(JSON.stringify(o));
 
 /* Renomme un id de pièce dans un contenu brut : liens (termes emboîtés
    compris), remises. Sert à prouver qu'aucun id n'est câblé dans le moteur. */

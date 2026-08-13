@@ -156,7 +156,10 @@ main.grammode #grampane{display:block}
 .gpill.sense{color:var(--ok);border-color:#2f4a36}
 .gpill.nonsense{color:var(--err);border-color:#5a3030}
 .gpill.lien{color:var(--accent);border-color:#23506e}
-.gpill.leve{color:var(--vice);border-color:#5a4030}
+/* `.gpill.leve` vivait ici depuis l'onglet « Grammaire » : la pastille annonçait
+   qu'une phrase LEVAIT un drapeau. Le banc d'essai n'en pose que quatre —
+   sensé, sans rapport, lien reconnu, bruit — et jamais celle-là. Retirée
+   par R4 du gardien, qui a mis un an à trouver son premier lecteur. */
 .gpill.bruit{color:var(--dim)}
 #grampane h3{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 0 8px}
 .gsquel{font-family:var(--mono);font-size:12.5px;color:var(--dim);line-height:1.7}
