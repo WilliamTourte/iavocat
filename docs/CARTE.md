@@ -2,9 +2,8 @@
 
 *Où vivent les choses. Rien d'autre.*
 
-> **Ce fichier ne dit jamais pourquoi.** Il localise, il n'explique pas — le §12 de
-> `docs/ARCHITECTURE.md` pose les quatre sources de vérité, et aucune n'est ici. Chaque ligne renvoie
-> au § qui tranche. En cas d'écart avec le code, **c'est le code qui a raison** : un index vieillit,
+> **Ce fichier ne dit jamais pourquoi.** Il localise, il n'explique pas : le §12 pose les quatre
+> sources de vérité, et aucune n'est ici. Chaque ligne renvoie au § qui tranche. En cas d'écart avec le code, **c'est le code qui a raison** : un index vieillit,
 > une règle non.
 >
 > Il est indexé par **noms de fonctions**, jamais par numéros de ligne — les lignes pourrissent en
@@ -181,14 +180,14 @@ Ni l'un ni l'autre n'est une suite : ils ne jouent pas l'affaire, ils regardent 
 
 | Outil | Commande | Ce qu'il éprouve, et que rien d'autre n'éprouve |
 |---|---|---|
-| `outils/gardien.js` | `npm run gardien` (dans `npm test`) | **les conventions** — R1 la forme des balises que le harnais inline, R2 les collisions de noms de haut niveau par page, R3 les variables CSS, R4 les familles CSS sans porteur, R5 les `onclick=`, R6 les ids visés et les quatre ancres du tutoriel, R7 les restes du schéma 2, R8 les tailles annoncées par ce fichier-ci, R9 les lectures d'`attend`/`apres` posés sur une remise, R10 la recopie d'un prédicat que `regles.js` exporte. **R7, R9 et R10 marchent sur `app/`, `tests/` et `outils/`** ; les sept autres sur les deux pages |
+| `outils/gardien.js` | `npm run gardien` (dans `npm test`) | **les conventions** — R1 la forme des balises que le harnais inline, R2 les collisions de noms de haut niveau par page, R3 les variables CSS, R4 les familles CSS sans porteur, R5 les `onclick=`, R6 les ids visés et les quatre ancres du tutoriel, R7 les restes du schéma 2, R8 les tailles annoncées par ce fichier-ci, R9 les lectures d'`attend`/`apres` posés sur une remise, R10 la recopie d'un prédicat que `regles.js` exporte, **R11 tout renvoi « §x » qui ne désigne aucune section — ou qui nomme le mauvais document**. **R7, R9 et R10 marchent sur `app/`, `tests/` et `outils/`, R11 sur tout le dépôt, documents compris** ; les six autres sur les deux pages |
 | `outils/vue.js` | `npm run vue` (hors `npm test`) | **le vrai chargement** — les quatre `<script src>` et la feuille, dans un vrai Chromium en `file://`, et la relecture à l'œil |
 
 Le gardien est en **mode double**, comme `moteur.js` : lancé, il contrôle et sort en 1 sur écart ;
 `require`, il ne rend que son inventaire. C'est par là qu'`eslint.config.js` obtient les noms que
 chaque page pose dans la portée globale — la liste n'est écrite nulle part, elle se calcule (§12).
 
-`eslint.config.js` est le filet **générique** : aucune des neuf pannes du gardien ne s'y voit. Il
+`eslint.config.js` est le filet **générique** : aucune des onze pannes du gardien ne s'y voit. Il
 tient l'autre bout — identifiant fautif, variable morte, clé dupliquée.
 
 ## Les pièges déjà payés

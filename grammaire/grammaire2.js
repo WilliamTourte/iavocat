@@ -30,7 +30,7 @@ const GRAMMAIRE = {
     { id: "t2e",  type: "terme",   source: "champ", de: "S2e", vers: "FIN", forme: "ordre_grandeur" },
 
     // --- Qualification : arite 1, sur une note close. La LIAISON est la base
-    //     légale (§4.5.5 d'ARCHITECTURE) — l'article n'est pas un ingrédient
+    //     légale (§4.5.5 de CONCEPTION) — l'article n'est pas un ingrédient
     //     qu'on va chercher, c'est le verbe qu'on emploie. ---
     { id: "c7",   type: "liaison", de: "SP",  vers: "FIN", texte: "est contraire à l'article 7", forme: "contraire_7" },
     { id: "k7",   type: "liaison", de: "SP",  vers: "FIN", texte: "est conforme à l'article 7",  forme: "conforme_7"  },

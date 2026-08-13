@@ -356,7 +356,7 @@ function renderRetenus(){
 /* ============================================================
    5) LE COMPOSEUR — les blocs de l'état courant, de gauche à droite.
       Aucune liste n'est restreinte : seules les erreurs de CATÉGORIE
-      sont refusées, à la clôture de la phrase (§4.5 d'ARCHITECTURE).
+      sont refusées, à la clôture de la phrase (§4.5 de CONCEPTION).
    ============================================================ */
 /* LA VOIX UNIQUE DU COMPOSEUR (§4.9). Une seule phrase pour l'état courant,
    dérivée de `S` comme le tutoriel dérive son temps : rendue dans le FANTÔME

@@ -3,9 +3,9 @@
  *
  * Les six suites éprouvent le SENS : elles jouent l'affaire, lisent `innerHTML`
  * et vérifient ce qui se dit. Elles ne lisent jamais un style calculé, jamais la
- * forme d'une balise, jamais l'inventaire des noms globaux d'une page. C'est
- * précisément là que ce dépôt s'est fait mal, à répétition — et le §2 de
- * `docs/PASSATION.md` tient la liste de ces pannes à la main, depuis un an.
+ * forme d'une balise, jamais l'inventaire des noms globaux d'une page, jamais un
+ * renvoi de commentaire. C'est précisément là que ce dépôt s'est fait mal, à
+ * répétition — et le §2 de `docs/PASSATION.md` en tient le récit.
  *
  * Ce fichier ne fait qu'une chose : rendre cette liste OPPOSABLE. Chaque règle
  * ci-dessous rejoue une panne réellement vécue, et cite le § qui la tranche.
@@ -20,11 +20,13 @@
  *   R8  la carte ne ment pas sur les tailles                        §12
  *   R9  `attend`/`apres` ne se lisent plus sur une remise           §3, §11, §15
  *   R10 aucune recopie d'un prédicat que `regles.js` exporte       §12, §16
+ *   R11 aucun renvoi « §x » ne pointe dans le vide                 §12
  *
- * R7, R9 et R10 marchent sur `app/`, `tests/` ET `outils/` — les sept autres
- * sur les deux pages. Voir TERRITOIRES, plus bas. Avant d'ajouter une règle, la
- * question à poser est SUR QUEL TERRITOIRE elle marche : la réponse n'est pas
- * « `app/` » par défaut, et c'est dans les deux autres que les copies avaient
+ * R7, R9 et R10 marchent sur `app/`, `tests/` ET `outils/`, R11 sur TOUT le
+ * dépôt — documents compris, puisque c'est eux qu'on cite. Les six autres ne
+ * regardent que les deux pages. Voir TERRITOIRES, plus bas. Avant d'ajouter une
+ * règle, la question à poser est SUR QUEL TERRITOIRE elle marche : la réponse
+ * n'est pas « `app/` » par défaut, et c'est ailleurs que les copies avaient
  * survécu.
  *
  * (*) R1 a servi à mesurer ce que le §13 affirmait sans l'avoir éprouvé — voir
@@ -702,6 +704,121 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
     }
   }
   regle("R10 · aucun fichier ne recopie un prédicat que regles.js exporte", faux);
+}
+
+/* ============================================================
+   R11 — AUCUN RENVOI « §x » NE POINTE DANS LE VIDE (§12)
+   ------------------------------------------------------------
+   Le dépôt entier se cite par NUMÉRO DE SECTION : plus de trois cents « §4.5 »,
+   « §12 », « §8.6 » vivent dans les commentaires du code, dans les suites, dans
+   les outils et dans les quatre autres documents. C'est la colonne vertébrale
+   de la méthode — « on réécrit le document, on le fait relire, PUIS on applique
+   au code » — et rien ne la tenait.
+
+   Ce qu'un renvoi mort coûte : exactement ce que coûte un reflet laissé
+   derrière (§15). Il ne casse rien, ne lève rien, aucune suite ne le voit ; il
+   envoie simplement lire une section qui n'existe pas, ou pire, une section qui
+   existe et parle d'autre chose. Le relevé du jour en a trouvé TROIS, vivants
+   depuis des semaines : `contenu-io.js` et `grammaire2.js` citaient une section
+   « 2.2 » d'une numérotation abandonnée, `diagnostic.js` une « 2.4 » pour le
+   doublon banal — qui est au §4.4. (Ces trois-là s'écrivent ici SANS le signe,
+   sinon cette règle se prendrait elle-même en faute — et elle l'a fait.)
+
+   POURQUOI PAS DES LIENS. Un lien Markdown se vérifierait tout seul, dit-on.
+   Non : son ancre se calcule sur le TEXTE du titre, donc renommer un titre le
+   casse en silence — la panne qu'on voulait fuir, au même endroit. Il ne
+   s'ouvre que sur GitHub, jamais en `file://` ni dans un éditeur, et le
+   livrable de ce dépôt n'a aucun build. Surtout, la grande majorité des renvois
+   vivent dans des COMMENTAIRES JS, où un lien n'est ni cliquable ni lisible. Le
+   numéro nu est la bonne écriture ; ce qui manquait, c'était le filet.
+
+   LES NUMÉROS SONT UNIQUES DANS TOUT LE DÉPÔT — §1 à §7 dans CONCEPTION.md,
+   §8.x dans ECRITURE.md, §9 à §17 dans ARCHITECTURE.md. Un renvoi n'a donc pas
+   à nommer son fichier, et cette règle est ce qui rend cette promesse tenable :
+   elle vérifie aussi qu'aucun numéro n'est servi par DEUX documents à la fois.
+
+   DEUX EXCEPTIONS, et elles se lisent : `docs/PASSATION.md` numérote ses
+   propres sections de 1 à 4 (« §2 » y désigne ses points de vigilance, cité
+   quarante fois), et un renvoi peut nommer explicitement « §2 de PASSATION ».
+   On ne juge donc, dans la passation, que les renvois à DEUX niveaux (« §4.5 »)
+   et « §16 bis » — ceux qui ne peuvent désigner qu'un document d'architecture.
+   ============================================================ */
+{
+  const faux = [];
+  const DOCS = ["docs/CONCEPTION.md", "docs/ECRITURE.md", "docs/ARCHITECTURE.md"];
+
+  // Les sections réellement présentes : un titre Markdown « ## 4.5 … » ou, pour
+  // ECRITURE, un paragraphe en gras « **8.6 … ». La valeur est le fichier, ce
+  // qui fait tomber du même coup les numéros servis deux fois.
+  const chez = new Map();
+  for (const d of DOCS) {
+    if (!existe(d)) { faux.push(`${d} est introuvable — les renvois « §x » n'ont plus de maison.`); continue; }
+    const src = lire(d);
+    const nums = [...src.matchAll(/^#+ (\d+(?:\.\d+)*(?: bis)?)\.? /gm)].map(m => m[1])
+      .concat([...src.matchAll(/^\*\*(\d+\.\d+) /gm)].map(m => m[1]));
+    for (const n of nums) {
+      if (chez.has(n) && chez.get(n) !== d)
+        faux.push(`« §${n} » existe dans ${chez.get(n)} ET dans ${d} — un numéro, un seul document.`);
+      chez.set(n, d);
+    }
+  }
+
+  // `§8.x` et `§4.x` sont des GABARITS de prose : le numéro y est suivi d'une
+  // lettre, jamais d'un chiffre. Les compter reviendrait à lire la section « 8 »
+  // toute seule, qui n'existe pas — R11 s'y est prise au premier essai.
+  // (Et pour la même raison, aucun exemple de renvoi mort ne s'écrit ici avec
+  //  son signe : cette règle lit sa propre prose, comme celle de tout le monde.)
+  const MOTIF_REF = /§\s?(\d+(?:\.\d+)*)( bis)?(\.[a-zà-ÿ])?/g;
+  const aJuger = [];
+  for (const f of fichiersJS(TERRITOIRES).concat(fichiersJS(["grammaire"]))) aJuger.push([f, lire(f), false]);
+  for (const p of ["app/index.html", "app/atelier_v3.html", "app/jeu.css", "app/atelier/atelier.css"])
+    if (existe(p)) aJuger.push([p, lire(p), false]);
+  for (const d of ["docs/CARTE.md", "docs/LEXIQUE.md", "docs/HISTORIQUE.md", "CLAUDE.md", ...DOCS])
+    if (existe(d)) aJuger.push([d, lire(d), false]);
+  if (existe("docs/PASSATION.md")) aJuger.push(["docs/PASSATION.md", lire("docs/PASSATION.md"), true]);
+
+  for (const [f, src, maison] of aJuger) {
+    for (const m of src.matchAll(MOTIF_REF)) {
+      if (m[3]) continue;                          // un gabarit « §8.x », pas un renvoi
+      const num = m[1] + (m[2] || "");
+      // Un document ne se cite pas lui-même par son propre numéro de section.
+      if (maison && !num.includes(".") && num !== "16 bis") continue;
+      const ligne = src.slice(0, m.index).split("\n").length;
+      if (!chez.has(num)) {
+        faux.push(`${f}:${ligne} — « §${num} » ne désigne aucune section : `
+                + `§1–§7 sont dans CONCEPTION.md, §8.x dans ECRITURE.md, §9–§17 dans ARCHITECTURE.md.`);
+        continue;
+      }
+      /* LE RENVOI QUI NOMME SON FICHIER doit nommer le BON. Il passerait sinon
+         le contrôle ci-dessus tout en envoyant lire ailleurs — c'est le cas le
+         plus traître, parce qu'il a l'air plus précis que les autres. Cinq
+         renvois « §4.x d'ARCHITECTURE » sont devenus faux le jour où §1–§7 sont
+         partis dans CONCEPTION.md, et aucun n'aurait bronché.
+         LE NOM DOIT ÊTRE GRAMMATICALEMENT ADJACENT, et c'est tout le soin de ce
+         bloc. Une fenêtre de caractères ne suffit pas : la phrase qui explique
+         justement cette répartition nomme les trois fichiers à quelques mots
+         d'écart, et lierait chaque numéro au mauvais voisin — elle l'a fait, sur
+         quatre numéros, au premier essai. On ne reconnaît donc que les deux
+         tournures réellement employées dans le dépôt :
+
+           docs/ARCHITECTURE.md §12      le nom, puis le numéro
+           §4.4 de CONCEPTION            le numéro, une préposition, le nom
+
+         Tout le reste — « §1, §2, §5 — et `docs/ECRITURE.md` », « §9 à §17 dans
+         ARCHITECTURE » pour le §9 — est un renvoi NU, que seul le numéro
+         adresse. C'est le cas ordinaire, et le bon. */
+      const AVANT = /(?:docs\/)?(CONCEPTION|ECRITURE|ARCHITECTURE)(?:\.md)?`?\s*$/;
+      const APRES = /^\s*[»)]?\s*(?:de|d'|dans|du)\s+`?(?:docs\/)?(CONCEPTION|ECRITURE|ARCHITECTURE)/;
+      const nomme = src.slice(Math.max(0, m.index - 40), m.index).match(AVANT)
+                 || src.slice(m.index + m[0].length, m.index + m[0].length + 40).match(APRES);
+      if (!nomme) continue;                        // renvoi nu : le numéro suffit
+      const attendu = "docs/" + nomme[1] + ".md";
+      if (chez.get(num) !== attendu)
+        faux.push(`${f}:${ligne} — « §${num} » est annoncé dans ${nomme[1]}, il vit dans `
+                + `${chez.get(num).replace("docs/", "")}.`);
+    }
+  }
+  regle("R11 · tout renvoi « §x » désigne une section qui existe, et une seule", faux);
 }
 
 bilan();

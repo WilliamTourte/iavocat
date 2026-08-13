@@ -493,7 +493,7 @@ SENS**, et la seule façon de la commencer est de jouer.
 l'œil, aucun par une suite, et les quatre étaient du même genre — un reflet resté à l'ancienne
 mécanique. Le §15 les nomme désormais un par un. **La leçon est qu'un reflet doit APPELER ce qu'il
 reflète**, et que là où il ne le peut pas, c'est une règle du gardien qui tient l'écart. Quatre des
-dix règles existent pour ça (R7, R8, R9, R10).*
+onze règles existent pour ça (R7, R8, R9, R10, R11).*
 
 *Et un mot pour qui reprendra le fil du 14 : la leçon de la 19 n'est pas « il restait des copies »,
 c'est **qu'on avait cherché les copies là où on savait déjà regarder**. Sept sessions de suite ont

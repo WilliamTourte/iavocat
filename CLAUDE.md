@@ -7,23 +7,28 @@ un fichier par outil) et six suites de test. **Zéro build, zéro serveur, zéro
 `file://` et joue. Une page ne porte que sa **structure** — le CSS entre par `<link>`, le JS par
 `<script src>`.
 
-> **Ce fichier n'est pas une source de vérité.** Le §12 de `docs/ARCHITECTURE.md` en pose exactement
-> quatre — le contenu, les règles, la grammaire, et la Partie I pour le sens. Ce qui suit ne fait
-> qu'**orienter** : ça renvoie, ça ne reformule pas. En cas d'écart, le document renvoyé tranche.
+> **Ce fichier n'est pas une source de vérité.** Le §12 en pose exactement quatre — le contenu, les
+> règles, la grammaire, et `docs/CONCEPTION.md` pour le sens. Ce qui suit ne fait qu'**orienter** : ça
+> renvoie, ça ne reformule pas. En cas d'écart, le document renvoyé tranche.
+>
+> **Un numéro de section suffit à adresser n'importe quoi** — ils sont uniques dans tout le dépôt :
+> **§1 à §7** dans `docs/CONCEPTION.md`, **§8.1 à §8.9** dans `docs/ECRITURE.md`, **§9 à §17** dans
+> `docs/ARCHITECTURE.md`. R11 du gardien vérifie qu'aucun renvoi ne pointe dans le vide, ni ne nomme
+> le mauvais fichier.
 
 ## Par où lire, selon ce qu'on vient faire
 
 **Toujours d'abord `docs/PASSATION.md`** — l'état du jour, les décisions prises avec l'auteur, et la
 prochaine étape. C'est court et c'est daté.
 
-Ensuite, dans `docs/ARCHITECTURE.md` (on n'en lit que ce qu'il faut) —
+Ensuite, on n'en lit que ce qu'il faut —
 
 | Ce qu'on vient faire | Ce qu'on lit |
 |---|---|
 | **Trouver *où* vit une chose** | `docs/CARTE.md` — l'index geste → fonction → fichier. Il ne dit jamais pourquoi ; il évite d'avoir à chercher |
 | **Un doute sur un mot** (empan/passage, lien/liaison, dossier/Dossier…) | `docs/LEXIQUE.md` — un mot, un sens, et les faux amis à ne jamais confondre |
-| Se repérer, sans plus | **§12** (où vit la vérité), **§17** (le résumé en trois phrases), **§9** (la règle de rangement — l'inventaire des fichiers, lui, est dans `docs/CARTE.md`) |
-| Toucher au **sens** | **§4.5** d'abord — la grammaire du composeur, le passage que le code cite le plus — puis la **Partie I** en entier. Le **§7** est l'**index** des invariants : il nomme et renvoie, c'est le § renvoyé qui tranche |
+| Se repérer, sans plus | `docs/ARCHITECTURE.md` : **§12** (où vit la vérité), **§17** (le résumé en trois phrases), **§9** (la règle de rangement — l'inventaire des fichiers, lui, est dans `docs/CARTE.md`) |
+| Toucher au **sens** | `docs/CONCEPTION.md`. Le **§4.5** d'abord — la grammaire du composeur, le passage que le code cite le plus, découpé en sept. Le **§7** est l'**index** des invariants : il nomme et renvoie, c'est le § renvoyé qui tranche |
 | Toucher au **contenu** | **§11** (le schéma 3, et tous les attributs optionnels) |
 | **Écrire une affaire** — des répliques, une pièce, un leurre | `docs/ECRITURE.md` — la discipline d'écriture, §8.1 à §8.9. Rien n'y touche au moteur, et rien ne s'y teste |
 | Toucher aux **tests** | **§16** (ce que chaque suite prouve, et pourquoi elles ne nomment aucun contenu) |
@@ -65,9 +70,9 @@ Les six suites éprouvent le **sens** : elles jouent l'affaire et lisent `innerH
 jamais un style calculé, jamais la forme d'une balise, jamais l'inventaire des noms globaux d'une
 page — et c'est exactement là que ce dépôt s'est fait mal, à répétition. Elles ne se lisent pas non
 plus **elles-mêmes**, et c'est leur second angle mort. `outils/gardien.js` rend le §2 de la passation
-**opposable** : dix règles, dix pannes déjà payées, chacune citant le § qui la tranche (§16 bis de
-`docs/ARCHITECTURE.md` les liste). R7, R9 et R10 marchent sur `app/`, `tests/` et `outils/` ; les
-sept autres sur les deux pages. Zéro dépendance, comme le livrable.
+**opposable** : onze règles, onze pannes déjà payées, chacune citant le § qui la tranche (§16 bis de
+`docs/ARCHITECTURE.md` les liste). R7, R9, R10 et R11 marchent au-delà des deux pages —
+R11 sur tout le dépôt, documents compris. Zéro dépendance, comme le livrable.
 
 **Ce n'est pas une source de vérité.** Il fait respecter, il ne décide pas : si une règle et son §
 divergent, c'est le § qui a raison. Il est en **mode double**, comme `moteur.js` — lancé il contrôle,
@@ -98,8 +103,9 @@ propriétés de `window` — **mais ils occupent quand même le nom**, et un mod
 
 ## La méthode, demandée par l'auteur
 
-Toute évolution part de `docs/ARCHITECTURE.md` : **on réécrit le document, on le fait relire, puis on
-applique au code.** La passation le redit à chaque fois, en clôture. Et à la fin, on relit les phrases
+Toute évolution part du **document** — `docs/CONCEPTION.md` si elle touche au sens,
+`docs/ARCHITECTURE.md` si elle touche au système : **on réécrit le document, on le fait relire, puis
+on applique au code.** La passation le redit à chaque fois, en clôture. Et à la fin, on relit les phrases
 composées **à l'œil** : c'est comme ça qu'on attrape ce qu'aucune suite ne voit.
 
 ## Une convention de dates, pour éviter la méprise
