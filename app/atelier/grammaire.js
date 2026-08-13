@@ -26,17 +26,22 @@ function moteurGram(){
 }
 /* les blocs-terme du squelette courant (les « trous » à remplir) */
 function gramTermes(sq){ return sq.filter(b=>b.type==="terme"); }
+/* Un squelette + une valeur par trou → la chaîne {bloc, valeur} que le moteur
+   attend. C'est le SEUL endroit qui sait dans quel ordre les trous se
+   remplissent : l'aperçu s'en sert pour un choix, la densité pour un million. */
+function chaineDe(sq,valeurs){
+  let ti=0;
+  return sq.map(bloc => bloc.type==="terme" ? {bloc, valeur:valeurs[ti++]} : {bloc, valeur:null});
+}
 /* construit la chaîne {bloc, valeur} pour le moteur, à partir des choix */
 function gramChaine(sq){
-  let ti=0;
-  return sq.map(bloc=>{
-    if(bloc.type!=="terme") return {bloc,valeur:null};
-    const v=GRAM.vals[ti++];
-    if(v==null) return {bloc,valeur:undefined};
-    // slot « note » : la valeur est la RÉDUCTION de la note gardée ;
-    // slot « champ » : la valeur est l'id du champ.
-    return {bloc, valeur: bloc.source==="note" ? (GRAM.notes[v]||{}).red : v};
-  });
+  // slot « note » : la valeur est la RÉDUCTION de la note gardée ;
+  // slot « champ » : la valeur est l'id du champ.
+  return chaineDe(sq, gramTermes(sq).map((bloc,ti)=>{
+    const v=GRAM.vals[ti];
+    if(v==null) return undefined;
+    return bloc.source==="note" ? (GRAM.notes[v]||{}).red : v;
+  }));
 }
 function gramSetVal(ti,val){ GRAM.vals[ti]=(val===""?null:val); renderGrammaire(); }
 function gramChoixSquel(i){ GRAM.squel=+i; GRAM.vals={}; renderGrammaire(); }
@@ -50,24 +55,45 @@ function gramGarderNote(){
   renderGrammaire();
 }
 function gramSupprNote(i){ GRAM.notes.splice(i,1); GRAM.vals={}; renderGrammaire(); }
-/* densité live : le même calcul que la section 4 du banc d'essai */
+/* DENSITÉ LIVE — le même calcul que la section 5 du banc d'essai.
+   ------------------------------------------------------------
+   Ce panneau existe pour UN chiffre : la marge de bruit, les phrases sensées
+   qui ne portent aucun lien. Si elle tombait à 0, « sensé » vaudrait
+   « correct » et l'interface trahirait (§14).
+
+   Il le calculait en prenant la DERNIÈRE FORME DÉCLARÉE du squelette —
+   `s.map(b=>b.forme).filter(Boolean).pop()` — ce qui était juste tant que toute
+   forme était portée par une liaison. Depuis la déduction (§4.5), un bloc
+   `deduit` fait CALCULER la forme des valeurs, et une liaison `imbrique`
+   EMBOÎTE ce qui précède au lieu de s'y ajouter : la forme reconstruite à la
+   main était d'arité 1 avec deux termes à plat, refusée pour « arité », à
+   chaque combinaison. Sur content.js : 24 sensées annoncées, 330 réelles ;
+   21 de marge annoncés, 315 réels.
+
+   On ne réécrit donc plus la réduction : on construit la chaîne de blocs et on
+   appelle `reduire`, comme le composeur du jeu (§12, §15). */
 function gramDensite(m){
   const {CHAMPS}=GRAM._data;
   const notes=GRAM.notes.map(n=>n.red);
   let total=0,senses=0,avecLien=0;
   for(const s of GRAM._sq){
-    const slots=s.filter(b=>b.type==="terme");
-    const sources=slots.map(b=>b.source==="note"?(notes.length?notes:[null]):CHAMPS.map(c=>c.id));
+    const sources=gramTermes(s).map(b=>b.source==="note"?(notes.length?notes:[null]):CHAMPS.map(c=>c.id));
     const combos=sources.reduce((a,src)=>a.flatMap(p=>src.map(v=>[...p,v])),[[]]);
     for(const c of combos){
       if(c.some(v=>v==null)) continue;
-      const r={forme:s.map(b=>b.forme).filter(Boolean).pop(), termes:c};
+      const r=m.reduire(chaineDe(s,c));
       total++;
       if(!m.valider(r)){ senses++; if(m.lienDe(r)) avecLien++; }
     }
   }
   return {total,senses,avecLien};
 }
+/* Ce qu'un squelette annonce comme forme, AVANT de connaître ses valeurs. Une
+   liaison la déclare ; un bloc `deduit` ne peut pas — elle se calcule des deux
+   empans, et le squelette seul ne sait pas laquelle ce sera. On le dit, plutôt
+   que d'écrire « undefined ». */
+const formeSquelette = s =>
+  s.map(b=>b.forme).filter(Boolean).pop() || (s.some(b=>b.deduit) ? "déduite des valeurs" : "—");
 function renderGrammaire(){
   const pane=$("grampane");
   const m=moteurGram();
@@ -144,7 +170,7 @@ function renderGrammaire(){
   const ref=`<h3>Les ${GRAM._sq.length} squelettes de phrase</h3>
     <div class="gsquel">${GRAM._sq.map(s=>
       "· "+s.map(b=>b.type==="terme"?(b.source==="note"?"<b>«note»</b>":"<b>___</b>"):escapeH(b.texte)).join(" ")
-      +'  → <span class="f">'+escapeH(s.map(b=>b.forme).filter(Boolean).pop())+"</span>").join("<br>")}</div>
+      +'  → <span class="f">'+escapeH(formeSquelette(s))+"</span>").join("<br>")}</div>
     <h3>Densité — la marge de bruit</h3>
     <div class="gstat"><b>${d.total}</b> phrases légales · <b>${d.senses}</b> sensées
       (${(100*d.senses/d.total).toFixed(1)} %) · <b>${d.avecLien}</b> portent un lien du contenu
