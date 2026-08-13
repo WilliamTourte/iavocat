@@ -82,11 +82,9 @@ function empanRelie(pid,eid){
   const k=K(pid,eid);
   return (CONTENU.liens||[]).some(L=>feuillesLien(L).includes(k));
 }
-/* Le RANG dans CONTENU.dimensions, jamais la pertinence (§4.3). La règle et la
-   palette vivent dans moteur.js, en un seul exemplaire — l'atelier en portait
-   les six mêmes hexadécimaux que le jeu. Ici on ne choisit que le repli : une
-   dimension inconnue est une ERREUR d'écriture, on la montre en rouge (le jeu,
-   lui, la grise et continue). */
+/* Le RANG dans CONTENU.dimensions, jamais la pertinence (§4.3) ; règle et
+   palette vivent dans moteur.js. Ici, seulement le repli : une dimension
+   inconnue est une ERREUR d'écriture, montrée en rouge (le jeu la grise). */
 function couleurDim(d){
   const api=window.MoteurGrammaire;
   return (api ? api.couleurDim(toutesDims(),d) : null) || "var(--err)";

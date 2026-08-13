@@ -19,12 +19,12 @@
 | Fichier | ~lignes | Ce qu'il porte | Ce qu'il ne porte jamais |
 |---|---|---|---|
 | `app/content.js` | 664 | **le contenu** — une affaire, en un seul exemplaire | aucune règle |
-| `app/regles.js` | 379 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
-| `app/moteur.js` | 245 | **la grammaire** — composer, valider, rendre — **et les projections du contenu** (§14) | aucune donnée |
-| `app/index.html` | 85 | **la structure du jeu** | aucun style, aucun script en ligne |
-| `app/jeu.css` | 244 | **la mise en forme du jeu** | rien que le JS relise |
-| `app/jeu.js` | 586 | **l'écran et les gestes** — rendu, sauvegarde de partie, tutoriel | ne décide rien |
-| `app/atelier_v3.html` + `app/atelier/` | 156 + 260 (css) + 1985 (js) | **l'atelier** — écrire et diagnostiquer une affaire, un fichier par outil | ne recopie rien (§12), *y compris de lui-même* |
+| `app/regles.js` | 355 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
+| `app/moteur.js` | 220 | **la grammaire** — composer, valider, rendre — **et les projections du contenu** (§14) | aucune donnée |
+| `app/index.html` | 75 | **la structure du jeu** | aucun style, aucun script en ligne |
+| `app/jeu.css` | 206 | **la mise en forme du jeu** | rien que le JS relise |
+| `app/jeu.js` | 511 | **l'écran et les gestes** — rendu, sauvegarde de partie, tutoriel | ne décide rien |
+| `app/atelier_v3.html` + `app/atelier/` | 133 + 260 (css) + 1873 (js) | **l'atelier** — écrire et diagnostiquer une affaire, un fichier par outil | ne recopie rien (§12), *y compris de lui-même* |
 
 Quatre dossiers : `app/` (le livrable — c'est lui qu'on zippe), `docs/`, `tests/` (§16),
 `grammaire/` (le banc d'essai, qui consomme `../app/moteur.js` et jamais une copie).

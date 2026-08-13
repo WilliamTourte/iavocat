@@ -1,15 +1,9 @@
-/* ============================================================
-   ATELIER — LE DIAGNOSTIC : le dossier tient-il ?
-   C'est la plus grosse pièce de l'atelier, et c'est normal — elle porte
-   tout ce qu'aucune suite ne peut attraper à la place de l'auteur.
-   ============================================================ */
-/* Rend la liste des anomalies du CONTENU ENTIER.
-   ELLE NE S'APPELLE PLUS `valider` : `moteur.js` a un `valider(r)` qui juge UNE
-   phrase et rend la raison de son refus. Les deux fichiers sont chargés par la
-   même page, et les deux rendaient « rien » quand tout va bien — l'un par
-   `null`, l'autre par un tableau vide. C'est la pire forme de collision : celle
-   où se tromper de fonction ne se voit pas tant que rien ne va mal
-   (docs/CARTE.md). Le `m.valider(…)` appelé plus bas est bien celui du moteur. */
+/* ATELIER — LE DIAGNOSTIC : le dossier tient-il ? La plus grosse pièce, et
+   c'est normal : elle porte ce qu'aucune suite ne peut attraper. */
+/* Les anomalies du CONTENU ENTIER. ELLE NE S'APPELLE PLUS `valider` : celui de
+   `moteur.js` juge UNE phrase, les deux fichiers sont chargés par la même page,
+   et tous deux rendent « rien » quand tout va bien — la pire collision, celle
+   qui ne se voit pas tant que rien ne va mal (docs/CARTE.md). */
 function diagnostiquer(){
   const out=[]; const P=CONTENU.pieces||{}, LI=CONTENU.liens||[];
   const add=(niveau,msg,detail,ref)=>out.push({niveau,msg,detail,ref});
@@ -60,18 +54,12 @@ function diagnostiquer(){
     const etats=new Set([G.depart,...G.blocs.flatMap(b=>[b.de,b.vers])]);
     for(const e of etats) if(!prod.has(e))
       add("erreur",`Impasse dans l'automate : état « ${e} »`,"Aucun chemin ne mène de cet état à une fin de phrase — le joueur y resterait coincé.",{});
-    /* UNE FORME EXISTE DE DEUX FAÇONS (§15). Une liaison peut la DÉCLARER
-       (`forme:` sur un bloc) ; depuis la déduction (§4.5), un bloc `deduit` peut
-       la faire DÉDUIRE — et celle-là n'est nommée par aucun bloc, puisque le
-       joueur désigne au lieu de déclarer. Ce contrôle ne connaissait que la
-       première : il tenait les quatre formes comparatives de l'affaire livrée
-       pour indicibles alors que le jeu les prononce.
-       « Déductible » se lit ici comme `deduire` le lit (moteur.js), et SUR CE
-       DOSSIER : le prédicat, l'arité 2, et un slot qui accepte au moins une
-       dimension déclarée. Chacune des trois manque autrement, donc se dit
-       autrement — un avertissement qui ne nomme pas son remède n'en est pas un.
-       L'OMBRAGE n'est pas signalé, et c'est voulu : `deduire` rend la PREMIÈRE
-       forme qui convient, l'ordre de déclaration est signifiant (§11), et
+    /* UNE FORME EXISTE DE DEUX FAÇONS (§15) : une liaison peut la DÉCLARER,
+       un bloc `deduit` peut la faire DÉDUIRE — et celle-là n'est nommée par
+       aucun bloc. « Déductible » se lit comme `deduire` le lit, et SUR CE
+       DOSSIER : prédicat, arité 2, un slot qui accepte une dimension déclarée.
+       Chacune manque autrement, donc se dit autrement.
+       L'OMBRAGE n'est pas signalé : l'ordre de déclaration est signifiant (§11),
        l'alerter reviendrait à interdire ce qui tranche les ambiguïtés. */
     const parDeduction=(G.blocs||[]).some(b=>b.deduit);
     const slotOuvert=F=>{ const s=F.slots&&F.slots[0];
@@ -143,13 +131,10 @@ function diagnostiquer(){
     if(L.conclusion && (f.arite||2)!==1)
       add("avert",`Lien ${i} marqué « conclusion » sans être une qualification`,
         "Seule une liaison d'arité 1 (sur une note close) conclut — c'est elle qui porte la base légale.",{edge:i});
-    /* Une remise attend une SUITE de réponses (§3) : le tag vit sur l'ATTENTE,
-       plus sur la remise. Cette ligne demandait encore `r.attend` — la forme
-       d'avant — si bien que sur une affaire au schéma 3 elle répondait « non »
-       pour TOUS les tags : six informations mensongères à chaque ouverture, une
-       par lien qui en porte un. Une bande toujours pleine s'apprend à ne plus se
-       lire. `attentesDeRemise` (noyau.js) est le normalisateur, et il lit les
-       deux écritures — R9 du gardien interdit désormais de le contourner. */
+    /* Le tag vit sur l'ATTENTE, plus sur la remise (§3). Cette ligne demandait
+       `r.attend` et répondait « non » pour TOUS les tags : six informations
+       mensongères par ouverture, et une bande toujours pleine s'apprend à ne
+       plus se lire. Passer par `attentesDeRemise` (R9). */
     if(L.tag && !(CONTENU.remises||[]).some(r=>attentesDeRemise(r).some(a=>a.attend===L.tag)))
       add("info",`Lien ${i} : tag « ${L.tag} » attendu par aucune remise`,"Le versement de cette phrase ne fera avancer aucune session.",{edge:i});
   });
@@ -158,11 +143,8 @@ function diagnostiquer(){
       add("avert",`Liens dupliqués (${i} et ${j})`,`« ${labelLien(LI[i])} » apparaît deux fois.`,{edge:j});
 
   /* ---- les articles : des RÉFÉRENCES, jamais des porteurs d'empan ----
-     C'est l'invariant du §4.5 (« une règle ne lit aucune dimension »), rendu
-     vérifiable. Un article ne s'invoque pas, il se cite : ce qu'on compare
-     vient toujours des pièces. `porte` dit ce que l'article régit — purement
-     indicatif, le moteur ne le lit jamais, mais le joueur en a besoin pour
-     savoir quel genre de relation on lui demande de chercher. */
+     L'invariant du §4.5 rendu vérifiable. `porte` est indicatif : le moteur ne
+     le lit jamais, le joueur en a besoin. */
   for(const [pid,p] of Object.entries(P)){
     if(!estRegle(p)) continue;
     const n=Object.keys(p.empans||{}).length;
@@ -202,10 +184,9 @@ function diagnostiquer(){
   if(faux===0) add("avert","Aucun faux vice","Le leurre (test de discrimination) manque.",{});
   else if(faux>1) add("avert",`${faux} faux vices`,"Un seul leurre suffit — plusieurs brouillent le test.",{});
 
-  /* ---- LE DOUBLON BANAL (§4.4 de CONCEPTION) ----
-     Si toutes les valeurs d'une dimension sont uniques, le premier doublon
-     EST la réponse. La dimension qui porte le vice doit compter au moins
-     deux doublons réguliers en plus de l'irrégulier. */
+  /* ---- LE DOUBLON BANAL (§4.4) ---- si toutes les valeurs d'une dimension sont
+     uniques, le premier doublon EST la réponse : celle qui porte le vice doit
+     compter au moins deux doublons réguliers en plus de l'irrégulier. */
   const plats=empansPlats().filter(e=>livrees.has(e.pid));
   const parDim={};
   for(const e of plats) (parDim[e.dim]=parDim[e.dim]||[]).push(e);
@@ -239,9 +220,8 @@ function diagnostiquer(){
   /* ---- les remises et leurs attentes ---- */
   const R=CONTENU.remises||[];
   const tags=new Set(LI.map(l=>l.tag).filter(Boolean));
-  /* Un chemin de composition existe-t-il, avec les seules pièces reçues à ce
-     stade, qui passe par la forme voulue et atteigne un état final ? Recherche
-     en largeur sur les états, en ne franchissant que les blocs livrés. */
+  /* Un chemin de composition existe-t-il avec les seules pièces reçues à ce
+     stade ? Recherche en largeur, blocs livrés seulement. */
   const formeComposable=(forme,dispo)=>{
     const G=CONTENU.grammaire||{}, fins=new Set(G.finaux||[]);
     const vus=new Set(), file=[[G.depart,false]];
@@ -263,9 +243,8 @@ function diagnostiquer(){
         `« ${pid} » n'existe pas — le jeu planterait en la livrant.`,{});
     if(!(r.pieces||[]).length)
       add("info",`Remise ${i+1} ne livre aucune pièce`,"Session purement narrative ?",{});
-    /* Une remise attend une SUITE de réponses (§3) : l'avocat pose, attend,
-       accuse réception, repose. L'ancienne forme — `attend`/`apres` sur la
-       remise — se lit comme une liste à un élément. */
+    /* Une remise attend une SUITE de réponses (§3) ; l'ancienne forme se lit
+       comme une liste à un élément. */
     const attentes=attentesDeRemise(r);
     if(!attentes.length)
       add("erreur",`Remise ${i+1} sans attente`,
@@ -287,12 +266,10 @@ function diagnostiquer(){
           "Aucune phrase composable ne satisfait cette attente — la session serait sans issue.",{});
         return;
       }
-      /* LE BLOC LIVRÉ TROP TARD. Depuis que les blocs sont filtrés par
-         livraison (§4.5), une attente peut devenir inservable : si TOUTES les
-         phrases qui la servent exigent une pièce qui arrive plus tard, le
-         joueur ne peut littéralement pas écrire ce qu'on lui demande. Ça vaut
-         pour un article, et depuis le 30 juillet pour le second empan aussi.
-         Aucune relecture n'attrape ça ; une partie de test, après vingt minutes. */
+      /* LE BLOC LIVRÉ TROP TARD : les blocs étant filtrés par livraison (§4.5),
+         une attente devient inservable si toutes les phrases qui la servent
+         exigent une pièce plus tardive — article comme second empan. Aucune
+         relecture n'attrape ça ; une partie de test, après vingt minutes. */
       const servables=(CONTENU.liens||[]).filter(L=>L.tag===a.attend && formeComposable(L.forme,dispo));
       if(!servables.length)
         add("erreur",`Remise ${i+1}${ou} attend « ${a.attend} », mais de quoi l'écrire n'est pas encore livré`,
@@ -360,21 +337,16 @@ function renderDiag(){
   });
   $("diag").innerHTML=h;
 }
-/* Cliquer une ligne du diagnostic, c'est laisser le diagnostic prendre la main :
-   tout ce qui était sélectionné tombe, puis on désigne. Écrit à la main, ce
-   nettoyage oubliait `formPieceEdit` — l'éditeur de texte restant ouvert, et
-   `renderInsp` le rendant en priorité, cliquer une ligne ne montrait RIEN.
-   `reinitSelection` (noyau.js) ne peut plus l'oublier pour personne. */
+/* Cliquer une ligne du diagnostic : tout ce qui était sélectionné tombe, puis on
+   désigne. Écrit à la main, ce nettoyage oubliait `formPieceEdit` et ne montrait
+   RIEN ; `reinitSelection` ne peut plus l'oublier pour personne. */
 function pointer(ref){
   reinitSelection();
   if(!ref) return render();
   if(ref.edge!=null){ selEdge=ref.edge; }
-  /* Les empans à surligner d'un LOT de liens. Cette ligne dépliait encore
-     `l.a`/`l.b`, le format du SCHÉMA 2 : en schéma 3 un lien porte
-     `forme`/`termes`, et sur le contenu livré `liens[7].a` vaut `undefined` —
-     cliquer l'avertissement « le vice a N canaux indépendants », son seul
-     émetteur, levait une TypeError. `feuillesLien` rend les empans-feuilles
-     quel que soit l'emboîtement, et il est déjà employé partout ailleurs ici. */
+  /* Les empans à surligner d'un LOT de liens. Cette ligne dépliait `l.a`/`l.b`,
+     du SCHÉMA 2, et levait une TypeError sur le seul chemin qui l'appelle (R7).
+     `feuillesLien` rend les feuilles quel que soit l'emboîtement. */
   if(ref.edges){ ref.edges.forEach(i=>{ const l=CONTENU.liens[i]; if(!l) return;
     for(const k of feuillesLien(l)) flagged.add(k); }); }
   if(ref.champ){ flagged.add(K(ref.champ[0],ref.champ[1])); scrollVers(ref.champ[0]); }

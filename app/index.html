@@ -15,10 +15,8 @@
     <h2>Discussion</h2>
     <div class="body" id="discussion"></div>
     <!-- On répond SOUS la question (§4.6). `#composeur` est le FRÈRE de
-         `#discussion`, jamais son enfant : le fil défile et se recale en bas à
-         chaque message, la phrase qu'on écrit ne doit pas partir avec lui.
-         Aucune étiquette « privé » ici — le statut se lit dans le fait que
-         rien n'en sort, pas dans un en-tête (§4.6). -->
+         `#discussion`, jamais son enfant : le fil se recale en bas à chaque
+         message, la phrase qu'on écrit ne doit pas partir avec lui. -->
     <div id="composeur"></div>
   </section>
   <section class="col">
@@ -61,26 +59,17 @@
      ============================================================ -->
 <script src="regles.js"></script>
 
-<!-- ============================================================
-     LE CONTENU — produit par l'atelier (« Exporter content.js »).
-     Place content.js à côté de ce fichier : c'est le seul contenu,
-     il n'y a plus de copie embarquée. Marche en file:// et sur itch.io.
-     ============================================================ -->
+<!-- LE CONTENU — produit par l'atelier. content.js va à côté de ce fichier :
+     c'est le seul exemplaire (§12). Marche en file:// et sur itch.io. -->
 <script src="content.js"></script>
 
-<!-- ============================================================
-     LE JEU — l'écran et les gestes. Il ne décide rien (§9) : tout ce qui
-     décide est dans regles.js, qu'il appelle.
-     TROIS RÈGLES SUR CETTE BALISE, et elles ne sont pas cosmétiques :
-     • sur UNE ligne, sans attribut — c'est la forme exacte que le harnais
-       de test reconnaît pour l'inliner (jsdom ne charge aucun src) ;
-     • ni `defer` ni `async`, JAMAIS — la regex du harnais ne reconnaît que
-       la forme exacte ci-dessus : avec un attribut de plus, la balise n'est
-       PAS inlinée du tout, rien ne se charge, et quatre contrôles tombent
-       (§13). L'écart se dit donc tout de suite, et R1 du gardien le tient ;
-     • APRÈS content.js — le démarrage, en fin de fichier, lit
-       `window.CONTENU` et touche le DOM.
-     ============================================================ -->
+<!-- LE JEU — l'écran et les gestes ; il ne décide rien (§9).
+     TROIS RÈGLES SUR CETTE BALISE, aucune n'est cosmétique :
+     • sur UNE ligne, sans attribut — la forme exacte que le harnais inline ;
+     • ni `defer` ni `async`, JAMAIS : un attribut de plus et la balise n'est
+       PAS inlinée du tout, rien ne se charge, quatre contrôles tombent (§13).
+       R1 du gardien tient la forme ;
+     • APRÈS content.js — le démarrage lit `window.CONTENU`. -->
 <script src="jeu.js"></script>
 </body>
 </html>

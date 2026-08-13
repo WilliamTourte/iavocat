@@ -167,10 +167,8 @@ function allerPiece(pid){ vue('graphe'); scrollVers(pid); }
 /* mutations de la frise — toutes par `muter` (noyau.js) : c'est lui qui porte
    `pushUndo` avant et `autosave(); render()` après. Ce qui reste écrit ici est
    ce que chacune change, et rien d'autre. */
-/* Ce que la SESSION porte en propre : son expéditeur et son message. Le tag et
-   l'accusé de réception vivent sur l'ATTENTE depuis le §3 — `majAttente` plus
-   bas —, et cette fonction gardait une branche `prop==="attend"` que plus
-   personne n'appelait depuis. Elle est partie avec R9. */
+/* Ce que la SESSION porte en propre : expéditeur et message. Le tag et l'accusé
+   vivent sur l'ATTENTE (§3) — voir `majAttente`, plus bas. */
 function majRemise(i,prop,v){ muter(()=>{ CONTENU.remises[i][prop]=v; }); }
 function retirerPieceRemise(i,pid){ muter(()=>{ CONTENU.remises[i].pieces=(CONTENU.remises[i].pieces||[]).filter(x=>x!==pid); }); }
 function ajouterPieceRemise(i,pid){ muter(()=>{ (CONTENU.remises[i].pieces=CONTENU.remises[i].pieces||[]).push(pid); }); }

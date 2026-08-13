@@ -33,10 +33,8 @@ $("file").addEventListener("change",e=>{
     }catch(err){ hint("JSON invalide : "+err.message,true); } };
   r.readAsText(f); e.target.value="";
 });
-/* Migration du schéma 2 (champs + relations + cases) vers le schéma 3
-   (empans + grammaire + attentes). Idempotente, silencieuse, appliquée à
-   l'import et au chargement de l'autosave. Voir docs/ECRITURE.md.
-   Le JEU, lui, ne migre pas : il refuse un contenu de schéma 2. */
+/* Migration du schéma 2 vers le schéma 3 (§11) : idempotente, silencieuse, à
+   l'import et au chargement de l'autosave. Le JEU, lui, ne migre pas. */
 const GRAMMAIRE_PAR_DEFAUT = () => clone(contenuLivre().grammaire);
 const DIMS_PAR_DEFAUT = () => clone(contenuLivre().dimensions);
 /* Les dimensions d'avant ne sont pas les cinq du QQOQC : on rabat ce qui se
@@ -95,19 +93,12 @@ function migrerContenu(j){
   for(const [,c] of Object.entries(j.cases||{})){
     const r=(j.remises||[])[(c.remise||1)-1];
     if(!r || !c.apres || !c.apres.replique) continue;
-    /* L'accusé se pose sur la PREMIÈRE ATTENTE de la session, jamais sur la
-       remise (§3). Il s'y posait jusqu'au 14 août, et c'était le dernier
-       endroit du dépôt qui PRODUISAIT l'ancienne écriture — pour un prix
-       entièrement silencieux : `attentesDe` ne rend une paire que si `attend`
-       existe AUSSI sur la remise, si bien qu'un accusé posé seul n'était
-       lisible ni par le jeu ni par l'atelier — `attentesDeRemise` rendant `[]`
-       de la même façon, l'inspecteur ne pouvait pas même l'éditer.
-       ON N'INVENTE AUCUNE ATTENTE, et c'est le point à ne pas rater : une
-       attente sans `attend` serait trouvée non servie par `attenteCourante`
-       POUR TOUJOURS — elle deviendrait l'attente courante, la clôture ne
-       s'ouvrirait jamais, et le remède serait pire que le mal. Faute
-       d'attente, l'accusé reste où il est : visible dans le JSON, à reloger à
-       la main, comme tout ce qu'une case portait d'autre (§11). */
+    /* L'accusé se pose sur la PREMIÈRE ATTENTE, jamais sur la remise (§3, §11) :
+       posé seul sur la remise, il ne serait lisible ni par le jeu ni par
+       l'atelier — les deux normalisateurs rendent `[]`.
+       ON N'INVENTE AUCUNE ATTENTE pour autant : une attente sans `attend` serait
+       trouvée non servie POUR TOUJOURS, et la clôture ne s'ouvrirait jamais.
+       Faute d'attente, l'accusé reste où il est, à reloger à la main. */
     const as=attentesDeRemise(r);
     if(as.length){ if(!as[0].apres) as[0].apres={...c.apres}; }
     else if(!r.apres) r.apres={...c.apres};
@@ -152,13 +143,10 @@ function adopter(j){
 }
 /* Revenir à content.js tel qu'il est sur le disque, en jetant le travail en
    cours. C'est l'annulation d'une session d'écriture, pas un « exemple ». */
-/* LA SIXIÈME CONFIRMATION EN DEUX CLICS, et la seule qui ne passe pas par
-   `demanderSuppr` — c'est assumé, pas un oubli. Les cinq autres arment un
-   BOUTON, qui change de classe et de mot ensemble (`btnSuppr`, noyau.js) ;
-   celle-ci vise un bouton statique de la barre d'outils, et s'annonce par le
-   `hint` en rouge. La ramener sous `demanderSuppr` lui ferait perdre sa phrase :
-   une sixième copie qu'on assume vaut mieux qu'une généralisation forcée.
-   L'épilogue, lui, est bien celui de tout le monde. */
+/* LA SIXIÈME CONFIRMATION EN DEUX CLICS, seule à ne pas passer par
+   `demanderSuppr` : les cinq autres arment un BOUTON, celle-ci vise un bouton
+   statique et s'annonce par le `hint`. Copie assumée plutôt que généralisation
+   forcée ; l'épilogue, lui, est celui de tout le monde. */
 function demanderExemple(){
   if(pendingDel!=="exemple"){ pendingDel="exemple"; hint("Recharger content.js efface le contenu courant — reclique pour confirmer.",true); return; }
   pendingDel=null; hint();

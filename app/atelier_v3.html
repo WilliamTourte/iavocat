@@ -5,28 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>IAvocat — Atelier v3 · banc de diagnostic du dossier</title>
 <!--
-  ============================================================
-  IAvocat — ATELIER DE CONCEPTION v3 (outil, pas le jeu)
-  ------------------------------------------------------------
-  Quatre onglets :
-  • Graphe & diagnostic — l'ESPACE du dossier (qui se relie à quoi,
-    et est-ce que ça tient)
-  • Étapes du jeu — le TEMPS du dossier :
-      - la frise : remises → verrous → répétition → fins, ÉDITABLE
-        (textes des remises, répliques de l'avocat, affirmations,
-        fins ; déplacer une pièce d'une remise à l'autre)
-      - le pas-à-pas : une simulation du déroulé, action par action,
-        avec les drapeaux (vice_trouvé / exposé) en direct
-  • JSON — le contenu brut, appliquable
-  • Grammaire — composer une phrase avec la grammaire du contenu courant
+  IAvocat — ATELIER DE CONCEPTION v3 (l'outil, pas le jeu). Quatre onglets :
+  Graphe & diagnostic (l'ESPACE du dossier), Étapes du jeu (le TEMPS : la frise
+  éditable et le pas-à-pas), JSON, Grammaire.
 
-  LES RÈGLES NE SONT PLUS RECOPIÉES ICI. Les déclencheurs (« servir
-  l'attente envoie la remise 2 », « ouvrir la pièce décisive déclenche
-  la tentation »…) vivent dans app/regles.js, que cette page CHARGE et
-  APPELLE — comme le jeu. Il n'y a donc plus rien à resynchroniser :
-  le pas-à-pas ne peut plus dériver du jeu. Ce qui reste propre à
-  l'atelier : le diagnostic, le graphe, la frise, la migration, l'export.
-  ============================================================
+  LES RÈGLES NE SONT PAS RECOPIÉES ICI : elles vivent dans app/regles.js, que
+  cette page CHARGE et APPELLE comme le jeu — le pas-à-pas ne peut pas dériver
+  (§12). Restent propres à l'atelier : le diagnostic, le graphe, la frise, la
+  migration, l'export.
 -->
 <link rel="stylesheet" href="atelier/atelier.css">
 </head>
@@ -105,10 +91,8 @@
   <div id="grampane"></div>
 </main>
 
-<!-- Le moteur de grammaire : le MÊME fichier que celui du jeu et du banc
-     d'essai (npm run demo:grammaire), jamais une copie. L'onglet « Grammaire »
-     l'applique à la grammaire du contenu courant. En file:// ce chemin marche ;
-     sous jsdom (tests) il ne se charge pas, et l'onglet le signale. -->
+<!-- Le moteur de grammaire : le MÊME fichier que le jeu et le banc d'essai,
+     jamais une copie. Sous jsdom il ne se charge pas, et l'onglet le dit. -->
 <script src="moteur.js"></script>
 
 <!-- LE CONTENU — le même fichier que celui du jeu. L'atelier ne porte plus de
@@ -117,22 +101,15 @@
 <script src="regles.js"></script>
 <script src="content.js"></script>
 
-<!-- ============================================================
-     L'ATELIER, PAR ONGLET. Une page de 2 170 lignes portait cinq outils ;
-     chacun a désormais son fichier. Portée globale CLASSIQUE (aucun module
-     ES) : c'est ce qui laisse intacts les cinquante-neuf `onclick=` /
-     `onchange=` du HTML ci-dessus, et la propriété « zéro build, file:// ».
-
-     L'ORDRE COMPTE, mais moins qu'il n'y paraît : les fonctions se voient
-     entre fichiers par hoisting, résolues à l'appel. Seul `noyau.js` exécute
-     son corps au chargement (`let CONTENU = contenuLivre()`), il vient donc
-     en premier — après le moteur, les règles et le contenu.
-
-     PIÈGE : un `const`/`let` de haut niveau n'est PAS une propriété de
-     `window` (docs/PASSATION.md §2). Les `window.X = X` explicites de
-     `undo`, `adopter`, `demanderExemple` et `simReset` ne sont pas
-     décoratifs — c'est par eux que les suites lisent l'atelier.
-     ============================================================ -->
+<!-- L'ATELIER, PAR ONGLET — un fichier par outil. Portée globale CLASSIQUE,
+     aucun module ES : c'est ce qui laisse intacts les cinquante-neuf `onclick=`
+     du HTML ci-dessus, et le « zéro build, file:// ».
+     L'ORDRE COMPTE, mais moins qu'il n'y paraît : les fonctions se voient par
+     hoisting ; seul `noyau.js` exécute son corps au chargement, il vient donc
+     en premier.
+     PIÈGE : un `const`/`let` de haut niveau n'est PAS une propriété de `window`
+     (§2 de la passation) — les `window.X = X` explicites d'`undo`, `adopter`,
+     `demanderExemple` et `simReset` sont ce par quoi les suites lisent. -->
 <script src="atelier/noyau.js"></script>
 <script src="atelier/graphe.js"></script>
 <script src="atelier/diagnostic.js"></script>

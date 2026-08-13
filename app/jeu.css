@@ -1,43 +1,20 @@
-/* ============================================================
-   LE JEU — LA FEUILLE DE STYLE
-   Chargée par <link> depuis index.html. Elle ne décide rien : les seules
-   valeurs calculées entrent par la variable `--dc`, posée en style inline
-   sur chaque élément par `couleurDim` (§4.3) — la palette, elle, vit dans
-   app/moteur.js, en un seul exemplaire.
-   ============================================================ */
+/* LE JEU — LA FEUILLE DE STYLE. Chargée par <link>. Elle ne décide rien : les
+   seules valeurs calculées entrent par `--dc`, posée en style inline par
+   `couleurDim` (§4.3) — la palette vit dans app/moteur.js, en un exemplaire. */
 :root{
   --bg:#0e1116; --panel:#161b22; --panel2:#1c232d; --line:#2b3440;
   --txt:#d7dde5; --muted:#8b97a6; --accent:#6fb3d6; --warn:#d6a96f;
-  /* LE BLEU DU TRANSMIS. Il cerne tout ce qui a franchi la frontière ou
-     s'apprête à la franchir (§4.6) : la bulle de l'IA, les pièces jointes, le
-     bouton d'envoi, la phrase close, la liste du plan. Il était employé huit
-     fois et défini nulle part. C'est le bleu que l'atelier emploie déjà avec
-     exactement les mêmes fonds (#0f2230 pour la bulle IA, #12324a pour les
-     boutons).
-
-     LE MÉCANISME, MESURÉ — parce que les huit règles ne tombaient PAS de la
-     même façon, et que la moitié tombait plus bas qu'on ne le croyait. Une
-     `var()` introuvable rend la déclaration *invalide au calcul* : la propriété
-     passe à `unset`, ce qui pour un RACCOURCI vide TOUTES ses longhands.
-     Relevé au navigateur sur `.attach{border:1px solid var(--transmis)}` :
-
-         sans la variable   border-top: none / 0px
-         avec la variable   border-top: solid / 1px / rgb(35,80,110)
-
-     Ce n'était donc pas un filet de la mauvaise couleur : il n'y avait pas de
-     filet du tout. Même chose pour `.liste li .up` et `.repet .up`. Les trois
-     règles qui posent `border-color` seul (bulle de l'IA, `.compo.prete`, le
-     bouton d'envoi) sont le cas doux : elles, oui, retombaient sur
-     `currentColor`. Aucune suite ne voit ni l'un ni l'autre — elles lisent
-     `innerHTML`, jamais le style calculé (§2 de la passation). */
+  /* LE BLEU DU TRANSMIS : il cerne ce qui a franchi la frontière ou s'apprête à
+     la franchir (§4.6). Il fut employé huit fois et défini nulle part — et une
+     `var()` introuvable rend la déclaration INVALIDE AU CALCUL : pour un
+     raccourci comme `border`, ça vide toutes ses longhands, donc pas de filet du
+     tout (R3 du gardien tient ça désormais). */
   --transmis:#23506e;
 
   --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  /* Les couleurs de dimension ne sont plus ici : la palette et la règle du
-     RANG (jamais la pertinence — §4.3) vivent dans app/moteur.js, en un seul
-     exemplaire, parce que l'atelier en portait la copie. `--dc` est posé
-     en style inline sur chaque élément par `couleurDim`. */
+  /* Les couleurs de dimension vivent dans app/moteur.js — le RANG, jamais la
+     pertinence (§4.3) ; `--dc` est posé en ligne par `couleurDim`. */
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.55}
@@ -49,15 +26,14 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .col > h2 .zcount{float:none;margin-left:auto}
 
 .body{padding:12px 14px;overflow-y:auto;max-height:72vh}
-/* `.col` pose `display:flex`, qui BAT la règle `[hidden]{display:none}` du
-   navigateur : sans cette ligne, cacher la colonne du plan ne ferait rien. */
+/* `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` : sans cette
+   ligne, cacher la Plaidoirie ne ferait rien. */
 .col[hidden]{display:none}
-/* Le composeur, ancré sous le fil : il ne défile pas avec lui (§4.6). Le
-   filet le sépare de la conversation — écrire n'est pas parler. */
+/* Le composeur, ancré sous le fil : il ne défile pas avec lui (§4.6). */
 #composeur{border-top:1px solid var(--line);padding:12px 14px;background:var(--panel)}
 #composeur .zone{margin:0}
-/* Sans plan, l'écran s'ouvre à deux colonnes (§4.9). `.cloture` est câblée
-   sur trois : elle suit, sinon elle déborde. */
+/* Sans plan, deux colonnes (§4.9) ; `.cloture` est câblée sur trois, elle
+   suit — sinon elle déborde. */
 .wrap.sansPlan{grid-template-columns:1fr 1fr}
 .wrap.sansPlan .cloture{grid-column:1/3}
 @media (max-width:1100px){
@@ -93,9 +69,6 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
   background:var(--panel2);display:flex;align-items:baseline;gap:8px}
 .zone .ztitle .zcount{float:none;margin-left:auto}
 .aide{color:var(--muted);font-size:12px;margin-top:8px;font-style:italic}
-/* `--fg` était une coquille pour `--txt` : `color` héritant, la règle rendait
-   déjà la couleur du texte. On corrige l'emploi plutôt que d'ajouter un alias
-   — un mot, une chose (docs/CARTE.md). Rien ne bouge à l'écran. */
 .aide.question{margin-top:0;margin-bottom:10px;color:var(--txt);border-left:2px solid var(--muted);padding-left:8px}
 /* --- les empans dans le texte d'une pièce --- */
 .piecetexte{line-height:1.9}
@@ -111,7 +84,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
   border:1px solid var(--line);border-left:3px solid var(--dc,var(--line));border-radius:6px;overflow:hidden}
 .mchip:hover{border-color:var(--accent)}
 /* `min-width:0` : sans lui, un item de flex refuse de rétrécir sous son
-   contenu, la citation pousse la puce hors du cadre et emporte le « × ». */
+   contenu — la citation pousserait la puce hors du cadre. */
 .mchip .corps{flex:1;min-width:0;text-align:left;background:none;border:none;color:var(--txt);
   padding:6px 9px;cursor:pointer;font:inherit;font-size:13px;line-height:1.4}
 .mchip .corps:disabled{cursor:default;opacity:.55}
@@ -149,10 +122,6 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .bbloc.suite{background:#25313d;border-left:3px solid var(--transmis)}
 /* Ce qu'un article régit — indicatif, jamais filtrant (§4.5) */
 .porte{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
-/* `.manuel li` et `.manuel .porte` vivaient ici : c'était la mise en forme de la
-   modale des Manuels, retirée avec `openManuels()` le 3 août. Plus rien ne
-   posait la classe depuis, et rien ne pouvait le dire — les suites lisent
-   `innerHTML`, jamais une feuille. C'est la première prise du gardien (R4). */
 /* --- plaidoirie --- */
 .liste{list-style:none;padding:0;margin:0}
 .liste li{font-size:13px;padding:8px 0;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}
@@ -178,9 +147,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .cloture button{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;
   padding:10px 20px;cursor:pointer;font-size:14px}
 .cloture button:disabled{opacity:.4;cursor:not-allowed}
-/* Le seul bouton de chrome de la clôture : il ne pèse pas comme elle, et il
-   portait sa mise en forme en attribut `style` sur la balise — c'était le
-   dernier style en ligne de la page qui n'était pas une valeur calculée. */
+/* Le seul bouton de chrome de la clôture : il ne pèse pas comme elle. */
 #btnRecommencer{margin-left:auto;background:none;border:1px solid var(--line);
   color:var(--muted);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer}
 .cloture .hint{color:var(--muted);font-size:12px;margin-top:6px}
@@ -199,13 +166,10 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 small.note{color:var(--muted)}
 code{font-family:var(--mono);color:var(--accent)}
 /* --- l'index du dossier : les pièces d'abord, les règles ensuite --- */
-/* Deux natures, deux BANDES pleine largeur — et non deux colonnes : à
-   largeur de colonne de Mémoire, une gouttière d'étiquette plus une demi-
-   largeur ne laissait plus la place à deux puces côte à côte, et l'index
-   s'empilait une ligne par pièce (§4.9). */
+/* Deux natures, deux BANDES pleine largeur : en colonnes, l'index s'empilait
+   une ligne par pièce (§4.9). */
 .dossier{display:flex;flex-direction:column;gap:6px;padding:2px 0 4px}
-/* L'étiquette tient en gouttière, à gauche : elle ne prend plus une ligne à
-   elle (§4.9) et les puces gardent leur pavé, qui enveloppe proprement. */
+/* L'étiquette tient en gouttière : pas une ligne à elle (§4.9). */
 .dcol{min-width:0;display:flex;gap:8px;align-items:baseline}
 .dcol .dtitre{flex:none;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 .dcol .dchips{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
@@ -217,16 +181,14 @@ code{font-family:var(--mono);color:var(--accent)}
 .dchip.regle{border-color:#4a4030;color:var(--warn)}
 .zcount{float:right;font-size:11px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0}
 .panne{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;padding:12px;margin:16px 20px}
-/* --- le tutoriel du premier geste (§4.8) : de la signalétique, pas de la
-   mécanique. Le halo ENTOURE la zone où le geste a lieu — jamais un empan,
-   sinon l'interface désignerait la réponse à la lampe torche (§4.3). Aucun
-   voile : il intercepterait les clics qu'il prétend montrer. --- */
+/* --- le tutoriel (§4.8) : de la signalétique, pas de la mécanique. Le halo
+   ENTOURE la zone, jamais un empan (§4.3). Aucun voile : il intercepterait les
+   clics qu'il prétend montrer. --- */
 [data-tuto]{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;
   animation:pouls 1.8s ease-in-out infinite}
 @keyframes pouls{0%,100%{outline-color:var(--accent)}50%{outline-color:transparent}}
-/* Ce n'est pas le passage demandé : même halo, même place, autre couleur.
-   Rien n'est barré ni grisé — le geste reste permis, c'est le tutoriel qui
-   ne suit pas (§4.8). */
+/* Pas le passage demandé : même halo, autre couleur. Rien n'est barré — le
+   geste reste permis, c'est le tutoriel qui ne suit pas (§4.8). */
 [data-tuto="alerte"]{outline-color:var(--warn);animation-name:poulsAlerte}
 @keyframes poulsAlerte{0%,100%{outline-color:var(--warn)}50%{outline-color:transparent}}
 @media (prefers-reduced-motion:reduce){ [data-tuto]{animation:none} }

@@ -9,9 +9,7 @@ const boot = () => H.boot();
 console.log("\n=== Le composeur, bloc par bloc ===");
 {
   /* On livre tout d'abord : une composition ne RESTE ouverte que là où l'état
-     suivant offre un vrai choix. Là où il n'en offre qu'un, la phrase se clôt
-     d'elle-même — une suite unique n'est pas un choix (§4.5), et il n'y a plus
-     rien à retirer ni à vider. */
+     suivant offre un vrai choix — ailleurs elle se clôt d'elle-même (§4.5). */
   const w = boot();
   H.livrerTout(w);
   check("au départ, la phrase est vide", w.S.compo.length === 0);
@@ -70,10 +68,9 @@ console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
   }
   check(`les ${n} relations déclarées se déduisent toutes des valeurs`, n > 0 && tous);
 
-  /* Le PATRON doit s'écrire. Une régression ici ne casse aucune forme réduite
-     — les phrases restent reconnues — mais le verbe disparaît de la phrase et
-     le joueur lit « l'heure d'arrivée l'heure des éclats ». Aucune suite ne
-     l'avait vu ; c'est la relecture à l'œil qui l'a attrapé. */
+  /* Le PATRON doit s'écrire : une régression ne casse aucune forme réduite, mais
+     le verbe disparaît et le joueur lit « l'heure d'arrivée l'heure des
+     éclats ». C'est la relecture à l'œil qui l'avait attrapé. */
   let patronsOk = true, vus = 0;
   for (const L of H.comparaisons(w)) {
     const f = w.JEU.grammaire.formes[L.forme];
@@ -271,9 +268,8 @@ console.log("\n=== La continuation : une comparaison demande toujours « et donc
 
 console.log("\n=== Le premier geste, montré ===");
 {
-  /* LE TUTORIEL (§4.8). De la signalétique, pas de la mécanique : il pointe la
-     ZONE où le geste a lieu, jamais le bon empan, et il ne décide rien. Comme
-     partout ailleurs, rien n'est nommé ici — ni pièce, ni empan, ni phrase. */
+  /* LE TUTORIEL (§4.8) : de la signalétique, pas de la mécanique — il pointe la
+     ZONE, jamais le bon empan, et il ne décide rien. */
   const w = H.boot({url:"http://localhost/"});
   const halo = () => w.document.querySelector("[data-tuto]");
   const bandeau = () => w.document.getElementById("tuto");
@@ -372,10 +368,8 @@ console.log("\n=== Les répliques : seulement au versement ===");
 
 console.log("\n=== L'économie de l'écran : ce qui est déjà sous les yeux ===");
 {
-  /* Le composeur vit SOUS le fil (§4.6) : la question qu'on vient de poser est
-     souvent la bulle juste au-dessus. Le rappel ne la redit donc que lorsqu'elle
-     a cessé d'être le dernier mot (§4.9). Rien n'est nommé ici : la question se
-     dérive de l'attente courante, comme partout ailleurs. */
+  /* Le composeur vit SOUS le fil (§4.6) : le rappel ne redit la question que
+     lorsqu'elle a cessé d'être le dernier mot (§4.9). */
   const w = boot();
   const q = w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
   check("au départ, la question vient d'être posée : elle est le dernier mot",
@@ -402,10 +396,9 @@ console.log("\n=== Le plan ne retient que les moyens ===");
   check("l'observation est bien partie", w.S.brouillon[i].versee);
   check("l'avocat y a répondu", w.S.fil.length > 1);
   check("mais elle n'entre pas au plan", !plaidoirie(w).includes(w.S.brouillon[i].texte));
-  /* Le plan ne se contente plus de le dire : tant que rien ne s'y inscrit, sa
-     colonne n'existe pas (§4.9). Une phrase envoyée mais non plaidable ne l'ouvre
-     donc pas — c'est le MOYEN qui la fait apparaître, et cette apparition est
-     ce qui enseigne le plan. On éprouve les deux états, pas seulement le second. */
+  /* Tant que rien ne s'y inscrit, la colonne du plan n'existe pas (§4.9) : une
+     phrase envoyée mais non plaidable ne l'ouvre pas. On éprouve les deux
+     états, pas seulement le second. */
   check("et le plan n'a pas encore de colonne à l'écran", !plaidoirieVisible(w));
   // un moyen : ce qui sert une attente de session
   const moyen = H.lienTag(w, w.R.attentesDe(w.JEU.remises[0])[0].attend);
@@ -430,11 +423,9 @@ console.log("\n=== Le plan ne retient que les moyens ===");
   H.phrasesBruit(w, 3);
   const n = w.S.brouillon.length;
   for (let i = 0; i < n; i++) w.envoyer(i);
-  /* Depuis que l'article est obligatoire, une phrase de bruit est une
-     QUALIFICATION qui ne se rattache à rien : c'est l'escalade
-     `rep_sans_rapport` qui monte, et plus celle des comparaisons nues —
-     lesquelles ne peuvent plus se clore. `rep_inutile` reste un filet, pour
-     une affaire qui offrirait encore de clore sans qualifier. */
+  /* Une phrase de bruit est une QUALIFICATION qui ne se rattache à rien :
+     c'est `rep_sans_rapport` qui monte, les comparaisons nues ne pouvant plus se
+     clore. `rep_inutile` reste un filet pour une affaire à l'ancienne. */
   check("les phrases sans lien font monter l'escalade « sans rapport »", w.S.incompris >= 2);
   check("la seconde réplique n'est pas la première",
     discussion(w).includes(w.JEU.avocat.rep_sans_rapport[1].slice(0, 20)));

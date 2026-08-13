@@ -1,19 +1,15 @@
-/* ESLint — le filet GÉNÉRIQUE. Le filet propre au dépôt, lui, est
-   `outils/gardien.js` : aucune des huit pannes qu'il rejoue n'est visible d'ici.
-   Ce qu'ESLint attrape et que personne d'autre n'attrape : un identifiant
-   fautif, une variable morte dans une fonction, une clé dupliquée.
+/* ESLint — le filet GÉNÉRIQUE ; le filet propre au dépôt est `outils/gardien.js`,
+   et aucune de ses onze pannes n'est visible d'ici. Ce qu'ESLint attrape seul :
+   identifiant fautif, variable morte, clé dupliquée.
 
-   TROIS BLOCS, parce que ce dépôt a trois natures de fichiers, et une seule
-   difficulté : les pages ne chargent AUCUN module ES. Un `<script src>` classique
-   partage la portée globale de la page (§9, §13) — donc `frise.js` emploie
-   `escapeH` sans l'avoir déclaré, et c'est correct.
+   TROIS BLOCS pour trois natures de fichiers, et une seule difficulté : les pages
+   ne chargent AUCUN module ES — un `<script src>` classique partage la portée
+   globale (§9, §13), donc `frise.js` emploie `escapeH` sans l'avoir déclaré.
 
-   D'OÙ VIENT LA LISTE DES GLOBALS : du gardien, pas d'ici. Il relève déjà, pour
-   chacune des deux pages, les noms de haut niveau de tous les fichiers qu'elle
-   charge (c'est ce dont sa règle R2 est faite). Recopier cette liste à la main
-   ici l'aurait fait vieillir au premier module ajouté, et le §12 ne pardonne pas
-   les copies. On la lui demande, et on retire de chaque fichier ses propres
-   déclarations — sans quoi `no-redeclare` reprocherait à `creerMoteur` d'exister. */
+   LA LISTE DES GLOBALS VIENT DU GARDIEN, pas d'ici : il relève déjà, par page,
+   les noms de haut niveau de ce qu'elle charge (R2). La recopier l'aurait fait
+   vieillir au premier module ajouté (§12). On retire de chaque fichier ses
+   propres déclarations, sinon `no-redeclare` proteste. */
 const js      = require("@eslint/js");
 const globals = require("globals");
 const { PAGES, nomsExposes, declarationsDeHautNiveau } = require("./outils/gardien.js");
@@ -37,16 +33,11 @@ const enGlobals = noms => Object.fromEntries([...noms].map(n => [n, "writable"])
 
 const REGLES = {
   ...js.configs.recommended.rules,
-  /* Deux assouplissements, et pas un de plus : ils portent des idiomes voulus.
-     Un `localStorage` refusé (navigation privée, file:// verrouillé) ne doit pas
-     casser la partie — d'où les `catch(e){}` de `sauverPartie`, `effacerPartie`
-     et `effacerTuto`. Et `vars:"local"` parce que les noms de haut niveau d'une
-     page SONT sa surface publique : `tutoPasser` n'est appelée que depuis un
-     `onclick=` du HTML, qu'ESLint ne lit pas. C'est R5 du gardien qui tient ce
-     bout-là, et lui sait lire les `onclick=`. `caughtErrors:"none"` va avec :
-     un `catch(e)` dont on ignore la raison est ici une décision, pas un oubli.
-     Tout ce qui restait après ces deux-là était du vrai code mort, et a été
-     retiré plutôt qu'excusé. */
+  /* Deux assouplissements, et pas un de plus, pour des idiomes voulus : un
+     `localStorage` refusé ne doit pas casser la partie (`catch(e){}`), et
+     `vars:"local"` parce que les noms de haut niveau d'une page SONT sa surface
+     publique — R5 du gardien tient ce bout-là, lui sait lire un `onclick=`.
+     Tout le reste était du vrai code mort, retiré plutôt qu'excusé. */
   "no-empty": ["error", { allowEmptyCatch: true }],
   "no-unused-vars": ["error", { args: "none", vars: "local", caughtErrors: "none" }]
 };
