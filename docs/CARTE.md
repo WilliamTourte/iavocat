@@ -148,6 +148,12 @@ d'écran — **une par surface, sous le nom que l'écran lui donne** (`discussio
 `instruire`, `terminer`). **Aucune suite ne nomme une pièce, un empan ou une valeur** : elles les
 *trouvent* par ces fonctions (§16) — c'est ce qui les rend valides sur une autre affaire.
 
+Il expose aussi ce qu'il **ne décide pas lui-même** : `estRegle`, `iTermeChamp` et `deK`. Le premier
+vient de `regles.js` par `require` — c'est une **règle**, pas une commodité de test, et le harnais la
+recopiait quatre fois ; le deuxième délègue à `R.indexTermeChamp(S)`, écrit cinq fois en `findIndex`
+dans les suites ; le troisième défait une clé `pid.eid`, que cinq endroits coupaient à la main.
+R10 tient le premier. *Une suite désigne, elle ne décide pas* (§16).
+
 Ce que chaque suite prouve : **§16**, qui les détaille une par une.
 
 ## L'atelier — ses sections numérotées
@@ -167,7 +173,7 @@ Ni l'un ni l'autre n'est une suite : ils ne jouent pas l'affaire, ils regardent 
 
 | Outil | Commande | Ce qu'il éprouve, et que rien d'autre n'éprouve |
 |---|---|---|
-| `outils/gardien.js` | `npm run gardien` (dans `npm test`) | **les conventions** — R1 la forme des balises que le harnais inline, R2 les collisions de noms de haut niveau par page, R3 les variables CSS, R4 les familles CSS sans porteur, R5 les `onclick=`, R6 les ids visés et les quatre ancres du tutoriel, R7 les restes du schéma 2, R8 les tailles annoncées par ce fichier-ci, R9 les lectures d'`attend`/`apres` posés sur une remise |
+| `outils/gardien.js` | `npm run gardien` (dans `npm test`) | **les conventions** — R1 la forme des balises que le harnais inline, R2 les collisions de noms de haut niveau par page, R3 les variables CSS, R4 les familles CSS sans porteur, R5 les `onclick=`, R6 les ids visés et les quatre ancres du tutoriel, R7 les restes du schéma 2, R8 les tailles annoncées par ce fichier-ci, R9 les lectures d'`attend`/`apres` posés sur une remise, R10 la recopie d'un prédicat que `regles.js` exporte. **R7, R9 et R10 marchent sur `app/`, `tests/` et `outils/`** ; les sept autres sur les deux pages |
 | `outils/vue.js` | `npm run vue` (hors `npm test`) | **le vrai chargement** — les quatre `<script src>` et la feuille, dans un vrai Chromium en `file://`, et la relecture à l'œil |
 
 Le gardien est en **mode double**, comme `moteur.js` : lancé, il contrôle et sort en 1 sur écart ;
