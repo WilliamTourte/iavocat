@@ -7,6 +7,14 @@ const fs = require("fs");
    moteur.js que le jeu et l'atelier (§12). Il en portait deux copies —
    l'aplatissement des empans et la marche des comparaisons emboîtées. */
 const { champsDe, comparaisonsDe } = require("../app/moteur.js");
+/* …et les RÈGLES viennent de regles.js, pour la même raison — qui n'avait
+   simplement jamais été appliquée ici. `estRegle` vit hors de la fabrique
+   exprès, pour se poser sans `JEU` lié (§12) ; l'atelier l'appelle depuis le
+   3 août, le harnais le réécrivait, et `smoke_atelier.js` deux fois de plus.
+   Quatre exemplaires d'une décision que le jeu prend ailleurs : le jour où
+   elle change, les contrôles restent verts en affirmant l'ancienne vérité.
+   Une suite DÉSIGNE, elle ne DÉCIDE pas (§16) — c'est R10 qui le tient. */
+const { estRegle } = require("../app/regles.js");
 
 function creerHarnais(dossier){
   const htmlJeu = fs.readFileSync(dossier + "/index.html", "utf8");
@@ -303,7 +311,7 @@ function creerHarnais(dossier){
 
   // Pièces, par leur forme
   const pidAvecDeclenche = w => Object.keys(J(w).pieces).find(pid=>J(w).pieces[pid].declenche);
-  const pidRegle = w => Object.keys(J(w).pieces).find(pid=>(J(w).pieces[pid].type||"").includes("règle"));
+  const pidRegle = w => surContenu.pidRegle(J(w));
   const pidPremiereRemise = w => (J(w).remises[0].pieces||[])[0];
   const empansDe = (w,pid) => Object.keys(J(w).pieces[pid].empans||{}).map(e=>pid+"."+e);
 
@@ -359,7 +367,7 @@ function creerHarnais(dossier){
                      return (t && typeof t==="object") ? t : L; },
     iLienNeutre: c => c.liens.findIndex(L=>!L.vice && !L.faux),
     pidDeclenche: c => Object.keys(c.pieces).find(p=>c.pieces[p].declenche),
-    pidRegle: c => Object.keys(c.pieces).find(p=>(c.pieces[p].type||"").includes("règle")),
+    pidRegle: c => Object.keys(c.pieces).find(p=>estRegle(c.pieces[p])),
     pidAutreQue: (c,pid) => Object.keys(c.pieces).find(p=>p!==pid),
     // un empan quelconque d'une pièce livrée
     unEmpan: c => surContenu.empans(c)[0],
@@ -371,7 +379,7 @@ function creerHarnais(dossier){
     }
   };
 
-  return { check, bilan, boot, bootAtelier, contenuLivre,
+  return { check, bilan, boot, bootAtelier, contenuLivre, estRegle,
            discussion, memoire, composeur, plaidoirie, plaidoirieVisible,
            lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,

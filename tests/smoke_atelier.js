@@ -2,7 +2,7 @@
 // (empans, liens, dimensions, sessions) sont dérivées de la forme du CONTENU,
 // pour survivre à un changement complet d'affaire.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, surContenu:SC } = H;
+const { check, bilan, surContenu:SC, estRegle } = H;
 const neuf = () => { const w = H.bootAtelier(); w.demanderExemple(); w.demanderExemple(); return w; };
 // `diagnostiquer()` — le diagnostic du contenu entier. Ce n'est pas le
 // `valider(r)` de moteur.js, qui juge une phrase (docs/LEXIQUE.md).
@@ -155,12 +155,11 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
      qu'il régit. Les deux contrôles qui rendent l'invariant vérifiable. */
   const w = neuf();
   const pidR = SC.pidRegle(w.CONTENU);
+  const regles = Object.values(w.CONTENU.pieces).filter(estRegle);
   check("dans le contenu livré, aucune règle ne porte d'empan",
-    Object.values(w.CONTENU.pieces).filter(p => (p.type||"").includes("règle"))
-      .every(p => Object.keys(p.empans||{}).length === 0));
+    regles.every(p => Object.keys(p.empans||{}).length === 0));
   check("et chaque règle livrée annonce ce qu'elle régit",
-    Object.values(w.CONTENU.pieces).filter(p => (p.type||"").includes("règle"))
-      .every(p => Array.isArray(p.porte) && p.porte.length));
+    regles.every(p => Array.isArray(p.porte) && p.porte.length));
   const e = SC.unEmpan(w.CONTENU);
   w.CONTENU.pieces[pidR].empans = { intrus: { dim: e.dim, valeur: e.valeur, texte: "x", nom: "x" } };
   w.CONTENU.pieces[pidR].texte += " {{intrus}}";
