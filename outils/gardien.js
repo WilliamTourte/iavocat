@@ -52,7 +52,7 @@ const nbLignes = rel => { const s = lire(rel); return s.split("\n").length - (s.
    ------------------------------------------------------------
    Jusqu'au 14 août, R7 et R9 portaient `marcher("app")` EN DUR, chacune avec sa
    copie de la marche. Les huit autres règles ne regardaient que les deux pages.
-   `tests/` et `outils/` — 2 800 lignes — n'étaient donc tenus que par ESLint.
+   `tests/` et `outils/` — 2 888 lignes — n'étaient donc tenus que par ESLint.
 
    C'est exactement le mauvais découpage : `app/` porte le livrable, mais
    `tests/` et `outils/` REFLÈTENT ses règles, et un reflet qui dérive ne se voit

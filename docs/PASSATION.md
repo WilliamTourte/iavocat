@@ -208,13 +208,15 @@ territoire — les suites et les outils ».*
     concluait « le rangement est fini ». C'était vrai **de `app/`**, et vérifié : les projections sont
     appelées partout, `muter` n'a plus un traînard, R7 et R9 ne relèvent rien. Ce ne l'était pas du
     reste. **Les sept sessions de rangement (12 à 18) ont toutes porté sur `app/`, et les neuf règles
-    du gardien aussi** — `marcher("app")`, en dur, dans R7 comme dans R9. `tests/` (1 965 lignes) et
-    `outils/` (812) n'avaient jamais été dégraissés et n'étaient tenus que par ESLint. C'est le même
-    oubli que celui de la décision 16, d'un cran : l'atelier avait été découpé sans être dégraissé ;
-    les suites, elles, n'avaient jamais été regardées **du tout**.
+    du gardien aussi** — `marcher("app")`, en dur, dans R7 comme dans R9. `tests/` et `outils/`
+    — **2 888 lignes** — n'avaient jamais été dégraissés et n'étaient tenus que par ESLint. C'est le
+    même oubli que celui de la décision 16, d'un cran : l'atelier avait été découpé sans être
+    dégraissé ; les suites, elles, n'avaient jamais été regardées **du tout**.
 
     Même critère que les décisions 12 et 16 : aucune règle, aucun contenu, aucun invariant ne bouge,
-    et **325 contrôles — le même nombre**, tous verts.
+    et **325 contrôles — le même nombre**, tous verts. Éprouvé au-delà des suites : `npm run vue`
+    rend les **six captures reproductibles identiques à l'octet** (la septième porte le halo qui
+    pulse, §2), et le banc d'essai de la grammaire ne bouge pas d'un chiffre — 1609 / 125 / 8.
 
     **Une RÈGLE était recopiée quatre fois à la main.** `estRegle` — *une pièce est-elle un article du
     manuel ?* — vit dans `regles.js` **hors de la fabrique, exprès**, pour qu'on puisse la poser sans
@@ -236,7 +238,17 @@ territoire — les suites et les outils ».*
     `outils`, plus **R10** — *aucun fichier ne recopie un prédicat que `regles.js` exporte*. Sans
     elle, la recopie se referait : les suites ne se lisent pas elles-mêmes, et c'est exactement le
     genre d'écart qu'aucune des six ne peut voir. Le territoire s'est trouvé **sain sur R7 et R9** —
-    on étend un filet sur un terrain propre, ce qui est le bon moment.
+    on étend un filet sur un terrain propre, ce qui est le bon moment. Les trois ont été éprouvées
+    en **cassant ce qu'elles surveillent**, une par une, comme le §2 l'exige.
+
+    **Le compte, et ce qu'il ne dit pas.** 1 573 → 1 575 lignes de code pour les suites, 465 → 478
+    pour les outils (commentaires et vides retirés) : le total **monte**, comme à la décision 16, et
+    pour les deux mêmes raisons — chaque geste nommé porte l'explication de pourquoi il existe, et
+    R10 est un filet *ajouté*, pas un pli défait. Ce qui compte est ailleurs : **vingt et une
+    écritures à la main sont devenues huit choses nommées** — quatre recopies d'`estRegle`, cinq
+    prédicats du vice dédoublés, cinq `findIndex` du terme, cinq `split(".")`, deux constructions de
+    fenêtre. Un compte de lignes ne mesure pas ça, et c'est pour ça qu'on ne l'a jamais pris pour
+    critère ici.
 
 20. **La migration émet la forme du §3, pas celle d'avant** *(14 août, décidé avec l'auteur)*.
     Tranchée à part de la 19, comme la 17 l'avait été de la 16, et pour la même raison : **ça change
@@ -457,7 +469,7 @@ c'est **qu'on avait cherché les copies là où on savait déjà regarder**. Sep
 dégraissé `app/` parce que c'est ce que le gardien surveillait, et le gardien surveillait `app/`
 parce que c'est là qu'on avait eu mal. La question à poser avant de déclarer une passe finie n'est
 pas « qu'est-ce qui reste ? » mais **« où n'ai-je pas regardé ? »**. Ici la réponse tenait en une
-ligne de code —* `marcher("app")` *— et valait 2 800 lignes.*
+ligne de code —* `marcher("app")` *— et valait 2 888 lignes.*
 
 **Méthode à conserver :** toute évolution part de `docs/ARCHITECTURE.md` — on réécrit le document, on
 le fait relire, puis on applique au code.
