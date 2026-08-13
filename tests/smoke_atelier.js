@@ -94,7 +94,12 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
   // qui attend une phrase dont l'article n'arrivera qu'après.
   const w = neuf();
   const C = w.CONTENU;
-  const bloc = C.grammaire.blocs.find(x => x.piece);
+  /* UN ARTICLE, c'est une liaison qui porte une FORME et une pièce. Chercher le
+     premier bloc qui porte une pièce ne suffit plus depuis la déduction : le
+     second empan (`t1`) en porte une aussi, et il n'a pas de forme — `bloc.forme`
+     valait `undefined`, aucun lien ne s'y accordait, et tout ce qui suit était
+     sauté. Troisième façon dont ce contrôle passait par le vide. */
+  const bloc = C.grammaire.blocs.find(x => x.piece && x.forme);
   if (bloc) {
     // on retire la pièce de l'article de toutes les remises, puis on la livre
     // en dernier : l'attente qu'elle sert devient inservable à temps.
@@ -103,13 +108,22 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
     if (sert) {
       for (const r of C.remises) r.pieces = (r.pieces||[]).filter(p => p !== bloc.piece);
       C.remises[C.remises.length-1].pieces.push(bloc.piece);
-      const iAttend = C.remises.findIndex(r => r.attend === sert);
+      /* CE CONTRÔLE PASSAIT PAR LE VIDE, et des deux façons à la fois. Il
+         cherchait le tag par `r.attend` — la forme d'avant les attentes en liste
+         (§3) —, si bien qu'`iAttend` valait -1 sur toute affaire au schéma 3 et
+         que la branche utile n'était jamais prise. Et le message qu'il guettait,
+         « son article n'est pas encore livré », n'existe plus dans le
+         diagnostic : il dit « mais de quoi l'écrire n'est pas encore livré »
+         depuis que le second empan aussi peut manquer. Deux moitiés pourries,
+         un contrôle toujours vert. On passe par `attentesDeRemise`, comme le
+         diagnostic, et on guette la phrase qu'il prononce vraiment. */
+      const iAttend = C.remises.findIndex(r => w.attentesDeRemise(r).some(a => a.attend === sert));
       const seulement = C.liens.filter(L => L.tag === sert).every(L => L.forme === bloc.forme);
       if (iAttend >= 0 && iAttend < C.remises.length - 1 && seulement)
         check("un article livré après la session qui l'attend est une erreur",
-          msgs(w).includes("son article n'est pas encore livré"));
+          msgs(w).includes("n'est pas encore livré"));
       else check("(l'attente reste servable autrement — pas de piège ici)",
-          !msgs(w).includes("son article n'est pas encore livré"));
+          !msgs(w).includes("n'est pas encore livré"));
     } else check("(aucune attente servie par un article)", true);
   } else check("(aucun bloc conditionné à une pièce)", true);
 }
