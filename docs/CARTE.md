@@ -31,11 +31,19 @@ nom pris dans la page qui charge le fichier.
 
 **Une page ne porte que sa structure** : le CSS entre par `<link>`, le JS par `<script src>`. Un script classique externe partage la même portée globale qu'un script en ligne — c'est ce qui laisse les `onclick=` du HTML engendré trouver leurs fonctions.
 
-**Les huit modules de l'atelier** se chargent en portée globale classique, dans l'ordre : `noyau.js`
-(le contenu, les outils, l'état d'interface, l'annulation, les onglets, l'échappement — **en premier**,
-c'est le seul dont le corps s'exécute au chargement), puis `graphe.js`, `diagnostic.js`,
-`inspecteur.js`, `frise.js`, `pasapas.js`, `contenu-io.js`, `grammaire.js`. La page ne garde que son
-HTML, son CSS et six lignes de démarrage.
+**Les huit modules de l'atelier** se chargent en portée globale classique, **dans cet ordre** — la page
+ne garde que son HTML, son CSS et six lignes de démarrage :
+
+| Module | Ce qu'il porte |
+|---|---|
+| `noyau.js` | le contenu chargé, les outils, l'état d'interface, l'annulation, les onglets, l'échappement — **et les quatre gestes ci-dessous**. **En premier** : le seul dont le corps s'exécute au chargement (`let CONTENU = contenuLivre()`) |
+| `graphe.js` | le canevas, les traits, le clic dessus — l'**espace** du dossier. Seul endroit où du CSS traverse vers du JS (`getCSS`, §13) |
+| `diagnostic.js` | « le dossier tient-il ? » — la plus grosse pièce, et c'est normal |
+| `inspecteur.js` | les formulaires, les mutations, les renommages d'identifiants |
+| `frise.js` | le **temps** du dossier, éditable — remises et attentes |
+| `pasapas.js` | la simulation du déroulé — **appelle** `regles.js`, ne le recopie pas |
+| `contenu-io.js` | import, export, migration 2→3, autosave |
+| `grammaire.js` | l'onglet Grammaire — composer, pour le **sentir** |
 
 **Les quatre gestes que tout l'atelier refait** vivent dans `noyau.js`, section *2 bis*. Ils ne
 décident rien : ils nomment ce qui était recopié soixante fois, jamais deux fois pareil.
@@ -197,9 +205,12 @@ donc dépendant de la session ; le flag `cite` est porté par la **liaison**, ja
   de ce qui s'écrit sont des attributs `libelle` déclarés dans le contenu, et le §11 les nomme.
 - **Explorer pour trouver *où décide* quelque chose.** La réponse est toujours `regles.js` : les deux
   pages HTML ne décident rien (§9). Si une décision semble vivre dans une page, c'est un bug.
-- **Lire `ARCHITECTURE.md` en entier.** C'est de loin le plus long document du dépôt, et le tableau
-  de `CLAUDE.md` dit quelles sections lire selon ce qu'on vient faire. Le §4.5 est découpé en sept
-  pour qu'on puisse n'en ouvrir qu'un septième. *(Cette ligne annonçait « 618 lignes » : un compte
-  qu'aucune règle ne tient dérive à la première retouche — on ne le remet pas.)*
+- **Lire `ARCHITECTURE.md` en entier.** C'est le plus long document du dépôt, et le tableau de
+  `CLAUDE.md` dit quelles sections lire selon ce qu'on vient faire. Le §4.5 est découpé en sept pour
+  qu'on puisse n'en ouvrir qu'un septième. Trois choses n'y sont **plus** et se cherchent ailleurs :
+  la discipline d'écriture (`docs/ECRITURE.md`, §8.1 à §8.9), l'historique des révisions
+  (`docs/HISTORIQUE.md`), et l'inventaire des fichiers — qui est **ici**. *(Cette ligne annonçait
+  « 618 lignes » : un compte qu'aucune règle ne tient dérive à la première retouche — on ne le
+  remet pas.)*
 - **Choisir un mot au jugé.** `docs/LEXIQUE.md` arbitre le vocabulaire — quel mot dire, à qui, pour
   quelle chose. Les pièges y sont nommés (`lien`/`liaison`, `clore`/`clôturer`, `empan`/`passage`).

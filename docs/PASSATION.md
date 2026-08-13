@@ -54,7 +54,7 @@ territoire — les suites et les outils ».*
     les affaires. Il nommait aussi la surface du milieu du jeu, au point que `bootAtelier()` et
     `atelier(w)` voulaient dire le contraire l'un de l'autre à quinze lignes d'écart dans le harnais.
     C'était la seule vraie collision du dépôt, et la seule que le lexique avait manquée.
-    **La frontière `empan` / `passage` reste**, elle : c'est la seule qui protège la fiction (§8.6).
+    **La frontière `empan` / `passage` reste**, elle : c'est la seule qui protège la fiction (§8.6 de `docs/ECRITURE.md`).
 
 12. **Dégraisser, sans toucher au sens** *(3 août)*. Aucune règle, aucun texte de contenu, aucun
     invariant n'a changé — le critère de la session était : zéro comportement observable modifié.

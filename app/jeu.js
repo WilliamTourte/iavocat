@@ -131,7 +131,7 @@ function recommencer(){
    laisserait le jeu identique. Le halo entoure la ZONE où le geste a lieu —
    jamais le bon empan : ce serait désigner la réponse à la lampe torche (§4.3).
    Ses phrases ne sont pas du contenu : elles parlent depuis le chrome, hors de
-   la fiction, parce que dans la fiction personne n'explique rien (§8.6). */
+   la fiction, parce que dans la fiction personne n'explique rien (§8.6 de docs/ECRITURE.md). */
 const CLE_TUTO="iavocat_tuto";
 let tutoFait=false;
 try{ tutoFait = !!localStorage.getItem(CLE_TUTO); }catch(e){}

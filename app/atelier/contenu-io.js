@@ -35,12 +35,12 @@ $("file").addEventListener("change",e=>{
 });
 /* Migration du schéma 2 (champs + relations + cases) vers le schéma 3
    (empans + grammaire + attentes). Idempotente, silencieuse, appliquée à
-   l'import et au chargement de l'autosave. Voir docs/ARCHITECTURE.md §8.
+   l'import et au chargement de l'autosave. Voir docs/ECRITURE.md.
    Le JEU, lui, ne migre pas : il refuse un contenu de schéma 2. */
 const GRAMMAIRE_PAR_DEFAUT = () => clone(contenuLivre().grammaire);
 const DIMS_PAR_DEFAUT = () => clone(contenuLivre().dimensions);
 /* Les dimensions d'avant ne sont pas les cinq du QQOQC : on rabat ce qui se
-   rabat, le reste tombe dans « quoi » (large par construction, §2.2). */
+   rabat, le reste tombe dans « quoi » (large par construction, §4.2). */
 const RABAT_DIM = { agent:"qui", personne:"qui", signature:"qui", greffier:"qui",
                     heure:"quand", date:"quand",
                     lieu:"ou",

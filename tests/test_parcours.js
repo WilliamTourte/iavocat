@@ -187,7 +187,7 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
   check("et la pièce d'où elle vient", !e.court || txt.includes(e.court));
 
   // Une comparaison, elle, ne s'écrit QUE par les noms — sinon on retomberait
-  // sur l'empilement de citations que le nom avait soigné (§8.8).
+  // sur l'empilement de citations que le nom avait soigné (§8.8 de docs/ECRITURE.md).
   const w2 = boot();
   H.livrerTout(w2);
   const C = H.lienConclusion(w2);

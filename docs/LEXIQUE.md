@@ -87,7 +87,7 @@ n'avait pas besoin d'arbitrage.
 - **`empan` / `passage`.** Rigoureusement le même objet, vu de deux côtés : `empan` est le mot du modèle de
   données et de la documentation technique ; `passage` est le mot que **lit le joueur** à l'écran et dans
   le tutoriel. Ce n'est pas une incohérence à corriger — c'est une frontière voulue entre le vocabulaire
-  du code et celui de la fiction (§8.6 : l'avocat n'explique jamais rien, l'écran ne parle pas non plus
+  du code et celui de la fiction (§8.6 de `docs/ECRITURE.md` : l'avocat n'explique jamais rien, l'écran ne parle pas non plus
   comme un développeur). Mais elle doit rester **étanche** : `empan` ne doit jamais fuiter dans une chaîne
   d'écran, `passage` ne doit jamais apparaître dans `content.js` ou `moteur.js`.
 
@@ -147,7 +147,7 @@ aucun flottement observé).
 **Et depuis le 2 août, une catégorie entière a disparu : les paires *nom de code / nom d'écran*.** Les
 trois surfaces portent le même mot partout — `discussion`, `memoire`, `plaidoirie` — du DOM au harnais
 en passant par l'état. **Une seule frontière de registre subsiste, et elle est voulue :
-`empan` / `passage`** (§ « Faux amis ») — c'est celle qui protège la fiction (§8.6), pas un reliquat.
+`empan` / `passage`** (§ « Faux amis ») — c'est celle qui protège la fiction (§8.6 de `docs/ECRITURE.md`), pas un reliquat.
 
 ## Une nuance voulue, pour ne pas la reprendre par erreur
 
