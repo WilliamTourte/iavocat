@@ -126,7 +126,7 @@ function adopter(j){
   j._pos=j._pos||{}; j._bruit=j._bruit||[];
   pushUndo();
   CONTENU=j; window.CONTENU=CONTENU;
-  selA=selB=null; selEdge=null; flagged.clear(); formPiece=formPieceEdit=formChamp=null; pendingDel=null;
+  reinitSelection();
   simReset();
   autoLayout(false); autosave(); render();
   return null;

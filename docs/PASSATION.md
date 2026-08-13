@@ -1,11 +1,11 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 13 août 2026, après la session « un gardien pour
-les pièges déjà payés ».*
+*À lire en tête d'une nouvelle conversation. État au 13 août 2026, après la session « l'atelier ne
+recopie plus rien, pas même lui-même ».*
 
 ## 1. Où en est le jeu
 
-**Quinze** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
+**Seize** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
 
 1. **Trois sessions.** R1 lire/extraire/répondre (`p_pv`, `t_voisin`, aucun article) ; R2 comparer
    (`r_temoin`, l'article 3) ; R3 l'ADN et le vice.
@@ -103,6 +103,34 @@ les pièges déjà payés ».*
 
     Enfin, une chose **remesurée** : le §13 se trompait à moitié sur `defer` (voir §2).
 
+16. **L'atelier ne recopie plus rien, pas même lui-même.** Les quatre sessions précédentes ont toutes
+    porté sur **le jeu et les modules partagés** — les enveloppes de `regles.js`, les projections
+    réunies dans `moteur.js`, le CSS/JS sorti des pages, les collisions de noms, le gardien. L'atelier,
+    lui, avait été **découpé en fichiers le 3 août sans être dégraissé à l'intérieur** : c'était le
+    dernier territoire où le §12 n'était pas passé, et le plus dense en copies. Même critère que la
+    décision 12 : aucune règle, aucun contenu, aucun invariant ne bouge.
+
+    **Quatre gestes nommés** (`noyau.js`, section 2 bis), qui remplacent **soixante** écritures à la
+    main : `muter` (l'épilogue `pushUndo` … `autosave(); render()`, 39 copies), `poserOuRetirer`
+    (« écrire, ou retirer la clé si c'est vide », 9 copies), `reinitSelection` (7 copies) et
+    `demanderSuppr`/`btnSuppr` (la suppression en deux clics, 5 gardes + 5 boutons). Avec deux formats
+    qui ne se déplient plus qu'en un endroit : **`deK`**, l'inverse de `K(pid,ch)` qui manquait depuis
+    toujours (10 `split(".")`), et **`reecrireTermes`**, la marche sur les termes emboîtés (3 copies).
+    Et la classe **`.glose`** pour la parenthèse grise des libellés, écrite 24 fois en `style=` en ligne.
+
+    **Ce que les copies avaient déjà fait dériver — un défaut, corrigé** : `pointer()` (le clic sur une
+    ligne du diagnostic) était la seule des sept remises à zéro à oublier **`formPieceEdit`**. Comme
+    `renderInsp` rend l'éditeur de texte en priorité, cliquer une ligne du diagnostic pendant qu'on
+    éditait une pièce **ne montrait rien** — ni le trait désigné, ni l'empan surligné. Aucune suite ne
+    couvre ce chemin. C'est exactement la panne que le §12 décrit, dans le seul territoire qu'il
+    n'avait pas visité. Conséquence assumée : `pointer()` abandonne désormais aussi la paire d'empans
+    sélectionnée — le diagnostic prend la main pour de bon.
+
+    Le compte : **1 473 → 1 455 lignes de code** (commentaires et vides retirés) pour les huit modules.
+    Le fichier total monte, lui, parce que chaque geste porte l'explication de pourquoi il existe — la
+    discipline du dépôt. Ce qui compte n'est pas le compte : c'est que soixante endroits soient devenus
+    quatre. Et le gardien a servi **le jour même** (voir §2).
+
 ## 2. Points de vigilance
 
 *Les points marqués **[Rn]** sont désormais tenus par une règle d'`outils/gardien.js` : ils restent
@@ -146,6 +174,18 @@ penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
   pas en `ReferenceError` au milieu d'une suite. *À retenir au-delà : une menace qu'on croit courir
   est du même genre qu'une laisse qu'on croit tendue (§16) — elle fait craindre le mauvais geste.
   Éprouver coûte deux minutes.*
+- **[R4] Une classe engendrée s'écrit `${x?"arm":""}`, jamais `${x?" arm":""}`.** Le gardien relève une
+  classe portée de deux façons : dans un `class="…"`, ou dans une chaîne qui n'est **qu'un mot**. En
+  factorisant le bouton de suppression en deux clics (décision 16), la forme concaténée
+  `class="${cls}${arme?" arm":""}"` a mis l'espace *dans la chaîne* — et `.arm`, bien vivante, est
+  passée pour une famille morte. R4 l'a dit dans la minute. À retenir : le gardien ne lit pas le DOM,
+  il lit le source ; une classe qu'on lui cache est une classe qu'il croira orpheline, et la
+  prochaine main la retirera. Écrire les fragments conditionnels comme le reste du dépôt les écrit
+  (`${pris?'pris':''}`) n'est donc pas du style.
+- **`muter(f)` porte `pushUndo` AVANT et `autosave(); render()` APRÈS — un `return` dans `f` n'y coupe
+  pas.** C'est le comportement d'avant, à la ligne près : `majAttente` poussait déjà son annulation
+  avant de découvrir que l'attente n'existait pas. Si un jour une mutation doit pouvoir renoncer sans
+  laisser d'entrée d'annulation, ça ne s'obtient pas en sortant de `f` — il faudra le dire à `muter`.
 - **Le CSS est inliné parce que `getCSS()` le lit.** Les couleurs de trait du graphe
   (`app/atelier/graphe.js`) sortent de `getComputedStyle` sur `:root` — seul endroit du dépôt où du
   CSS traverse vers du JS. jsdom résout les variables d'un `<style>` en ligne et rend `""` pour un
@@ -227,6 +267,7 @@ penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
 | La progression : portes, place de la Fin 3 | Trois sessions actées ; la porte de la Fin 3 reste à placer |
 | `comment` en sixième dimension | Écarté, réintégrable sans coût |
 | Le canal de révélation de la culpabilité | Non tranché |
+| **« Forme X sans bloc » : quatre avertissements permanents, et faux** | **Trouvé le 13 août, NON corrigé — c'est une décision d'auteur, pas du rangement.** Le diagnostic avertit qu'une forme est « indicible » si aucun bloc ne la déclare (`!G.blocs.some(b=>b.forme===f)`). Or **depuis la déduction (§4.5), une forme comparative ne se déclare plus : elle se déduit** d'un bloc `deduit`. Les quatre formes déduites de l'affaire livrée (`identite_oui`, `anteriorite`, `ordre_grandeur`, `identite_non`) sont donc signalées à **chaque ouverture de l'atelier**, alors qu'elles sont parfaitement dicibles — le jeu les compose. Même nature que le `pointer()` resté au schéma 2 (§2) : un contrôle que le changement de mécanique a laissé derrière. Le correctif tient en une ligne (accepter aussi `b.deduit` quand la forme porte `deduction`), mais il change ce que le diagnostic **juge** — donc il se décide, il ne se glisse pas dans une passe de rangement. Le prix de ne rien faire est connu : quatre fausses alertes en permanence, et un diagnostic qu'on apprend à ne plus lire |
 | Les Manuels | **Tranché le 3 août : `openManuels()` est retirée**, avec les sept contrôles qui la maintenaient seule en vie — on éprouvait un chemin injouable. La **règle** reste dans `regles.js` (`reglesLivrees`, `porteDe`) : rebrancher les Manuels reste une décision de design, et ne coûtera pas une ligne de moteur. **Conséquence à garder en tête** : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par le jeu, alors que la frise les édite toujours et que le diagnostic avertit encore de leur absence |
 
 ## 4. Prochaine étape

@@ -111,7 +111,7 @@ function renderGrammaire(){
   const complet=!ch.some(p=>p.bloc.type==="terme"&&p.valeur===undefined);
   let phrase, verdict="";
   if(!complet){
-    phrase=`<span style="color:var(--dim)">Remplis les trous pour composer une phrase…</span>`;
+    phrase=`<span class="glose">Remplis les trous pour composer une phrase…</span>`;
   } else {
     phrase=escapeH(m.rendre(ch));
     const red=m.reduire(ch), raison=m.valider(red), lien=m.lienDe(red);
@@ -150,7 +150,7 @@ function renderGrammaire(){
       (${(100*d.senses/d.total).toFixed(1)} %) · <b>${d.avecLien}</b> portent un lien du contenu
       → <b>${d.senses-d.avecLien}</b> phrases sensées <b>sans</b> lien : c'est la marge de bruit.<br>
       Si elle tombait à 0, « sensé » vaudrait « correct » et l'interface trahirait
-      (invariant du §14 de ARCHITECTURE.md).${GRAM.notes.length?'':' <span style="color:var(--dim)">(garde des notes pour peupler les slots «note».)</span>'}</div>`;
+      (invariant du §14 de ARCHITECTURE.md).${GRAM.notes.length?'':' <span class="glose">(garde des notes pour peupler les slots «note».)</span>'}</div>`;
 
   pane.innerHTML=`<h2>Grammaire — prototype <span style="color:var(--dim);font-weight:400;font-size:12px">non branché sur le jeu</span></h2>
     <p class="lead">Compose une phrase en remplissant les trous d'un squelette. Le moteur (partagé avec

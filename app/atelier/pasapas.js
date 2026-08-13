@@ -66,7 +66,7 @@ function simComposable(L){
 }
 const memeReduite = (a,b) => { const m=MG(); return !!m && m.memeRed(a,b); };
 function simSurligner(k){
-  const [pid,eid]=k.split(".");
+  const [pid,eid]=deK(k);
   const avant=SIM.retenus.includes(k);
   RG().surligner(SIM,pid,eid);
   simMsg({sys:true,texte:avant?`oublie ${cflabel(k)}.`

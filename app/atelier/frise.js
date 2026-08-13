@@ -25,10 +25,9 @@ function renderFrise(){
   // ---- les sessions (remises) ----
   R.forEach((r,i)=>{
     const opts=nonLivrees.map(pid=>QOPT(pid)).join("");
-    const delKey="remise:"+i;
     h+=`<div class="step">
       <h3>Session ${i+1} <span class="cid">— ce que l'avocat transmet</span><span class="sp"></span>
-        ${R.length>1?`<button class="xsmall ${pendingDel===delKey?"arm":""}" onclick="demanderSupprRemise(${i})">${pendingDel===delKey?"confirmer ?":"✕ session"}</button>`:""}</h3>
+        ${R.length>1?btnSuppr("remise:"+i,"xsmall",`demanderSupprRemise(${i})`,"✕ session","confirmer ?"):""}</h3>
       <label>Expéditeur</label>
       <input type="text" class="mono" value="${escapeAttr(r.qui||"")}" onchange="majRemise(${i},'qui',this.value)">
       <label>Message d'ouverture</label>
@@ -43,9 +42,9 @@ function renderFrise(){
         ${opts?`<select class="pselect" onchange="if(this.value)ajouterPieceRemise(${i},this.value)">
           <option value="">+ pièce…</option>${opts}</select>`:""}
       </div>
-      <label>Ce que l'avocat attend <span style="color:var(--dim)">(une SUITE : il pose, attend, accuse réception, repose. La session ne se ferme qu'une fois la liste épuisée)</span></label>
+      <label>Ce que l'avocat attend <span class="glose">(une SUITE : il pose, attend, accuse réception, repose. La session ne se ferme qu'une fois la liste épuisée)</span></label>
       ${attentesDeRemise(r).map((a,j)=>`<div class="attente">
-        <label>Question posée <span style="color:var(--dim)">— facultatif : laissée vide, l'avocat n'attend qu'une phrase, sans la demander</span></label>
+        <label>Question posée <span class="glose">— facultatif : laissée vide, l'avocat n'attend qu'une phrase, sans la demander</span></label>
         <textarea style="min-height:34px" onchange="majAttente(${i},${j},'question',this.value)">${escapeH(a.question||"")}</textarea>
         <label>Tag servi</label>
         <div class="steprow">
@@ -54,9 +53,9 @@ function renderFrise(){
             <option value="">tags existants…</option>${tags.map(t=>`<option ${t===a.attend?"selected":""}>${escapeH(t)}</option>`).join("")}</select>`:""}
           ${attentesDeRemise(r).length>1?`<button class="xsmall" onclick="retirerAttente(${i},${j})">✕ attente</button>`:""}
         </div>
-        <label>Accusé de réception (apres) <span style="color:var(--dim)">— dit quand cette attente est servie</span></label>
+        <label>Accusé de réception (apres) <span class="glose">— dit quand cette attente est servie</span></label>
         <textarea style="min-height:34px" onchange="majAttenteApres(${i},${j},this.value)">${escapeH((a.apres||{}).replique||"")}</textarea>
-        ${a.apres?`<div class="steprow"><span style="color:var(--dim)">dit par</span>
+        ${a.apres?`<div class="steprow"><span class="glose">dit par</span>
           <input type="text" class="mono" style="width:130px" value="${escapeAttr(a.apres.qui||"")}" placeholder="Maître Auber" onchange="majAttenteApresQui(${i},${j},this.value)"></div>`:""}
       </div>`).join("")}
       <button class="addrow" onclick="ajouterAttente(${i})">+ Attente</button>
@@ -87,7 +86,7 @@ function renderFrise(){
     <div class="repline">${mir("l'IA ouvre une pièce portant un « declenche » → sa réplique part (une_fois : une seule)")}</div>
     ${avecDecl.map(([pid,p])=>`<div class="steprow">
         <span class="cl">📎 ${escapeH(courtDe(pid))}</span>
-        <span style="color:var(--dim)">dit par</span>
+        <span class="glose">dit par</span>
         <input type="text" class="mono" style="width:130px" value="${escapeAttr(p.declenche.qui||"")}" placeholder="Maître Auber" onchange="majDeclencheQui('${pid}',this.value)">
         <label class="chk" style="margin:0"><input type="checkbox" ${p.declenche.une_fois?"checked":""} onchange="majDeclencheFois('${pid}',this.checked)"> une seule fois</label>
         <button class="xsmall" onclick="retirerDeclenche('${pid}')">✕</button>
@@ -112,7 +111,7 @@ function renderFrise(){
     <h3>Les manuels <span class="cid">— le manuel de soi ; les règles du cas sont des pièces de type « règle », affichées une fois LIVRÉES</span></h3>
     <label>Directives (une par ligne)</label>
     <textarea onchange="majDirectives(this.value)">${escapeH((CONTENU.directives||[]).join("\n"))}</textarea>
-    <label>Avis d'exploitation <span style="color:var(--dim)">(le brouillard, consultable dans les Manuels)</span></label>
+    <label>Avis d'exploitation <span class="glose">(le brouillard, consultable dans les Manuels)</span></label>
     <textarea style="min-height:34px" onchange="majAvis(this.value)">${escapeH(CONTENU.avis_exploitation||"")}</textarea>
   </div>`;
 
@@ -121,18 +120,15 @@ function renderFrise(){
     <h3>Clôture → répétition de plaidoirie <span class="cid">— la veille du dépôt</span></h3>
     <label>Intro de la répétition</label>
     <textarea onchange="majRep('intro',this.value)">${escapeH(REP.intro||"")}</textarea>
-    <label>Affirmations de l'accusation <span style="color:var(--dim)">(défilent une à une — l'IA laisse passer ou verse une phrase contre)</span></label>
-    ${(REP.affirmations||[]).map((a,j)=>{
-      const dk="aff:"+j;
-      return `<div class="affrow">
+    <label>Affirmations de l'accusation <span class="glose">(défilent une à une — l'IA laisse passer ou verse une phrase contre)</span></label>
+    ${(REP.affirmations||[]).map((a,j)=>`<div class="affrow">
         <div class="steprow">
           <span class="cid">${j+1}</span>
           <input type="text" class="mono" value="${escapeAttr(a.court||"")}" onchange="majAff(${j},'court',this.value)" title="nom court (affiché sous la phrase versée)">
-          <button class="xsmall ${pendingDel===dk?"arm":""}" onclick="demanderSupprAff(${j})">${pendingDel===dk?"confirmer ?":"✕"}</button>
+          ${btnSuppr("aff:"+j,"xsmall",`demanderSupprAff(${j})`,"✕","confirmer ?")}
         </div>
         <textarea onchange="majAff(${j},'texte',this.value)">${escapeH(a.texte||"")}</textarea>
-      </div>`;
-    }).join("")}
+      </div>`).join("")}
     <button class="addrow" onclick="ajouterAff()">+ Affirmation</button>
     <div class="repline">${mir("verser une phrase contre l'affirmation = le même geste, avec une cible ; phrase déjà versée → « deja »")}</div>
     <textarea style="min-height:34px" onchange="majAvocat('deja',this.value)">${escapeH(A.deja||"")}</textarea>
@@ -168,24 +164,17 @@ function renderFrise(){
 
 function allerPiece(pid){ vue('graphe'); scrollVers(pid); }
 
-/* mutations de la frise */
-function majRemise(i,prop,v){
-  pushUndo();
+/* mutations de la frise — toutes par `muter` (noyau.js) : c'est lui qui porte
+   `pushUndo` avant et `autosave(); render()` après. Ce qui reste écrit ici est
+   ce que chacune change, et rien d'autre. */
+function majRemise(i,prop,v){ muter(()=>{
   const r=CONTENU.remises[i];
-  if(prop==="attend" && !String(v||"").trim()) delete r.attend;
-  else r[prop]=typeof v==="string"&&prop==="attend"?v.trim():v;
-  autosave(); render();
-}
-function retirerPieceRemise(i,pid){ pushUndo(); CONTENU.remises[i].pieces=(CONTENU.remises[i].pieces||[]).filter(x=>x!==pid); autosave(); render(); }
-function ajouterPieceRemise(i,pid){ pushUndo(); (CONTENU.remises[i].pieces=CONTENU.remises[i].pieces||[]).push(pid); autosave(); render(); }
-function ajouterRemise(){ pushUndo(); CONTENU.remises.push({qui:"Maître Auber",texte:"",pieces:[]}); autosave(); render(); }
-function demanderSupprRemise(i){
-  const k="remise:"+i;
-  if(pendingDel!==k){ pendingDel=k; return render(); }
-  pendingDel=null; pushUndo();
-  CONTENU.remises.splice(i,1);
-  autosave(); render();
-}
+  if(prop==="attend") poserOuRetirer(r,prop,v,{trim:true}); else r[prop]=v;
+}); }
+function retirerPieceRemise(i,pid){ muter(()=>{ CONTENU.remises[i].pieces=(CONTENU.remises[i].pieces||[]).filter(x=>x!==pid); }); }
+function ajouterPieceRemise(i,pid){ muter(()=>{ (CONTENU.remises[i].pieces=CONTENU.remises[i].pieces||[]).push(pid); }); }
+function ajouterRemise(){ muter(()=>{ CONTENU.remises.push({qui:"Maître Auber",texte:"",pieces:[]}); }); }
+function demanderSupprRemise(i){ demanderSuppr("remise:"+i,()=>{ CONTENU.remises.splice(i,1); }); }
 /* LES ATTENTES D'UNE SESSION (§3). Éditer une remise écrite à l'ancienne la
    convertit en liste : on n'écrit plus qu'une forme, mais on lit les deux. */
 function attentesEditables(i){
@@ -199,53 +188,39 @@ function attentesEditables(i){
   }
   return r.attentes;
 }
-function majAttente(i,j,prop,v){
-  pushUndo();
+function majAttente(i,j,prop,v){ muter(()=>{
   const a=attentesEditables(i)[j]; if(!a) return;
-  const s=typeof v==="string"?v.trim():v;
-  if(!s) delete a[prop]; else a[prop]=prop==="attend"?s:v;
-  autosave(); render();
-}
-function majAttenteApres(i,j,v){
-  pushUndo();
+  poserOuRetirer(a,prop,v,{trim:prop==="attend"});
+}); }
+function majAttenteApres(i,j,v){ muter(()=>{
   const a=attentesEditables(i)[j]; if(!a) return;
   if(String(v).trim()) a.apres={...(a.apres||{}),replique:v}; else delete a.apres;
-  autosave(); render();
-}
-function majAttenteApresQui(i,j,v){
-  pushUndo();
+}); }
+function majAttenteApresQui(i,j,v){ muter(()=>{
   const a=attentesEditables(i)[j]; if(!a||!a.apres) return;
-  if(String(v).trim()) a.apres.qui=v.trim(); else delete a.apres.qui;
-  autosave(); render();
-}
-function ajouterAttente(i){ pushUndo(); attentesEditables(i).push({}); autosave(); render(); }
-function retirerAttente(i,j){
-  pushUndo();
+  poserOuRetirer(a.apres,"qui",v,{trim:true});
+}); }
+function ajouterAttente(i){ muter(()=>{ attentesEditables(i).push({}); }); }
+function retirerAttente(i,j){ muter(()=>{
   const as=attentesEditables(i);
   if(as.length>1) as.splice(j,1);
-  autosave(); render();
-}
+}); }
 /* Les accusés de réception vivent sur l'ATTENTE, pas sur la session ni sur une
    case (§3) : `majAttenteApres` / `majAttenteApresQui`, plus haut. Les deux
    fonctions de session qui vivaient ici n'avaient plus d'appelant. */
-function majDeclenche(pid,v){ pushUndo(); CONTENU.pieces[pid].declenche={...(CONTENU.pieces[pid].declenche||{une_fois:true}),replique:v}; autosave(); render(); }
-function majDeclencheQui(pid,v){ pushUndo(); const d=CONTENU.pieces[pid].declenche||{}; if(String(v).trim()) d.qui=v.trim(); else delete d.qui; CONTENU.pieces[pid].declenche=d; autosave(); render(); }
-function majDeclencheFois(pid,b){ pushUndo(); const d=CONTENU.pieces[pid].declenche||{}; if(b)d.une_fois=true; else delete d.une_fois; CONTENU.pieces[pid].declenche=d; autosave(); render(); }
-function ajouterDeclenche(pid){ pushUndo(); CONTENU.pieces[pid].declenche={une_fois:true,replique:""}; autosave(); render(); }
-function retirerDeclenche(pid){ pushUndo(); delete CONTENU.pieces[pid].declenche; autosave(); render(); }
-function majDirectives(text){ pushUndo(); CONTENU.directives=text.split("\n").map(s=>s.trim()).filter(Boolean); autosave(); render(); }
-function majAvis(v){ pushUndo(); if(String(v).trim()) CONTENU.avis_exploitation=v; else delete CONTENU.avis_exploitation; autosave(); render(); }
-function majAvocat(k,v){ pushUndo(); CONTENU.avocat[k]=v; autosave(); render(); }
-function majAvocatIdx(k,i,v){ pushUndo(); CONTENU.avocat[k][i]=v; autosave(); render(); }
-function majRep(prop,v){ pushUndo(); CONTENU.repetition[prop]=v; autosave(); render(); }
-function majAff(i,prop,v){ pushUndo(); CONTENU.repetition.affirmations[i][prop]=v; autosave(); render(); }
-function ajouterAff(){ pushUndo(); CONTENU.repetition.affirmations.push({court:"…",texte:""}); autosave(); render(); }
-function demanderSupprAff(i){
-  const k="aff:"+i;
-  if(pendingDel!==k){ pendingDel=k; return render(); }
-  pendingDel=null; pushUndo();
-  CONTENU.repetition.affirmations.splice(i,1);
-  autosave(); render();
-}
-function majFin(k,prop,v){ pushUndo(); CONTENU.fins[k][prop]=v; autosave(); render(); }
+const declencheDe = pid => (CONTENU.pieces[pid].declenche = CONTENU.pieces[pid].declenche || {});
+function majDeclenche(pid,v){ muter(()=>{ CONTENU.pieces[pid].declenche={...(CONTENU.pieces[pid].declenche||{une_fois:true}),replique:v}; }); }
+function majDeclencheQui(pid,v){ muter(()=>{ poserOuRetirer(declencheDe(pid),"qui",v,{trim:true}); }); }
+function majDeclencheFois(pid,b){ muter(()=>{ poserOuRetirer(declencheDe(pid),"une_fois",b); }); }
+function ajouterDeclenche(pid){ muter(()=>{ CONTENU.pieces[pid].declenche={une_fois:true,replique:""}; }); }
+function retirerDeclenche(pid){ muter(()=>{ delete CONTENU.pieces[pid].declenche; }); }
+function majDirectives(text){ muter(()=>{ CONTENU.directives=text.split("\n").map(s=>s.trim()).filter(Boolean); }); }
+function majAvis(v){ muter(()=>{ poserOuRetirer(CONTENU,"avis_exploitation",v); }); }
+function majAvocat(k,v){ muter(()=>{ CONTENU.avocat[k]=v; }); }
+function majAvocatIdx(k,i,v){ muter(()=>{ CONTENU.avocat[k][i]=v; }); }
+function majRep(prop,v){ muter(()=>{ CONTENU.repetition[prop]=v; }); }
+function majAff(i,prop,v){ muter(()=>{ CONTENU.repetition.affirmations[i][prop]=v; }); }
+function ajouterAff(){ muter(()=>{ CONTENU.repetition.affirmations.push({court:"…",texte:""}); }); }
+function demanderSupprAff(i){ demanderSuppr("aff:"+i,()=>{ CONTENU.repetition.affirmations.splice(i,1); }); }
+function majFin(k,prop,v){ muter(()=>{ CONTENU.fins[k][prop]=v; }); }
 

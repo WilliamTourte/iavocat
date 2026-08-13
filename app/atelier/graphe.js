@@ -52,7 +52,6 @@ function render(){
         <span class="dot" style="background:${dim?couleurDim(dim):'var(--err)'}"></span>
         <span class="cn">${joli(k)}</span><span class="cv">${escapeH(String(e.valeur??""))}</span></div>`;
     }).join("");
-    const delKey="piece:"+pid;
     const html=`<div class="card ${estRegle(p)?'regle':''}" data-id="${pid}" style="left:${pos.x}px;top:${pos.y}px">
       <div class="chead" data-drag="${pid}">
         <span class="kind">${estRegle(p)?'règle':'pièce'}</span>
@@ -63,7 +62,7 @@ function render(){
       <div class="cfoot">
         <button class="addchip" onclick="formulaireChamp('${pid}')">+ empan</button>
         <button class="addchip" onclick="formulairePieceEdit('${pid}')">✎ texte</button>
-        <button class="delcard ${pendingDel===delKey?'arm':''}" onclick="demanderSupprPiece('${pid}')">${pendingDel===delKey?'confirmer ?':'✕'}</button>
+        ${btnSuppr("piece:"+pid,"delcard",`demanderSupprPiece('${pid}')`,"✕","confirmer ?")}
       </div>
     </div>`;
     cv.insertAdjacentHTML("beforeend",html);
@@ -128,7 +127,7 @@ function renderEdges(){
   let h="";
   (CONTENU.liens||[]).forEach((L,i)=>{
     const p=paireVisible(L); if(!p) return;
-    const A=chipCenter(...p[0].split(".")), B=chipCenter(...p[1].split("."));
+    const A=chipCenter(...deK(p[0])), B=chipCenter(...deK(p[1]));
     if(!A||!B) return;
     const col=edgeColor(L);
     const dash=lienSense(L)?"":"6 5";
@@ -164,18 +163,20 @@ function armerDrag(){
 /* ============================================================
    4) INTERACTION GRAPHE
    ============================================================ */
+/* Le SEUL endroit qui garde sa paire d'empans en repartant à zéro : c'est lui
+   qui la construit, clic après clic (`garderEmpans`, noyau.js). */
 function clicChamp(pid,ch){
-  flagged.clear(); formPiece=formPieceEdit=formChamp=null; pendingDel=null;
+  reinitSelection({garderEmpans:true});
   const meme=s=>s&&s.pid===pid&&s.champ===ch;
   if(meme(selA)){ selA=selB; selB=null; }
   else if(meme(selB)){ selB=null; }
   else if(!selA){ selA={pid,champ:ch}; }
   else if(!selB){ selB={pid,champ:ch}; }
   else { selB={pid,champ:ch}; }
-  selEdge=null; hint();
+  hint();
   render();
 }
-function clicEdge(i){ selEdge=i; selA=selB=null; flagged.clear(); formPiece=formPieceEdit=formChamp=null; pendingDel=null; render(); }
+function clicEdge(i){ reinitSelection(); selEdge=i; render(); }
 
 function creerLien(forme){
   if(!selA||!selB) return;

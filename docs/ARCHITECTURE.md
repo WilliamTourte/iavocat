@@ -349,7 +349,8 @@ app/        LE JEU LIVRABLE — c'est ce dossier, et lui seul, qu'on zippe
   atelier_v3.html LA STRUCTURE de l'atelier + six lignes de démarrage. 156 lignes.
   atelier/        … la feuille de style, puis un fichier par outil :
     atelier.css     la mise en forme — et les JETONS que `getCSS()` relit (voir §13)
-    noyau.js        le contenu chargé, les outils, l'état d'interface, l'annulation, les onglets
+    noyau.js        le contenu chargé, les outils, l'état d'interface, l'annulation, les onglets,
+                    ET LES QUATRE GESTES que tout l'atelier refait (voir plus bas)
     graphe.js       le canevas, les traits, le clic dessus — l'ESPACE du dossier
     diagnostic.js   « le dossier tient-il ? » — la plus grosse pièce, et c'est normal
     inspecteur.js   les formulaires, les mutations, les renommages d'identifiants
@@ -365,6 +366,24 @@ grammaire/  grammaire2.js (jeu de données de démonstration) + test_grammaire2.
 **La règle de rangement, en une phrase :** *le contenu ne contient aucune règle, les règles ne contiennent aucun contenu, l'interface ne décide rien, et l'atelier ne recopie rien.* `index.html` et `atelier_v3.html` chargent les mêmes trois voisins par `<script src>` — aucune étape de build, aucun serveur, tout marche en `file://`.
 
 **Une page ne porte plus que sa structure.** Ni `<style>`, ni `<script>` en ligne : le CSS part en `<link>`, le JS en `<script src>`. Ça ne change rien à l'exécution — un script classique externe partage la même portée globale qu'un script en ligne, et les déclarations de fonction restent des propriétés de `window`, ce dont dépendent tous les `onclick=` du HTML engendré. Ça change ce qu'on ouvre quand on cherche quelque chose.
+
+**« L'atelier ne recopie rien » vaut aussi de lui-même.** La règle de rangement visait le jeu : ne pas
+réécrire une règle que `regles.js` porte déjà. Elle a une seconde moitié, restée impensée jusqu'au
+13 août — l'atelier se recopiait **lui-même**, soixante fois. Découper un fichier de 2 170 lignes en
+huit range les outils ; ça ne dégraisse rien, et ça peut même cacher les copies en les éloignant.
+`noyau.js` porte donc, en section *2 bis*, les **quatre gestes** que tous les autres refont : `muter`
+(l'épilogue d'une mutation — annuler, persister, redessiner), `poserOuRetirer` (écrire une valeur, ou
+retirer la clé quand elle est vide, pour qu'aucune clé vide ne parte à l'export), `reinitSelection` (ce
+qu'une sélection laisse derrière elle) et `demanderSuppr`/`btnSuppr` (la suppression en deux clics, et
+le bouton qui l'annonce — les deux moitiés d'un même geste, qui doivent s'accorder). Avec eux, deux
+**formats** qui ne se déplient plus qu'en un endroit : `deK(k)`, l'inverse de `K(pid, ch)`, et
+`reecrireTermes(t, f)`, la marche récursive sur les termes emboîtés du schéma 3.
+
+Ce ne sont **pas** des règles du jeu, et ils ne doivent jamais le devenir : `regles.js` reste la seule
+maison de ce qui décide (§12). Ce sont les gestes d'un **outil d'écriture** — ce qui explique qu'ils
+vivent chez lui et non dans un module partagé. La preuve que la dispersion coûtait quelque chose est
+dans les copies elles-mêmes : sur les sept remises à zéro de la sélection, **pas deux n'étaient
+identiques**, et celle du diagnostic oubliait un drapeau, ce qui rendait un clic muet.
 
 **Pourquoi l'atelier est un dossier et pas un fichier.** Il portait cinq outils dans 2 170 lignes ; chacun a maintenant le sien, et la page ne garde que son HTML, son CSS et six lignes de démarrage. Les modules se chargent en **portée globale classique**, jamais en modules ES : c'est ce qui laisse intacts les cinquante-neuf `onclick=`/`onchange=` du HTML — les réécrire aurait été le vrai coût du découpage — et ce qui préserve le « zéro build ». **L'ordre des balises compte**, mais moins qu'il n'y paraît : les fonctions se voient entre fichiers par *hoisting*, résolues à l'appel ; seul `noyau.js` exécute son corps au chargement (son `let CONTENU = contenuLivre()`), il vient donc en premier.
 

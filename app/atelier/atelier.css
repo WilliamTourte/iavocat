@@ -122,6 +122,10 @@ main.jsonmode #stage, main.jsonmode #right{display:none}
 .danger.arm{background:#3a1c1c;border-color:var(--err);color:#f0c0c0}
 .ipath{font-family:var(--mono);font-size:11.5px;color:var(--accent);word-break:break-all}
 .inote{color:var(--warn);font-size:12px;margin-bottom:6px}
+/* La glose d'un libellé — « (ex. p_temoin2) », « (qui parle) ». Elle s'écrivait
+   `style="color:var(--dim)"` en ligne, vingt-quatre fois, dans trois fichiers :
+   une famille CSS existait déjà, elle n'avait simplement pas de nom. */
+.glose{color:var(--dim)}
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);padding:6px 14px;
   border-top:1px solid var(--line)}
 .legend span{display:inline-flex;align-items:center;gap:5px}

@@ -45,6 +45,11 @@ function clone(o){ return JSON.parse(JSON.stringify(o)); }
 const $ = id => document.getElementById(id);
 const joli = k => k.replace(/_/g," ");
 const K = (pid,ch) => pid+"."+ch;
+/* L'INVERSE de K, qui manquait : dix endroits écrivaient `String(k).split(".")`
+   pour défaire un « pid.eid ». Une clé se fabrique par K et se défait par deK —
+   le format n'est plus écrit qu'ici. On coupe au PREMIER point, comme le faisait
+   le renommage de pièce, le seul des dix à s'en être soucié. */
+function deK(k){ const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; }
 function sanId(s){ return String(s||"").trim().replace(/[^\p{L}\p{N}_]/gu,"_").replace(/_+/g,"_").replace(/^_|_$/g,""); }
 /* Un seul exemplaire, dans regles.js : c'est une règle, pas une commodité
    d'atelier. Export statique, donc disponible même sans `JEU` lié (§12). */
@@ -128,6 +133,17 @@ function labelLien(L){
     : `${t[0]||"…"} ${texteForme(L.forme)} ${t[1]||"…"}`;
 }
 
+/* La marche récursive sur les termes d'un lien, avec une substitution aux
+   FEUILLES. Elle existait en trois exemplaires : deux dans les renommages
+   d'identifiants (inspecteur.js), plus `termesFeuilles` ci-dessus qui parcourt
+   la même structure pour ne faire que la lire. L'emboîtement du schéma 3 est un
+   format ; on ne le déplie qu'ici. */
+function reecrireTermes(t,f){
+  return Array.isArray(t) ? t.map(u=>reecrireTermes(u,f))
+       : typeof t==="string" ? f(t)
+       : {...t, termes:reecrireTermes(t.termes||[],f)};
+}
+
 /* état d'interface */
 let selA=null, selB=null;
 let selEdge=null;
@@ -144,8 +160,67 @@ function pushUndo(){ UNDO.push(JSON.stringify(CONTENU)); if(UNDO.length>30) UNDO
 function undo(){
   if(!UNDO.length) return;
   CONTENU=JSON.parse(UNDO.pop()); window.CONTENU=CONTENU;
-  selA=selB=null; selEdge=null; flagged.clear(); formPiece=formPieceEdit=formChamp=null; pendingDel=null;
+  reinitSelection();
   majUndoBtn(); autosave(); render();
+}
+
+/* ============================================================
+   2 bis) LES QUATRE GESTES QUE TOUT L'ATELIER REFAIT
+   ------------------------------------------------------------
+   Ils ne décident rien de neuf : ils nomment ce qui était recopié. L'atelier a
+   été découpé en fichiers le 3 août sans être dégraissé à l'intérieur, et ces
+   quatre-là s'y écrivaient soixante fois — jamais deux fois pareil.
+   TOUS SONT DES `function` DÉCLARÉES, et il le faut : `btnSuppr` engendre un
+   `onclick` qui vise `demanderSuppr`, et seule une déclaration de fonction est
+   une propriété de `window` (docs/PASSATION.md §2 — un `const` de haut niveau
+   occupe le nom sans le donner).
+   ============================================================ */
+
+/* 1. L'ÉPILOGUE D'UNE MUTATION. Trente-neuf fonctions ouvraient par `pushUndo()`
+   et fermaient par `autosave(); render()`. Ce qui les distingue tient sur une
+   ligne : ce qu'elles écrivent. Une seule ordonnance, un seul endroit où
+   l'annulation, la persistance et le redessin restent d'accord. */
+function muter(f){ pushUndo(); f(); autosave(); render(); }
+
+/* 2. ÉCRIRE, OU RETIRER LA CLÉ QUAND C'EST VIDE. Neuf mutations portaient cet
+   idiome, chacune à sa façon — l'export ne doit pas emporter de clé vide, et
+   `attend` ne veut pas d'espaces au bord. Un booléen faux se retire aussi :
+   c'est le cas de `une_fois` et des trois drapeaux d'un lien. */
+function poserOuRetirer(obj,prop,v,opts){
+  const vide = typeof v==="string" ? !v.trim() : !v;
+  if(vide){ delete obj[prop]; return; }
+  obj[prop] = ((opts||{}).trim && typeof v==="string") ? v.trim() : v;
+}
+
+/* 3. LA REMISE À ZÉRO DE LA SÉLECTION. Sept endroits l'écrivaient à la main, et
+   PAS DEUX PAREILLES — c'est la dérive que le §12 décrit, attrapée sur le fait :
+   `pointer()` (diagnostic.js) oubliait `formPieceEdit`, si bien que cliquer une
+   ligne du diagnostic pendant qu'on éditait le texte d'une pièce ne montrait
+   rien, `renderInsp` rendant l'éditeur en priorité. Une seule exception, et elle
+   est de nature : `clicChamp` construit sa paire d'empans, il garde donc la
+   sienne (`garderEmpans`). */
+function reinitSelection(opts){
+  if(!(opts||{}).garderEmpans){ selA=null; selB=null; }
+  selEdge=null; flagged.clear();
+  formPiece=formPieceEdit=formChamp=null;
+  pendingDel=null;
+}
+
+/* 4. LA SUPPRESSION EN DEUX CLICS. Cinq fonctions tenaient la même garde, et
+   cinq boutons redisaient la même condition ailleurs — or le bouton armé doit
+   changer de CLASSE et de MOT ensemble, sans quoi il ment. Les deux moitiés du
+   geste vivent désormais l'une à côté de l'autre. */
+function demanderSuppr(cle,faire){
+  if(pendingDel!==cle){ pendingDel=cle; return render(); }
+  pendingDel=null; muter(faire);
+}
+/* Le fragment conditionnel s'écrit `${arme?"arm":""}`, jamais `${arme?" arm":""}`
+   — et ce n'est pas cosmétique : le gardien (R4) relève une classe soit dans un
+   `class="…"`, soit dans une chaîne qui n'est QU'un mot. Un espace en tête et
+   `.arm` passe pour une famille morte. Il l'a dit le jour même. */
+function btnSuppr(cle,cls,appel,mot,motArme){
+  const arme = pendingDel===cle;
+  return `<button class="${cls} ${arme?"arm":""}" onclick="${appel}">${arme?motArme:mot}</button>`;
 }
 function majUndoBtn(){ const b=$("btnUndo"); if(b) b.disabled=!UNDO.length; }
 document.addEventListener("keydown",e=>{

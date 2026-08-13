@@ -20,7 +20,7 @@
 | `app/index.html` | 85 | **la structure du jeu** — trois surfaces, la clôture, la modale, le bandeau du tutoriel | aucun style, aucun script en ligne |
 | `app/jeu.css` | 244 | **la mise en forme du jeu** — les jetons, les surfaces, le tutoriel | rien que le JS relise |
 | `app/jeu.js` | 586 | **l'écran et les gestes** — rendu, sauvegarde de partie, tutoriel | ne décide rien ; n'enveloppe plus les lectures |
-| `app/atelier_v3.html` + `app/atelier/` | 156 + 257 (css) + 1827 (js) | **l'atelier** — écrire et diagnostiquer une affaire, **un fichier par outil**. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12) |
+| `app/atelier_v3.html` + `app/atelier/` | 156 + 260 (css) + 1877 (js) | **l'atelier** — écrire et diagnostiquer une affaire, **un fichier par outil**. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12), *y compris de lui-même* |
 
 `regles.js` et `moteur.js` sont en **mode double** — `require` (tests, banc) ou `<script src>` (jeu,
 atelier). Les deux exposent une **fabrique** : `creerRegles(JEU, M)` et `creerMoteur(GRAMMAIRE, CHAMPS, LIENS)`.
@@ -36,6 +36,21 @@ nom pris dans la page qui charge le fichier.
 c'est le seul dont le corps s'exécute au chargement), puis `graphe.js`, `diagnostic.js`,
 `inspecteur.js`, `frise.js`, `pasapas.js`, `contenu-io.js`, `grammaire.js`. La page ne garde que son
 HTML, son CSS et six lignes de démarrage.
+
+**Les quatre gestes que tout l'atelier refait** vivent dans `noyau.js`, section *2 bis*. Ils ne
+décident rien : ils nomment ce qui était recopié soixante fois, jamais deux fois pareil.
+
+| Le geste | Ce qu'il remplace | Où on l'appelle |
+|---|---|---|
+| `muter(f)` | `pushUndo()` … `autosave(); render()` — **39 copies** | toute mutation de `frise.js`, `inspecteur.js` |
+| `poserOuRetirer(o,p,v,{trim})` | « écrire, ou retirer la clé si c'est vide » — **9 copies**, chacune écrite autrement | `majLien`, `majAttente`, `majDeclencheQui`, `majAvis`… |
+| `reinitSelection({garderEmpans})` | la remise à zéro de la sélection — **7 copies, et pas deux pareilles** | `undo`, `adopter`, `pointer`, `clicChamp`, `clicEdge`, les trois `formulaireX` |
+| `demanderSuppr(cle,f)` + `btnSuppr(…)` | la suppression en deux clics — **5 gardes + 5 boutons** qui devaient s'accorder | pièce, empan, lien, remise, affirmation |
+
+Avec eux, deux formats qui ne se déplient plus qu'en un endroit : `deK(k)` — l'inverse de `K(pid,ch)`,
+qui manquait (**10 copies** de `split(".")`) — et `reecrireTermes(t,f)`, la marche récursive sur les
+termes emboîtés d'un lien (**3 copies**). Et la classe `.glose` porte la petite parenthèse grise des
+libellés, écrite **24 fois** en `style=` en ligne.
 
 ## Le geste du joueur, de bout en bout
 
