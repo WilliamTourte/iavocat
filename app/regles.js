@@ -1,13 +1,9 @@
 // Les RÈGLES DU JEU — pures, sans DOM, sans localStorage, sans fenêtre.
 // Mode double : `require` (tests, banc) ou `<script src>` (jeu, atelier).
-//
-// Tout ce qui décide vit ici : sessions, drapeaux du vice, ce qui entre au plan,
-// répliques, calcul de la fin. Le jeu n'en garde que l'affichage, et le pas-à-pas
-// de l'atelier APPELLE ces fonctions au lieu de les recopier (§12).
-//
+// Tout ce qui décide vit ici ; le jeu n'en garde que l'affichage, et le pas-à-pas
+// APPELLE ces fonctions au lieu de les recopier (§12).
 // Convention : chaque fonction reçoit `S` en premier argument et le modifie sur
-// place ; aucune ne rend de HTML ; celles qui « parlent » poussent dans `S.fil`,
-// qui est de l'état, pas de l'écran.
+// place ; aucune ne rend de HTML ; celles qui « parlent » poussent dans `S.fil`.
 function creerRegles(JEU, M) {
 
   /* ---- L'ÉTAT — trois surfaces, une privée (§4.6) ------------------- */
@@ -47,9 +43,8 @@ function creerRegles(JEU, M) {
   const pousser = (S, qui, texte, pieces, ia) =>
     S.fil.push({ qui, texte, pieces: pieces || [], ia: !!ia });
 
-  /* Une remise attend une SUITE de réponses. L'ancienne forme — `attend`/`apres`
-     sur la remise — se lit comme une liste à un élément : une affaire écrite
-     avant se joue sans modification (§11). Seul normalisateur du jeu (R9). */
+  /* Une remise attend une SUITE de réponses ; l'ancienne forme se lit comme une
+     liste à un élément (§11). Seul normalisateur du jeu (R9). */
   function attentesDe(r) {
     if (!r) return [];
     if (Array.isArray(r.attentes)) return r.attentes;
@@ -82,16 +77,15 @@ function creerRegles(JEU, M) {
     }
   }
 
-  /* ---- Les pièces reçues ---- une seule maison : dossier, Manuels et
-     liaisons-articles doivent dire la même chose (§4.5). */
+  /* ---- Les pièces reçues ---- une seule maison (§4.5). */
   function piecesLivrees(S) {
     const out = [];
     for (let i = 0; i < S.remisesEnvoyees; i++)
       for (const pid of (JEU.remises[i].pieces || [])) out.push(pid);
     return out;
   }
-  // Le prédicat vit dans l'API du module (bas de fichier) : un exemplaire, et
-  // l'atelier peut le poser sans `JEU` lié (R10).
+  // Le prédicat vit dans l'API du module : un exemplaire, posable sans `JEU`
+  // lié (R10).
   const estRegle = p => _apiRegles.estRegle(p);
 
   /* ---- LA MÉMOIRE — privée, gratuite, illimitée --------------------- */
@@ -122,10 +116,9 @@ function creerRegles(JEU, M) {
   }
   const chaineCompo = S => S.compo.map(p => ({ bloc: blocParId(p.bloc), valeur: p.valeur }));
 
-  /* LE PRESSENTIMENT (§4.7). L'article étant obligatoire, aucune comparaison nue
-     ne se clôt : il se lève donc à l'instant où la comparaison du vice
-     s'AFFICHE au composeur. Dérivé du terme emboîté du lien de conclusion — le
-     contenu n'a rien de plus à déclarer. Privé : rien n'est transmis. */
+  /* LE PRESSENTIMENT (§4.7) : il se lève à l'instant où la comparaison du vice
+     s'AFFICHE au composeur, dérivé du terme emboîté de la conclusion — le contenu
+     n'a rien de plus à déclarer. */
   const sousLienVice = () => {
     const c = (JEU.liens || []).find(L => L.vice && L.conclusion);
     const t = c && (c.termes || [])[0];
@@ -162,10 +155,8 @@ function creerRegles(JEU, M) {
     if ((JEU.grammaire.finaux || []).includes(b.vers)) clore(S);
     else if (b.type === "terme") cloreSansChoix(S);
   }
-  /* UNE SUITE UNIQUE N'EST PAS UN CHOIX (§4.5) : un seul bloc, une liaison qui
-     clôt et n'emboîte rien, c'est de la ponctuation. `imbrique` est exclu —
-     invoquer un texte est un acte, et sans ça la relance « et donc ? » se
-     répondrait toute seule. Rien ici ne lit le contenu. */
+  /* UNE SUITE UNIQUE N'EST PAS UN CHOIX (§4.5). `imbrique` est exclu — sans ça
+     la relance « et donc ? » se répondrait toute seule. Rien ne lit le contenu. */
   function cloreSansChoix(S) {
     const offerts = blocsOfferts(S);
     if (offerts.length !== 1) return;
@@ -196,8 +187,8 @@ function creerRegles(JEU, M) {
     clorePhrase(S, r, M.rendre(ch));
   }
   /* Une phrase réduite entre au journal : dédoublonnage, drapeaux, attente sur
-     place. Séparé de `clore` parce que le pas-à-pas joue au grain du LIEN et
-     doit passer par la même porte (§12). */
+     place. Séparé de `clore` : le pas-à-pas joue au grain du LIEN et doit passer
+     par la même porte (§12). */
   function clorePhrase(S, r, texte) {
     const deja = S.brouillon.findIndex(n => M.memeRed(n.reduite, r));
     if (deja >= 0) {                            // déjà écrite : on ne la duplique pas.
@@ -215,8 +206,7 @@ function creerRegles(JEU, M) {
     return S.prete;
   }
 
-  /* ---- LE PLAN ---- Un MOYEN est ce que l'avocat peut plaider ; le reste, il
-     l'entend et y répond, sans que ça entre au plan (§4.6). */
+  /* ---- LE PLAN ---- un MOYEN est ce que l'avocat peut plaider (§4.6). */
   const estMoyen = L => !!L && !!(L.conclusion || L.faux || L.tag);
 
   /* LE GESTE. Le seul qui traverse la frontière — donc le seul lieu du dilemme. */
@@ -242,9 +232,9 @@ function creerRegles(JEU, M) {
     else if (L && L.faux)            pousser(S, "Maître Auber", A.rep_faux);
     else if (L && L.rep)             pousser(S, "Maître Auber", L.rep);
     else {
-      // Pas de lien reconnu : trois façons de rater — comparaison sans
-      // conclusion, qualification qui ne se rattache à rien, citation hors
-      // sujet. Les deux dernières sont d'arité 1, l'emboîtement les sépare.
+      // Trois façons de rater : comparaison sans conclusion, qualification qui
+      // ne se rattache à rien, citation hors sujet — l'emboîtement sépare les
+      // deux dernières, toutes deux d'arité 1.
       const f = (JEU.grammaire.formes || {})[n.reduite.forme] || {};
       const emboite = typeof ((n.reduite.termes || [])[0]) === "object";
       if ((f.arite || 2) > 1) pousser(S, "Maître Auber", esc1(A.rep_inutile || ["…"], "inutiles"));
@@ -319,9 +309,8 @@ function creerRegles(JEU, M) {
              texte: (f.texte || "") + (fauxPlaide && f.variante_faux ? " " + f.variante_faux : "") };
   }
 
-  /* ---- Les Manuels : les règles LIVRÉES et ce qu'elles régissent ----
-     `porte` est indicatif : il annonce, il ne filtre pas, et le moteur ne le lit
-     jamais (§4.5). */
+  /* ---- Les Manuels : les règles LIVRÉES ---- `porte` annonce, ne filtre pas,
+     et le moteur ne le lit jamais (§4.5). */
   function reglesLivrees(S) {
     const livrees = new Set(piecesLivrees(S));
     return Object.entries(JEU.pieces)
@@ -330,8 +319,8 @@ function creerRegles(JEU, M) {
   }
   const porteDe = pid => ((JEU.pieces[pid] || {}).porte) || [];
 
-  // Ce qui n'est pas ici reste INTERNE (§4.7). `pressentir` sort quand même : le
-  // pas-à-pas joue « comparer sans qualifier », et c'est ce qu'il appelle.
+  // Ce qui n'est pas ici reste INTERNE (§4.7) ; `pressentir` sort parce que le
+  // pas-à-pas joue « comparer sans qualifier ».
   return { etatInitial, signatureContenu, pousser, envoyerRemise, ouvrirPiece,
            piecesLivrees, estRegle, reglesLivrees, porteDe,
            surligner, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
@@ -343,10 +332,8 @@ function creerRegles(JEU, M) {
            avancerRepetition, finir };
 }
 
-/* Une pièce est-elle un article ? La question ne dépend d'aucun état : elle sort
-   donc de la fabrique, pour que l'atelier la pose sans `JEU` lié (R10). Cloîtrée,
-   comme les projections de moteur.js : un nom de haut niveau ici serait un nom
-   pris dans la page qui charge le fichier (§9). */
+/* Une pièce est-elle un article ? Ne dépend d'aucun état : hors fabrique, pour
+   que l'atelier la pose sans `JEU` lié (R10) — et cloîtrée (§9). */
 const _apiRegles = (function () {
   const estRegle = p => ((p || {}).type || "").includes("règle");
   return { creerRegles, estRegle };

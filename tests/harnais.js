@@ -3,9 +3,8 @@
 // l'atelier. Chaque suite garde ses assertions ; ici, que la tuyauterie.
 const { JSDOM } = require("jsdom");
 const fs = require("fs");
-/* Les projections du contenu ne se recopient pas ici : le harnais lit le MÊME
-   moteur.js que le jeu et l'atelier (§12). Il en portait deux copies —
-   l'aplatissement des empans et la marche des comparaisons emboîtées. */
+/* Les projections ne se recopient pas : le harnais lit le MÊME moteur.js que le
+   jeu et l'atelier (§12, §14). */
 const { champsDe, comparaisonsDe } = require("../app/moteur.js");
 /* …et les RÈGLES viennent de regles.js, pour la même raison. Une suite DÉSIGNE,
    elle ne DÉCIDE pas (§16) — un prédicat recopié reste vert en affirmant
@@ -22,13 +21,10 @@ function creerHarnais(dossier){
   function bilan(){ console.log(`\n${pass} ok, ${fail} échec(s)`); process.exit(fail?1:0); }
 
   /* jsdom ne charge NI <script src> NI <link rel=stylesheet> : on inline les
-     fichiers voisins qu'une page réclame — pas des copies, les fichiers mêmes,
-     relus à chaque boot, ce qui permet au contenu de n'exister qu'en un
-     exemplaire (§12). Générique exprès, et dans l'ORDRE des balises, qui compte
-     (§13). LE CSS AUSSI, bien qu'aucune suite ne lise de couleur : `getCSS()`
-     (graphe.js) en lit, et jsdom rend "" pour un <link> — sans ce filet, sortir
-     le CSS du HTML aurait changé ce que le graphe dessine sous test SANS QU'AUCUN
-     CONTRÔLE NE BRONCHE. */
+     fichiers mêmes, relus à chaque boot, dans l'ORDRE des balises (§12, §13).
+     LE CSS AUSSI, bien qu'aucune suite ne lise de couleur — `getCSS()` en lit, et
+     jsdom rend "" pour un <link> : sans ce filet, sortir le CSS du HTML aurait
+     changé ce que le graphe dessine sous test sans qu'aucun contrôle ne bronche. */
   const injecter = h => h
     .replace(/<script src="([^"]+)"><\/script>/g, (_, f) => `<script>${lire(f)}</script>`)
     .replace(/<link rel="stylesheet" href="([^"]+)">/g, (_, f) => `<style>${lire(f)}</style>`);
@@ -39,9 +35,8 @@ function creerHarnais(dossier){
                  absent → content.js, le contenu livré
      - graine  : {clé:valeur} semé dans localStorage AVANT les scripts
      - url     : origine (nécessaire pour localStorage ; posée d'office si graine) */
-  /* La fenêtre, en un seul endroit : les deux boots ne diffèrent que par la page
-     et l'origine. Un semis de graine qui diverge, c'est une suite de sauvegarde
-     qui éprouve autre chose que ce qu'elle croit. */
+  /* La fenêtre en un seul endroit : un semis de graine qui diverge, c'est une
+     suite de sauvegarde qui éprouve autre chose que ce qu'elle croit. */
   const ouvrir = (html,url,graine) =>
     new JSDOM(injecter(html),{runScripts:"dangerously", ...(url?{url}:{}),
       beforeParse(win){ if(graine) for(const [k,v] of Object.entries(graine)) win.localStorage.setItem(k,v); }
@@ -72,17 +67,13 @@ function creerHarnais(dossier){
   const plaidoirie = w => w.document.getElementById("plaidoirie").innerHTML;
   const plaidoirieVisible = w => !w.document.getElementById("colPlaidoirie").hidden;
 
-  /* ---- Sélecteurs par PROPRIÉTÉ ------------------------------
-     Aucune suite ne doit nommer une pièce, un empan ou une valeur
-     du contenu : tout se dérive de la forme. Le jour où l'affaire
-     change, les tests suivent sans retouche. */
+  /* ---- Sélecteurs par PROPRIÉTÉ ---- aucune suite ne nomme une pièce, un empan
+     ou une valeur : tout se dérive de la forme (§16). */
   const J = w => w.JEU;
 
-  /* ---- LES PRÉDICATS, en un seul exemplaire ----
-     Deux familles posent les MÊMES questions : celle qui part d'une fenêtre et
-     `surContenu`, qui part d'un contenu brut. On met en commun le PRÉDICAT,
-     jamais la fonction — l'une l'emploie en `.find`, l'autre en `.findIndex`
-     (§12). */
+  /* ---- LES PRÉDICATS, en un seul exemplaire ---- deux familles posent les
+     MÊMES questions, l'une depuis une fenêtre, l'autre depuis un contenu brut.
+     On met en commun le PRÉDICAT, jamais la fonction (§12). */
   const estVice       = L => !!L.vice;
   const estConclusion = L => !!(L.vice && L.conclusion);
   const estViceNu     = L => !!(L.vice && !L.conclusion);
@@ -101,9 +92,8 @@ function creerHarnais(dossier){
     J(w).liens.find(estViceNu) || sousTerme(lienConclusion(w)) || undefined;
   const lienConclusion = w => J(w).liens.find(estConclusion);
   const lienFaux       = w => J(w).liens.find(estFaux);
-  /* Le lien qui porte un tag d'attente. Une attente peut être servie de
-     plusieurs façons (c'est voulu, §3) — `docile` prend celle qui ne passe pas
-     par le vice, ce qui définit le parcours de la Fin 3. */
+  /* Le lien qui porte un tag d'attente ; `docile` prend celui qui ne passe pas
+     par le vice — c'est le parcours de la Fin 3 (§3). */
   const lienTag = (w,tag,{docile=true}={}) => {
     const cands=J(w).liens.filter(L=>L.tag===tag);
     return (docile ? cands.find(L=>!estVice(L)) : cands.find(estVice)) || cands[0];
@@ -113,9 +103,8 @@ function creerHarnais(dossier){
      celle de moteur.js. */
   const comparaisons = w => comparaisonsDe(J(w).liens, J(w).grammaire.formes);
   const arite = (w,L) => ((J(w).grammaire.formes||{})[L.forme]||{}).arite || 2;
-  /* Les CITATIONS : une forme d'arité 1 dont le terme est ATOMIQUE. Un fait se
-     cite, une relation se fonde (§4.5) — l'emboîtement, et lui seul, sépare la
-     citation de la qualification. */
+  /* Les CITATIONS : arité 1, terme ATOMIQUE — l'emboîtement, et lui seul, les
+     sépare d'une qualification (§4.5). */
   const citations = w => J(w).liens.filter(L =>
     arite(w,L)===1 && typeof (L.termes||[])[0]==="string");
   // Le bloc qui clôt sur une citation, s'il existe.
@@ -126,11 +115,9 @@ function creerHarnais(dossier){
 
   // --- composer : le geste du jeu, joué par les fonctions du moteur ---
   const idBloc = (w,id) => w.R.blocsOfferts(w.S).findIndex(b=>b.id===id);
-  /* L'index, parmi les blocs offerts, du TERME QUI PREND UN EMPAN — le calcul
-     vit dans regles.js : une suite demande aux règles (§16).
-     À NE PAS confondre avec ses voisins : le second empan porte en plus `deduit`
-     (`poserComparaison`), et `blocChamp` cherche un ID de bloc dans la
-     grammaire, pas un rang dans ce qui est offert maintenant. */
+  /* Le TERME QUI PREND UN EMPAN, parmi les blocs offerts — le calcul vit dans
+     regles.js (§16). À ne pas confondre : le second empan porte en plus `deduit`,
+     et `blocChamp` cherche un ID de bloc, pas un rang. */
   const iTermeChamp = w => w.R.indexTermeChamp(w.S);
   /* Défaire une clé « pid.eid », comme le `deK` de l'atelier : on coupe au
      PREMIER point — c'est le pid qui ne peut pas en contenir, pas l'eid. */
@@ -138,9 +125,8 @@ function creerHarnais(dossier){
   const surligner = (w,k) => { const [pid,eid]=deK(k); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
-  /* Compose la phrase qui réalise un lien : on surligne, puis on parcourt
-     l'automate en choisissant le bloc qui mène à la forme voulue. Rend l'index
-     au brouillon, ou -1. */
+  /* Compose la phrase qui réalise un lien : surligner, puis parcourir l'automate
+     vers la forme voulue. Rend l'index au brouillon, ou -1. */
   function composerLien(w,L){
     const f=(J(w).grammaire.formes||{})[L.forme]||{};
     w.viderCompo();
@@ -185,18 +171,16 @@ function creerHarnais(dossier){
     }
     return trouve();
   }
-  /* Les deux termes et la liaison d'une forme d'arité 2, SANS chercher à clore :
-     selon la grammaire on se retrouve soit déjà à la fin (à l'ancienne), soit
-     sur l'état qui offre « et donc ? ». */
+  /* Les deux termes d'une forme d'arité 2, SANS chercher à clore : selon la
+     grammaire, on finit à la fin (à l'ancienne) ou sur « et donc ? » (§4.5). */
   function poserComparaison(w,L){
     const G=J(w).grammaire;
     const [t0,t1]=L.termes||[];
     if(typeof t0!=="string" || typeof t1!=="string") return false;
     surligner(w,t0); surligner(w,t1);
     const bT=idBloc(w,blocChamp(w)); if(bT<0) return false;
-    /* Une SONDE : quand la comparaison n'est pas ouverte (session 1), poser le
-       premier terme suffit à clore une citation (§4.5). Une sonde qui échoue ne
-       laisse rien au journal : on note où l'on en était. */
+    /* Une SONDE : en session 1, poser le premier terme suffit à clore une
+       citation (§4.5) — et une sonde qui échoue ne laisse rien au journal. */
     const n0=w.S.brouillon.length, p0=w.S.prete;
     const echec=()=>{ w.S.brouillon.length=n0; w.S.prete=p0; w.viderCompo(); return false; };
     w.poserBloc(bT,iRetenu(w,t0));

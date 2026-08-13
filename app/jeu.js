@@ -1,12 +1,7 @@
-/* LE JEU — L'ÉCRAN ET LES GESTES
-   Chargé par <script src> APRÈS moteur.js, regles.js et content.js. Portée
-   globale classique, jamais un module ES : c'est ce qui laisse les `onclick=`
-   du HTML engendré trouver leurs fonctions.
-
-   IL NE DÉCIDE RIEN (§9) : ici le rendu, les gestes, la sauvegarde de partie et
-   le tutoriel. Ce qui REDESSINE est une fonction d'ici — un `R.x(S,…)` suivi
-   d'un `rendreTout()`, cible de `onclick` ; ce qui LIT s'écrit `R.x(S)` sur
-   place, sans enveloppe (§12). */
+/* LE JEU — L'ÉCRAN ET LES GESTES. Chargé par <script src> APRÈS moteur.js,
+   regles.js et content.js, en portée globale classique (§9).
+   IL NE DÉCIDE RIEN : ce qui REDESSINE est une fonction d'ici — `R.x(S,…)` puis
+   `rendreTout()` ; ce qui LIT s'écrit `R.x(S)` sur place (§12). */
 
 /* 1) LE CONTENU — content.js, et lui seul : une seule maison (§12). S'il manque
       ou s'il est d'un schéma inconnu, on le dit au lieu de jouer autre chose. */
@@ -19,8 +14,7 @@ function contenuValide(c){
     && c.repetition && Array.isArray(c.repetition.affirmations)
     && c.avocat && c.fins );
 }
-/* Un contenu vide et bien formé, pour que la page rende son bandeau de panne
-   au lieu de planter à la première boucle. Il ne se joue pas : zéro remise. */
+/* Vide et bien formé : la page rend son bandeau au lieu de planter (§13). */
 const CONTENU_ABSENT = { schema:3, dimensions:[], pieces:{},
   grammaire:{ depart:"S0", finaux:[], blocs:[], formes:{} },
   liens:[], remises:[], repetition:{ affirmations:[] }, avocat:{}, fins:{} };
@@ -43,10 +37,8 @@ if(CONTENU_OK && (JEU.schema||0) > 3)
 const $ = id => document.getElementById(id);
 /* `MoteurAPI` est le MODULE ; `M` l'instance liée à cette affaire. */
 const MoteurAPI = window.MoteurGrammaire || {};
-/* Tous les empans aplatis en "pid.eid" : le vocabulaire des TERMES que le moteur
-   connaît (la mémoire du joueur n'en porte que ce qu'il a surligné).
-   L'aplatissement vit dans moteur.js, en un exemplaire — c'est l'argument que
-   `creerMoteur` attend (§12). */
+/* Les empans aplatis en "pid.eid" : le vocabulaire des TERMES, et l'argument que
+   `creerMoteur` attend. L'aplatissement vit dans moteur.js (§12, §14). */
 const CHAMPS = MoteurAPI.champsDe ? MoteurAPI.champsDe(JEU) : [];
 const M = MoteurAPI.creerMoteur
         ? MoteurAPI.creerMoteur(JEU.grammaire, CHAMPS, JEU.liens)
@@ -56,9 +48,8 @@ if(!M){
     `<div class="panne">moteur.js n'a pas été chargé. Le fichier doit rester à côté de index.html (voir docs/ARCHITECTURE.md §9).</div>`);
 }
 const EMPAN = Object.fromEntries(CHAMPS.map(c=>[c.id,c]));
-/* La couleur d'une dimension : par son RANG, jamais par sa pertinence (§4.3).
-   Règle et palette vivent dans moteur.js ; ici, seulement le repli — une
-   dimension inconnue retombe sur le gris (l'atelier la signale en rouge). */
+/* Par RANG, jamais par pertinence (§4.3) ; règle et palette dans moteur.js. Ici
+   le repli seul : une dimension inconnue est grisée. */
 const couleurDim = d =>
   (MoteurAPI.couleurDim ? MoteurAPI.couleurDim(JEU.dimensions,d) : null) || "var(--muted)";
 
@@ -84,9 +75,9 @@ function restaurerPartie(){
     const brut=localStorage.getItem(CLE_PARTIE); if(!brut) return false;
     const d=JSON.parse(brut);
     if(d.sig!==R.signatureContenu()){ localStorage.removeItem(CLE_PARTIE); return false; }
-    /* Sauvegarde écrite avant que `S.memoire` ne devienne `S.retenus` : le
-       contenu n'ayant pas changé, la signature ne jette pas cette partie — sans
-       reprise, le joueur la retrouverait vide de passages, sans un mot. */
+    /* Sauvegarde écrite avant que `S.memoire` ne devienne `S.retenus` : la
+       signature ne jette pas cette partie, le contenu n'ayant pas changé —
+       sans reprise, elle reviendrait vide de passages, sans un mot. */
     if(d.retenus===undefined && Array.isArray(d.memoire)) d.retenus=d.memoire;
     delete d.memoire;
     delete d.sig; Object.assign(S,d); return true;
@@ -106,30 +97,25 @@ function recommencer(){
 }
 
 /* ---- Le tutoriel du premier geste (§4.8) — de l'écran, pas de la règle ----
-   Il ne DÉCIDE rien : son temps se dérive de `S`, sans champ d'état ni
-   sauvegarde ; le retirer laisserait le jeu identique. Le halo entoure la ZONE,
-   jamais le bon empan — ce serait désigner la réponse à la lampe torche (§4.3).
-   Ses phrases parlent depuis le chrome : dans la fiction, personne n'explique
-   rien (§8.6 de docs/ECRITURE.md). */
+   Il ne DÉCIDE rien : son temps se dérive de `S`, le retirer laisserait le jeu
+   identique. Le halo entoure la ZONE, jamais le bon empan (§4.3), et ses phrases
+   parlent depuis le chrome (§8.6 de docs/ECRITURE.md). */
 const CLE_TUTO="iavocat_tuto";
 let tutoFait=false;
 try{ tutoFait = !!localStorage.getItem(CLE_TUTO); }catch(e){}
 function effacerTuto(){ try{ localStorage.removeItem(CLE_TUTO); }catch(e){} }
 function tutoClore(){ tutoFait=true; try{ localStorage.setItem(CLE_TUTO,"1"); }catch(e){} }
 function tutoPasser(){ tutoClore(); majTutoriel(); }
-/* Ce que la question attend, dérivé du contenu comme le fait le harnais : tag de
-   l'attente courante → lien → terme s'il est ATOMIQUE. Rien n'est nommé, et une
-   comparaison ne rend rien : le tutoriel ne juge que la citation. */
+/* Ce que la question attend : tag de l'attente → lien → terme s'il est ATOMIQUE.
+   Rien n'est nommé, et une comparaison ne rend rien (§4.8). */
 function tutoAttendu(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
   const L=a&&a.attend&&(JEU.liens||[]).find(x=>x.tag===a.attend);
   const t=L&&(L.termes||[])[0];
   return typeof t==="string" ? t : null;
 }
-/* Quatre temps, ceux qui restent depuis qu'une suite unique se pose toute seule
-   (§4.5) ; le second a deux moitiés, la pièce ouverte couvrant l'écran. Le
-   tutoriel n'avance qu'avec le passage demandé mais n'EMPÊCHE rien : ce qu'il
-   retient, c'est son approbation (§4.8). */
+/* Quatre temps (§4.8) ; le second a deux moitiés, la pièce ouverte couvrant
+   l'écran. Il n'avance qu'avec le passage demandé, mais n'EMPÊCHE rien. */
 function tutoEtape(){
   if(S.remisesEnvoyees!==1 || S.satisfaits.length) return null;
   const veut=tutoAttendu();
@@ -153,9 +139,8 @@ function tutoEtape(){
   return  {n:4, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
 }
-/* En fin de `rendreTout` : tout est refait à chaque geste, le halo se repose de
-   même. On marque par un ATTRIBUT, pas par une classe — la sérialisation le
-   range en fin de balise et laisse intactes les `class="…"` que des suites
+/* Le halo se repose à chaque geste. On marque par un ATTRIBUT, pas par une
+   classe : la sérialisation laisse alors intactes les `class="…"` que des suites
    lisent. */
 let tutoCible=null;
 function majTutoriel(){
@@ -247,8 +232,7 @@ function ouvrirPiece(pid){
   rendreTout();
 }
 /* LE DOSSIER — les pièces d'abord, les règles ensuite : deux natures, donc deux
-   bandes. Bandes et non colonnes : à cette largeur, une demi-colonne ne tenait
-   plus deux puces côte à côte (§4.9). */
+   bandes pleine largeur et non deux colonnes (§4.9). */
 function renderDossier(){
   if(!S.remisesEnvoyees) return "";
   const livres=R.piecesLivrees(S);
@@ -279,12 +263,10 @@ function modalPieceHTML(pid){
     <p class="piecetexte">${rendreTexte(pid)}</p>
     `;
 }
-/* La mémoire est AUSSI le clavier : un empan retenu n'existe qu'une fois à
-   l'écran (§4.6). Deux lignes, pas trois (§4.9) — le NOM, puis citation et
-   provenance sur la MÊME ligne : la citation cède au besoin, la source jamais,
-   c'est elle qui fonde. Le corps pose l'empan quand un terme est attendu, le
-   « × » l'oublie toujours. L'id de zone est l'ancre du 3ᵉ temps du tutoriel
-   (§4.8) : ne pas la viser par `:last-child`, ça dépendrait de l'ordre. */
+/* La mémoire est AUSSI le clavier (§4.6). Deux lignes, pas trois (§4.9) : le NOM,
+   puis citation et provenance sur la MÊME ligne — la citation cède au besoin, la
+   source jamais, c'est elle qui fonde. L'id de zone est l'ancre du 3ᵉ temps du
+   tutoriel (§4.8) : ne pas la viser par `:last-child`. */
 function renderRetenus(){
   const iT=R.indexTermeChamp(S);
   let h=`<div class="zone" id="zoneRetenus">`;
@@ -316,12 +298,10 @@ function renderRetenus(){
   return h;
 }
 
-/* 5) LE COMPOSEUR — les blocs de l'état courant. Aucune liste n'est restreinte :
-      seules les erreurs de CATÉGORIE sont refusées, à la clôture (§4.5).
-
-   LA VOIX UNIQUE (§4.9) : une phrase pour l'état courant, dérivée de `S` —
-   rendue dans le FANTÔME tant que la phrase est vide, dans l'AIDE ensuite. Elle
-   ne lit aucun contenu : un compte de blocs, deux drapeaux, la mémoire. */
+/* 5) LE COMPOSEUR — les blocs de l'état courant ; seules les erreurs de
+      CATÉGORIE sont refusées, à la clôture (§4.5).
+   LA VOIX UNIQUE (§4.9), dérivée de `S` : dans le FANTÔME tant que la phrase est
+   vide, dans l'AIDE ensuite. Elle ne lit aucun contenu. */
 function souffle(){
   const offerts=R.blocsOfferts(S);
   const second=offerts.some(b=>b.type==="terme"&&b.deduit);
@@ -334,9 +314,8 @@ function souffle(){
   if(citation && second) return "Ajouter un second passage ?";
   if(citation) return "Quel article citer pour appuyer la déclaration ?";
   if(attendTerme) return "Clique sur un second passage pour le mettre en relation";
-  /* LA RELANCE : une comparaison demande toujours « et donc ? », et c'est le
-     composeur qui la pose — une remarque nue ne peut plus parvenir à l'avocat.
-     Elle ne se coupe pas : elle porte la contrainte par la forme (§4.5, §4.9). */
+  /* LA RELANCE (§4.5) : elle ne se coupe pas — elle porte la contrainte de
+     fondement par la forme, et non par l'agacement de l'avocat (§4.9). */
   return offerts.length
     ? "Et donc ? Une comparaison ne se plaide pas seule — au regard de quel texte ?"
     : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
@@ -358,8 +337,7 @@ function texteCompoPartiel(){
     ? ` <span class="trou">…et ?</span>` : "");
 }
 /* iBloc indexe R.blocsOfferts(S) — POSITIONNEL dans la liste filtrée, donc
-   dépendant de la session ; iSrc indexe la mémoire ou le brouillon. La décision
-   est dans regles.js : ces quatre-là ne sont que des gestes d'écran. */
+   dépendant de la session ; iSrc indexe la mémoire ou le brouillon. */
 function poserBloc(iBloc,iSrc){ R.poserBloc(S,iBloc,iSrc); rendreTout(); }
 function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
 function viderCompo(){ R.viderCompo(S); rendreTout(); }
@@ -369,11 +347,9 @@ function effacerPrete(){ R.effacerPrete(S); rendreTout(); }
 function rappelQuestion(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
   if(!a || !a.question) return "";
-  /* Depuis que le composeur est SOUS le fil (§4.6), la question vient souvent
-     d'être posée juste au-dessus : la rappeler l'écrirait deux fois à quelques
-     pixels d'écart. On ne la redit donc que lorsqu'elle a cessé d'être le
-     dernier mot — c'est-à-dire quand l'avocat a reparlé depuis, et qu'elle a
-     commencé à remonter hors de vue (§4.9). Dérivé de `S`, sans champ neuf. */
+  /* Le composeur étant SOUS le fil (§4.6), la question est souvent la bulle
+     juste au-dessus : on ne la redit que lorsqu'elle a cessé d'être le dernier
+     mot (§4.9). Dérivé de `S`, sans champ neuf. */
   const dernier=S.fil[S.fil.length-1];
   if(dernier && dernier.texte===a.question) return "";
   return `<div class="aide question">« ${escapeAttr(a.question)} »</div>`;
@@ -423,12 +399,9 @@ function renderCompo(){
   return h;
 }
 
-/* 6) LA MÉMOIRE (privée) ET LA PLAIDOIRIE (transmise). L'avocat ne voit QUE la
-      Plaidoirie : envoyer est le seul geste à conséquence, donc le seul lieu
-      possible du dilemme — et il n'y inscrit que les MOYENS.
-
-   La Mémoire porte le dossier et les empans retenus ; la phrase s'écrit sous le
-   fil (§4.6), le clavier reste ici — le prix accepté de l'arbitrage (§7). */
+/* 6) LA MÉMOIRE (privée) ET LA PLAIDOIRIE (transmise) — l'avocat ne voit QUE la
+      seconde, et n'y inscrit que les MOYENS (§4.6). La phrase s'écrit sous le
+      fil, le clavier reste ici : le prix accepté de l'arbitrage (§7). */
 function renderMemoire(){
   $("memoire").innerHTML = renderDossier() + renderRetenus();
 }
@@ -439,9 +412,8 @@ function renderComposeur(){
 /* Un seul titre, celui de la colonne (§4.9) ; le compte monte dans le `<h2>`. */
 function renderPlaidoirie(){
   const gardes=S.plaidoirie.filter(x=>S.brouillon[x.b] && R.estMoyen(S.brouillon[x.b].lien));
-  /* Vide, la colonne n'existe pas (§4.9) : elle apparaît au premier moyen
-     versé, et c'est cette apparition qui l'enseigne — d'où l'absence de toute
-     phrase d'attente, qui serait de toute façon inatteignable. */
+  /* Vide, la colonne n'existe pas (§4.9) : elle apparaît au premier moyen versé,
+     et c'est cette apparition qui l'enseigne. */
   const vide = !gardes.length;
   { const c=$("colPlaidoirie"); if(c) c.hidden=vide; }
   { const w=document.querySelector(".wrap"); if(w) w.classList.toggle("sansPlan",vide); }
@@ -492,11 +464,8 @@ function finir(){
   </div>`);
 }
 
-/* ---- Ce qu'un article régit ---- `porte` est purement indicatif : aucune
-   liste n'est filtrée, aucune phrase refusée pour ça (§4.5).
-   LES MANUELS ONT ÉTÉ RETIRÉS de l'écran ; la RÈGLE reste dans regles.js
-   (`reglesLivrees`, `porteDe`), les rebrancher ne coûtera pas une ligne de
-   moteur (§16). */
+/* ---- Ce qu'un article régit ---- indicatif, jamais filtrant (§4.5). Les
+   Manuels ont été retirés de l'écran, la RÈGLE reste dans regles.js (§16). */
 function portePhrase(pid){
   const d=R.porteDe(pid);
   return d.length ? `<span class="porte">porte sur : ${d.map(escapeAttr).join(", ")}</span>` : "";

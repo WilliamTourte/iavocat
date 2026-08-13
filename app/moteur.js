@@ -1,7 +1,6 @@
-// Le moteur de la grammaire — partagé par le banc d'essai (Node) et
-// l'atelier (navigateur). Mode double : `require` ou `<script src>`.
-// Aucune donnée ici : on reçoit GRAMMAIRE / CHAMPS / LIENS et on rend les
-// fonctions pures qui composent, valident et reconnaissent une phrase.
+// Le moteur de la grammaire, en mode double (`require` ou `<script src>`).
+// Aucune donnée : on reçoit GRAMMAIRE / CHAMPS / LIENS et on rend les fonctions
+// pures qui composent, valident et reconnaissent une phrase (§14).
 function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
   const G = GRAMMAIRE;
   const C = Object.fromEntries(CHAMPS.map(c => [c.id, c]));
@@ -24,9 +23,8 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     const sa = String(a), sb = String(b);
     return sa < sb ? -1 : sa > sb ? 1 : 0;
   }
-  // La forme qui lie deux empans, ou null (dimensions différentes → null, le
-  // seul refus qui existe). L'ORDRE de déclaration tranche les ambiguïtés : la
-  // première qui accepte la dimension et dont le prédicat tient (§11).
+  // La forme qui lie deux empans, ou null (dimensions différentes → null, le seul
+  // refus qui existe). L'ORDRE de déclaration tranche les ambiguïtés (§11).
   function deduire(idA, idB) {
     const a = C[idA], b = C[idB];
     if (!a || !b || idA === idB || a.dim !== b.dim) return null;
@@ -52,10 +50,9 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     return inverser ? [y, x] : [x, y];
   }
 
-  // Une chaîne de blocs → sa forme réduite {forme, termes}. `deduit` fait DÉDUIRE
-  // la forme des deux termes accumulés ; `imbrique` EMBOÎTE ce qui précède comme
-  // terme unique de sa forme — la continuation (§4.5). Sans ni l'un ni l'autre,
-  // comportement d'avant : la dernière forme gagne, termes à plat.
+  // Une chaîne de blocs → sa forme réduite. `deduit` fait DÉDUIRE la forme des
+  // deux termes ; `imbrique` EMBOÎTE ce qui précède (§4.5). Sans l'un ni l'autre :
+  // la dernière forme gagne, termes à plat (§11).
   function reduire(ch) {
     let termes = [], forme = null;
     for (const p of ch) {
@@ -81,10 +78,9 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     for (let i = 0; i < r.termes.length; i++) {
       const s = f.slots[i], d = dimDe(r.termes[i]);
       if (s !== "*" && !s.includes(d)) return `slot ${i} refuse « ${d} »`;
-      // Un terme EMBOÎTÉ doit tenir pour lui-même : sans ça, qualifier une
-      // comparaison bancale la blanchirait — « affirmation » est une catégorie
-      // que tout objet satisfait. C'est le seul chemin de clôture (§4.5), donc
-      // le seul endroit où la catégorie peut trancher.
+      // Un terme EMBOÎTÉ doit tenir pour lui-même : « affirmation » est une
+      // catégorie que tout objet satisfait, et la qualification est le seul
+      // chemin de clôture (§4.5, §14).
       if (typeof r.termes[i] === "object") {
         const err = valider(r.termes[i]);
         if (err) return err;
@@ -109,13 +105,12 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
   }
   // Le lien du contenu que la phrase reconnaît (ou undefined : bruit sensé).
   const lienDe = r => LIENS.find(l => memeRed({ forme: l.forme, termes: l.termes }, r));
-  // La chaîne → le texte français. Un empan s'y écrit par son `nom`, pas par sa
-  // citation (§4.1) ; rien ne s'insère devant une ponctuation, pour que la
-  // continuation se recolle. Une forme déduite écrit d'un bloc, par son
-  // `patron` — le seul endroit où l'accord se joue (§8.8 de docs/ECRITURE.md).
+  // La chaîne → le texte français : un empan s'écrit par son `nom` (§4.1), rien
+  // ne s'insère devant une ponctuation, et une forme déduite écrit d'un bloc par
+  // son `patron` — seul endroit où l'accord se joue (§8.8 de docs/ECRITURE.md).
   const nomDe = v => (C[v] ? (C[v].nom || C[v].texte) : String(v));
-  // Une liaison `cite` écrit l'empan qui précède DEUX FOIS : nom, citation,
-  // pièce. Seul endroit où un empan se lit deux fois dans une phrase (§4.1).
+  // Une liaison `cite` écrit l'empan qui précède DEUX FOIS — nom, citation,
+  // pièce (§4.1).
   const citeDe = v => {
     const c = C[v]; if (!c) return String(v);
     return (c.nom || c.texte) + " : « " + c.texte + " »" + (c.court ? " (" + c.court + ")" : "");
@@ -142,9 +137,8 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
           termes = ord;
         }
       } else if (b.forme) {
-        // Symétrique du patron : le fragment qui précède est réécrit d'un bloc.
-        // Le flag est porté par la LIAISON, jamais par le terme, pour que la
-        // voie de comparaison — même bloc de premier terme — reste intacte.
+        // Le flag est porté par la LIAISON, jamais par le terme : la voie de
+        // comparaison partage le même bloc de premier terme (§14).
         if (b.cite && termes.length === 1 && typeof termes[0] === "string")
           bouts.splice(bouts.length - 1, 1, citeDe(termes[0]));
         if (b.imbrique) termes = [{ forme, termes }];
@@ -166,16 +160,14 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
 }
 
 /* LES PROJECTIONS DU CONTENU — pures, sans fabrique : on passe un contenu, on
-   reçoit une vue. C'est leur seule maison (§12, §14) ; ce ne sont pas des
-   DONNÉES, l'en-tête du fichier tient.
-   ELLES SONT CLOÎTRÉES, et il le faut : chargé par `<script src>`, ce fichier
-   partage la portée globale de la page — `couleurDim` heurtait celui
-   d'index.html. On ne sort que par `MoteurGrammaire.x` (§9). */
+   reçoit une vue. C'est leur seule maison (§12, §14), et ce ne sont pas des
+   DONNÉES. ELLES SONT CLOÎTRÉES, et il le faut : on ne sort que par
+   `MoteurGrammaire.x` (§9). */
 const _projections = (function () {
 
-/* Les empans aplatis en « pid.eid » : le vocabulaire des TERMES, et exactement
-   l'argument CHAMPS que `creerMoteur` attend. `nom` porte la phrase composée
-   (§4.1), `court` dit d'où sort une citation (§4.5). */
+/* Les empans aplatis en « pid.eid » : exactement l'argument CHAMPS que
+   `creerMoteur` attend. `nom` porte la phrase composée (§4.1), `court` dit d'où
+   sort une citation (§4.5). */
 function champsDe(contenu) {
   const out = [];
   for (const [pid, p] of Object.entries((contenu || {}).pieces || {}))
@@ -186,9 +178,9 @@ function champsDe(contenu) {
   return out;
 }
 
-/* Les COMPARAISONS (arité 2) d'un jeu de liens, emboîtées comprises : l'article
-   étant obligatoire, elles vivent en terme emboîté dans les qualifications. On
-   ne suppose pas laquelle des deux écritures l'affaire emploie. */
+/* Les COMPARAISONS (arité 2), emboîtées comprises : l'article étant obligatoire,
+   elles vivent en terme emboîté — et on ne suppose pas laquelle des deux
+   écritures l'affaire emploie (§14). */
 function comparaisonsDe(liens, formes) {
   const out = [], vus = new Set();
   const rec = t => {

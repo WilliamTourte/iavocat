@@ -65,17 +65,13 @@ function bilan() {
   process.exit(ecarts ? 1 : 0);
 }
 
-/* Découpe un source JS en TROIS vues, parce que les règles en demandent trois :
-
-     `code`     chaînes, gabarits, regex et commentaires blanchis — la vue où
-                l'on compte les accolades (R2).
-     `chaines`  le CONTENU des chaînes : les classes CSS et le HTML engendré (R4).
-     `sansComm` le source moins les commentaires. Seule vue où un
-                `onclick="poserBloc(${iT},${j})"` se lit d'un bloc (R5, R6).
-
-   Un `split` ne suffit pas : gabarits IMBRIQUÉS (`app/jeu.js`), littéraux
-   RÉGULIERS dont les accolades fausseraient la profondeur, et COMMENTAIRES qui
-   citent du code — `index.html` cité dans une prose devenait la classe `.html`. */
+/* TROIS vues d'un source JS, parce que les règles en demandent trois :
+     `code`     tout blanchi sauf le code — on y compte les accolades (R2)
+     `chaines`  le contenu des chaînes — classes CSS et HTML engendré (R4)
+     `sansComm` le source moins les commentaires — seule vue où un `onclick="…"`
+                se lit d'un bloc (R5, R6)
+   Un `split` ne suffit pas : gabarits imbriqués, regex dont les accolades
+   fausseraient la profondeur, commentaires qui citent du code. */
 const MOTS_AVANT_REGEX = /(?:^|[^\w$.])(?:return|typeof|case|in|of|do|else|delete|void|instanceof|new|yield)$/;
 function debutDeRegex(codeAvant) {
   const t = codeAvant.replace(/\s+$/, "");
@@ -108,9 +104,8 @@ function decouperJS(src) {
     const c = src[i], d = src[i + 1];
     if (dansCode()) {
       if (c === "/" && d === "/") { while (i < src.length && src[i] !== "\n") i++; continue; }
-      /* Un commentaire de bloc est blanchi mais REND SES SAUTS DE LIGNE : R7 et
-         R9 comptent les `\n` de `code` pour dire où regarder, et un message qui
-         désigne la mauvaise ligne coûte plus qu'il ne rapporte. */
+      /* Blanchi, mais REND SES SAUTS DE LIGNE : R7 et R9 comptent les `\n` de
+         `code` pour dire où regarder. */
       if (c === "/" && d === "*") {
         const j = src.indexOf("*/", i + 2), fin = j < 0 ? src.length : j + 2;
         const sauts = src.slice(i, fin).replace(/[^\n]/g, "");
@@ -151,10 +146,8 @@ function decouperJS(src) {
 }
 
 /* Les déclarations à PROFONDEUR D'ACCOLADE ZÉRO — les seules qui prennent un nom
-   dans la page. La profondeur n'est pas un raffinement : `couleurDim` est en
-   colonne 0 dans `moteur.js` comme dans `graphe.js`, mais celui de `moteur.js`
-   est cloîtré dans une fermeture (§2) — sans le compte, on annonce une collision
-   qui n'existe pas, et on fait retirer ce qui protège du vrai piège. */
+   dans la page. Sans le compte, une fermeture (§9) passerait pour une collision,
+   et on ferait retirer ce qui protège du vrai piège. */
 const DECLARATION = /(function|const|let|var|class)\s+([A-Za-z_$][\w$]*)/y;
 function declarationsDeHautNiveau(code) {
   const noms = [];
@@ -172,10 +165,8 @@ function declarationsDeHautNiveau(code) {
       if (m && m.index === i) {
         noms.push(m[2]);
         let j = DECLARATION.lastIndex;
-        /* LA SUITE DES DÉCLARATEURS : `let selA=null, selB=null;` déclare DEUX
-           noms, et un nom manquant à l'inventaire est une collision que R2 ne
-           verrait pas. On parcourt jusqu'au `;` en sautant ce qui est entre
-           parenthèses ou accolades — ce qui tient aussi les fermetures dehors. */
+        /* `let selA=null, selB=null;` déclare DEUX noms, et un nom manquant à
+           l'inventaire est une collision que R2 ne verrait pas. */
         if (m[1] !== "function" && m[1] !== "class") {
           let d = 0;
           while (j < code.length) {
@@ -203,9 +194,8 @@ function declarationsDeHautNiveau(code) {
 
 /* ---- CSS ---------------------------------------------------------------- */
 const sansCommentairesCSS = s => s.replace(/\/\*[\s\S]*?\*\//g, "");
-/* Les sélecteurs : tout ce qui précède une accolade ouvrante, à n'importe quelle
-   profondeur — une règle sous `@media` en est une. Les préludes d'at-règles sont
-   écartés : `@keyframes pouls` ne nomme aucune famille. */
+/* Les sélecteurs : ce qui précède une `{`, à toute profondeur. Les préludes
+   d'at-règles sont écartés — `@keyframes pouls` ne nomme aucune famille. */
 function classesCSS(css) {
   const out = new Set();
   for (const m of sansCommentairesCSS(css).matchAll(/([^{}]*)\{/g)) {
@@ -222,12 +212,11 @@ const varsEmployees = txt => new Set([...txt.matchAll(/var\(\s*(--[A-Za-z][\w-]*
 const sansCommentairesHTML = s => s.replace(/<!--[\s\S]*?-->/g, "");
 
 /* Les classes qu'une page POSE réellement (R4, R6). Deux gisements, pas un de
-   plus : ce qui est écrit dans un `class="…"` (statique ou engendré, fragments
-   conditionnels compris), et toute chaîne qui n'est QU'un mot — `const
-   cls=["chip"]`. Prendre tous les mots de toutes les chaînes serait trop large
-   d'exactement une chose : `content.js` est de la PROSE, et « manuel » y
-   apparaît — la famille morte `.manuel` passerait pour portée par le texte de
-   l'affaire. Un gardien qui lit le contenu ne garde rien (§9). */
+   plus : un `class="…"` (statique ou engendré), et toute chaîne qui n'est QU'un
+   mot. Prendre tous les mots de toutes les chaînes serait trop large d'une
+   chose : `content.js` est de la PROSE, et une famille morte y passerait pour
+   portée par le texte de l'affaire — un gardien qui lit le contenu ne garde
+   rien (§9). */
 function classesPosees(page) {
   const out = new Set();
   const attribut = txt => {
@@ -242,9 +231,8 @@ function classesPosees(page) {
   return out;
 }
 
-/* LE MODÈLE : une page, et les fichiers qu'elle charge. Tout se juge PAR PAGE —
-   `escapeAttr` et `$` sont déclarés dans `jeu.js` ET dans `noyau.js`, et c'est
-   légitime : jamais la même page. */
+/* Tout se juge PAR PAGE : `escapeAttr` et `$` sont déclarés dans `jeu.js` ET
+   dans `noyau.js`, et c'est légitime — jamais la même page. */
 const TAG_SCRIPT_STRICT = /^<script src="([^"]+)"><\/script>$/;
 const TAG_LIEN_STRICT   = /^<link rel="stylesheet" href="([^"]+)">$/;
 
@@ -281,10 +269,9 @@ const PAGES = [
   chargerPage("app/atelier_v3.html", "l'atelier")
 ];
 
-/* CE QU'UNE PAGE EXPOSE À ELLE-MÊME — les noms qu'un fichier emploie sans les
-   avoir déclarés, un voisin les ayant posés dans la portée globale. Deux
-   lecteurs : R5, pour juger un `onclick=`, et `eslint.config.js` pour ses
-   `globals`. La liste n'est écrite nulle part, elle se calcule (§12). */
+/* CE QU'UNE PAGE EXPOSE À ELLE-MÊME. Deux lecteurs : R5, pour juger un
+   `onclick=`, et `eslint.config.js` pour ses `globals` — la liste n'est écrite
+   nulle part, elle se calcule (§12). */
 function nomsExposes(page) {
   const noms = new Set();
   for (const s of page.sources) {
@@ -301,13 +288,10 @@ if (require.main !== module) return;
 
 console.log("Le gardien — les conventions que les six suites ne voient pas.\n");
 
-/* R1 — LA FORME DES BALISES (§13, §2)
-   Le harnais INLINE tout `<script src>` et tout `<link rel=stylesheet>` par une
-   regex stricte. Une balise déviante n'est PAS inlinée du tout : rien ne se
-   charge, quatre contrôles tombent. Ce que la règle apporte : l'écart se dit ICI,
-   sur la balise, au lieu d'un `ReferenceError` au milieu d'une suite — plus les
-   deux cas qu'aucune suite ne nomme, un fichier chargé qui n'existe pas et une
-   balise en commentaire, que le harnais inlinerait quand même. */
+/* R1 — LA FORME DES BALISES (§13). Une balise déviante n'est PAS inlinée du
+   tout : l'écart se dit ICI plutôt qu'en `ReferenceError` au milieu d'une suite.
+   Plus deux cas qu'aucune suite ne nomme : un fichier chargé qui n'existe pas,
+   et une balise en commentaire — que le harnais inlinerait quand même. */
 {
   const faux = [];
   for (const p of PAGES) {
@@ -330,11 +314,9 @@ console.log("Le gardien — les conventions que les six suites ne voient pas.\n"
   regle("R1 · les balises ont la forme exacte que le harnais inline, sans defer ni async", faux);
 }
 
-/* R2 — UN NOM DE HAUT NIVEAU, UNE SEULE FOIS PAR PAGE (§2)
-   Chargé par `<script src>`, un fichier partage la portée globale de la page.
-   `const` contre `const` LÈVE, et les suites le voient ; `function` contre
-   `function` ÉCRASE EN SILENCE, le dernier chargé gagne. C'est cette moitié-là
-   que la règle tient. */
+/* R2 — UN NOM DE HAUT NIVEAU, UNE SEULE FOIS PAR PAGE (§2, §9). `const` contre
+   `const` LÈVE et les suites le voient ; `function` contre `function` ÉCRASE EN
+   SILENCE — c'est cette moitié-là que la règle tient. */
 {
   const faux = [];
   for (const p of PAGES) {
@@ -349,12 +331,10 @@ console.log("Le gardien — les conventions que les six suites ne voient pas.\n"
   regle("R2 · deux fichiers d'une même page ne se disputent aucun nom de haut niveau", faux);
 }
 
-/* R3 — TOUTE `var(--x)` A UNE DÉFINITION (§2)
-   Une `var()` introuvable rend la déclaration INVALIDE AU CALCUL : la propriété
-   passe à `unset`, et pour un RACCOURCI cela vide toutes ses longhands — pas un
-   filet de la mauvaise couleur, pas de filet du tout. Aucune suite ne lit un
-   style calculé. Les définitions se relèvent dans la feuille ET dans les scripts
-   (`--dc` est posée en style en ligne par `couleurDim`, §4.3). */
+/* R3 — TOUTE `var(--x)` A UNE DÉFINITION (§2). Introuvable, elle rend la
+   déclaration INVALIDE AU CALCUL : pour un raccourci, toutes les longhands sont
+   vidées — pas de filet du tout, et aucune suite ne lit un style calculé. Les
+   définitions se relèvent dans la feuille ET dans les scripts (§4.3). */
 {
   const faux = [];
   for (const p of PAGES) {
@@ -368,10 +348,9 @@ console.log("Le gardien — les conventions que les six suites ne voient pas.\n"
   regle("R3 · toute variable CSS employée est définie, et toute variable définie sert", faux);
 }
 
-/* R4 — UNE FAMILLE CSS A UN PORTEUR (§14)
-   Le test se fait PAR JETON, jamais sur `class="…"` entier : `graphe.js`
-   construit ses classes par `const cls=["chip"]`, et un test plus strict ferait
-   retirer une famille bien vivante — pire que d'en laisser une morte. */
+/* R4 — UNE FAMILLE CSS A UN PORTEUR (§14). PAR JETON, jamais sur `class="…"`
+   entier : un test plus strict ferait retirer une famille vivante, pire que d'en
+   laisser une morte. */
 {
   const faux = [];
   for (const p of PAGES) {
@@ -381,10 +360,9 @@ console.log("Le gardien — les conventions que les six suites ne voient pas.\n"
   regle("R4 · toute famille CSS d'une page est portée par un élément qu'elle engendre", faux);
 }
 
-/* R5 — UN `onclick` VISE UNE FONCTION QUI EXISTE (§2)
-   Un gestionnaire renommé donne un bouton qui ne fait rien, sans un mot. C'est
-   ce qui rend non décoratifs les `window.X = X` de l'atelier : un `const`/`let`
-   de haut niveau n'est pas une propriété de `window`. */
+/* R5 — UN `onclick` VISE UNE FONCTION QUI EXISTE (§2). Un gestionnaire renommé
+   donne un bouton qui ne fait rien, sans un mot — d'où les `window.X = X`
+   explicites de l'atelier. */
 const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "function", "catch", "do", "else", "new", "delete", "void"]);
 {
   const faux = [];
@@ -404,11 +382,9 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
   regle("R5 · tout gestionnaire d'événement vise une fonction que la page expose", faux);
 }
 
-/* R6 — UN ID VISÉ EXISTE, ET LE TUTORIEL VISE QUELQUE CHOSE (§2, §4.8)
-   `majTutoriel` teste `if(tutoCible)` et NE SE PLAINT JAMAIS d'une cible
-   introuvable : seule une capture prouvait que le halo visait encore quelque
-   chose. Les quatre ancres sont donc contrôlées par les sélecteurs mêmes que
-   `tutoEtape` écrit — id ET classes. */
+/* R6 — UN ID VISÉ EXISTE, ET LE TUTORIEL VISE QUELQUE CHOSE (§2, §4.8).
+   `majTutoriel` NE SE PLAINT JAMAIS d'une cible introuvable : seule une capture
+   le prouvait. On contrôle par les sélecteurs mêmes que `tutoEtape` écrit. */
 {
   const faux = [];
   for (const p of PAGES) {
@@ -433,10 +409,9 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
   regle("R6 · tout id visé existe, et les quatre ancres du tutoriel visent quelque chose", faux);
 }
 
-/* R7 — AUCUN RESTE DU SCHÉMA 2 (§2)
-   `pointer()` dépliait encore `l.a[0]` / `l.b[0]` et levait une `TypeError` sur
-   un chemin qu'aucune suite ne couvre : la migration 2→3 avait été faite dans
-   l'import, pas partout. */
+/* R7 — AUCUN RESTE DU SCHÉMA 2 (§2). La migration 2→3 avait été faite dans
+   l'import, pas partout : `l.a[0]` levait une `TypeError` sur un chemin
+   qu'aucune suite ne couvre. */
 {
   const faux = [];
   for (const f of fichiersJS(TERRITOIRES)) {
@@ -449,12 +424,9 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
   regle("R7 · plus rien ne déplie un lien du schéma 2", faux);
 }
 
-/* ============================================================
-   R8 — LA CARTE NE MENT PAS SUR LES TAILLES (§12)
-   ------------------------------------------------------------
-   Un index périmé sape en silence la méthode du dépôt (document d'abord, code
-   ensuite). Tolérance : TROIS LIGNES — assez pour un commentaire retouché, pas
-   pour un changement réel. Le message imprime le chiffre à écrire. */
+/* R8 — LA CARTE NE MENT PAS SUR LES TAILLES (§12). Tolérance : TROIS LIGNES,
+   assez pour un commentaire retouché, pas pour un changement réel. Le message
+   imprime le chiffre à écrire. */
 {
   const faux = [];
   const carte = lire("docs/CARTE.md");
@@ -487,22 +459,16 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
   regle("R8 · le tableau des territoires de docs/CARTE.md dit les tailles réelles", faux);
 }
 
-/* R9 — `attend`/`apres` NE SE LISENT PLUS SUR UNE REMISE (§3, §11, §15)
-   Sœur de R7, et pour la même raison : une remise attend une SUITE de réponses,
-   le tag vit sur l'ATTENTE. L'ancienne écriture reste LISIBLE (§3), donc une
-   branche restée à `r.attend` ne casse pas, ne lève pas — elle répond « non »
-   pour toujours. Elle l'a fait dans le diagnostic pendant deux semaines.
-
-   QUATRE FONCTIONS y échappent, et seulement elles : les deux normalisateurs du
-   §11, `attentesDe` (regles.js) et `attentesDeRemise` (noyau.js) — *on ne les
-   fusionne pas, on dit lequel est lequel* — et les deux convertisseurs,
-   `attentesEditables` (frise.js) et `migrerContenu` (contenu-io.js).
-
-   ELLE LIT DU TEXTE, PAS DES TYPES : est tenu pour une remise un récepteur écrit
-   `r`, `remise`, ou une indexation de `remises` — la convention de nommage du
-   dépôt, que R9 rend contraignante du même coup. Les ÉCRITURES sont hors champ :
-   construire ou défaire l'ancienne forme reste permis, c'est la LIRE qui ne
-   l'est plus. */
+/* R9 — `attend`/`apres` NE SE LISENT PLUS SUR UNE REMISE (§3, §11). Sœur de R7 :
+   l'ancienne écriture reste LISIBLE, donc une branche restée à `r.attend` répond
+   « non » pour toujours sans que rien ne casse.
+   QUATRE FONCTIONS y échappent, et seulement elles : les normalisateurs
+   `attentesDe` (regles.js) et `attentesDeRemise` (noyau.js) — *on ne les fusionne
+   pas, on dit lequel est lequel* — et les convertisseurs `attentesEditables`
+   (frise.js) et `migrerContenu` (contenu-io.js).
+   ELLE LIT DU TEXTE, PAS DES TYPES : est une remise un récepteur écrit `r`,
+   `remise`, ou une indexation de `remises` — R9 rend cette convention de nommage
+   contraignante. Les ÉCRITURES sont hors champ : c'est la LIRE qui est interdit. */
 {
   const faux = [];
   const TOLERES = {
@@ -536,16 +502,12 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
   regle("R9 · plus rien ne lit « attend » ou « apres » posé sur une remise", faux);
 }
 
-/* R10 — AUCUNE RECOPIE D'UN PRÉDICAT QUE `regles.js` EXPORTE (§12)
-   Sœur de R2, un cran plus haut : R2 interdit de se disputer un NOM, R10 de
-   réécrire une DÉCISION que `regles.js` publie déjà. `estRegle` vit hors de la
-   fabrique EXPRÈS, pour se poser sans `JEU` lié ; les suites la recopiaient
-   quatre fois à la main — ça ne casse pas, ça ne lève pas, ça affirme l'ancienne
-   vérité pour toujours, et les suites ne se lisent pas elles-mêmes (§16).
-
-   LE MOT EST ASSEMBLÉ, et ce n'est pas de la coquetterie : écrit en clair, ce
-   fichier se dénoncerait lui-même — une règle qui doit s'exclure de son propre
-   champ est une règle qu'on finit par croire fausse. */
+/* R10 — AUCUNE RECOPIE D'UN PRÉDICAT QUE `regles.js` EXPORTE (§12, §16). Sœur de
+   R2, un cran plus haut : R2 interdit de se disputer un NOM, R10 de réécrire une
+   DÉCISION. Un prédicat recopié affirme l'ancienne vérité pour toujours, et les
+   suites ne se lisent pas elles-mêmes.
+   LE MOT EST ASSEMBLÉ : écrit en clair, ce fichier se dénoncerait lui-même — une
+   règle qui doit s'exclure de son propre champ, on finit par la croire fausse. */
 {
   const faux = [];
   const MAISON = "app/regles.js";                       // la seule maison (§12)
@@ -563,24 +525,14 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
   regle("R10 · aucun fichier ne recopie un prédicat que regles.js exporte", faux);
 }
 
-/* R11 — AUCUN RENVOI « §x » NE POINTE DANS LE VIDE (§12)
-   Le dépôt se cite par NUMÉRO DE SECTION — des centaines de renvois, dans le
-   code, les suites, les outils et les documents. Un renvoi mort ne casse rien,
-   ne lève rien, aucune suite ne le voit : il envoie lire une section qui
-   n'existe pas, ou pire, une qui existe et parle d'autre chose.
-
-   PAS DE LIENS MARKDOWN : leur ancre se calcule sur le TEXTE du titre, donc
-   renommer un titre les casse en silence — la panne qu'on voulait fuir. Et la
-   plupart des renvois vivent dans des commentaires JS, où un lien ne se clique
-   pas. Le numéro nu est la bonne écriture ; ce qui manquait, c'était le filet.
-
+/* R11 — AUCUN RENVOI « §x » NE POINTE DANS LE VIDE (§12, §16 bis). Un renvoi
+   mort ne casse rien, ne lève rien : il envoie lire une section qui n'existe
+   pas, ou pire, une qui existe et parle d'autre chose.
    LES NUMÉROS SONT UNIQUES DANS TOUT LE DÉPÔT — §1 à §7 dans CONCEPTION.md,
    §8.x dans ECRITURE.md, §9 à §17 dans ARCHITECTURE.md : un renvoi n'a pas à
-   nommer son fichier, et la règle vérifie du même coup qu'aucun numéro n'est
-   servi par DEUX documents.
-
-   UNE EXCEPTION : `docs/PASSATION.md` numérote ses propres sections de 1 à 4.
-   On n'y juge donc que les renvois à DEUX niveaux et « §16 bis ». */
+   nommer son fichier, et la règle vérifie qu'aucun numéro n'est servi deux fois.
+   UNE EXCEPTION : `docs/PASSATION.md` numérote ses propres sections de 1 à 4 —
+   on n'y juge que les renvois à deux niveaux et « §16 bis ». */
 {
   const faux = [];
   const DOCS = ["docs/CONCEPTION.md", "docs/ECRITURE.md", "docs/ARCHITECTURE.md"];
@@ -628,17 +580,14 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
         continue;
       }
       /* LE RENVOI QUI NOMME SON FICHIER doit nommer le BON — le cas le plus
-         traître, parce qu'il a l'air plus précis que les autres.
-         LE NOM DOIT ÊTRE GRAMMATICALEMENT ADJACENT : une fenêtre de caractères
-         ne suffit pas, la phrase qui explique la répartition nomme les trois
-         fichiers à quelques mots d'écart et lierait chaque numéro au mauvais
-         voisin. On ne reconnaît donc que les deux tournures employées ici :
+         traître, parce qu'il a l'air plus précis. LE NOM DOIT ÊTRE
+         GRAMMATICALEMENT ADJACENT : une fenêtre de caractères lierait chaque
+         numéro au mauvais voisin. Deux tournures reconnues, et deux seulement :
 
            docs/ARCHITECTURE.md §12      le nom, puis le numéro
            §4.4 de CONCEPTION            le numéro, une préposition, le nom
 
-         Tout le reste est un renvoi NU, que seul le numéro adresse — le cas
-         ordinaire, et le bon. */
+         Tout le reste est un renvoi NU — le cas ordinaire, et le bon. */
       const AVANT = /(?:docs\/)?(CONCEPTION|ECRITURE|ARCHITECTURE)(?:\.md)?`?\s*$/;
       const APRES = /^\s*[»)]?\s*(?:de|d'|dans|du)\s+`?(?:docs\/)?(CONCEPTION|ECRITURE|ARCHITECTURE)/;
       const nomme = src.slice(Math.max(0, m.index - 40), m.index).match(AVANT)
