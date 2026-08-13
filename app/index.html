@@ -41,7 +41,7 @@
 <div id="modalRoot"></div>
 
 <!-- Le tutoriel parle depuis le CHROME, hors de la fiction : l'avocat, lui,
-     n'explique rien (§8.6). Le bandeau ne bouge jamais ; seul son texte
+     n'explique rien (§8.6 de docs/ECRITURE.md). Le bandeau ne bouge jamais ; seul son texte
      change, et le halo se déplace d'un élément à l'autre (§4.8). -->
 <div id="tuto" hidden>
   <span class="pas" id="tutoPas"></span>
@@ -74,9 +74,10 @@
      TROIS RÈGLES SUR CETTE BALISE, et elles ne sont pas cosmétiques :
      • sur UNE ligne, sans attribut — c'est la forme exacte que le harnais
        de test reconnaît pour l'inliner (jsdom ne charge aucun src) ;
-     • ni `defer` ni `async`, JAMAIS — le harnais inline, donc un attribut
-       de timing ferait diverger le test du navigateur, et le test
-       resterait vert pendant que la page casse ;
+     • ni `defer` ni `async`, JAMAIS — la regex du harnais ne reconnaît que
+       la forme exacte ci-dessus : avec un attribut de plus, la balise n'est
+       PAS inlinée du tout, rien ne se charge, et quatre contrôles tombent
+       (§13). L'écart se dit donc tout de suite, et R1 du gardien le tient ;
      • APRÈS content.js — le démarrage, en fin de fichier, lit
        `window.CONTENU` et touche le DOM.
      ============================================================ -->

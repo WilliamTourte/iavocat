@@ -131,7 +131,7 @@ function recommencer(){
    laisserait le jeu identique. Le halo entoure la ZONE où le geste a lieu —
    jamais le bon empan : ce serait désigner la réponse à la lampe torche (§4.3).
    Ses phrases ne sont pas du contenu : elles parlent depuis le chrome, hors de
-   la fiction, parce que dans la fiction personne n'explique rien (§8.6). */
+   la fiction, parce que dans la fiction personne n'explique rien (§8.6 de docs/ECRITURE.md). */
 const CLE_TUTO="iavocat_tuto";
 let tutoFait=false;
 try{ tutoFait = !!localStorage.getItem(CLE_TUTO); }catch(e){}
@@ -307,8 +307,8 @@ function surligner(pid,eid){
 }
 function modalPieceHTML(pid){
   const p=JEU.pieces[pid];
-  // La liste des dimensions de la pièce se calculait ici : c'était la légende
-  // retirée le 2 août (décision 10). Personne ne la lisait plus depuis.
+  // La liste des dimensions de la pièce se calculait ici : c'était la légende,
+  // retirée avec les notes d'aide de la modale. Personne ne la lisait plus.
   return `<h3>${escapeAttr(p.titre)}</h3><small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
     <p class="piecetexte">${rendreTexte(pid)}</p>
     `;
@@ -356,7 +356,7 @@ function renderRetenus(){
 /* ============================================================
    5) LE COMPOSEUR — les blocs de l'état courant, de gauche à droite.
       Aucune liste n'est restreinte : seules les erreurs de CATÉGORIE
-      sont refusées, à la clôture de la phrase (§4.5 d'ARCHITECTURE).
+      sont refusées, à la clôture de la phrase (§4.5 de CONCEPTION).
    ============================================================ */
 /* LA VOIX UNIQUE DU COMPOSEUR (§4.9). Une seule phrase pour l'état courant,
    dérivée de `S` comme le tutoriel dérive son temps : rendue dans le FANTÔME

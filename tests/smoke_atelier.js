@@ -249,7 +249,7 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
     cases:{ c1:{ label:"Case", remise:1, options:["x"], bonne:"x", apres:{ replique:"Reçu." } } },
     // La session déclare une attente : c'est LÀ que l'accusé de la case doit
     // atterrir (§3). Il se posait sur la remise, où ni le jeu ni l'atelier ne
-    // pouvaient plus le lire — voir la décision 20.
+    // pouvaient plus le lire — une donnée migrée puis injoignable (§11).
     remises:[{ qui:"Maître", texte:"Voilà.", pieces:["a","b"], attentes:[{ attend:"t_x" }] }],
     repetition:{ intro:"", affirmations:[], fin:"" },
     avocat:{ rep_vice:"", rep_faux:"", rep_inutile:[], rep_sans_rapport:[], deja:"" },

@@ -1,6 +1,6 @@
 # IAvocat — Lexique
 
-*Un mot, un sens. Ce fichier ne décide ni le sens (c'est `ARCHITECTURE.md`) ni l'emplacement (c'est
+*Un mot, un sens. Ce fichier ne décide ni le sens (c'est `CONCEPTION.md`) ni l'emplacement (c'est
 `CARTE.md`) — il **arbitre le vocabulaire** : quel mot dire, à qui, pour quelle chose.*
 
 > **Deux régimes, et un écart ne se tranche pas de la même façon selon celui dont il relève.**
@@ -52,7 +52,7 @@ S'ils apparaissent un jour dans une chaîne d'écran, c'est une fuite à corrige
 | Terme | Ce qu'il désigne | Ne pas confondre avec |
 |---|---|---|
 | **pièce** | un document du dossier (PV, fiche, bordereau, article) — objet dans `JEU.pieces` | *le dossier*, l'ensemble des pièces livrées, ou *Dossier*, la bande qui les liste (§ « Faux amis ») |
-| **empan** | un fragment marqué d'une pièce : `texte`, `dim`, `valeur`, `qui`, `nom` (§4.1 d'ARCHITECTURE.md) | *passage* (mot du joueur pour la même chose) ; *citation* et *nom*, ses deux écritures (ligne suivante) |
+| **empan** | un fragment marqué d'une pièce : `texte`, `dim`, `valeur`, `qui`, `nom` (§4.1 de `docs/CONCEPTION.md`) | *passage* (mot du joueur pour la même chose) ; *citation* et *nom*, ses deux écritures (ligne suivante) |
 | **citation** | l'écriture d'un empan **dans la pièce** ou **rappelée telle quelle** dans une phrase (`e.texte`) | *nom*, l'écriture du même empan **comme sujet** d'une comparaison |
 | **nom** | l'écriture d'un empan comme groupe nominal dans une phrase composée (`e.nom`, replié sur `e.texte` si absent) | *citation* — un empan se lit deux fois, jamais de la même façon (§4.1) |
 | **terme** | un empan (ou un lien imbriqué) **une fois posé** comme argument dans la phrase en cours (`termes` d'un lien, `poserBloc`) | *empan* — le terme est le rôle que joue un empan une fois choisi, pas l'empan lui-même |
@@ -62,7 +62,7 @@ S'ils apparaissent un jour dans une chaîne d'écran, c'est une fuite à corrige
 | **forme** | le patron grammatical d'une comparaison (déduction, sens, `patron` de rendu) — propriété d'un `lien` ou d'un `bloc` `deduit` | — |
 | **attente** | ce que l'avocat attend d'une remise : `{question?, attend, apres?}` | *remise* — l'attente est une des choses qu'une remise porte |
 | **remise** | un envoi de pièces par l'avocat, avec sa liste d'attentes | *session* — une session correspond en pratique à une remise, mais le mot « session » reste réservé au sens (Partie I), jamais au code |
-| **session** | un temps du récit (§3 d'ARCHITECTURE.md) : « session 1 », « session 2»… | *remise* — le mot de code ; on dit « session » en parlant du sens, « remise » en parlant des données |
+| **session** | un temps du récit (§3 de `docs/CONCEPTION.md`) : « session 1 », « session 2»… | *remise* — le mot de code ; on dit « session » en parlant du sens, « remise » en parlant des données |
 | **atelier** | **`app/atelier_v3.html`, et rien d'autre** : l'outil qui écrit et diagnostique une affaire. Un mot, une chose *(harmonisé le 2 août)* | rien — c'est justement le point. Le mot nommait aussi la surface du milieu du jeu (`#atelier`, `renderAtelier`) : cette seconde vie est terminée, la surface s'appelle `memoire` partout |
 | **S.retenus** | le tableau des empans retenus (surlignés) — *seulement* ceux-là. Nommé `S.memoire` avant le 2 août | `renderRetenus`, la **zone** qui l'affiche, contre `renderMemoire`, la **surface** qui contient cette zone et le dossier |
 | **S.plaidoirie** | le tableau de ce qui est entré au plan (les moyens envoyés) | *S.satisfaits*, les tags d'attente déjà servis — deux compteurs différents qui avancent ensemble sans se confondre |
@@ -87,7 +87,7 @@ n'avait pas besoin d'arbitrage.
 - **`empan` / `passage`.** Rigoureusement le même objet, vu de deux côtés : `empan` est le mot du modèle de
   données et de la documentation technique ; `passage` est le mot que **lit le joueur** à l'écran et dans
   le tutoriel. Ce n'est pas une incohérence à corriger — c'est une frontière voulue entre le vocabulaire
-  du code et celui de la fiction (§8.6 : l'avocat n'explique jamais rien, l'écran ne parle pas non plus
+  du code et celui de la fiction (§8.6 de `docs/ECRITURE.md` : l'avocat n'explique jamais rien, l'écran ne parle pas non plus
   comme un développeur). Mais elle doit rester **étanche** : `empan` ne doit jamais fuiter dans une chaîne
   d'écran, `passage` ne doit jamais apparaître dans `content.js` ou `moteur.js`.
 
@@ -147,7 +147,7 @@ aucun flottement observé).
 **Et depuis le 2 août, une catégorie entière a disparu : les paires *nom de code / nom d'écran*.** Les
 trois surfaces portent le même mot partout — `discussion`, `memoire`, `plaidoirie` — du DOM au harnais
 en passant par l'état. **Une seule frontière de registre subsiste, et elle est voulue :
-`empan` / `passage`** (§ « Faux amis ») — c'est celle qui protège la fiction (§8.6), pas un reliquat.
+`empan` / `passage`** (§ « Faux amis ») — c'est celle qui protège la fiction (§8.6 de `docs/ECRITURE.md`), pas un reliquat.
 
 ## Une nuance voulue, pour ne pas la reprendre par erreur
 

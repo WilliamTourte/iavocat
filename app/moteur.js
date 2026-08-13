@@ -119,9 +119,9 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
   // La chaîne de blocs → le texte français de la phrase. Un empan s'y écrit par
   // son `nom` (« l'heure des éclats de voix »), pas par sa citation — §4.1 ;
   // et rien ne s'insère devant une ponctuation, pour que la continuation se
-  // recolle proprement (§8.8).
+  // recolle proprement (§8.8 de docs/ECRITURE.md).
   // Une forme déduite écrit sa phrase d'un bloc, par son `patron` — c'est le
-  // seul endroit où l'accord se joue (§8.8).
+  // seul endroit où l'accord se joue (§8.8 de docs/ECRITURE.md).
   const nomDe = v => (C[v] ? (C[v].nom || C[v].texte) : String(v));
   // Une liaison `cite` fait écrire l'empan qui la précède DEUX FOIS : son nom,
   // puis sa citation, puis la pièce d'où elle sort. C'est le seul endroit où un

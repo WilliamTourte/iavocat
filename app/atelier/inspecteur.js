@@ -45,10 +45,9 @@ function inspFormPiece(){
 }
 /* La GARDE reste avant l'appel, la QUEUE passe après : `muter` porte `pushUndo`
    avant et `autosave(); render()` après, et un `return` dans son argument n'y
-   couperait pas (§2 de la passation). C'est la forme des huit dernières
-   mutations écrites à la main — celles que la décision 16 avait laissées,
-   toutes pour la même raison : elles renoncent avant, ou font quelque chose
-   après le redessin. */
+   couperait pas (§2 de la passation). C'est la forme des dernières mutations
+   restées à la main quand `muter` a été nommé — toutes pour la même raison :
+   elles renoncent avant, ou font quelque chose après le redessin. */
 function creerPiece(){
   const pid=sanId($("npId").value);
   if(!pid){ toastInsp("Identifiant vide ou invalide."); return; }

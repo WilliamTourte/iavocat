@@ -202,7 +202,7 @@ function diagnostiquer(){
   if(faux===0) add("avert","Aucun faux vice","Le leurre (test de discrimination) manque.",{});
   else if(faux>1) add("avert",`${faux} faux vices`,"Un seul leurre suffit — plusieurs brouillent le test.",{});
 
-  /* ---- LE DOUBLON BANAL (§2.4 d'ARCHITECTURE) ----
+  /* ---- LE DOUBLON BANAL (§4.4 de CONCEPTION) ----
      Si toutes les valeurs d'une dimension sont uniques, le premier doublon
      EST la réponse. La dimension qui porte le vice doit compter au moins
      deux doublons réguliers en plus de l'irrégulier. */
