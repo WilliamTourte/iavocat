@@ -143,7 +143,14 @@ function diagnostiquer(){
     if(L.conclusion && (f.arite||2)!==1)
       add("avert",`Lien ${i} marqué « conclusion » sans être une qualification`,
         "Seule une liaison d'arité 1 (sur une note close) conclut — c'est elle qui porte la base légale.",{edge:i});
-    if(L.tag && !(CONTENU.remises||[]).some(r=>r.attend===L.tag))
+    /* Une remise attend une SUITE de réponses (§3) : le tag vit sur l'ATTENTE,
+       plus sur la remise. Cette ligne demandait encore `r.attend` — la forme
+       d'avant — si bien que sur une affaire au schéma 3 elle répondait « non »
+       pour TOUS les tags : six informations mensongères à chaque ouverture, une
+       par lien qui en porte un. Une bande toujours pleine s'apprend à ne plus se
+       lire. `attentesDeRemise` (noyau.js) est le normalisateur, et il lit les
+       deux écritures — R9 du gardien interdit désormais de le contourner. */
+    if(L.tag && !(CONTENU.remises||[]).some(r=>attentesDeRemise(r).some(a=>a.attend===L.tag)))
       add("info",`Lien ${i} : tag « ${L.tag} » attendu par aucune remise`,"Le versement de cette phrase ne fera avancer aucune session.",{edge:i});
   });
   for(let i=0;i<LI.length;i++) for(let j=i+1;j<LI.length;j++)

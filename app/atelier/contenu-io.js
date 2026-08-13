@@ -124,20 +124,30 @@ function adopter(j){
   }
   j.liens=uniq;
   j._pos=j._pos||{}; j._bruit=j._bruit||[];
-  pushUndo();
-  CONTENU=j; window.CONTENU=CONTENU;
-  reinitSelection();
-  simReset();
-  autoLayout(false); autosave(); render();
+  /* Les huit refus ci-dessus renoncent AVANT `muter` : un import refusé ne
+     laisse pas d'entrée d'annulation. `autoLayout` redessine déjà — le `render`
+     de l'épilogue en ajoute un second, comme avant. */
+  muter(()=>{
+    CONTENU=j; window.CONTENU=CONTENU;
+    reinitSelection();
+    simReset();
+    autoLayout(false);
+  });
   return null;
 }
 /* Revenir à content.js tel qu'il est sur le disque, en jetant le travail en
    cours. C'est l'annulation d'une session d'écriture, pas un « exemple ». */
+/* LA SIXIÈME CONFIRMATION EN DEUX CLICS, et la seule qui ne passe pas par
+   `demanderSuppr` — c'est assumé, pas un oubli. Les cinq autres arment un
+   BOUTON, qui change de classe et de mot ensemble (`btnSuppr`, noyau.js) ;
+   celle-ci vise un bouton statique de la barre d'outils, et s'annonce par le
+   `hint` en rouge. La ramener sous `demanderSuppr` lui ferait perdre sa phrase :
+   une sixième copie qu'on assume vaut mieux qu'une généralisation forcée.
+   L'épilogue, lui, est bien celui de tout le monde. */
 function demanderExemple(){
   if(pendingDel!=="exemple"){ pendingDel="exemple"; hint("Recharger content.js efface le contenu courant — reclique pour confirmer.",true); return; }
   pendingDel=null; hint();
-  pushUndo();
-  CONTENU=contenuLivre(); window.CONTENU=CONTENU; simReset(); autoLayout(true); autosave();
+  muter(()=>{ CONTENU=contenuLivre(); window.CONTENU=CONTENU; simReset(); autoLayout(true); });
 }
 
 function autosave(){ try{ localStorage.setItem("iavocat_atelier_v2",JSON.stringify(CONTENU)); }catch(e){} }

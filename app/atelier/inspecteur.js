@@ -43,17 +43,24 @@ function inspFormPiece(){
       <button onclick="formPiece=null;render()">Annuler</button>
     </div>`;
 }
+/* La GARDE reste avant l'appel, la QUEUE passe après : `muter` porte `pushUndo`
+   avant et `autosave(); render()` après, et un `return` dans son argument n'y
+   couperait pas (§2 de la passation). C'est la forme des huit dernières
+   mutations écrites à la main — celles que la décision 16 avait laissées,
+   toutes pour la même raison : elles renoncent avant, ou font quelque chose
+   après le redessin. */
 function creerPiece(){
   const pid=sanId($("npId").value);
   if(!pid){ toastInsp("Identifiant vide ou invalide."); return; }
   if(CONTENU.pieces[pid]){ toastInsp("Cet identifiant existe déjà."); return; }
   const court=$("npCourt").value.trim()||pid;
-  pushUndo();
-  CONTENU.pieces[pid]={ titre:court, court, type:formPiece==='regle'?"règle du manuel":"pièce",
-    qui:$("npQui").value.trim()||"", resume:"", texte:"", empans:{} };
-  CONTENU._pos[pid]=placeLibre(formPiece);
-  formPiece=null;
-  autosave(); render(); scrollVers(pid);
+  muter(()=>{
+    CONTENU.pieces[pid]={ titre:court, court, type:formPiece==='regle'?"règle du manuel":"pièce",
+      qui:$("npQui").value.trim()||"", resume:"", texte:"", empans:{} };
+    CONTENU._pos[pid]=placeLibre(formPiece);
+    formPiece=null;
+  });
+  scrollVers(pid);
 }
 /* L'éditeur de pièce : son texte porte les marqueurs {{eid}}, donc c'est ici
    que se règle la règle de surlignage (§4.3 — tout empan est marqué). */
@@ -104,15 +111,15 @@ function creerChamp(){
   const eid=sanId($("ncNom").value);
   if(!eid){ toastInsp("Identifiant vide ou invalide."); return; }
   if(empanExiste(formChamp,eid)){ toastInsp("Cet empan existe déjà."); return; }
-  pushUndo();
-  const p=CONTENU.pieces[formChamp];
-  p.empans=p.empans||{};
-  p.empans[eid]={ dim:$("ncDim").value, valeur:$("ncVal").value, texte:$("ncTexte").value||$("ncVal").value,
-                  nom:$("ncNomCourt").value||$("ncTexte").value||$("ncVal").value };
-  p.texte=String(p.texte||"")+(p.texte?" ":"")+"{{"+eid+"}}";   // marqué d'office : la règle de surlignage
-  selA={pid:formChamp,champ:eid}; selB=null;
-  formChamp=null;
-  autosave(); render();
+  muter(()=>{
+    const p=CONTENU.pieces[formChamp];
+    p.empans=p.empans||{};
+    p.empans[eid]={ dim:$("ncDim").value, valeur:$("ncVal").value, texte:$("ncTexte").value||$("ncVal").value,
+                    nom:$("ncNomCourt").value||$("ncTexte").value||$("ncVal").value };
+    p.texte=String(p.texte||"")+(p.texte?" ":"")+"{{"+eid+"}}";   // marqué d'office : la règle de surlignage
+    selA={pid:formChamp,champ:eid}; selB=null;
+    formChamp=null;
+  });
 }
 
 function inspEmpan(s){
@@ -197,10 +204,17 @@ function majLien(i,prop,val){ muter(()=>{
 function demanderSupprLien(i){ demanderSuppr("lien:"+i,()=>{
   CONTENU.liens.splice(i,1); selEdge=null;
 }); }
+/* Supprimer un empan, c'est aussi retirer son marqueur du texte de la pièce —
+   sans quoi le diagnostic signale un « Marqueur orphelin » que l'atelier vient
+   de créer lui-même, et qu'il faut réparer à la main dans l'éditeur.
+   IL NE LE RETIRAIT JAMAIS. Le motif s'écrivait avec QUATRE antislashs, ce qui
+   en fait deux dans la chaîne, donc un antislash LITTÉRAL dans le motif compilé
+   (`\\s*\\{\\{e_x\\}\\}`) : il ne pouvait correspondre à rien. Deux suffisent —
+   la chaîne en porte un, la regex l'entend comme une échappe. */
 function demanderSupprChamp(pid,ch){ demanderSuppr("champ:"+K(pid,ch),()=>{
   const p=CONTENU.pieces[pid], k=K(pid,ch);
   delete p.empans[ch];
-  p.texte=String(p.texte||"").replace(new RegExp("\\\\s*\\\\{\\\\{"+ch+"\\\\}\\\\}",""),"");
+  p.texte=String(p.texte||"").replace(new RegExp("\\s*\\{\\{"+ch+"\\}\\}",""),"");
   CONTENU.liens=CONTENU.liens.filter(L=>!feuillesLien(L).includes(k));
   CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>x!==k);
   selA=selB=null;
@@ -229,18 +243,19 @@ function renommerPieceId(ancien,neuf){
   const err=idValide(neuf,Object.keys(CONTENU.pieces),ancien);
   if(err) return err;
   if(neuf===ancien) return null;
-  pushUndo();
-  CONTENU.pieces=renommerClef(CONTENU.pieces,ancien,neuf);
-  /* Les termes des liens sont des « pid.eid » — emboîtés compris. La marche
-     récursive vit dans `reecrireTermes` (noyau.js) : ici on ne dit plus que ce
-     que devient une FEUILLE, et la même phrase sert au bruit. */
-  const renommer = k => { const [pid,eid]=deK(k); return pid===ancien ? K(neuf,eid) : k; };
-  for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
-  CONTENU._bruit=(CONTENU._bruit||[]).map(renommer);
-  for(const r of (CONTENU.remises||[]))
-    if(Array.isArray(r.pieces)) r.pieces=r.pieces.map(p=>p===ancien?neuf:p);
-  if(CONTENU._pos && CONTENU._pos[ancien]) CONTENU._pos=renommerClef(CONTENU._pos,ancien,neuf);
-  pendingDel=null; simReset(); autosave(); render();
+  muter(()=>{
+    CONTENU.pieces=renommerClef(CONTENU.pieces,ancien,neuf);
+    /* Les termes des liens sont des « pid.eid » — emboîtés compris. La marche
+       récursive vit dans `reecrireTermes` (noyau.js) : ici on ne dit plus que ce
+       que devient une FEUILLE, et la même phrase sert au bruit. */
+    const renommer = k => { const [pid,eid]=deK(k); return pid===ancien ? K(neuf,eid) : k; };
+    for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
+    CONTENU._bruit=(CONTENU._bruit||[]).map(renommer);
+    for(const r of (CONTENU.remises||[]))
+      if(Array.isArray(r.pieces)) r.pieces=r.pieces.map(p=>p===ancien?neuf:p);
+    if(CONTENU._pos && CONTENU._pos[ancien]) CONTENU._pos=renommerClef(CONTENU._pos,ancien,neuf);
+    pendingDel=null; simReset();
+  });
   return null;
 }
 /* Renommer un empan : sa clé, son marqueur dans le texte, les liens et le bruit. */
@@ -250,15 +265,16 @@ function renommerEmpanId(pid,ancien,neuf){
   const err=idValide(neuf,Object.keys(p.empans||{}),ancien);
   if(err) return err;
   if(neuf===ancien) return null;
-  pushUndo();
-  p.empans=renommerClef(p.empans,ancien,neuf);
-  p.texte=String(p.texte||"").split("{{"+ancien+"}}").join("{{"+neuf+"}}");
-  const av=K(pid,ancien), ap=K(pid,neuf);
-  const renommer = k => k===av ? ap : k;
-  for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
-  CONTENU._bruit=(CONTENU._bruit||[]).map(renommer);
-  if(selA&&selA.pid===pid&&selA.champ===ancien) selA={pid,champ:neuf};
-  pendingDel=null; simReset(); autosave(); render();
+  muter(()=>{
+    p.empans=renommerClef(p.empans,ancien,neuf);
+    p.texte=String(p.texte||"").split("{{"+ancien+"}}").join("{{"+neuf+"}}");
+    const av=K(pid,ancien), ap=K(pid,neuf);
+    const renommer = k => k===av ? ap : k;
+    for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
+    CONTENU._bruit=(CONTENU._bruit||[]).map(renommer);
+    if(selA&&selA.pid===pid&&selA.champ===ancien) selA={pid,champ:neuf};
+    pendingDel=null; simReset();
+  });
   return null;
 }
 /* Demander un id, l'appliquer, dire pourquoi si c'est refusé. Les deux

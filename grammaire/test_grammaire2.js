@@ -21,10 +21,19 @@ const prod = new Set(G.finaux); let z = true;
 while (z) { z = false; for (const b of G.blocs) if (prod.has(b.vers) && !prod.has(b.de)) { prod.add(b.de); z = true; } }
 [...etats].every(e => prod.has(e)) ? ok("aucune impasse") : ko("impasse");
 G.blocs.filter(b => estFinal(b.vers) && !b.forme).length ? ko("clôture sans forme") : ok("toute clôture porte une forme");
+// Ce qu'un squelette annonce comme forme AVANT de connaître ses valeurs : une
+// liaison la déclare, un bloc `deduit` ne peut pas (elle se calcule des deux
+// empans). La grammaire de démonstration n'en a pas — la ligne le dit quand même.
+const formeSquelette = s =>
+  s.map(b => b.forme).filter(Boolean).pop() || (s.some(b => b.deduit) ? "déduite des valeurs" : "—");
+// Le squelette + une valeur par trou → la chaîne {bloc, valeur} du moteur.
+const chaineDe = (s, valeurs) => { let ti = 0;
+  return s.map(bloc => bloc.type === "terme" ? { bloc, valeur: valeurs[ti++] } : { bloc, valeur: null }); };
+
 console.log("  " + squelettes.length + " squelettes — tous offerts dès la première phrase :");
 for (const s of squelettes) console.log("   · " + s.map(b => b.type === "terme"
   ? (b.source === "note" ? "«" + b.texte + "»" : "___") : b.texte).join(" ")
-  + "  → " + (s.map(b => b.forme).filter(Boolean).pop()));
+  + "  → " + formeSquelette(s));
 
 // ---------- 2. LES CINQ DIMENSIONS ----------
 console.log("\n=== 2. Les cinq dimensions (QQOQC) ===");
@@ -70,13 +79,19 @@ for (const [r, txt] of chaine) {
 console.log("\n=== 5. Densité — « sensé » vaut-il « correct » ? ===");
 const notesPossibles = [n1, { forme: "identite_non", termes: ["sc1", "sc2"] },
   { forme: "anteriorite", termes: ["har", "hvo"] }];
+// On ne réécrit PAS la réduction : on construit la chaîne de blocs et on
+// appelle `reduire`, comme le composeur du jeu. Reconstruire la forme à la main
+// ignore `deduit` et `imbrique` — sur cette grammaire-ci, qui déclare toutes
+// ses formes sur des liaisons, les deux écritures donnent le même compte au
+// chiffre près ; sur celle de content.js, l'ancienne se trompait d'un facteur
+// quinze (docs/ARCHITECTURE.md §15).
 let total = 0, senses = 0, avecLien = 0;
 for (const s of squelettes) {
   const slots = s.filter(b => b.type === "terme");
   const sources = slots.map(b => b.source === "note" ? notesPossibles : CHAMPS.map(c => c.id));
   const combos = sources.reduce((a, src) => a.flatMap(p => src.map(v => [...p, v])), [[]]);
   for (const c of combos) {
-    const r = { forme: s.map(b => b.forme).filter(Boolean).pop(), termes: c };
+    const r = M.reduire(chaineDe(s, c));
     total++;
     if (!valider(r)) { senses++; if (lienDe(r)) avecLien++; }
   }
