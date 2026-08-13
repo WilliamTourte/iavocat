@@ -1,11 +1,11 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 13 août 2026, après la session « l'atelier ne
+*À lire en tête d’une nouvelle conversation. État au 13 août 2026, après la session « l’atelier ne
 recopie plus rien, pas même lui-même ».*
 
 ## 1. Où en est le jeu
 
-**Seize** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
+**Dix-sept** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
 
 1. **Trois sessions.** R1 lire/extraire/répondre (`p_pv`, `t_voisin`, aucun article) ; R2 comparer
    (`r_temoin`, l'article 3) ; R3 l'ADN et le vice.
@@ -130,6 +130,33 @@ recopie plus rien, pas même lui-même ».*
     Le fichier total monte, lui, parce que chaque geste porte l'explication de pourquoi il existe — la
     discipline du dépôt. Ce qui compte n'est pas le compte : c'est que soixante endroits soient devenus
     quatre. Et le gardien a servi **le jour même** (voir §2).
+
+17. **Une forme existe de deux façons, et le diagnostic n'en connaissait qu'une** *(13 août, décidé avec
+    l'auteur)*. Trouvé en relisant l'atelier à l'œil après la décision 16, et tranché à part parce que
+    ça change ce que le diagnostic **juge** — ce n'est pas du rangement. Le contrôle « forme indicible »
+    demandait *« un bloc porte-t-il `forme: <f>` ? »*. C'était juste **avant la déduction** : le joueur
+    déclarait alors la relation en cliquant une liaison, et toute forme devait être portée par un bloc.
+    Depuis le §4.5, **le joueur désigne** — il clique le second empan (`t1`, `deduit:true`, sans
+    `forme`), et `deduire()` calcule la forme des dimensions et des valeurs. Les quatre formes
+    comparatives de l'affaire livrée étaient donc déclarées « indicibles » **à chaque ouverture de
+    l'atelier**, alors que le jeu les prononce — `ordre_grandeur` est mot pour mot la phrase qui clôt
+    le chemin docile de `npm run vue`. Même nature que le `pointer()` resté au schéma 2 (§2) : un
+    contrôle que le changement de mécanique a laissé derrière, et qu'aucune suite ne couvre — les
+    suites lisent le jeu, jamais le diagnostic.
+
+    **La version retenue est la prudente** (le §15 la décrit) : « déductible » se lit comme `deduire`
+    le lit, et **sur ce dossier** — `deduction`, arité 2, et un slot qui accepte au moins une dimension
+    déclarée, plus un bloc qui porte `deduit`. La version en une ligne (« elle porte `deduction`, donc
+    elle est dicible ») aurait cessé d'alerter sur une forme dont le slot ne nomme que des dimensions
+    absentes, réellement inatteignable. Les quatre conditions manquent chacune autrement, donc se
+    disent autrement : un avertissement qui ne nomme pas son remède n'en est pas un. **L'ombrage n'est
+    délibérément pas signalé** — `deduire` rend la première forme qui convient, l'ordre de déclaration
+    est signifiant (§11), et l'alerter reviendrait à interdire ce qui tranche les ambiguïtés.
+
+    Le dossier livré passe de **4 avert. + 17 info** à **0 avert. + 17 info**. Ce n'est pas le bruit
+    qui coûtait : c'est qu'une bande d'avertissements toujours pleine s'apprend à ne plus se lire, et
+    qu'un vrai avertissement s'y serait perdu. Elle est vide, donc elle veut de nouveau dire quelque
+    chose.
 
 ## 2. Points de vigilance
 
@@ -267,7 +294,6 @@ penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
 | La progression : portes, place de la Fin 3 | Trois sessions actées ; la porte de la Fin 3 reste à placer |
 | `comment` en sixième dimension | Écarté, réintégrable sans coût |
 | Le canal de révélation de la culpabilité | Non tranché |
-| **« Forme X sans bloc » : quatre avertissements permanents, et faux** | **Trouvé le 13 août, NON corrigé — c'est une décision d'auteur, pas du rangement.** Le diagnostic avertit qu'une forme est « indicible » si aucun bloc ne la déclare (`!G.blocs.some(b=>b.forme===f)`). Or **depuis la déduction (§4.5), une forme comparative ne se déclare plus : elle se déduit** d'un bloc `deduit`. Les quatre formes déduites de l'affaire livrée (`identite_oui`, `anteriorite`, `ordre_grandeur`, `identite_non`) sont donc signalées à **chaque ouverture de l'atelier**, alors qu'elles sont parfaitement dicibles — le jeu les compose. Même nature que le `pointer()` resté au schéma 2 (§2) : un contrôle que le changement de mécanique a laissé derrière. Le correctif tient en une ligne (accepter aussi `b.deduit` quand la forme porte `deduction`), mais il change ce que le diagnostic **juge** — donc il se décide, il ne se glisse pas dans une passe de rangement. Le prix de ne rien faire est connu : quatre fausses alertes en permanence, et un diagnostic qu'on apprend à ne plus lire |
 | Les Manuels | **Tranché le 3 août : `openManuels()` est retirée**, avec les sept contrôles qui la maintenaient seule en vie — on éprouvait un chemin injouable. La **règle** reste dans `regles.js` (`reglesLivrees`, `porteDe`) : rebrancher les Manuels reste une décision de design, et ne coûtera pas une ligne de moteur. **Conséquence à garder en tête** : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par le jeu, alors que la frise les édite toujours et que le diagnostic avertit encore de leur absence |
 
 ## 4. Prochaine étape
