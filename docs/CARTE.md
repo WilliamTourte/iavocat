@@ -42,7 +42,7 @@ décident rien : ils nomment ce qui était recopié soixante fois, jamais deux f
 
 | Le geste | Ce qu'il remplace | Où on l'appelle |
 |---|---|---|
-| `muter(f)` | `pushUndo()` … `autosave(); render()` — **39 copies** | toute mutation de `frise.js`, `inspecteur.js` |
+| `muter(f)` | `pushUndo()` … `autosave(); render()` — **39 copies**, puis les **8 dernières** le 13 août | **toute** mutation de l'atelier. Celles qui renoncent gardent leur garde **avant** l'appel, celles qui font suite leur queue **après** — `muter` ne se laisse pas interrompre de l'intérieur (§2 de la passation) |
 | `poserOuRetirer(o,p,v,{trim})` | « écrire, ou retirer la clé si c'est vide » — **9 copies**, chacune écrite autrement | `majLien`, `majAttente`, `majDeclencheQui`, `majAvis`… |
 | `reinitSelection({garderEmpans})` | la remise à zéro de la sélection — **7 copies, et pas deux pareilles** | `undo`, `adopter`, `pointer`, `clicChamp`, `clicEdge`, les trois `formulaireX` |
 | `demanderSuppr(cle,f)` + `btnSuppr(…)` | la suppression en deux clics — **5 gardes + 5 boutons** qui devaient s'accorder | pièce, empan, lien, remise, affirmation |
@@ -54,16 +54,17 @@ libellés, écrite **24 fois** en `style=` en ligne.
 
 ## Le geste du joueur, de bout en bout
 
-Se lit de haut en bas : c'est la boucle d'une session (§4.6). `index.html` n'y apparaît que comme
-**rendu**, et comme relais pour les seuls **gestes**.
+Se lit de haut en bas : c'est la boucle d'une session (§4.6). Le rendu vit dans **`app/jeu.js`**
+depuis le 4 août — `index.html` ne porte plus que sa structure, et n'apparaît ici ni comme rendu ni
+comme relais.
 
-> **La ligne de partage, à tenir :** ce qui *redessine* est une fonction d'`index.html` — un
+> **La ligne de partage, à tenir :** ce qui *redessine* est une fonction de `jeu.js` — un
 > `R.xxx(S, …)` suivi d'un `rendreTout()`, et c'est une cible de `onclick`. Ce qui *lit* n'a pas
 > d'enveloppe : ça s'écrit `R.xxx(S)` sur place, et les suites l'appellent pareil, en `w.R.xxx(w.S)`.
-> Les colonnes « règle » ci-dessous nomment donc souvent une fonction qu'`index.html` appelle
+> Les colonnes « règle » ci-dessous nomment donc souvent une fonction que `jeu.js` appelle
 > directement, sans homonyme.
 
-| Le geste | La règle (`regles.js`) | La grammaire (`moteur.js`) | Le rendu (`index.html`) | § |
+| Le geste | La règle (`regles.js`) | La grammaire (`moteur.js`) | Le rendu (`jeu.js`) | § |
 |---|---|---|---|---|
 | l'avocat ouvre une session | `envoyerRemise` → `poserQuestion` | — | `renderDiscussion` | 4.6 |
 | ouvrir une pièce | `ouvrirPiece` (+ son `declenche`) | — | `modalPieceHTML`, `rendreTexte` | 4.3 |
@@ -87,7 +88,7 @@ les sépare vit dans le contenu — une liaison portant `cite:true`, lue par `re
 (`citeDe`), contre une forme d'arité 2 déduite par `deduire` et écrite par son `patron`.
 
 **Le tutoriel n'a pas de colonne « règle », et c'est le point.** Il vit entièrement dans
-`index.html`, comme la sauvegarde de partie : son temps se dérive de `S`, il n'ajoute aucun champ
+`jeu.js`, comme la sauvegarde de partie : son temps se dérive de `S`, il n'ajoute aucun champ
 d'état, il ne refuse aucun geste. Seule exception à connaître : `tutoAttendu` **dérive du contenu ce
 que la question attend** (tag de l'attente → lien → terme atomique), pour pouvoir dire *« ce n'est
 pas ça »* sans jamais dire lequel c'était. C'est le seul endroit où l'écran connaît la réponse, et
@@ -113,8 +114,8 @@ source de vérité du schéma. Ici, seulement qui les lit :
 
 | Clé | Lue par |
 |---|---|
-| `dimensions` | `couleurDim` / `rangDim` (`index.html`) — par **rang**, jamais par pertinence |
-| `pieces` (`empans`, `nom`, `court`, `declenche`, `porte`, `type`) | `CHAMPS` (`index.html`), `piecesLivrees` / `reglesLivrees` / `ouvrirPiece` |
+| `dimensions` | `couleurDim` (`moteur.js`, appelé par `jeu.js` et l'atelier) — par **rang**, jamais par pertinence |
+| `pieces` (`empans`, `nom`, `court`, `declenche`, `porte`, `type`) | `CHAMPS` (`jeu.js`, via `champsDe`), `piecesLivrees` / `reglesLivrees` / `ouvrirPiece` |
 | `grammaire` (`formes`, `blocs`, `depart`, `finaux`) | `moteur.js` en entier ; `blocsOfferts` pour le filtre `piece` |
 | `liens` | `lienDe` (`moteur.js`) — c'est ce qui fait qu'une phrase est *reconnue* |
 | `remises` (`attentes: [{question, attend, apres}]`) | `attentesDe`, `attenteCourante`, `avancerSurAttente` |
@@ -125,15 +126,19 @@ L'**ancienne forme** `attend`/`apres` posée sur la remise se lit comme une list
 (`regles.js`, dans la fabrique) rend une paire `{attend, apres}` fabriquée ; `attentesDeRemise`
 (`app/atelier/noyau.js`) rend **la remise elle-même**, pour que l'inspecteur l'édite en place. Sur une
 affaire au schéma 3, les deux rendent le même `r.attentes`. L'arbitrage est écrit sur la seconde : *on
-ne les fusionne pas, on dit lequel est lequel.*
+ne les fusionne pas, on dit lequel est lequel.* **Personne d'autre ne lit `attend` ni `apres` sur une
+remise**, et c'est désormais R9 qui le tient : deux convertisseurs y échappent en plus des deux
+normalisateurs — `attentesEditables` (`frise.js`) et `migrerContenu` (`contenu-io.js`).
 
 ## Les six suites
 
 Point d'entrée unique : `tests/harnais.js`, `creerHarnais(dossier)`. `npm test` les enchaîne dans
 l'ordre de `package.json` — **325 contrôles, tout vert ou ce n'est pas fini** (§16).
 
-Le harnais **inline** les trois `<script src>` au boot, parce que jsdom n'en charge aucun (§13) —
-c'est pourquoi `npm run vue` existe : il est le seul à éprouver le vrai chargement.
+Le harnais **inline tout `<script src>` et tout `<link rel=stylesheet>`** au boot, par regex et dans
+l'ordre, parce que jsdom n'en charge aucun (§13) — quatre balises pour le jeu, onze pour l'atelier,
+et ajouter un fichier ne demande pas d'y revenir. C'est pourquoi `npm run vue` existe : il est le
+seul à éprouver le vrai chargement.
 
 Ce qu'il expose, et qui est le **contrat d'interaction** : `boot` / `bootAtelier`, les lectures
 d'écran — **une par surface, sous le nom que l'écran lui donne** (`discussion`, `memoire`,
@@ -145,11 +150,14 @@ d'écran — **une par surface, sous le nom que l'écran lui donne** (`discussio
 
 Ce que chaque suite prouve : **§16**, qui les détaille une par une.
 
-## L'atelier — ses onze sections numérotées
+## L'atelier — ses sections numérotées
 
-`app/atelier_v3.html` est commenté par sections `1)` … `11)` ; `grep -n "^   [0-9]*)" app/atelier_v3.html`
-les liste. Les deux qui comptent : **7) la frise** (éditable — remises, attentes) et **8) le
-pas-à-pas**, qui appelle `RG()` — c'est-à-dire `creerRegles` du jeu — sur son propre état `SIM`.
+La numérotation `1)` … `11)` a **suivi les modules** quand la page s'est découpée : chaque fichier
+d'`app/atelier/` ouvre sur la ou les sections qu'il porte. `grep -rn "^   [0-9]" app/atelier/` les
+liste. Elle n'est plus continue — il n'y a pas de `5)`, `diagnostic.js` n'en porte aucune, et
+`2 bis)` est arrivée après : c'est un ordre de lecture hérité, pas un index. Les deux qui comptent :
+**7) la frise** (`frise.js` — éditable : remises, attentes) et **8) le pas-à-pas** (`pasapas.js`),
+qui appelle `RG()` — c'est-à-dire `creerRegles` du jeu — sur son propre état `SIM`.
 Il n'a **que** deux écarts assumés : il joue au grain du **lien** (`simComposer`) et non du bloc, et
 il narre les gestes privés en lignes « · ». Le badge ⚙ signale une règle qui vit dans `regles.js`.
 
@@ -159,14 +167,14 @@ Ni l'un ni l'autre n'est une suite : ils ne jouent pas l'affaire, ils regardent 
 
 | Outil | Commande | Ce qu'il éprouve, et que rien d'autre n'éprouve |
 |---|---|---|
-| `outils/gardien.js` | `npm run gardien` (dans `npm test`) | **les conventions** — R1 la forme des balises que le harnais inline, R2 les collisions de noms de haut niveau par page, R3 les variables CSS, R4 les familles CSS sans porteur, R5 les `onclick=`, R6 les ids visés et les quatre ancres du tutoriel, R7 les restes du schéma 2, R8 les tailles annoncées par ce fichier-ci |
+| `outils/gardien.js` | `npm run gardien` (dans `npm test`) | **les conventions** — R1 la forme des balises que le harnais inline, R2 les collisions de noms de haut niveau par page, R3 les variables CSS, R4 les familles CSS sans porteur, R5 les `onclick=`, R6 les ids visés et les quatre ancres du tutoriel, R7 les restes du schéma 2, R8 les tailles annoncées par ce fichier-ci, R9 les lectures d'`attend`/`apres` posés sur une remise |
 | `outils/vue.js` | `npm run vue` (hors `npm test`) | **le vrai chargement** — les quatre `<script src>` et la feuille, dans un vrai Chromium en `file://`, et la relecture à l'œil |
 
 Le gardien est en **mode double**, comme `moteur.js` : lancé, il contrôle et sort en 1 sur écart ;
 `require`, il ne rend que son inventaire. C'est par là qu'`eslint.config.js` obtient les noms que
 chaque page pose dans la portée globale — la liste n'est écrite nulle part, elle se calcule (§12).
 
-`eslint.config.js` est le filet **générique** : aucune des huit pannes du gardien ne s'y voit. Il
+`eslint.config.js` est le filet **générique** : aucune des neuf pannes du gardien ne s'y voit. Il
 tient l'autre bout — identifiant fautif, variable morte, clé dupliquée.
 
 ## Les pièges déjà payés
@@ -183,6 +191,6 @@ donc dépendant de la session ; le flag `cite` est porté par la **liaison**, ja
   de ce qui s'écrit sont des attributs `libelle` déclarés dans le contenu, et le §11 les nomme.
 - **Explorer pour trouver *où décide* quelque chose.** La réponse est toujours `regles.js` : les deux
   pages HTML ne décident rien (§9). Si une décision semble vivre dans une page, c'est un bug.
-- **Lire `ARCHITECTURE.md` en entier.** 510 lignes, et le tableau de `CLAUDE.md` dit lesquelles.
+- **Lire `ARCHITECTURE.md` en entier.** 618 lignes, et le tableau de `CLAUDE.md` dit lesquelles.
 - **Choisir un mot au jugé.** `docs/LEXIQUE.md` arbitre le vocabulaire — quel mot dire, à qui, pour
   quelle chose. Les pièges y sont nommés (`lien`/`liaison`, `clore`/`clôturer`, `empan`/`passage`).

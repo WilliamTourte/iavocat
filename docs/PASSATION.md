@@ -1,11 +1,11 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d’une nouvelle conversation. État au 13 août 2026, après la session « l’atelier ne
-recopie plus rien, pas même lui-même ».*
+*À lire en tête d’une nouvelle conversation. État au 13 août 2026, après la session « ce que le §15
+demandait de resynchroniser ».*
 
 ## 1. Où en est le jeu
 
-**Dix-sept** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
+**Dix-huit** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
 
 1. **Trois sessions.** R1 lire/extraire/répondre (`p_pv`, `t_voisin`, aucun article) ; R2 comparer
    (`r_temoin`, l'article 3) ; R3 l'ADN et le vice.
@@ -158,6 +158,52 @@ recopie plus rien, pas même lui-même ».*
     qu'un vrai avertissement s'y serait perdu. Elle est vide, donc elle veut de nouveau dire quelque
     chose.
 
+18. **Ce que le §15 demandait de resynchroniser, et qui ne l'avait pas été** *(13 août, décidé avec
+    l'auteur)*. La décision 17 n'était pas un cas isolé : c'était **le premier relevé d'un genre**.
+    Le §15 d'ARCHITECTURE tient un tableau de trois lignes — *« ce qui change → ce qu'il faut penser
+    à suivre »*. La 17 en a réglé la moitié d'une. **Les deux autres n'avaient jamais été faites.**
+
+    Le genre, d'abord, parce qu'il explique les quatre trouvailles d'un coup : **un reflet de
+    l'atelier sur le jeu que le changement de mécanique a laissé derrière**. Il ne casse rien, ne
+    lève aucune exception, et **aucune suite ne le voit** — les six lisent le jeu, jamais le
+    diagnostic ni l'onglet Grammaire. Il ment simplement, tous les jours, à celui qui écrit
+    l'affaire. C'est le défaut le moins cher à produire et le plus cher à découvrir de ce dépôt.
+
+    **La densité de l'onglet Grammaire** (ligne 3 du §15) refaisait la réduction à la main —
+    « la dernière forme déclarée du squelette ». Juste tant que toute forme était portée par une
+    liaison ; faux depuis que `deduit` fait *calculer* la forme et qu'`imbrique` *emboîte* au lieu
+    d'ajouter. Elle annonçait **21 de marge de bruit là où le moteur en compte 315** — un facteur
+    quinze sur le seul chiffre pour lequel ce panneau existe (§14). La même écriture traînait dans
+    `grammaire/test_grammaire2.js` ; là-bas elle était juste, et **la sortie du banc d'essai ne bouge
+    pas d'un chiffre** (1609 / 125 / 8), ce qui est la preuve que le correctif ne touche que le faux.
+
+    **Le diagnostic** (ligne 2) demandait encore `r.attend` — la forme d'avant les attentes en liste
+    (§3) : **six informations mensongères** à chaque ouverture, une par lien qui porte un tag. La
+    bande passe de `0 avert. + 17 info` à **`0 avert. + 11 info`**, et les onze qui restent sont
+    toutes des « Bruit assumé », c'est-à-dire vraies.
+
+    **Supprimer un empan ne retirait jamais son marqueur** du texte de la pièce : le motif s'écrivait
+    avec **quatre antislashs**, donc un antislash littéral dans la regex compilée, donc rien. Défaut
+    vieux comme la refonte du 27 juillet. L'atelier créait ainsi le « Marqueur orphelin » que son
+    propre diagnostic signalait ensuite.
+
+    **Et un contrôle de `smoke_atelier.js` qui passait par le vide, de trois façons empilées** — le
+    pire des quatre, parce que c'est une *suite* : il cherchait l'article par le premier bloc portant
+    une pièce (depuis la déduction, c'est le second empan, qui n'a pas de forme), la session qui
+    attend par `r.attend` (−1 au schéma 3), et un message que le diagnostic ne dit plus. Chacune
+    seule suffisait à le rendre toujours vert. Il mord de nouveau : on neutralise le contrôle du
+    diagnostic, la suite tombe.
+
+    Avec eux, deux choses qui ne sont pas des correctifs. **R9** au gardien — la sœur de R7 : hors
+    des deux normalisateurs et des deux convertisseurs, plus rien ne *lit* `attend`/`apres` sur une
+    remise (§16 bis). Et **les huit dernières mutations de l'atelier passent sous `muter`** : la
+    décision 16 en avait rangé trente-neuf et laissé huit, toutes parce qu'elles renoncent *avant* ou
+    font suite *après*. La forme était déjà tranchée au §2 — la garde reste avant l'appel, la queue
+    passe après, `muter` ne se laisse pas interrompre de l'intérieur.
+
+    *En écrivant R9, un défaut du gardien lui-même : les lignes qu'il annonçait étaient fausses (voir
+    §2).*
+
 ## 2. Points de vigilance
 
 *Les points marqués **[Rn]** sont désormais tenus par une règle d'`outils/gardien.js` : ils restent
@@ -234,6 +280,22 @@ penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
   doux, et pour elles le `currentColor` d'hier était juste. À retenir avant de retirer une variable de
   `:root` : compter ses usages, et regarder si ce sont des raccourcis. **Aucune suite ne voit ni l'un
   ni l'autre** — elles lisent `innerHTML`, jamais le style calculé.
+- **[R9] Le tag d'une session vit sur l'ATTENTE, jamais sur la remise** *(corrigé le 13 août)*.
+  `r.attend` et `r.apres` restent **lisibles** — une affaire écrite avant le §3 se joue sans
+  modification — et c'est tout le piège : une branche restée à l'ancienne forme ne casse pas, ne
+  lève pas, elle répond « non » pour toujours. Elle l'a fait deux semaines dans le diagnostic. Quatre
+  fonctions ont le droit de connaître l'ancienne écriture, R9 les nomme, et personne d'autre.
+- **Une suite peut passer par le vide, et rien ne le dit.** Le contrôle « un article livré après la
+  session qui l'attend » de `smoke_atelier.js` était vert depuis des semaines **sans rien éprouver**
+  — trois raisons empilées, chacune suffisante (§1, décision 18). Un contrôle enveloppé d'un `if`
+  qui choisit entre « ça mord » et « (pas de piège ici) » est **toujours vert par construction** :
+  la seule façon de savoir s'il tient, c'est de **casser ce qu'il surveille et de le voir tomber**.
+  À faire au moins une fois pour tout contrôle conditionnel.
+- **Le gardien annonçait des lignes fausses** *(corrigé le 13 août)*. `decouperJS` blanchissait les
+  commentaires de bloc et le texte des gabarits **en les raccourcissant** : R7 et R9 comptaient trop
+  peu de sauts de ligne et désignaient la ligne 123 pour un écart vivant à la 153. Les sauts sont
+  désormais restitués. À savoir avant d'ajouter une règle qui cite une ligne : la vue `code` doit
+  rester **alignée** sur le fichier, un `\n` étant du blanc pour tout le reste.
 - **[R7] Le diagnostic de l'atelier lisait encore le schéma 2** *(corrigé le 5 août)*. `pointer()` dépliait
   `l.a[0]`/`l.b[0]` — le format d'avant le schéma 3. Sur le contenu livré, `liens[7].a` vaut
   `undefined` : cliquer l'avertissement « le vice a N canaux indépendants », son seul émetteur, levait
@@ -294,6 +356,7 @@ penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
 | La progression : portes, place de la Fin 3 | Trois sessions actées ; la porte de la Fin 3 reste à placer |
 | `comment` en sixième dimension | Écarté, réintégrable sans coût |
 | Le canal de révélation de la culpabilité | Non tranché |
+| **`rep_hors_sujet` ne s'écrit pas dans l'atelier** | La frise édite `rep_inutile` et `rep_sans_rapport`, **pas la troisième escalade** — celle des citations qui ne répondent pas, née avec « un fait se cite ». Le contenu la porte, `reponseAvocat` la lit, l'atelier ne sait pas l'écrire. C'est la **ligne 1 du §15** (« vérifier que la frise décrit toujours le déroulé »), et la seule des trois qui reste ouverte. **Écarté de la session du 13 août avec l'auteur** : ça ajoute un champ, donc une fonctionnalité, pas une correction |
 | Les Manuels | **Tranché le 3 août : `openManuels()` est retirée**, avec les sept contrôles qui la maintenaient seule en vie — on éprouvait un chemin injouable. La **règle** reste dans `regles.js` (`reglesLivrees`, `porteDe`) : rebrancher les Manuels reste une décision de design, et ne coûtera pas une ligne de moteur. **Conséquence à garder en tête** : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par le jeu, alors que la frise les édite toujours et que le diagnostic avertit encore de leur absence |
 
 ## 4. Prochaine étape
@@ -307,6 +370,16 @@ penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
 3. Si la session 1 guide trop : retirer les `question` une à une — c'est le repli, et il n'exige
    aucune ligne de code. Si l'écran ne guide plus assez, le repli symétrique est aussi court :
    rendre l'aide **et** le fantôme, comme avant.
+
+**Le rangement est fini.** Sept sessions y auront passé (décisions 12 à 18) ; il n'en reste rien de
+nommable. Ce qui reste ouvert côté outil tient en une ligne du §3 — `rep_hors_sujet`, qui ajoute un
+champ. **La prochaine session porte sur le SENS**, et la seule façon de la commencer est de jouer.
+
+*Un mot pour qui reprendra le fil du 13 août : quatre défauts ont été trouvés en relisant l'atelier à
+l'œil, aucun par une suite, et les quatre étaient du même genre — un reflet resté à l'ancienne
+mécanique. Le §15 les nomme désormais un par un. **La leçon est qu'un reflet doit APPELER ce qu'il
+reflète**, et que là où il ne le peut pas, c'est une règle du gardien qui tient l'écart. Trois des
+neuf règles existent pour ça (R7, R8, R9).*
 
 **Méthode à conserver :** toute évolution part de `docs/ARCHITECTURE.md` — on réécrit le document, on
 le fait relire, puis on applique au code.
