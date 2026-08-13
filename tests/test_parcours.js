@@ -19,7 +19,7 @@ console.log("\n=== Le composeur, bloc par bloc ===");
   const emp = w.CHAMPS.filter(c => c.dim === w.CHAMPS[0].dim).slice(0, 2);
   for (const pid of new Set(emp.map(e => e.pid))) w.ouvrirPiece(pid);
   for (const e of emp) H.surligner(w, e.id);
-  const iT = w.R.blocsOfferts(w.S).findIndex(b => b.type === "terme" && b.source !== "note");
+  const iT = H.iTermeChamp(w);
   w.poserBloc(iT, 0);
   check("poser un terme fait avancer l'automate", w.S.compo.length === 1);
   check("l'état a changé", w.R.etatCompo(w.S) !== w.JEU.grammaire.depart);
@@ -42,7 +42,7 @@ console.log("\n=== Refus de catégorie : le seul refus qui existe ===");
   check("aucune relation ne se déduit entre deux dimensions", w.M.deduire(a.id, b.id) === null);
   // On désigne quand même les deux : rien n'est jamais interdit à la pose,
   // c'est à la clôture que la catégorie tranche (§4.5).
-  const iT = () => w.R.blocsOfferts(w.S).findIndex(x => x.type === "terme" && x.source !== "note");
+  const iT = () => H.iTermeChamp(w);
   w.poserBloc(iT(), w.S.retenus.indexOf(a.id));
   w.poserBloc(iT(), w.S.retenus.indexOf(b.id));
   // C'est l'article — le seul moyen de clore — qui déclenche la validation.
@@ -162,7 +162,7 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
   const L = cits[0];
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   H.surligner(w, L.termes[0]);
-  const iT = w.R.blocsOfferts(w.S).findIndex(b => b.type === "terme" && b.source !== "note");
+  const iT = H.iTermeChamp(w);
   w.poserBloc(iT, w.S.retenus.indexOf(L.termes[0]));
   /* En session 1 l'état qui suit l'empan n'offre QUE cette clôture : une suite
      unique n'est pas un choix, la phrase se referme sans qu'on la confirme
@@ -310,8 +310,7 @@ console.log("\n=== Le premier geste, montré ===");
   const zone = halo();
   check("et il montre la mémoire", !!zone && zone.contains(w.document.querySelector(".mchip")));
 
-  w.poserBloc(w.R.blocsOfferts(w.S).findIndex(b => b.type === "terme" && b.source !== "note"),
-              w.S.retenus.indexOf(veut));
+  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut));
   const envoi = halo();
   check("la phrase close, il montre le seul geste qui parle",
     !!envoi && envoi.classList.contains("envoi"));

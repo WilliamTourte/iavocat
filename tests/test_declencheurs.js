@@ -10,8 +10,10 @@ const boot = contenu => H.boot({contenu});   // null = aucun contenu du tout
    compris), remises. Sert à prouver qu'aucun id n'est câblé dans le moteur. */
 function renommerPiece(c, ancien, neuf){
   c.pieces = Object.fromEntries(Object.entries(c.pieces).map(([k,v])=>[k===ancien?neuf:k, v]));
+  // Une clé se défait par `deK`, jamais à la main — et surtout pas deux fois
+  // dans la même expression, ce qui était la seule façon de les faire diverger.
   const rec = t => Array.isArray(t) ? t.map(rec)
-    : typeof t === "string" ? (t.split(".")[0]===ancien ? neuf+"."+t.split(".").slice(1).join(".") : t)
+    : typeof t === "string" ? (([p,e]) => p===ancien ? neuf+"."+e : t)(H.deK(t))
     : {...t, termes: rec(t.termes||[])};
   for (const L of c.liens) L.termes = rec(L.termes||[]);
   for (const r of c.remises) r.pieces = (r.pieces||[]).map(p => p===ancien?neuf:p);

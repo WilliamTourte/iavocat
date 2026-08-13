@@ -61,9 +61,11 @@ Sans navigateur trouvé, il le dit et sort en 0. Il ne sort en 1 que sur une err
 
 Les six suites éprouvent le **sens** : elles jouent l'affaire et lisent `innerHTML`. Elles ne lisent
 jamais un style calculé, jamais la forme d'une balise, jamais l'inventaire des noms globaux d'une
-page — et c'est exactement là que ce dépôt s'est fait mal, à répétition. `outils/gardien.js` rend le
-§2 de la passation **opposable** : neuf règles, neuf pannes déjà payées, chacune citant le § qui la
-tranche (§16 bis de `docs/ARCHITECTURE.md` les liste). Zéro dépendance, comme le livrable.
+page — et c'est exactement là que ce dépôt s'est fait mal, à répétition. Elles ne se lisent pas non
+plus **elles-mêmes**, et c'est leur second angle mort. `outils/gardien.js` rend le §2 de la passation
+**opposable** : dix règles, dix pannes déjà payées, chacune citant le § qui la tranche (§16 bis de
+`docs/ARCHITECTURE.md` les liste). R7, R9 et R10 marchent sur `app/`, `tests/` et `outils/` ; les
+sept autres sur les deux pages. Zéro dépendance, comme le livrable.
 
 **Ce n'est pas une source de vérité.** Il fait respecter, il ne décide pas : si une règle et son §
 divergent, c'est le § qui a raison. Il est en **mode double**, comme `moteur.js` — lancé il contrôle,

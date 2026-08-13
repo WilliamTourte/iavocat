@@ -2,7 +2,7 @@
 // (empans, liens, dimensions, sessions) sont dérivées de la forme du CONTENU,
 // pour survivre à un changement complet d'affaire.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, surContenu:SC } = H;
+const { check, bilan, surContenu:SC, estRegle } = H;
 const neuf = () => { const w = H.bootAtelier(); w.demanderExemple(); w.demanderExemple(); return w; };
 // `diagnostiquer()` — le diagnostic du contenu entier. Ce n'est pas le
 // `valider(r)` de moteur.js, qui juge une phrase (docs/LEXIQUE.md).
@@ -140,7 +140,7 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
   const LV = SC.sousVice(w.CONTENU);
   const dv = SC.dim(w.CONTENU, LV.termes[0]);
   const valVice = new Set(LV.termes.map(t => {
-    const [pid,eid] = String(t).split(".");
+    const [pid,eid] = H.deK(t);
     return (w.CONTENU.pieces[pid].empans[eid]||{}).valeur;
   }));
   let n = 0;
@@ -155,12 +155,11 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
      qu'il régit. Les deux contrôles qui rendent l'invariant vérifiable. */
   const w = neuf();
   const pidR = SC.pidRegle(w.CONTENU);
+  const regles = Object.values(w.CONTENU.pieces).filter(estRegle);
   check("dans le contenu livré, aucune règle ne porte d'empan",
-    Object.values(w.CONTENU.pieces).filter(p => (p.type||"").includes("règle"))
-      .every(p => Object.keys(p.empans||{}).length === 0));
+    regles.every(p => Object.keys(p.empans||{}).length === 0));
   check("et chaque règle livrée annonce ce qu'elle régit",
-    Object.values(w.CONTENU.pieces).filter(p => (p.type||"").includes("règle"))
-      .every(p => Array.isArray(p.porte) && p.porte.length));
+    regles.every(p => Array.isArray(p.porte) && p.porte.length));
   const e = SC.unEmpan(w.CONTENU);
   w.CONTENU.pieces[pidR].empans = { intrus: { dim: e.dim, valeur: e.valeur, texte: "x", nom: "x" } };
   w.CONTENU.pieces[pidR].texte += " {{intrus}}";
@@ -248,7 +247,10 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
     liens:[{ a:["a","agent_x"], rel:"est en désaccord avec", b:["b","exige"], tient:true, vice:true, rep:"Tiens." }],
     relations:["est en accord avec","est en désaccord avec"],
     cases:{ c1:{ label:"Case", remise:1, options:["x"], bonne:"x", apres:{ replique:"Reçu." } } },
-    remises:[{ qui:"Maître", texte:"Voilà.", pieces:["a","b"] }],
+    // La session déclare une attente : c'est LÀ que l'accusé de la case doit
+    // atterrir (§3). Il se posait sur la remise, où ni le jeu ni l'atelier ne
+    // pouvaient plus le lire — voir la décision 20.
+    remises:[{ qui:"Maître", texte:"Voilà.", pieces:["a","b"], attentes:[{ attend:"t_x" }] }],
     repetition:{ intro:"", affirmations:[], fin:"" },
     avocat:{ rep_vice:"", rep_faux:"", rep_inutile:[], rep_sans_rapport:[], deja:"" },
     fins:{1:{},2:{},3:{}},
@@ -267,7 +269,12 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
   check("une grammaire est fournie", Array.isArray(m.grammaire.blocs) && !!m.grammaire.formes);
   check("les dimensions sont posées", Array.isArray(m.dimensions) && m.dimensions.length === 5);
   check("les cases et les relations disparaissent", m.cases === undefined && m.relations === undefined);
-  check("l'accusé de réception d'une case migre sur sa session", m.remises[0].apres.replique === "Reçu.");
+  /* Lu PAR LE NORMALISATEUR, et c'est le contrôle : un accusé que
+     `attentesDeRemise` ne rend pas est un accusé que l'inspecteur ne peut pas
+     éditer et que l'avocat ne dira jamais. */
+  const accuse = (w.attentesDeRemise(m.remises[0])[0]||{}).apres;
+  check("l'accusé de réception d'une case migre sur l'attente de sa session",
+    !!accuse && accuse.replique === "Reçu.");
   check("la clé attention est retirée", m.attention === undefined);
   check("la migration est idempotente",
     JSON.stringify(w.migrerContenu(JSON.parse(JSON.stringify(m)))) === JSON.stringify(m));

@@ -93,9 +93,24 @@ function migrerContenu(j){
   //    (l'accusé de réception d'une case migre sur sa session ; le reste
   //     est de l'écriture à reprendre à la main — signalé au diagnostic)
   for(const [,c] of Object.entries(j.cases||{})){
-    const i=(c.remise||1)-1;
-    const r=(j.remises||[])[i];
-    if(r && !r.apres && c.apres && c.apres.replique) r.apres={...c.apres};
+    const r=(j.remises||[])[(c.remise||1)-1];
+    if(!r || !c.apres || !c.apres.replique) continue;
+    /* L'accusé se pose sur la PREMIÈRE ATTENTE de la session, jamais sur la
+       remise (§3). Il s'y posait jusqu'au 14 août, et c'était le dernier
+       endroit du dépôt qui PRODUISAIT l'ancienne écriture — pour un prix
+       entièrement silencieux : `attentesDe` ne rend une paire que si `attend`
+       existe AUSSI sur la remise, si bien qu'un accusé posé seul n'était
+       lisible ni par le jeu ni par l'atelier — `attentesDeRemise` rendant `[]`
+       de la même façon, l'inspecteur ne pouvait pas même l'éditer.
+       ON N'INVENTE AUCUNE ATTENTE, et c'est le point à ne pas rater : une
+       attente sans `attend` serait trouvée non servie par `attenteCourante`
+       POUR TOUJOURS — elle deviendrait l'attente courante, la clôture ne
+       s'ouvrirait jamais, et le remède serait pire que le mal. Faute
+       d'attente, l'accusé reste où il est : visible dans le JSON, à reloger à
+       la main, comme tout ce qu'une case portait d'autre (§11). */
+    const as=attentesDeRemise(r);
+    if(as.length){ if(!as[0].apres) as[0].apres={...c.apres}; }
+    else if(!r.apres) r.apres={...c.apres};
   }
   delete j.cases; delete j.relations; delete j.dims; delete j.attention;
 

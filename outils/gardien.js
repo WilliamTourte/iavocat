@@ -19,6 +19,11 @@
  *   R7  aucun reste du schéma 2                                     §2
  *   R8  la carte ne ment pas sur les tailles                        §12
  *   R9  `attend`/`apres` ne se lisent plus sur une remise           §3, §11, §15
+ *   R10 aucune recopie d'un prédicat que `regles.js` exporte       §12, §16
+ *
+ * R7, R9 et R10 marchent sur `app/`, `tests/` ET `outils/` — les sept autres
+ * sur les deux pages. Voir TERRITOIRES, plus bas : jusqu'au 14 août tout était
+ * borné à `app/`, et c'est là que les copies avaient survécu.
  *
  * (*) R1 a servi à mesurer ce que le §13 affirmait sans l'avoir éprouvé — voir
  * le commentaire de la règle, et la décision 15 de `docs/PASSATION.md`.
@@ -41,6 +46,34 @@ const existe  = rel => fs.existsSync(path.join(RACINE, rel));
 // `wc -l` compte les sauts de ligne : un fichier qui finit par un saut n'a pas
 // une ligne vide de plus. La carte est écrite avec ces chiffres-là.
 const nbLignes = rel => { const s = lire(rel); return s.split("\n").length - (s.endsWith("\n") ? 1 : 0); };
+
+/* ============================================================
+   LES TERRITOIRES — et pourquoi il y en a trois, pas un
+   ------------------------------------------------------------
+   Jusqu'au 14 août, R7 et R9 portaient `marcher("app")` EN DUR, chacune avec sa
+   copie de la marche. Les huit autres règles ne regardaient que les deux pages.
+   `tests/` et `outils/` — 2 888 lignes — n'étaient donc tenus que par ESLint.
+
+   C'est exactement le mauvais découpage : `app/` porte le livrable, mais
+   `tests/` et `outils/` REFLÈTENT ses règles, et un reflet qui dérive ne se voit
+   nulle part — les suites éprouvent le jeu, jamais elles-mêmes (§16). Le relevé
+   d'extension a trouvé le territoire sain sur R7 et R9, et fautif sur R10 : le
+   prédicat `estRegle` y était recopié à la main quatre fois. On étend un filet
+   sur un terrain propre, ce qui est le bon moment pour le faire.
+   ============================================================ */
+const TERRITOIRES = ["app", "tests", "outils"];
+function fichiersJS(racines) {
+  const out = [];
+  const marcher = rel => {
+    for (const e of fs.readdirSync(path.join(RACINE, rel), { withFileTypes: true })) {
+      const r = rel + "/" + e.name;
+      if (e.isDirectory()) marcher(r);
+      else if (r.endsWith(".js")) out.push(r);
+    }
+  };
+  for (const r of racines) if (existe(r)) marcher(r);
+  return out;
+}
 
 /* ============================================================
    LE COMPTE-RENDU — la forme de `tests/harnais.js`, pour que la
@@ -512,15 +545,7 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
    ============================================================ */
 {
   const faux = [];
-  const fichiers = [];
-  (function marcher(rel) {
-    for (const e of fs.readdirSync(path.join(RACINE, rel), { withFileTypes: true })) {
-      const r = rel + "/" + e.name;
-      if (e.isDirectory()) marcher(r);
-      else if (r.endsWith(".js")) fichiers.push(r);
-    }
-  })("app");
-  for (const f of fichiers) {
+  for (const f of fichiersJS(TERRITOIRES)) {
     const { code } = decouperJS(lire(f));
     for (const m of code.matchAll(/\.[ab]\[/g)) {
       const ligne = code.slice(0, m.index).split("\n").length;
@@ -618,15 +643,7 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
     const avant = [...code.slice(0, i).matchAll(/function\s+([A-Za-z_$][\w$]*)/g)];
     return avant.length ? avant[avant.length - 1][1] : "";
   };
-  const fichiers = [];
-  (function marcher(rel) {
-    for (const e of fs.readdirSync(path.join(RACINE, rel), { withFileTypes: true })) {
-      const r = rel + "/" + e.name;
-      if (e.isDirectory()) marcher(r);
-      else if (r.endsWith(".js")) fichiers.push(r);
-    }
-  })("app");
-  for (const f of fichiers) {
+  for (const f of fichiersJS(TERRITOIRES)) {
     if (f === "app/content.js") continue;                   // du contenu, pas du code
     const { code } = decouperJS(lire(f));
     const permis = TOLERES[f] || [];
@@ -642,6 +659,47 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
     }
   }
   regle("R9 · plus rien ne lit « attend » ou « apres » posé sur une remise", faux);
+}
+
+/* ============================================================
+   R10 — AUCUNE RECOPIE D'UN PRÉDICAT QUE `regles.js` EXPORTE (§12)
+   ------------------------------------------------------------
+   R10 est la sœur de R2, un cran plus haut : R2 interdit à deux fichiers d'une
+   même page de se disputer un NOM, R10 interdit à n'importe quel fichier de
+   réécrire une DÉCISION que `regles.js` publie déjà.
+
+   `estRegle` — une pièce est-elle un article du manuel ? — vit hors de la
+   fabrique EXPRÈS, pour se poser sans `JEU` lié (§12) ; `app/atelier/noyau.js`
+   l'appelle depuis le 3 août. Le harnais, lui, la réécrivait à la main deux
+   fois, et `smoke_atelier.js` deux fois de plus — quatre exemplaires d'une
+   décision que le jeu prend ailleurs. Ça ne casse pas, ça ne lève pas : le jour
+   où le prédicat change, le jeu change et les quatre contrôles restent VERTS en
+   affirmant l'ancienne vérité. Aucune suite ne pouvait le voir, les suites ne
+   se lisant pas elles-mêmes ; et le gardien ne le voyait pas non plus, ses neuf
+   règles marchant sur `app/`. C'est la panne qui a ouvert la décision 19.
+
+   LE MOT EST ASSEMBLÉ, et ce n'est pas de la coquetterie : écrit en clair dans
+   le motif, ce fichier-ci se dénoncerait lui-même — la vue `sansComm` garde les
+   littéraux réguliers (c'est `code` qui les blanchit, et `code` ne peut pas
+   servir ici puisqu'il blanchit justement les chaînes qu'on cherche). Une règle
+   qui doit s'exclure de son propre champ est une règle qu'on finit par croire
+   fausse : celle-ci s'applique au dépôt entier, gardien compris.
+   ============================================================ */
+{
+  const faux = [];
+  const MAISON = "app/regles.js";                       // la seule maison (§12)
+  const MOT = "règle";
+  const MOTIF = new RegExp('includes\\(\\s*["\']' + MOT + '["\']\\s*\\)', "g");
+  for (const f of fichiersJS(TERRITOIRES)) {
+    if (f === MAISON || f === "app/content.js") continue;   // la maison, et de la prose
+    const { sansComm } = decouperJS(lire(f));
+    for (const m of sansComm.matchAll(MOTIF)) {
+      const ligne = sansComm.slice(0, m.index).split("\n").length;
+      faux.push(`${f}:${ligne} — « ${m[0]} » recopie le prédicat d'${MAISON} : `
+              + `appeler estRegle (ReglesJeu.estRegle dans une page, require dans une suite).`);
+    }
+  }
+  regle("R10 · aucun fichier ne recopie un prédicat que regles.js exporte", faux);
 }
 
 bilan();

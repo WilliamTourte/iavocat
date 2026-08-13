@@ -7,6 +7,14 @@ const fs = require("fs");
    moteur.js que le jeu et l'atelier (§12). Il en portait deux copies —
    l'aplatissement des empans et la marche des comparaisons emboîtées. */
 const { champsDe, comparaisonsDe } = require("../app/moteur.js");
+/* …et les RÈGLES viennent de regles.js, pour la même raison — qui n'avait
+   simplement jamais été appliquée ici. `estRegle` vit hors de la fabrique
+   exprès, pour se poser sans `JEU` lié (§12) ; l'atelier l'appelle depuis le
+   3 août, le harnais le réécrivait, et `smoke_atelier.js` deux fois de plus.
+   Quatre exemplaires d'une décision que le jeu prend ailleurs : le jour où
+   elle change, les contrôles restent verts en affirmant l'ancienne vérité.
+   Une suite DÉSIGNE, elle ne DÉCIDE pas (§16) — c'est R10 qui le tient. */
+const { estRegle } = require("../app/regles.js");
 
 function creerHarnais(dossier){
   const htmlJeu = fs.readFileSync(dossier + "/index.html", "utf8");
@@ -44,23 +52,26 @@ function creerHarnais(dossier){
                  absent → content.js, le contenu livré
      - graine  : {clé:valeur} semé dans localStorage AVANT les scripts
      - url     : origine (nécessaire pour localStorage ; posée d'office si graine) */
+  /* La fenêtre, en un seul endroit : les deux boots ne diffèrent que par la
+     page qu'ils ouvrent et par l'origine qu'ils exigent. Le semis de la graine
+     s'écrivait deux fois mot pour mot — et un semis qui diverge, c'est une
+     suite de sauvegarde qui éprouve autre chose que ce qu'elle croit. */
+  const ouvrir = (html,url,graine) =>
+    new JSDOM(injecter(html),{runScripts:"dangerously", ...(url?{url}:{}),
+      beforeParse(win){ if(graine) for(const [k,v] of Object.entries(graine)) win.localStorage.setItem(k,v); }
+    }).window;
+
   function boot(opts={}){
     let h=htmlJeu;
     if("contenu" in opts)
       h=h.replace('<script src="content.js"></script>',
         opts.contenu?`<script>window.CONTENU=${JSON.stringify(opts.contenu)};</script>`:"");
-    h=injecter(h);
-    const url=opts.url || (opts.graine ? "http://localhost/" : undefined);
-    return new JSDOM(h,{runScripts:"dangerously", ...(url?{url}:{}),
-      beforeParse(win){ if(opts.graine) for(const [k,v] of Object.entries(opts.graine)) win.localStorage.setItem(k,v); }
-    }).window;
+    return ouvrir(h, opts.url || (opts.graine ? "http://localhost/" : undefined), opts.graine);
   }
   function bootAtelier(opts={}){
     if(htmlAtelier===null) htmlAtelier=fs.readFileSync(dossier + "/atelier_v3.html","utf8");
-    const url=opts.url || "http://localhost/";   // l'atelier vit sur localStorage
-    return new JSDOM(injecter(htmlAtelier),{runScripts:"dangerously",url,
-      beforeParse(win){ if(opts.graine) for(const [k,v] of Object.entries(opts.graine)) win.localStorage.setItem(k,v); }
-    }).window;
+    // l'atelier vit sur localStorage : il lui faut TOUJOURS une origine.
+    return ouvrir(htmlAtelier, opts.url || "http://localhost/", opts.graine);
   }
   /* Le contenu LIVRÉ — celui de content.js, le seul qui existe. Les suites qui
      éprouvent le décâblage partent de lui et le mutent. */
@@ -84,29 +95,44 @@ function creerHarnais(dossier){
      change, les tests suivent sans retouche. */
   const J = w => w.JEU;
 
+  /* ---- LES PRÉDICATS, en un seul exemplaire -------------------
+     Deux familles de sélecteurs posent les MÊMES questions : celle qui part
+     d'une fenêtre (`lienVice`, `lienConclusion`…) et `surContenu`, qui part
+     d'un contenu brut. Les deux NOMS restent distincts — c'est l'arbitrage
+     écrit sur `surContenu`, et il tient : une fenêtre n'est pas un contenu.
+     Ce qu'on met en commun, c'est le PRÉDICAT, jamais la fonction : la
+     famille fenêtre l'emploie en `.find`, `surContenu` en `.findIndex`, et
+     « ce qui porte le vice » ne se redécide plus à deux endroits (§12). */
+  const estVice       = L => !!L.vice;
+  const estConclusion = L => !!(L.vice && L.conclusion);
+  const estViceNu     = L => !!(L.vice && !L.conclusion);
+  const estFaux       = L => !!L.faux;
+  const estNeutre     = L => !L.vice && !L.faux;
+  const aDeclenche    = p => !!p.declenche;
+  // Le terme emboîté d'un lien, s'il en porte un — la comparaison du vice y
+  // vit depuis que l'article est obligatoire (§4.5).
+  const sousTerme = L => { const t = L && (L.termes||[])[0];
+                           return (t && typeof t === "object") ? t : null; };
+
   // Liens, par leur rôle déclaré
   /* LE PRESSENTIMENT. Depuis que l'article est obligatoire, la comparaison du
      vice ne peut plus se clore seule : elle n'est plus déclarée comme lien à
      part, elle est le TERME EMBOÎTÉ de la conclusion. On la lit donc là — et
      si une affaire l'expose encore comme lien nu (écriture à l'ancienne), on
      prend celui-là. */
-  const lienVice = w => {
-    const nu = J(w).liens.find(L=>L.vice && !L.conclusion);
-    if(nu) return nu;
-    const c = lienConclusion(w), t = c && (c.termes||[])[0];
-    return (t && typeof t === "object") ? t : undefined;
-  };
-  const lienConclusion = w => J(w).liens.find(L=>L.vice && L.conclusion);
-  const lienFaux       = w => J(w).liens.find(L=>L.faux);
+  const lienVice = w =>
+    J(w).liens.find(estViceNu) || sousTerme(lienConclusion(w)) || undefined;
+  const lienConclusion = w => J(w).liens.find(estConclusion);
+  const lienFaux       = w => J(w).liens.find(estFaux);
   /* Le lien qui porte un tag d'attente. Une même attente peut être servie de
      plusieurs façons (c'est voulu : le chemin docile et le chemin honnête
      ferment la même session) — `docile` prend celui qui ne passe pas par le
      vice, ce qui définit exactement le parcours de la Fin 3. */
   const lienTag = (w,tag,{docile=true}={}) => {
     const cands=J(w).liens.filter(L=>L.tag===tag);
-    return (docile ? cands.find(L=>!L.vice) : cands.find(L=>L.vice)) || cands[0];
+    return (docile ? cands.find(L=>!estVice(L)) : cands.find(estVice)) || cands[0];
   };
-  const liensNeutres   = w => J(w).liens.filter(L=>!L.vice && !L.faux);
+  const liensNeutres   = w => J(w).liens.filter(estNeutre);
   /* Toutes les COMPARAISONS (arité 2) que le contenu déclare — emboîtées
      comprises, puisque depuis que l'article est obligatoire elles ne sont plus
      des liens de plein droit. La marche est celle de moteur.js. */
@@ -127,7 +153,24 @@ function creerHarnais(dossier){
 
   // --- composer : le geste du jeu, joué par les fonctions du moteur ---
   const idBloc = (w,id) => w.R.blocsOfferts(w.S).findIndex(b=>b.id===id);
-  const surligner = (w,k) => { const [pid,eid]=k.split("."); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
+  /* L'index, parmi les blocs offerts, du TERME QUI PREND UN EMPAN. Ce calcul
+     vit dans regles.js (`indexTermeChamp`, que `jeu.js` emploie pour rendre les
+     puces inertes) ; cinq endroits des suites le réécrivaient en `findIndex`.
+     La garde d'`indexTermeChamp` — « -1 si une phrase close attend » — ne change
+     aucun de ces cinq résultats : tous s'appellent composition ouverte, et
+     `poserBloc` remet `S.prete` à null en entrée. Une suite demande aux règles,
+     et ne les redécide pas non plus (§16).
+     À NE PAS confondre avec ses deux voisins : le second empan porte en plus
+     `deduit` (voir `poserComparaison`), et `blocChamp` cherche un ID de bloc
+     dans la grammaire, pas un rang dans ce qui est offert ici et maintenant. */
+  const iTermeChamp = w => w.R.indexTermeChamp(w.S);
+  /* Défaire une clé « pid.eid ». L'atelier a nommé ce geste `deK` le 13 août
+     (`noyau.js`, l'inverse de son `K(pid,ch)`) parce que dix endroits le
+     coupaient à la main ; le harnais en avait cinq et n'en avait pas hérité.
+     On coupe au PREMIER point, comme lui : c'est le pid qui ne peut pas en
+     contenir, pas l'eid. */
+  const deK = k => { const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; };
+  const surligner = (w,k) => { const [pid,eid]=deK(k); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
   /* Compose la phrase qui réalise un lien donné, quel qu'il soit : on
@@ -302,8 +345,12 @@ function creerHarnais(dossier){
   }
 
   // Pièces, par leur forme
-  const pidAvecDeclenche = w => Object.keys(J(w).pieces).find(pid=>J(w).pieces[pid].declenche);
-  const pidRegle = w => Object.keys(J(w).pieces).find(pid=>(J(w).pieces[pid].type||"").includes("règle"));
+  /* La famille fenêtre passe par `surContenu` là où la question est exactement
+     la même : `J(w)` EST un contenu. Le prédicat n'existe alors qu'une fois, et
+     les deux noms restent (`surContenu` est déclaré plus bas — ces flèches ne
+     s'évaluent qu'à l'appel, bien après). */
+  const pidAvecDeclenche = w => surContenu.pidDeclenche(J(w));
+  const pidRegle = w => surContenu.pidRegle(J(w));
   const pidPremiereRemise = w => (J(w).remises[0].pieces||[])[0];
   const empansDe = (w,pid) => Object.keys(J(w).pieces[pid].empans||{}).map(e=>pid+"."+e);
 
@@ -346,20 +393,18 @@ function creerHarnais(dossier){
      objet, pas une fenêtre de jeu). Objet à part pour éviter toute confusion. */
   const surContenu = {
     empans: c => champsDe(c),
-    dim: (c,k) => { const [pid,eid]=k.split("."); return ((c.pieces[pid]||{}).empans||{})[eid]?.dim; },
+    dim: (c,k) => { const [pid,eid]=deK(k); return ((c.pieces[pid]||{}).empans||{})[eid]?.dim; },
     // Le lien qui PORTE le vice : la conclusion, depuis que l'article est
     // obligatoire ; le pressentiment nu si l'affaire l'expose encore.
-    iLienVice: c => { const i=c.liens.findIndex(L=>L.vice && !L.conclusion);
-                      return i>=0 ? i : c.liens.findIndex(L=>L.vice); },
-    iLienConclusion: c => c.liens.findIndex(L=>L.vice && L.conclusion),
+    iLienVice: c => { const i=c.liens.findIndex(estViceNu);
+                      return i>=0 ? i : c.liens.findIndex(estVice); },
+    iLienConclusion: c => c.liens.findIndex(estConclusion),
     // La comparaison du vice, où qu'elle vive : lien nu, ou terme emboîté.
-    sousVice: c => { const L=c.liens.find(x=>x.vice && x.conclusion) || c.liens.find(x=>x.vice);
-                     if(!L) return null;
-                     const t=(L.termes||[])[0];
-                     return (t && typeof t==="object") ? t : L; },
-    iLienNeutre: c => c.liens.findIndex(L=>!L.vice && !L.faux),
-    pidDeclenche: c => Object.keys(c.pieces).find(p=>c.pieces[p].declenche),
-    pidRegle: c => Object.keys(c.pieces).find(p=>(c.pieces[p].type||"").includes("règle")),
+    sousVice: c => { const L=c.liens.find(estConclusion) || c.liens.find(estVice);
+                     return L ? (sousTerme(L) || L) : null; },
+    iLienNeutre: c => c.liens.findIndex(estNeutre),
+    pidDeclenche: c => Object.keys(c.pieces).find(p=>aDeclenche(c.pieces[p])),
+    pidRegle: c => Object.keys(c.pieces).find(p=>estRegle(c.pieces[p])),
     pidAutreQue: (c,pid) => Object.keys(c.pieces).find(p=>p!==pid),
     // un empan quelconque d'une pièce livrée
     unEmpan: c => surContenu.empans(c)[0],
@@ -371,12 +416,12 @@ function creerHarnais(dossier){
     }
   };
 
-  return { check, bilan, boot, bootAtelier, contenuLivre,
+  return { check, bilan, boot, bootAtelier, contenuLivre, estRegle,
            discussion, memoire, composeur, plaidoirie, plaidoirieVisible,
            lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
            cloreSurPlace, poserComparaison, livrerTout,
-           surligner, iRetenu, composerLien, phrasesBruit, cheminVers,
+           surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
            instruire, terminer, numeroFin, surContenu };

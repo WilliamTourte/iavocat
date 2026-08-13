@@ -1,11 +1,11 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d’une nouvelle conversation. État au 13 août 2026, après la session « ce que le §15
-demandait de resynchroniser ».*
+*À lire en tête d’une nouvelle conversation. État au 14 août 2026, après la session « le dernier
+territoire — les suites et les outils ».*
 
 ## 1. Où en est le jeu
 
-**Dix-huit** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
+**Vingt** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
 
 1. **Trois sessions.** R1 lire/extraire/répondre (`p_pv`, `t_voisin`, aucun article) ; R2 comparer
    (`r_temoin`, l'article 3) ; R3 l'ADN et le vice.
@@ -204,12 +204,91 @@ demandait de resynchroniser ».*
     *En écrivant R9, un défaut du gardien lui-même : les lignes qu'il annonçait étaient fausses (voir
     §2).*
 
+19. **Le dernier territoire — les suites ne recopient plus rien** *(14 août)*. La session précédente
+    concluait « le rangement est fini ». C'était vrai **de `app/`**, et vérifié : les projections sont
+    appelées partout, `muter` n'a plus un traînard, R7 et R9 ne relèvent rien. Ce ne l'était pas du
+    reste. **Les sept sessions de rangement (12 à 18) ont toutes porté sur `app/`, et les neuf règles
+    du gardien aussi** — `marcher("app")`, en dur, dans R7 comme dans R9. `tests/` et `outils/`
+    — **2 888 lignes** — n'avaient jamais été dégraissés et n'étaient tenus que par ESLint. C'est le
+    même oubli que celui de la décision 16, d'un cran : l'atelier avait été découpé sans être
+    dégraissé ; les suites, elles, n'avaient jamais été regardées **du tout**.
+
+    Même critère que les décisions 12 et 16 : aucune règle, aucun contenu, aucun invariant ne bouge,
+    et **325 contrôles — le même nombre**, tous verts. Éprouvé au-delà des suites : `npm run vue`
+    rend les **six captures reproductibles identiques à l'octet** (la septième porte le halo qui
+    pulse, §2), et le banc d'essai de la grammaire ne bouge pas d'un chiffre — 1609 / 125 / 8.
+
+    **Une RÈGLE était recopiée quatre fois à la main.** `estRegle` — *une pièce est-elle un article du
+    manuel ?* — vit dans `regles.js` **hors de la fabrique, exprès**, pour qu'on puisse la poser sans
+    `JEU` lié (§12) ; `app/atelier/noyau.js` l'appelle depuis le 3 août. Le harnais, lui, la
+    réécrivait (`pidRegle`, puis `surContenu.pidRegle`), et `smoke_atelier.js` deux fois de plus. Or
+    le harnais `require` déjà `moteur.js` **pour cette raison exacte** — il n'avait simplement jamais
+    fait le même geste pour les règles. Le jour où le prédicat change, le jeu change et quatre
+    contrôles continuent d'affirmer l'ancienne vérité, verts.
+
+    Avec elle, deux autres dédoublements du même genre : les **prédicats du vice**, écrits deux fois
+    (les sélecteurs de fenêtre en `.find`, ceux de `surContenu` en `.findIndex`) — on partage
+    désormais le prédicat, jamais la fonction, parce que les deux familles doivent rester deux noms ;
+    et **l'index du terme qui prend un empan**, écrit cinq fois en `findIndex` alors que `regles.js`
+    l'exporte sous le nom `indexTermeChamp`, que `jeu.js` emploie. Plus deux commodités : un seul
+    constructeur de fenêtre pour `boot`/`bootAtelier`, et un `deK` pour les cinq `split(".")` restés
+    à la main — l'atelier avait nommé ce geste le 13 août, le harnais ne l'avait pas.
+
+    **Et le gardien marche enfin sur le dernier territoire** : R7 et R9 étendues à `app`, `tests`,
+    `outils`, plus **R10** — *aucun fichier ne recopie un prédicat que `regles.js` exporte*. Sans
+    elle, la recopie se referait : les suites ne se lisent pas elles-mêmes, et c'est exactement le
+    genre d'écart qu'aucune des six ne peut voir. Le territoire s'est trouvé **sain sur R7 et R9** —
+    on étend un filet sur un terrain propre, ce qui est le bon moment. Les trois ont été éprouvées
+    en **cassant ce qu'elles surveillent**, une par une, comme le §2 l'exige.
+
+    **Le compte, et ce qu'il ne dit pas.** 1 573 → 1 575 lignes de code pour les suites, 465 → 478
+    pour les outils (commentaires et vides retirés) : le total **monte**, comme à la décision 16, et
+    pour les deux mêmes raisons — chaque geste nommé porte l'explication de pourquoi il existe, et
+    R10 est un filet *ajouté*, pas un pli défait. Ce qui compte est ailleurs : **vingt et une
+    écritures à la main sont devenues huit choses nommées** — quatre recopies d'`estRegle`, cinq
+    prédicats du vice dédoublés, cinq `findIndex` du terme, cinq `split(".")`, deux constructions de
+    fenêtre. Un compte de lignes ne mesure pas ça, et c'est pour ça qu'on ne l'a jamais pris pour
+    critère ici.
+
+20. **La migration émet la forme du §3, pas celle d'avant** *(14 août, décidé avec l'auteur)*.
+    Tranchée à part de la 19, comme la 17 l'avait été de la 16, et pour la même raison : **ça change
+    ce que `migrerContenu` ÉMET**, donc ce n'est pas du rangement.
+
+    L'accusé de réception d'une case migrait **sur la remise** (`r.apres`) — la forme d'avant les
+    attentes en liste. C'était le **dernier producteur** de l'ancienne écriture dans le dépôt, et le
+    prix était entièrement silencieux : `attentesDe` ne rend une paire que si `attend` existe *aussi*
+    sur la remise. Un `apres` migré seul n'était donc lisible **ni par le jeu ni par l'atelier** —
+    `attentesDeRemise` rendant `[]` de la même façon, l'inspecteur ne pouvait pas même l'éditer. Une
+    donnée qu'on migre et que plus personne ne peut atteindre est pire qu'une donnée perdue : elle se
+    voit dans le JSON, et nulle part ailleurs.
+
+    L'accusé se pose désormais sur la **première attente** de la session. **On n'en invente aucune** :
+    si la session n'en déclare pas, l'accusé reste où il est — une attente sans `attend` serait
+    toujours trouvée non servie par `attenteCourante`, deviendrait l'attente courante *pour toujours*,
+    et **bloquerait l'avancement de session**. Le remède aurait été pire que le mal, et c'est le seul
+    endroit de cette session où il fallait s'arrêter avant d'aller au bout du geste.
+
+    `contenu-io.js` **reste** dans les tolérés de R9 : c'est un convertisseur, il doit continuer à
+    *lire* l'ancienne forme. Ce qui a changé, c'est qu'il ne l'écrit plus.
+
 ## 2. Points de vigilance
 
 *Les points marqués **[Rn]** sont désormais tenus par une règle d'`outils/gardien.js` : ils restent
 écrits ici — le § reste l'arbitre, le gardien n'est qu'un bras (§16 bis) — mais on n'a plus à y
 penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
 
+- **[R10] Une suite DÉSIGNE, elle ne DÉCIDE pas** *(posé le 14 août)*. Le contrat du §16 était écrit
+  pour les lectures (`w.R.x(w.S)`, jamais `w.x()`) ; il vaut tout autant pour les **prédicats**. Une
+  suite qui réécrit `(p.type||"").includes("règle")` au lieu d'appeler `estRegle` ne casse pas, ne
+  lève pas, et reste verte le jour où la règle change — elle affirme simplement l'ancienne vérité,
+  pour toujours. Le harnais `require` `moteur.js` **et** `regles.js` : tout ce que ces deux modules
+  publient s'appelle, ne se recopie pas. R10 le tient, sous la forme vérifiable `includes("règle")`
+  hors d'`app/regles.js`.
+- **Les suites ne se lisent pas elles-mêmes, et c'est leur angle mort** *(14 août)*. Les six éprouvent
+  le jeu et l'atelier ; **rien n'éprouvait les six**. Quatre recopies d'une règle y ont vécu sans que
+  personne puisse les voir — ni les suites, qui ne s'inspectent pas, ni le gardien, dont les neuf
+  règles marchaient sur `app/` en dur. À retenir avant d'ajouter une règle au gardien : demander
+  **sur quel territoire** elle marche, la réponse n'est plus « `app/` » par défaut.
 - `test_autre_affaire.js` n'a pas bougé d'une ligne depuis le découpage en trois sessions ni depuis
   le tutoriel : c'est le contrôle qui prouve que la liste d'attentes et la clôture automatique sont
   des **généralisations**, pas des remplacements.
@@ -371,15 +450,26 @@ penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
    aucune ligne de code. Si l'écran ne guide plus assez, le repli symétrique est aussi court :
    rendre l'aide **et** le fantôme, comme avant.
 
-**Le rangement est fini.** Sept sessions y auront passé (décisions 12 à 18) ; il n'en reste rien de
-nommable. Ce qui reste ouvert côté outil tient en une ligne du §3 — `rep_hors_sujet`, qui ajoute un
-champ. **La prochaine session porte sur le SENS**, et la seule façon de la commencer est de jouer.
+**Le rangement est fini — cette fois pour de bon, et sur les quatre territoires.** Huit sessions y
+auront passé (décisions 12 à 19). La précédente le déclarait déjà fini : elle avait raison sur
+`app/`, et n'avait pas vu que `tests/` et `outils/` n'avaient jamais été regardés. Il n'en reste rien
+de nommable, et surtout **le gardien couvre désormais tout ce qui est du code** — c'est ce qui rend
+la déclaration tenable cette fois, au lieu d'être une impression. Ce qui reste ouvert côté outil
+tient en une ligne du §3 — `rep_hors_sujet`, qui ajoute un champ. **La prochaine session porte sur le
+SENS**, et la seule façon de la commencer est de jouer.
 
 *Un mot pour qui reprendra le fil du 13 août : quatre défauts ont été trouvés en relisant l'atelier à
 l'œil, aucun par une suite, et les quatre étaient du même genre — un reflet resté à l'ancienne
 mécanique. Le §15 les nomme désormais un par un. **La leçon est qu'un reflet doit APPELER ce qu'il
-reflète**, et que là où il ne le peut pas, c'est une règle du gardien qui tient l'écart. Trois des
-neuf règles existent pour ça (R7, R8, R9).*
+reflète**, et que là où il ne le peut pas, c'est une règle du gardien qui tient l'écart. Quatre des
+dix règles existent pour ça (R7, R8, R9, R10).*
+
+*Et un mot pour qui reprendra le fil du 14 : la leçon de la 19 n'est pas « il restait des copies »,
+c'est **qu'on avait cherché les copies là où on savait déjà regarder**. Sept sessions de suite ont
+dégraissé `app/` parce que c'est ce que le gardien surveillait, et le gardien surveillait `app/`
+parce que c'est là qu'on avait eu mal. La question à poser avant de déclarer une passe finie n'est
+pas « qu'est-ce qui reste ? » mais **« où n'ai-je pas regardé ? »**. Ici la réponse tenait en une
+ligne de code —* `marcher("app")` *— et valait 2 888 lignes.*
 
 **Méthode à conserver :** toute évolution part de `docs/ARCHITECTURE.md` — on réécrit le document, on
 le fait relire, puis on applique au code.
