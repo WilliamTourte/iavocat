@@ -60,9 +60,34 @@ function diagnostiquer(){
     const etats=new Set([G.depart,...G.blocs.flatMap(b=>[b.de,b.vers])]);
     for(const e of etats) if(!prod.has(e))
       add("erreur",`Impasse dans l'automate : état « ${e} »`,"Aucun chemin ne mène de cet état à une fin de phrase — le joueur y resterait coincé.",{});
-    for(const f of Object.keys(G.formes))
-      if(!G.blocs.some(b=>b.forme===f))
-        add("avert",`Forme « ${f} » sans bloc`,"Aucune liaison ne produit cette forme : elle est indicible.",{});
+    /* UNE FORME EXISTE DE DEUX FAÇONS (§15). Une liaison peut la DÉCLARER
+       (`forme:` sur un bloc) ; depuis la déduction (§4.5), un bloc `deduit` peut
+       la faire DÉDUIRE — et celle-là n'est nommée par aucun bloc, puisque le
+       joueur désigne au lieu de déclarer. Ce contrôle ne connaissait que la
+       première : il tenait les quatre formes comparatives de l'affaire livrée
+       pour indicibles alors que le jeu les prononce.
+       « Déductible » se lit ici comme `deduire` le lit (moteur.js), et SUR CE
+       DOSSIER : le prédicat, l'arité 2, et un slot qui accepte au moins une
+       dimension déclarée. Chacune des trois manque autrement, donc se dit
+       autrement — un avertissement qui ne nomme pas son remède n'en est pas un.
+       L'OMBRAGE n'est pas signalé, et c'est voulu : `deduire` rend la PREMIÈRE
+       forme qui convient, l'ordre de déclaration est signifiant (§11), et
+       l'alerter reviendrait à interdire ce qui tranche les ambiguïtés. */
+    const parDeduction=(G.blocs||[]).some(b=>b.deduit);
+    const slotOuvert=F=>{ const s=F.slots&&F.slots[0];
+      return s==="*" || (Array.isArray(s) && s.some(d=>dims.includes(d))); };
+    for(const [f,F] of Object.entries(G.formes)){
+      if(G.blocs.some(b=>b.forme===f)) continue;        // déclarée par une liaison
+      if(!F.deduction || (F.arite||2)!==2)
+        add("avert",`Forme « ${f} » sans bloc`,
+          "Aucune liaison ne la produit, et elle ne peut pas se déduire — une forme déduite porte « deduction » et une arité 2. Elle est indicible.",{});
+      else if(!parDeduction)
+        add("avert",`Forme « ${f} » déductible, mais rien ne la déduit`,
+          "Elle porte « deduction », mais aucun bloc de la grammaire ne porte « deduit » : rien ne déclencherait le calcul.",{});
+      else if(!slotOuvert(F))
+        add("avert",`Forme « ${f} » se déduirait sur une dimension absente`,
+          `Son premier slot ne nomme aucune dimension déclarée (${dims.join(", ")}) : deux empans de ce dossier ne la produiront jamais.`,{});
+    }
   }
   if(!Array.isArray(CONTENU.dimensions)||!CONTENU.dimensions.length)
     add("erreur","Clé « dimensions » absente","Le jeu refuserait ce contenu — et les couleurs d'empan n'auraient plus de rang.",{});
@@ -103,7 +128,7 @@ function diagnostiquer(){
     if((L.termes||[]).length!==(f.arite||2))
       add("erreur",`Lien ${i} : ${(L.termes||[]).length} terme(s) pour une forme d'arité ${f.arite}`,"",{edge:i});
     for(const k of feuillesLien(L)){
-      const [pid,eid]=String(k).split(".");
+      const [pid,eid]=deK(k);
       if(!empanExiste(pid,eid))
         add("erreur",`Lien ${i} pointe vers un empan inexistant (${k})`,"Empan ou pièce supprimé ?",{edge:i});
       else if(!livrees.has(pid))
@@ -161,7 +186,7 @@ function diagnostiquer(){
   }
   for(const l of viceLiens)
     for(const k of feuillesLien(l)){
-      const [pid,eid]=String(k).split(".");
+      const [pid,eid]=deK(k);
       if(estBruit(pid,eid))
         add("avert","Le vice passe par un empan marqué « bruit »",
           `${cflabel(k)} est à la fois porteur du vice et déclaré décoratif — décoche l'un des deux.`,{edge:LI.indexOf(l)});
@@ -183,7 +208,7 @@ function diagnostiquer(){
   };
   const dimsVice=new Set();
   for(const l of viceLiens) for(const k of feuillesLien(l)){
-    const [pid,eid]=String(k).split("."); const e=empanDe(pid,eid); if(e) dimsVice.add(e.dim);
+    const [pid,eid]=deK(k); const e=empanDe(pid,eid); if(e) dimsVice.add(e.dim);
   }
   for(const d of dims){
     const n=(parDim[d]||[]).length;
@@ -195,7 +220,7 @@ function diagnostiquer(){
     if(dimsVice.has(d)){
       const irreg=new Set();
       for(const l of viceLiens) for(const k of feuillesLien(l)){
-        const [pid,eid]=String(k).split("."); const e=empanDe(pid,eid);
+        const [pid,eid]=deK(k); const e=empanDe(pid,eid);
         if(e && e.dim===d) irreg.add(String(e.valeur));
       }
       const reguliers=dbl.filter(([v])=>!irreg.has(v)).length;
@@ -304,7 +329,7 @@ function diagnostiquer(){
 }
 /* « pid.eid » → « court·eid ». Accepte aussi l'ancienne paire [pid,eid]. */
 function cflabel(k){
-  const [pid,eid]=Array.isArray(k)?k:String(k).split(".");
+  const [pid,eid]=Array.isArray(k)?k:deK(k);
   const p=CONTENU.pieces[pid];
   return (p?p.court:pid)+"·"+joli(eid||"?");
 }
@@ -328,8 +353,13 @@ function renderDiag(){
   });
   $("diag").innerHTML=h;
 }
+/* Cliquer une ligne du diagnostic, c'est laisser le diagnostic prendre la main :
+   tout ce qui était sélectionné tombe, puis on désigne. Écrit à la main, ce
+   nettoyage oubliait `formPieceEdit` — l'éditeur de texte restant ouvert, et
+   `renderInsp` le rendant en priorité, cliquer une ligne ne montrait RIEN.
+   `reinitSelection` (noyau.js) ne peut plus l'oublier pour personne. */
 function pointer(ref){
-  flagged.clear(); selEdge=null; formPiece=formChamp=null; pendingDel=null;
+  reinitSelection();
   if(!ref) return render();
   if(ref.edge!=null){ selEdge=ref.edge; }
   /* Les empans à surligner d'un LOT de liens. Cette ligne dépliait encore

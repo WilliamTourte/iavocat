@@ -1,11 +1,11 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. État au 13 août 2026, après la session « un gardien pour
-les pièges déjà payés ».*
+*À lire en tête d’une nouvelle conversation. État au 13 août 2026, après la session « l’atelier ne
+recopie plus rien, pas même lui-même ».*
 
 ## 1. Où en est le jeu
 
-**Quinze** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
+**Dix-sept** décisions tiennent l'état actuel. Détail de chacune : `docs/ARCHITECTURE.md` §3, §4.5, §4.6, §4.8, §4.9 — et `docs/LEXIQUE.md` pour le vocabulaire.
 
 1. **Trois sessions.** R1 lire/extraire/répondre (`p_pv`, `t_voisin`, aucun article) ; R2 comparer
    (`r_temoin`, l'article 3) ; R3 l'ADN et le vice.
@@ -103,6 +103,61 @@ les pièges déjà payés ».*
 
     Enfin, une chose **remesurée** : le §13 se trompait à moitié sur `defer` (voir §2).
 
+16. **L'atelier ne recopie plus rien, pas même lui-même.** Les quatre sessions précédentes ont toutes
+    porté sur **le jeu et les modules partagés** — les enveloppes de `regles.js`, les projections
+    réunies dans `moteur.js`, le CSS/JS sorti des pages, les collisions de noms, le gardien. L'atelier,
+    lui, avait été **découpé en fichiers le 3 août sans être dégraissé à l'intérieur** : c'était le
+    dernier territoire où le §12 n'était pas passé, et le plus dense en copies. Même critère que la
+    décision 12 : aucune règle, aucun contenu, aucun invariant ne bouge.
+
+    **Quatre gestes nommés** (`noyau.js`, section 2 bis), qui remplacent **soixante** écritures à la
+    main : `muter` (l'épilogue `pushUndo` … `autosave(); render()`, 39 copies), `poserOuRetirer`
+    (« écrire, ou retirer la clé si c'est vide », 9 copies), `reinitSelection` (7 copies) et
+    `demanderSuppr`/`btnSuppr` (la suppression en deux clics, 5 gardes + 5 boutons). Avec deux formats
+    qui ne se déplient plus qu'en un endroit : **`deK`**, l'inverse de `K(pid,ch)` qui manquait depuis
+    toujours (10 `split(".")`), et **`reecrireTermes`**, la marche sur les termes emboîtés (3 copies).
+    Et la classe **`.glose`** pour la parenthèse grise des libellés, écrite 24 fois en `style=` en ligne.
+
+    **Ce que les copies avaient déjà fait dériver — un défaut, corrigé** : `pointer()` (le clic sur une
+    ligne du diagnostic) était la seule des sept remises à zéro à oublier **`formPieceEdit`**. Comme
+    `renderInsp` rend l'éditeur de texte en priorité, cliquer une ligne du diagnostic pendant qu'on
+    éditait une pièce **ne montrait rien** — ni le trait désigné, ni l'empan surligné. Aucune suite ne
+    couvre ce chemin. C'est exactement la panne que le §12 décrit, dans le seul territoire qu'il
+    n'avait pas visité. Conséquence assumée : `pointer()` abandonne désormais aussi la paire d'empans
+    sélectionnée — le diagnostic prend la main pour de bon.
+
+    Le compte : **1 473 → 1 455 lignes de code** (commentaires et vides retirés) pour les huit modules.
+    Le fichier total monte, lui, parce que chaque geste porte l'explication de pourquoi il existe — la
+    discipline du dépôt. Ce qui compte n'est pas le compte : c'est que soixante endroits soient devenus
+    quatre. Et le gardien a servi **le jour même** (voir §2).
+
+17. **Une forme existe de deux façons, et le diagnostic n'en connaissait qu'une** *(13 août, décidé avec
+    l'auteur)*. Trouvé en relisant l'atelier à l'œil après la décision 16, et tranché à part parce que
+    ça change ce que le diagnostic **juge** — ce n'est pas du rangement. Le contrôle « forme indicible »
+    demandait *« un bloc porte-t-il `forme: <f>` ? »*. C'était juste **avant la déduction** : le joueur
+    déclarait alors la relation en cliquant une liaison, et toute forme devait être portée par un bloc.
+    Depuis le §4.5, **le joueur désigne** — il clique le second empan (`t1`, `deduit:true`, sans
+    `forme`), et `deduire()` calcule la forme des dimensions et des valeurs. Les quatre formes
+    comparatives de l'affaire livrée étaient donc déclarées « indicibles » **à chaque ouverture de
+    l'atelier**, alors que le jeu les prononce — `ordre_grandeur` est mot pour mot la phrase qui clôt
+    le chemin docile de `npm run vue`. Même nature que le `pointer()` resté au schéma 2 (§2) : un
+    contrôle que le changement de mécanique a laissé derrière, et qu'aucune suite ne couvre — les
+    suites lisent le jeu, jamais le diagnostic.
+
+    **La version retenue est la prudente** (le §15 la décrit) : « déductible » se lit comme `deduire`
+    le lit, et **sur ce dossier** — `deduction`, arité 2, et un slot qui accepte au moins une dimension
+    déclarée, plus un bloc qui porte `deduit`. La version en une ligne (« elle porte `deduction`, donc
+    elle est dicible ») aurait cessé d'alerter sur une forme dont le slot ne nomme que des dimensions
+    absentes, réellement inatteignable. Les quatre conditions manquent chacune autrement, donc se
+    disent autrement : un avertissement qui ne nomme pas son remède n'en est pas un. **L'ombrage n'est
+    délibérément pas signalé** — `deduire` rend la première forme qui convient, l'ordre de déclaration
+    est signifiant (§11), et l'alerter reviendrait à interdire ce qui tranche les ambiguïtés.
+
+    Le dossier livré passe de **4 avert. + 17 info** à **0 avert. + 17 info**. Ce n'est pas le bruit
+    qui coûtait : c'est qu'une bande d'avertissements toujours pleine s'apprend à ne plus se lire, et
+    qu'un vrai avertissement s'y serait perdu. Elle est vide, donc elle veut de nouveau dire quelque
+    chose.
+
 ## 2. Points de vigilance
 
 *Les points marqués **[Rn]** sont désormais tenus par une règle d'`outils/gardien.js` : ils restent
@@ -146,6 +201,18 @@ penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
   pas en `ReferenceError` au milieu d'une suite. *À retenir au-delà : une menace qu'on croit courir
   est du même genre qu'une laisse qu'on croit tendue (§16) — elle fait craindre le mauvais geste.
   Éprouver coûte deux minutes.*
+- **[R4] Une classe engendrée s'écrit `${x?"arm":""}`, jamais `${x?" arm":""}`.** Le gardien relève une
+  classe portée de deux façons : dans un `class="…"`, ou dans une chaîne qui n'est **qu'un mot**. En
+  factorisant le bouton de suppression en deux clics (décision 16), la forme concaténée
+  `class="${cls}${arme?" arm":""}"` a mis l'espace *dans la chaîne* — et `.arm`, bien vivante, est
+  passée pour une famille morte. R4 l'a dit dans la minute. À retenir : le gardien ne lit pas le DOM,
+  il lit le source ; une classe qu'on lui cache est une classe qu'il croira orpheline, et la
+  prochaine main la retirera. Écrire les fragments conditionnels comme le reste du dépôt les écrit
+  (`${pris?'pris':''}`) n'est donc pas du style.
+- **`muter(f)` porte `pushUndo` AVANT et `autosave(); render()` APRÈS — un `return` dans `f` n'y coupe
+  pas.** C'est le comportement d'avant, à la ligne près : `majAttente` poussait déjà son annulation
+  avant de découvrir que l'attente n'existait pas. Si un jour une mutation doit pouvoir renoncer sans
+  laisser d'entrée d'annulation, ça ne s'obtient pas en sortant de `f` — il faudra le dire à `muter`.
 - **Le CSS est inliné parce que `getCSS()` le lit.** Les couleurs de trait du graphe
   (`app/atelier/graphe.js`) sortent de `getComputedStyle` sur `:root` — seul endroit du dépôt où du
   CSS traverse vers du JS. jsdom résout les variables d'un `<style>` en ligne et rend `""` pour un

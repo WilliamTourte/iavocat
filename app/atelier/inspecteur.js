@@ -25,16 +25,18 @@ function listeQualifications(){
         ${x.L.vice?"⚑ ":""}${x.L.faux?"✗ ":""}${escapeH(labelLien(x.L))}</div>`).join("");
 }
 
-/* — formulaires de création (remplacent les dialogues natifs, bloqués en iframe sandboxée) — */
-function formulairePiece(kind){ formPiece=kind; formPieceEdit=formChamp=null; selA=selB=null; selEdge=null; pendingDel=null; render(); }
+/* — formulaires de création (remplacent les dialogues natifs, bloqués en iframe sandboxée) —
+   Ouvrir un formulaire, c'est abandonner la sélection en cours : `reinitSelection`
+   (noyau.js) dit ce que ça veut dire, en un seul endroit. */
+function formulairePiece(kind){ reinitSelection(); formPiece=kind; render(); }
 function inspFormPiece(){
   const regle=formPiece==='regle';
   return `<label>Nouvelle ${regle?'règle':'pièce'}</label>
-    <label>Identifiant <span style="color:var(--dim)">(ex. ${regle?'r_delai':'p_temoin2'})</span></label>
+    <label>Identifiant <span class="glose">(ex. ${regle?'r_delai':'p_temoin2'})</span></label>
     <input type="text" id="npId" placeholder="${regle?'r_':'p_'}…">
     <label>Nom court (affiché)</label>
     <input type="text" id="npCourt" placeholder="ex. ${regle?'délai':'témoin 2'}">
-    <label>Signataire <span style="color:var(--dim)">(qui parle dans cette pièce)</span></label>
+    <label>Signataire <span class="glose">(qui parle dans cette pièce)</span></label>
     <input type="text" id="npQui" placeholder="ex. brigadier N.">
     <div class="relbtns">
       <button onclick="creerPiece()">Créer</button>
@@ -55,7 +57,7 @@ function creerPiece(){
 }
 /* L'éditeur de pièce : son texte porte les marqueurs {{eid}}, donc c'est ici
    que se règle la règle de surlignage (§4.3 — tout empan est marqué). */
-function formulairePieceEdit(pid){ formPieceEdit=pid; formPiece=formChamp=null; selA=selB=null; selEdge=null; pendingDel=null; render(); }
+function formulairePieceEdit(pid){ reinitSelection(); formPieceEdit=pid; render(); }
 function inspPiece(pid){
   const p=CONTENU.pieces[pid];
   const eids=Object.keys(p.empans||{});
@@ -65,30 +67,30 @@ function inspPiece(pid){
     <input type="text" value="${escapeAttr(p.titre||"")}" onchange="majPiece('${pid}','titre',this.value)">
     <label>Nom court</label>
     <input type="text" value="${escapeAttr(p.court||"")}" onchange="majPiece('${pid}','court',this.value)">
-    <label>Type <span style="color:var(--dim)">(« règle… » ⇒ va au Manuel du cas)</span></label>
+    <label>Type <span class="glose">(« règle… » ⇒ va au Manuel du cas)</span></label>
     <input type="text" value="${escapeAttr(p.type||"")}" onchange="majPiece('${pid}','type',this.value)">
-    <label>Signataire par défaut <span style="color:var(--dim)">(qui parle)</span></label>
+    <label>Signataire par défaut <span class="glose">(qui parle)</span></label>
     <input type="text" value="${escapeAttr(p.qui||"")}" onchange="majPiece('${pid}','qui',this.value)">
-    <label>Résumé <span style="color:var(--dim)">(hors jeu — mémo d'atelier)</span></label>
+    <label>Résumé <span class="glose">(hors jeu — mémo d'atelier)</span></label>
     <textarea style="min-height:34px" onchange="majPiece('${pid}','resume',this.value)">${escapeH(p.resume||"")}</textarea>
-    <label>Texte de la pièce <span style="color:var(--dim)">— place {{id}} là où chaque empan se lit</span></label>
+    <label>Texte de la pièce <span class="glose">— place {{id}} là où chaque empan se lit</span></label>
     <textarea class="mono" style="min-height:120px" onchange="majPiece('${pid}','texte',this.value)">${escapeH(txt)}</textarea>
     <div style="font-size:11.5px;color:var(--dim);margin-top:6px">empans : ${
       eids.length ? eids.map(e=>`<code style="color:${txt.includes("{{"+e+"}}")?"var(--ok)":"var(--err)"}">{{${escapeH(e)}}}</code>`).join(" ")
                   : "aucun"}</div>
     <div class="relbtns"><button onclick="formPieceEdit=null;render()">Fermer</button></div>`;
 }
-function formulaireChamp(pid){ formChamp=pid; formPiece=formPieceEdit=null; selA=selB=null; selEdge=null; pendingDel=null; render(); }
+function formulaireChamp(pid){ reinitSelection(); formChamp=pid; render(); }
 function inspFormChamp(){
   const p=CONTENU.pieces[formChamp];
   return `<label>Nouvel empan — ${escapeH(p.court)}</label>
-    <label>Identifiant <span style="color:var(--dim)">(ex. e_heure_transfert)</span></label>
+    <label>Identifiant <span class="glose">(ex. e_heure_transfert)</span></label>
     <input type="text" id="ncNom" placeholder="e_…">
-    <label>Nom <span style="color:var(--dim)">(un groupe nominal : ce qui parlera dans une phrase composée)</span></label>
+    <label>Nom <span class="glose">(un groupe nominal : ce qui parlera dans une phrase composée)</span></label>
     <input type="text" id="ncNomCourt" placeholder="ex. l'heure de remise au greffe">
-    <label>Ce qui se lit <span style="color:var(--dim)">(quelqu'un affirme quelque chose)</span></label>
+    <label>Ce qui se lit <span class="glose">(quelqu'un affirme quelque chose)</span></label>
     <input type="text" id="ncTexte" placeholder="ex. j'ai remis le scellé à 15h20">
-    <label>Valeur comparable <span style="color:var(--dim)">(sert à vérifier, jamais à déduire)</span></label>
+    <label>Valeur comparable <span class="glose">(sert à vérifier, jamais à déduire)</span></label>
     <input type="text" id="ncVal" placeholder="ex. 15:20">
     <label>Dimension</label>
     <select id="ncDim">${toutesDims().map(d=>`<option>${escapeH(d)}</option>`).join("")}</select>
@@ -115,26 +117,26 @@ function creerChamp(){
 
 function inspEmpan(s){
   const p=CONTENU.pieces[s.pid], e=empanDe(s.pid,s.champ)||{};
-  const delKey="champ:"+K(s.pid,s.champ);
   const marque=String(p.texte||"").includes("{{"+s.champ+"}}");
   return `<label>Empan — ${escapeH(p.court)}·${escapeH(joli(s.champ))}</label>
-    <label>Nom <span style="color:var(--dim)">(ce qui parle dans une phrase composée — un groupe nominal)</span></label>
+    <label>Nom <span class="glose">(ce qui parle dans une phrase composée — un groupe nominal)</span></label>
     <input type="text" value="${escapeAttr(e.nom||"")}" onchange="majEmpan('${s.pid}','${s.champ}','nom',this.value)"
            placeholder="ex. l'heure des éclats de voix">
-    <label>Ce qui se lit <span style="color:var(--dim)">(la déclaration, telle qu'elle se surligne dans la pièce)</span></label>
+    <label>Ce qui se lit <span class="glose">(la déclaration, telle qu'elle se surligne dans la pièce)</span></label>
     <textarea onchange="majEmpan('${s.pid}','${s.champ}','texte',this.value)">${escapeH(e.texte||"")}</textarea>
     <label>Valeur comparable</label>
     <input type="text" value="${escapeAttr(String(e.valeur??""))}" onchange="majEmpan('${s.pid}','${s.champ}','valeur',this.value)">
     <label>Dimension</label>
     <select onchange="majEmpan('${s.pid}','${s.champ}','dim',this.value)">
       ${toutesDims().map(d=>`<option ${d===e.dim?'selected':''}>${escapeH(d)}</option>`).join("")}</select>
-    <label>Signataire <span style="color:var(--dim)">(vide : celui de la pièce — ${escapeH(p.qui||"—")})</span></label>
+    <label>Signataire <span class="glose">(vide : celui de la pièce — ${escapeH(p.qui||"—")})</span></label>
     <input type="text" value="${escapeAttr(e.qui||"")}" onchange="majEmpan('${s.pid}','${s.champ}','qui',this.value)">
     <div style="font-size:12px;color:${marque?'var(--muted)':'var(--err)'};margin-top:6px">
       ${marque?"marqué dans le texte de la pièce ✓":"⚠ {{"+escapeH(s.champ)+"}} absent du texte — l'empan serait inatteignable"}</div>
     <button class="xsmall" style="margin-top:8px" onclick="demanderRenommageEmpan('${s.pid}','${s.champ}')">✎ renommer l'id</button>
     <label class="chk"><input type="checkbox" ${estBruit(s.pid,s.champ)?'checked':''} onchange="majBruit('${s.pid}','${s.champ}',this.checked)"> bruit intentionnel (ne pas signaler comme inerte)</label>
-    <button class="danger ${pendingDel===delKey?'arm':''}" onclick="demanderSupprChamp('${s.pid}','${s.champ}')">${pendingDel===delKey?'Confirmer la suppression (liens compris)':'Supprimer cet empan'}</button>`;
+    ${btnSuppr("champ:"+K(s.pid,s.champ),"danger",`demanderSupprChamp('${s.pid}','${s.champ}')`,
+               "Supprimer cet empan","Confirmer la suppression (liens compris)")}`;
 }
 function inspPaire(){
   const da=dimEmpan(selA.pid,selA.champ), db=dimEmpan(selB.pid,selB.champ);
@@ -149,7 +151,6 @@ function inspPaire(){
 }
 function inspLien(i){
   const L=CONTENU.liens[i];
-  const delKey="lien:"+i;
   const f=formeDe(L.forme)||{};
   const sense=lienSense(L);
   return `<label>Lien</label>
@@ -162,54 +163,48 @@ function inspLien(i){
     <label class="chk"><input type="checkbox" ${L.vice?'checked':''} onchange="majLien(${i},'vice',this.checked)"> ⚑ c'est LE vice</label>
     <label class="chk"><input type="checkbox" ${L.conclusion?'checked':''} onchange="majLien(${i},'conclusion',this.checked)"> c'est la CONCLUSION (lève vice_trouve / vice_expose)</label>
     <label class="chk"><input type="checkbox" ${L.faux?'checked':''} onchange="majLien(${i},'faux',this.checked)"> ✗ c'est le faux vice</label>
-    <label>Tag d'attente <span style="color:var(--dim)">(une remise qui « attend » ce tag se ferme quand cette phrase est versée)</span></label>
+    <label>Tag d'attente <span class="glose">(une remise qui « attend » ce tag se ferme quand cette phrase est versée)</span></label>
     <input type="text" class="mono" value="${escapeAttr(L.tag||"")}" placeholder="—" onchange="majLien(${i},'tag',this.value)">
-    <label>Réplique de l'avocat <span style="color:var(--dim)">(si versée au plan)</span></label>
+    <label>Réplique de l'avocat <span class="glose">(si versée au plan)</span></label>
     <textarea onchange="majLien(${i},'rep',this.value)">${escapeH(L.rep||"")}</textarea>
     ${formesParArite(1).length?`<label>Conclure ce lien par…</label>
       <div class="relbtns">${formesParArite(1).map(x=>`<button onclick="conclureLien(${i},'${x}')">${escapeH(texteForme(x))}</button>`).join("")}</div>`:""}
-    <button class="danger ${pendingDel===delKey?'arm':''}" onclick="demanderSupprLien(${i})">${pendingDel===delKey?'Confirmer la suppression':'Supprimer ce lien'}</button>`;
+    ${btnSuppr("lien:"+i,"danger",`demanderSupprLien(${i})`,"Supprimer ce lien","Confirmer la suppression")}`;
 }
 
 function toastInsp(m){ $("insp").insertAdjacentHTML("afterbegin",`<div class="inote">${escapeH(m)}</div>`); }
 
-/* ---- mutations ---- */
-function majEmpan(pid,eid,prop,v){
-  pushUndo();
+/* ---- mutations — l'épilogue est dans `muter` (noyau.js) ---- */
+function majEmpan(pid,eid,prop,v){ muter(()=>{
   const e=CONTENU.pieces[pid].empans[eid];
-  if((prop==="qui") && !String(v).trim()) delete e.qui; else e[prop]=v;
-  autosave(); render();
-}
-function majPiece(pid,prop,v){ pushUndo(); CONTENU.pieces[pid][prop]=v; autosave(); render(); }
-function majBruit(pid,ch,on){ pushUndo(); CONTENU._bruit=CONTENU._bruit||[]; const k=K(pid,ch);
-  CONTENU._bruit=CONTENU._bruit.filter(x=>x!==k); if(on) CONTENU._bruit.push(k); autosave(); render(); }
-function majLien(i,prop,val){
-  pushUndo();
-  const L=CONTENU.liens[i];
-  if((prop==='rep'||prop==='tag') && !String(val||"").trim()) delete L[prop];
-  else if((prop==='vice'||prop==='faux'||prop==='conclusion') && !val) delete L[prop];
-  else L[prop]=typeof val==="string"?val.trim():val;
-  autosave(); render();
-}
+  // Le signataire vide se RETIRE : l'empan retombe alors sur celui de la pièce.
+  if(prop==="qui") poserOuRetirer(e,prop,v); else e[prop]=v;
+}); }
+function majPiece(pid,prop,v){ muter(()=>{ CONTENU.pieces[pid][prop]=v; }); }
+function majBruit(pid,ch,on){ muter(()=>{
+  const k=K(pid,ch);
+  CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>x!==k);
+  if(on) CONTENU._bruit.push(k);
+}); }
+function majLien(i,prop,val){ muter(()=>{
+  // Les trois drapeaux et les deux textes se retirent quand ils sont vides —
+  // une clé vide partirait à l'export sans rien dire.
+  poserOuRetirer(CONTENU.liens[i],prop,val,{trim:true});
+}); }
 
-/* ---- suppressions en deux clics (plus de dialogue de confirmation natif) ---- */
-function demanderSupprLien(i){
-  const k="lien:"+i;
-  if(pendingDel!==k){ pendingDel=k; return render(); }
-  pendingDel=null; pushUndo();
-  CONTENU.liens.splice(i,1); selEdge=null; autosave(); render();
-}
-function demanderSupprChamp(pid,ch){
-  const k="champ:"+K(pid,ch);
-  if(pendingDel!==k){ pendingDel=k; return render(); }
-  pendingDel=null; pushUndo();
-  const p=CONTENU.pieces[pid];
+/* ---- suppressions en deux clics (plus de dialogue de confirmation natif) ----
+   La garde vit dans `demanderSuppr` (noyau.js), avec le bouton qui l'annonce. */
+function demanderSupprLien(i){ demanderSuppr("lien:"+i,()=>{
+  CONTENU.liens.splice(i,1); selEdge=null;
+}); }
+function demanderSupprChamp(pid,ch){ demanderSuppr("champ:"+K(pid,ch),()=>{
+  const p=CONTENU.pieces[pid], k=K(pid,ch);
   delete p.empans[ch];
   p.texte=String(p.texte||"").replace(new RegExp("\\\\s*\\\\{\\\\{"+ch+"\\\\}\\\\}",""),"");
-  CONTENU.liens=CONTENU.liens.filter(L=>!feuillesLien(L).includes(K(pid,ch)));
-  CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>x!==K(pid,ch));
-  selA=selB=null; autosave(); render();
-}
+  CONTENU.liens=CONTENU.liens.filter(L=>!feuillesLien(L).includes(k));
+  CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>x!==k);
+  selA=selB=null;
+}); }
 /* ---- Renommage d'identifiants ------------------------------
    Le seul geste dangereux à la main : un id de pièce est référencé
    par les liens, les remises et la mise en page (_pos). Ici, tout
@@ -236,12 +231,12 @@ function renommerPieceId(ancien,neuf){
   if(neuf===ancien) return null;
   pushUndo();
   CONTENU.pieces=renommerClef(CONTENU.pieces,ancien,neuf);
-  // les termes des liens sont des « pid.eid » — emboîtés compris
-  const reecrire=t=>Array.isArray(t) ? t.map(reecrire)
-    : (typeof t==="string" ? (t.split(".")[0]===ancien ? neuf+"."+t.split(".").slice(1).join(".") : t)
-                           : {...t, termes:reecrire(t.termes||[])});
-  for(const L of (CONTENU.liens||[])) L.termes=reecrire(L.termes||[]);
-  CONTENU._bruit=(CONTENU._bruit||[]).map(k=>k.split(".")[0]===ancien?neuf+"."+k.split(".").slice(1).join("."):k);
+  /* Les termes des liens sont des « pid.eid » — emboîtés compris. La marche
+     récursive vit dans `reecrireTermes` (noyau.js) : ici on ne dit plus que ce
+     que devient une FEUILLE, et la même phrase sert au bruit. */
+  const renommer = k => { const [pid,eid]=deK(k); return pid===ancien ? K(neuf,eid) : k; };
+  for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
+  CONTENU._bruit=(CONTENU._bruit||[]).map(renommer);
   for(const r of (CONTENU.remises||[]))
     if(Array.isArray(r.pieces)) r.pieces=r.pieces.map(p=>p===ancien?neuf:p);
   if(CONTENU._pos && CONTENU._pos[ancien]) CONTENU._pos=renommerClef(CONTENU._pos,ancien,neuf);
@@ -259,39 +254,38 @@ function renommerEmpanId(pid,ancien,neuf){
   p.empans=renommerClef(p.empans,ancien,neuf);
   p.texte=String(p.texte||"").split("{{"+ancien+"}}").join("{{"+neuf+"}}");
   const av=K(pid,ancien), ap=K(pid,neuf);
-  const reecrire=t=>Array.isArray(t) ? t.map(reecrire)
-    : (typeof t==="string" ? (t===av?ap:t) : {...t, termes:reecrire(t.termes||[])});
-  for(const L of (CONTENU.liens||[])) L.termes=reecrire(L.termes||[]);
-  CONTENU._bruit=(CONTENU._bruit||[]).map(k=>k===av?ap:k);
+  const renommer = k => k===av ? ap : k;
+  for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
+  CONTENU._bruit=(CONTENU._bruit||[]).map(renommer);
   if(selA&&selA.pid===pid&&selA.champ===ancien) selA={pid,champ:neuf};
   pendingDel=null; simReset(); autosave(); render();
   return null;
 }
-function demanderRenommagePiece(pid){
-  const neuf=prompt("Nouvel id pour « "+(CONTENU.pieces[pid].court||pid)+" » (actuel : "+pid+")\nLes liens, remises et positions suivront.",pid);
+/* Demander un id, l'appliquer, dire pourquoi si c'est refusé. Les deux
+   renommages ne diffèrent que par la question posée et par le geste. */
+function demanderRenommage(question,actuel,appliquer){
+  const neuf=prompt(question,actuel);
   if(neuf===null) return;
-  const err=renommerPieceId(pid,neuf);
+  const err=appliquer(neuf);
   if(err) alert("Renommage refusé : "+err);
+}
+function demanderRenommagePiece(pid){
+  demanderRenommage("Nouvel id pour « "+(CONTENU.pieces[pid].court||pid)+" » (actuel : "+pid+")\nLes liens, remises et positions suivront.",
+    pid, neuf=>renommerPieceId(pid,neuf));
 }
 function demanderRenommageEmpan(pid,eid){
-  const neuf=prompt("Nouvel id pour l'empan « "+eid+" » de « "+courtDe(pid)+" »\nLe marqueur {{…}} et les liens suivront.",eid);
-  if(neuf===null) return;
-  const err=renommerEmpanId(pid,eid,neuf);
-  if(err) alert("Renommage refusé : "+err);
+  demanderRenommage("Nouvel id pour l'empan « "+eid+" » de « "+courtDe(pid)+" »\nLe marqueur {{…}} et les liens suivront.",
+    eid, neuf=>renommerEmpanId(pid,eid,neuf));
 }
 
-function demanderSupprPiece(pid){
-  const k="piece:"+pid;
-  if(pendingDel!==k){ pendingDel=k; return render(); }
-  pendingDel=null; pushUndo();
+function demanderSupprPiece(pid){ demanderSuppr("piece:"+pid,()=>{
   delete CONTENU.pieces[pid];
   delete CONTENU._pos[pid];
-  CONTENU.liens=(CONTENU.liens||[]).filter(L=>!feuillesLien(L).some(k=>k.split(".")[0]===pid));
-  CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>!x.startsWith(pid+"."));
+  CONTENU.liens=(CONTENU.liens||[]).filter(L=>!feuillesLien(L).some(k=>deK(k)[0]===pid));
+  CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>deK(x)[0]!==pid);
   for(const r of CONTENU.remises||[]) r.pieces=(r.pieces||[]).filter(x=>x!==pid);
   if(selA&&selA.pid===pid) selA=null;
   if(selB&&selB.pid===pid) selB=null;
   selEdge=null;
-  autosave(); render();
-}
+}); }
 
