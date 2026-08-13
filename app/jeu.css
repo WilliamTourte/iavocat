@@ -149,8 +149,10 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .bbloc.suite{background:#25313d;border-left:3px solid var(--transmis)}
 /* Ce qu'un article régit — indicatif, jamais filtrant (§4.5) */
 .porte{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
-.manuel li{margin-bottom:9px}
-.manuel .porte{display:inline;margin:0}
+/* `.manuel li` et `.manuel .porte` vivaient ici : c'était la mise en forme de la
+   modale des Manuels, retirée avec `openManuels()` le 3 août. Plus rien ne
+   posait la classe depuis, et rien ne pouvait le dire — les suites lisent
+   `innerHTML`, jamais une feuille. C'est la première prise du gardien (R4). */
 /* --- plaidoirie --- */
 .liste{list-style:none;padding:0;margin:0}
 .liste li{font-size:13px;padding:8px 0;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}

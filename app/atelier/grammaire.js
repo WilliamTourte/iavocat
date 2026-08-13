@@ -82,7 +82,6 @@ function renderGrammaire(){
   const {CHAMPS}=GRAM._data;
   const sq=GRAM._sq[GRAM.squel];
   const termes=gramTermes(sq);
-  const forme=sq.map(b=>b.forme).filter(Boolean).pop();
 
   // le sélecteur de squelette + les trous
   let compo=`<div class="gcompose">

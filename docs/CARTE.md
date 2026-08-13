@@ -15,12 +15,12 @@
 | Fichier | ~lignes | Ce qu'il porte | Ce qu'il ne porte jamais |
 |---|---|---|---|
 | `app/content.js` | 664 | **le contenu** — une affaire, en un seul exemplaire | aucune règle |
-| `app/regles.js` | 366 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
-| `app/moteur.js` | 236 | **la grammaire** — composer, valider, rendre — **et les projections du contenu** (§14) | aucune donnée |
+| `app/regles.js` | 379 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
+| `app/moteur.js` | 245 | **la grammaire** — composer, valider, rendre — **et les projections du contenu** (§14) | aucune donnée |
 | `app/index.html` | 85 | **la structure du jeu** — trois surfaces, la clôture, la modale, le bandeau du tutoriel | aucun style, aucun script en ligne |
-| `app/jeu.css` | 238 | **la mise en forme du jeu** — les jetons, les surfaces, le tutoriel | rien que le JS relise |
-| `app/jeu.js` | 581 | **l'écran et les gestes** — rendu, sauvegarde de partie, tutoriel | ne décide rien ; n'enveloppe plus les lectures |
-| `app/atelier_v3.html` + `app/atelier/` | 156 + 257 (css) + 1808 (js) | **l'atelier** — écrire et diagnostiquer une affaire, **un fichier par outil**. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12) |
+| `app/jeu.css` | 244 | **la mise en forme du jeu** — les jetons, les surfaces, le tutoriel | rien que le JS relise |
+| `app/jeu.js` | 586 | **l'écran et les gestes** — rendu, sauvegarde de partie, tutoriel | ne décide rien ; n'enveloppe plus les lectures |
+| `app/atelier_v3.html` + `app/atelier/` | 156 + 257 (css) + 1827 (js) | **l'atelier** — écrire et diagnostiquer une affaire, **un fichier par outil**. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12) |
 
 `regles.js` et `moteur.js` sont en **mode double** — `require` (tests, banc) ou `<script src>` (jeu,
 atelier). Les deux exposent une **fabrique** : `creerRegles(JEU, M)` et `creerMoteur(GRAMMAIRE, CHAMPS, LIENS)`.
@@ -138,10 +138,27 @@ pas-à-pas**, qui appelle `RG()` — c'est-à-dire `creerRegles` du jeu — sur 
 Il n'a **que** deux écarts assumés : il joue au grain du **lien** (`simComposer`) et non du bloc, et
 il narre les gestes privés en lignes « · ». Le badge ⚙ signale une règle qui vit dans `regles.js`.
 
+## Les deux outils
+
+Ni l'un ni l'autre n'est une suite : ils ne jouent pas l'affaire, ils regardent le dépôt.
+
+| Outil | Commande | Ce qu'il éprouve, et que rien d'autre n'éprouve |
+|---|---|---|
+| `outils/gardien.js` | `npm run gardien` (dans `npm test`) | **les conventions** — R1 la forme des balises que le harnais inline, R2 les collisions de noms de haut niveau par page, R3 les variables CSS, R4 les familles CSS sans porteur, R5 les `onclick=`, R6 les ids visés et les quatre ancres du tutoriel, R7 les restes du schéma 2, R8 les tailles annoncées par ce fichier-ci |
+| `outils/vue.js` | `npm run vue` (hors `npm test`) | **le vrai chargement** — les quatre `<script src>` et la feuille, dans un vrai Chromium en `file://`, et la relecture à l'œil |
+
+Le gardien est en **mode double**, comme `moteur.js` : lancé, il contrôle et sort en 1 sur écart ;
+`require`, il ne rend que son inventaire. C'est par là qu'`eslint.config.js` obtient les noms que
+chaque page pose dans la portée globale — la liste n'est écrite nulle part, elle se calcule (§12).
+
+`eslint.config.js` est le filet **générique** : aucune des huit pannes du gardien ne s'y voit. Il
+tient l'autre bout — identifiant fautif, variable morte, clé dupliquée.
+
 ## Les pièges déjà payés
 
 **Ils sont au §2 de `docs/PASSATION.md`, et c'est là qu'il faut les lire** — ils changent à chaque
-session. Les trois qui reviennent, pour mémoire seulement : les `const` de haut niveau ne sont pas
+session, et **la moitié est désormais tenue par une règle du gardien**, qui les nomme par leur numéro.
+Les trois qui reviennent, pour mémoire seulement : les `const` de haut niveau ne sont pas
 des propriétés de `window` ; l'index `iBloc` de `poserBloc` est **positionnel dans la liste filtrée**,
 donc dépendant de la session ; le flag `cite` est porté par la **liaison**, jamais par le terme.
 

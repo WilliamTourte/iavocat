@@ -58,7 +58,7 @@ function migrerContenu(j){
 
   // -- 2. champs → empans, et les marqueurs dans le texte --
   const anciennesDims = j.dims||{};
-  for(const [pid,p] of Object.entries(j.pieces||{})){
+  for(const p of Object.values(j.pieces||{})){
     if(!p || p.empans) continue;
     const empans={};
     for(const [ch,v] of Object.entries(p.champs||{})){

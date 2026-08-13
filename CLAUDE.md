@@ -31,10 +31,16 @@ Ensuite, dans `docs/ARCHITECTURE.md` (on n'en lit que ce qu'il faut) —
 ## Les commandes
 
 ```sh
-npm test               # les six suites — 325 contrôles. La règle d'or : tout vert, ou ce n'est pas fini (§16)
+npm test               # les six suites (325 contrôles), PUIS le gardien, PUIS ESLint.
+                       # La règle d'or : tout vert, ou ce n'est pas fini (§16)
+npm run suites         # les six suites seules — le sens, sans la forme
+npm run gardien        # les conventions que les suites ne voient pas. Voir ci-dessous
+npm run lint           # ESLint, le filet générique
 npm run vue            # ouvre le jeu dans un VRAI navigateur, joue, capture. Voir ci-dessous
 npm run demo:grammaire # banc d'essai de la grammaire. Hors `npm test` : pas de code de sortie
 ```
+
+L'ordre de `npm test` n'est pas indifférent : **les suites d'abord**, le sens avant la forme.
 
 Rien d'autre à préparer : pas de build, pas de service, pas de base. En session distante, le hook
 `.claude/hooks/session-start.sh` a déjà posé `node_modules`.
@@ -50,6 +56,19 @@ passation rappelle irremplaçable. Il ne réimplémente rien — il injecte `tes
 et appelle son `instruire`, donc il joue exactement le chemin que jouent les suites.
 
 Sans navigateur trouvé, il le dit et sort en 0. Il ne sort en 1 que sur une erreur JS de la page.
+
+### `npm run gardien` — les conventions que les suites ne voient pas
+
+Les six suites éprouvent le **sens** : elles jouent l'affaire et lisent `innerHTML`. Elles ne lisent
+jamais un style calculé, jamais la forme d'une balise, jamais l'inventaire des noms globaux d'une
+page — et c'est exactement là que ce dépôt s'est fait mal, à répétition. `outils/gardien.js` rend le
+§2 de la passation **opposable** : huit règles, huit pannes déjà payées, chacune citant le § qui la
+tranche (§16 bis de `docs/ARCHITECTURE.md` les liste). Zéro dépendance, comme le livrable.
+
+**Ce n'est pas une source de vérité.** Il fait respecter, il ne décide pas : si une règle et son §
+divergent, c'est le § qui a raison. Il est en **mode double**, comme `moteur.js` — lancé il contrôle,
+`require` il ne rend que son inventaire, et c'est par là qu'`eslint.config.js` obtient ses globals
+sans qu'aucune liste soit recopiée.
 
 ## Ce qu'il ne faut pas défaire
 

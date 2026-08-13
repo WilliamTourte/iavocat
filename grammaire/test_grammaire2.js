@@ -7,8 +7,8 @@
 // « correct » et l'interface trahirait la réponse.
 const { GRAMMAIRE, CHAMPS, LIENS } = require("./grammaire2.js");
 const M = require("../app/moteur.js").creerMoteur(GRAMMAIRE, CHAMPS, LIENS);
-const G = GRAMMAIRE, C = M.C;                        // le moteur est partagé avec le jeu et l'atelier
-const { valider, lienDe, rendre } = M;
+const G = GRAMMAIRE;                                 // le moteur est partagé avec le jeu et l'atelier
+const { valider, lienDe } = M;
 const ok = s => console.log("  ✅ " + s), ko = s => console.log("  ❌ " + s);
 const estFinal = e => G.finaux.includes(e);
 

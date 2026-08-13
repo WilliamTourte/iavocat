@@ -1,5 +1,7 @@
 # La règle d'or du §16 de docs/ARCHITECTURE.md, rendue opposable :
-# « une évolution n'est finie que quand les six suites sont vertes ».
+# « une évolution n'est finie que quand les six suites sont vertes » — et,
+# depuis le 13 août, quand le gardien et ESLint le sont aussi. L'ordre compte :
+# `npm test` passe les suites d'abord. Le sens se contrôle avant la forme.
 name: tests
 
 on:
@@ -17,8 +19,10 @@ jobs:
           node-version: '22'
           cache: npm
 
-      # jsdom est la seule dépendance ; `ci` la pose à l'identique du lock.
+      # jsdom et ESLint sont les seules dépendances, et toutes deux de DEV : le
+      # livrable, lui, n'en a aucune. `ci` les pose à l'identique du lock.
       - run: npm ci
 
-      # Les six suites. Pas de build, pas de service, pas de base à monter.
+      # Les six suites, puis le gardien, puis ESLint. Pas de build, pas de
+      # service, pas de base à monter.
       - run: npm test
