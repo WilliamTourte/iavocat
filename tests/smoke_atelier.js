@@ -140,7 +140,7 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
   const LV = SC.sousVice(w.CONTENU);
   const dv = SC.dim(w.CONTENU, LV.termes[0]);
   const valVice = new Set(LV.termes.map(t => {
-    const [pid,eid] = String(t).split(".");
+    const [pid,eid] = H.deK(t);
     return (w.CONTENU.pieces[pid].empans[eid]||{}).valeur;
   }));
   let n = 0;

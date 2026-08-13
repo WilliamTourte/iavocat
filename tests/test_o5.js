@@ -42,7 +42,7 @@ console.log("\n=== Surligner : privé, gratuit, illimité ===");
   const avant = w.S.fil.length;
   H.surligner(w, tous[0]);
   check("surligner deux fois ne double pas", w.S.retenus.filter(k => k === tous[0]).length === 1);
-  const [pid, eid] = tous[0].split(".");
+  const [pid, eid] = H.deK(tous[0]);
   w.surligner(pid, eid);
   check("re-cliquer oublie", !w.S.retenus.includes(tous[0]));
   check("rien n'a été transmis dans le canal", w.S.fil.length === avant);

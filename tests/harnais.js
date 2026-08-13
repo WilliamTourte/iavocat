@@ -52,23 +52,26 @@ function creerHarnais(dossier){
                  absent → content.js, le contenu livré
      - graine  : {clé:valeur} semé dans localStorage AVANT les scripts
      - url     : origine (nécessaire pour localStorage ; posée d'office si graine) */
+  /* La fenêtre, en un seul endroit : les deux boots ne diffèrent que par la
+     page qu'ils ouvrent et par l'origine qu'ils exigent. Le semis de la graine
+     s'écrivait deux fois mot pour mot — et un semis qui diverge, c'est une
+     suite de sauvegarde qui éprouve autre chose que ce qu'elle croit. */
+  const ouvrir = (html,url,graine) =>
+    new JSDOM(injecter(html),{runScripts:"dangerously", ...(url?{url}:{}),
+      beforeParse(win){ if(graine) for(const [k,v] of Object.entries(graine)) win.localStorage.setItem(k,v); }
+    }).window;
+
   function boot(opts={}){
     let h=htmlJeu;
     if("contenu" in opts)
       h=h.replace('<script src="content.js"></script>',
         opts.contenu?`<script>window.CONTENU=${JSON.stringify(opts.contenu)};</script>`:"");
-    h=injecter(h);
-    const url=opts.url || (opts.graine ? "http://localhost/" : undefined);
-    return new JSDOM(h,{runScripts:"dangerously", ...(url?{url}:{}),
-      beforeParse(win){ if(opts.graine) for(const [k,v] of Object.entries(opts.graine)) win.localStorage.setItem(k,v); }
-    }).window;
+    return ouvrir(h, opts.url || (opts.graine ? "http://localhost/" : undefined), opts.graine);
   }
   function bootAtelier(opts={}){
     if(htmlAtelier===null) htmlAtelier=fs.readFileSync(dossier + "/atelier_v3.html","utf8");
-    const url=opts.url || "http://localhost/";   // l'atelier vit sur localStorage
-    return new JSDOM(injecter(htmlAtelier),{runScripts:"dangerously",url,
-      beforeParse(win){ if(opts.graine) for(const [k,v] of Object.entries(opts.graine)) win.localStorage.setItem(k,v); }
-    }).window;
+    // l'atelier vit sur localStorage : il lui faut TOUJOURS une origine.
+    return ouvrir(htmlAtelier, opts.url || "http://localhost/", opts.graine);
   }
   /* Le contenu LIVRÉ — celui de content.js, le seul qui existe. Les suites qui
      éprouvent le décâblage partent de lui et le mutent. */
@@ -161,7 +164,13 @@ function creerHarnais(dossier){
      `deduit` (voir `poserComparaison`), et `blocChamp` cherche un ID de bloc
      dans la grammaire, pas un rang dans ce qui est offert ici et maintenant. */
   const iTermeChamp = w => w.R.indexTermeChamp(w.S);
-  const surligner = (w,k) => { const [pid,eid]=k.split("."); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
+  /* Défaire une clé « pid.eid ». L'atelier a nommé ce geste `deK` le 13 août
+     (`noyau.js`, l'inverse de son `K(pid,ch)`) parce que dix endroits le
+     coupaient à la main ; le harnais en avait cinq et n'en avait pas hérité.
+     On coupe au PREMIER point, comme lui : c'est le pid qui ne peut pas en
+     contenir, pas l'eid. */
+  const deK = k => { const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; };
+  const surligner = (w,k) => { const [pid,eid]=deK(k); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
   /* Compose la phrase qui réalise un lien donné, quel qu'il soit : on
@@ -384,7 +393,7 @@ function creerHarnais(dossier){
      objet, pas une fenêtre de jeu). Objet à part pour éviter toute confusion. */
   const surContenu = {
     empans: c => champsDe(c),
-    dim: (c,k) => { const [pid,eid]=k.split("."); return ((c.pieces[pid]||{}).empans||{})[eid]?.dim; },
+    dim: (c,k) => { const [pid,eid]=deK(k); return ((c.pieces[pid]||{}).empans||{})[eid]?.dim; },
     // Le lien qui PORTE le vice : la conclusion, depuis que l'article est
     // obligatoire ; le pressentiment nu si l'affaire l'expose encore.
     iLienVice: c => { const i=c.liens.findIndex(estViceNu);
@@ -412,7 +421,7 @@ function creerHarnais(dossier){
            lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
            cloreSurPlace, poserComparaison, livrerTout,
-           surligner, iRetenu, iTermeChamp, composerLien, phrasesBruit, cheminVers,
+           surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
            instruire, terminer, numeroFin, surContenu };
