@@ -26,8 +26,11 @@ territoire — les suites et les outils ».*
 7. **Une voix par état.** L'écran ne nomme jamais deux fois le même geste suivant : une seule aide,
    dérivée de l'état, dans le fantôme tant que la phrase est vide et dans l'aide dès qu'elle ne l'est
    plus. Un titre par zone, le locuteur au seul changement de locuteur, la puce de mémoire sur deux
-   lignes. Trois phrases ne se coupent pas, parce qu'elles *sont* le jeu : « Rien n'en sort »,
-   « → Maître Auber », « Et donc ? ».
+   lignes. Trois phrases ne se coupent pas, parce qu'elles *sont* le jeu : « Tant que tu ne l'envoies
+   pas, personne ne la lit. », « → Envoyer », « Et donc ? ». *(Les deux premières se nommaient ici
+   « Rien n'en sort » et « → Maître Auber » — deux formulations que l'écran ne porte plus depuis
+   longtemps. Une phrase qu'on protège sans qu'elle existe protège le vide : relever sur l'écran,
+   jamais recopier.)*
 8. **On répond sous la question** *(31 juillet)*. Le composeur quitte la colonne du milieu pour
    s'ancrer **sous le fil de la Discussion**, à la place d'une zone de saisie de messagerie. Les
    passages retenus, eux, **restent dans la Mémoire** — c'est un arbitrage pris avec l'auteur, pas un
