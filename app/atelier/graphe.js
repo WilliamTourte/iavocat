@@ -182,10 +182,13 @@ function creerLien(forme){
   if(!selA||!selB) return;
   const cand={forme, termes:[K(selA.pid,selA.champ),K(selB.pid,selB.champ)]};
   if((CONTENU.liens||[]).some(L=>memeLien(L,cand))){ toastInsp("Ce lien existe déjà."); return; }
-  pushUndo();
-  CONTENU.liens.push(cand);
-  selEdge=CONTENU.liens.length-1; selA=selB=null;
-  autosave(); render();
+  // La garde renonce AVANT `muter` : elle ne doit pas laisser d'entrée
+  // d'annulation, et un `return` dans l'argument ne couperait pas l'épilogue
+  // (§2 de la passation, `muter` dans noyau.js).
+  muter(()=>{
+    CONTENU.liens.push(cand);
+    selEdge=CONTENU.liens.length-1; selA=selB=null;
+  });
 }
 /* Conclure un lien existant : la phrase close devient le terme d'une
    liaison de qualification (arité 1). C'est la chaîne du vice en deux temps. */
@@ -193,10 +196,10 @@ function conclureLien(i,forme){
   const L=CONTENU.liens[i]; if(!L) return;
   const cand={forme, termes:[{forme:L.forme, termes:clone(L.termes||[])}]};
   if((CONTENU.liens||[]).some(M=>memeLien(M,cand))){ toastInsp("Cette conclusion existe déjà."); return; }
-  pushUndo();
-  CONTENU.liens.push(cand);
-  selEdge=CONTENU.liens.length-1;
-  autosave(); render();
+  muter(()=>{
+    CONTENU.liens.push(cand);
+    selEdge=CONTENU.liens.length-1;
+  });
 }
 /* Les formes offertes, rangées par arité — c'est la grammaire qui les déclare. */
 function formesParArite(n){

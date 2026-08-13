@@ -20,7 +20,7 @@
 | `app/index.html` | 85 | **la structure du jeu** — trois surfaces, la clôture, la modale, le bandeau du tutoriel | aucun style, aucun script en ligne |
 | `app/jeu.css` | 244 | **la mise en forme du jeu** — les jetons, les surfaces, le tutoriel | rien que le JS relise |
 | `app/jeu.js` | 586 | **l'écran et les gestes** — rendu, sauvegarde de partie, tutoriel | ne décide rien ; n'enveloppe plus les lectures |
-| `app/atelier_v3.html` + `app/atelier/` | 156 + 260 (css) + 1943 (js) | **l'atelier** — écrire et diagnostiquer une affaire, **un fichier par outil**. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12), *y compris de lui-même* |
+| `app/atelier_v3.html` + `app/atelier/` | 156 + 260 (css) + 1970 (js) | **l'atelier** — écrire et diagnostiquer une affaire, **un fichier par outil**. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12), *y compris de lui-même* |
 
 `regles.js` et `moteur.js` sont en **mode double** — `require` (tests, banc) ou `<script src>` (jeu,
 atelier). Les deux exposent une **fabrique** : `creerRegles(JEU, M)` et `creerMoteur(GRAMMAIRE, CHAMPS, LIENS)`.

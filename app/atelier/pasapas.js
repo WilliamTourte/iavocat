@@ -50,7 +50,7 @@ function simTag(L){
    reçu. Le filtre de livraison est lu sur les blocs offerts par regles.js —
    c'est la règle du jeu, pas une seconde écriture de la règle. */
 function simComposable(L){
-  const f=formeDe(L.forme)||{}, R=RG();
+  const f=formeDe(L.forme)||{};
   if((f.arite||2)===1){
     const sous=(L.termes||[])[0];
     const bloc=(CONTENU.grammaire.blocs||[]).find(b=>b.forme===L.forme);
@@ -59,8 +59,13 @@ function simComposable(L){
        l'avoir en mémoire, aucun article n'est requis (§4.5). */
     if(typeof sous==="string") return SIM.retenus.includes(sous);
     if(!sous || typeof sous!=="object") return false;
+    /* Le `R && R.estRegle &&` qui traînait ici ne disait rien : `estRegle` y
+       était éprouvé comme valeur de vérité d'une FONCTION — toujours vraie dès
+       que `R` existe, et sans rapport avec la question posée. Reste d'un
+       renommage. En le retirant, `R` n'avait plus d'autre lecture dans cette
+       fonction, et c'est ESLint qui l'a dit — l'autre bout du filet (§16 bis). */
     return feuillesLien(sous).every(k=>SIM.retenus.includes(k))
-        || SIM.brouillon.some(n=>n.reduite && R && R.estRegle && memeReduite(n.reduite,sous));
+        || SIM.brouillon.some(n=>n.reduite && memeReduite(n.reduite,sous));
   }
   return feuillesLien(L).every(k=>SIM.retenus.includes(k));
 }
