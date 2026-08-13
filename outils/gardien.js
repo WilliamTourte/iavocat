@@ -30,7 +30,7 @@
  * survécu.
  *
  * (*) R1 a servi à mesurer ce que le §13 affirmait sans l'avoir éprouvé — voir
- * le commentaire de la règle, et la décision 15 de `docs/PASSATION.md`.
+ * le commentaire de la règle.
  *
  * CE N'EST PAS UNE CINQUIÈME SOURCE DE VÉRITÉ (§12). Il fait respecter, il ne
  * décide pas : le jour où une règle et son § divergent, c'est le § qui a raison
@@ -680,7 +680,7 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
    où le prédicat change, le jeu change et les quatre contrôles restent VERTS en
    affirmant l'ancienne vérité. Aucune suite ne pouvait le voir, les suites ne
    se lisant pas elles-mêmes ; et le gardien ne le voyait pas non plus, ses neuf
-   règles marchant sur `app/`. C'est la panne qui a ouvert la décision 19.
+   règles marchant sur `app/`. C'est la panne qui a ouvert R10.
 
    LE MOT EST ASSEMBLÉ, et ce n'est pas de la coquetterie : écrit en clair dans
    le motif, ce fichier-ci se dénoncerait lui-même — la vue `sansComm` garde les

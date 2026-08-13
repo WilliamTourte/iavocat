@@ -307,8 +307,8 @@ function surligner(pid,eid){
 }
 function modalPieceHTML(pid){
   const p=JEU.pieces[pid];
-  // La liste des dimensions de la pièce se calculait ici : c'était la légende
-  // retirée le 2 août (décision 10). Personne ne la lisait plus depuis.
+  // La liste des dimensions de la pièce se calculait ici : c'était la légende,
+  // retirée avec les notes d'aide de la modale. Personne ne la lisait plus.
   return `<h3>${escapeAttr(p.titre)}</h3><small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
     <p class="piecetexte">${rendreTexte(pid)}</p>
     `;
