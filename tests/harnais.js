@@ -150,6 +150,17 @@ function creerHarnais(dossier){
 
   // --- composer : le geste du jeu, joué par les fonctions du moteur ---
   const idBloc = (w,id) => w.R.blocsOfferts(w.S).findIndex(b=>b.id===id);
+  /* L'index, parmi les blocs offerts, du TERME QUI PREND UN EMPAN. Ce calcul
+     vit dans regles.js (`indexTermeChamp`, que `jeu.js` emploie pour rendre les
+     puces inertes) ; cinq endroits des suites le réécrivaient en `findIndex`.
+     La garde d'`indexTermeChamp` — « -1 si une phrase close attend » — ne change
+     aucun de ces cinq résultats : tous s'appellent composition ouverte, et
+     `poserBloc` remet `S.prete` à null en entrée. Une suite demande aux règles,
+     et ne les redécide pas non plus (§16).
+     À NE PAS confondre avec ses deux voisins : le second empan porte en plus
+     `deduit` (voir `poserComparaison`), et `blocChamp` cherche un ID de bloc
+     dans la grammaire, pas un rang dans ce qui est offert ici et maintenant. */
+  const iTermeChamp = w => w.R.indexTermeChamp(w.S);
   const surligner = (w,k) => { const [pid,eid]=k.split("."); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
@@ -401,7 +412,7 @@ function creerHarnais(dossier){
            lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
            cloreSurPlace, poserComparaison, livrerTout,
-           surligner, iRetenu, composerLien, phrasesBruit, cheminVers,
+           surligner, iRetenu, iTermeChamp, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
            instruire, terminer, numeroFin, surContenu };

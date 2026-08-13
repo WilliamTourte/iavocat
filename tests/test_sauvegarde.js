@@ -46,7 +46,7 @@ console.log("\n=== Une composition en cours survit aussi ===");
   w1.ouvrirPiece(pid);
   const k = H.empansDe(w1, pid)[0];
   H.surligner(w1, k);
-  const iT = w1.R.blocsOfferts(w1.S).findIndex(b => b.type === "terme" && b.source !== "note");
+  const iT = H.iTermeChamp(w1);
   w1.poserBloc(iT, 0);
   check("un bloc est posé", w1.S.compo.length === 1);
   const etat = w1.R.etatCompo(w1.S);
