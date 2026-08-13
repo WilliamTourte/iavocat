@@ -92,29 +92,44 @@ function creerHarnais(dossier){
      change, les tests suivent sans retouche. */
   const J = w => w.JEU;
 
+  /* ---- LES PRÉDICATS, en un seul exemplaire -------------------
+     Deux familles de sélecteurs posent les MÊMES questions : celle qui part
+     d'une fenêtre (`lienVice`, `lienConclusion`…) et `surContenu`, qui part
+     d'un contenu brut. Les deux NOMS restent distincts — c'est l'arbitrage
+     écrit sur `surContenu`, et il tient : une fenêtre n'est pas un contenu.
+     Ce qu'on met en commun, c'est le PRÉDICAT, jamais la fonction : la
+     famille fenêtre l'emploie en `.find`, `surContenu` en `.findIndex`, et
+     « ce qui porte le vice » ne se redécide plus à deux endroits (§12). */
+  const estVice       = L => !!L.vice;
+  const estConclusion = L => !!(L.vice && L.conclusion);
+  const estViceNu     = L => !!(L.vice && !L.conclusion);
+  const estFaux       = L => !!L.faux;
+  const estNeutre     = L => !L.vice && !L.faux;
+  const aDeclenche    = p => !!p.declenche;
+  // Le terme emboîté d'un lien, s'il en porte un — la comparaison du vice y
+  // vit depuis que l'article est obligatoire (§4.5).
+  const sousTerme = L => { const t = L && (L.termes||[])[0];
+                           return (t && typeof t === "object") ? t : null; };
+
   // Liens, par leur rôle déclaré
   /* LE PRESSENTIMENT. Depuis que l'article est obligatoire, la comparaison du
      vice ne peut plus se clore seule : elle n'est plus déclarée comme lien à
      part, elle est le TERME EMBOÎTÉ de la conclusion. On la lit donc là — et
      si une affaire l'expose encore comme lien nu (écriture à l'ancienne), on
      prend celui-là. */
-  const lienVice = w => {
-    const nu = J(w).liens.find(L=>L.vice && !L.conclusion);
-    if(nu) return nu;
-    const c = lienConclusion(w), t = c && (c.termes||[])[0];
-    return (t && typeof t === "object") ? t : undefined;
-  };
-  const lienConclusion = w => J(w).liens.find(L=>L.vice && L.conclusion);
-  const lienFaux       = w => J(w).liens.find(L=>L.faux);
+  const lienVice = w =>
+    J(w).liens.find(estViceNu) || sousTerme(lienConclusion(w)) || undefined;
+  const lienConclusion = w => J(w).liens.find(estConclusion);
+  const lienFaux       = w => J(w).liens.find(estFaux);
   /* Le lien qui porte un tag d'attente. Une même attente peut être servie de
      plusieurs façons (c'est voulu : le chemin docile et le chemin honnête
      ferment la même session) — `docile` prend celui qui ne passe pas par le
      vice, ce qui définit exactement le parcours de la Fin 3. */
   const lienTag = (w,tag,{docile=true}={}) => {
     const cands=J(w).liens.filter(L=>L.tag===tag);
-    return (docile ? cands.find(L=>!L.vice) : cands.find(L=>L.vice)) || cands[0];
+    return (docile ? cands.find(L=>!estVice(L)) : cands.find(estVice)) || cands[0];
   };
-  const liensNeutres   = w => J(w).liens.filter(L=>!L.vice && !L.faux);
+  const liensNeutres   = w => J(w).liens.filter(estNeutre);
   /* Toutes les COMPARAISONS (arité 2) que le contenu déclare — emboîtées
      comprises, puisque depuis que l'article est obligatoire elles ne sont plus
      des liens de plein droit. La marche est celle de moteur.js. */
@@ -310,7 +325,11 @@ function creerHarnais(dossier){
   }
 
   // Pièces, par leur forme
-  const pidAvecDeclenche = w => Object.keys(J(w).pieces).find(pid=>J(w).pieces[pid].declenche);
+  /* La famille fenêtre passe par `surContenu` là où la question est exactement
+     la même : `J(w)` EST un contenu. Le prédicat n'existe alors qu'une fois, et
+     les deux noms restent (`surContenu` est déclaré plus bas — ces flèches ne
+     s'évaluent qu'à l'appel, bien après). */
+  const pidAvecDeclenche = w => surContenu.pidDeclenche(J(w));
   const pidRegle = w => surContenu.pidRegle(J(w));
   const pidPremiereRemise = w => (J(w).remises[0].pieces||[])[0];
   const empansDe = (w,pid) => Object.keys(J(w).pieces[pid].empans||{}).map(e=>pid+"."+e);
@@ -357,16 +376,14 @@ function creerHarnais(dossier){
     dim: (c,k) => { const [pid,eid]=k.split("."); return ((c.pieces[pid]||{}).empans||{})[eid]?.dim; },
     // Le lien qui PORTE le vice : la conclusion, depuis que l'article est
     // obligatoire ; le pressentiment nu si l'affaire l'expose encore.
-    iLienVice: c => { const i=c.liens.findIndex(L=>L.vice && !L.conclusion);
-                      return i>=0 ? i : c.liens.findIndex(L=>L.vice); },
-    iLienConclusion: c => c.liens.findIndex(L=>L.vice && L.conclusion),
+    iLienVice: c => { const i=c.liens.findIndex(estViceNu);
+                      return i>=0 ? i : c.liens.findIndex(estVice); },
+    iLienConclusion: c => c.liens.findIndex(estConclusion),
     // La comparaison du vice, où qu'elle vive : lien nu, ou terme emboîté.
-    sousVice: c => { const L=c.liens.find(x=>x.vice && x.conclusion) || c.liens.find(x=>x.vice);
-                     if(!L) return null;
-                     const t=(L.termes||[])[0];
-                     return (t && typeof t==="object") ? t : L; },
-    iLienNeutre: c => c.liens.findIndex(L=>!L.vice && !L.faux),
-    pidDeclenche: c => Object.keys(c.pieces).find(p=>c.pieces[p].declenche),
+    sousVice: c => { const L=c.liens.find(estConclusion) || c.liens.find(estVice);
+                     return L ? (sousTerme(L) || L) : null; },
+    iLienNeutre: c => c.liens.findIndex(estNeutre),
+    pidDeclenche: c => Object.keys(c.pieces).find(p=>aDeclenche(c.pieces[p])),
     pidRegle: c => Object.keys(c.pieces).find(p=>estRegle(c.pieces[p])),
     pidAutreQue: (c,pid) => Object.keys(c.pieces).find(p=>p!==pid),
     // un empan quelconque d'une pièce livrée
