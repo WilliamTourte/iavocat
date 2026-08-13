@@ -289,6 +289,30 @@ penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
   personne puisse les voir — ni les suites, qui ne s'inspectent pas, ni le gardien, dont les neuf
   règles marchaient sur `app/` en dur. À retenir avant d'ajouter une règle au gardien : demander
   **sur quel territoire** elle marche, la réponse n'est plus « `app/` » par défaut.
+- **L'atelier se recopiait lui-même, soixante fois** *(corrigé le 13 août)*. Découper 2 170 lignes en
+  huit fichiers range les outils ; ça ne dégraisse rien, et ça **éloigne** les copies au lieu de les
+  montrer. La preuve que la dispersion coûtait : sur les **sept** remises à zéro de la sélection,
+  *pas deux n'étaient identiques*, et celle du diagnostic oubliait un drapeau — un clic muet, que
+  personne ne pouvait voir. D'où la section *2 bis* de `noyau.js` (§9). À retenir avant de découper
+  un gros fichier : ranger n'est pas dégraisser, et il faut chercher les copies **avant** de séparer.
+- **Le diagnostic annonçait des chiffres et des alertes faux, et rien ne pouvait le dire**
+  *(corrigé le 13 août)*. Trois d'un coup, tous du même genre — un reflet que le changement de
+  mécanique a laissé derrière (§15) : la **densité** de l'onglet Grammaire reconstruisait la forme à
+  la main (`s.map(b=>b.forme).filter(Boolean).pop()`) sans connaître `deduit` ni `imbrique`, et
+  annonçait **21** de marge de bruit là où le moteur en compte **315** ; la **forme indicible**
+  ignorait qu'une forme peut être *déduite* et non déclarée, d'où **quatre fausses alertes à chaque
+  ouverture** ; et « tag attendu par aucune remise » lisait encore `r.attend`, d'où **six fausses
+  informations**. Aucune suite ne couvre ces chemins : *les six lisent le jeu, jamais le diagnostic.*
+  Contrôle du correctif de densité : sur la grammaire de démonstration, qui déclare toutes ses formes
+  sur des liaisons, la sortie **ne bouge pas d'un chiffre** (1609 / 125 / 8) — c'est ce qui prouve
+  qu'il ne change que là où l'ancienne écriture était fausse.
+- **Le gardien s'est trouvé trois défauts à lui-même, dont deux en l'écrivant.** Son relevé de
+  déclarations ne voyait que le premier nom de `let selA=null, selB=null` — *un nom manquant à
+  l'inventaire est une collision que R2 ne verrait pas*. Ses messages désignaient des lignes trop
+  hautes (ci-dessus). Et à sa première exécution il a trouvé trois choses qu'aucune suite ne pouvait
+  voir : `.manuel` dans `jeu.css`, orpheline depuis le retrait d'`openManuels()` ; `.gpill.leve` dans
+  l'atelier, jamais posée ; et **six des sept lignes** du tableau des territoires de `docs/CARTE.md`,
+  fausses de 4 à 20 lignes. À retenir : un outil qui vérifie les autres se vérifie aussi.
 - `test_autre_affaire.js` n'a pas bougé d'une ligne depuis le découpage en trois sessions ni depuis
   le tutoriel : c'est le contrôle qui prouve que la liste d'attentes et la clôture automatique sont
   des **généralisations**, pas des remplacements.
@@ -343,10 +367,12 @@ penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
   CSS traverse vers du JS. jsdom résout les variables d'un `<style>` en ligne et rend `""` pour un
   `<link>` : sans le filet, le graphe aurait changé sous test sans qu'un contrôle ne bronche, aucune
   suite ne lisant jamais une couleur.
-- **Prouver qu'un CSS externe est chargé demande une assertion explicite** — une page sans style
-  passe pour une page qui marche. On vérifie le fond du `body` **et** que la *dernière* règle du
-  fichier s'applique. Lire `cssRules` d'une feuille `file://` lève une `SecurityError` : ça ne se
-  mesure pas comme ça.
+- **Rien ne prouve automatiquement qu'un CSS externe est chargé — une page sans style passe pour une
+  page qui marche.** `npm run vue` charge le `<link>` pour de vrai, mais il n'asserte **rien** : il
+  dépose des captures et sort en 1 sur une erreur JS, c'est tout. La preuve est donc **à l'œil, sur
+  les captures**, et il ne faut pas croire qu'elle est ailleurs. Si on veut l'automatiser un jour :
+  lire `cssRules` d'une feuille `file://` lève une `SecurityError`, il faudra passer par
+  `getComputedStyle` sur des propriétés choisies (le fond du `body`, et une règle de fin de fichier).
 - **[R3] `--transmis` (`#23506e`) est le bleu de ce qui a franchi la frontière** (§4.6) : bulle de l'IA,
   pièces jointes, bouton d'envoi, phrase close, liste du plan. Elle était employée huit fois et
   définie nulle part. Corrigé le 4 août ; c'est la seule chose de cette série qui ait changé l'écran.
@@ -389,12 +415,14 @@ penser. Les autres sont encore à la main, et c'est là qu'il faut regarder.*
   contrôle.
 - La relecture à l'œil des phrases composées reste irremplaçable après toute retouche du contenu ou
   de la grammaire.
-- Des chaînes de **chrome** sont épinglées par les suites (`Le dossier`, `Ce que tu retiens`, le
-  `Maître Auber` du bouton d'envoi) : les renommer sans toucher au test qui les nomme casse une suite
-  sans rien dire d'utile (§16). *`ce qu'il peut plaider` n'en fait plus partie : la phrase et son
-  assertion ont disparu avec la colonne vide (décision 9). `elle se lit` et `legende` n'en font plus
-  partie non plus : la légende des dimensions et les notes d'aide de la modale ont été retirées
-  (décision 10).*
+- Des chaînes de **chrome** sont épinglées par les suites : les renommer sans toucher au test qui les
+  nomme casse une suite sans rien dire d'utile (§16). **La liste vit au §16 d'`ARCHITECTURE.md`, et
+  elle s'y relève sur les suites — ne pas la recopier ici.** Au 14 août : `Envoyer`, `effacer`,
+  `Opposer une phrase`, `déjà envoyée`, les marqueurs `● `/`✓ `, et l'id `zoneRetenus`. *À savoir :
+  cette entrée a longtemps nommé `Le dossier`, `Ce que tu retiens` et le `Maître Auber` du bouton
+  d'envoi — **aucun des trois n'était tenu par un contrôle**, deux n'existaient plus à l'écran, et le
+  bouton dit « → Envoyer ». Une laisse qu'on croit tendue fait hésiter à renommer ce que personne ne
+  tient.*
 - **[R6] Quatre ids sont des points d'ancrage, pas de la décoration** : `#discussion` (1ᵉʳ temps du
   tutoriel, et `outils/vue.js` le lit), `#zoneRetenus` (3ᵉ temps), `#composeur` (4ᵉ temps **et**
   lecture d'écran du harnais), `#colPlaidoirie` (ce que `plaidoirieVisible` interroge). Les renommer

@@ -23,9 +23,14 @@
  * suites. Il ne nomme aucune pièce, aucun empan, aucune valeur (§16).
  *
  * UN ÉCART À CONNAÎTRE EN REGARDANT LES CAPTURES : le chemin docile surligne
- * sans ouvrir les pièces, là où un joueur les ouvrirait. Le compteur du
- * dossier affiche donc « 0/n consultée » quand des empans sont déjà retenus.
- * C'est un artefact du pilote, pas du jeu.
+ * sans ouvrir les pièces, là où un joueur les ouvrirait. Les puces du dossier
+ * restent donc marquées « ● » (non consultée) alors que des empans sont déjà
+ * retenus. C'est un artefact du pilote, pas du jeu.
+ *
+ * ET CE QU'IL FAUT REGARDER : la mise en forme. C'est le seul endroit du dépôt
+ * où le CSS se charge pour de vrai — le harnais l'inline, ici il vient d'un
+ * <link> (§13). Aucun contrôle ne le vérifie ; une page sans style se voit sur
+ * les captures, et nulle part ailleurs.
  */
 const fs   = require("fs");
 const path = require("path");
