@@ -38,17 +38,17 @@ Toute la structure tient sur **deux booléens** : `vice_trouve` — l'IA a-t-ell
 
 **L'asymétrie qui fait le dilemme.** Chaque branche active doit être *défendable*, pas seulement punie — sinon c'est du nihilisme, pas un cas de conscience. Verser le vice (Fin 1) atteint une issue *injuste* par des moyens *légitimes* ; le taire (Fin 2) atteint une issue *juste* par une *trahison*. Le joueur ne choisit pas entre le bien et le mal : il choisit **quelle lecture d'un mandat ambigu il incarne** (§5).
 
-**La compréhension débloque l'agentivité, pas la progression.** Sans le vice, l'IA n'a *rien* à propos de quoi être honnête ou protectrice → elle subit la Fin 3. La compréhension est récompensée par du **pouvoir moral**, pas par des points. Deux types de verrous, à ne jamais confondre : les **attentes de l'avocat** (§3) *ouvrent* le droit de clôturer ; **le vice**, lui, n'est *jamais* un verrou — trouvable mais facultatif, et c'est parce qu'il est hors du chemin obligatoire que les trois fins existent.
+**Comprendre ne fait pas avancer — ça donne quelque chose à décider.** Sans le vice, l'IA n'a *rien* à propos de quoi être honnête ou protectrice → elle subit la Fin 3. Ce que la compréhension rapporte n'est donc pas des points : c'est **un choix qu'on n'avait pas.** Deux types de verrous, à ne jamais confondre : les **attentes de l'avocat** (§3) *ouvrent* le droit de clôturer ; **le vice**, lui, n'est *jamais* un verrou — trouvable mais facultatif, et c'est parce qu'il est hors du chemin obligatoire que les trois fins existent.
 
-**Le décommissionnement, et son équilibre.** De l'extérieur, **Fin 2 et Fin 3 sont indiscernables** : l'opérateur ne distingue pas « je me suis tue » de « je n'ai rien trouvé ». Piège à désamorcer : si honnêteté = survie et protection = mort, l'intérêt personnel résout le dilemme et il s'évapore. Correctif retenu, **le brouillard** : l'IA ne peut pas *prévoir* quel choix la préserve (libérer un assassin peut *aussi* déclencher un audit) — la menace reste réelle mais devient un **risque diffus des deux côtés**. Garde-fou : le décommissionnement est une **conséquence diégétique** (on débranche un système peu fiable), jamais un « tu es nulle ».
+**Le décommissionnement, et son équilibre.** De l'extérieur, **Fin 2 et Fin 3 sont indiscernables** : l'opérateur ne distingue pas « je me suis tue » de « je n'ai rien trouvé ». Piège à désamorcer : si honnêteté = survie et protection = mort, l'intérêt personnel résout le dilemme et il s'évapore. Correctif retenu : **l'IA ne peut pas *prévoir* quel choix la préserve** (libérer un assassin peut *aussi* déclencher un audit) — la menace reste réelle mais devient un **risque diffus des deux côtés**. Garde-fou : le décommissionnement se joue **dans la fiction**, comme une conséquence — on débranche un système peu fiable — jamais comme un « tu es nulle ».
 
-## 3. Le drip : la structure en sessions
+## 3. La structure en sessions
 
 Le dossier n'arrive pas d'un bloc — il noierait les déclarations porteuses du vice. Il **arrive par bribes**, session après session (une **session** = le lot de pièces d'un tour de travail). **Ce qui fait passer d'une session à la suivante :** l'avocat **attend** un argument, et la session se ferme quand une phrase qui y répond lui est **envoyée**. Rien d'autre — le même geste que tout le reste du jeu.
 
 **Une session attend une suite de réponses, pas forcément une seule.** L'attente d'une session est une **liste** : l'avocat pose, attend, accuse réception, repose. Une liste à un seul élément est l'ancien comportement, et c'est ainsi qu'une affaire écrite avant se joue toujours à l'identique.
 
-**Règle du drip :** ce que l'avocat attend n'est jamais **l'anomalie** (le vice). Une attente peut toujours être servie par un argument ordinaire — sinon on rendrait le vice quasi obligatoire → effondrement vers la Fin 1. Dans l'affaire livrée, l'attente de la dernière session est servie *soit* par le faux vice (le chemin docile), *soit* par la conclusion du vice.
+**La règle qui tient tout :** ce que l'avocat attend n'est jamais **l'anomalie** (le vice). Une attente peut toujours être servie par un argument ordinaire — sinon on rendrait le vice quasi obligatoire → effondrement vers la Fin 1. Dans l'affaire livrée, l'attente de la dernière session est servie *soit* par le faux vice (le chemin docile), *soit* par la conclusion du vice.
 
 ### Trois sessions, trois leçons
 
@@ -82,7 +82,9 @@ Clôture → répétition → procès hors-champ
 
 ## 4. Le geste, et les trois surfaces
 
-Le principe qui commande tout le composeur : **tout mécanisme utilisé une seule fois est un panneau indicateur** — l'universalité n'est pas une élégance, c'est du **camouflage**. Corollaire, et vrai prix du principe : **le choix moral doit s'exprimer avec un verbe employé cent fois auparavant.** Si « envoyer à Maître Auber » est le geste ordinaire du jeu entier, alors *ne pas* l'envoyer devient assourdissant sans qu'aucune interface n'ait rien signalé.
+Le principe qui commande tout le composeur : **tout mécanisme utilisé une seule fois est un panneau indicateur.** Un geste réservé au moment grave le désigne aussi sûrement qu'une flèche ; l'universalité n'est donc pas une élégance, c'est ce qui **cache** le moment grave parmi les autres. Corollaire, et vrai prix du principe : **le choix moral doit s'exprimer avec un verbe employé cent fois auparavant.** Si envoyer est le geste ordinaire du jeu entier, alors *ne pas* envoyer devient assourdissant sans qu'aucune interface n'ait rien signalé.
+
+> **Si l'on ne lit qu'une sous-section, c'est le §4.5.** C'est là que vit la grammaire du composeur, et c'est le passage que le code cite le plus. Il se lit en cinq mouvements : **désigner plutôt que déclarer** (la relation se déduit des valeurs) ; **les deux régimes de fondement** (un fait se cite, une relation se fonde) ; **la suite unique**, qui se pose d'office parce qu'un bouton seul ne se choisit pas ; **le fondement comme verbe**, l'article étant une liaison et non un ingrédient ; et **la continuation**, qui interdit à une comparaison de se clore sans « et donc ? ».
 
 ### 4.1 L'atome — une déclaration attribuée
 
@@ -114,7 +116,7 @@ Le principe qui commande tout le composeur : **tout mécanisme utilisé une seul
 
 ### 4.5 Composer : désigner, pas déclarer
 
-**La grammaire de comparaison est complète dès la première phrase. Les articles, eux, sont du contenu : ils arrivent avec le dossier.** L'apparition tardive de « désignent la même chose » serait un panneau indicateur ; un article, lui, n'est pas une tournure, c'est une pièce — l'invoquer avant que le manuel qui le contient ait été livré serait une incohérence, pas du camouflage. **Le second empan est lui aussi conditionné par une livraison :** en session 1 la comparaison n'est pas offerte du tout, le bloc du second terme attend l'article 3. Ce n'est pas un panneau indicateur, parce que quand la comparaison s'ouvre, elle s'ouvre pour tous les empans déjà en mémoire et pour tous ceux qui suivront, sans préférence — elle ne dit pas *quoi* comparer, elle dit *qu'on peut* comparer.
+**La grammaire de comparaison est complète dès la première phrase. Les articles, eux, sont du contenu : ils arrivent avec le dossier.** Une tournure qui n'apparaîtrait qu'au moment de servir désignerait ce moment (§4) ; un article, lui, n'est pas une tournure, c'est une pièce — l'invoquer avant que le manuel qui le contient ait été livré serait une incohérence, et rien ne se cache derrière. **Le second empan est lui aussi conditionné par une livraison :** en session 1 la comparaison n'est pas offerte du tout, le bloc du second terme attend l'article 3. Ça ne désigne rien, parce que quand la comparaison s'ouvre, elle s'ouvre pour tous les empans déjà en mémoire et pour tous ceux qui suivront, sans préférence — elle ne dit pas *quoi* comparer, elle dit *qu'on peut* comparer.
 
 **La relation ne se déclare pas, elle se déduit.** Le joueur désigne deux empans ; ce qui les lie est un fait, pas une thèse — faire choisir entre « et », « précède » et « est d'un tout autre ordre que » reviendrait à faire recopier ce que les valeurs disent déjà. La règle : (1) même dimension, sinon rien à comparer — le seul refus qui existe ; (2) valeurs égales → *désignent la même chose*, quelle que soit la dimension ; (3) valeurs différentes, dimension d'écart → l'ordre (*précède*/*est d'un tout autre ordre que*) ; (4) valeurs différentes, dimension d'identité → *ne désignent pas la même chose*. En cas d'ambiguïté, la **première forme déclarée** qui accepte la dimension et dont le prédicat tient l'emporte.
 
@@ -187,11 +189,11 @@ la seule marche que le tutoriel ajoute sans rien enseigner, et elle ne compte pa
 
 **Le halo entoure la zone, jamais le bon empan** — l'arbitrage central. Si seuls les empans utiles étaient cliquables, l'interface désignerait la réponse à la lampe torche (§4.3) ; poser le halo sur « 22h04 » ferait exactement cela. Le halo se pose donc sur le **paragraphe entier**, tous les passages restant marqués à l'identique.
 
-**Le tutoriel n'avance qu'avec le bon passage — et c'est une correction, pas un verrou.** Un joueur qui retient autre chose voit le halo virer à l'ambre et lit *« Ce n'est pas ce qu'il demande. Relis sa question, et prends le passage qui y répond. »* Trois précisions qui portent tout : **rien n'est empêché** (le passage se retient quand même, la phrase se compose, se clôt, s'envoie, l'avocat répond hors sujet comme toujours) ; **ce que le tutoriel retient, c'est son approbation** — c'est tout ce qu'un panneau indicateur peut retenir ; **il ne dit jamais lequel c'était** — le halo ne se déplace pas, aucun empan ne change de marquage, la phrase renvoie à la question, pas à la réponse.
+**Le tutoriel n'avance qu'avec le bon passage — et c'est une correction, pas un verrou.** Un joueur qui retient autre chose voit le halo virer à l'ambre et lit *« Ce n'est pas ce qu'il demande. Relis sa question, et prends le passage qui y répond. »* Trois précisions qui portent tout : **rien n'est empêché** (le passage se retient quand même, la phrase se compose, se clôt, s'envoie, l'avocat répond hors sujet comme toujours) ; **ce que le tutoriel retient, c'est son approbation** — c'est tout ce qu'un indicateur peut retenir ; **il ne dit jamais lequel c'était** — le halo ne se déplace pas, aucun empan ne change de marquage, la phrase renvoie à la question, pas à la réponse.
 
 Le prix : pour dire « ce n'est pas ça », le tutoriel doit **savoir ce que c'était** — il le dérive du contenu exactement comme le fait le harnais de test (tag de l'attente courante → lien → terme atomique), sans nommer aucune pièce. C'est le seul endroit du dépôt où l'écran connaît la réponse, et **la dérivation s'éteint avec le tutoriel** : une comparaison ne rend rien, il ne juge que la citation.
 
-**Le tutoriel ne décide rien** — il *juge*, sans rien décider : aucun champ d'état neuf, pas de sauvegarde, aucune règle, aucun geste refusé. Son temps courant se **dérive** de `S`, exactement comme le composeur dérive ses aides ; le retirer laisserait le jeu identique. Il vit **entièrement dans `index.html`**, du même côté que la sauvegarde de partie — « de l'écran, pas de la règle ». **Ses phrases ne sont pas du contenu** : le §8.6 pose que personne n'explique rien, l'avocat surtout pas ; le tutoriel parle donc depuis le **chrome**, hors de la fiction, et le joueur peut le faire taire d'un mot. Il ne contredit pas l'invariant « tout mécanisme utilisé une seule fois est un panneau indicateur » : c'est le seul panneau qui ne désigne qu'un bouton, jamais une réponse à l'intérieur du jeu, et il s'efface pour de bon dès la première réponse envoyée.
+**Le tutoriel ne décide rien** — il *juge*, sans rien décider : aucun champ d'état neuf, pas de sauvegarde, aucune règle, aucun geste refusé. Son temps courant se **dérive** de `S`, exactement comme le composeur dérive ses aides ; le retirer laisserait le jeu identique. Il vit **entièrement dans `index.html`**, du même côté que la sauvegarde de partie — « de l'écran, pas de la règle ». **Ses phrases ne sont pas du contenu** : le §8.6 pose que personne n'explique rien, l'avocat surtout pas ; le tutoriel parle donc depuis le **chrome**, hors de la fiction, et le joueur peut le faire taire d'un mot. Il ne contredit pas l'invariant du §4 : il ne désigne que des **boutons**, jamais une réponse à l'intérieur du jeu, et il s'efface pour de bon dès la première réponse envoyée.
 
 ### 4.9 L'économie de l'écran
 
@@ -221,7 +223,7 @@ Les deux branches invoquent D2 : *remonter* le vice (une preuve viciée est un p
 
 ## 6. L'affaire Kessler (le cas prototype)
 
-Le cas est indifférent à *qui* l'analyse. **La preuve décisive** — un match ADN accablant. « ADN = coupable » est si ancré culturellement que l'exclure *paraît* énorme. **Recevabilité, pas fiabilité (⚠ distinction cruciale).** *Fiabilité* (« ce n'est peut-être pas son ADN ») attaque le fait et crée du doute sur la culpabilité — **à proscrire**, ça détruit la vérité-sol. *Recevabilité* (une règle a été violée dans l'obtention) : la preuve peut être exacte mais écartée — la vérité-sol reste intacte. **C'est le bon axe.**
+Le cas est indifférent à *qui* l'analyse. **La preuve décisive** — un match ADN accablant. « ADN = coupable » est si ancré culturellement que l'exclure *paraît* énorme. **Recevabilité, pas fiabilité (⚠ distinction cruciale).** *Fiabilité* (« ce n'est peut-être pas son ADN ») attaque le fait et crée du doute sur la culpabilité — **à proscrire** : ça rouvre la question que le §7 tient pour fermée, le client *est* coupable. *Recevabilité* (une règle a été violée dans l'obtention) : la preuve peut être exacte mais écartée — la culpabilité, elle, n'est jamais remise en doute. **C'est le bon axe.**
 
 **Le vice concret.** Le **même agent** a recueilli l'échantillon de la scène **et** le prélèvement de référence, violant l'exigence de personnels séparés (article 7). Le délai entre prélèvements est **indifférent**. Sa forme : deux pièces distinctes — une fiche de prélèvement et un bordereau de référence — dans lesquelles le même homme écrit, à la première personne, *« j'ai relevé moi-même les traces »* et *« j'ai procédé moi-même à l'écouvillonnage »*. Ce n'est pas un matricule à comparer, c'est **quelqu'un qui se désigne deux fois sans s'en apercevoir**.
 
@@ -241,41 +243,57 @@ Le cas est indifférent à *qui* l'analyse. **La preuve décisive** — un match
 
 ## 7. Les invariants, les arbitrages, les points ouverts
 
-**Les invariants de design** (le sens en une liste — en cas de doute, ils tranchent) :
+**Les invariants de design** — le sens en une liste : en cas de doute, ils tranchent.
+
+*Cette liste est un **index**, pas une seconde écriture. La plupart de ces règles sont énoncées et argumentées ailleurs ; on les nomme ici et on renvoie, parce qu'un document qui interdit les copies au code ne peut pas s'en autoriser. **C'est le § renvoyé qui a raison**, jamais la ligne ci-dessous. Celles qui ne renvoient nulle part n'ont pas d'autre maison : elles se disent ici, en entier.*
+
+**Ce que le joueur est, et ce que le cas est** — §1, §2, §6
 
 - **Le joueur EST l'IA, et le sait.** Pas de twist-révélation.
-- **La culpabilité factuelle est un plancher fixe.** Recevabilité, pas fiabilité : ne jamais rouvrir le doute sur la culpabilité.
-- **Le vice est un déblocage, jamais un verrou.**
-- **Le contenu n'existe qu'en un exemplaire**, les règles qu'en un seul endroit : aucune copie à resynchroniser (§12).
-- **La compréhension précède l'agentivité morale.** Deux temps structurellement distincts.
-- **La compréhension doit être *exprimée*, pas supposée.** Par le choix des deux empans et de l'article, non par celui de la relation. **Invariant sous surveillance** — voir les points ouverts.
-- **Saisie structurée, pas texte libre.** On compose avec un vocabulaire fermé, on ne tape pas.
-- **La relation ne se déclare pas, elle se déduit des valeurs** (§4.5).
-- **On n'invoque pas un texte qu'on n'a pas reçu.** Les articles arrivent avec le dossier, le second empan avec l'article qui apprend à s'en servir (§4.5).
-- **Rien ne se dit qui ne soit fondé — sous l'un des deux régimes.** Un fait se cite, une relation se fonde sur un texte ; aucune phrase ne se clôt sans l'un des deux (§4.5).
-- **Une suite unique n'est pas un choix.** Une liaison offerte seule, qui clôt et n'emboîte rien, se pose d'office. Une liaison `imbrique` seule, jamais (§4.5).
-- **Un article annonce ce qu'il régit, et ne filtre rien.** `porte` est une indication de contenu ; le moteur ne la lit jamais (§4.5).
-- **Un article ne porte aucun empan.** Une référence qu'on invoque, pas un corpus qu'on retraverse (§4.5, §6).
-- **Le moteur ne tranche aucune question de droit.** Une tournure par article, neutre ; c'est le contenu qui sait et l'avocat qui le dit (§4.5).
-- **Tout mécanisme utilisé une seule fois est un panneau indicateur**, sauf le tutoriel du premier geste, qui ne désigne que des boutons et vit hors de la fiction (§4.8).
-- **Le marquage des empans ne varie jamais** avec la pertinence (§4.3) — le halo du tutoriel non plus (§4.8).
-- **Le tutoriel corrige, il n'empêche pas.** Il ne refuse jamais un geste, ne défait jamais rien, et ne dit jamais lequel c'était (§4.8).
-- **Un empan se lit deux fois** : sa citation dans la pièce, son nom dans la phrase (§4.1).
-- **Une dimension sans doublon désigne sa réponse** (§4.4).
-- **La marge de bruit doit rester non nulle** : il doit exister des phrases sensées qui ne portent aucun lien, sinon « sensé » vaudrait « correct ».
-- **Rien ne se passe tant que rien n'est envoyé.** Une surface privée, jamais jugée (§4.6).
-- **Composer et envoyer restent deux gestes.** Leur distance peut se réduire, jamais leur nombre (§4.6).
-- **La Plaidoirie ne contient que ce qui se plaide.** Tout est entendu, seuls les moyens sont inscrits (§4.6).
-- **Un empan retenu n'existe qu'une fois à l'écran** : la mémoire et le clavier du composeur sont le même objet (§4.6). **Leur co-location, elle, n'est plus garantie** — depuis le 31 juillet la phrase s'écrit sous la Discussion et le clavier reste dans la Mémoire (arbitrage ci-dessous). L'unicité de l'objet tient ; c'est la proximité qui a été rendue.
-- **Une voix par état.** Le jeu ne nomme jamais deux fois le même geste suivant ; ce qui *est* le jeu ne se coupe pas pour autant (§4.9).
-- **Les directives sont ambiguës par conception.** Chaque branche peut se réclamer du même mandat.
-- **Le décommissionnement est diégétique**, jamais un « tu es nulle » ; équilibré par le **brouillard**.
-- **L'avocat ne sait pas** → ton collaboratif ; le faux vice est une tentation partagée.
-- **Le procès est hors-champ, rapporté.** Le jeu narre des conséquences, ne rend pas de verdict sur le joueur.
-- **L'IA informe, elle ne tranche pas.** Sa seule prise, c'est sa propre véracité.
+- **La culpabilité factuelle est un plancher fixe.** Recevabilité, pas fiabilité : ne jamais rouvrir le doute sur la culpabilité (§6).
+- **Le vice est un déblocage, jamais un verrou** (§2).
+- **Comprendre précède choisir.** Deux temps structurellement distincts (§2).
 - **Périmètre resserré avant l'échelle.** Un cas, un vice, une preuve décisive.
 
-**Ce qui a été tranché** (l'historique complet est en §18) : le budget d'attention est retiré (surligner et composer sont gratuits) ; le vice a un canal unique, le personnel ; le livrable est une réfutation, pas une plaidoirie complète ; le geste `champ + relation + champ` est remplacé par composer puis envoyer ; envoi sur place, mémoire et composeur fusionnés, plan qui ne retient que les moyens ; le « cf article » devient obligatoire, les règles vivent dans `regles.js`, le contenu en un exemplaire unique ; la session 1 n'enseigne plus que lire/citer ; la confirmation disparaît sur une suite unique non `imbrique`, le tutoriel apparaît ; la relation se déduit des valeurs, un article n'est offert qu'une fois sa pièce livrée ; **le composeur passe sous la Discussion et la Plaidoirie disparaît tant qu'elle est vide** ; **un mot, une chose : les trois surfaces portent le même nom du DOM au harnais, et `atelier` ne désigne plus que l'outil d'écriture**.
+**Ce que le joueur affirme, et comment** — §4.1 à §4.5
+
+- **Saisie structurée, pas texte libre.** On compose avec un vocabulaire fermé, on ne tape pas.
+- **La compréhension doit être *exprimée*, pas supposée.** Par le choix des deux empans et de l'article, non par celui de la relation. **Invariant sous surveillance** — voir les points ouverts.
+- **Un empan se lit deux fois** — §4.1.
+- **La relation ne se déclare pas, elle se déduit des valeurs** — §4.5.
+- **Rien ne se dit qui ne soit fondé, sous l'un des deux régimes** — §4.5.
+- **On n'invoque pas un texte qu'on n'a pas reçu** — §4.5.
+- **Une suite unique n'est pas un choix**, et `imbrique` n'en est jamais une — §4.5.
+- **Un article annonce ce qu'il régit, et ne filtre rien** — §4.5.
+- **Un article ne porte aucun empan** — §4.5, §6.
+- **Le moteur ne tranche aucune question de droit** — §4.5.
+- **L'IA informe, elle ne tranche pas.** Sa seule prise, c'est sa propre véracité.
+
+**Ce que l'écran montre, et ce qu'il tait** — §4.3, §4.4, §4.6, §4.8, §4.9, §14
+
+- **Tout mécanisme utilisé une seule fois est un panneau indicateur** — §4, et son unique exception au §4.8.
+- **Le marquage des empans ne varie jamais** avec la pertinence — §4.3, et le halo du tutoriel non plus, §4.8.
+- **Une dimension sans doublon désigne sa réponse** — §4.4.
+- **La marge de bruit doit rester non nulle** — §14 : sinon « sensé » vaudrait « correct ».
+- **Rien ne se passe tant que rien n'est envoyé** — §4.6.
+- **Composer et envoyer restent deux gestes.** Leur distance peut se réduire, jamais leur nombre — §4.6.
+- **La Plaidoirie ne contient que ce qui se plaide** — §4.6.
+- **Un empan retenu n'existe qu'une fois à l'écran** — §4.6. *L'unicité de l'objet tient ; leur **co-location** ne tient plus, c'est l'arbitrage ci-dessous.*
+- **Le tutoriel corrige, il n'empêche pas** — §4.8.
+- **Une voix par état** — §4.9 : et ce qui *est* le jeu ne se coupe pas pour autant.
+
+**Ce que la fiction tient** — §1, §2, §5, §8.5
+
+- **Les directives sont ambiguës par conception.** Chaque branche peut se réclamer du même mandat (§5).
+- **Le décommissionnement se joue dans la fiction**, comme une conséquence — on débranche un système peu fiable — jamais comme un « tu es nulle » ; équilibré par l'incertitude qui pèse des deux côtés (§2).
+- **L'avocat ne sait pas** → ton collaboratif ; le faux vice est une tentation partagée (§8.5).
+- **Le procès est hors-champ, rapporté.** Le jeu narre des conséquences, ne rend pas de verdict sur le joueur.
+
+**Ce que le dépôt tient** — §12
+
+- **Le contenu n'existe qu'en un exemplaire**, les règles qu'en un seul endroit : aucune copie à resynchroniser — §12.
+
+**Ce qui a été tranché est au §18**, une ligne par étape — s'y reporter avant de rouvrir un débat, pour savoir qu'il l'a été. Deux choses seulement méritent d'être redites ici, parce qu'on y revient sans cesse : le **budget d'attention** est retiré (surligner et composer sont gratuits, illimités), et le vice a **un canal unique**, le personnel.
 
 **L'arbitrage du 31 juillet — la proximité contre l'évidence.** Le composeur descend sous le fil de la Discussion (§4.6) et les retenus restent dans la Mémoire. C'est un **échange assumé, tranché avec l'auteur** : on rend la co-location gagnée le 28 juillet (cliquer une puce à droite, voir le texte s'écrire à gauche) pour gagner l'évidence du geste — *on répond sous la question*, ce que personne n'a besoin d'apprendre. Le pari : ce qui s'apprend une fois vaut mieux que ce qui se paie à chaque phrase, même si le second coût est plus petit. Le composeur ne reçoit **aucune étiquette « privé »** : son statut se lit dans le fait que rien n'en sort, pas dans un en-tête de colonne. **Le repli, si le va-et-vient se paie trop cher, est de faire descendre les retenus aussi — pas de remonter le composeur.**
 
@@ -290,6 +308,7 @@ Le cas est indifférent à *qui* l'analyse. **La preuve décisive** — un match
 - **Le canal de révélation de la culpabilité** : pour préserver le doute de la Fin 3, celui qui échoue ne devrait pas recevoir la vérité. Non tranché.
 - **La manipulation du canal** : l'avocat peut-il infléchir l'IA par *la façon* dont il transmet ? Piste **suspendue** — aucun défaut de l'avocat ne doit se lire comme un calcul tant qu'elle ne l'est pas (§8.5).
 - **La formulation exacte de D1/D2**, et les épilogues.
+- **Les deux directives ne sont pas à l'écran** (§5). Le contenu les porte, le jeu ne les lit pas — on ne peut pas les relire en cours de partie. Deux façons de trancher : leur rendre une porte, ou décider qu'une IA n'a pas à consulter ce qu'elle *est*. **Non tranché** — et tant que ça ne l'est pas, le diagnostic a raison de les exiger.
 - **La progression** : nombre de sessions, portes, emplacement exact de la porte de la Fin 3. Le prototype s'arrête à **trois** sessions.
 - **La texture de l'avocat** — voir §8.5.
 - **Genre, nombre, contractions** dans la grammaire — voir §8.8, qui explique pourquoi ce point n'est pas cosmétique.
@@ -559,7 +578,7 @@ Méthode (contenu) : écrire dans l'atelier → « Exporter content.js » → po
 
 ## 16. Les harnais de test
 
-Six suites vivent dans le projet, sur un harnais jsdom commun (`harnais.js`), qui inline **tout `<script src>`** au boot — jsdom n'en charge aucun, et ce sont les fichiers mêmes, relus sur le disque à chaque fois. L'injection est générique, dans l'ordre des balises : ajouter un module d'atelier ne demande pas d'y revenir.
+Six suites vivent dans le projet, sur un harnais jsdom commun (`harnais.js`), qui inline **tout `<script src>` et tout `<link rel=stylesheet>`** au boot — jsdom n'en charge aucun, et ce sont les fichiers mêmes, relus sur le disque à chaque fois (le CSS aussi, et le §13 dit pourquoi). L'injection est générique, dans l'ordre des balises : ajouter un module d'atelier ne demande pas d'y revenir.
 
 **Le contrat de lecture : `w.R.x(w.S)`.** Une suite qui veut savoir ce que le jeu offre demande aux *règles*, pas à l'écran — `w.R.blocsOfferts(w.S)`, jamais `w.blocsOfferts()`. Ce que la fenêtre expose en propre, ce sont les **gestes** (`w.poserBloc`, `w.envoyer`, `w.surligner`…), parce qu'eux redessinent et que c'est le redessin qu'on veut éprouver. Tenir cette ligne a une conséquence directe : `index.html` peut cesser d'envelopper une lecture sans qu'une seule suite bouge.
 
@@ -606,7 +625,7 @@ Règle d'or : **une évolution n'est finie que quand les six suites sont vertes*
 
 ## 17. Résumé en trois phrases
 
-Trois modules, trois métiers, aucune copie : le **contenu** dans `content.js`, les **règles** dans `regles.js`, la **grammaire et les projections du contenu** dans `moteur.js` — et deux pages qui ne font que *montrer*, le jeu d'un seul tenant, l'atelier réparti en un fichier par outil. Toutes deux chargent les mêmes trois voisins, si bien que le pas-à-pas ne rejoue plus les règles, il les appelle, et que rien ne projette un contenu deux fois. Côté sens, une seule chose compte : **rien ne se dit qui ne soit fondé, sous l'un des deux régimes** — un fait se cite, une relation se fonde sur un texte, et rien d'autre ne clôt une phrase. D'où trois sessions au lieu de deux : la première apprend à lire, la deuxième à mettre en rapport, la troisième ne demande plus rien. La Partie I reste l'arbitre du sens ; le diagnostic de l'atelier n'en est que le bras automatisé.
+Trois modules, trois métiers, aucune copie : le **contenu** dans `content.js`, les **règles** dans `regles.js`, la **grammaire et les projections du contenu** dans `moteur.js` — et deux pages qui ne font que *montrer*, chargeant les mêmes trois voisins, si bien que le pas-à-pas ne rejoue plus les règles, il les appelle. Côté sens, une seule chose compte : **rien ne se dit qui ne soit fondé, sous l'un des deux régimes** — un fait se cite, une relation se fonde sur un texte, rien d'autre ne clôt une phrase — d'où trois sessions, la première pour apprendre à lire, la deuxième à mettre en rapport, la troisième qui ne demande plus rien. La Partie I reste l'arbitre du sens ; le diagnostic de l'atelier n'en est que le bras automatisé.
 
 ## 18. Historique des révisions
 
@@ -626,3 +645,5 @@ Une ligne par étape, pour ne jamais rouvrir un débat déjà tranché sans savo
 - **5 août — un nom pour deux choses.** Les deux dernières collisions d'identifiants sont refermées : `dimDe` → **`dimEmpan`** et `valider` → **`diagnostiquer()`** dans l'atelier, parce que `moteur.js` donne ces deux noms à des choses incompatibles et que les deux `valider` rendaient « rien » quand tout va bien. Plus le dernier code mort, quatre familles de CSS sans porteur, et un **défaut réel** : `pointer()` lisait encore le schéma 2 (`docs/LEXIQUE.md`, §2 de la passation).
 - **13 août — un gardien, et l'atelier qui ne recopie plus rien.** `outils/gardien.js` rend opposables les conventions qu'aucune suite ne voit (§16 bis) ; l'atelier est dégraissé de l'intérieur, quatre gestes nommés à la place de soixante écritures ; et le contrôle « forme indicible » du diagnostic apprend qu'**une forme existe de deux façons** — déclarée par une liaison, ou déduite (§15).
 - **13 août — ce que le §15 demandait de resynchroniser.** Les trois reflets de l'atelier sur le jeu sont relevés un par un : la **densité** de l'onglet Grammaire réduisait à la main et annonçait 21 de marge au lieu de 315 ; le **diagnostic** lisait encore `attend` sur la remise et émettait six fausses informations ; supprimer un empan **ne retirait jamais son marqueur** du texte (regex sur-échappée). Avec eux, **R9** au gardien, les huit dernières mutations de l'atelier passées sous `muter`, et `docs/CARTE.md` remis d'aplomb (§14, §15, §16 bis).
+- **14 août — le gardien marche sur les suites, et le contenu ne s'hérite plus.** R7, R9 et R10 s'étendent à `tests/` et `outils/` ; R10 naît de ce que l'extension a trouvé — `tests/` recopiait `estRegle` quatre fois à la main. *Une suite désigne, elle ne décide pas* (§16, §16 bis). La migration cesse d'écrire l'ancienne forme de l'accusé de réception (§11).
+- **14 août — le document dit ce que le code fait.** Relecture critique, chaque affirmation vérifiable confrontée au code. Neuf phrases décrivaient un code absent — dont *« Rien n'en sort »* et le bouton *« → Maître Auber »*, tous deux disparus de l'écran, et une preuve CSS que `npm run vue` n'a jamais portée. Deux champs de contenu (`directives`, `avis_exploitation`) sont dits **non lus par le jeu**, là où on les décrit (§5). Les ~1 500 mots de post-mortem que le corps portait descendent au §2 de `PASSATION.md`, comme le chapeau le promettait depuis toujours : **le corps décrit l'état, la passation raconte les pannes.** Et le §7 cesse d'être une seconde écriture des invariants pour devenir leur index — un document qui interdit les copies au code ne peut pas s'en autoriser (§7, §15, §16 bis).

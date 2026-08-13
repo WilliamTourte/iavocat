@@ -23,7 +23,7 @@ Ensuite, dans `docs/ARCHITECTURE.md` (on n'en lit que ce qu'il faut) —
 | **Trouver *où* vit une chose** | `docs/CARTE.md` — l'index geste → fonction → fichier. Il ne dit jamais pourquoi ; il évite d'avoir à chercher |
 | **Un doute sur un mot** (empan/passage, lien/liaison, dossier/Dossier…) | `docs/LEXIQUE.md` — un mot, un sens, et les faux amis à ne jamais confondre |
 | Se repérer, sans plus | **§9** (les quatre territoires), **§12** (où vit la vérité), **§17** (le résumé en trois phrases) |
-| Toucher au **sens** | **Partie I** en entier, et **§7** avant tout (invariants, arbitrages, points ouverts) |
+| Toucher au **sens** | **§4.5** d'abord — la grammaire du composeur, le passage que le code cite le plus — puis la **Partie I** en entier. Le **§7** est l'**index** des invariants : il nomme et renvoie, c'est le § renvoyé qui tranche |
 | Toucher au **contenu** | **§11** (le schéma 3, et tous les attributs optionnels) |
 | Toucher aux **tests** | **§16** (ce que chaque suite prouve, et pourquoi elles ne nomment aucun contenu) |
 | Comprendre une panne au chargement | **§13** |

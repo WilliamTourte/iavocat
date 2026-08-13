@@ -22,8 +22,10 @@
  *   R10 aucune recopie d'un prédicat que `regles.js` exporte       §12, §16
  *
  * R7, R9 et R10 marchent sur `app/`, `tests/` ET `outils/` — les sept autres
- * sur les deux pages. Voir TERRITOIRES, plus bas : jusqu'au 14 août tout était
- * borné à `app/`, et c'est là que les copies avaient survécu.
+ * sur les deux pages. Voir TERRITOIRES, plus bas. Avant d'ajouter une règle, la
+ * question à poser est SUR QUEL TERRITOIRE elle marche : la réponse n'est pas
+ * « `app/` » par défaut, et c'est dans les deux autres que les copies avaient
+ * survécu.
  *
  * (*) R1 a servi à mesurer ce que le §13 affirmait sans l'avoir éprouvé — voir
  * le commentaire de la règle, et la décision 15 de `docs/PASSATION.md`.
@@ -366,14 +368,14 @@ console.log("Le gardien — les conventions que les six suites ne voient pas.\n"
    Le harnais n'ouvre pas les pages : il INLINE tout `<script src>` et tout
    `<link rel=stylesheet>` par une regex stricte, dans l'ordre.
 
-   MESURÉ, ET LE §13 SE TROMPE À MOITIÉ. Le document dit que `defer` ferait
-   diverger le test du navigateur et que « le test resterait vert pendant que la
-   page casse ». Éprouvé sur les six suites, ce n'est pas ce qui arrive : la
-   regex est si stricte qu'une balise déviante n'est PAS inlinée du tout, donc
-   rien ne se charge et quatre contrôles tombent. Idem pour une balise mise en
-   commentaire. La menace décrite au §13 est celle qu'on courrait si la regex
-   était relâchée — c'est un argument pour la garder stricte, pas la
-   description de ce qui se passe aujourd'hui.
+   CE QU'UNE BALISE DÉVIANTE COÛTE, MESURÉ. On a longtemps cru qu'un `defer`
+   ferait diverger le test du navigateur et que « le test resterait vert pendant
+   que la page casse ». Éprouvé sur les six suites : ce n'est pas ce qui arrive.
+   La regex est si stricte qu'une balise déviante n'est PAS inlinée du tout,
+   donc rien ne se charge et quatre contrôles tombent. Idem pour une balise mise
+   en commentaire. Le danger qu'on redoutait est celui qu'on courrait si la
+   regex était RELÂCHÉE — c'est un argument pour la garder stricte, pas la
+   description de ce qui se passe. Le §13 le dit désormais ainsi.
 
    Ce que la règle vaut donc, et c'est déjà beaucoup : l'écart se dit ICI, sur
    la balise, au lieu de se dire en `ReferenceError` au milieu d'une suite (le
