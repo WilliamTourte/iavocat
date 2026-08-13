@@ -197,10 +197,17 @@ function majLien(i,prop,val){ muter(()=>{
 function demanderSupprLien(i){ demanderSuppr("lien:"+i,()=>{
   CONTENU.liens.splice(i,1); selEdge=null;
 }); }
+/* Supprimer un empan, c'est aussi retirer son marqueur du texte de la pièce —
+   sans quoi le diagnostic signale un « Marqueur orphelin » que l'atelier vient
+   de créer lui-même, et qu'il faut réparer à la main dans l'éditeur.
+   IL NE LE RETIRAIT JAMAIS. Le motif s'écrivait avec QUATRE antislashs, ce qui
+   en fait deux dans la chaîne, donc un antislash LITTÉRAL dans le motif compilé
+   (`\\s*\\{\\{e_x\\}\\}`) : il ne pouvait correspondre à rien. Deux suffisent —
+   la chaîne en porte un, la regex l'entend comme une échappe. */
 function demanderSupprChamp(pid,ch){ demanderSuppr("champ:"+K(pid,ch),()=>{
   const p=CONTENU.pieces[pid], k=K(pid,ch);
   delete p.empans[ch];
-  p.texte=String(p.texte||"").replace(new RegExp("\\\\s*\\\\{\\\\{"+ch+"\\\\}\\\\}",""),"");
+  p.texte=String(p.texte||"").replace(new RegExp("\\s*\\{\\{"+ch+"\\}\\}",""),"");
   CONTENU.liens=CONTENU.liens.filter(L=>!feuillesLien(L).includes(k));
   CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>x!==k);
   selA=selB=null;
