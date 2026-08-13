@@ -18,6 +18,7 @@
  *   R6  un id visé existe — et le tutoriel vise quelque chose       §2, §4.8
  *   R7  aucun reste du schéma 2                                     §2
  *   R8  la carte ne ment pas sur les tailles                        §12
+ *   R9  `attend`/`apres` ne se lisent plus sur une remise           §3, §11, §15
  *
  * (*) R1 a servi à mesurer ce que le §13 affirmait sans l'avoir éprouvé — voir
  * le commentaire de la règle, et la décision 15 de `docs/PASSATION.md`.
@@ -114,7 +115,16 @@ function decouperJS(src) {
     const c = src[i], d = src[i + 1];
     if (dansCode()) {
       if (c === "/" && d === "/") { while (i < src.length && src[i] !== "\n") i++; continue; }
-      if (c === "/" && d === "*") { i += 2; while (i < src.length && !(src[i] === "*" && src[i + 1] === "/")) i++; i += 2; continue; }
+      /* UN COMMENTAIRE DE BLOC REND SES SAUTS DE LIGNE. Il est blanchi, mais pas
+         raccourci : R7 et R9 comptent les `\n` de `code` pour dire OÙ regarder,
+         et ce dépôt commente en blocs de vingt lignes. Sans cette restitution,
+         R9 envoyait à la ligne 123 pour un écart qui vit à la 153. Un message
+         qui désigne la mauvaise ligne coûte plus qu'il ne rapporte. */
+      if (c === "/" && d === "*") {
+        const j = src.indexOf("*/", i + 2), fin = j < 0 ? src.length : j + 2;
+        const sauts = src.slice(i, fin).replace(/[^\n]/g, "");
+        code += sauts; sansComm += sauts; i = fin; continue;
+      }
       if (c === "/" && debutDeRegex(code)) {
         const j = finDeRegex(src, i);
         if (j > 0) { sansComm += src.slice(i, j); code += "/RE/"; i = j; continue; }
@@ -141,6 +151,9 @@ function decouperJS(src) {
     if (c === "\\") { g.txt += src[i + 1] || ""; sansComm += src.slice(i, i + 2); i += 2; continue; }
     if (c === "`")  { chaines.push(g.txt); pile.pop(); sansComm += c; i++; continue; }
     if (c === "$" && d === "{") { pile.push({ t: "interp", prof: 0 }); sansComm += "${"; i += 2; continue; }
+    // Même raison qu'au commentaire de bloc : le texte d'un gabarit est blanchi,
+    // mais ses sauts de ligne restent, sinon les lignes annoncées dérivent.
+    if (c === "\n") code += c;
     g.txt += c; sansComm += c; i++;
   }
   return { code, chaines, sansComm };
@@ -558,6 +571,77 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
     }
   }
   regle("R8 · le tableau des territoires de docs/CARTE.md dit les tailles réelles", faux);
+}
+
+/* ============================================================
+   R9 — `attend`/`apres` NE SE LISENT PLUS SUR UNE REMISE (§3, §11, §15)
+   ------------------------------------------------------------
+   C'est la sœur de R7, et pour la même raison. Depuis le 30 juillet une remise
+   attend une SUITE de réponses : le tag et l'accusé de réception vivent sur
+   l'ATTENTE, plus sur la remise. L'ancienne écriture reste LISIBLE — une affaire
+   d'avant se joue sans modification (§3) — et c'est exactement le piège : rien
+   ne casse, rien ne lève, une branche restée à `r.attend` répond simplement
+   « non » pour toujours.
+
+   Elle l'a fait dans le diagnostic, pendant deux semaines : le contrôle « tag
+   attendu par aucune remise » émettait SIX informations mensongères à chaque
+   ouverture de l'atelier — une par lien qui porte un tag. Aucune suite ne le
+   voyait : elles lisent le jeu, jamais le diagnostic.
+
+   QUATRE FONCTIONS ONT LE DROIT de connaître l'ancienne écriture, et seulement
+   elles : les deux normalisateurs déclarés au §11 — `attentesDe` (regles.js) et
+   `attentesDeRemise` (noyau.js), *on ne les fusionne pas, on dit lequel est
+   lequel* —, plus les deux convertisseurs, `attentesEditables` (frise.js) qui
+   convertit une remise en place à la première édition, et `migrerContenu`
+   (contenu-io.js) qui relit un contenu de schéma 2.
+
+   ELLE LIT DU TEXTE, PAS DES TYPES, et elle en dépend : est tenu pour une remise
+   un récepteur écrit `r`, `remise`, ou une indexation de `remises`. C'est la
+   convention de nommage du dépôt, tenue dans regles.js, diagnostic.js et
+   frise.js — R9 la rend contraignante du même coup. Les ÉCRITURES sont hors
+   champ (`delete r.attend`, `r.apres = …`) : construire ou défaire l'ancienne
+   forme reste permis, c'est la LIRE au lieu de passer par un normalisateur qui
+   ne l'est plus.
+   ============================================================ */
+{
+  const faux = [];
+  const TOLERES = {
+    "app/regles.js":             ["attentesDe"],
+    "app/atelier/noyau.js":      ["attentesDeRemise"],
+    "app/atelier/frise.js":      ["attentesEditables"],
+    "app/atelier/contenu-io.js": ["migrerContenu"]
+  };
+  const estRemise = recv => recv === "r" || recv === "remise" || /remises(\[[^\]]*\])?$/.test(recv);
+  // La fonction qui contient une position : la dernière déclarée avant elle.
+  // Heuristique assumée — le gardien lit du texte (voir l'en-tête de R9).
+  const fonctionEn = (code, i) => {
+    const avant = [...code.slice(0, i).matchAll(/function\s+([A-Za-z_$][\w$]*)/g)];
+    return avant.length ? avant[avant.length - 1][1] : "";
+  };
+  const fichiers = [];
+  (function marcher(rel) {
+    for (const e of fs.readdirSync(path.join(RACINE, rel), { withFileTypes: true })) {
+      const r = rel + "/" + e.name;
+      if (e.isDirectory()) marcher(r);
+      else if (r.endsWith(".js")) fichiers.push(r);
+    }
+  })("app");
+  for (const f of fichiers) {
+    if (f === "app/content.js") continue;                   // du contenu, pas du code
+    const { code } = decouperJS(lire(f));
+    const permis = TOLERES[f] || [];
+    for (const m of code.matchAll(/([A-Za-z_$][\w$]*(?:\.[\w$]+|\[[^\]]*\])*)\.(attend|apres)\b\s*(=[^=]|\b)?/g)) {
+      if (!estRemise(m[1])) continue;
+      if (m[3] && m[3].startsWith("=")) continue;                       // une écriture
+      if (/\bdelete\s+$/.test(code.slice(Math.max(0, m.index - 8), m.index))) continue;
+      const nom = fonctionEn(code, m.index);
+      if (permis.includes(nom)) continue;
+      const ligne = code.slice(0, m.index).split("\n").length;
+      faux.push(`${f}:${ligne} — « ${m[1]}.${m[2]} » dans ${nom || "(hors fonction)"} : `
+              + `le tag vit sur l'ATTENTE (§3). Passer par attentesDe / attentesDeRemise.`);
+    }
+  }
+  regle("R9 · plus rien ne lit « attend » ou « apres » posé sur une remise", faux);
 }
 
 bilan();
