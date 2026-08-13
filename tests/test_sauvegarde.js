@@ -113,7 +113,7 @@ console.log("\n=== La signature du contenu ===");
 
 console.log("\n=== Une sauvegarde d'avant le renommage se reprend ===");
 {
-  /* `S.memoire` est devenu `S.retenus` (docs/LEXIQUE.md). Le contenu n'ayant
+  /* `S.memoire` est devenu `S.retenus` (docs/CARTE.md). Le contenu n'ayant
      pas changé, la signature ne jette PAS ces parties : sans reprise, le joueur
      retrouverait la sienne avec zéro passage retenu et aucun message. */
   const w1 = boot();

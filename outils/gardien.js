@@ -773,7 +773,7 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
   for (const f of fichiersJS(TERRITOIRES).concat(fichiersJS(["grammaire"]))) aJuger.push([f, lire(f), false]);
   for (const p of ["app/index.html", "app/atelier_v3.html", "app/jeu.css", "app/atelier/atelier.css"])
     if (existe(p)) aJuger.push([p, lire(p), false]);
-  for (const d of ["docs/CARTE.md", "docs/LEXIQUE.md", "docs/HISTORIQUE.md", "CLAUDE.md", ...DOCS])
+  for (const d of ["docs/CARTE.md", "docs/HISTORIQUE.md", "CLAUDE.md", ...DOCS])
     if (existe(d)) aJuger.push([d, lire(d), false]);
   if (existe("docs/PASSATION.md")) aJuger.push(["docs/PASSATION.md", lire("docs/PASSATION.md"), true]);
 

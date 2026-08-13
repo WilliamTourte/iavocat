@@ -59,7 +59,7 @@ const estRegle = p => window.ReglesJeu.estRegle(p);
    une remise écrite à l'ancienne, la remise ELLE-MÊME (`[r]`) et non une paire
    recopiée, pour que l'inspecteur l'édite en place. Sur une affaire au schéma 3
    les deux rendent le même tableau `r.attentes`. Deux fonctions, deux emplois :
-   on ne les fusionne pas, on dit lequel est lequel (docs/LEXIQUE.md). */
+   on ne les fusionne pas, on dit lequel est lequel (docs/CARTE.md). */
 function attentesDeRemise(r){
   if(!r) return [];
   if(Array.isArray(r.attentes)) return r.attentes;
@@ -72,14 +72,14 @@ function empanExiste(pid,eid){ return !!empanDe(pid,eid); }
    le nom que `moteur.js` donne à la dimension d'un TERME RÉDUIT, qui répond
    « affirmation » pour un terme emboîté là où celle-ci ne répond jamais ça.
    Deux questions, deux noms — comme `toutesPiecesLivrees` ci-dessous
-   (docs/LEXIQUE.md). */
+   (docs/CARTE.md). */
 function dimEmpan(pid,eid){ const e=empanDe(pid,eid); return e && e.dim; }
 function toutesDims(){ return [...(CONTENU.dimensions||[])]; }
 function estBruit(pid,eid){ return (CONTENU._bruit||[]).includes(K(pid,eid)); }
 /* TOUTES les pièces qu'une remise livre, à un moment ou à un autre — l'atelier
    regarde le dossier fini. À ne pas confondre avec `piecesLivrees(S)` de
    regles.js, qui est PROGRESSIF (jusqu'à `S.remisesEnvoyees`) : deux questions
-   différentes, donc deux noms (docs/LEXIQUE.md). */
+   différentes, donc deux noms (docs/CARTE.md). */
 function toutesPiecesLivrees(){
   const s=new Set(); for(const r of CONTENU.remises||[]) for(const p of r.pieces||[]) s.add(p); return s;
 }
@@ -265,12 +265,12 @@ function appliquerJson(){
 
 
 /* ============================================================
-   11) L'ÉCHAPPEMENT — le même couple de noms que le jeu (docs/LEXIQUE.md)
+   11) L'ÉCHAPPEMENT — le même couple de noms que le jeu (docs/CARTE.md)
    ============================================================ */
 /* Le même échappement que le `esc` du jeu, sous un autre nom : deux documents
    indépendants, aucun fichier partagé où poser la fonction commune. Doublet
    assumé — deux noms pour une chose se remarquent, un nom pour deux choses se
-   subit (docs/LEXIQUE.md). Ce qui n'était pas assumé, c'est que `escapeH(null)`
+   subit (docs/CARTE.md). Ce qui n'était pas assumé, c'est que `escapeH(null)`
    écrivait « null » là où `esc(null)` écrit « » : aligné. */
 function escapeH(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function escapeAttr(s){ return escapeH(s).replace(/"/g,"&quot;"); }

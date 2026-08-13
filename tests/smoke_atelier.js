@@ -5,7 +5,7 @@ const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, surContenu:SC, estRegle } = H;
 const neuf = () => { const w = H.bootAtelier(); w.demanderExemple(); w.demanderExemple(); return w; };
 // `diagnostiquer()` — le diagnostic du contenu entier. Ce n'est pas le
-// `valider(r)` de moteur.js, qui juge une phrase (docs/LEXIQUE.md).
+// `valider(r)` de moteur.js, qui juge une phrase (docs/CARTE.md).
 const err = w => w.diagnostiquer().filter(i => i.niveau === "erreur");
 const msgs = w => w.diagnostiquer().map(i => i.msg).join(" | ");
 

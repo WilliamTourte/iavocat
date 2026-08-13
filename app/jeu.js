@@ -104,7 +104,7 @@ function restaurerPartie(){
     const d=JSON.parse(brut);
     if(d.sig!==R.signatureContenu()){ localStorage.removeItem(CLE_PARTIE); return false; }
     /* Sauvegarde écrite avant que `S.memoire` ne devienne `S.retenus`
-       (docs/LEXIQUE.md). Le CONTENU, lui, n'a pas changé : la signature ne
+       (docs/CARTE.md). Le CONTENU, lui, n'a pas changé : la signature ne
        jette donc pas cette partie, et sans cette reprise le joueur la
        retrouverait avec zéro passage retenu, sans un mot. */
     if(d.retenus===undefined && Array.isArray(d.memoire)) d.retenus=d.memoire;
@@ -479,7 +479,7 @@ function renderCompo(){
       à conséquence — donc le seul lieu possible du dilemme. Et il
       n'y inscrit que les MOYENS : le reste, il le dit.
       (« atelier » ne désigne plus que app/atelier_v3.html, l'outil
-       qui écrit les affaires — docs/LEXIQUE.md.)
+       qui écrit les affaires — docs/CARTE.md.)
    ============================================================ */
 /* La colonne de travail : le dossier et les empans retenus. La phrase, elle,
    s'écrit sous le canal depuis le 31 juillet (§4.6) — le clavier reste ici,

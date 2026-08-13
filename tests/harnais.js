@@ -78,7 +78,7 @@ function creerHarnais(dossier){
   function contenuLivre(){ return JSON.parse(JSON.stringify(boot().JEU)); }
 
   /* Les quatre surfaces à lire, chacune sous le nom que l'écran lui donne
-     (docs/LEXIQUE.md) : Discussion, Mémoire, le composeur qui vit sous la
+     (docs/CARTE.md) : Discussion, Mémoire, le composeur qui vit sous la
      Discussion (§4.6), et la Plaidoirie — dont `plaidoirieVisible` dit si la
      colonne existe, puisque vide elle est retirée (§4.9).
      `atelier` ne désigne plus qu'une chose dans ce dépôt : `atelier_v3.html`,

@@ -2,114 +2,72 @@
 
 Un jeu à dominante textuelle : on incarne une **IA** qu'un **avocat de la défense** interroge session
 après session, pour lui préparer de quoi réfuter l'accusation. Le vrai sujet est un cas de conscience.
-Le dépôt porte le **jeu** (`app/`), l'**atelier** qui l'écrit (`app/atelier_v3.html` + `app/atelier/`,
-un fichier par outil) et six suites de test. **Zéro build, zéro serveur, zéro dépendance à l'exécution** : `app/index.html` s'ouvre en
-`file://` et joue. Une page ne porte que sa **structure** — le CSS entre par `<link>`, le JS par
-`<script src>`.
+Le dépôt porte le **jeu** (`app/`), l'**atelier** qui l'écrit (`app/atelier_v3.html` + `app/atelier/`)
+et six suites de test. **Zéro build, zéro serveur, zéro dépendance à l'exécution** : `app/index.html`
+s'ouvre en `file://` et joue. Une page ne porte que sa **structure** — le CSS entre par `<link>`, le JS
+par `<script src>`.
 
-> **Ce fichier n'est pas une source de vérité.** Le §12 en pose exactement quatre — le contenu, les
-> règles, la grammaire, et `docs/CONCEPTION.md` pour le sens. Ce qui suit ne fait qu'**orienter** : ça
-> renvoie, ça ne reformule pas. En cas d'écart, le document renvoyé tranche.
+> **Ce fichier oriente, il ne tranche pas.** Le §12 pose exactement quatre sources de vérité. En cas
+> d'écart, le document renvoyé a raison.
 >
-> **Un numéro de section suffit à adresser n'importe quoi** — ils sont uniques dans tout le dépôt :
-> **§1 à §7** dans `docs/CONCEPTION.md`, **§8.1 à §8.9** dans `docs/ECRITURE.md`, **§9 à §17** dans
-> `docs/ARCHITECTURE.md`. R11 du gardien vérifie qu'aucun renvoi ne pointe dans le vide, ni ne nomme
-> le mauvais fichier.
+> **Un numéro de section adresse n'importe quoi** — ils sont uniques dans tout le dépôt : **§1 à §7**
+> dans `docs/CONCEPTION.md`, **§8.1 à §8.9** dans `docs/ECRITURE.md`, **§9 à §17** dans
+> `docs/ARCHITECTURE.md`. Un renvoi n'a donc pas à nommer son fichier ; R11 du gardien vérifie
+> qu'aucun ne pointe dans le vide, ni ne nomme le mauvais.
 
-## Par où lire, selon ce qu'on vient faire
+## Par où lire
 
-**Toujours d'abord `docs/PASSATION.md`** — l'état du jour, les décisions prises avec l'auteur, et la
-prochaine étape. C'est court et c'est daté.
-
-Ensuite, on n'en lit que ce qu'il faut —
+**D'abord `docs/PASSATION.md`** — l'état du jour, ce qui mord, la prochaine étape. C'est court.
 
 | Ce qu'on vient faire | Ce qu'on lit |
 |---|---|
-| **Trouver *où* vit une chose** | `docs/CARTE.md` — l'index geste → fonction → fichier. Il ne dit jamais pourquoi ; il évite d'avoir à chercher |
-| **Un doute sur un mot** (empan/passage, lien/liaison, dossier/Dossier…) | `docs/LEXIQUE.md` — un mot, un sens, et les faux amis à ne jamais confondre |
-| Se repérer, sans plus | `docs/ARCHITECTURE.md` : **§12** (où vit la vérité), **§17** (le résumé en trois phrases), **§9** (la règle de rangement — l'inventaire des fichiers, lui, est dans `docs/CARTE.md`) |
-| Toucher au **sens** | `docs/CONCEPTION.md`. Le **§4.5** d'abord — la grammaire du composeur, le passage que le code cite le plus, découpé en sept. Le **§7** est l'**index** des invariants : il nomme et renvoie, c'est le § renvoyé qui tranche |
-| Toucher au **contenu** | **§11** (le schéma 3, et tous les attributs optionnels) |
-| **Écrire une affaire** — des répliques, une pièce, un leurre | `docs/ECRITURE.md` — la discipline d'écriture, §8.1 à §8.9. Rien n'y touche au moteur, et rien ne s'y teste |
-| Toucher aux **tests** | **§16** (ce que chaque suite prouve, et pourquoi elles ne nomment aucun contenu) |
+| Trouver **où** vit une chose, ou **comment elle s'appelle** | `docs/CARTE.md` — l'index geste → fonction → fichier, et l'arbitrage du vocabulaire (empan/passage, lien/liaison…) |
+| Toucher au **sens** | `docs/CONCEPTION.md`. Le **§4.5** d'abord (la grammaire du composeur, découpée en sept) ; le **§7** est l'index des invariants |
+| Toucher au **contenu** | **§11** — le schéma 3 et tous les attributs optionnels |
+| **Écrire une affaire** | `docs/ECRITURE.md`, §8.1 à §8.9. Rien n'y touche au moteur |
+| Se repérer dans le système | **§9** (la règle de rangement), **§12** (où vit la vérité), **§17** (le résumé) |
+| Toucher aux **tests** | **§16** — ce que chaque suite prouve |
 | Comprendre une panne au chargement | **§13** |
-| **Savoir si un débat a déjà été tranché** | `docs/HISTORIQUE.md` — une ligne par étape, sans le pourquoi (il vit dans la section qu'elle a fait évoluer) |
+| Savoir si un débat a été tranché | `docs/HISTORIQUE.md` — une ligne par étape |
 
 ## Les commandes
 
 ```sh
 npm test               # les six suites (325 contrôles), PUIS le gardien, PUIS ESLint.
-                       # La règle d'or : tout vert, ou ce n'est pas fini (§16)
-npm run suites         # les six suites seules — le sens, sans la forme
-npm run gardien        # les conventions que les suites ne voient pas. Voir ci-dessous
+                       # Tout vert, ou ce n'est pas fini (§16)
+npm run suites         # les six suites seules — le sens avant la forme
+npm run gardien        # les onze conventions que les suites ne voient pas (§16 bis)
 npm run lint           # ESLint, le filet générique
-npm run vue            # ouvre le jeu dans un VRAI navigateur, joue, capture. Voir ci-dessous
-npm run demo:grammaire # banc d'essai de la grammaire. Hors `npm test` : pas de code de sortie
+npm run vue            # ouvre le jeu dans un VRAI Chromium en file://, joue, capture dans captures/
+npm run demo:grammaire # banc d'essai de la grammaire. Hors `npm test`
 ```
 
-L'ordre de `npm test` n'est pas indifférent : **les suites d'abord**, le sens avant la forme.
-
-Rien d'autre à préparer : pas de build, pas de service, pas de base. En session distante, le hook
+Rien à préparer : pas de build, pas de service, pas de base. En session distante,
 `.claude/hooks/session-start.sh` a déjà posé `node_modules`.
 
-### `npm run vue` — voir le jeu tourner
-
-`outils/vue.js` ouvre `app/index.html` en **`file://`** dans Chromium, joue le chemin docile et dépose
-des captures dans `captures/` (ignoré par git), en versant le fil de l'avocat sur la sortie standard.
-
-Deux choses qu'il est le seul à faire : il éprouve le **vrai** chargement des quatre `<script src>` et de la feuille de style,
-là où le harnais de test les inline (§13) ; et il permet la **relecture à l'œil**, que le §2 de la
-passation rappelle irremplaçable. Il ne réimplémente rien — il injecte `tests/harnais.js` dans la page
-et appelle son `instruire`, donc il joue exactement le chemin que jouent les suites.
-
-Sans navigateur trouvé, il le dit et sort en 0. Il ne sort en 1 que sur une erreur JS de la page.
-
-### `npm run gardien` — les conventions que les suites ne voient pas
-
-Les six suites éprouvent le **sens** : elles jouent l'affaire et lisent `innerHTML`. Elles ne lisent
-jamais un style calculé, jamais la forme d'une balise, jamais l'inventaire des noms globaux d'une
-page — et c'est exactement là que ce dépôt s'est fait mal, à répétition. Elles ne se lisent pas non
-plus **elles-mêmes**, et c'est leur second angle mort. `outils/gardien.js` rend le §2 de la passation
-**opposable** : onze règles, onze pannes déjà payées, chacune citant le § qui la tranche (§16 bis de
-`docs/ARCHITECTURE.md` les liste). R7, R9, R10 et R11 marchent au-delà des deux pages —
-R11 sur tout le dépôt, documents compris. Zéro dépendance, comme le livrable.
-
-**Ce n'est pas une source de vérité.** Il fait respecter, il ne décide pas : si une règle et son §
-divergent, c'est le § qui a raison. Il est en **mode double**, comme `moteur.js` — lancé il contrôle,
-`require` il ne rend que son inventaire, et c'est par là qu'`eslint.config.js` obtient ses globals
-sans qu'aucune liste soit recopiée.
+`npm run vue` est le **seul** à éprouver le vrai chargement des `<script src>` et de la feuille de
+style, là où le harnais les inline (§13) — et le seul à permettre la relecture à l'œil, qui reste
+irremplaçable.
 
 ## Ce qu'il ne faut pas défaire
 
-**La règle de rangement** (§9), qui tient tout le reste :
+**La règle de rangement** (§9) : *le contenu ne contient aucune règle, les règles ne contiennent aucun
+contenu, l'interface ne décide rien, et l'atelier ne recopie rien.* Le contenu vit en un seul
+exemplaire dans `app/content.js`, les règles dans `app/regles.js` (pur, sans DOM), la grammaire et les
+projections du contenu dans `app/moteur.js` (pur, sans données). Ce qui redessine est une fonction
+d'écran ; ce qui lit s'écrit `R.x(S)` sur place, et les suites lisent pareil, en `w.R.x(w.S)`.
 
-> *le contenu ne contient aucune règle, les règles ne contiennent aucun contenu, l'interface ne décide
-> rien, et l'atelier ne recopie rien.*
-
-Concrètement : le contenu vit **en un seul exemplaire** dans `app/content.js`, les règles dans
-`app/regles.js` (pur, sans DOM), la grammaire dans `app/moteur.js` (pur, sans données) — qui porte
-aussi, hors fabrique, les **projections du contenu** (`champsDe`, `comparaisonsDe`, `couleurDim`),
-parce qu'elles vivaient en deux ou trois copies. Les deux pages HTML ne font que *montrer*, et
-`index.html` **n'enveloppe plus** les lectures de `regles.js` : ce qui redessine est une fonction
-d'écran, ce qui lit s'écrit `R.x(S)` — les suites lisent pareil, en `w.R.x(w.S)`. Le pas-à-pas de l'atelier **appelle** les règles du jeu, il ne les rejoue
-pas — c'est ce qui a permis de supprimer une checklist de resynchronisation de dix-sept lignes (§12).
-
-Les **pièges déjà payés** sont listés au §2 de `docs/PASSATION.md` — les lire avant de toucher au
-moteur ou à la grammaire. Les quatre qui reviennent : les `const` de haut niveau ne sont pas des
-propriétés de `window` — **mais ils occupent quand même le nom**, et un module chargé par
-`<script src>` partage la portée globale de la page ; l'index `iBloc` de `poserBloc` est
-**positionnel dans la liste filtrée**, donc dépendant de la session ; le flag `cite` est porté par la
-**liaison**, jamais par le terme.
+Les **pièges déjà payés** sont au §2 de `docs/PASSATION.md` — à lire avant de toucher au moteur ou à
+la grammaire. Les quatre qui reviennent : les `const` de haut niveau ne sont pas des propriétés de
+`window` **mais occupent quand même le nom** ; un module chargé par `<script src>` partage la portée
+globale de la page ; l'index `iBloc` de `poserBloc` est **positionnel dans la liste filtrée** ; le flag
+`cite` est porté par la **liaison**, jamais par le terme.
 
 ## La méthode, demandée par l'auteur
 
-Toute évolution part du **document** — `docs/CONCEPTION.md` si elle touche au sens,
-`docs/ARCHITECTURE.md` si elle touche au système : **on réécrit le document, on le fait relire, puis
-on applique au code.** La passation le redit à chaque fois, en clôture. Et à la fin, on relit les phrases
-composées **à l'œil** : c'est comme ça qu'on attrape ce qu'aucune suite ne voit.
+Toute évolution part du **document** — `docs/CONCEPTION.md` pour le sens, `docs/ARCHITECTURE.md` pour
+le système : **on réécrit le document, on le fait relire, puis on applique au code.** Et à la fin, on
+relit les phrases composées **à l'œil** : c'est comme ça qu'on attrape ce qu'aucune suite ne voit.
 
-## Une convention de dates, pour éviter la méprise
-
-Dans les docs, « le 28 juillet », « le 29 », « le 30 » désignent des **sessions de travail
-successives**, pas des dates de calendrier : `git log` place tous les commits au même jour. Chercher à
-recouper les deux ne mène nulle part.
+*Une convention de dates : « le 28 juillet », « le 29 » désignent des **sessions de travail**
+successives, pas des dates de calendrier — `git log` place tous les commits au même jour.*

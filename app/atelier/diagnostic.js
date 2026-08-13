@@ -9,7 +9,7 @@
    même page, et les deux rendaient « rien » quand tout va bien — l'un par
    `null`, l'autre par un tableau vide. C'est la pire forme de collision : celle
    où se tromper de fonction ne se voit pas tant que rien ne va mal
-   (docs/LEXIQUE.md). Le `m.valider(…)` appelé plus bas est bien celui du moteur. */
+   (docs/CARTE.md). Le `m.valider(…)` appelé plus bas est bien celui du moteur. */
 function diagnostiquer(){
   const out=[]; const P=CONTENU.pieces||{}, LI=CONTENU.liens||[];
   const add=(niveau,msg,detail,ref)=>out.push({niveau,msg,detail,ref});
