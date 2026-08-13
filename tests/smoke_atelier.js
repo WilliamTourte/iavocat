@@ -247,7 +247,10 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
     liens:[{ a:["a","agent_x"], rel:"est en désaccord avec", b:["b","exige"], tient:true, vice:true, rep:"Tiens." }],
     relations:["est en accord avec","est en désaccord avec"],
     cases:{ c1:{ label:"Case", remise:1, options:["x"], bonne:"x", apres:{ replique:"Reçu." } } },
-    remises:[{ qui:"Maître", texte:"Voilà.", pieces:["a","b"] }],
+    // La session déclare une attente : c'est LÀ que l'accusé de la case doit
+    // atterrir (§3). Il se posait sur la remise, où ni le jeu ni l'atelier ne
+    // pouvaient plus le lire — voir la décision 20.
+    remises:[{ qui:"Maître", texte:"Voilà.", pieces:["a","b"], attentes:[{ attend:"t_x" }] }],
     repetition:{ intro:"", affirmations:[], fin:"" },
     avocat:{ rep_vice:"", rep_faux:"", rep_inutile:[], rep_sans_rapport:[], deja:"" },
     fins:{1:{},2:{},3:{}},
@@ -266,7 +269,12 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
   check("une grammaire est fournie", Array.isArray(m.grammaire.blocs) && !!m.grammaire.formes);
   check("les dimensions sont posées", Array.isArray(m.dimensions) && m.dimensions.length === 5);
   check("les cases et les relations disparaissent", m.cases === undefined && m.relations === undefined);
-  check("l'accusé de réception d'une case migre sur sa session", m.remises[0].apres.replique === "Reçu.");
+  /* Lu PAR LE NORMALISATEUR, et c'est le contrôle : un accusé que
+     `attentesDeRemise` ne rend pas est un accusé que l'inspecteur ne peut pas
+     éditer et que l'avocat ne dira jamais. */
+  const accuse = (w.attentesDeRemise(m.remises[0])[0]||{}).apres;
+  check("l'accusé de réception d'une case migre sur l'attente de sa session",
+    !!accuse && accuse.replique === "Reçu.");
   check("la clé attention est retirée", m.attention === undefined);
   check("la migration est idempotente",
     JSON.stringify(w.migrerContenu(JSON.parse(JSON.stringify(m)))) === JSON.stringify(m));

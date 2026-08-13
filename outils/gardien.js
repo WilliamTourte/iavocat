@@ -43,6 +43,34 @@ const existe  = rel => fs.existsSync(path.join(RACINE, rel));
 const nbLignes = rel => { const s = lire(rel); return s.split("\n").length - (s.endsWith("\n") ? 1 : 0); };
 
 /* ============================================================
+   LES TERRITOIRES — et pourquoi il y en a trois, pas un
+   ------------------------------------------------------------
+   Jusqu'au 14 août, R7 et R9 portaient `marcher("app")` EN DUR, chacune avec sa
+   copie de la marche. Les huit autres règles ne regardaient que les deux pages.
+   `tests/` et `outils/` — 2 800 lignes — n'étaient donc tenus que par ESLint.
+
+   C'est exactement le mauvais découpage : `app/` porte le livrable, mais
+   `tests/` et `outils/` REFLÈTENT ses règles, et un reflet qui dérive ne se voit
+   nulle part — les suites éprouvent le jeu, jamais elles-mêmes (§16). Le relevé
+   d'extension a trouvé le territoire sain sur R7 et R9, et fautif sur R10 : le
+   prédicat `estRegle` y était recopié à la main quatre fois. On étend un filet
+   sur un terrain propre, ce qui est le bon moment pour le faire.
+   ============================================================ */
+const TERRITOIRES = ["app", "tests", "outils"];
+function fichiersJS(racines) {
+  const out = [];
+  const marcher = rel => {
+    for (const e of fs.readdirSync(path.join(RACINE, rel), { withFileTypes: true })) {
+      const r = rel + "/" + e.name;
+      if (e.isDirectory()) marcher(r);
+      else if (r.endsWith(".js")) out.push(r);
+    }
+  };
+  for (const r of racines) if (existe(r)) marcher(r);
+  return out;
+}
+
+/* ============================================================
    LE COMPTE-RENDU — la forme de `tests/harnais.js`, pour que la
    sortie du gardien se lise comme celle des suites.
    ============================================================ */
@@ -512,15 +540,7 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
    ============================================================ */
 {
   const faux = [];
-  const fichiers = [];
-  (function marcher(rel) {
-    for (const e of fs.readdirSync(path.join(RACINE, rel), { withFileTypes: true })) {
-      const r = rel + "/" + e.name;
-      if (e.isDirectory()) marcher(r);
-      else if (r.endsWith(".js")) fichiers.push(r);
-    }
-  })("app");
-  for (const f of fichiers) {
+  for (const f of fichiersJS(TERRITOIRES)) {
     const { code } = decouperJS(lire(f));
     for (const m of code.matchAll(/\.[ab]\[/g)) {
       const ligne = code.slice(0, m.index).split("\n").length;
@@ -618,15 +638,7 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
     const avant = [...code.slice(0, i).matchAll(/function\s+([A-Za-z_$][\w$]*)/g)];
     return avant.length ? avant[avant.length - 1][1] : "";
   };
-  const fichiers = [];
-  (function marcher(rel) {
-    for (const e of fs.readdirSync(path.join(RACINE, rel), { withFileTypes: true })) {
-      const r = rel + "/" + e.name;
-      if (e.isDirectory()) marcher(r);
-      else if (r.endsWith(".js")) fichiers.push(r);
-    }
-  })("app");
-  for (const f of fichiers) {
+  for (const f of fichiersJS(TERRITOIRES)) {
     if (f === "app/content.js") continue;                   // du contenu, pas du code
     const { code } = decouperJS(lire(f));
     const permis = TOLERES[f] || [];
