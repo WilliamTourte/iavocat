@@ -1,17 +1,10 @@
 /* ============================================================
    ATELIER — LE PAS-À-PAS : la simulation du déroulé.
    ============================================================ */
-/* ============================================================
-   8) ÉTAPES — B. LE PAS-À-PAS (simulation)
-   Ce n'était plus un miroir du moteur : c'en était une COPIE, qu'il
-   fallait resynchroniser à la main à chaque évolution. Depuis
-   l'extraction de app/regles.js, le pas-à-pas appelle les MÊMES
-   fonctions que le jeu, sur le MÊME état. Il ne peut plus dériver.
-   Ce qui reste propre à l'atelier, et c'est tout : il joue au grain du
-   LIEN (« composer la phrase qui réalise ce lien ») plutôt que bloc à
-   bloc — la composition bloc à bloc se voit dans l'onglet « Grammaire »
-   et dans le jeu — et il narre ses gestes privés en lignes « · ».
-   ============================================================ */
+/* 8) ÉTAPES — B. LE PAS-À-PAS (simulation). Il APPELLE les mêmes fonctions que
+   le jeu, sur le même état : il ne peut plus dériver (§12). Deux écarts assumés,
+   et c'est tout — il joue au grain du LIEN plutôt que bloc à bloc, et il narre
+   ses gestes privés en lignes « · ». */
 let SIM=null, SIMACT=[];
 /* Les règles, refaites quand le contenu change — comme MG() pour la grammaire. */
 let _rg=null, _rgSig=null;

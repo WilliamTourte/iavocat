@@ -1,36 +1,20 @@
 #!/usr/bin/env node
-/* `npm run vue` — voir le jeu tourner, pour de vrai.
+/* `npm run vue` — voir le jeu tourner, pour de vrai. Ouvre `app/index.html` en
+ * file:// dans Chromium, joue le chemin docile, capture dans `captures/`.
  *
- * Ouvre `app/index.html` en file:// dans Chromium, joue le chemin docile, et
- * dépose une capture à chaque étape dans `captures/`, en versant le fil de
- * l'avocat sur la sortie standard.
+ * Deux choses qu'il est seul à faire : éprouver le VRAI chargement des balises
+ * et de la feuille de style, là où le harnais les inline (§13) ; et permettre la
+ * relecture à l'œil, irremplaçable (§2 de la passation).
  *
- * Pourquoi cet outil existe alors que six suites tournent déjà :
+ * Ce n'est PAS une suite : aucune assertion, hors `npm test`. Il ne sort en 1
+ * que sur une erreur JS de la page. Il ne réimplémente rien — il injecte
+ * `tests/harnais.js` et appelle ses chemins, donc il joue ce que jouent les
+ * suites, sans nommer aucune pièce ni aucun empan (§16).
  *
- *   1. Le harnais de test INLINE `moteur.js`, `regles.js` et `content.js` au
- *      boot, parce que jsdom ne charge aucun <script src> (§13). Ici les trois
- *      balises se chargent pour de vrai : c'est le seul endroit du projet qui
- *      éprouve le vrai chemin de chargement du jeu.
- *   2. « La relecture à l'œil reste irremplaçable » (§6 de PASSATION.md). Une
- *      suite dit qu'une phrase s'est formée ; elle ne dit pas qu'elle se lit.
- *
- * Ce n'est PAS une suite de test : aucune assertion, et il n'entre pas dans
- * `npm test` — même statut que `demo:grammaire`. Il ne sort en 1 que si la
- * page lève une erreur JS, ce qui n'est pas un jugement mais un plantage.
- *
- * Il ne réimplémente rien : il injecte `tests/harnais.js` dans la page et
- * appelle ses fonctions de chemin, donc il joue exactement ce que jouent les
- * suites. Il ne nomme aucune pièce, aucun empan, aucune valeur (§16).
- *
- * UN ÉCART À CONNAÎTRE EN REGARDANT LES CAPTURES : le chemin docile surligne
- * sans ouvrir les pièces, là où un joueur les ouvrirait. Les puces du dossier
- * restent donc marquées « ● » (non consultée) alors que des empans sont déjà
- * retenus. C'est un artefact du pilote, pas du jeu.
- *
- * ET CE QU'IL FAUT REGARDER : la mise en forme. C'est le seul endroit du dépôt
- * où le CSS se charge pour de vrai — le harnais l'inline, ici il vient d'un
- * <link> (§13). Aucun contrôle ne le vérifie ; une page sans style se voit sur
- * les captures, et nulle part ailleurs.
+ * UN ÉCART À CONNAÎTRE : le chemin docile surligne sans ouvrir les pièces, dont
+ * les puces restent « ● ». Artefact du pilote, pas du jeu.
+ * CE QU'IL FAUT REGARDER : la mise en forme — seul endroit où le CSS se charge
+ * pour de vrai, et aucun contrôle ne le vérifie.
  */
 const fs   = require("fs");
 const path = require("path");
@@ -57,12 +41,9 @@ function trouverNavigateur() {
   return pistes.find(p => { try { return fs.statSync(p).isFile(); } catch { return false; } });
 }
 
-/* ---- Le harnais, porté dans la page -------------------------------------
-   `tests/harnais.js` est du CommonJS écrit pour Node, mais ses fonctions de
-   chemin (`composerLien`, `lienTag`, `terminer`…) ne touchent ni au disque ni
-   à jsdom : elles prennent une fenêtre et l'actionnent. Trois bouchons
-   suffisent donc à le faire vivre dans un navigateur — et on évite ainsi
-   d'en écrire une seconde version, ce que ce dépôt ne pardonne pas (§12). */
+/* ---- Le harnais, porté dans la page ---- ses fonctions de chemin prennent une
+   fenêtre et l'actionnent : trois bouchons suffisent à le faire vivre dans un
+   navigateur, et on évite d'en écrire une seconde version (§12). */
 function amorceHarnais() {
   const source = fs.readFileSync(path.join(RACINE, "tests", "harnais.js"), "utf8");
   return `(() => {
@@ -74,11 +55,9 @@ function amorceHarnais() {
   })();`;
 }
 
-/* ---- Le chemin docile, une étape à la fois -------------------------------
-   C'est le corps de `instruire()` du harnais, déroulé pas à pas pour qu'on
-   puisse capturer entre deux. La décision reste chez les autres : l'attente
-   courante vient de `regles.js` (l'exemplaire unique de la normalisation), le
-   lien et sa composition viennent du harnais. */
+/* ---- Le chemin docile, une étape à la fois ---- le corps d'`instruire()`,
+   déroulé pour capturer entre deux. La décision reste chez les autres :
+   l'attente vient de `regles.js`, le lien et sa composition du harnais. */
 const UN_PAS = `(() => {
   const H = window.__H;
   const r = R.remiseCourante(S);

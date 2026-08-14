@@ -3,17 +3,12 @@
 // l'atelier. Chaque suite garde ses assertions ; ici, que la tuyauterie.
 const { JSDOM } = require("jsdom");
 const fs = require("fs");
-/* Les projections du contenu ne se recopient pas ici : le harnais lit le MÊME
-   moteur.js que le jeu et l'atelier (§12). Il en portait deux copies —
-   l'aplatissement des empans et la marche des comparaisons emboîtées. */
+/* Les projections ne se recopient pas : le harnais lit le MÊME moteur.js que le
+   jeu et l'atelier (§12, §14). */
 const { champsDe, comparaisonsDe } = require("../app/moteur.js");
-/* …et les RÈGLES viennent de regles.js, pour la même raison — qui n'avait
-   simplement jamais été appliquée ici. `estRegle` vit hors de la fabrique
-   exprès, pour se poser sans `JEU` lié (§12) ; l'atelier l'appelle depuis le
-   3 août, le harnais le réécrivait, et `smoke_atelier.js` deux fois de plus.
-   Quatre exemplaires d'une décision que le jeu prend ailleurs : le jour où
-   elle change, les contrôles restent verts en affirmant l'ancienne vérité.
-   Une suite DÉSIGNE, elle ne DÉCIDE pas (§16) — c'est R10 qui le tient. */
+/* …et les RÈGLES viennent de regles.js, pour la même raison. Une suite DÉSIGNE,
+   elle ne DÉCIDE pas (§16) — un prédicat recopié reste vert en affirmant
+   l'ancienne vérité, et R10 le tient. */
 const { estRegle } = require("../app/regles.js");
 
 function creerHarnais(dossier){
@@ -25,23 +20,11 @@ function creerHarnais(dossier){
   function check(l,c){ if(c){pass++;console.log("  ok — "+l);} else {fail++;console.log("  ÉCHEC — "+l);} }
   function bilan(){ console.log(`\n${pass} ok, ${fail} échec(s)`); process.exit(fail?1:0); }
 
-  /* jsdom ne charge NI <script src> NI <link rel=stylesheet> : on inline tous
-     les fichiers voisins qu'une page réclame — la grammaire, les règles, le
-     contenu, les modules d'atelier, et les feuilles de style. Ce ne sont pas
-     des copies : ce sont les fichiers mêmes, relus sur le disque à chaque boot.
-     C'est ce qui permet au contenu de n'exister qu'en un exemplaire (§12).
-
-     Générique exprès : des `replace` codés en dur obligeaient à revenir ici à
-     chaque fichier ajouté, et un oubli ne se serait vu qu'en `ReferenceError`
-     au milieu d'une suite. L'ORDRE des balises est préservé, et il compte —
-     les modules de l'atelier se lisent de haut en bas (§13).
-
-     POURQUOI LE CSS AUSSI, alors qu'aucune suite ne lit une couleur : parce que
-     `getCSS()` (app/atelier/graphe.js) en lit, lui — les couleurs de trait du
-     graphe sortent de `getComputedStyle` sur `:root`. jsdom résout les
-     variables d'un <style> en ligne et rend "" pour un <link> : sans cette
-     ligne, sortir le CSS du HTML aurait changé ce que le graphe dessine sous
-     test, SANS QU'AUCUN CONTRÔLE NE BRONCHE. Le filet coûte trois lignes. */
+  /* jsdom ne charge NI <script src> NI <link rel=stylesheet> : on inline les
+     fichiers mêmes, relus à chaque boot, dans l'ORDRE des balises (§12, §13).
+     LE CSS AUSSI, bien qu'aucune suite ne lise de couleur — `getCSS()` en lit, et
+     jsdom rend "" pour un <link> : sans ce filet, sortir le CSS du HTML aurait
+     changé ce que le graphe dessine sous test sans qu'aucun contrôle ne bronche. */
   const injecter = h => h
     .replace(/<script src="([^"]+)"><\/script>/g, (_, f) => `<script>${lire(f)}</script>`)
     .replace(/<link rel="stylesheet" href="([^"]+)">/g, (_, f) => `<style>${lire(f)}</style>`);
@@ -52,9 +35,7 @@ function creerHarnais(dossier){
                  absent → content.js, le contenu livré
      - graine  : {clé:valeur} semé dans localStorage AVANT les scripts
      - url     : origine (nécessaire pour localStorage ; posée d'office si graine) */
-  /* La fenêtre, en un seul endroit : les deux boots ne diffèrent que par la
-     page qu'ils ouvrent et par l'origine qu'ils exigent. Le semis de la graine
-     s'écrivait deux fois mot pour mot — et un semis qui diverge, c'est une
+  /* La fenêtre en un seul endroit : un semis de graine qui diverge, c'est une
      suite de sauvegarde qui éprouve autre chose que ce qu'elle croit. */
   const ouvrir = (html,url,graine) =>
     new JSDOM(injecter(html),{runScripts:"dangerously", ...(url?{url}:{}),
@@ -77,32 +58,22 @@ function creerHarnais(dossier){
      éprouvent le décâblage partent de lui et le mutent. */
   function contenuLivre(){ return JSON.parse(JSON.stringify(boot().JEU)); }
 
-  /* Les quatre surfaces à lire, chacune sous le nom que l'écran lui donne
-     (docs/LEXIQUE.md) : Discussion, Mémoire, le composeur qui vit sous la
-     Discussion (§4.6), et la Plaidoirie — dont `plaidoirieVisible` dit si la
-     colonne existe, puisque vide elle est retirée (§4.9).
-     `atelier` ne désigne plus qu'une chose dans ce dépôt : `atelier_v3.html`,
-     l'outil qui écrit les affaires — voir `bootAtelier` plus haut. */
+  /* Les quatre surfaces, chacune sous le nom que l'écran lui donne
+     (docs/CARTE.md) — la Plaidoirie vide étant retirée, `plaidoirieVisible` dit
+     si la colonne existe (§4.9). */
   const discussion = w => w.document.getElementById("discussion").textContent;
   const memoire  = w => w.document.getElementById("memoire").innerHTML;
   const composeur = w => w.document.getElementById("composeur").innerHTML;
   const plaidoirie = w => w.document.getElementById("plaidoirie").innerHTML;
   const plaidoirieVisible = w => !w.document.getElementById("colPlaidoirie").hidden;
 
-  /* ---- Sélecteurs par PROPRIÉTÉ ------------------------------
-     Aucune suite ne doit nommer une pièce, un empan ou une valeur
-     du contenu : tout se dérive de la forme. Le jour où l'affaire
-     change, les tests suivent sans retouche. */
+  /* ---- Sélecteurs par PROPRIÉTÉ ---- aucune suite ne nomme une pièce, un empan
+     ou une valeur : tout se dérive de la forme (§16). */
   const J = w => w.JEU;
 
-  /* ---- LES PRÉDICATS, en un seul exemplaire -------------------
-     Deux familles de sélecteurs posent les MÊMES questions : celle qui part
-     d'une fenêtre (`lienVice`, `lienConclusion`…) et `surContenu`, qui part
-     d'un contenu brut. Les deux NOMS restent distincts — c'est l'arbitrage
-     écrit sur `surContenu`, et il tient : une fenêtre n'est pas un contenu.
-     Ce qu'on met en commun, c'est le PRÉDICAT, jamais la fonction : la
-     famille fenêtre l'emploie en `.find`, `surContenu` en `.findIndex`, et
-     « ce qui porte le vice » ne se redécide plus à deux endroits (§12). */
+  /* ---- LES PRÉDICATS, en un seul exemplaire ---- deux familles posent les
+     MÊMES questions, l'une depuis une fenêtre, l'autre depuis un contenu brut.
+     On met en commun le PRÉDICAT, jamais la fonction (§12). */
   const estVice       = L => !!L.vice;
   const estConclusion = L => !!(L.vice && L.conclusion);
   const estViceNu     = L => !!(L.vice && !L.conclusion);
@@ -115,68 +86,47 @@ function creerHarnais(dossier){
                            return (t && typeof t === "object") ? t : null; };
 
   // Liens, par leur rôle déclaré
-  /* LE PRESSENTIMENT. Depuis que l'article est obligatoire, la comparaison du
-     vice ne peut plus se clore seule : elle n'est plus déclarée comme lien à
-     part, elle est le TERME EMBOÎTÉ de la conclusion. On la lit donc là — et
-     si une affaire l'expose encore comme lien nu (écriture à l'ancienne), on
-     prend celui-là. */
+  /* LE PRESSENTIMENT : la comparaison du vice est le TERME EMBOÎTÉ de la
+     conclusion. On la lit là — ou comme lien nu, à l'ancienne. */
   const lienVice = w =>
     J(w).liens.find(estViceNu) || sousTerme(lienConclusion(w)) || undefined;
   const lienConclusion = w => J(w).liens.find(estConclusion);
   const lienFaux       = w => J(w).liens.find(estFaux);
-  /* Le lien qui porte un tag d'attente. Une même attente peut être servie de
-     plusieurs façons (c'est voulu : le chemin docile et le chemin honnête
-     ferment la même session) — `docile` prend celui qui ne passe pas par le
-     vice, ce qui définit exactement le parcours de la Fin 3. */
+  /* Le lien qui porte un tag d'attente ; `docile` prend celui qui ne passe pas
+     par le vice — c'est le parcours de la Fin 3 (§3). */
   const lienTag = (w,tag,{docile=true}={}) => {
     const cands=J(w).liens.filter(L=>L.tag===tag);
     return (docile ? cands.find(L=>!estVice(L)) : cands.find(estVice)) || cands[0];
   };
   const liensNeutres   = w => J(w).liens.filter(estNeutre);
-  /* Toutes les COMPARAISONS (arité 2) que le contenu déclare — emboîtées
-     comprises, puisque depuis que l'article est obligatoire elles ne sont plus
-     des liens de plein droit. La marche est celle de moteur.js. */
+  /* Les COMPARAISONS (arité 2) du contenu, emboîtées comprises — la marche est
+     celle de moteur.js. */
   const comparaisons = w => comparaisonsDe(J(w).liens, J(w).grammaire.formes);
   const arite = (w,L) => ((J(w).grammaire.formes||{})[L.forme]||{}).arite || 2;
-  /* Les CITATIONS que le contenu déclare : une forme d'arité 1 dont le terme
-     est ATOMIQUE. Un fait se cite, une relation se fonde (§4.5) — c'est
-     l'emboîtement, et lui seul, qui sépare une citation d'une qualification.
-     Vide pour une affaire qui n'emploie pas la seconde voie de clôture. */
+  /* Les CITATIONS : arité 1, terme ATOMIQUE — l'emboîtement, et lui seul, les
+     sépare d'une qualification (§4.5). */
   const citations = w => J(w).liens.filter(L =>
     arite(w,L)===1 && typeof (L.termes||[])[0]==="string");
   // Le bloc qui clôt sur une citation, s'il existe.
   const blocCite = w => (J(w).grammaire.blocs||[]).find(b=>b.cite && b.forme);
-  /* La liste d'attentes CÔTÉ CONTENU — les objets rendus sont ceux du contenu,
-     pour qu'une suite puisse les retoucher avant le boot. Pour une affaire à
-     l'ancienne, c'est la remise elle-même qui porte `attend` et `apres`. */
+  /* La liste d'attentes CÔTÉ CONTENU : les objets rendus sont ceux du contenu,
+     pour qu'une suite les retouche avant le boot. */
   const attentesContenu = r => Array.isArray(r.attentes) ? r.attentes : [r];
 
   // --- composer : le geste du jeu, joué par les fonctions du moteur ---
   const idBloc = (w,id) => w.R.blocsOfferts(w.S).findIndex(b=>b.id===id);
-  /* L'index, parmi les blocs offerts, du TERME QUI PREND UN EMPAN. Ce calcul
-     vit dans regles.js (`indexTermeChamp`, que `jeu.js` emploie pour rendre les
-     puces inertes) ; cinq endroits des suites le réécrivaient en `findIndex`.
-     La garde d'`indexTermeChamp` — « -1 si une phrase close attend » — ne change
-     aucun de ces cinq résultats : tous s'appellent composition ouverte, et
-     `poserBloc` remet `S.prete` à null en entrée. Une suite demande aux règles,
-     et ne les redécide pas non plus (§16).
-     À NE PAS confondre avec ses deux voisins : le second empan porte en plus
-     `deduit` (voir `poserComparaison`), et `blocChamp` cherche un ID de bloc
-     dans la grammaire, pas un rang dans ce qui est offert ici et maintenant. */
+  /* Le TERME QUI PREND UN EMPAN, parmi les blocs offerts — le calcul vit dans
+     regles.js (§16). À ne pas confondre : le second empan porte en plus `deduit`,
+     et `blocChamp` cherche un ID de bloc, pas un rang. */
   const iTermeChamp = w => w.R.indexTermeChamp(w.S);
-  /* Défaire une clé « pid.eid ». L'atelier a nommé ce geste `deK` le 13 août
-     (`noyau.js`, l'inverse de son `K(pid,ch)`) parce que dix endroits le
-     coupaient à la main ; le harnais en avait cinq et n'en avait pas hérité.
-     On coupe au PREMIER point, comme lui : c'est le pid qui ne peut pas en
-     contenir, pas l'eid. */
+  /* Défaire une clé « pid.eid », comme le `deK` de l'atelier : on coupe au
+     PREMIER point — c'est le pid qui ne peut pas en contenir, pas l'eid. */
   const deK = k => { const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; };
   const surligner = (w,k) => { const [pid,eid]=deK(k); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
-  /* Compose la phrase qui réalise un lien donné, quel qu'il soit : on
-     surligne ce qu'il faut, puis on parcourt l'automate en choisissant, à
-     chaque état, le bloc qui mène à la forme voulue. Rend l'index de la
-     phrase au brouillon (ou -1 si elle n'a pas pu se former). */
+  /* Compose la phrase qui réalise un lien : surligner, puis parcourir l'automate
+     vers la forme voulue. Rend l'index au brouillon, ou -1. */
   function composerLien(w,L){
     const f=(J(w).grammaire.formes||{})[L.forme]||{};
     w.viderCompo();
@@ -184,9 +134,8 @@ function creerHarnais(dossier){
 
     if((f.arite||2)===1){
       const sous=(L.termes||[])[0]||{};
-      /* 0) LA CITATION (§4.5) : un fait se cite. Un seul empan, clos par une
-            liaison qui n'emboîte rien — pas d'article, il n'y a pas de
-            raisonnement à fonder. */
+      /* 0) LA CITATION (§4.5) : un empan, clos par une liaison qui n'emboîte
+            rien — pas d'article, il n'y a pas de raisonnement à fonder. */
       if(typeof (L.termes||[])[0]==="string"){
         const k=(L.termes||[])[0];
         surligner(w,k);
@@ -222,19 +171,16 @@ function creerHarnais(dossier){
     }
     return trouve();
   }
-  /* Les deux termes et la liaison d'une forme d'arité 2, SANS chercher à clore :
-     selon la grammaire on se retrouve soit déjà à la fin (à l'ancienne), soit
-     sur l'état qui offre « et donc ? ». */
+  /* Les deux termes d'une forme d'arité 2, SANS chercher à clore : selon la
+     grammaire, on finit à la fin (à l'ancienne) ou sur « et donc ? » (§4.5). */
   function poserComparaison(w,L){
     const G=J(w).grammaire;
     const [t0,t1]=L.termes||[];
     if(typeof t0!=="string" || typeof t1!=="string") return false;
     surligner(w,t0); surligner(w,t1);
     const bT=idBloc(w,blocChamp(w)); if(bT<0) return false;
-    /* C'est une SONDE : quand la comparaison n'est pas ouverte (session 1, où
-       le second empan attend sa pièce), poser le premier terme suffit à clore
-       une citation — une suite unique n'est pas un choix (§4.5). Une sonde qui
-       échoue ne doit rien laisser au journal : on note où l'on en était. */
+    /* Une SONDE : en session 1, poser le premier terme suffit à clore une
+       citation (§4.5) — et une sonde qui échoue ne laisse rien au journal. */
     const n0=w.S.brouillon.length, p0=w.S.prete;
     const echec=()=>{ w.S.brouillon.length=n0; w.S.prete=p0; w.viderCompo(); return false; };
     w.poserBloc(bT,iRetenu(w,t0));
@@ -251,9 +197,9 @@ function creerHarnais(dossier){
     }
     return true;
   }
-  /* Fait partir toutes les remises, sans jouer l'instruction. Utile depuis que
-     les liaisons-articles sont filtrées par livraison (§4.5) : une suite qui
-     compose une conclusion sans jouer doit d'abord avoir reçu le texte. */
+  /* Fait partir toutes les remises sans jouer l'instruction : les
+     liaisons-articles étant filtrées par livraison (§4.5), une suite qui compose
+     une conclusion doit d'abord avoir reçu le texte. */
   function livrerTout(w){
     let garde=0;
     while(w.S.remisesEnvoyees < J(w).remises.length && garde++<20) w.R.envoyerRemise(w.S);
@@ -292,12 +238,9 @@ function creerHarnais(dossier){
     const livrees=new Set(w.R.piecesLivrees(w.S));
     return (J(w).grammaire.blocs||[]).filter(b=>b.imbrique && b.forme && (!b.piece || livrees.has(b.piece)));
   };
-  /* Des phrases sensées qui ne portent AUCUN lien : la marge de bruit. Sert à
-     vérifier que composer et verser restent gratuits et illimités.
-     Depuis que l'article est obligatoire, une phrase de bruit est une
-     comparaison quelconque QUALIFIÉE par un article quelconque — c'est-à-dire
-     bien formée, fondée, et sans le moindre intérêt. C'est exactement ce que
-     l'invariant demande : « sensé » ne doit jamais valoir « correct ». */
+  /* Des phrases sensées qui ne portent AUCUN lien : la marge de bruit — une
+     comparaison quelconque QUALIFIÉE par un article quelconque, bien formée,
+     fondée, sans intérêt. « Sensé » ne doit jamais valoir « correct » (§14). */
   function phrasesBruit(w,n){
     const G=J(w).grammaire;
     const emp=w.CHAMPS;
@@ -330,10 +273,9 @@ function creerHarnais(dossier){
           if(composerLien(w,cand)>=0) fait++;
         }
       }
-    /* Depuis que le fait se cite, chaque empan est à lui seul une phrase close
-       possible. D'une autre nature : elle ne se fonde que sur elle-même, donc
-       elle ne sert pas à chercher — les citer toutes ne dit rien de plus que
-       les avoir lues. Mais elle compte dans la marge. */
+    /* Chaque empan est à lui seul une phrase close possible : elle ne se fonde
+       que sur elle-même, donc ne sert pas à chercher — mais compte dans la
+       marge (§4.5). */
     const bc=blocCite(w);
     if(bc) for(let i=0;i<emp.length&&fait<n;i++){
       const cand={forme:bc.forme,termes:[emp[i].id]};
@@ -345,10 +287,9 @@ function creerHarnais(dossier){
   }
 
   // Pièces, par leur forme
-  /* La famille fenêtre passe par `surContenu` là où la question est exactement
-     la même : `J(w)` EST un contenu. Le prédicat n'existe alors qu'une fois, et
-     les deux noms restent (`surContenu` est déclaré plus bas — ces flèches ne
-     s'évaluent qu'à l'appel, bien après). */
+  /* La famille fenêtre passe par `surContenu` là où la question est la même :
+     `J(w)` EST un contenu (`surContenu` est déclaré plus bas — ces flèches ne
+     s'évaluent qu'à l'appel). */
   const pidAvecDeclenche = w => surContenu.pidDeclenche(J(w));
   const pidRegle = w => surContenu.pidRegle(J(w));
   const pidPremiereRemise = w => (J(w).remises[0].pieces||[])[0];

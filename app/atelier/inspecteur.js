@@ -43,11 +43,9 @@ function inspFormPiece(){
       <button onclick="formPiece=null;render()">Annuler</button>
     </div>`;
 }
-/* La GARDE reste avant l'appel, la QUEUE passe après : `muter` porte `pushUndo`
-   avant et `autosave(); render()` après, et un `return` dans son argument n'y
-   couperait pas (§2 de la passation). C'est la forme des dernières mutations
-   restées à la main quand `muter` a été nommé — toutes pour la même raison :
-   elles renoncent avant, ou font quelque chose après le redessin. */
+/* La GARDE avant l'appel, la QUEUE après : `muter` porte `pushUndo` avant et
+   `autosave(); render()` après, et un `return` dans son argument n'y couperait
+   pas (§2 de la passation). */
 function creerPiece(){
   const pid=sanId($("npId").value);
   if(!pid){ toastInsp("Identifiant vide ou invalide."); return; }
@@ -203,13 +201,10 @@ function majLien(i,prop,val){ muter(()=>{
 function demanderSupprLien(i){ demanderSuppr("lien:"+i,()=>{
   CONTENU.liens.splice(i,1); selEdge=null;
 }); }
-/* Supprimer un empan, c'est aussi retirer son marqueur du texte de la pièce —
-   sans quoi le diagnostic signale un « Marqueur orphelin » que l'atelier vient
-   de créer lui-même, et qu'il faut réparer à la main dans l'éditeur.
-   IL NE LE RETIRAIT JAMAIS. Le motif s'écrivait avec QUATRE antislashs, ce qui
-   en fait deux dans la chaîne, donc un antislash LITTÉRAL dans le motif compilé
-   (`\\s*\\{\\{e_x\\}\\}`) : il ne pouvait correspondre à rien. Deux suffisent —
-   la chaîne en porte un, la regex l'entend comme une échappe. */
+/* Supprimer un empan retire aussi son marqueur du texte, sans quoi le
+   diagnostic signale un « Marqueur orphelin » que l'atelier vient de créer.
+   ATTENTION AU MOTIF : quatre antislashs en font un LITTÉRAL dans la regex
+   compilée, qui ne correspond alors à rien. Deux suffisent. */
 function demanderSupprChamp(pid,ch){ demanderSuppr("champ:"+K(pid,ch),()=>{
   const p=CONTENU.pieces[pid], k=K(pid,ch);
   delete p.empans[ch];
@@ -218,13 +213,9 @@ function demanderSupprChamp(pid,ch){ demanderSuppr("champ:"+K(pid,ch),()=>{
   CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>x!==k);
   selA=selB=null;
 }); }
-/* ---- Renommage d'identifiants ------------------------------
-   Le seul geste dangereux à la main : un id de pièce est référencé
-   par les liens, les remises et la mise en page (_pos). Ici, tout
-   est réécrit d'un bloc. Les ids de cases ne sont référencés nulle
-   part ailleurs (apparait_si/leve pointent des drapeaux, pas des
-   cases) : on ne déplace que la clé. Retourne null si OK, sinon
-   le message d'erreur. */
+/* ---- Renommage d'identifiants ---- le seul geste dangereux à la main : un id
+   de pièce est référencé par les liens, les remises et `_pos`, et tout est
+   réécrit d'un bloc. Rend null si OK, sinon le message d'erreur. */
 function idValide(neuf,existants,ancien){
   const n=String(neuf||"").trim();
   if(!n) return "id vide.";

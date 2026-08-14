@@ -1,14 +1,9 @@
 /* ============================================================
    ATELIER — L'ONGLET GRAMMAIRE : le geste de composition, pour le SENTIR.
    ============================================================ */
-/* ============================================================
-   10bis) ONGLET GRAMMAIRE — le geste de composition, pour le SENTIR
-   Branché sur LE CONTENU COURANT : sa grammaire, ses empans, ses liens
-   (docs/ARCHITECTURE.md §14). Il lit CONTENU, il ne l'écrit jamais. Le
-   moteur est app/moteur.js, chargé tel quel — jamais recopié. Sous jsdom
-   (smoke_atelier), les <script src> ne se chargent pas → le moteur est
-   absent → on affiche un encart, sans planter.
-   ============================================================ */
+/* 10bis) ONGLET GRAMMAIRE — composer, pour le SENTIR. Branché sur LE CONTENU
+   COURANT (§14) : il le lit, ne l'écrit jamais. Le moteur est app/moteur.js,
+   chargé tel quel. Sous jsdom il est absent : on affiche un encart. */
 let GRAM={ squel:0, vals:{}, notes:[], _m:null };
 /* L'onglet Grammaire compose sur LE CONTENU COURANT : sa grammaire, ses
    empans, ses liens. C'est le même moteur que le jeu (app/moteur.js). */
@@ -55,23 +50,12 @@ function gramGarderNote(){
   renderGrammaire();
 }
 function gramSupprNote(i){ GRAM.notes.splice(i,1); GRAM.vals={}; renderGrammaire(); }
-/* DENSITÉ LIVE — le même calcul que la section 5 du banc d'essai.
-   ------------------------------------------------------------
-   Ce panneau existe pour UN chiffre : la marge de bruit, les phrases sensées
-   qui ne portent aucun lien. Si elle tombait à 0, « sensé » vaudrait
-   « correct » et l'interface trahirait (§14).
-
-   Il le calculait en prenant la DERNIÈRE FORME DÉCLARÉE du squelette —
-   `s.map(b=>b.forme).filter(Boolean).pop()` — ce qui était juste tant que toute
-   forme était portée par une liaison. Depuis la déduction (§4.5), un bloc
-   `deduit` fait CALCULER la forme des valeurs, et une liaison `imbrique`
-   EMBOÎTE ce qui précède au lieu de s'y ajouter : la forme reconstruite à la
-   main était d'arité 1 avec deux termes à plat, refusée pour « arité », à
-   chaque combinaison. Sur content.js : 24 sensées annoncées, 330 réelles ;
-   21 de marge annoncés, 315 réels.
-
-   On ne réécrit donc plus la réduction : on construit la chaîne de blocs et on
-   appelle `reduire`, comme le composeur du jeu (§12, §15). */
+/* DENSITÉ LIVE — le même calcul que le banc d'essai, pour UN chiffre : la marge
+   de bruit. Si elle tombait à 0, « sensé » vaudrait « correct » (§14).
+   ON NE RÉÉCRIT PAS LA RÉDUCTION : on bâtit la chaîne de blocs et on appelle
+   `reduire`, comme le composeur du jeu (§12, §15). L'avoir reconstruite à la
+   main annonçait 21 de marge au lieu de 315 — un reflet qui ment sans rien
+   casser, et qu'aucune suite ne voyait. */
 function gramDensite(m){
   const {CHAMPS}=GRAM._data;
   const notes=GRAM.notes.map(n=>n.red);
@@ -88,10 +72,9 @@ function gramDensite(m){
   }
   return {total,senses,avecLien};
 }
-/* Ce qu'un squelette annonce comme forme, AVANT de connaître ses valeurs. Une
-   liaison la déclare ; un bloc `deduit` ne peut pas — elle se calcule des deux
-   empans, et le squelette seul ne sait pas laquelle ce sera. On le dit, plutôt
-   que d'écrire « undefined ». */
+/* Ce qu'un squelette annonce comme forme AVANT de connaître ses valeurs : une
+   liaison la déclare, un bloc `deduit` ne peut pas. On le dit plutôt que
+   d'écrire « undefined ». */
 const formeSquelette = s =>
   s.map(b=>b.forme).filter(Boolean).pop() || (s.some(b=>b.deduit) ? "déduite des valeurs" : "—");
 function renderGrammaire(){

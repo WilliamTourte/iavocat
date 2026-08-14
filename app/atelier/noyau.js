@@ -1,10 +1,6 @@
-/* ============================================================
-   ATELIER — LE NOYAU
-   Le contenu chargé, les outils, l'état d'interface, l'annulation, les
-   onglets, l'échappement. Tout le reste en dépend : ce fichier se charge
-   EN PREMIER (c'est le seul dont le corps s'exécute au chargement — son
-   `let CONTENU = contenuLivre()`). Voir docs/ARCHITECTURE.md §13.
-   ============================================================ */
+/* ATELIER — LE NOYAU : le contenu chargé, les outils, l'état d'interface,
+   l'annulation, les onglets, l'échappement. Il se charge EN PREMIER — seul
+   fichier dont le corps s'exécute au chargement (§13). */
 /* ============================================================
    1) LE CONTENU — celui de content.js, et lui seul.
    ============================================================ */
@@ -14,10 +10,8 @@ const LIVRE = (typeof window!=="undefined" && window.CONTENU)
             ? JSON.parse(JSON.stringify(window.CONTENU)) : null;
 if(typeof window!=="undefined") window.LIVRE=LIVRE;   // exposé (console, tests)
 
-/* Les ANNOTATIONS d'atelier, elles, appartiennent à l'atelier : elles ne sont
-   pas du contenu (l'export les retire, comme toute clé « _ »). `_bruit` marque
-   les empans qu'on veut voir rester inertes — c'est une note d'auteur sur le
-   dossier, pas une donnée que le jeu lit. */
+/* Les ANNOTATIONS d'atelier ne sont pas du contenu : l'export retire toute clé
+   « _ ». `_bruit` est une note d'auteur, jamais une donnée que le jeu lit. */
 const ANNOTATIONS = {
   _bruit:["p_pv.e_app","p_pv.e_equip","p_pv.e_porte","t_voisin.e_vehic","t_voisin.e_pal",
           "p_adn.e_scA","p_adn.e_scB","p_scene.e_ou","p_scene.e_h","p_scene.e_hg",
@@ -45,21 +39,18 @@ function clone(o){ return JSON.parse(JSON.stringify(o)); }
 const $ = id => document.getElementById(id);
 const joli = k => k.replace(/_/g," ");
 const K = (pid,ch) => pid+"."+ch;
-/* L'INVERSE de K, qui manquait : dix endroits écrivaient `String(k).split(".")`
-   pour défaire un « pid.eid ». Une clé se fabrique par K et se défait par deK —
-   le format n'est plus écrit qu'ici. On coupe au PREMIER point, comme le faisait
-   le renommage de pièce, le seul des dix à s'en être soucié. */
+/* L'INVERSE de K : une clé se fabrique par K et se défait par deK, le format
+   n'est écrit qu'ici. On coupe au PREMIER point — c'est le pid qui ne peut pas
+   en contenir. */
 function deK(k){ const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; }
 function sanId(s){ return String(s||"").trim().replace(/[^\p{L}\p{N}_]/gu,"_").replace(/_+/g,"_").replace(/^_|_$/g,""); }
 /* Un seul exemplaire, dans regles.js : c'est une règle, pas une commodité
    d'atelier. Export statique, donc disponible même sans `JEU` lié (§12). */
 const estRegle = p => window.ReglesJeu.estRegle(p);
 /* La liste d'attentes d'une remise (§3). ATTENTION — ce n'est PAS le
-   `attentesDe` de regles.js, et la différence est voulue : celui-ci rend, pour
-   une remise écrite à l'ancienne, la remise ELLE-MÊME (`[r]`) et non une paire
-   recopiée, pour que l'inspecteur l'édite en place. Sur une affaire au schéma 3
-   les deux rendent le même tableau `r.attentes`. Deux fonctions, deux emplois :
-   on ne les fusionne pas, on dit lequel est lequel (docs/LEXIQUE.md). */
+   `attentesDe` de regles.js : celui-ci rend, pour une remise à l'ancienne, la
+   remise ELLE-MÊME, pour que l'inspecteur l'édite en place. *On ne les fusionne
+   pas, on dit lequel est lequel* (docs/CARTE.md). */
 function attentesDeRemise(r){
   if(!r) return [];
   if(Array.isArray(r.attentes)) return r.attentes;
@@ -67,27 +58,21 @@ function attentesDeRemise(r){
 }
 function empanDe(pid,eid){ const p=CONTENU.pieces[pid]; return p && p.empans && p.empans[eid]; }
 function empanExiste(pid,eid){ return !!empanDe(pid,eid); }
-/* La dimension d'un EMPAN — écrite sur l'empan, il n'y a plus de table globale
-   ni de surcharge par pièce (schéma 3). ELLE NE S'APPELLE PLUS `dimDe` : c'est
-   le nom que `moteur.js` donne à la dimension d'un TERME RÉDUIT, qui répond
-   « affirmation » pour un terme emboîté là où celle-ci ne répond jamais ça.
-   Deux questions, deux noms — comme `toutesPiecesLivrees` ci-dessous
-   (docs/LEXIQUE.md). */
+/* La dimension d'un EMPAN. ELLE NE S'APPELLE PLUS `dimDe` : c'est le nom que
+   `moteur.js` donne à celle d'un TERME RÉDUIT, qui répond « affirmation » pour
+   un terme emboîté. Deux questions, deux noms (docs/CARTE.md). */
 function dimEmpan(pid,eid){ const e=empanDe(pid,eid); return e && e.dim; }
 function toutesDims(){ return [...(CONTENU.dimensions||[])]; }
 function estBruit(pid,eid){ return (CONTENU._bruit||[]).includes(K(pid,eid)); }
-/* TOUTES les pièces qu'une remise livre, à un moment ou à un autre — l'atelier
-   regarde le dossier fini. À ne pas confondre avec `piecesLivrees(S)` de
-   regles.js, qui est PROGRESSIF (jusqu'à `S.remisesEnvoyees`) : deux questions
-   différentes, donc deux noms (docs/LEXIQUE.md). */
+/* TOUTES les pièces qu'une remise livre : l'atelier regarde le dossier fini. À
+   ne pas confondre avec `piecesLivrees(S)` de regles.js, PROGRESSIF — deux
+   questions, deux noms (docs/CARTE.md). */
 function toutesPiecesLivrees(){
   const s=new Set(); for(const r of CONTENU.remises||[]) for(const p of r.pieces||[]) s.add(p); return s;
 }
-/* Tous les empans du dossier, aplatis en "pid.eid" — le vocabulaire des TERMES.
-   L'aplatissement vit dans moteur.js : l'atelier en portait une copie identique
-   à celle du jeu au caractère près, et deux exemplaires divergent en silence
-   (§12). Sans moteur chargé (file:// incomplet), le dossier n'a pas de
-   vocabulaire — le diagnostic et l'onglet Grammaire le disent déjà. */
+/* Les empans aplatis en "pid.eid" — le vocabulaire des TERMES. L'aplatissement
+   vit dans moteur.js, en un exemplaire (§12). Sans moteur chargé, le dossier n'a
+   pas de vocabulaire, et le diagnostic le dit. */
 function empansPlats(){
   return window.MoteurGrammaire ? window.MoteurGrammaire.champsDe(CONTENU) : [];
 }
@@ -133,11 +118,8 @@ function labelLien(L){
     : `${t[0]||"…"} ${texteForme(L.forme)} ${t[1]||"…"}`;
 }
 
-/* La marche récursive sur les termes d'un lien, avec une substitution aux
-   FEUILLES. Elle existait en trois exemplaires : deux dans les renommages
-   d'identifiants (inspecteur.js), plus `termesFeuilles` ci-dessus qui parcourt
-   la même structure pour ne faire que la lire. L'emboîtement du schéma 3 est un
-   format ; on ne le déplie qu'ici. */
+/* La marche récursive sur les termes d'un lien, avec substitution aux FEUILLES.
+   L'emboîtement du schéma 3 est un format : on ne le déplie qu'ici. */
 function reecrireTermes(t,f){
   return Array.isArray(t) ? t.map(u=>reecrireTermes(u,f))
        : typeof t==="string" ? f(t)
@@ -164,41 +146,29 @@ function undo(){
   majUndoBtn(); autosave(); render();
 }
 
-/* ============================================================
-   2 bis) LES QUATRE GESTES QUE TOUT L'ATELIER REFAIT
-   ------------------------------------------------------------
-   Ils ne décident rien de neuf : ils nomment ce qui était recopié. L'atelier a
-   été découpé en fichiers le 3 août sans être dégraissé à l'intérieur, et ces
-   quatre-là s'y écrivaient soixante fois — jamais deux fois pareil.
+/* 2 bis) LES QUATRE GESTES QUE TOUT L'ATELIER REFAIT. Ils ne décident rien : ils
+   nomment ce qui était recopié soixante fois, jamais deux fois pareil.
    TOUS SONT DES `function` DÉCLARÉES, et il le faut : `btnSuppr` engendre un
    `onclick` qui vise `demanderSuppr`, et seule une déclaration de fonction est
-   une propriété de `window` (docs/PASSATION.md §2 — un `const` de haut niveau
-   occupe le nom sans le donner).
-   ============================================================ */
+   une propriété de `window` (§2 de la passation). */
 
-/* 1. L'ÉPILOGUE D'UNE MUTATION. Trente-neuf fonctions ouvraient par `pushUndo()`
-   et fermaient par `autosave(); render()`. Ce qui les distingue tient sur une
-   ligne : ce qu'elles écrivent. Une seule ordonnance, un seul endroit où
-   l'annulation, la persistance et le redessin restent d'accord. */
+/* 1. L'ÉPILOGUE D'UNE MUTATION : `pushUndo()` avant, `autosave(); render()`
+   après. Une seule ordonnance — et une mutation qui doit renoncer garde sa garde
+   AVANT l'appel, `muter` ne se laisse pas interrompre de l'intérieur. */
 function muter(f){ pushUndo(); f(); autosave(); render(); }
 
-/* 2. ÉCRIRE, OU RETIRER LA CLÉ QUAND C'EST VIDE. Neuf mutations portaient cet
-   idiome, chacune à sa façon — l'export ne doit pas emporter de clé vide, et
-   `attend` ne veut pas d'espaces au bord. Un booléen faux se retire aussi :
-   c'est le cas de `une_fois` et des trois drapeaux d'un lien. */
+/* 2. ÉCRIRE, OU RETIRER LA CLÉ QUAND C'EST VIDE : l'export ne doit emporter
+   aucune clé vide. Un booléen faux se retire aussi (`une_fois`, les drapeaux). */
 function poserOuRetirer(obj,prop,v,opts){
   const vide = typeof v==="string" ? !v.trim() : !v;
   if(vide){ delete obj[prop]; return; }
   obj[prop] = ((opts||{}).trim && typeof v==="string") ? v.trim() : v;
 }
 
-/* 3. LA REMISE À ZÉRO DE LA SÉLECTION. Sept endroits l'écrivaient à la main, et
-   PAS DEUX PAREILLES — c'est la dérive que le §12 décrit, attrapée sur le fait :
-   `pointer()` (diagnostic.js) oubliait `formPieceEdit`, si bien que cliquer une
-   ligne du diagnostic pendant qu'on éditait le texte d'une pièce ne montrait
-   rien, `renderInsp` rendant l'éditeur en priorité. Une seule exception, et elle
-   est de nature : `clicChamp` construit sa paire d'empans, il garde donc la
-   sienne (`garderEmpans`). */
+/* 3. LA REMISE À ZÉRO DE LA SÉLECTION. Sept endroits l'écrivaient, et PAS DEUX
+   PAREILLES — celle de `pointer()` oubliait `formPieceEdit`, et cliquer une
+   ligne du diagnostic ne montrait alors rien. Une exception, de nature :
+   `clicChamp` construit sa paire d'empans (`garderEmpans`). */
 function reinitSelection(opts){
   if(!(opts||{}).garderEmpans){ selA=null; selB=null; }
   selEdge=null; flagged.clear();
@@ -206,18 +176,15 @@ function reinitSelection(opts){
   pendingDel=null;
 }
 
-/* 4. LA SUPPRESSION EN DEUX CLICS. Cinq fonctions tenaient la même garde, et
-   cinq boutons redisaient la même condition ailleurs — or le bouton armé doit
-   changer de CLASSE et de MOT ensemble, sans quoi il ment. Les deux moitiés du
-   geste vivent désormais l'une à côté de l'autre. */
+/* 4. LA SUPPRESSION EN DEUX CLICS : le bouton armé change de CLASSE et de MOT
+   ensemble, sans quoi il ment — les deux moitiés du geste vivent côte à côte. */
 function demanderSuppr(cle,faire){
   if(pendingDel!==cle){ pendingDel=cle; return render(); }
   pendingDel=null; muter(faire);
 }
-/* Le fragment conditionnel s'écrit `${arme?"arm":""}`, jamais `${arme?" arm":""}`
-   — et ce n'est pas cosmétique : le gardien (R4) relève une classe soit dans un
-   `class="…"`, soit dans une chaîne qui n'est QU'un mot. Un espace en tête et
-   `.arm` passe pour une famille morte. Il l'a dit le jour même. */
+/* Le fragment s'écrit `${arme?"arm":""}`, jamais `${arme?" arm":""}` : R4 relève
+   une classe dans une chaîne qui n'est QU'un mot — un espace en tête, et `.arm`
+   passe pour une famille morte. */
 function btnSuppr(cle,cls,appel,mot,motArme){
   const arme = pendingDel===cle;
   return `<button class="${cls} ${arme?"arm":""}" onclick="${appel}">${arme?motArme:mot}</button>`;
@@ -265,12 +232,11 @@ function appliquerJson(){
 
 
 /* ============================================================
-   11) L'ÉCHAPPEMENT — le même couple de noms que le jeu (docs/LEXIQUE.md)
+   11) L'ÉCHAPPEMENT — le même couple de noms que le jeu (docs/CARTE.md)
    ============================================================ */
-/* Le même échappement que le `esc` du jeu, sous un autre nom : deux documents
-   indépendants, aucun fichier partagé où poser la fonction commune. Doublet
-   assumé — deux noms pour une chose se remarquent, un nom pour deux choses se
-   subit (docs/LEXIQUE.md). Ce qui n'était pas assumé, c'est que `escapeH(null)`
-   écrivait « null » là où `esc(null)` écrit « » : aligné. */
+/* Le même échappement que le `esc` du jeu, sous un autre nom : aucun fichier
+   n'est chargé par les deux pages où poser la fonction commune. Doublet assumé —
+   *deux noms pour une chose se remarquent, un nom pour deux choses se subit*
+   (docs/CARTE.md). */
 function escapeH(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function escapeAttr(s){ return escapeH(s).replace(/"/g,"&quot;"); }

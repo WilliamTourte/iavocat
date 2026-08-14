@@ -195,11 +195,8 @@ console.log("\n=== Les trois drapeaux du vice ===");
   check("→ Fin 1", H.numeroFin(H.terminer(w)) === "1");
 }
 
-/* LES MANUELS N'ONT PLUS DE SUITE. Sept contrôles éprouvaient `openManuels()`,
-   orpheline à l'écran depuis le retrait du <header> : ils étaient la seule
-   chose qui la maintenait en vie, c'est-à-dire qu'on éprouvait un chemin que le
-   joueur ne pouvait pas prendre. La fonction d'écran est retirée ; la règle
-   reste dans regles.js (`reglesLivrees`, `porteDe`). Le jour où les Manuels se
+/* LES MANUELS N'ONT PLUS DE SUITE (§16) : on éprouvait un chemin que le joueur
+   ne pouvait pas prendre. La règle reste dans regles.js ; le jour où ils se
    rebranchent, ces contrôles reviennent avec eux — et pas avant. */
 
 console.log("\n=== Les dimensions viennent du contenu, pas du moteur ===");

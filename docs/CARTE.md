@@ -1,215 +1,182 @@
-# IAvocat — la carte du code
+# IAvocat — la carte
 
-*Où vivent les choses. Rien d'autre.*
+*Où vit une chose, et comment elle s'appelle. Rien d'autre.*
 
-> **Ce fichier ne dit jamais pourquoi.** Il localise, il n'explique pas : le §12 pose les quatre
-> sources de vérité, et aucune n'est ici. Chaque ligne renvoie au § qui tranche. En cas d'écart avec le code, **c'est le code qui a raison** : un index vieillit,
-> une règle non.
+> **Ce fichier n'explique jamais** : il localise et il nomme — le §12 pose les quatre sources de
+> vérité, aucune n'est ici. En cas d'écart avec le code, **c'est le code qui a raison**. Indexé par
+> **noms de fonctions**, jamais par numéros de ligne.
 >
-> Il est indexé par **noms de fonctions**, jamais par numéros de ligne — les lignes pourrissent en
-> trois commits, les noms tiennent. Un `grep -n "function nomDeLaFonction"` donne la ligne du jour.
+> Pour la partie **Les mots**, deux régimes : *quel mot dire* — ce fichier fait foi ; *ce qui porte
+> ce mot* — le code fait foi. Un arbitrage de vocabulaire ne tranche jamais une question de sens.
 
-## Les quatre territoires, en une ligne chacun (§9)
+# Où
+
+## Les quatre territoires (§9)
 
 | Fichier | ~lignes | Ce qu'il porte | Ce qu'il ne porte jamais |
 |---|---|---|---|
 | `app/content.js` | 664 | **le contenu** — une affaire, en un seul exemplaire | aucune règle |
-| `app/regles.js` | 379 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
-| `app/moteur.js` | 245 | **la grammaire** — composer, valider, rendre — **et les projections du contenu** (§14) | aucune donnée |
-| `app/index.html` | 85 | **la structure du jeu** — trois surfaces, la clôture, la modale, le bandeau du tutoriel | aucun style, aucun script en ligne |
-| `app/jeu.css` | 244 | **la mise en forme du jeu** — les jetons, les surfaces, le tutoriel | rien que le JS relise |
-| `app/jeu.js` | 586 | **l'écran et les gestes** — rendu, sauvegarde de partie, tutoriel | ne décide rien ; n'enveloppe plus les lectures |
-| `app/atelier_v3.html` + `app/atelier/` | 156 + 260 (css) + 1985 (js) | **l'atelier** — écrire et diagnostiquer une affaire, **un fichier par outil**. **Seule chose que ce mot désigne** (`docs/LEXIQUE.md`) | ne recopie rien (§12), *y compris de lui-même* |
+| `app/regles.js` | 342 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
+| `app/moteur.js` | 212 | **la grammaire** — composer, valider, rendre — **et les projections du contenu** (§14) | aucune donnée |
+| `app/index.html` | 75 | **la structure du jeu** | aucun style, aucun script en ligne |
+| `app/jeu.css` | 206 | **la mise en forme du jeu** | rien que le JS relise |
+| `app/jeu.js` | 480 | **l'écran et les gestes** — rendu, sauvegarde, tutoriel | ne décide rien |
+| `app/atelier_v3.html` + `app/atelier/` | 133 + 260 (css) + 1873 (js) | **l'atelier** — écrire et diagnostiquer une affaire, un fichier par outil | ne recopie rien (§12), *y compris de lui-même* |
 
-`regles.js` et `moteur.js` sont en **mode double** — `require` (tests, banc) ou `<script src>` (jeu,
-atelier). Les deux exposent une **fabrique** : `creerRegles(JEU, M)` et `creerMoteur(GRAMMAIRE, CHAMPS, LIENS)`.
-Ils exposent aussi, **hors fabrique**, ce qui ne dépend d'aucun état : `MoteurGrammaire.champsDe`,
-`.comparaisonsDe`, `.couleurDim` et `ReglesJeu.estRegle` — les projections d'un contenu, en un seul
-exemplaire (§12, §14). Elles sont **cloîtrées** dans une fermeture : un nom de haut niveau y serait un
-nom pris dans la page qui charge le fichier.
+Quatre dossiers : `app/` (le livrable), `docs/`, `tests/` (§16), `grammaire/` (le banc d'essai, qui
+consomme `../app/moteur.js`). `regles.js` et `moteur.js` sont en **mode double** — `require` ou
+`<script src>` — et exposent une **fabrique** : `creerRegles(JEU, M)`, `creerMoteur(GRAMMAIRE,
+CHAMPS, LIENS)`. Hors fabrique et **cloîtrés** (§9) : `MoteurGrammaire.champsDe`, `.comparaisonsDe`,
+`.couleurDim`, `ReglesJeu.estRegle`.
 
-**Une page ne porte que sa structure** : le CSS entre par `<link>`, le JS par `<script src>`. Un script classique externe partage la même portée globale qu'un script en ligne — c'est ce qui laisse les `onclick=` du HTML engendré trouver leurs fonctions.
-
-**Les huit modules de l'atelier** se chargent en portée globale classique, **dans cet ordre** — la page
-ne garde que son HTML, son CSS et six lignes de démarrage :
+## Les huit modules de l'atelier, dans leur ordre de chargement
 
 | Module | Ce qu'il porte |
 |---|---|
-| `noyau.js` | le contenu chargé, les outils, l'état d'interface, l'annulation, les onglets, l'échappement — **et les quatre gestes ci-dessous**. **En premier** : le seul dont le corps s'exécute au chargement (`let CONTENU = contenuLivre()`) |
-| `graphe.js` | le canevas, les traits, le clic dessus — l'**espace** du dossier. Seul endroit où du CSS traverse vers du JS (`getCSS`, §13) |
-| `diagnostic.js` | « le dossier tient-il ? » — la plus grosse pièce, et c'est normal |
+| `noyau.js` | le contenu chargé, les outils, l'état d'interface, l'annulation, les onglets, l'échappement — **et les quatre gestes ci-dessous**. **En premier** : seul dont le corps s'exécute au chargement |
+| `graphe.js` | le canevas, les traits, le clic dessus. Seul endroit où du CSS traverse vers du JS (`getCSS`, §13) |
+| `diagnostic.js` | « le dossier tient-il ? » |
 | `inspecteur.js` | les formulaires, les mutations, les renommages d'identifiants |
 | `frise.js` | le **temps** du dossier, éditable — remises et attentes |
-| `pasapas.js` | la simulation du déroulé — **appelle** `regles.js`, ne le recopie pas |
+| `pasapas.js` | la simulation du déroulé — **appelle** `regles.js` |
 | `contenu-io.js` | import, export, migration 2→3, autosave |
 | `grammaire.js` | l'onglet Grammaire — composer, pour le **sentir** |
 
-**Les quatre gestes que tout l'atelier refait** vivent dans `noyau.js`, section *2 bis*. Ils ne
-décident rien : ils nomment ce qui était recopié soixante fois, jamais deux fois pareil.
-
-| Le geste | Ce qu'il remplace | Où on l'appelle |
-|---|---|---|
-| `muter(f)` | `pushUndo()` … `autosave(); render()` — **39 copies**, puis les **8 dernières** le 13 août | **toute** mutation de l'atelier. Celles qui renoncent gardent leur garde **avant** l'appel, celles qui font suite leur queue **après** — `muter` ne se laisse pas interrompre de l'intérieur (§2 de la passation) |
-| `poserOuRetirer(o,p,v,{trim})` | « écrire, ou retirer la clé si c'est vide » — **9 copies**, chacune écrite autrement | `majLien`, `majAttente`, `majDeclencheQui`, `majAvis`… |
-| `reinitSelection({garderEmpans})` | la remise à zéro de la sélection — **7 copies, et pas deux pareilles** | `undo`, `adopter`, `pointer`, `clicChamp`, `clicEdge`, les trois `formulaireX` |
-| `demanderSuppr(cle,f)` + `btnSuppr(…)` | la suppression en deux clics — **5 gardes + 5 boutons** qui devaient s'accorder | pièce, empan, lien, remise, affirmation |
-
-Avec eux, deux formats qui ne se déplient plus qu'en un endroit : `deK(k)` — l'inverse de `K(pid,ch)`,
-qui manquait (**10 copies** de `split(".")`) — et `reecrireTermes(t,f)`, la marche récursive sur les
-termes emboîtés d'un lien (**3 copies**). Et la classe `.glose` porte la petite parenthèse grise des
-libellés, écrite **24 fois** en `style=` en ligne.
+**Les quatre gestes que tout l'atelier refait**, dans `noyau.js`, section *2 bis* : `muter(f)`
+(annuler, persister, redessiner — **toute** mutation passe par lui), `poserOuRetirer(o,p,v)`,
+`reinitSelection({garderEmpans})`, `demanderSuppr(cle,f)` + `btnSuppr(…)`. Avec eux deux formats :
+`deK(k)`, l'inverse de `K(pid,ch)`, et `reecrireTermes(t,f)`, la marche sur les termes emboîtés.
 
 ## Le geste du joueur, de bout en bout
 
-Se lit de haut en bas : c'est la boucle d'une session (§4.6). Le rendu vit dans **`app/jeu.js`**
-depuis le 4 août — `index.html` ne porte plus que sa structure, et n'apparaît ici ni comme rendu ni
-comme relais.
-
-> **La ligne de partage, à tenir :** ce qui *redessine* est une fonction de `jeu.js` — un
-> `R.xxx(S, …)` suivi d'un `rendreTout()`, et c'est une cible de `onclick`. Ce qui *lit* n'a pas
-> d'enveloppe : ça s'écrit `R.xxx(S)` sur place, et les suites l'appellent pareil, en `w.R.xxx(w.S)`.
-> Les colonnes « règle » ci-dessous nomment donc souvent une fonction que `jeu.js` appelle
-> directement, sans homonyme.
+C'est la boucle d'une session (§4.6). **La ligne de partage :** ce qui *redessine* est une fonction de
+`jeu.js` — `R.xxx(S, …)` puis `rendreTout()`, cible de `onclick` ; ce qui *lit* s'écrit `R.xxx(S)`
+sur place, et les suites l'appellent pareil, en `w.R.xxx(w.S)`.
 
 | Le geste | La règle (`regles.js`) | La grammaire (`moteur.js`) | Le rendu (`jeu.js`) | § |
 |---|---|---|---|---|
 | l'avocat ouvre une session | `envoyerRemise` → `poserQuestion` | — | `renderDiscussion` | 4.6 |
 | ouvrir une pièce | `ouvrirPiece` (+ son `declenche`) | — | `modalPieceHTML`, `rendreTexte` | 4.3 |
 | l'index du dossier | `piecesLivrees` | — | `renderDossier` | 4.5 |
-| **surligner** (privé, gratuit) | `surligner` | — | `renderRetenus` *(la zone)*, dans `renderMemoire` *(la surface)* | 4.6 |
+| **surligner** (privé, gratuit) | `surligner` | — | `renderRetenus` dans `renderMemoire` | 4.6 |
 | ce que le composeur offre | `blocsOfferts`, `etatCompo`, `indexTermeChamp` | `offerts` | `renderCompo` | 4.5 |
-| ce que l'écran souffle — **une seule voix par état** | *(aucune — dérivé de `S`)* | — | `souffle` (dans le fantôme si la phrase est vide, dans l'aide sinon) | 4.9 |
-| le rappel de la question — **seulement si elle n'est plus le dernier mot** | `attenteCourante`, `remiseCourante` | — | `rappelQuestion` | 4.9 |
+| ce que l'écran souffle — une voix par état | *(dérivé de `S`)* | — | `souffle` | 4.9 |
+| le rappel de la question | `attenteCourante`, `remiseCourante` | — | `rappelQuestion` | 4.9 |
 | **poser un bloc** | `poserBloc`, `retirerBloc`, `viderCompo` | `reduire`, `deduire`, `ordonner` | `texteCompoPartiel` | 4.5 |
-| la clôture sans choix | `cloreSansChoix` (appelée par `poserBloc`) | — | *(rien : le bouton disparaît)* | 4.5 |
+| la clôture sans choix | `cloreSansChoix` | — | *(rien : le bouton disparaît)* | 4.5 |
 | le pressentiment ⚑ | `majPressentiment`, `pressentir`, `sousLienVice` | `memeRed` | *(rien : privé)* | 4.7 |
-| **clore la phrase** | `clore` → `clorePhrase` | `valider`, `rendre`, `lienDe` | `renderCompo` → `renderComposeur` (`#composeur`, **sous la Discussion**) | 4.5 |
+| **clore la phrase** | `clore` → `clorePhrase` | `valider`, `rendre`, `lienDe` | `renderComposeur` (`#composeur`, **sous la Discussion**) | 4.5 |
 | **envoyer** — le seul geste transmis | `envoyer` → `reponseAvocat` → `avancerSurAttente` | — | `renderPlaidoirie`, `renderDiscussion` | 4.6 |
-| ce qui entre à la Plaidoirie | `estMoyen` | — | `renderPlaidoirie` — **cache sa colonne** (`#colPlaidoirie`) tant que rien ne s'y inscrit | 4.6, 4.9 |
+| ce qui entre à la Plaidoirie | `estMoyen` | — | `renderPlaidoirie` — **cache sa colonne** tant que rien ne s'y inscrit | 4.6, 4.9 |
 | clôturer, répétition | `instructionComplete`, `cloturer`, `verserContre`, `avancerRepetition` | — | `majCloture` | 5 |
 | la fin | `finir` | — | `finir` (modale) | 5 |
 | **le tutoriel du premier geste** | *(aucune — il ne décide rien)* | — | `tutoAttendu`, `tutoEtape`, `majTutoriel` | 4.8 |
 
-**Les deux voies de clôture** (§4.5) ne sont pas deux mécaniques : c'est le **même** `clore`. Ce qui
-les sépare vit dans le contenu — une liaison portant `cite:true`, lue par `rendre` de `moteur.js`
-(`citeDe`), contre une forme d'arité 2 déduite par `deduire` et écrite par son `patron`.
-
-**Le tutoriel n'a pas de colonne « règle », et c'est le point.** Il vit entièrement dans
-`jeu.js`, comme la sauvegarde de partie : son temps se dérive de `S`, il n'ajoute aucun champ
-d'état, il ne refuse aucun geste. Seule exception à connaître : `tutoAttendu` **dérive du contenu ce
-que la question attend** (tag de l'attente → lien → terme atomique), pour pouvoir dire *« ce n'est
-pas ça »* sans jamais dire lequel c'était. C'est le seul endroit où l'écran connaît la réponse, et
-ça s'éteint avec le tutoriel (§4.8).
+**Les deux voies de clôture** (§4.5) sont le **même** `clore` ; ce qui les sépare vit dans le contenu
+— une liaison `cite:true`, lue par `citeDe`, contre une forme d'arité 2 déduite et écrite par son
+`patron`. Le tutoriel n'a pas de colonne « règle », et c'est le point ; seule exception,
+`tutoAttendu` dérive du contenu ce que la question attend (§4.8).
 
 ## L'état `S`
 
-Un seul endroit : `etatInitial` en tête de `regles.js`, où **les vingt champs sont commentés un par
-un** — c'est là qu'il faut lire, pas ici. Convention : chaque règle reçoit `S` en premier argument et
-le modifie **sur place** ; aucune ne rend de HTML ; celles qui « parlent » poussent dans `S.fil`.
+`etatInitial`, en tête de `regles.js`, où **les vingt champs sont commentés un par un** — c'est là
+qu'il faut lire. Chaque règle reçoit `S` en premier argument et le modifie **sur place** ; aucune ne
+rend de HTML ; celles qui « parlent » poussent dans `S.fil`. Les trois drapeaux : §4.7.
 
-Les trois drapeaux (`vice_pressenti`, `vice_trouve`, `vice_expose`) et où ils se lèvent : §4.7.
+## Le contenu — qui lit quoi
 
-**Trois tableaux, trois rôles, trois noms** (`docs/LEXIQUE.md`) : `S.fil` (ce que la Discussion
-affiche), `S.retenus` (les empans surlignés — *seulement* eux), `S.plaidoirie` (ce qui est entré à la
-Plaidoirie). `S.retenus` s'appelait `S.memoire` avant le 2 août ; `restaurerPartie` reprend les
-sauvegardes écrites sous l'ancien nom.
-
-## Le contenu — les clés de `content.js`
-
-`schema: 3`. Chaque clé et **tous ses attributs optionnels** sont décrits au **§11**, qui est la
-source de vérité du schéma. Ici, seulement qui les lit :
+`schema: 3` ; chaque clé et ses attributs optionnels sont au **§11**. Ici, seulement qui les lit :
 
 | Clé | Lue par |
 |---|---|
-| `dimensions` | `couleurDim` (`moteur.js`, appelé par `jeu.js` et l'atelier) — par **rang**, jamais par pertinence |
-| `pieces` (`empans`, `nom`, `court`, `declenche`, `porte`, `type`) | `CHAMPS` (`jeu.js`, via `champsDe`), `piecesLivrees` / `reglesLivrees` / `ouvrirPiece` |
-| `grammaire` (`formes`, `blocs`, `depart`, `finaux`) | `moteur.js` en entier ; `blocsOfferts` pour le filtre `piece` |
-| `liens` | `lienDe` (`moteur.js`) — c'est ce qui fait qu'une phrase est *reconnue* |
+| `dimensions` | `couleurDim` — par **rang**, jamais par pertinence |
+| `pieces` (`empans`, `nom`, `court`, `declenche`, `porte`, `type`) | `CHAMPS` via `champsDe`, `piecesLivrees` / `reglesLivrees` / `ouvrirPiece` |
+| `grammaire` | `moteur.js` en entier ; `blocsOfferts` pour le filtre `piece` |
+| `liens` | `lienDe` — ce qui fait qu'une phrase est *reconnue* |
 | `remises` (`attentes: [{question, attend, apres}]`) | `attentesDe`, `attenteCourante`, `avancerSurAttente` |
 | `repetition`, `fins`, `avocat` | `cloturer`, `finir`, `reponseAvocat` |
 
-L'**ancienne forme** `attend`/`apres` posée sur la remise se lit comme une liste à un élément, et
-**deux fonctions la normalisent — c'est voulu, ce n'est pas une copie oubliée** : `attentesDe`
-(`regles.js`, dans la fabrique) rend une paire `{attend, apres}` fabriquée ; `attentesDeRemise`
-(`app/atelier/noyau.js`) rend **la remise elle-même**, pour que l'inspecteur l'édite en place. Sur une
-affaire au schéma 3, les deux rendent le même `r.attentes`. L'arbitrage est écrit sur la seconde : *on
-ne les fusionne pas, on dit lequel est lequel.* **Personne d'autre ne lit `attend` ni `apres` sur une
-remise**, et c'est désormais R9 qui le tient : deux convertisseurs y échappent en plus des deux
-normalisateurs — `attentesEditables` (`frise.js`) et `migrerContenu` (`contenu-io.js`).
+**Deux fonctions normalisent l'ancienne forme `attend`/`apres`, et c'est voulu** : `attentesDe`
+(`regles.js`) rend une paire fabriquée, `attentesDeRemise` (`noyau.js`) rend **la remise elle-même**,
+pour que l'inspecteur l'édite en place. *On ne les fusionne pas, on dit lequel est lequel.* Personne
+d'autre ne les lit sur une remise (R9), hors `attentesEditables` (`frise.js`) et `migrerContenu`
+(`contenu-io.js`).
 
-## Les six suites
+## Les six suites, et les deux outils
 
-Point d'entrée unique : `tests/harnais.js`, `creerHarnais(dossier)`. `npm test` les enchaîne dans
-l'ordre de `package.json` — **325 contrôles, tout vert ou ce n'est pas fini** (§16).
-
-Le harnais **inline tout `<script src>` et tout `<link rel=stylesheet>`** au boot, par regex et dans
-l'ordre, parce que jsdom n'en charge aucun (§13) — quatre balises pour le jeu, onze pour l'atelier,
-et ajouter un fichier ne demande pas d'y revenir. C'est pourquoi `npm run vue` existe : il est le
-seul à éprouver le vrai chargement.
-
-Ce qu'il expose, et qui est le **contrat d'interaction** : `boot` / `bootAtelier`, les lectures
-d'écran — **une par surface, sous le nom que l'écran lui donne** (`discussion`, `memoire`,
-`composeur`, `plaidoirie`, plus `plaidoirieVisible` qui dit si la colonne existe) —, les désignations de contenu (`lienVice`, `lienConclusion`,
-`lienFaux`, `lienTag`, `citations`, `blocCite`, `comparaisons`, `attentesContenu`), et les chemins
-(`surligner`, `composerLien`, `poserComparaison`, `cheminVers`, `cloreSurPlace`, `livrerTout`,
-`instruire`, `terminer`). **Aucune suite ne nomme une pièce, un empan ou une valeur** : elles les
-*trouvent* par ces fonctions (§16) — c'est ce qui les rend valides sur une autre affaire.
-
-Il expose aussi ce qu'il **ne décide pas lui-même** : `estRegle`, `iTermeChamp` et `deK`. Le premier
-vient de `regles.js` par `require` — c'est une **règle**, pas une commodité de test, et le harnais la
-recopiait quatre fois ; le deuxième délègue à `R.indexTermeChamp(S)`, écrit cinq fois en `findIndex`
-dans les suites ; le troisième défait une clé `pid.eid`, que cinq endroits coupaient à la main.
-R10 tient le premier. *Une suite désigne, elle ne décide pas* (§16).
-
-Ce que chaque suite prouve : **§16**, qui les détaille une par une.
-
-## L'atelier — ses sections numérotées
-
-La numérotation `1)` … `11)` a **suivi les modules** quand la page s'est découpée : chaque fichier
-d'`app/atelier/` ouvre sur la ou les sections qu'il porte. `grep -rn "^   [0-9]" app/atelier/` les
-liste. Elle n'est plus continue — il n'y a pas de `5)`, `diagnostic.js` n'en porte aucune, et
-`2 bis)` est arrivée après : c'est un ordre de lecture hérité, pas un index. Les deux qui comptent :
-**7) la frise** (`frise.js` — éditable : remises, attentes) et **8) le pas-à-pas** (`pasapas.js`),
-qui appelle `RG()` — c'est-à-dire `creerRegles` du jeu — sur son propre état `SIM`.
-Il n'a **que** deux écarts assumés : il joue au grain du **lien** (`simComposer`) et non du bloc, et
-il narre les gestes privés en lignes « · ». Le badge ⚙ signale une règle qui vit dans `regles.js`.
-
-## Les deux outils
-
-Ni l'un ni l'autre n'est une suite : ils ne jouent pas l'affaire, ils regardent le dépôt.
+Point d'entrée unique : `tests/harnais.js`, `creerHarnais(dossier)` — **325 contrôles** ; ce que
+chacune prouve est au §16. Il **inline tout `<script src>` et tout `<link rel=stylesheet>`** au boot
+(§13). Ce qu'il expose est le **contrat d'interaction** : `boot` / `bootAtelier` ; les lectures
+d'écran, une par surface (`discussion`, `memoire`, `composeur`, `plaidoirie`, `plaidoirieVisible`) ;
+les désignations de contenu (`lienVice`, `lienConclusion`, `lienFaux`, `lienTag`, `citations`,
+`blocCite`, `comparaisons`, `attentesContenu`) ; les chemins (`surligner`, `composerLien`,
+`poserComparaison`, `cheminVers`, `cloreSurPlace`, `livrerTout`, `instruire`, `terminer`). Plus ce
+qu'il **ne décide pas lui-même** : `estRegle` (par `require`), `iTermeChamp`, `deK`. **Aucune suite
+ne nomme une pièce, un empan ou une valeur** (§16).
 
 | Outil | Commande | Ce qu'il éprouve, et que rien d'autre n'éprouve |
 |---|---|---|
-| `outils/gardien.js` | `npm run gardien` (dans `npm test`) | **les conventions** — R1 la forme des balises que le harnais inline, R2 les collisions de noms de haut niveau par page, R3 les variables CSS, R4 les familles CSS sans porteur, R5 les `onclick=`, R6 les ids visés et les quatre ancres du tutoriel, R7 les restes du schéma 2, R8 les tailles annoncées par ce fichier-ci, R9 les lectures d'`attend`/`apres` posés sur une remise, R10 la recopie d'un prédicat que `regles.js` exporte, **R11 tout renvoi « §x » qui ne désigne aucune section — ou qui nomme le mauvais document**. **R7, R9 et R10 marchent sur `app/`, `tests/` et `outils/`, R11 sur tout le dépôt, documents compris** ; les six autres sur les deux pages |
-| `outils/vue.js` | `npm run vue` (hors `npm test`) | **le vrai chargement** — les quatre `<script src>` et la feuille, dans un vrai Chromium en `file://`, et la relecture à l'œil |
+| `outils/gardien.js` | `npm run gardien` (dans `npm test`) | **les onze conventions** — la liste vit dans son en-tête, le §16 bis dit ce qu'une règle a le droit d'être. R7, R9, R10 marchent sur `app/`, `tests/` et `outils/`, R11 sur tout le dépôt ; les huit autres sur les deux pages |
+| `outils/vue.js` | `npm run vue` (hors `npm test`) | **le vrai chargement**, dans un Chromium en `file://`, et la relecture à l'œil |
 
-Le gardien est en **mode double**, comme `moteur.js` : lancé, il contrôle et sort en 1 sur écart ;
-`require`, il ne rend que son inventaire. C'est par là qu'`eslint.config.js` obtient les noms que
-chaque page pose dans la portée globale — la liste n'est écrite nulle part, elle se calcule (§12).
+Le gardien est en **mode double** : lancé il contrôle, `require` il rend son inventaire — c'est par là
+qu'`eslint.config.js` obtient ses globals (§12). La numérotation `1)` … `11)` de l'atelier a suivi ses
+modules : `grep -rn "^   [0-9]" app/atelier/` les liste. **Les pièges déjà payés sont au §2 de
+`docs/PASSATION.md`.**
 
-`eslint.config.js` est le filet **générique** : aucune des onze pannes du gardien ne s'y voit. Il
-tient l'autre bout — identifiant fautif, variable morte, clé dupliquée.
+# Les mots
 
-## Les pièges déjà payés
+Le joueur ne lit jamais `empan`, `bloc`, `lien`, `forme`, `terme` : s'ils apparaissent dans une chaîne
+d'écran, c'est une fuite à corriger.
 
-**Ils sont au §2 de `docs/PASSATION.md`, et c'est là qu'il faut les lire** — ils changent à chaque
-session, et **la moitié est désormais tenue par une règle du gardien**, qui les nomme par leur numéro.
-Les trois qui reviennent, pour mémoire seulement : les `const` de haut niveau ne sont pas
-des propriétés de `window` ; l'index `iBloc` de `poserBloc` est **positionnel dans la liste filtrée**,
-donc dépendant de la session ; le flag `cite` est porté par la **liaison**, jamais par le terme.
+| Terme à l'écran | Ce qu'il désigne | Ne pas confondre avec |
+|---|---|---|
+| **Discussion** | la surface de gauche : le fil et les pièces jointes | rien — le code dit `discussion` |
+| **Mémoire** | la surface du milieu : le dossier + les passages retenus | `S.retenus`, qui n'en couvre que la moitié |
+| **Plaidoirie** | la surface de droite, cachée tant que rien n'y entre | rien — le code dit `plaidoirie` |
+| **passage** | un fragment souligné, cliquable, dans une pièce | *empan* — même chose, nom de code |
+| **Ta réponse** / **Réponse** | la zone du composeur ; la bascule est **intentionnelle** (la phrase close ne lui appartient plus tout à fait) — ne pas uniformiser | *Envoyer*, le geste |
+| **→ Envoyer** | transmet la phrase close — irréversible | *Clôturer l'instruction* |
+| **Clôturer l'instruction** | ferme l'affaire et déclenche une des trois fins | *clore* une phrase |
 
-## Trois réflexes qui coûtent cher
+| Terme de code | Ce qu'il désigne | Ne pas confondre avec |
+|---|---|---|
+| **pièce** | un document du dossier — objet dans `JEU.pieces` | *le dossier*, l'ensemble des pièces livrées |
+| **empan** | un fragment marqué : `texte`, `dim`, `valeur`, `qui`, `nom` (§4.1) | *citation* et *nom*, ses deux écritures |
+| **citation** | l'écriture d'un empan **dans la pièce** (`e.texte`) | *nom* |
+| **nom** | son écriture **comme sujet** d'une phrase (`e.nom`, replié sur `e.texte`) | *citation* — un empan se lit deux fois, jamais pareil |
+| **terme** | un empan (ou un lien imbriqué) **une fois posé** comme argument | *empan* — le terme est un rôle |
+| **bloc** / **liaison** | une transition offerte par l'automate, rendue comme bouton | *lien* |
+| **lien** | un triplet `{forme, termes}` **reconnu** (`JEU.liens`, `lienDe`) | *liaison* — le lien est le résultat, la liaison le geste |
+| **forme** | le patron grammatical d'une comparaison (`deduction`, `sens`, `patron`) | — |
+| **attente** | `{question?, attend, apres?}` | *remise*, qui en porte la liste |
+| **remise** | un envoi de pièces, avec ses attentes | *session* — mot du sens ; « remise » est le mot des données |
+| **atelier** | **`app/atelier_v3.html`, et rien d'autre** | rien : c'est le point |
+| **`S.retenus`** | les empans surlignés, *seulement* eux (ex-`S.memoire`) | `renderRetenus` la **zone**, `renderMemoire` la **surface** |
+| **`S.plaidoirie`** | ce qui est entré au plan | `S.satisfaits`, les tags déjà servis |
+| **`S.fil`** | le journal affiché dans Discussion | les deux ci-dessus — trois tableaux, trois rôles |
 
-- **Chercher un libellé de bouton par `grep`** avant d'avoir lu le §11 : les libellés qui diffèrent
-  de ce qui s'écrit sont des attributs `libelle` déclarés dans le contenu, et le §11 les nomme.
-- **Explorer pour trouver *où décide* quelque chose.** La réponse est toujours `regles.js` : les deux
-  pages HTML ne décident rien (§9). Si une décision semble vivre dans une page, c'est un bug.
-- **Lire `ARCHITECTURE.md` en entier.** C'est le plus long document du dépôt, et le tableau de
-  `CLAUDE.md` dit quelles sections lire selon ce qu'on vient faire. Le §4.5 est découpé en sept pour
-  qu'on puisse n'en ouvrir qu'un septième. Trois choses n'y sont **plus** et se cherchent ailleurs :
-  la discipline d'écriture (`docs/ECRITURE.md`, §8.1 à §8.9), l'historique des révisions
-  (`docs/HISTORIQUE.md`), et l'inventaire des fichiers — qui est **ici**. *(Cette ligne annonçait
-  « 618 lignes » : un compte qu'aucune règle ne tient dérive à la première retouche — on ne le
-  remet pas.)*
-- **Choisir un mot au jugé.** `docs/LEXIQUE.md` arbitre le vocabulaire — quel mot dire, à qui, pour
-  quelle chose. Les pièges y sont nommés (`lien`/`liaison`, `clore`/`clôturer`, `empan`/`passage`).
+## Faux amis — les quatre qui mordent encore
+
+- **`lien` / `liaison`** — le premier est du contenu déclaré à l'avance, la seconde un geste possible
+  à un instant donné. *liaison* et *bloc* sont interchangeables, *lien* ne l'est jamais.
+- **`clore` / `clôturer`** — `clore` ferme **une phrase**, à chaque tour ; `cloturer` ferme
+  **l'instruction**, une fois, et déclenche une fin. Jamais l'un pour l'autre, commentaires compris.
+- **`empan` / `passage`** — le même objet vu de deux côtés : frontière **voulue** (§8.6 de
+  `docs/ECRITURE.md`) et **étanche**, `empan` ne fuit jamais à l'écran, `passage` n'entre jamais dans
+  `content.js` ni `moteur.js`.
+- **`dossier` / `Dossier` / `pièce`** — un concept, une bande, un document. On ne dit pas « ouvrir le
+  dossier » pour « ouvrir une pièce ».
+
+**Trois collisions d'identifiants, refermées** — les deux sens y étaient *incompatibles*, dans une
+même portée globale :
+
+| Identifiant | Ici | …et là | Tranché |
+|---|---|---|---|
+| `piecesLivrees` | `regles.js` : les pièces livrées **à ce stade** | l'atelier : celles de n'importe quelle remise | `toutesPiecesLivrees()` |
+| `dimDe` | `moteur.js` : la dimension d'un **terme réduit** | l'atelier : celle d'un **empan** | `dimEmpan(pid, eid)` |
+| `valider` | `moteur.js` : le refus d'**une phrase** | l'atelier : les anomalies **du contenu entier** | `diagnostiquer()` |
+
+*La dernière a tenu longtemps parce que les deux rendent « rien » quand tout va bien.* À l'inverse,
+`esc` (jeu) et `escapeH` (atelier) restent deux noms pour une chose, et c'est accepté : **deux noms
+pour une chose se remarquent ; un nom pour deux choses se subit.**
