@@ -9,7 +9,8 @@
     "gardien": "node outils/gardien.js",
     "lint": "eslint .",
     "demo:grammaire": "node grammaire/test_grammaire2.js",
-    "vue": "node outils/vue.js"
+    "vue": "node outils/vue.js",
+    "export": "node outils/exporter.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
