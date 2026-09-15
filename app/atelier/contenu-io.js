@@ -13,8 +13,6 @@ function telecharger(nom,data,type){
 function exporter(){
   telecharger("content.json", JSON.stringify(nettoyerPourJeu(CONTENU),null,2), "application/json");
 }
-/* LE TEXTE DU FICHIER, en un exemplaire : l'écriture sur place l'écrit, le
-   repli le télécharge, la suite le relit. */
 function sourceContenuJS(){
   return "/* LE CONTENU DE L'AFFAIRE — l'unique exemplaire. Le jeu (index.html) et\n"
     + "   l'atelier (atelier_v3.html) chargent ce même fichier ; il n'y a plus ni\n"
@@ -23,9 +21,6 @@ function sourceContenuJS(){
     + "window.CONTENU = " + JSON.stringify(nettoyerPourJeu(CONTENU),null,2) + ";\n";
 }
 
-/* LA POIGNÉE DU FICHIER, RETENUE D'UNE SESSION À L'AUTRE : `localStorage` ne
-   peut pas la garder, IndexedDB si — et elle marche en file:// (éprouvé sous
-   Chrome). Toute panne de rangement se tait : sans poignée, on redésigne. */
 const IDB_BASE="iavocat_atelier", IDB_LOT="poignees", IDB_CLE="content.js";
 function idb(){
   return new Promise((ok,ko)=>{
@@ -63,10 +58,6 @@ async function droitEcriture(h){
   return await h.requestPermission(quoi)==="granted";
 }
 
-/* « Écrire content.js » — le fichier que le jeu charge, réécrit sur place (§10).
-   ALT+CLIC redésigne le fichier. AUCUN ÉCHEC MUET : sans File System Access, sur
-   droit refusé ou poignée creuse, on retombe sur le téléchargement et le bouton
-   le dit ; une poignée qui a échoué est jetée. */
 async function exporterJS(ev){
   const data=sourceContenuJS();
   const replier=mot=>{ if(telecharger("content.js",data,"text/javascript")) direSurBouton(mot); };
@@ -88,8 +79,6 @@ async function exporterJS(ev){
     replier("écriture impossible — téléchargé");
   }
 }
-/* LE BOUTON DIT CE QUI VIENT DE SE PASSER, pas le `hint` : celui-ci n'est
-   visible que dans l'onglet Graphe, le bouton l'est partout. */
 let _motBouton=null, _minuteurBouton=null;
 function direSurBouton(txt){
   const b=$("btnEcrire"); if(!b) return;
@@ -106,12 +95,8 @@ $("file").addEventListener("change",e=>{
     }catch(err){ hint("JSON invalide : "+err.message,true); } };
   r.readAsText(f); e.target.value="";
 });
-/* Migration 2 → 3 (§11) : idempotente, silencieuse, à l'import et au chargement
-   de l'autosave. Le JEU, lui, ne migre pas. */
 const GRAMMAIRE_PAR_DEFAUT = () => clone(contenuLivre().grammaire);
 const DIMS_PAR_DEFAUT = () => clone(contenuLivre().dimensions);
-/* Les dimensions d'avant ne sont pas les cinq du QQOQC : on rabat ce qui se
-   rabat, le reste tombe dans « quoi » (large par construction, §4.2). */
 const RABAT_DIM = { agent:"qui", personne:"qui", signature:"qui", greffier:"qui",
                     heure:"quand", date:"quand",
                     lieu:"ou",
@@ -139,7 +124,6 @@ function migrerContenu(j){
     }
     p.empans=empans;
     delete p.champs; delete p.dims;
-    // tout empan doit être marqué, sinon il est inatteignable (§4.3)
     const txt=String(p.texte||"");
     const manquants=Object.keys(empans).filter(e=>!txt.includes("{{"+e+"}}"));
     p.texte = txt + (manquants.length ? (txt?" ":"")+manquants.map(e=>"{{"+e+"}}").join(" ") : "");
@@ -199,8 +183,6 @@ function adopter(j){
   }
   j.liens=uniq;
   j._pos=j._pos||{}; j._bruit=j._bruit||[];
-  /* Les huit refus ci-dessus renoncent AVANT `muter` : un import refusé ne
-     laisse pas d'entrée d'annulation. */
   muter(()=>{
     CONTENU=j; window.CONTENU=CONTENU;
     reinitSelection();
@@ -209,10 +191,6 @@ function adopter(j){
   });
   return null;
 }
-/* Revenir à content.js tel qu'il est sur le disque : l'annulation d'une session
-   d'écriture, pas un « exemple ». */
-/* LA SIXIÈME CONFIRMATION EN DEUX CLICS, seule à ne pas passer par
-   `demanderSuppr` : elle vise un bouton statique et s'annonce par le `hint`. */
 function demanderExemple(){
   if(pendingDel!=="exemple"){ pendingDel="exemple"; hint("Recharger content.js efface le contenu courant — reclique pour confirmer.",true); return; }
   pendingDel=null; hint();

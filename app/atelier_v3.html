@@ -60,7 +60,6 @@
     <div id="insp"></div>
   </div>
 
-  <!-- ============ ÉTAPES DU JEU ============ -->
   <div id="etapes">
     <div class="fcol" id="frise"></div>
     <div id="simcol">
@@ -84,16 +83,11 @@
     <div id="jsonmsg"></div>
   </div>
 
-  <!-- ============ GRAMMAIRE (prototype, non branché) ============ -->
   <div id="grampane"></div>
 </main>
 
-<!-- Le MÊME moteur que le jeu et le banc d'essai, jamais une copie. Sous jsdom
-     il ne se charge pas, et l'onglet le dit. -->
 <script src="moteur.js"></script>
 
-<!-- LE CONTENU — le même fichier que celui du jeu : l'atelier n'en porte pas de
-     copie, il l'ÉDITE et le RÉÉCRIT sur place (§10). -->
 <script src="regles.js"></script>
 <script src="content.js"></script>
 
@@ -114,7 +108,6 @@
 <script src="atelier/grammaire.js"></script>
 
 <script>
-/* Le seul code qui s'exécute au chargement, et il reste sur la page. */
 window.addEventListener("resize",renderEdges);
 if(!chargerAuto()) CONTENU=contenuLivre();
 window.CONTENU=CONTENU;   // exposé pour bidouiller en console (comme window.JEU dans le jeu)

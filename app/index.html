@@ -22,7 +22,6 @@
     <h2>Mémoire</h2>
     <div class="body" id="memoire"></div>
   </section>
-  <!-- Caché tant que rien ne s'y inscrit (§4.9) ; `renderPlaidoirie` pose le `hidden`. -->
   <section class="col" id="colPlaidoirie" hidden>
     <h2>Plaidoirie<span class="zcount" id="plaidoirieCount"></span></h2>
     <div class="body" id="plaidoirie"></div>
@@ -36,24 +35,16 @@
 
 <div id="modalRoot"></div>
 
-<!-- Le tutoriel parle depuis le CHROME, hors de la fiction (§4.8) : le bandeau
-     ne bouge jamais, seul son texte change et le halo se déplace. -->
 <div id="tuto" hidden>
   <span class="pas" id="tutoPas"></span>
   <span class="dit" id="tutoDit"></span>
   <button class="passer" onclick="tutoPasser()">je sais faire</button>
 </div>
 
-<!-- LA GRAMMAIRE — fonctions pures, partagées avec l'atelier et le banc
-     d'essai ; aucune donnée dedans (§14). -->
 <script src="moteur.js"></script>
 
-<!-- LES RÈGLES DU JEU — pures elles aussi, et partagées avec le pas-à-pas de
-     l'atelier, qui ne les recopie pas (§12). -->
 <script src="regles.js"></script>
 
-<!-- LE CONTENU — produit par l'atelier, à côté de ce fichier : seul exemplaire
-     (§12). Marche en file:// et sur itch.io. -->
 <script src="content.js"></script>
 
 <!-- LE JEU — l'écran et les gestes ; il ne décide rien (§9).

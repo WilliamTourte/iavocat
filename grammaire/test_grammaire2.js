@@ -18,11 +18,8 @@ const prod = new Set(G.finaux); let z = true;
 while (z) { z = false; for (const b of G.blocs) if (prod.has(b.vers) && !prod.has(b.de)) { prod.add(b.de); z = true; } }
 [...etats].every(e => prod.has(e)) ? ok("aucune impasse") : ko("impasse");
 G.blocs.filter(b => estFinal(b.vers) && !b.forme).length ? ko("clôture sans forme") : ok("toute clôture porte une forme");
-// Ce qu'un squelette annonce comme forme AVANT de connaître ses valeurs : une
-// liaison la déclare, un bloc `deduit` ne peut pas.
 const formeSquelette = s =>
   s.map(b => b.forme).filter(Boolean).pop() || (s.some(b => b.deduit) ? "déduite des valeurs" : "—");
-// Le squelette + une valeur par trou → la chaîne {bloc, valeur} du moteur.
 const chaineDe = (s, valeurs) => { let ti = 0;
   return s.map(bloc => bloc.type === "terme" ? { bloc, valeur: valeurs[ti++] } : { bloc, valeur: null }); };
 

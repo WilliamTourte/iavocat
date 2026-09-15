@@ -160,17 +160,11 @@ function renderFrise(){
 
 function allerPiece(pid){ vue('graphe'); scrollVers(pid); }
 
-/* Mutations — toutes par `muter` (noyau.js), qui porte `pushUndo` avant et
-   `autosave(); render()` après. */
-/* Ce que la SESSION porte en propre : expéditeur et message. Le tag et l'accusé
-   vivent sur l'ATTENTE (R9) — voir `majAttente`. */
 function majRemise(i,prop,v){ muter(()=>{ CONTENU.remises[i][prop]=v; }); }
 function retirerPieceRemise(i,pid){ muter(()=>{ CONTENU.remises[i].pieces=(CONTENU.remises[i].pieces||[]).filter(x=>x!==pid); }); }
 function ajouterPieceRemise(i,pid){ muter(()=>{ (CONTENU.remises[i].pieces=CONTENU.remises[i].pieces||[]).push(pid); }); }
 function ajouterRemise(){ muter(()=>{ CONTENU.remises.push({qui:"Maître Auber",texte:"",pieces:[]}); }); }
 function demanderSupprRemise(i){ demanderSuppr("remise:"+i,()=>{ CONTENU.remises.splice(i,1); }); }
-/* LES ATTENTES D'UNE SESSION (§3) : éditer une remise écrite à l'ancienne la
-   convertit en liste — on n'écrit plus qu'une forme, mais on lit les deux. */
 function attentesEditables(i){
   const r=CONTENU.remises[i];
   if(!Array.isArray(r.attentes)){

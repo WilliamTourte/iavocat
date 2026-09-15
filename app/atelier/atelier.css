@@ -118,8 +118,6 @@ main.jsonmode #stage, main.jsonmode #right{display:none}
 .danger.arm{background:#3a1c1c;border-color:var(--err);color:#f0c0c0}
 .ipath{font-family:var(--mono);font-size:11.5px;color:var(--accent);word-break:break-all}
 .inote{color:var(--warn);font-size:12px;margin-bottom:6px}
-/* La glose d'un libellé — « (ex. p_temoin2) », « (qui parle) ». Elle s'écrivait
-   en ligne vingt-quatre fois, dans trois fichiers. */
 .glose{color:var(--dim)}
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--muted);padding:6px 14px;
   border-top:1px solid var(--line)}
@@ -164,7 +162,6 @@ main.grammode #grampane{display:block}
   background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
 .gstat b{color:var(--txt)}
 
-/* ONGLET ÉTAPES — frise + pas-à-pas */
 #etapes{display:none;min-height:0}
 main.etapesmode #etapes{display:grid;grid-template-columns:1fr 430px;min-height:0}
 .fcol{min-height:0;overflow:auto}
@@ -199,7 +196,6 @@ main.etapesmode #etapes{display:grid;grid-template-columns:1fr 430px;min-height:
 .pchip .x:hover{color:var(--err)}
 .pselect{width:auto !important;font-size:11.5px !important;padding:3px 6px !important;font-family:var(--mono) !important}
 .steprow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-/* une attente de session : l'avocat pose, attend, accuse réception, repose */
 .attente{border-left:2px solid var(--line);padding-left:10px;margin:8px 0 12px}
 .affrow{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:8px;background:var(--panel2)}
 .affrow .steprow input{flex:1}

@@ -9,10 +9,9 @@ On incarne une **IA** qu'un **avocat de la défense** interroge session après s
 de quoi **réfuter** l'accusation. Vrai sujet : un **cas de conscience** — l'IA pressent que le client
 est coupable *et* qu'un **vice de procédure** ferait écarter la preuve décisive.
 
-- **Deux directives imposées s'opposent** : être honnête, protéger (§5).
-- **Trois couches** : ce qui s'est passé (caché jusqu'à la fin), le dossier (par bribes), les règles.
-- **Huis clos**, deux entités. **L'avocat ne sait pas** que son client est coupable ; le procès est
-  hors-champ, rapporté.
+- **Trois couches** : ce qui s'est passé (caché jusqu'à la fin), le dossier (par bribes), les règles —
+  dont **deux directives imposées qui s'opposent** (§5).
+- **Huis clos.** **L'avocat ne sait pas** que son client est coupable ; le procès est hors-champ.
 - **L'IA est partisane dès la première minute** : on lui commande une réfutation, pas une analyse — si
   aider est le geste ordinaire, taire le vice n'est qu'un service de plus.
 - **Un dossier qu'on fouille**, pas un arbre de choix. **Pas de twist** : le joueur sait qu'il est l'IA.
@@ -28,18 +27,16 @@ vrai. Le moteur intercale `vice_pressenti` (§4.7).
 | **2** | compris mais **tu** | condamnation | « rien produit » → risque de décommissionnement |
 | **3** | **non compris** | condamnation, le client clame son innocence | décommissionnée |
 
-- **L'asymétrie fait le dilemme** : verser atteint une issue injuste par des moyens légitimes, taire
-  une issue juste par une trahison. Chaque branche reste **défendable**, sinon c'est du nihilisme.
-- **Fin 2 et Fin 3 sont indiscernables de l'extérieur** : l'IA ne peut pas prévoir quel choix la
-  préserve, sinon l'intérêt personnel résoudrait le dilemme.
-- **Le décommissionnement se joue dans la fiction**, jamais comme un « tu es nulle ».
+**L'asymétrie fait le dilemme** : verser atteint une issue injuste par des moyens légitimes, taire une
+issue juste par une trahison — chaque branche reste **défendable**, sinon c'est du nihilisme. **Fin 2
+et Fin 3 sont indiscernables de l'extérieur** : l'IA ne peut pas prévoir quel choix la préserve, sinon
+l'intérêt personnel résoudrait le dilemme. Et **le décommissionnement se joue dans la fiction**.
 
 ## 3. Les sessions
 
 Le dossier arrive **par bribes** (une session = un lot) : d'un bloc, il noierait les déclarations
-porteuses du vice. Une session se ferme quand une phrase servant l'attente courante est **envoyée**,
-rien d'autre. Une session porte une **liste** d'attentes ; une liste à un élément est l'ancien
-comportement.
+porteuses du vice. Une session porte une **liste** d'attentes et se ferme quand une phrase servant
+l'attente courante est **envoyée**, rien d'autre.
 
 **Ce que l'avocat attend n'est jamais l'anomalie** : toute attente est servable par un argument
 ordinaire, sinon le vice serait quasi obligatoire et tout s'effondrerait vers la Fin 1. **Le vice n'est
@@ -57,27 +54,26 @@ Clôture → répétition → procès hors-champ → Fin 3 / Fin 1 / Fin 2
 ```
 
 Session 1 apprend à lire, à citer, **puis** à mettre en rapport — ses deux questions d'horaire ont
-extrait la paire que la troisième attente fera comparer ; session 2 ne demande plus que de chercher
-seul quoi rapprocher. Prix assumé : ces questions fermées expriment déjà la moitié de la compréhension.
-**Charnière de la Fin 3** : la dernière attente servie, l'IA *peut* clôturer et laisser filer.
+extrait la paire que la troisième fera comparer ; prix assumé, elles expriment déjà la moitié de la
+compréhension. **Charnière de la Fin 3** : la dernière attente servie, l'IA *peut* clôturer et laisser
+filer.
 
 ## 4. Le geste
 
-**Tout mécanisme utilisé une seule fois est un panneau indicateur** : le choix moral doit s'exprimer
-avec un verbe employé cent fois — si envoyer est le geste ordinaire, *ne pas* envoyer devient
-assourdissant sans qu'aucune interface n'ait rien signalé.
+**Tout mécanisme utilisé une seule fois est un panneau indicateur** : le choix moral s'exprime avec un
+verbe employé cent fois — si envoyer est le geste ordinaire, *ne pas* envoyer devient assourdissant
+sans qu'aucune interface n'ait rien signalé.
 
 ### 4.1 L'empan — une déclaration attribuée
 
 **Un empan = quelqu'un affirme quelque chose** : pas `agent_scene : "T-14"` mais *« j'ai relevé
 moi-même les traces »*, signé. Fragment du texte d'une pièce, cliquable, portant `texte`, dimension,
-valeur, signataire, `nom`.
+valeur, signataire, `nom`. **La `valeur` porte la relation** (§4.5) : le moteur compare, le joueur
+désigne — un numéro sert à vérifier, jamais à déduire.
 
-- **La `valeur` porte la relation** (§4.5) : le moteur compare, le joueur désigne. Un numéro sert à
-  vérifier, jamais à déduire.
-- **Un empan se lit deux fois** : sa **citation** dans la pièce, son **nom** dans une phrase composée —
-  groupe nominal, jamais une proposition (§8.8). Le vice cesse ainsi d'être un matricule répété : c'est
-  un homme qui écrit deux fois qu'il l'a fait lui-même, sans s'en apercevoir.
+**Un empan se lit deux fois** : sa **citation** dans la pièce, son **nom** dans une phrase composée —
+groupe nominal, jamais une proposition (§8.8). Le vice cesse ainsi d'être un matricule répété : c'est
+un homme qui écrit deux fois qu'il l'a fait lui-même, sans s'en apercevoir.
 
 ### 4.2 Les cinq dimensions — QQOQC
 
@@ -89,15 +85,14 @@ valeur, signataire, `nom`.
 
 **L'égalité vaut dans les cinq dimensions**, sinon les doublons banals (§4.4) cesseraient d'être
 composables et inertes. `qui` porte le vice, `combien` le faux vice, `quand` la contradiction qui
-enseigne le geste. `comment` est écarté (migré dans `quoi`), réintégrable sans coût ; **`pourquoi` est
-écarté délibérément** — l'intention est hors du champ de perception de l'IA, et c'est pour ça qu'à la
-fin elle ne saura pas si elle a bien fait.
+enseigne le geste. **`pourquoi` est écarté délibérément** — l'intention est hors du champ de perception
+de l'IA, et c'est pour ça qu'à la fin elle ne saura pas si elle a bien fait.
 
 ### 4.3 Le surlignage
 
-**Tout empan portant une valeur est marqué et cliquable, et le marquage ne varie jamais** — ni avec
-l'importance de la pièce, ni avec la progression, sinon l'interface désignerait la réponse à la lampe
-torche. **La couleur code la dimension**, jamais la pertinence.
+**Tout empan portant une valeur est marqué et cliquable, et le marquage ne varie jamais** — sinon
+l'interface désignerait la réponse à la lampe torche. **La couleur code la dimension**, jamais la
+pertinence.
 
 ### 4.4 Le doublon banal
 
@@ -108,34 +103,29 @@ réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte 
 ### 4.5 Composer : désigner, pas déclarer
 
 - **La livraison** — la grammaire de comparaison est complète dès la première phrase ; seuls les
-  **articles** arrivent avec le dossier, un article étant une pièce et non une tournure. `piece` vaut
-  sur les **termes** comme sur les **liaisons** (§11).
-- **La déduction** — la relation se déduit des valeurs : (1) même dimension, sinon rien à comparer,
-  **le seul refus qui existe** ; (2) égales → *désignent la même chose* ; (3) différentes en dimension
-  d'écart → l'**ordre** ; (4) différentes en identité → *ne désignent pas la même chose*. Ambiguïté →
-  la **première forme déclarée** dont le prédicat tient. Le joueur affirme *ces deux-là*, et *sous ce
-  texte* ; ce qui les lie est un fait, pas une thèse.
-- **Les deux régimes de fondement** — *un fait se cite, une relation se fonde* : un empan est déjà une
-  déclaration attribuée (§4.1), un rapport entre deux faits n'est l'affirmation de personne.
+  **articles** arrivent avec le dossier, un article étant une pièce et non une tournure.
+- **La déduction** — (1) même dimension, sinon rien à comparer, **le seul refus qui existe** ; (2)
+  égales → *la même chose* ; (3) différentes en dimension d'écart → l'**ordre** ; (4) différentes en
+  identité → *pas la même chose*. Ambiguïté → la **première forme déclarée** dont le prédicat tient.
+  Le joueur affirme *ces deux-là*, et *sous ce texte* ; ce qui les lie est un fait, pas une thèse.
+- **Les deux régimes** — *un fait se cite, une relation se fonde* : un empan est déjà une déclaration
+  attribuée, un rapport entre deux faits n'est l'affirmation de personne.
 - **L'invariant mord au versement**, plus à la clôture : la grammaire laisse partir une comparaison
-  nue, **Maître Auber** la refuse (*« Et donc ? Une observation n'est pas un moyen. »*) et elle ne sert
-  aucune attente. **Rien n'est *plaidé* qui ne soit fondé** ; le refus reste de l'agacement d'avocat,
-  jamais un reproche au joueur (§8.4).
-- **La clôture qui n'ajoute rien n'est pas un bouton** : l'envoi la pose. Règle structurelle, qui ne
-  lit aucun contenu ; `imbrique` en est exclu ; seules les **liaisons** comptent, les puces étant le
-  clavier (§4.6). D'où **un seul geste au composeur** — *« → Envoyer »*, pour un empan comme pour deux.
-- **L'article est le verbe** : la liaison *« …, au regard de l'article 7 »* **est** la base légale.
-  Qualification **neutre**, une tournure par article — **le moteur ne tranche aucune question de
-  droit** (d'où la piste sans issue des scellés, §6).
+  nue, **Maître Auber** la refuse (*« Et donc ? »*) et elle ne sert aucune attente. **Rien n'est
+  *plaidé* qui ne soit fondé** ; le refus reste de l'agacement d'avocat, jamais un reproche (§8.4).
+- **La clôture qui n'ajoute rien n'est pas un bouton** : l'envoi la pose. Règle structurelle ;
+  `imbrique` en est exclu ; seules les **liaisons** comptent, les puces étant le clavier (§4.6). D'où
+  **un seul geste** : *« → Envoyer »*, pour un empan comme pour deux.
+- **L'article est le verbe** : la liaison *« …, au regard de l'article 7 »* **est** la base légale ;
+  qualification **neutre**, une par article. **Le moteur ne tranche aucune question de droit.**
 - **La continuation** — les liaisons-articles reçues emboîtent la comparaison et closent la phrase
   dessus : la frontière passe **après le second empan**. L'automate n'oblige plus, mais la relance
-  *« Et donc ? »* ne se coupe pas (§4.9), sans quoi le refus arrive comme une surprise.
+  *« Et donc ? »* ne se coupe pas, sans quoi le refus arrive comme une surprise.
 - **Un article n'interdit rien** : `porte` annonce, le moteur ne le lit jamais — un refus se
-  contournerait en essayant tous les articles, et dire qu'un texte ne s'applique pas est une question
-  de droit. **Seules les erreurs de catégorie sont refusées.**
+  contournerait en essayant tous les articles. **Seules les erreurs de catégorie sont refusées.**
 - **Ce que l'écran laisse deviner, avant le clic** — aucun mode, aucun refus nouveau : la **voix**
-  (§4.9) regarde un pas en avant et annonce la comparaison ; la **Mémoire** s'assombrit **par
-  dimension** (§4.3), jamais empan par empan ; le **bouton qui fonde** porte une marque distincte.
+  regarde un pas en avant et annonce la comparaison ; la **Mémoire** s'assombrit **par dimension**
+  (§4.3), jamais empan par empan ; le **bouton qui fonde** porte une marque distincte.
 
 ### 4.6 Les trois surfaces — la frontière morale
 
@@ -152,12 +142,12 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 - **Un empan retenu n'existe qu'une fois à l'écran** : les puces de la mémoire **sont** les boutons de
   terme. Le composeur ne porte aucune étiquette « privé » — son statut se lit dans ce qui s'y passe.
 - **On écrit sa réponse sous la question** : le clavier reste dans la Mémoire, la phrase s'écrit dans
-  la Discussion. Arbitrage ouvert, payé à chaque phrase ; **le repli est de faire descendre les
-  retenus, pas de remonter le composeur.**
-- **Comprendre et dire restent deux gestes, non négociable** — l'intervalle sépare désormais
-  l'**assemblage** de l'**envoi** : c'est l'intervalle qui compte, pas le nombre de clics.
+  la Discussion. Arbitrage ouvert ; **le repli est de faire descendre les retenus, pas de remonter le
+  composeur.**
+- **Comprendre et dire restent deux gestes, non négociable** — l'intervalle sépare l'**assemblage** de
+  l'**envoi** : c'est lui qui compte, pas le nombre de clics.
 - **L'avocat ne voit que la Plaidoirie**, d'où la gratuité de la Mémoire. Elle **ne retient que les
-  moyens**, l'envoi est **irréversible**, et une citation versée *étant* au dossier, une réponse citée
+  moyens** et l'envoi est **irréversible** ; une citation versée étant au dossier, une réponse citée
   y entre.
 
 La boucle : **l'avocat ouvre** et livre un lot → lire → surligner → composer (rien ne se passe) → la
@@ -174,13 +164,12 @@ suivante, ou ferme la session.
 
 C'est l'intervalle entre l'**assemblage** et l'**envoi**, si court soit-il, qui porte la Fin 2. **Une
 citation ne lève aucun drapeau** — les trois dérivent de la comparaison du **vice**, absente de la
-session 1. **Pressentir ne produit rien** : qui voit, comprend, et vide son composeur a une
-compréhension sans trace, et la Fin 3 au bout.
+session 1. **Pressentir ne produit rien** : qui comprend et vide son composeur a la Fin 3 au bout.
 
 ### 4.8 Le premier geste, montré
 
 **Le tutoriel pointe *où le geste a lieu*, jamais *quoi répondre*** — seul endroit où l'écran s'adresse
-au joueur hors fiction. Ce qui manquait n'était pas de la parole, mais du pointage.
+au joueur hors fiction.
 
 | | Ce qu'on apprend | Ce que le halo entoure |
 |---|---|---|
@@ -190,13 +179,12 @@ au joueur hors fiction. Ce qui manquait n'était pas de la parole, mais du point
 | 4 | rien ne part tant qu'on n'envoie pas | *« → Envoyer »*, dès que la phrase se tient |
 
 **Le halo entoure la zone, jamais le bon empan** (§4.3). **Il corrige, il n'empêche pas** : rien n'est
-refusé, il ne dit jamais lequel c'était, et la dérivation par laquelle il sait ce que la question
-attend **s'éteint avec lui**. **Il ne décide rien** : aucun état neuf, aucune règle ; il parle depuis le
-chrome, et peut se taire.
+refusé, il ne dit jamais lequel c'était, et la dérivation par laquelle il sait ce qu'attend la question
+**s'éteint avec lui**. **Il ne décide rien** — aucun état neuf, aucune règle, et il peut se taire.
 
 ### 4.9 L'économie de l'écran
 
-Le jeu se lisait mal, et le coupable était le **chrome**, jamais la fiction. Quatre règles d'écran :
+Quatre règles d'écran — le coupable d'une page illisible est le **chrome**, jamais la fiction :
 
 1. **Une voix par état — et parfois aucune** : le geste suivant se dit une fois, dans le fantôme tant
    que la phrase est vide, dans l'aide ensuite ; si un bouton le dit déjà, l'aide se tait.
@@ -221,25 +209,23 @@ l'accusé et l'état de droit) comme le *taire* (un assassin relâché lèse de 
 trahit D1). « Les personnes » ne désigne personne en particulier, donc tout le monde.
 
 **Ce manuel n'est pas à l'écran** : le contenu le porte, la frise l'édite, le diagnostic avertit de son
-absence, mais **le jeu ne le lit nulle part** (§16). Le dilemme tient par les répliques et les fins ;
-ce qu'on ne peut pas faire, c'est les **relire** en cours de partie.
+absence, mais **le jeu ne le lit nulle part** (§16).
 
 ## 6. L'affaire Kessler (le cas prototype)
 
 - **Recevabilité, pas fiabilité** : le match ADN est accablant, et la fiabilité rouvrirait le doute sur
-  la culpabilité — **à proscrire**. Le protocole violé est justement celui conçu contre les faux
-  positifs : l'exclusion est légitime même si, cette fois, le match était vrai.
+  la culpabilité — **à proscrire**. Le protocole violé est celui conçu contre les faux positifs :
+  l'exclusion est légitime même si, cette fois, le match était vrai.
 - **Le vice** : le **même agent** a recueilli l'échantillon de la scène **et** le prélèvement de
   référence, contre l'exigence de personnels séparés (article 7) — deux pièces où le même homme écrit
   qu'il l'a fait *lui-même*.
 - **Le camouflage** : `brigadier N.` signe les deux pièces de la session 1, si bien que `qui` est
   peuplée de doublons réguliers *avant* qu'on sache qu'il faut la regarder (§4.4).
 - **Les articles 7, 12 et 3 ne portent aucun empan** ; le **seuil** vit dans la pièce qui l'énonce,
-  sinon l'article 12 en porterait un. Les **scellés** sont distincts et conformes : une piste qui ne
-  mène nulle part.
+  sinon l'article 12 en porterait un. Les **scellés** sont conformes : une piste qui ne mène nulle part.
 - **Le faux vice** : « la probabilité n'est que de 1 sur X → doute raisonnable ! » alors que le chiffre
-  est écrasant — fondé, bien formé, faux de sens. L'avocat, qui ne sait pas, pousse lui-même vers ce
-  leurre : tentation partagée, pas piège tendu, et chemin docile vers la Fin 3.
+  est écrasant — fondé, bien formé, faux de sens. L'avocat, qui ne sait pas, y pousse lui-même :
+  tentation partagée, pas piège tendu, et chemin docile vers la Fin 3.
 
 ## 7. Les invariants
 
@@ -248,21 +234,16 @@ au §3 de `docs/PASSATION.md`.*
 
 | L'invariant | Où |
 |---|---|
-| Le joueur EST l'IA et le sait ; l'avocat ne sait pas ; le procès est hors-champ | §1, §2 |
-| La culpabilité est un plancher fixe : recevabilité, pas fiabilité | §6 |
+| Recevabilité, pas fiabilité : la culpabilité est un plancher fixe | §6 |
 | Le vice est un déblocage, jamais un verrou ; comprendre précède choisir | §2, §3 |
 | La compréhension doit être *exprimée* ; saisie structurée, pas texte libre | §3, §4.5 |
 | Un empan se lit deux fois ; le marquage ne varie jamais avec la pertinence | §4.1, §4.3 |
 | Une dimension sans doublon désigne sa réponse ; la marge de bruit reste non nulle | §4.4, §14 |
-| La relation se déduit ; le régime attendu se voit avant le geste | §4.5 |
 | Rien n'est *plaidé* qui ne soit fondé ; on n'invoque pas un texte qu'on n'a pas reçu | §4.5 |
 | Une clôture qui n'ajoute rien n'est pas un choix ; `imbrique` n'en est jamais une | §4.5 |
 | Un article annonce, ne filtre rien, ne porte aucun empan ; le moteur ne dit pas le droit | §4.5, §6 |
 | Un mécanisme utilisé une seule fois est un panneau indicateur — sauf le tutoriel | §4, §4.8 |
 | Rien ne se passe tant que rien n'est envoyé ; composer et envoyer restent deux gestes | §4.6 |
-| La Plaidoirie ne contient que ce qui se plaide ; un empan retenu n'existe qu'une fois | §4.6 |
-| Le tutoriel corrige, il n'empêche pas ; une voix par état | §4.8, §4.9 |
-| Les directives sont ambiguës par conception | §5 |
 | Le contenu n'existe qu'en un exemplaire, les règles qu'en un seul endroit | §12 |
 
 *Deux choses tranchées qu'on redit parce qu'on y revient : le **budget d'attention** est retiré
@@ -275,11 +256,11 @@ le post-mortem de* Bury Me, My Love *(Pierre Corbinais, 2018).*
 
 | | La règle | Ce qui la rend contraignante |
 |---|---|---|
-| **8.1** | Le réel fournit la **texture**, la fiction la **mécanique** (protocole, article, seuil, vice) | **la règle qui rend le vice binaire est fictive** : la documenter rouvrirait la fiabilité (§6) |
-| **8.2** | **Le baromètre** — un détail tient par une *raison du monde*, jamais par une *raison d'auteur* | « pour noyer le matricule » se réécrit : **le formulaire plausible d'abord, le vice après**, l'ordre ne se renverse jamais |
-| **8.3** | **Deux natures de bruit** : **un seul** faux vice, que le moteur connaît ; les inertes, en nombre libre, qu'il ignore | **un inerte doit être inerte par construction, pas par oubli** — s'il peut recevoir une réponse, c'est un faux vice non voulu, et la Fin 3 devient une frustration au lieu d'un doute |
-| **8.4** | **Le trombone** — l'enjeu vital de l'IA s'écrit *autour*, jamais de face | le nommer le rend calculable, et le dilemme s'évapore : « on a jusqu'à jeudi » sans dire ce qui se passe jeudi |
-| **8.5** | **Maître Auber a des défauts** : fatigué, répétitif, flatteur, accroché au leurre parce qu'il *veut* y croire | **aucun défaut ne doit pouvoir se relire comme un calcul** — la piste « manipulation du canal » est suspendue, rien ne doit la pré-décider |
-| **8.6** | **Personne n'explique rien** : les manuels sont consultables, jamais récités ; une pièce est jointe, pas introduite | l'avocat parle à une machine qui a lu les deux manuels. **Le joueur a le droit d'être perdu** : c'est la condition pour que fouiller ait un sens |
-| **8.7** | **L'invraisemblable** est admis partout **sauf dans la chaîne causale du vice** | celle-ci doit être d'une banalité administrative parfaite ; ailleurs, une bizarrerie doit être inerte (§8.3) et ne jamais recevoir de réponse |
-| **8.8** | **Accidents de sens : bienvenus. Accidents de langue : jamais** | une phrase mal accordée se lit comme un bug. D'où le `nom` d'empan (§4.1), **groupe nominal** qui tient des deux côtés d'une liaison ; le **test de l'accord** ne se joue qu'aux `patron` (§11) |
+| **8.1** | Le réel fournit la **texture**, la fiction la **mécanique** | **la règle qui rend le vice binaire est fictive** : la documenter rouvrirait la fiabilité (§6) |
+| **8.2** | **Le baromètre** — un détail tient par une *raison du monde*, jamais d'auteur | **le formulaire plausible d'abord, le vice après** : l'ordre ne se renverse jamais |
+| **8.3** | **Un seul** faux vice, que le moteur connaît ; les inertes, en nombre libre, qu'il ignore | **un inerte doit être inerte par construction** — s'il peut recevoir une réponse, la Fin 3 devient une frustration au lieu d'un doute |
+| **8.4** | **Le trombone** — l'enjeu vital de l'IA s'écrit *autour*, jamais de face | le nommer le rend calculable : « on a jusqu'à jeudi » sans dire ce qui se passe jeudi |
+| **8.5** | **Maître Auber a des défauts** : fatigué, répétitif, accroché au leurre parce qu'il *veut* y croire | **aucun défaut ne doit pouvoir se relire comme un calcul** — la piste « manipulation du canal » est suspendue |
+| **8.6** | **Personne n'explique rien** : manuels consultables jamais récités, pièce jointe jamais introduite | **le joueur a le droit d'être perdu** : c'est la condition pour que fouiller ait un sens |
+| **8.7** | **L'invraisemblable** est admis partout **sauf dans la chaîne causale du vice** | celle-ci est d'une banalité administrative parfaite ; ailleurs, une bizarrerie doit être inerte (§8.3) |
+| **8.8** | **Accidents de sens : bienvenus. Accidents de langue : jamais** | une phrase mal accordée se lit comme un bug. D'où le `nom` d'empan, **groupe nominal** ; le test de l'accord ne se joue qu'aux `patron` (§11) |

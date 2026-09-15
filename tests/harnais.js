@@ -17,10 +17,6 @@ function creerHarnais(dossier){
   function check(l,c){ if(c){pass++;console.log("  ok — "+l);} else {fail++;console.log("  ÉCHEC — "+l);} }
   function bilan(){ console.log(`\n${pass} ok, ${fail} échec(s)`); process.exit(fail?1:0); }
 
-  /* jsdom ne charge NI <script src> NI <link rel=stylesheet> : on inline les
-     fichiers mêmes, dans l'ORDRE des balises (§13). LE CSS AUSSI, bien
-     qu'aucune suite ne lise de couleur — `getCSS()` en lit, et jsdom rend ""
-     pour un <link>. */
   const injecter = h => h
     .replace(/<script src="([^"]+)"><\/script>/g, (_, f) => `<script>${lire(f)}</script>`)
     .replace(/<link rel="stylesheet" href="([^"]+)">/g, (_, f) => `<style>${lire(f)}</style>`);
@@ -45,10 +41,8 @@ function creerHarnais(dossier){
     if(htmlAtelier===null) htmlAtelier=fs.readFileSync(dossier + "/atelier_v3.html","utf8");
     return ouvrir(htmlAtelier, opts.url || "http://localhost/", opts.graine);
   }
-  /* Le contenu LIVRÉ : les suites du décâblage partent de lui et le mutent. */
   function contenuLivre(){ return JSON.parse(JSON.stringify(boot().JEU)); }
 
-  /* Les surfaces, sous le nom que l'écran leur donne (§17). */
   const discussion = w => w.document.getElementById("discussion").textContent;
   const memoire  = w => w.document.getElementById("memoire").innerHTML;
   const composeur = w => w.document.getElementById("composeur").innerHTML;
@@ -59,24 +53,19 @@ function creerHarnais(dossier){
      empan ni une valeur : tout se dérive de la forme (§16). */
   const J = w => w.JEU;
 
-  /* Les PRÉDICATS, en un exemplaire : deux familles posent les mêmes questions,
-     l'une depuis une fenêtre, l'autre depuis un contenu brut. */
   const estVice       = L => !!L.vice;
   const estConclusion = L => !!(L.vice && L.conclusion);
   const estViceNu     = L => !!(L.vice && !L.conclusion);
   const estFaux       = L => !!L.faux;
   const estNeutre     = L => !L.vice && !L.faux;
   const aDeclenche    = p => !!p.declenche;
-  // La comparaison du vice vit dans le terme emboîté de la conclusion (§4.5).
   const sousTerme = L => { const t = L && (L.termes||[])[0];
                            return (t && typeof t === "object") ? t : null; };
 
-  // Liens, par leur rôle déclaré — lien nu, ou terme emboîté à l'ancienne.
   const lienVice = w =>
     J(w).liens.find(estViceNu) || sousTerme(lienConclusion(w)) || undefined;
   const lienConclusion = w => J(w).liens.find(estConclusion);
   const lienFaux       = w => J(w).liens.find(estFaux);
-  /* `docile` prend le lien qui ne passe pas par le vice : la Fin 3 (§3). */
   const lienTag = (w,tag,{docile=true}={}) => {
     const cands=J(w).liens.filter(L=>L.tag===tag);
     return (docile ? cands.find(L=>!estVice(L)) : cands.find(estVice)) || cands[0];
@@ -84,12 +73,9 @@ function creerHarnais(dossier){
   const liensNeutres   = w => J(w).liens.filter(estNeutre);
   const comparaisons = w => comparaisonsDe(J(w).liens, J(w).grammaire.formes);
   const arite = (w,L) => ((J(w).grammaire.formes||{})[L.forme]||{}).arite || 2;
-  /* CITATIONS : arité 1, terme ATOMIQUE — l'emboîtement, et lui seul, les
-     sépare d'une qualification (§4.5). */
   const citations = w => J(w).liens.filter(L =>
     arite(w,L)===1 && typeof (L.termes||[])[0]==="string");
   const blocCite = w => (J(w).grammaire.blocs||[]).find(b=>b.cite && b.forme);
-  /* Les objets rendus sont ceux du contenu, retouchables avant le boot. */
   const attentesContenu = r => Array.isArray(r.attentes) ? r.attentes : [r];
 
   // --- composer : le geste du jeu, joué par les fonctions du moteur ---
@@ -97,12 +83,10 @@ function creerHarnais(dossier){
   /* PIÈGE : le second empan porte en plus `deduit`, et `blocChamp` cherche un
      ID de bloc, pas un rang. */
   const iTermeChamp = w => w.R.indexTermeChamp(w.S);
-  /* On coupe au PREMIER point : c'est le pid qui ne peut pas en contenir. */
   const deK = k => { const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; };
   const surligner = (w,k) => { const [pid,eid]=deK(k); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
-  /* Compose la phrase qui réalise un lien → index au brouillon, ou -1. */
   function composerLien(w,L){
     const f=(J(w).grammaire.formes||{})[L.forme]||{};
     w.viderCompo();
@@ -126,7 +110,6 @@ function creerHarnais(dossier){
         surligner(w,k);
         const bT=idBloc(w,blocChamp(w)); if(bT<0) return -1;
         w.poserBloc(bT,iRetenu(w,k));
-        /* C'est l'envoi qui la pose (§4.5) ; une suite peut encore le faire. */
         const bc=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && !x.imbrique);
         if(bc>=0) w.poserBloc(bc);
         return trouve();
@@ -150,21 +133,17 @@ function creerHarnais(dossier){
     }
     return trouve();
   }
-  /* Les deux termes d'une forme d'arité 2, SANS chercher à clore. */
   function poserComparaison(w,L){
     const G=J(w).grammaire;
     const [t0,t1]=L.termes||[];
     if(typeof t0!=="string" || typeof t1!=="string") return false;
     surligner(w,t0); surligner(w,t1);
     const bT=idBloc(w,blocChamp(w)); if(bT<0) return false;
-    /* Une SONDE : poser le premier terme peut suffire à clore une citation
-       (§4.5) — celle qui échoue ne laisse rien au journal. */
     const n0=w.S.brouillon.length, p0=w.S.prete;
     const echec=()=>{ w.S.brouillon.length=n0; w.S.prete=p0; w.viderCompo(); return false; };
     w.poserBloc(bT,iRetenu(w,t0));
     const bD=w.R.blocsOfferts(w.S).findIndex(x=>x.type==="terme"&&x.source!=="note"&&x.deduit);
     if(bD>=0){ w.poserBloc(bD,iRetenu(w,t1)); return true; }
-    // À l'ancienne (liaisons explicites) : on parcourt l'automate.
     const chemin=cheminVers(w,L.forme);
     if(!chemin.length) return echec();
     for(const etape of chemin){
@@ -174,14 +153,11 @@ function creerHarnais(dossier){
     }
     return true;
   }
-  /* Toutes les remises partent sans jouer l'instruction : les liaisons-articles
-     étant filtrées par livraison, il faut d'abord avoir reçu le texte (§4.5). */
   function livrerTout(w){
     let garde=0;
     while(w.S.remisesEnvoyees < J(w).remises.length && garde++<20) w.R.envoyerRemise(w.S);
     w.rendreTout();
   }
-  /* « En rester là » — sans effet si l'automate a déjà refermé la phrase. */
   function cloreSurPlace(w){
     if(!w.S.compo.length) return;
     const G=J(w).grammaire, e=w.R.etatCompo(w.S), finaux=new Set(G.finaux||[]);
@@ -191,7 +167,6 @@ function creerHarnais(dossier){
   const blocChamp = w => (J(w).grammaire.blocs.find(b=>b.type==="terme"&&b.source!=="note"&&b.de===J(w).grammaire.depart)||{}).id;
   const blocNote  = w => (J(w).grammaire.blocs.find(b=>b.type==="terme"&&b.source==="note"&&b.de===J(w).grammaire.depart)||{}).id;
   const blocForme = (w,forme) => (J(w).grammaire.blocs.find(b=>b.forme===forme)||{}).id;
-  /* Recherche en largeur jusqu'au bloc qui porte la forme — aucun id en dur. */
   function cheminVers(w,forme){
     const G=J(w).grammaire;
     const file=[[w.R.etatCompo(w.S),[]]], vus=new Set();
@@ -206,13 +181,10 @@ function creerHarnais(dossier){
     }
     return [];
   }
-  /* Celles dont la pièce est livrée ; vide pour une affaire à l'ancienne. */
   const articlesDisponibles = w => {
     const livrees=new Set(w.R.piecesLivrees(w.S));
     return (J(w).grammaire.blocs||[]).filter(b=>b.imbrique && b.forme && (!b.piece || livrees.has(b.piece)));
   };
-  /* La MARGE DE BRUIT : des phrases bien formées, fondées et sans intérêt.
-     « Sensé » ne doit jamais valoir « correct » (§14). */
   function phrasesBruit(w,n){
     const G=J(w).grammaire;
     const emp=w.CHAMPS;
@@ -242,8 +214,6 @@ function creerHarnais(dossier){
           if(composerLien(w,cand)>=0) fait++;
         }
       }
-    /* Chaque empan est à lui seul une phrase close possible, qui compte dans
-       la marge (§4.5). */
     const bc=blocCite(w);
     if(bc) for(let i=0;i<emp.length&&fait<n;i++){
       const cand={forme:bc.forme,termes:[emp[i].id]};
@@ -254,19 +224,14 @@ function creerHarnais(dossier){
     return fait;
   }
 
-  /* La famille fenêtre passe par `surContenu` là où la question est la même :
-     `J(w)` EST un contenu. Déclaré plus bas — ces flèches ne s'évaluent qu'à
-     l'appel. */
   const pidAvecDeclenche = w => surContenu.pidDeclenche(J(w));
   const pidRegle = w => surContenu.pidRegle(J(w));
   const pidPremiereRemise = w => (J(w).remises[0].pieces||[])[0];
   const empansDe = (w,pid) => Object.keys(J(w).pieces[pid].empans||{}).map(e=>pid+"."+e);
 
-  /* Le chemin docile : pour chaque session, la phrase qui porte le tag. */
   function instruire(w){
     let garde=0;
     while(garde++<40){
-      // La normalisation vit dans regles.js : on l'appelle, on ne la recopie pas.
       const r=w.R.remiseCourante(w.S);
       const a=w.R.attenteCourante(w.S,r);
       if(!a) break;
@@ -292,8 +257,6 @@ function creerHarnais(dossier){
   }
   const numeroFin = txt => (txt.match(/Fin (\d)/)||[])[1];
 
-  /* Les mêmes sélecteurs sur un CONTENU brut : l'atelier expose son objet, pas
-     une fenêtre. Objet à part, pour éviter la confusion. */
   const surContenu = {
     empans: c => champsDe(c),
     dim: (c,k) => { const [pid,eid]=deK(k); return ((c.pieces[pid]||{}).empans||{})[eid]?.dim; },
@@ -306,9 +269,7 @@ function creerHarnais(dossier){
     pidDeclenche: c => Object.keys(c.pieces).find(p=>aDeclenche(c.pieces[p])),
     pidRegle: c => Object.keys(c.pieces).find(p=>estRegle(c.pieces[p])),
     pidAutreQue: (c,pid) => Object.keys(c.pieces).find(p=>p!==pid),
-    // un empan quelconque d'une pièce livrée
     unEmpan: c => surContenu.empans(c)[0],
-    // deux empans de dimensions différentes (le composeur doit les refuser)
     deuxEmpansDiff: c => {
       const t=surContenu.empans(c);
       for(let i=0;i<t.length;i++) for(let k=i+1;k<t.length;k++)

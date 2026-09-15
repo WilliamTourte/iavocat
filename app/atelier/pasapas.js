@@ -3,7 +3,6 @@
    même état : il ne peut pas dériver (§12). Deux écarts assumés — il joue au
    grain du LIEN plutôt que bloc à bloc, et il narre ses gestes privés. */
 let SIM=null, SIMACT=[];
-/* Refaites quand le contenu change — comme MG() pour la grammaire. */
 let _rg=null, _rgSig=null;
 function RG(){
   const m=MG(); if(!m) return null;
@@ -19,8 +18,6 @@ function simReset(){
   if(R) R.envoyerRemise(SIM);       // la session 1 part au démarrage
   renderEtapes();
 }
-/* Les gestes privés ne parlent à personne : le pas-à-pas les narre pour qu'on
-   VOIE qu'ils ne produisent rien. */
 function simMsg(m){ SIM.fil.push(m); }
 function simLivrees(){ const R=RG(); return new Set(R?R.piecesLivrees(SIM):[]); }
 function simPhase(){
@@ -35,16 +32,12 @@ function simTag(L){
        : L.faux?{t:"✗",c:"f",title:"le faux vice"}
        : !lienSense(L)?{t:"∅",c:"n",title:"phrase refusée à la composition"}:null;
 }
-/* Composable si tous les empans-feuilles sont EN MÉMOIRE et, pour une
-   qualification, si la comparaison est atteignable et l'article reçu. Le filtre
-   de livraison est lu sur les blocs offerts par regles.js. */
 function simComposable(L){
   const f=formeDe(L.forme)||{};
   if((f.arite||2)===1){
     const sous=(L.termes||[])[0];
     const bloc=(CONTENU.grammaire.blocs||[]).find(b=>b.forme===L.forme);
     if(bloc && bloc.piece && !simLivrees().has(bloc.piece)) return false;
-    /* UNE CITATION : terme atomique, aucun article requis (§4.5). */
     if(typeof sous==="string") return SIM.retenus.includes(sous);
     if(!sous || typeof sous!=="object") return false;
     return feuillesLien(sous).every(k=>SIM.retenus.includes(k))
@@ -61,18 +54,12 @@ function simSurligner(k){
                              :`surligne ${cflabel(k)} — retenu, privé. Rien ne part.`});
   renderEtapes();
 }
-/* On arrive avec la forme réduite déjà faite et on passe par `clorePhrase`, la
-   MÊME porte que le composeur du jeu — mêmes drapeaux, même dédoublonnage. */
 function simComposer(i){
   const L=CONTENU.liens[i];
   RG().clorePhrase(SIM,{forme:L.forme,termes:clone(L.termes||[])},labelLien(L));
   simMsg({sys:true,texte:`écrit : ${labelLien(L)} — elle attend sur place, privée. Rien ne part.`});
   renderEtapes();
 }
-/* COMPARER SANS QUALIFIER : les deux empans sous les yeux, la relation qui
-   s'affiche, et rien d'écrit. C'est là, et là seulement, que naît le
-   pressentiment (§4.7). */
-/* La marche récursive vit dans moteur.js (§12). */
 function sousComparaisons(){
   const api=window.MoteurGrammaire;
   return api ? api.comparaisonsDe(CONTENU.liens,(CONTENU.grammaire||{}).formes) : [];
@@ -82,7 +69,6 @@ function simComparer(r){
   simMsg({sys:true,texte:`compare : ${labelLien(r)} — sous les yeux, sans texte. Rien ne part.`});
   renderEtapes();
 }
-/* ENVOYER — le seul geste transmis ; tout est décidé par regles.js. */
 function simEnvoyer(ni,contre){
   RG().envoyer(SIM,ni,contre);
   renderEtapes();
@@ -113,25 +99,20 @@ function simActions(){
     for(const pid of livrees) if(!SIM.examinees.includes(pid))
       A.push({t:`Ouvrir « ${courtDe(pid)} »`, cls:"ghost", f:()=>simOuvrir(pid)});
 
-  // surligner : gratuit, illimité, sur les pièces reçues
   for(const e of empansPlats()){
     if(!livrees.has(e.pid) || SIM.retenus.includes(e.id)) continue;
     A.push({t:`Surligner : ${cflabel(e.id)} — « ${String(e.texte||"").slice(0,42)} »`, cls:"ghost", f:()=>simSurligner(e.id)});
   }
-  // comparer : désigner deux empans, voir ce qui les lie — et s'arrêter là
   for(const r of sousComparaisons()){
     if(!feuillesLien(r).every(k=>SIM.retenus.includes(k))) continue;
     A.push({t:`Comparer (sans qualifier) : ${labelLien(r)}`, cls:"ghost", f:()=>simComparer(r)});
   }
-  /* composer : deux voies, deux verbes — on ne compose pas une citation, on
-     répond (§4.5). */
   (CONTENU.liens||[]).forEach((L,i)=>{
     const deja=SIM.brouillon.some(n=>memeReduite(n.reduite,{forme:L.forme,termes:L.termes||[]}));
     if(deja || !simComposable(L)) return;
     const cite=(formeDe(L.forme)||{}).arite===1 && typeof (L.termes||[])[0]==="string";
     A.push({t:`${cite?"Répondre (citer)":"Composer"} : ${labelLien(L)}`, tag:simTag(L), f:()=>simComposer(i)});
   });
-  // envoyer : le seul geste transmis
   if(phase!=="repetition")
     SIM.brouillon.forEach((n,ni)=>{
       if(n.versee) return;

@@ -9,7 +9,6 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
 
   /* ---- LA DÉDUCTION (§4.5) ---- la relation se calcule de la dimension et des
      valeurs : le joueur désigne, il ne déclare plus. */
-  // Volontairement fruste : une valeur est un jeton de contenu, pas un type.
   const enNombre = v => {
     const s = String(v == null ? "" : v).trim();
     if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
@@ -36,7 +35,6 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     }
     return null;
   }
-  // Rangés selon le `sens` ; sans effet sur une forme non ordonnée.
   function ordonner(forme, termes) {
     const f = G.formes[forme];
     if (!f || !f.ordonne || termes.length !== 2) return termes;
@@ -67,7 +65,6 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     return { forme, termes };
   }
   const dimDe = t => (typeof t === "object" ? "affirmation" : C[t].dim);
-  // → null si la phrase est sensée (catégories respectées), sinon la raison.
   function valider(r) {
     const f = G.formes[r.forme];
     if (!f) return "ces deux-là ne se comparent pas";
@@ -101,9 +98,6 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
         && y.termes.every(t => x.termes.some(u => memeTerme(t, u)));
   }
   const lienDe = r => LIENS.find(l => memeRed({ forme: l.forme, termes: l.termes }, r));
-  // La chaîne → le texte français : un empan s'écrit par son `nom` (§4.1), et
-  // une forme déduite d'un bloc par son `patron` — seul endroit où l'accord se
-  // joue (§8.8).
   const nomDe = v => (C[v] ? (C[v].nom || C[v].texte) : String(v));
   const citeDe = v => {
     const c = C[v]; if (!c) return String(v);
@@ -123,8 +117,6 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
         forme = termes.length === 2 ? deduire(termes[0], termes[1]) : null;
         const f = forme && G.formes[forme];
         if (f && f.patron) {
-          // Les deux derniers fragments SONT les termes : un automate à
-          // déduction ne place aucune liaison entre eux.
           const ord = ordonner(forme, termes);
           bouts.splice(bouts.length - 2, 2,
             f.patron.replace("{a}", nomDe(ord[0])).replace("{b}", nomDe(ord[1])));
@@ -152,11 +144,8 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
            squelettes, comparer, deduire, ordonner };
 }
 
-/* LES PROJECTIONS DU CONTENU — pures, sans fabrique : leur seule maison (§14).
-   CLOÎTRÉES, et il le faut : on ne sort que par `MoteurGrammaire.x` (§9). */
 const _projections = (function () {
 
-/* Exactement l'argument CHAMPS que `creerMoteur` attend. */
 function champsDe(contenu) {
   const out = [];
   for (const [pid, p] of Object.entries((contenu || {}).pieces || {}))
@@ -167,8 +156,6 @@ function champsDe(contenu) {
   return out;
 }
 
-/* Les COMPARAISONS (arité 2), emboîtées comprises — on ne suppose pas laquelle
-   des deux écritures l'affaire emploie (§14). */
 function comparaisonsDe(liens, formes) {
   const out = [], vus = new Set();
   const rec = t => {
@@ -183,8 +170,6 @@ function comparaisonsDe(liens, formes) {
   return out;
 }
 
-/* Par RANG, jamais par pertinence (§4.3). `null` si inconnue : le jeu grise,
-   l'atelier signale en rouge. */
 const PALETTE_DIM = ["#7fb3d5", "#d99a9a", "#9dc98c", "#c9ab6a", "#b79ad6", "#7fc9c1"];
 function couleurDim(dimensions, d) {
   const i = (dimensions || []).indexOf(d);

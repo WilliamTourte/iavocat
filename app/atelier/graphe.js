@@ -78,9 +78,6 @@ function empanRelie(pid,eid){
   const k=K(pid,eid);
   return (CONTENU.liens||[]).some(L=>feuillesLien(L).includes(k));
 }
-/* Le RANG dans CONTENU.dimensions, jamais la pertinence (§4.3). Ici le repli
-   seul : une dimension inconnue est une ERREUR d'écriture, montrée en rouge —
-   le jeu, lui, la grise. */
 function couleurDim(d){
   const api=window.MoteurGrammaire;
   return (api ? api.couleurDim(toutesDims(),d) : null) || "var(--err)";
@@ -101,15 +98,11 @@ function edgeColor(L){
   return getCSS('--ok');
 }
 function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
-/* Via moteur.js, seul juge : une phrase est « sensée » si ses termes
-   respectent les catégories déclarées par la forme. */
 function lienSense(L){
   const m=MG(); if(!m) return true;
   if(!formeDe(L.forme)) return false;
   return !m.valider({forme:L.forme,termes:L.termes||[]});
 }
-/* Un lien d'arité 2 dont les deux termes sont des empans se dessine ; une
-   qualification (arité 1) n'a pas de trait — elle se lit sous le diagnostic. */
 function paireVisible(L){
   const t=L.termes||[];
   return t.length===2 && typeof t[0]==="string" && typeof t[1]==="string" ? t : null;
@@ -154,8 +147,6 @@ function armerDrag(){
 }
 
 /* 4) INTERACTION GRAPHE */
-/* Le SEUL endroit qui garde sa paire d'empans en repartant à zéro : c'est lui
-   qui la construit, clic après clic (`garderEmpans`). */
 function clicChamp(pid,ch){
   reinitSelection({garderEmpans:true});
   const meme=s=>s&&s.pid===pid&&s.champ===ch;
@@ -180,8 +171,6 @@ function creerLien(forme){
     selEdge=CONTENU.liens.length-1; selA=selB=null;
   });
 }
-/* Conclure un lien existant : la phrase close devient le terme d'une liaison de
-   qualification. C'est la chaîne du vice en deux temps (§4.7). */
 function conclureLien(i,forme){
   const L=CONTENU.liens[i]; if(!L) return;
   const cand={forme, termes:[{forme:L.forme, termes:clone(L.termes||[])}]};
@@ -191,7 +180,6 @@ function conclureLien(i,forme){
     selEdge=CONTENU.liens.length-1;
   });
 }
-/* Les formes offertes, rangées par arité — c'est la grammaire qui les déclare. */
 function formesParArite(n){
   return Object.entries(((CONTENU.grammaire||{}).formes)||{})
     .filter(([,f])=>(f.arite||2)===n).map(([k])=>k);

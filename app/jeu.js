@@ -45,7 +45,6 @@ if(!M){
     `<div class="panne">moteur.js n'a pas été chargé. Le fichier doit rester à côté de index.html (voir docs/ARCHITECTURE.md §9).</div>`);
 }
 const EMPAN = Object.fromEntries(CHAMPS.map(c=>[c.id,c]));
-/* Par RANG, jamais par pertinence (§4.3) ; ici, le repli seul. */
 const couleurDim = d =>
   (MoteurAPI.couleurDim ? MoteurAPI.couleurDim(JEU.dimensions,d) : null) || "var(--muted)";
 
@@ -98,15 +97,12 @@ try{ tutoFait = !!localStorage.getItem(CLE_TUTO); }catch(e){}
 function effacerTuto(){ try{ localStorage.removeItem(CLE_TUTO); }catch(e){} }
 function tutoClore(){ tutoFait=true; try{ localStorage.setItem(CLE_TUTO,"1"); }catch(e){} }
 function tutoPasser(){ tutoClore(); majTutoriel(); }
-/* Ce que la question attend : tag → lien → terme s'il est ATOMIQUE. Rien n'est
-   jamais nommé au joueur (§4.8). */
 function tutoAttendu(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
   const L=a&&a.attend&&(JEU.liens||[]).find(x=>x.tag===a.attend);
   const t=L&&(L.termes||[])[0];
   return typeof t==="string" ? t : null;
 }
-/* Quatre temps ; il n'avance qu'avec le passage demandé, mais n'EMPÊCHE rien. */
 function tutoEtape(){
   if(S.remisesEnvoyees!==1 || S.satisfaits.length) return null;
   const veut=tutoAttendu();
@@ -254,8 +250,6 @@ function renderRetenus(){
     for(const d of JEU.dimensions||[]){
       const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
       if(!ks.length) continue;
-      // Assombri par DIMENSION, jamais empan par empan (§4.3) ; rien n'est
-      // désactivé, le clic reste possible et retombe sur le refus (§4.5).
       const hors=dimReq && d!==dimReq;
       h+=`<div class="dimgrp ${hors?"horsdim":""}" style="--dc:${couleurDim(d)}"><div class="dnom">${escapeAttr(d)}</div>`;
       for(const {k,j} of ks){
@@ -290,11 +284,9 @@ function souffle(){
     if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
     return second ? "Sélectionne un ou plusieurs passages de ta mémoire" : "Depuis ta mémoire, sélectionne un passage pour répondre";
   }
-  // La phrase se tient et rien ne reste à y mettre : on se tait (§4.9).
   if(offerts.some(b=>b.cite) || R.compoFinie(S)) return "";
   if(offerts.some(b=>b.type==="terme"&&b.source!=="note"))
     return "Clique sur un second passage pour le mettre en relation";
-  // LA RELANCE ne se coupe pas (§4.5).
   return offerts.length
     ? "Et donc ? Une comparaison ne se plaide pas seule — au regard de quel texte ?"
     : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
@@ -302,7 +294,6 @@ function souffle(){
 function texteCompoPartiel(){
   if(!S.compo.length) return `<span class="trou">${escapeAttr(souffle())}</span>`;
   const ch=R.chaineCompo(S);
-  // Tant que le second empan n'est pas posé, on montre le premier SEUL.
   const fini=ch.some(p=>p.bloc.deduit);
   if(fini) return `<span class="bl">${escapeAttr(M.rendre(ch).replace(/\.$/,""))}</span>`;
   return ch.map(p=>{
@@ -321,11 +312,7 @@ function texteCompoPartiel(){
 function poserBloc(iBloc,iSrc){ R.poserBloc(S,iBloc,iSrc); rendreTout(); }
 function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
 function viderCompo(){ R.viderCompo(S); rendreTout(); }
-/* LE GESTE UNIQUE (§4.5) : on envoie de la même manière un empan, deux, ou
-   deux et un article. */
 function envoyerCompo(){ R.envoyerCompo(S); rendreTout(); }
-/* Le composeur étant SOUS le fil (§4.6), la question est souvent la bulle juste
-   au-dessus : on ne la redit qu'une fois qu'elle a cessé d'être le dernier mot. */
 function rappelQuestion(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
   if(!a || !a.question) return "";
@@ -343,7 +330,6 @@ function renderCompo(){
       ${R.peutEnvoyer(S)?`<button class="envoi" onclick="envoyerCompo()">→ Envoyer</button>`:""}
       <button onclick="retirerBloc()">← retirer</button><button onclick="viderCompo()">tout effacer</button></div>`;
   h+=`<div class="offre">`;
-  /* LA CLÔTURE QUI N'AJOUTE RIEN N'EST PAS UN BOUTON (§4.5) : l'envoi la pose. */
   const implicite=R.clotureImplicite(S);
   offerts.forEach((b,i)=>{
     if(implicite && b.id===implicite.id) return;
@@ -415,8 +401,6 @@ function cloturer(){
   if(suite==="fin") return finir();
   if(suite) rendreTout();
 }
-/* Le MÊME geste que l'envoi, avec une cible — dernier moment où la conclusion
-   tue peut encore partir (§4.7). */
 function verserContre(i){ R.verserContre(S,i); rendreTout(); }
 function avancerRepetition(){ R.avancerRepetition(S); rendreTout(); }
 function finir(){

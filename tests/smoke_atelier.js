@@ -8,8 +8,6 @@ const neuf = () => { const w = H.bootAtelier(); w.demanderExemple(); w.demanderE
 const err = w => w.diagnostiquer().filter(i => i.niveau === "erreur");
 const msgs = w => w.diagnostiquer().map(i => i.msg).join(" | ");
 
-/* L'atelier ne porte plus de copie du contenu : il ÉDITE content.js. Ce bloc ne
-   compare plus deux exemplaires, il vérifie que le seul qui existe tient. */
 console.log("\n=== content.js tient debout, et c'est lui que l'atelier édite ===");
 {
   const w = neuf();
@@ -56,7 +54,6 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
     msgs(w).includes("Empan sans nom") && !err(w).some(i => /sans nom/.test(i.msg)));
 }
 {
-  // un bloc qui emboîte alors qu'aucune forme n'a encore été fixée
   const w = neuf();
   const G = w.CONTENU.grammaire;
   G.blocs.push({ id:"vide", type:"liaison", de:G.depart, vers:G.finaux[0],
@@ -64,7 +61,6 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
   check("emboîter dans le vide est une erreur", msgs(w).includes("emboîte dans le vide"));
 }
 {
-  // le bloc « en rester là » : sans forme, mais parti d'un état déjà formé
   const w = neuf();
   check("un bloc de clôture sans forme, après une forme fixée, passe",
     !msgs(w).includes("clôt une phrase sans forme"));
@@ -88,7 +84,6 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
   } else check("(aucune forme ordonnée déductible)", true);
 }
 {
-  // une session qui attend une phrase dont l'article n'arrivera qu'après
   const w = neuf();
   const C = w.CONTENU;
   /* PIÈGE : un article est une liaison qui porte une FORME *et* une pièce —
@@ -96,8 +91,6 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
      en porte une aussi et n'a pas de forme. Tout ce qui suit était alors sauté. */
   const bloc = C.grammaire.blocs.find(x => x.piece && x.forme);
   if (bloc) {
-    // on retire la pièce de l'article de toutes les remises, puis on la livre
-    // en dernier : l'attente qu'elle sert devient inservable à temps.
     let sert = null;
     for (const L of C.liens) if (L.tag && L.forme === bloc.forme) sert = L.tag;
     if (sert) {
@@ -140,7 +133,6 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
     msgs(w).includes("doublon(s) régulier(s)"));
 }
 {
-  /* Un article est une RÉFÉRENCE : aucun empan, et il annonce ce qu'il régit. */
   const w = neuf();
   const pidR = SC.pidRegle(w.CONTENU);
   const regles = Object.values(w.CONTENU.pieces).filter(estRegle);
@@ -167,7 +159,6 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
 }
 {
   const w = neuf();
-  // Un vice déclaré que rien ne conclut : pressenti, jamais dicible en droit.
   for (const L of w.CONTENU.liens) if (L.vice) delete L.conclusion;
   check("un vice sans conclusion est une erreur", msgs(w).includes("pas de conclusion"));
 }
@@ -184,15 +175,12 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
   check("une attente qu'aucun lien ne porte est une erreur", msgs(w).includes("qu'aucun lien ne porte"));
 }
 {
-  // Une question posée que rien ne peut satisfaire bloquerait la session.
   const w = neuf();
   const as = w.attentesDeRemise(w.CONTENU.remises[0]);
   as[0].question = "Et alors ?"; delete as[0].attend;
   check("une question sans tag à servir est une erreur", msgs(w).includes("sans tag à servir"));
 }
 {
-  /* Le second empan livré trop tard : un bloc de terme pouvant être conditionné,
-     une attente qui exige une comparaison devient inservable. */
   const w = neuf();
   const t = (w.CONTENU.grammaire.blocs || []).find(b => b.type === "terme" && b.deduit);
   if (t) {
@@ -204,7 +192,6 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
 {
   const w = neuf();
   const L0 = w.CONTENU.liens[SC.iLienNeutre(w.CONTENU)];
-  // La comparaison à casser est emboîtée sous sa qualification.
   const L = (L0.termes||[]).length === 1 && typeof L0.termes[0] === "object" ? L0.termes[0] : L0;
   if (L.termes.length === 2 && typeof L.termes[1] === "string") {
     const autre = SC.empans(w.CONTENU).find(e => e.dim !== SC.dim(w.CONTENU, L.termes[0]));
@@ -233,8 +220,6 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
     liens:[{ a:["a","agent_x"], rel:"est en désaccord avec", b:["b","exige"], tient:true, vice:true, rep:"Tiens." }],
     relations:["est en accord avec","est en désaccord avec"],
     cases:{ c1:{ label:"Case", remise:1, options:["x"], bonne:"x", apres:{ replique:"Reçu." } } },
-    // L'accusé de la case atterrit sur l'ATTENTE (§11) : posé sur la remise, ni
-    // le jeu ni l'atelier ne pouvaient plus le lire.
     remises:[{ qui:"Maître", texte:"Voilà.", pieces:["a","b"], attentes:[{ attend:"t_x" }] }],
     repetition:{ intro:"", affirmations:[], fin:"" },
     avocat:{ rep_vice:"", rep_faux:"", rep_inutile:[], rep_sans_rapport:[], deja:"" },
@@ -254,8 +239,6 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
   check("une grammaire est fournie", Array.isArray(m.grammaire.blocs) && !!m.grammaire.formes);
   check("les dimensions sont posées", Array.isArray(m.dimensions) && m.dimensions.length === 5);
   check("les cases et les relations disparaissent", m.cases === undefined && m.relations === undefined);
-  /* Lu PAR LE NORMALISATEUR, et c'est le contrôle : un accusé que
-     `attentesDeRemise` ne rend pas ne sera jamais dit. */
   const accuse = (w.attentesDeRemise(m.remises[0])[0]||{}).apres;
   check("l'accusé de réception d'une case migre sur l'attente de sa session",
     !!accuse && accuse.replique === "Reçu.");
@@ -301,8 +284,6 @@ console.log("\n=== Édition : empans, liens, renommages ===");
 }
 {
   const w = neuf();
-  /* L'article étant obligatoire, le contenu livré ne déclare plus aucune
-     comparaison nue : on en crée une à la main, puis on la conclut. */
   const sv = SC.sousVice(w.CONTENU);
   w.CONTENU.liens.push({ forme: sv.forme, termes: JSON.parse(JSON.stringify(sv.termes)) });
   const i = w.CONTENU.liens.length - 1;
@@ -344,8 +325,6 @@ console.log("\n=== Le chemin docile, simulé ===");
   w.simReset();
   let garde = 0;
   while (garde++ < 40) {
-    // On sert la première attente encore due ; la remise suivante ne part
-    // qu'une fois la liste épuisée (§3).
     const r = w.CONTENU.remises[w.SIM.remisesEnvoyees-1];
     const a = w.attentesDeRemise(r).find(x => !w.SIM.satisfaits.includes(x.attend));
     if (!a) break;

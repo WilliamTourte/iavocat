@@ -12,7 +12,6 @@ function renderInsp(){
   el.innerHTML=`<div class="empty">Sélectionne un empan (ou un trait) pour l'éditer.<br>Deux empans → crée un lien.<br><br>Les liens de <b>qualification</b> (arité 1) se créent depuis un lien existant : clique son trait, puis « conclure par… ».</div>`
     + listeQualifications();
 }
-/* Les liens sans trait (arité 1) se lisent ici, sinon ils seraient invisibles. */
 function listeQualifications(){
   const q=(CONTENU.liens||[]).map((L,i)=>({L,i})).filter(x=>!paireVisible(x.L));
   if(!q.length) return "";
@@ -21,8 +20,6 @@ function listeQualifications(){
         ${x.L.vice?"⚑ ":""}${x.L.faux?"✗ ":""}${escapeH(labelLien(x.L))}</div>`).join("");
 }
 
-/* Formulaires de création — les dialogues natifs sont bloqués en iframe
-   sandboxée. Ouvrir un formulaire abandonne la sélection : `reinitSelection`. */
 function formulairePiece(kind){ reinitSelection(); formPiece=kind; render(); }
 function inspFormPiece(){
   const regle=formPiece==='regle';
@@ -54,8 +51,6 @@ function creerPiece(){
   });
   scrollVers(pid);
 }
-/* Le texte d'une pièce porte les marqueurs {{eid}} : c'est ici que se règle la
-   règle de surlignage (§4.3). */
 function formulairePieceEdit(pid){ reinitSelection(); formPieceEdit=pid; render(); }
 function inspPiece(pid){
   const p=CONTENU.pieces[pid];
@@ -176,7 +171,6 @@ function toastInsp(m){ $("insp").insertAdjacentHTML("afterbegin",`<div class="in
 /* ---- mutations — l'épilogue est dans `muter` (noyau.js) ---- */
 function majEmpan(pid,eid,prop,v){ muter(()=>{
   const e=CONTENU.pieces[pid].empans[eid];
-  // Le signataire vide se RETIRE : l'empan retombe sur celui de la pièce.
   if(prop==="qui") poserOuRetirer(e,prop,v); else e[prop]=v;
 }); }
 function majPiece(pid,prop,v){ muter(()=>{ CONTENU.pieces[pid][prop]=v; }); }
@@ -186,8 +180,6 @@ function majBruit(pid,ch,on){ muter(()=>{
   if(on) CONTENU._bruit.push(k);
 }); }
 function majLien(i,prop,val){ muter(()=>{
-  // Drapeaux et textes se retirent quand ils sont vides : une clé vide
-  // partirait à l'export sans rien dire.
   poserOuRetirer(CONTENU.liens[i],prop,val,{trim:true});
 }); }
 
@@ -206,8 +198,6 @@ function demanderSupprChamp(pid,ch){ demanderSuppr("champ:"+K(pid,ch),()=>{
   CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>x!==k);
   selA=selB=null;
 }); }
-/* Le seul geste dangereux à la main : un id de pièce est référencé par les
-   liens, les remises et `_pos`, et tout est réécrit d'un bloc. */
 function idValide(neuf,existants,ancien){
   const n=String(neuf||"").trim();
   if(!n) return "id vide.";
@@ -227,8 +217,6 @@ function renommerPieceId(ancien,neuf){
   if(neuf===ancien) return null;
   muter(()=>{
     CONTENU.pieces=renommerClef(CONTENU.pieces,ancien,neuf);
-    /* La marche récursive vit dans `reecrireTermes` (noyau.js) : ici on ne dit que
-       ce que devient une FEUILLE. */
     const renommer = k => { const [pid,eid]=deK(k); return pid===ancien ? K(neuf,eid) : k; };
     for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
     CONTENU._bruit=(CONTENU._bruit||[]).map(renommer);
@@ -239,7 +227,6 @@ function renommerPieceId(ancien,neuf){
   });
   return null;
 }
-/* Renommer un empan : clé, marqueur, liens et bruit. */
 function renommerEmpanId(pid,ancien,neuf){
   neuf=String(neuf||"").trim();
   const p=CONTENU.pieces[pid];
@@ -258,7 +245,6 @@ function renommerEmpanId(pid,ancien,neuf){
   });
   return null;
 }
-/* Les deux renommages ne diffèrent que par la question posée et le geste. */
 function demanderRenommage(question,actuel,appliquer){
   const neuf=prompt(question,actuel);
   if(neuf===null) return;

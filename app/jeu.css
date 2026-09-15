@@ -24,7 +24,6 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 /* PIÈGE : `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` — sans
    cette ligne, cacher la Plaidoirie ne ferait rien. */
 .col[hidden]{display:none}
-/* Le composeur, ancré sous le fil : il ne défile pas avec lui (§4.6). */
 #composeur{border-top:1px solid var(--line);padding:12px 14px;background:var(--panel)}
 #composeur .zone{margin:0}
 /* PIÈGE : sans plan, deux colonnes — `.cloture` est câblée sur trois, elle suit,
@@ -38,7 +37,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 }
 /* --- canal --- */
 .msg{margin-bottom:10px}
-.msg.suite{margin-top:-4px}   /* même locuteur : les bulles se serrent (§4.9) */
+.msg.suite{margin-top:-4px}   
 .msg .who{font-size:12px;color:var(--muted);margin-bottom:3px}
 .msg .bubble{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .msg.ia .who{color:#5b8aa6}
@@ -49,8 +48,6 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .attach.seen{opacity:.6}
 /* --- zones --- */
 .zone{margin-bottom:12px}
-/* Le dossier et la mémoire partagent une colonne mais pas un sujet : chacun son
-   cadre plein, pour rester deux blocs et non un enchaînement. */
 #zoneDossier,#zoneRetenus{border:1px solid var(--line);border-radius:8px;
   background:var(--panel2);padding:10px 12px;margin-bottom:12px}
 .zone .ztitle{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;
@@ -68,8 +65,6 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .empan .sig{font-size:11px;color:var(--muted);font-family:var(--mono)}
 /* --- mémoire : une seule liste, qui sert AUSSI de clavier au composeur --- */
 .dimgrp{margin-bottom:9px}
-/* Un groupe qui comparerait sans rien construire (§4.5) : assombri, jamais
-   désactivé — le clic reste permis, et le refus reste celui du clic. */
 .dimgrp.horsdim{opacity:.45}
 .dimgrp .dnom{font-size:11px;color:var(--dc,var(--muted));text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
 .mchip{display:flex;align-items:stretch;margin:3px 0;background:var(--panel2);
@@ -81,7 +76,6 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
   padding:6px 9px;cursor:pointer;font:inherit;font-size:13px;line-height:1.4}
 .mchip .corps:disabled{cursor:default;opacity:.55}
 .mchip .nom{display:block}
-/* Deux lignes, pas trois (§4.9) : la citation cède la place, la source jamais. */
 .mchip .prov{display:flex;align-items:baseline;gap:6px;margin-top:2px}
 .mchip .cit{flex:1;min-width:0;font-size:11.5px;color:var(--muted);font-style:italic;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -95,7 +89,6 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .phrase .bl{border-bottom:1px solid var(--line);padding:0 2px}
 .phrase .bl.terme{border-bottom:2px solid var(--dc,var(--accent))}
 .phrase .trou{color:var(--muted);font-style:italic}
-/* Un empan POSÉ se relit comme dans la mémoire : les deux lignes de `.mchip`. */
 .phrase .bl.terme.pose{display:inline-block;vertical-align:top;max-width:100%;
   padding:2px 5px;margin:1px 0;border-radius:4px 4px 0 0;
   background:color-mix(in srgb, var(--dc,#888) 10%, transparent)}
@@ -117,7 +110,6 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .compo .barre .envoi{background:#12324a;color:#bfe0f2;border-color:var(--transmis);font-size:12.5px;padding:4px 12px}
 .compo .barre .envoi:hover{border-color:var(--accent);color:#eaf4fb}
 .bbloc.fondement{background:#25313d;border-left:3px solid var(--transmis)}
-/* Ce qu'un article régit — indicatif, jamais filtrant (§4.5) */
 .porte{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
 /* --- plaidoirie --- */
 .liste{list-style:none;padding:0;margin:0}
@@ -162,8 +154,6 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 small.note{color:var(--muted)}
 code{font-family:var(--mono);color:var(--accent)}
 /* --- l'index du dossier : les pièces d'abord, les règles ensuite --- */
-/* Deux natures, deux BANDES pleine largeur : en colonnes, l'index s'empilait
-   une ligne par pièce (§4.9). */
 .dossier{display:flex;flex-direction:column;gap:6px;padding:2px 0 4px}
 .dcol{min-width:0;display:flex;gap:8px;align-items:baseline}
 .dcol .dtitre{flex:none;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
@@ -181,7 +171,6 @@ code{font-family:var(--mono);color:var(--accent)}
 [data-tuto]{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;
   animation:pouls 1.8s ease-in-out infinite}
 @keyframes pouls{0%,100%{outline-color:var(--accent)}50%{outline-color:transparent}}
-/* Pas le passage demandé : même halo, autre couleur. Rien n'est barré. */
 [data-tuto="alerte"]{outline-color:var(--warn);animation-name:poulsAlerte}
 @keyframes poulsAlerte{0%,100%{outline-color:var(--warn)}50%{outline-color:transparent}}
 @media (prefers-reduced-motion:reduce){ [data-tuto]{animation:none} }

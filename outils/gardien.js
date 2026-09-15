@@ -27,8 +27,6 @@ const RACINE  = path.join(__dirname, "..");
 const lire    = rel => fs.readFileSync(path.join(RACINE, rel), "utf8");
 const existe  = rel => fs.existsSync(path.join(RACINE, rel));
 
-/* Trois territoires : `tests/` et `outils/` REFLÈTENT les règles du jeu, et un
-   reflet qui dérive ne se voit nulle part (§16). */
 const TERRITOIRES = ["app", "tests", "outils"];
 function fichiersJS(racines) {
   const out = [];
@@ -55,11 +53,6 @@ function bilan() {
   process.exit(ecarts ? 1 : 0);
 }
 
-/* TROIS vues d'un source JS : `code` (tout blanchi sauf le code — on y compte
-   les accolades, R2), `chaines` (classes CSS et HTML engendré, R6), `sansComm`
-   (seule vue où un `onclick="…"` se lit d'un bloc, R5 et R6). Un `split` ne
-   suffit pas : gabarits imbriqués, regex dont les accolades fausseraient la
-   profondeur, commentaires qui citent du code. */
 const MOTS_AVANT_REGEX = /(?:^|[^\w$.])(?:return|typeof|case|in|of|do|else|delete|void|instanceof|new|yield)$/;
 function debutDeRegex(codeAvant) {
   const t = codeAvant.replace(/\s+$/, "");
@@ -67,7 +60,6 @@ function debutDeRegex(codeAvant) {
   if ("(,=:[!&|?{};+-*%~^<>".includes(t[t.length - 1])) return true;
   return MOTS_AVANT_REGEX.test(t);
 }
-// -1 s'il ne se referme pas avant la fin de ligne : c'était une division.
 function finDeRegex(src, i) {
   let j = i + 1, classe = false;
   while (j < src.length) {
@@ -91,7 +83,6 @@ function decouperJS(src) {
     const c = src[i], d = src[i + 1];
     if (dansCode()) {
       if (c === "/" && d === "/") { while (i < src.length && src[i] !== "\n") i++; continue; }
-      /* Blanchi, mais REND SES SAUTS DE LIGNE : R9 y compte les lignes. */
       if (c === "/" && d === "*") {
         const j = src.indexOf("*/", i + 2), fin = j < 0 ? src.length : j + 2;
         const sauts = src.slice(i, fin).replace(/[^\n]/g, "");
@@ -123,16 +114,12 @@ function decouperJS(src) {
     if (c === "\\") { g.txt += src[i + 1] || ""; sansComm += src.slice(i, i + 2); i += 2; continue; }
     if (c === "`")  { chaines.push(g.txt); pile.pop(); sansComm += c; i++; continue; }
     if (c === "$" && d === "{") { pile.push({ t: "interp", prof: 0 }); sansComm += "${"; i += 2; continue; }
-    // Même raison : sans les sauts de ligne, les lignes annoncées dérivent.
     if (c === "\n") code += c;
     g.txt += c; sansComm += c; i++;
   }
   return { code, chaines, sansComm };
 }
 
-/* Les déclarations à PROFONDEUR D'ACCOLADE ZÉRO — les seules qui prennent un
-   nom dans la page ; sans le compte, une fermeture (§9) passerait pour une
-   collision. `async` en tête compte comme une déclaration ordinaire. */
 const DECLARATION = /(?:async\s+)?(function|const|let|var|class)\s+([A-Za-z_$][\w$]*)/y;
 function declarationsDeHautNiveau(code) {
   const noms = [];
@@ -141,16 +128,14 @@ function declarationsDeHautNiveau(code) {
     const c = code[i];
     if (c === "{") { prof++; precedent = c; continue; }
     if (c === "}") { prof--; precedent = c; continue; }
-    // Une déclaration ouvre une instruction : sans ce garde-fou, le `g` de
-    // `const f = function g(){}` passerait pour un nom de haut niveau.
+    // PIÈGE : sans ce garde-fou, le `g` de `const f = function g(){}` passerait
+    // pour un nom de haut niveau.
     if (prof === 0 && /[A-Za-z]/.test(c) && (precedent === "" || precedent === ";" || precedent === "}")) {
       DECLARATION.lastIndex = i;
       const m = DECLARATION.exec(code);
       if (m && m.index === i) {
         noms.push(m[2]);
         let j = DECLARATION.lastIndex;
-        /* `let a=1, b=2;` déclare DEUX noms ; un nom manquant à l'inventaire
-           est une collision que R2 ne verrait pas. */
         if (m[1] !== "function" && m[1] !== "class") {
           let d = 0;
           while (j < code.length) {
@@ -179,9 +164,6 @@ function declarationsDeHautNiveau(code) {
 /* ---- HTML --------------------------------------------------------------- */
 const sansCommentairesHTML = s => s.replace(/<!--[\s\S]*?-->/g, "");
 
-/* Les classes qu'une page POSE (R6) : un `class="…"`, et toute chaîne qui n'est
-   QU'un mot. Pas tous les mots de toutes les chaînes — `content.js` est de la
-   PROSE, et un gardien qui lit le contenu ne garde rien (§9). */
 function classesPosees(page) {
   const out = new Set();
   const attribut = txt => {
@@ -196,8 +178,6 @@ function classesPosees(page) {
   return out;
 }
 
-/* Tout se juge PAR PAGE : `escapeAttr` et `$` vivent dans `jeu.js` ET dans
-   `noyau.js`, légitimement — jamais la même page. */
 const TAG_SCRIPT_STRICT = /^<script src="([^"]+)"><\/script>$/;
 const TAG_LIEN_STRICT   = /^<link rel="stylesheet" href="([^"]+)">$/;
 
@@ -233,8 +213,6 @@ const PAGES = [
   chargerPage("app/atelier_v3.html", "l'atelier")
 ];
 
-/* CE QU'UNE PAGE EXPOSE À ELLE-MÊME — lu par R5 et par `eslint.config.js`,
-   dont les `globals` ne s'écrivent nulle part : ils se calculent (§12). */
 function nomsExposes(page) {
   const noms = new Set();
   for (const s of page.sources) {
@@ -244,7 +222,6 @@ function nomsExposes(page) {
   return noms;
 }
 
-/* Mode double : lancé il contrôle, `require` il ne rend que l'inventaire. */
 module.exports = { PAGES, decouperJS, declarationsDeHautNiveau, nomsExposes };
 if (require.main !== module) return;
 
@@ -267,8 +244,6 @@ console.log("Le gardien — les conventions que les suites ne voient pas.\n");
         faux.push(`${p.htmlRel} — feuille hors de la forme que le harnais inline : ${t.slice(0, 90)}`);
     for (const f of [...p.scripts, ...p.feuilles])
       if (!existe(f)) faux.push(`${p.htmlRel} — charge ${f}, qui n'existe pas`);
-    // Une balise COMMENTÉE est inlinée quand même : un exemple mis de côté
-    // deviendrait un fichier chargé sous test, et sous test seul.
     for (const c of p.brut.match(/<!--[\s\S]*?-->/g) || [])
       if (/<script src="|<link rel="stylesheet" href="/.test(c))
         faux.push(`${p.htmlRel} — une balise en commentaire : le harnais l'inlinerait quand même`);
@@ -294,8 +269,7 @@ console.log("Le gardien — les conventions que les suites ne voient pas.\n");
 }
 
 /* R5 — UN `onclick` VISE UNE FONCTION QUI EXISTE : un gestionnaire renommé
-   donne un bouton qui ne fait rien, sans un mot — d'où les `window.X = X`
-   explicites de l'atelier. */
+   donne un bouton qui ne fait rien, sans un mot. */
 const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "function", "catch", "do", "else", "new", "delete", "void"]);
 {
   const faux = [];
@@ -317,7 +291,7 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
 
 /* R6 — UN ID VISÉ EXISTE, ET LE TUTORIEL VISE QUELQUE CHOSE (§4.8).
    `majTutoriel` NE SE PLAINT JAMAIS d'une cible introuvable : seule une capture
-   le prouvait. On contrôle par les sélecteurs mêmes que `tutoEtape` écrit. */
+   le prouvait. On contrôle par les sélecteurs que `tutoEtape` écrit. */
 {
   const faux = [];
   for (const p of PAGES) {
@@ -343,10 +317,10 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
 
 /* R9 — `attend`/`apres` NE SE LISENT PLUS SUR UNE REMISE (§11). L'ancienne
    écriture reste LISIBLE : une branche restée à `r.attend` répond « non » pour
-   toujours sans que rien ne casse. QUATRE FONCTIONS y échappent, et seulement
-   elles : `attentesDe`, `attentesDeRemise`, `attentesEditables`, `migrerContenu`.
-   ELLE LIT DU TEXTE, PAS DES TYPES : est une remise un récepteur écrit `r`,
-   `remise`, ou une indexation de `remises`. Les ÉCRITURES sont hors champ. */
+   toujours sans que rien ne casse. QUATRE FONCTIONS y échappent : `attentesDe`,
+   `attentesDeRemise`, `attentesEditables`, `migrerContenu`. ELLE LIT DU TEXTE,
+   PAS DES TYPES — une remise est un récepteur écrit `r`, `remise`, ou une
+   indexation de `remises` ; les ÉCRITURES sont hors champ. */
 {
   const faux = [];
   const TOLERES = {
@@ -356,7 +330,6 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
     "app/atelier/contenu-io.js": ["migrerContenu"]
   };
   const estRemise = recv => recv === "r" || recv === "remise" || /remises(\[[^\]]*\])?$/.test(recv);
-  // Heuristique assumée : la fonction contenante est la dernière déclarée.
   const fonctionEn = (code, i) => {
     const avant = [...code.slice(0, i).matchAll(/function\s+([A-Za-z_$][\w$]*)/g)];
     return avant.length ? avant[avant.length - 1][1] : "";
@@ -379,19 +352,15 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
   regle("R9 · plus rien ne lit « attend » ou « apres » posé sur une remise", faux);
 }
 
-/* R11 — AUCUN RENVOI « §x » NE POINTE DANS LE VIDE (§12, §16). Un renvoi mort
-   ne casse rien, ne lève rien : il envoie lire une section qui n'existe pas, ou
+/* R11 — AUCUN RENVOI « §x » NE POINTE DANS LE VIDE (§12). Un renvoi mort ne
+   casse rien, ne lève rien : il envoie lire une section qui n'existe pas, ou
    pire, une qui existe et parle d'autre chose. LES NUMÉROS SONT UNIQUES DANS
    TOUT LE DÉPÔT — §1 à §8 dans CONCEPTION.md, §9 à §17 dans ARCHITECTURE.md.
-   EXCEPTION : `docs/PASSATION.md` numérote ses propres sections, on n'y juge
-   que les renvois à deux niveaux. */
+   EXCEPTION : `docs/PASSATION.md` numérote ses propres sections. */
 {
   const faux = [];
   const DOCS = ["docs/CONCEPTION.md", "docs/ARCHITECTURE.md"];
 
-  // Les sections présentes : un titre « ## 4.5 … », ou une ligne de table
-  // « | **8.1** | … » (le §8). La valeur est le fichier, ce qui fait tomber du
-  // même coup les numéros servis deux fois.
   const chez = new Map();
   for (const d of DOCS) {
     if (!existe(d)) { faux.push(`${d} est introuvable — les renvois « §x » n'ont plus de maison.`); continue; }
@@ -405,9 +374,9 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
     }
   }
 
-  // `§8.x` et `§4.x` sont des GABARITS de prose : le numéro y est suivi d'une
-  // lettre, jamais d'un chiffre. Les compter reviendrait à juger une section
-  // « 8 » toute seule, qui n'existe pas.
+  // PIÈGE : `§8.x` et `§4.x` sont des GABARITS de prose — le numéro y est suivi
+  // d'une lettre. Les compter reviendrait à juger une section « 8 » toute
+  // seule, qui n'existe pas.
   const MOTIF_REF = /§\s?(\d+(?:\.\d+)*)(\.[a-zà-ÿ])?/g;
   const aJuger = [];
   for (const f of fichiersJS(TERRITOIRES).concat(fichiersJS(["grammaire"]))) aJuger.push([f, lire(f), false]);
@@ -429,8 +398,7 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
       }
       /* LE RENVOI QUI NOMME SON FICHIER doit nommer le BON — le cas le plus
          traître, parce qu'il a l'air plus précis. Deux tournures reconnues :
-         « docs/ARCHITECTURE.md §12 » et « §4.4 de CONCEPTION » ; tout le reste
-         est un renvoi NU, le cas ordinaire et le bon. */
+         « docs/ARCHITECTURE.md §12 » et « §4.4 de CONCEPTION ». */
       const AVANT = /(?:docs\/)?(CONCEPTION|ARCHITECTURE)(?:\.md)?`?\s*$/;
       const APRES = /^\s*[»)]?\s*(?:de|d'|dans|du)\s+`?(?:docs\/)?(CONCEPTION|ARCHITECTURE)/;
       const nomme = src.slice(Math.max(0, m.index - 40), m.index).match(AVANT)

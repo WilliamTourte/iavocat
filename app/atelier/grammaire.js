@@ -14,17 +14,12 @@ function moteurGram(){
   }
   return GRAM._m;
 }
-/* les blocs-terme du squelette courant (les « trous » à remplir) */
 function gramTermes(sq){ return sq.filter(b=>b.type==="terme"); }
-/* Le SEUL endroit qui sait dans quel ordre les trous se remplissent : l'aperçu
-   s'en sert pour un choix, la densité pour un million. */
 function chaineDe(sq,valeurs){
   let ti=0;
   return sq.map(bloc => bloc.type==="terme" ? {bloc, valeur:valeurs[ti++]} : {bloc, valeur:null});
 }
 function gramChaine(sq){
-  // slot « note » : la valeur est la RÉDUCTION de la note gardée ;
-  // slot « champ » : la valeur est l'id du champ.
   return chaineDe(sq, gramTermes(sq).map((bloc,ti)=>{
     const v=GRAM.vals[ti];
     if(v==null) return undefined;
@@ -63,8 +58,6 @@ function gramDensite(m){
   }
   return {total,senses,avecLien};
 }
-/* Ce qu'un squelette annonce AVANT de connaître ses valeurs : une liaison le
-   déclare, un bloc `deduit` ne peut pas. */
 const formeSquelette = s =>
   s.map(b=>b.forme).filter(Boolean).pop() || (s.some(b=>b.deduit) ? "déduite des valeurs" : "—");
 function renderGrammaire(){
@@ -82,7 +75,6 @@ function renderGrammaire(){
   const sq=GRAM._sq[GRAM.squel];
   const termes=gramTermes(sq);
 
-  // le sélecteur de squelette + les trous
   let compo=`<div class="gcompose">
     <select onchange="gramChoixSquel(this.value)">
       ${GRAM._sq.map((s,i)=>{

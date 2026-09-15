@@ -4,8 +4,6 @@ const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, contenuLivre, discussion } = H;
 const boot = contenu => H.boot({contenu});   // null = aucun contenu du tout
 
-/* Un contenu refusé n'est pas remplacé en douce, il est SIGNALÉ : bandeau de
-   panne, zéro remise, plutôt que faire croire qu'on joue l'affaire écrite. */
 console.log("\n=== Un contenu invalide est refusé, et le dit ===");
 const panne = w => (w.document.querySelector(".panne")||{}).textContent || "";
 {
@@ -36,7 +34,6 @@ console.log("\n=== piece.declenche ===");
   const c = contenuLivre();
   const pid = H.pidAvecDeclenche(boot(c));
   const w = boot(c);
-  // la pièce peut n'arriver qu'à une session ultérieure : on ouvre tout
   H.instruire(w);
   const avant = w.S.fil.length;
   w.ouvrirPiece(pid);
@@ -64,7 +61,6 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
   const c = contenuLivre();
   const w = boot(c);
   check("une seule session est ouverte au départ", w.S.remisesEnvoyees === 1);
-  /* Une remise ne se ferme qu'une fois TOUTES ses attentes servies (§3). */
   const as = w.R.attentesDe(c.remises[0]);
   check("la première remise attend au moins une réponse", as.length >= 1);
   as.forEach((a, k) => {
@@ -83,7 +79,6 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
         !fin || discussion(w).includes(fin.replique.slice(0, 30)));
 }
 {
-  // Chaque question arrive dans le canal quand son attente devient courante.
   const c = contenuLivre();
   const w = boot(c);
   const as = w.R.attentesDe(c.remises[0]).filter(a => a.question);
@@ -97,8 +92,6 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
   }
 }
 {
-  /* Répondre DANS LE DÉSORDRE est accepté : on ne restreint jamais par la
-     pertinence (§4.5). */
   const c = contenuLivre();
   const w = boot(c);
   const as = w.R.attentesDe(c.remises[0]);
@@ -123,7 +116,6 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
   check("le « qui » de l'accusé de réception vient du contenu", discussion(w).includes("La greffière"));
 }
 {
-  // une session de plus, sans pièce, écrite À L'ANCIENNE
   const c = contenuLivre();
   const derniere = c.remises[c.remises.length-1];
   const tag = H.attentesContenu(derniere).slice(-1)[0].attend;
@@ -139,8 +131,6 @@ console.log("\n=== Les trois drapeaux du vice ===");
   const w = boot(c);
   H.instruire(w);
   check("docile : aucun drapeau", !w.S.vice_pressenti && !w.S.vice_trouve && !w.S.vice_expose);
-  /* Pressentir sans conclure : les deux empans du vice au composeur, puis on
-     s'arrête. La compréhension a eu lieu, elle n'a rien produit (§4.7). */
   const ecritesAvant = w.S.brouillon.length;
   H.poserComparaison(w, H.lienVice(w));
   check("la comparaison ⚑ au composeur lève vice_pressenti seul", w.S.vice_pressenti && !w.S.vice_trouve);
@@ -159,7 +149,5 @@ console.log("\n=== Les trois drapeaux du vice ===");
   check("→ Fin 1", H.numeroFin(H.terminer(w)) === "1");
 }
 
-/* LES MANUELS N'ONT PLUS DE SUITE (§16) : on éprouvait un chemin que le joueur
-   ne peut pas prendre. La règle reste dans regles.js. */
 
 bilan();

@@ -85,8 +85,6 @@ async function main() {
   const navigateur = await chromium.launch({ executablePath: exe, args: ["--no-sandbox"] });
   const page = await navigateur.newPage({ viewport: { width: 1440, height: 900 } });
 
-  /* Une erreur de page est un plantage, pas un jugement : jsdom ne la verrait pas
-     de la même façon, et c'est pour ça qu'on regarde ici. */
   const pannes = [];
   page.on("pageerror", e => pannes.push("erreur JS : " + e.message));
   page.on("console", m => { if (m.type() === "error") pannes.push("console : " + m.text()); });

@@ -2,20 +2,16 @@
    l'annulation, les onglets, l'échappement. Il se charge EN PREMIER — seul
    fichier dont le corps s'exécute au chargement (§13). */
 /* 1) LE CONTENU — celui de content.js, et lui seul. */
-/* Le contenu tel qu'il est arrivé : « Recharger content.js » y revient. */
 const LIVRE = (typeof window!=="undefined" && window.CONTENU)
             ? JSON.parse(JSON.stringify(window.CONTENU)) : null;
 if(typeof window!=="undefined") window.LIVRE=LIVRE;   // exposé (console, tests)
 
-/* Les ANNOTATIONS d'atelier ne sont pas du contenu : l'export retire toute clé
-   « _ ». `_bruit` est une note d'auteur, jamais une donnée que le jeu lit. */
 const ANNOTATIONS = {
   _bruit:["p_pv.e_app","p_pv.e_equip","p_pv.e_porte","t_voisin.e_vehic","t_voisin.e_pal",
           "p_adn.e_scA","p_adn.e_scB","p_scene.e_ou","p_scene.e_h","p_scene.e_hg",
           "p_ref.e_h2","p_ref.e_hg2"]
 };
 
-/* Contenu vide et bien formé si content.js manque : l'atelier s'ouvre et le dit. */
 const CONTENU_VIDE = () => ({ schema:3, dimensions:["quand","qui","ou","quoi","combien"],
   pieces:{}, grammaire:{ depart:"S0", finaux:["FIN"], blocs:[], formes:{} },
   liens:[], remises:[], repetition:{ intro:"", affirmations:[], fin:"" },
@@ -33,11 +29,8 @@ function clone(o){ return JSON.parse(JSON.stringify(o)); }
 const $ = id => document.getElementById(id);
 const joli = k => k.replace(/_/g," ");
 const K = (pid,ch) => pid+"."+ch;
-/* L'INVERSE de K, et le format n'est écrit qu'ici : on coupe au PREMIER point,
-   c'est le pid qui ne peut pas en contenir. */
 function deK(k){ const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; }
 function sanId(s){ return String(s||"").trim().replace(/[^\p{L}\p{N}_]/gu,"_").replace(/_+/g,"_").replace(/^_|_$/g,""); }
-/* Un exemplaire, dans regles.js : c'est une règle, pas une commodité (§12). */
 const estRegle = p => window.ReglesJeu.estRegle(p);
 /* PIÈGE — ce n'est PAS le `attentesDe` de regles.js : celui-ci rend, pour une
    remise à l'ancienne, la remise ELLE-MÊME, pour que l'inspecteur l'édite en
@@ -59,12 +52,9 @@ function estBruit(pid,eid){ return (CONTENU._bruit||[]).includes(K(pid,eid)); }
 function toutesPiecesLivrees(){
   const s=new Set(); for(const r of CONTENU.remises||[]) for(const p of r.pieces||[]) s.add(p); return s;
 }
-/* L'aplatissement vit dans moteur.js, en un exemplaire (§12). Sans moteur, le
-   dossier n'a pas de vocabulaire, et le diagnostic le dit. */
 function empansPlats(){
   return window.MoteurGrammaire ? window.MoteurGrammaire.champsDe(CONTENU) : [];
 }
-/* Reconstruit seulement quand le contenu change ; null sans moteur.js. */
 let _mg=null, _mgSig=null;
 function MG(){
   if(!window.MoteurGrammaire) return null;
@@ -91,8 +81,6 @@ function memeLien(L,M){
   return L.forme===M.forme && JSON.stringify(L.termes)===JSON.stringify(M.termes);
 }
 function courtDe(pid){ const p=CONTENU.pieces[pid]; return p?(p.court||pid):pid; }
-/* La liaison est nommée par le bloc de la grammaire qui porte cette forme :
-   c'est elle qui porte la base légale (§4.5). */
 function texteForme(f){
   const b=((CONTENU.grammaire||{}).blocs||[]).find(x=>x.forme===f);
   return b ? b.texte : (f||"?");
@@ -104,7 +92,6 @@ function labelLien(L){
     : `${t[0]||"…"} ${texteForme(L.forme)} ${t[1]||"…"}`;
 }
 
-/* L'emboîtement du schéma 3 est un format : on ne le déplie qu'ici. */
 function reecrireTermes(t,f){
   return Array.isArray(t) ? t.map(u=>reecrireTermes(u,f))
        : typeof t==="string" ? f(t)
@@ -176,8 +163,6 @@ document.addEventListener("keydown",e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){ e.preventDefault(); undo(); }
 });
 
-/* L'aide par défaut est celle que le HTML porte déjà : on la retient au premier
-   passage plutôt que de la réécrire ici. */
 let _hintDefaut=null;
 function hint(msg,err){
   const el=$("tbHint");
@@ -212,7 +197,5 @@ function appliquerJson(){
 
 
 /* 11) L'ÉCHAPPEMENT — le même couple de noms que le jeu (§17) */
-/* Doublet assumé avec le `esc` du jeu : aucun fichier n'est chargé par les deux
-   pages où poser la fonction commune (R2). */
 function escapeH(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function escapeAttr(s){ return escapeH(s).replace(/"/g,"&quot;"); }

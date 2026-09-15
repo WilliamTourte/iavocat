@@ -9,17 +9,17 @@
 l'interface ne décide rien, et l'atelier ne recopie rien.*
 
 - Quatre dossiers : `app/` (le livrable), `docs/`, `tests/` (§16), `grammaire/` (le banc d'essai, qui
-  consomme `../app/moteur.js` et prouve la rétrocompatibilité du §11). Inventaire : §17.
+  prouve la rétrocompatibilité du §11). Inventaire : §17.
 - **Une page ne porte que sa structure** : CSS en `<link>`, JS en `<script src>`, aucun build — un
   script classique externe partage la portée globale, ce dont dépendent tous les `onclick=`.
 - **Corollaire payé** : un nom de haut niveau dans `moteur.js` ou `regles.js` est un nom **pris dans la
-  page**. Les projections (§14) et `estRegle` sont **cloîtrés** et ne sortent que par
-  `MoteurGrammaire.x` / `ReglesJeu.x`.
-- **Les modules de l'atelier se chargent en portée globale classique**, jamais en modules ES ; les
+  page**. Les projections (§14) et `estRegle` sont **cloîtrés** derrière `MoteurGrammaire.x` /
+  `ReglesJeu.x`.
+- **Les modules de l'atelier se chargent en portée globale classique**, jamais en modules ES : les
   fonctions se voient par *hoisting*, et `noyau.js` vient **en premier**, seul dont le corps s'exécute
   au chargement.
-- **Le contenu n'existe qu'en un exemplaire** : manquant ou d'un schéma inconnu, le jeu ne joue pas
-  autre chose en douce — il le dit et ne démarre pas (§13).
+- **Le contenu n'existe qu'en un exemplaire** : manquant ou d'un schéma inconnu, le jeu le dit et ne
+  démarre pas (§13).
 
 ## 10. Le cycle d'écriture
 
@@ -27,10 +27,9 @@ l'interface ne décide rien, et l'atelier ne recopie rien.*
 `<script src>` : un cycle, pas une chaîne — plus d'amont ni d'aval, donc plus de dérive.
 
 **L'export remplace le fichier sur place** (File System Access, jusqu'en `file://` sous Chrome et
-Edge) : on désigne `app/content.js` une fois, la poignée est retenue dans IndexedDB, les fois suivantes
-tiennent en un clic ; **Alt+clic** en désigne un autre. Sans l'API (Firefox, Safari) ou sur droit
-refusé, le bouton **retombe sur le téléchargement** et le dit sur lui-même : la commodité dépend du
-navigateur, jamais le cycle.
+Edge) : on désigne `app/content.js` une fois, la poignée est retenue dans IndexedDB, **Alt+clic** en
+désigne un autre. Sans l'API (Firefox, Safari) ou sur droit refusé, le bouton **retombe sur le
+téléchargement** et le dit : la commodité dépend du navigateur, jamais le cycle.
 
 ## 11. Le contenu — schéma 3
 
@@ -61,7 +60,7 @@ navigateur, jamais le cycle.
 }
 ```
 
-- **Marqueurs `{{eid}}`**, pas d'appariement de sous-chaînes : un marquage ne glisse pas quand on
+- **Marqueurs `{{eid}}`** : pas d'appariement de sous-chaînes, donc pas de marquage qui glisse quand on
   corrige une virgule. `nom` absent → le `texte` en tient lieu.
 - **Attributs d'un bloc** : `imbrique` (la liaison **emboîte** l'acquis comme terme unique) · `deduit`
   (le bloc **clôt une paire** : forme déduite, termes rangés dans l'ordre canonique) · `piece` (offert
@@ -72,15 +71,13 @@ navigateur, jamais le cycle.
   **L'ordre de déclaration est signifiant** : `deduire` rend la première forme qui convient.
 - **Attribut d'une pièce** : `porte`, sur une pièce « règle » seulement — affiché, **jamais lu par le
   moteur** ; une telle pièce ne porte aucun empan (diagnostic, pas moteur).
-- **Les attentes** sont servies dans l'ordre — `question` poussée quand l'attente devient courante,
-  `attend` comparé au tag du lien versé, `apres` l'accusé de réception ; le **désordre est accepté**.
-  L'ancienne forme (`attend`/`apres` sur la remise) se lit comme une liste à un élément.
-- **Un terme** est `"pid.eid"` ou un `{forme, termes}` imbriqué. Les dimensions vivent dans le contenu,
-  le moteur ne lit aucun de ces noms : ajouter `comment` est un geste d'atelier.
+- **Les attentes** sont servies dans l'ordre, et le **désordre est accepté** ; l'ancienne forme
+  (`attend`/`apres` sur la remise) se lit comme une liste à un élément.
+- **Un terme** est `"pid.eid"` ou un `{forme, termes}` imbriqué. Le moteur ne lit aucun nom de
+  dimension : ajouter `comment` est un geste d'atelier.
 - **Migration 2 → 3** (`migrerContenu()`, silencieuse) : `champs` → `empans`, marqueurs posés, liens par
-  paires → `{forme, termes}`, accusé migré sur la **première attente**, `cases`/`relations` retirés.
-  Elle **n'invente aucune attente** (sans `attend`, la session bloquerait pour toujours) ; **le jeu ne
-  migre pas** — un schéma 2 est refusé par `contenuValide()`.
+  paires → `{forme, termes}`, accusé migré sur la **première attente**. Elle **n'invente aucune
+  attente** (sans `attend`, la session bloquerait pour toujours) ; **le jeu ne migre pas**.
 - *On ne retire pas du moteur une capacité que le contenu du jour n'emploie pas* : la source `note`, la
   clôture sans forme.
 
@@ -97,29 +94,26 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 
 - `creerRegles(JEU, M)` est **pur** : ses fonctions prennent `S` en argument explicite, sans DOM ni
   `localStorage` ; celles qui « parlent » poussent dans `S.fil`, qui est de l'état. Le pas-à-pas appelle
-  **les mêmes fonctions sur le même état**, il ne peut donc pas dériver.
+  **les mêmes fonctions sur le même état**, il ne peut donc pas dériver — au grain du lien, quand le
+  jeu va bloc à bloc, mais par le même `clorePhrase`.
 - **Ce qui redessine reste une fonction de `jeu.js` ; ce qui lit s'écrit `R.x(S)` sur place.** Restent
   les seules cibles de `onclick` — `poserBloc`, `envoyer`, `surligner`, `cloturer` — qui font
-  `R.x(S, …)` **puis** `rendreTout()`. **Les suites lisent pareil**, en `w.R.x(w.S)` : un contrat, pas
-  une commodité.
-- Une seule différence de nature : le pas-à-pas joue au grain du lien, le jeu bloc à bloc ; les deux
-  passent par `clorePhrase`.
+  `R.x(S, …)` **puis** `rendreTout()`. **Les suites lisent pareil**, en `w.R.x(w.S)` : un contrat.
 
 ## 13. Le chargement, et `content.js` manquant
 
-- **Aucun repli** : un repli silencieux ferait *jouer autre chose* sans le dire. Fichier absent, schéma
-  antérieur à 3, clé vitale manquante → un **bandeau** nomme le cas, aucune session n'est livrée.
+- **Aucun repli** : il ferait *jouer autre chose* sans le dire. Fichier absent, schéma antérieur à 3,
+  clé vitale manquante → un **bandeau** nomme le cas, aucune session n'est livrée.
 - **La sauvegarde est signée par le contenu** (`localStorage`, `iavocat_partie`) : livrer un nouveau
   `content.js` invalide les parties en cours.
 - **Le harnais inline tout `<script src>` et tout `<link rel=stylesheet>`** au boot, dans l'ordre des
-  balises — jsdom n'en charge aucun. Le CSS aussi, alors qu'aucune suite ne lit de couleur : `getCSS()`
-  en lit (`graphe.js`), et jsdom rend `""` pour un `<link>`.
+  balises. Le CSS aussi, alors qu'aucune suite ne lit de couleur : `getCSS()` en lit (`graphe.js`), et
+  jsdom rend `""` pour un `<link>`.
 - **Trois règles sur la balise de `jeu.js`**, en commentaire dans `index.html` : **une ligne, sans
   attribut** ; **ni `defer` ni `async`** ; **après `content.js`**. Un attribut de plus empêche l'inlinage
   *entièrement*. R1 tient la forme.
-- **Le harnais ne prouve jamais que les balises se chargent pour de vrai** : seul `npm run vue` y
-  touche, qui n'asserte rien non plus — il sort en 1 sur une erreur JS et dépose des captures. **La
-  preuve du CSS est à l'œil.**
+- **Rien ne prouve que les balises se chargent pour de vrai**, sauf `npm run vue` — qui n'asserte rien
+  non plus : il sort en 1 sur une erreur JS et dépose des captures. **La preuve du CSS est à l'œil.**
 
 ## 14. Le moteur
 
@@ -127,13 +121,12 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 `rendre`, `squelettes`… — chargé tel quel par le jeu, l'atelier et le banc d'essai.
 
 - **Accumuler, pas écraser** : `reduire(ch)` empile les termes en retenant la forme courante ; à un bloc
-  `imbrique`, l'acquis devient le **terme unique** de la nouvelle forme. `rendre(ch)` écrit le `nom`,
-  avec repli sur `texte`.
-- **La déduction** tient sur trois fonctions : `comparer(a, b)` (numérique quand les deux valeurs le
-  sont, `hh:mm` compris ; lexicographique sinon), `deduire(idA, idB)` (la forme, ou `null` sur
-  dimensions différentes — le seul refus qui existe), `ordonner(forme, [a, b])`.
-- **Rétrocompatibilité** : sans `deduit`, sans `deduction`, sans `patron`, `reduire` et `rendre` se
-  comportent comme un automate à liaisons explicites — le banc d'essai (`grammaire/`) l'exerce.
+  `imbrique`, l'acquis devient le **terme unique** de la nouvelle forme.
+- **La déduction** tient sur `comparer` (numérique quand les deux valeurs le sont, `hh:mm` compris ;
+  lexicographique sinon), `deduire` (la forme, ou `null` sur dimensions différentes — le seul refus qui
+  existe) et `ordonner`.
+- **Rétrocompatibilité** : sans `deduit`, `deduction` ni `patron`, `reduire` et `rendre` se comportent
+  comme un automate à liaisons explicites — le banc d'essai l'exerce.
 - **`valider(r)` descend dans les termes emboîtés**, sans quoi l'article obligatoire ouvrirait un trou,
   « affirmation » étant une catégorie que tout objet satisfait.
 - **Le flag `cite` est porté par la liaison, jamais par le terme** — sinon la voie de comparaison, qui
@@ -147,10 +140,9 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 | `comparaisonsDe(liens, formes)` — les comparaisons d'arité 2, emboîtées comprises, dédoublonnées | l'atelier, le harnais |
 | `couleurDim(dimensions, d)` — le **rang**, jamais la pertinence (§4.3) ; `null` si inconnue | le jeu, l'atelier |
 
-`champsDe` est **exactement l'argument `CHAMPS` de `creerMoteur`**. `couleurDim` rend `null` plutôt
-qu'une couleur de repli : le jeu grise, l'atelier montre en rouge — chez lui, c'est une erreur
-d'écriture. **La marge de bruit doit rester non nulle**, sinon « sensé » vaudrait « correct » : mesurée
-en direct par l'onglet Grammaire, jamais recopiée ici.
+`couleurDim` rend `null` plutôt qu'une couleur de repli : le jeu grise, l'atelier montre en rouge —
+chez lui, c'est une erreur d'écriture. **La marge de bruit doit rester non nulle**, sinon « sensé »
+vaudrait « correct » : mesurée en direct par l'onglet Grammaire, jamais recopiée ici.
 
 ## 15. Les trois reflets
 
@@ -164,11 +156,10 @@ aucune suite ne le voit — il ment tous les jours à celui qui écrit l'affaire
 checklist : que le reflet **appelle** ce qu'il reflète (§12), et là où il ne le peut pas, qu'une règle
 du gardien tienne l'écart (§16).
 
-**Ce que le diagnostic contrôle** : la règle de surlignage (empan sans marqueur → erreur), le nom
-d'empan (absent → avertissement), le doublon banal dans les deux sens, la grammaire (impasse, clôture
-sans forme, forme indicible, lien insensé, emboîtement dans le vide, forme ordonnée sans `sens`,
-dimension sans forme déductible), les articles, le vice, les sessions — plus l'article livré **trop
-tard**, qui rend une session inclôturable.
+**Ce que le diagnostic contrôle** : la règle de surlignage, le nom d'empan, le doublon banal dans les
+deux sens, la grammaire (impasse, clôture sans forme, forme indicible, lien insensé, emboîtement dans
+le vide, forme ordonnée sans `sens`, dimension sans forme déductible), les articles, le vice, les
+sessions — plus l'article livré **trop tard**, qui rend une session inclôturable.
 
 - **« Forme indicible »** : une forme existe de **deux façons** — déclarée par une liaison, ou déduite
   par un bloc `deduit` ; celle-là n'est nommée par aucun bloc.
@@ -185,22 +176,22 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
 
 | Suite | Ce qu'elle prouve |
 |---|---|
-| `test_o5.js` (36) | l'index du dossier ; tout empan cliquable, aucun marqueur qui fuit ; surligner et composer gratuits et illimités ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
-| `test_declencheurs.js` (34) | le décâblage, sur contenus **mutés** : `declenche`/`une_fois`/`qui`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (123) | le grain fin : composer, retirer, effacer ; **le geste unique — poser ne clôt plus, l'envoi clôt et transmet** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la Plaidoirie ; la répétition |
-| `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère ; la fin efface |
-| `smoke_atelier.js` (87) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et ses deux replis (§10), autosave |
+| `test_o5.js` (36) | l'index du dossier ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
+| `test_declencheurs.js` (34) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
+| `test_parcours.js` (123) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition |
+| `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
+| `smoke_atelier.js` (87) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place (§10) |
 
 - **Le contrat de lecture : `w.R.x(w.S)`** — une suite demande aux *règles*, pas à l'écran ; ce que la
   fenêtre expose en propre, ce sont les **gestes**, parce qu'eux redessinent.
 - **Une suite ne redécide rien** : un prédicat recopié ne casse pas, ne lève pas, et reste vert en
   affirmant l'ancienne vérité — et **les suites ne se lisent pas elles-mêmes**.
-- **Les tests ne nomment aucun contenu** : ni pièce, ni empan, ni valeur ; tout se dérive de la *forme*,
-  si bien que **changer d'affaire ne casse pas une seule suite**. Sont épinglées, en revanche, des
-  chaînes de chrome (`Envoyer`, `effacer`, `Opposer une phrase`, `déjà envoyée`, `● `, `✓ `,
-  `zoneRetenus`) : on les renomme si on veut, jamais sans toucher au test qui les nomme.
-- *Les Manuels n'ont plus de suite — on éprouvait un chemin que le joueur ne peut pas prendre. La règle
-  reste dans `regles.js`, mais `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par le jeu.*
+- **Les tests ne nomment aucun contenu** : tout se dérive de la *forme*, si bien que **changer
+  d'affaire ne casse pas une seule suite**. Sont épinglées, en revanche, des chaînes de chrome
+  (`Envoyer`, `effacer`, `Opposer une phrase`, `déjà envoyée`, `● `, `✓ `, `zoneRetenus`) : on les
+  renomme si on veut, jamais sans toucher au test qui les nomme.
+- *Les Manuels n'ont plus de suite : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par
+  le jeu, alors que la frise les édite.*
 
 **Le gardien** (`outils/gardien.js`, dans `npm test` après les suites) rend opposables les conventions
 qu'aucune suite ne voit : **six règles, six pannes réellement vécues**, chacune citant son § — *la liste
@@ -211,13 +202,13 @@ vit dans son en-tête*. Il ne connaît ni pièce, ni empan, ni valeur.
 - **Sur quel territoire elle marche** — première question avant d'en ajouter une, et la réponse n'est
   pas « `app/` » par défaut : `tests/` et `outils/` *reflètent* les règles du jeu.
 - **Ce n'est pas une cinquième source de vérité** (§12) : si une règle et son § divergent, c'est le §
-  qui a raison. Les renvois sont des **numéros nus**, l'ancre d'un lien Markdown se calculant sur le
+  qui a raison. Les renvois sont des **numéros nus** — l'ancre d'un lien Markdown se calcule sur le
   titre, que renommer casserait en silence.
 
 **`eslint.config.js`**, l'autre bout, générique : identifiant fautif, variable morte, clé dupliquée. Sa
-liste de globals ne s'écrit pas, elle se **calcule** en demandant son inventaire au gardien. Deux
-assouplissements, pour des idiomes voulus : un `catch` qui ignore délibérément sa raison, et les noms de
-haut niveau d'une page, qu'ESLint croirait morts faute de savoir lire un `onclick=`.
+liste de globals se **calcule** en demandant son inventaire au gardien. Deux assouplissements pour des
+idiomes voulus : un `catch` qui ignore délibérément sa raison, et les noms de haut niveau d'une page,
+qu'ESLint croirait morts faute de savoir lire un `onclick=`.
 
 **Règle d'or : une évolution n'est finie que quand les cinq suites sont vertes**, gardien et ESLint
 compris. **Les suites d'abord** : le sens avant la forme.
@@ -240,38 +231,32 @@ qui a raison.*
 **fabrique**. Hors fabrique et cloîtrés (§9) : `MoteurGrammaire.champsDe`, `.comparaisonsDe`,
 `.couleurDim`, `ReglesJeu.estRegle`.
 
-**Les huit modules de l'atelier, dans l'ordre de chargement** : `noyau.js` (contenu chargé, outils, état
+**Les huit modules de l'atelier, dans l'ordre de chargement** : `noyau.js` (contenu, outils, état
 d'interface, annulation, onglets — **et les quatre gestes** ci-dessous ; en premier) · `graphe.js` (le
 canevas ; seul endroit où du CSS traverse vers du JS, `getCSS`) · `diagnostic.js` · `inspecteur.js`
 (formulaires, mutations, renommages) · `frise.js` (remises et attentes) · `pasapas.js` (**appelle**
 `regles.js`) · `contenu-io.js` (import, export, migration, autosave) · `grammaire.js`.
 
-**Les quatre gestes que tout l'atelier refait** (`noyau.js`, section *2 bis*) : `muter(f)` — annuler,
-persister, redessiner, **toute** mutation passe par lui —, `poserOuRetirer(o,p,v)`,
-`reinitSelection({garderEmpans})`, `demanderSuppr(cle,f)` + `btnSuppr(…)`. Plus deux formats : `deK(k)`,
-l'inverse de `K(pid,ch)`, et `reecrireTermes(t,f)`, la marche sur les termes emboîtés.
+**Les quatre gestes que tout l'atelier refait** (`noyau.js`, section *2 bis*) : `muter(f)` — **toute**
+mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`, `demanderSuppr` +
+`btnSuppr`. Plus deux formats : `deK(k)`, l'inverse de `K(pid,ch)`, et `reecrireTermes(t,f)`.
 
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
-| l'avocat ouvre une session | `envoyerRemise` → `poserQuestion` | `renderDiscussion` |
-| ouvrir une pièce ; l'index du dossier | `ouvrirPiece` (+ `declenche`), `piecesLivrees` | `modalPieceHTML`, `rendreTexte`, `renderDossier` |
+| l'avocat ouvre une session ; ouvrir une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion`, `ouvrirPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion`, `modalPieceHTML`, `rendreTexte`, `renderDossier` |
 | **surligner** (privé, gratuit) | `surligner` | `renderRetenus` dans `renderMemoire` |
-| ce que le composeur offre | `blocsOfferts`, `etatCompo`, `indexTermeChamp` | `renderCompo` |
-| ce qui se devine avant le clic ; la voix | `comparaisonPossible`, `dimAttendue`, `attenteCourante` | `souffle`, `rappelQuestion` |
-| **poser un bloc** | `poserBloc`, `retirerBloc`, `viderCompo` | `texteCompoPartiel` |
-| la clôture qui n'ajoute rien | `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `renderCompo` — elle n'est PAS un bouton |
-| le pressentiment ⚑ | `majPressentiment`, `pressentir`, `sousLienVice` | *(rien : privé)* |
-| **clore la phrase** | `clore` → `clorePhrase` | *(aucun panneau)* |
+| ce que le composeur offre ; ce qui se devine avant le clic ; la voix | `blocsOfferts`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante` | `renderCompo`, `souffle`, `rappelQuestion` |
+| **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
+| le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
 | **envoyer** — le seul geste | `envoyerCompo` → `clore` → `envoyer` → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **sous la Discussion**), `renderPlaidoirie` |
 | ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie` — **cache sa colonne** tant que rien ne s'y inscrit |
 | clôturer, répétition, fin | `instructionComplete`, `cloturer`, `verserContre`, `avancerRepetition`, `finir` | `majCloture`, `finir` (modale) |
 | le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoEtape`, `majTutoriel` |
 
 - **Les deux voies de clôture** sont le **même** `clore`, appelé par le **même** `envoyerCompo` ; ce qui
-  les sépare vit dans le contenu — une liaison `cite:true` (`citeDe`) contre une forme d'arité 2 déduite
-  et écrite par son `patron`.
+  les sépare vit dans le contenu — une liaison `cite:true` contre une forme d'arité 2 déduite.
 - **L'état `S`** : `etatInitial`, en tête de `regles.js`, où les vingt champs sont commentés un par un.
-- **Deux fonctions normalisent l'ancienne forme `attend`/`apres`, et c'est voulu** : `attentesDe`
+- **Deux normalisateurs de l'ancienne forme `attend`/`apres`, et c'est voulu** : `attentesDe`
   (`regles.js`) rend une paire fabriquée, `attentesDeRemise` (`noyau.js`) rend **la remise elle-même**,
   pour que l'inspecteur l'édite en place. Personne d'autre ne les lit sur une remise (R9), hors
   `attentesEditables` et `migrerContenu`.
@@ -283,15 +268,13 @@ irréversible) ; **Clôturer l'instruction** (ferme l'affaire).
 
 | Dans le code | Ce que ça désigne |
 |---|---|
-| **pièce** | un document (`JEU.pieces`) — pas *le dossier*, qui est l'ensemble des pièces livrées |
+| **pièce** / **dossier** | un document (`JEU.pieces`) / l'ensemble des pièces livrées |
 | **empan** | un fragment marqué : `texte`, `dim`, `valeur`, `qui`, `nom` |
 | **citation** / **nom** | son écriture dans la pièce (`e.texte`) / comme sujet d'une phrase (`e.nom`) |
 | **terme** | un empan (ou un lien imbriqué) **une fois posé** : un rôle, pas un objet |
-| **bloc** / **liaison** | une transition offerte par l'automate, rendue comme bouton — mots interchangeables |
-| **lien** | un triplet `{forme, termes}` **reconnu** (`JEU.liens`, `lienDe`) : le résultat, quand la liaison est le geste |
+| **bloc** / **liaison** / **lien** | la transition offerte par l'automate (les deux premiers mots sont interchangeables) / le triplet `{forme, termes}` **reconnu** : le lien est le résultat, la liaison le geste |
 | **forme** | le patron grammatical d'une comparaison (`deduction`, `sens`, `patron`) |
 | **attente** / **remise** | `{question?, attend, apres?}` / un envoi de pièces avec sa liste — « session » est le mot du sens |
-| **atelier** | `app/atelier_v3.html`, et rien d'autre |
 | **`S.retenus`** / **`S.plaidoirie`** / **`S.fil`** | les empans surlignés / ce qui est entré au plan / le journal affiché |
 
 **Deux faux amis qui mordent encore** : `clore` ferme **une phrase**, `cloturer` ferme

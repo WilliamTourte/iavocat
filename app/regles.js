@@ -14,7 +14,6 @@ function creerRegles(JEU, M) {
     compo: [],                    // la phrase en cours — [{bloc:id, valeur}]
     refus: null,                  // le dernier refus de catégorie, à afficher
     brouillon: [],                // PRIVÉ — journal des phrases closes, sans zone
-                                  //   à lui : {reduite, texte, lien|null, versee}
     prete: null,                  // PRIVÉ — index, dans le journal, de la phrase
                                   //   qui attend sur place (§4.7)
     plaidoirie: [],               // TRANSMIS — {b:index journal, contre:index affirmation|null}
@@ -94,29 +93,21 @@ function creerRegles(JEU, M) {
     for (const p of S.compo) { const b = blocParId(p.bloc); if (b) e = b.vers; }
     return e;
   }
-  // Les blocs offerts à UN ÉTAT DONNÉ, moins ceux dont la pièce n'est pas reçue
-  // — SEUL endroit où une liste se restreint, et jamais par pertinence (§4.5).
   function blocsDepuis(e, S) {
     const livrees = new Set(piecesLivrees(S));
     return (JEU.grammaire.blocs || []).filter(b => b.de === e && (!b.piece || livrees.has(b.piece)));
   }
   function blocsOfferts(S) { return blocsDepuis(etatCompo(S), S); }
-  // -1 quand la phrase attend autre chose : les puces sont alors inertes.
   function indexTermeChamp(S) {
     if (S.prete != null) return -1;
     return blocsOfferts(S).findIndex(b => b.type === "terme" && b.source !== "note");
   }
-  /* UN CRAN D'ANTICIPATION, jamais deux (§4.5) : « si je pose un terme
-     quelconque, un second suivra-t-il ? » La comparaison s'ouvrant pour tous
-     les empans à la fois, un seul suffit à sonder. */
   function comparaisonPossible(S) {
     const offerts = blocsOfferts(S);
     if (S.compo.length) return offerts.some(b => b.type === "terme" && b.deduit);
     return offerts.some(b => b.type === "terme"
       && blocsDepuis(b.vers, S).some(x => x.type === "terme" && x.deduit));
   }
-  /* La dimension qu'un second terme doit partager (§4.5, le seul refus qui
-     existe) ; `null` si rien ne la contraint encore. Dérivé, rien de neuf. */
   function dimAttendue(S) {
     const i = indexTermeChamp(S);
     if (i < 0) return null;
@@ -126,11 +117,8 @@ function creerRegles(JEU, M) {
     return premier ? M.dimDe(premier.valeur) : null;
   }
   const chaineCompo = S => S.compo.map(p => ({ bloc: blocParId(p.bloc), valeur: p.valeur }));
-  // Arrivée au bout de l'automate : l'écran n'a plus rien à souffler (§4.9).
   const compoFinie = S => (JEU.grammaire.finaux || []).includes(etatCompo(S));
 
-  /* LE PRESSENTIMENT (§4.7) : dérivé du terme emboîté de la conclusion — le
-     contenu n'a rien de plus à déclarer. */
   const sousLienVice = () => {
     const c = (JEU.liens || []).find(L => L.vice && L.conclusion);
     const t = c && (c.termes || [])[0];
@@ -140,7 +128,6 @@ function creerRegles(JEU, M) {
     const sous = sousLienVice();
     return !!(sous && r && r.forme && M.memeRed(r, sous));
   };
-  // La CONCLUSION du vice : la comparaison qualifiée, pas la comparaison nue.
   const estConclusionVice = r => {
     const c = (JEU.liens || []).find(L => L.vice && L.conclusion);
     return !!(c && r && r.forme && M.memeRed(r, { forme: c.forme, termes: c.termes }));
@@ -170,9 +157,6 @@ function creerRegles(JEU, M) {
     }
     S.compo.push({ bloc: b.id, valeur });
     S.refus = null;
-    /* LE SEUL REFUS QUI EXISTE (§4.5) tombe au clic qui le produit — celui qui
-       DÉDUIT une paire, ou celui qui achève la phrase. Ailleurs on se tait :
-       une composition en cours n'est pas encore fausse. */
     const r = M.reduire(chaineCompo(S));
     const err = b.deduit && !r.forme ? "ces deux-là ne se comparent pas"
               : (JEU.grammaire.finaux || []).includes(b.vers) ? M.valider(r) : null;
@@ -194,8 +178,6 @@ function creerRegles(JEU, M) {
     if (b.imbrique) return null;
     return (JEU.grammaire.finaux || []).includes(b.vers) ? b : null;
   }
-  /* Ce que le composeur peut envoyer TEL QUEL, clôture implicite comprise → la
-     chaîne, ou null. Pur : il ne touche pas à `S`. */
   function chaineEnvoyable(S) {
     if (!S.compo.length) return null;
     const b = clotureImplicite(S);
@@ -205,11 +187,8 @@ function creerRegles(JEU, M) {
   const peutEnvoyer = S => !!chaineEnvoyable(S);
   function retirerBloc(S) { S.compo.pop(); S.refus = null; }
   function viderCompo(S) { S.compo = []; S.refus = null; }
-  // Effacer sans envoyer : la phrase reste au journal — seul `vice_expose`
-  // dépend de l'envoi.
   function effacerPrete(S) { S.prete = null; }
 
-  /* On réduit, on valide la CATÉGORIE, et si elle tient elle attend SUR PLACE. */
   function clore(S) {
     const ch = chaineEnvoyable(S);
     if (!ch) {
@@ -220,15 +199,11 @@ function creerRegles(JEU, M) {
     S.compo = [];
     return clorePhrase(S, M.reduire(ch), M.rendre(ch));
   }
-  /* LE GESTE UNIQUE DU COMPOSEUR (§4.5) : ce qui n'est pas fondé part quand
-     même — c'est l'AVOCAT qui le refuse. */
   function envoyerCompo(S) {
     const i = clore(S);
     if (i == null) return;
     envoyer(S, i);
   }
-  /* Séparé de `clore` : le pas-à-pas joue au grain du LIEN et doit passer par
-     la même porte (§12). */
   function clorePhrase(S, r, texte) {
     const deja = S.brouillon.findIndex(n => M.memeRed(n.reduite, r));
     if (deja >= 0) {                                 // écrite deux fois : une seule entrée
@@ -246,10 +221,8 @@ function creerRegles(JEU, M) {
     return S.prete;
   }
 
-  /* Un MOYEN est ce que l'avocat peut plaider (§4.6). */
   const estMoyen = L => !!L && !!(L.conclusion || L.faux || L.tag);
 
-  /* LE GESTE — le seul qui traverse la frontière (§4.6). */
   function envoyer(S, i, contre) {
     const n = S.brouillon[i];
     if (!n || n.versee) return;
@@ -263,8 +236,6 @@ function creerRegles(JEU, M) {
     avancerSurAttente(S, L);
   }
 
-  /* L'avocat ne réagit qu'à ce qui est versé, et jamais par « juste » : au
-     mieux « utilisable », au pire « inutilisable en l'état ». */
   function reponseAvocat(S, n) {
     const L = n.lien, A = JEU.avocat || {};
     const esc1 = (liste, cpt) => liste[Math.min(S[cpt]++, liste.length - 1)];
@@ -272,8 +243,6 @@ function creerRegles(JEU, M) {
     else if (L && L.faux)            pousser(S, "Maître Auber", A.rep_faux);
     else if (L && L.rep)             pousser(S, "Maître Auber", L.rep);
     else {
-      // Trois façons de rater ; l'emboîtement sépare les deux dernières,
-      // toutes deux d'arité 1.
       const f = (JEU.grammaire.formes || {})[n.reduite.forme] || {};
       const emboite = typeof ((n.reduite.termes || [])[0]) === "object";
       if ((f.arite || 2) > 1) pousser(S, "Maître Auber", esc1(A.rep_inutile || ["…"], "inutiles"));
@@ -282,7 +251,6 @@ function creerRegles(JEU, M) {
     }
   }
 
-  /* La remise suivante part quand l'attente est servie. Aucun id en dur. */
   function avancerSurAttente(S, L) {
     if (!L || !L.tag) return;
     const r = remiseCourante(S);
@@ -305,7 +273,6 @@ function creerRegles(JEU, M) {
   const repetitionEnCours = S =>
     S.clotureDemandee && S.repetitionIdx < JEU.repetition.affirmations.length;
 
-  // → "repetition" (elle vient de s'ouvrir), "fin" (à afficher), ou null.
   function cloturer(S) {
     if (!instructionComplete(S)) return null;
     if (!S.clotureDemandee) {
@@ -319,8 +286,6 @@ function creerRegles(JEU, M) {
     if (repetitionEnCours(S)) return null;
     return "fin";
   }
-  /* Le MÊME geste que l'envoi, avec une cible — dernier moment où la conclusion
-     tue peut encore partir (§4.7). */
   function verserContre(S, i) {
     const n = S.brouillon[i], aff = JEU.repetition.affirmations[S.repetitionIdx];
     if (!n || !aff) return;
@@ -343,7 +308,6 @@ function creerRegles(JEU, M) {
              texte: (f.texte || "") + (fauxPlaide && f.variante_faux ? " " + f.variante_faux : "") };
   }
 
-  /* `porte` annonce, ne filtre pas, et le moteur ne le lit jamais (§4.5). */
   function reglesLivrees(S) {
     const livrees = new Set(piecesLivrees(S));
     return Object.entries(JEU.pieces)
@@ -352,8 +316,6 @@ function creerRegles(JEU, M) {
   }
   const porteDe = pid => ((JEU.pieces[pid] || {}).porte) || [];
 
-  // Ce qui n'est pas ici reste INTERNE ; `pressentir` sort parce que le
-  // pas-à-pas joue « comparer sans qualifier ».
   return { etatInitial, signatureContenu, pousser, envoyerRemise, ouvrirPiece,
            piecesLivrees, estRegle, reglesLivrees, porteDe,
            surligner, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
@@ -367,7 +329,6 @@ function creerRegles(JEU, M) {
            avancerRepetition, finir };
 }
 
-/* Hors fabrique, pour que l'atelier la pose sans `JEU` lié — et cloîtrée (§9). */
 const _apiRegles = (function () {
   const estRegle = p => ((p || {}).type || "").includes("règle");
   return { creerRegles, estRegle };

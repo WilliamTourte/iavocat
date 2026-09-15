@@ -36,8 +36,6 @@ console.log("\n=== Les quatre surfaces survivent au rechargement ===");
 
 console.log("\n=== Une composition en cours survit aussi ===");
 {
-  /* On livre d'abord, pour que l'état qui suit l'empan offre les deux voies :
-     rien ne se clôt sans l'envoi (§4.5). */
   const w1 = boot();
   H.livrerTout(w1);
   const pid = H.pidPremiereRemise(w1);
@@ -56,9 +54,6 @@ console.log("\n=== Une composition en cours survit aussi ===");
     w2.R.blocsOfferts(w2.S).map(b=>b.id).join() === w1.R.blocsOfferts(w1.S).map(b=>b.id).join());
 }
 {
-  /* L'ÉCART ENTRE COMPRENDRE ET DIRE (§4.7) est passé à l'ASSEMBLAGE : ce qui
-     doit survivre au rechargement, c'est la phrase assemblée au composeur et le
-     drapeau qu'elle a levé — le perdre effacerait la Fin 2. */
   const w1 = boot();
   H.livrerTout(w1);                           // l'article doit avoir été reçu (§4.5)
   const C = H.lienConclusion(w1);
@@ -129,7 +124,6 @@ console.log("\n=== Une sauvegarde d'avant le renommage se reprend ===");
   const attendus = [...w1.S.retenus];
   check("des passages sont retenus", attendus.length > 0);
 
-  // on rétrograde la sauvegarde à l'ancien nom, tout le reste identique
   const ancienne = JSON.parse(sauvegarde(w1));
   ancienne.memoire = ancienne.retenus; delete ancienne.retenus;
   check("la sauvegarde rétrogradée ne porte plus `retenus`", ancienne.retenus === undefined);

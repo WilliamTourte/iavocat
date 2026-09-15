@@ -30,8 +30,6 @@ const GRAMMAIRE = {
     { id: "c3",   type: "liaison", de: "SP",  vers: "FIN", texte: "est contraire à l'article 3", forme: "contraire_3" }
   ],
 
-  // Chaque forme déclare ce qu'elle admet, slot par slot : la liste rejette les
-  // erreurs de CATÉGORIE, pas les affirmations inintéressantes.
   formes: {
     identite_oui:  { arite: 2, ordonne: false, slots: [["qui","quoi","ou"], ["qui","quoi","ou"]], relation: "meme_dim" },
     identite_non:  { arite: 2, ordonne: false, slots: [["qui","quoi","ou"], ["qui","quoi","ou"]], relation: "meme_dim" },
@@ -43,9 +41,6 @@ const GRAMMAIRE = {
   }
 };
 
-// Un empan = quelqu'un affirme quelque chose. `texte` est ce que le joueur lit,
-// `qui` le signataire, `valeur` la forme comparable — qui sert à VÉRIFIER,
-// jamais à déduire (§4.1).
 const CHAMPS = [
   { id: "ags",  dim: "qui",     valeur: "T-14",        qui: "agent T-14",   texte: "j'ai relevé moi-même les traces sur le montant de la porte" },
   { id: "agr",  dim: "qui",     valeur: "T-14",        qui: "agent T-14",   texte: "j'ai procédé au prélèvement de référence sur le mis en cause" },
@@ -69,24 +64,18 @@ const CHAMPS = [
   { id: "seu",  dim: "combien", valeur: "1e6",         qui: "le protocole", texte: "au-delà d'une chance sur un million, la correspondance est réputée probante" }
 ];
 
-// Les liens du contenu : ce que l'avocat reconnaît ; le reste est du bruit sensé.
 const NOTE_VICE = { forme: "identite_oui", termes: ["ags", "agr"] };
 const NOTE_SCELLES = { forme: "identite_non", termes: ["sc1", "sc2"] };
 
 const LIENS = [
-  // le tutoriel : un écart d'heures, sans portée
   { forme: "anteriorite",   termes: ["har", "hvo"] },
-  // le vice, en deux phrases — pressentir, puis qualifier
   { forme: "identite_oui",  termes: ["ags", "agr"], vice: true },
   { forme: "contraire_7",   termes: [NOTE_VICE], vice: true, conclusion: true },
-  // le chemin docile, offert au même endroit
   { forme: "identite_non",  termes: ["sc1", "sc2"] },
   { forme: "conforme_7",    termes: [NOTE_SCELLES] },
-  // le faux vice : un ordre de grandeur qu'on croit pouvoir attaquer
   { forme: "ordre_grandeur",termes: ["tx", "seu"], faux: true }
 ];
 
-// Mode double : le banc d'essai ET l'atelier lisent la MÊME définition.
 const _data = { GRAMMAIRE, CHAMPS, LIENS };
 if (typeof module !== "undefined" && module.exports) module.exports = _data;
 if (typeof window !== "undefined") window.Grammaire = _data;
