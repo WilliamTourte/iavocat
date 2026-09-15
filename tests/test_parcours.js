@@ -8,8 +8,8 @@ const boot = () => H.boot();
 
 console.log("\n=== Le composeur, bloc par bloc ===");
 {
-  /* On livre tout d'abord : une composition ne RESTE ouverte que là où l'état
-     suivant offre un vrai choix — ailleurs elle se clôt d'elle-même (§4.5). */
+  /* On livre tout d'abord. Depuis le geste unique (§4.5.4), poser ne clôt
+     JAMAIS : la composition reste ouverte tant qu'on n'envoie pas. */
   const w = boot();
   H.livrerTout(w);
   check("au départ, la phrase est vide", w.S.compo.length === 0);
@@ -161,18 +161,25 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
   H.surligner(w, L.termes[0]);
   const iT = H.iTermeChamp(w);
   w.poserBloc(iT, w.S.retenus.indexOf(L.termes[0]));
-  /* En session 1 l'état qui suit l'empan n'offre QUE cette clôture : une suite
-     unique n'est pas un choix, la phrase se referme sans qu'on la confirme
-     (§4.5). Le geste est donc : désigner, et c'est tout. */
-  check("un seul empan posé, la phrase s'est close d'elle-même",
-    w.S.compo.length === 0 && w.S.brouillon.length === 1);
+  /* LA CLÔTURE QUI N'AJOUTE RIEN (§4.5.4) : l'empan seul SE TIENT déjà — la
+     liaison qui le citera n'est pas un bouton, c'est l'envoi qui la pose. Le
+     geste est donc : désigner, puis envoyer, et c'est tout. */
+  check("un seul empan posé, la phrase se tient déjà", w.S.compo.length === 1);
+  check("et elle s'envoie telle quelle", w.R.peutEnvoyer(w.S));
+  const imp = w.R.clotureImplicite(w.S);
+  check("la clôture qui la citera est celle du contenu", !!imp && imp.id === bc.id);
   check("et aucun article n'est requis pour cette voie", !bc.piece);
-  check("la citation se clôt sans article", w.S.brouillon.length === 1);
+  /* L'INTERVALLE QUI PORTE LA FIN 2 (§4.6) : composer ne dit rien. Il s'est
+     déplacé de la clôture vers l'assemblage, il n'a pas disparu. */
+  check("composer ne met rien au journal", w.S.brouillon.length === 0);
+  check("ni ne transmet quoi que ce soit", w.S.plaidoirie.length === 0);
+  w.envoyerCompo();
+  check("l'envoi clôt ET transmet, d'un seul geste",
+    w.S.compo.length === 0 && w.S.brouillon.length === 1 && w.S.brouillon[0].versee);
   check("elle porte exactement le lien déclaré",
     w.M.memeRed(w.S.brouillon[0].reduite, {forme: L.forme, termes: L.termes}));
   check("son terme est resté ATOMIQUE — rien n'a été emboîté",
     typeof w.S.brouillon[0].reduite.termes[0] === "string");
-  check("elle attend sur place, comme toute phrase close", w.S.prete === 0);
 
   /* L'ÉCRITURE : un empan s'y lit DEUX FOIS — son nom, puis sa citation, puis
      la pièce d'où elle sort. C'est ce qui fait qu'une réponse répond au lieu
@@ -194,39 +201,46 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
     j >= 0 && feuilles.every(c => !w2.S.brouillon[j].texte.includes(c.texte)));
 }
 {
-  /* LA VOIE DE COMPARAISON N'EST PAS OUVERTE D'EMBLÉE. Le second empan attend
-     lui aussi sa pièce : la session 1 n'enseigne qu'à lire (§3). */
+  /* LES DEUX VOIES SONT OUVERTES D'EMBLÉE (§3, §4.5.1) : la première session
+     va jusqu'à la comparaison, l'article arrivant avec le premier lot. Le
+     MÉCANISME qui permettrait de la retarder reste entier — `piece` porte sur
+     les termes comme sur les liaisons (§11) —, et c'est lui qu'on éprouve, en
+     déplaçant la pièce sans jamais la nommer. */
   const w = boot();
   const G = w.JEU.grammaire;
   const second = (G.blocs || []).find(b => b.type === "terme" && b.deduit);
-  if (second && second.piece) {
-    check("le second empan est conditionné à une pièce",
-      !new Set(w.R.piecesLivrees(w.S)).has(second.piece));
+  if (second) {
+    check("le second empan porte une pièce, comme une liaison", !!second.piece);
+    check("et l'affaire la livre d'emblée",
+      !second.piece || new Set(w.R.piecesLivrees(w.S)).has(second.piece));
     for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
     const e = w.CHAMPS[0];
     H.surligner(w, e.id);
-    /* Ce que l'état suivant offre ne s'observe plus APRÈS la pose : il n'offre
-       qu'une clôture, donc la phrase se referme (§4.5). On le lit donc sur la
-       grammaire, filtrée par ce qui est livré — comme le fait le jeu. */
-    const livrees = new Set(w.R.piecesLivrees(w.S));
-    const apres = (G.blocs || []).filter(b => b.de === second.de && (!b.piece || livrees.has(b.piece)));
-    check("un empan posé, aucun second n'est offert",
-      !apres.some(b => b.type === "terme" && b.deduit));
-    check("seule la citation reste, donc la session 1 ne compare pas",
-      apres.length === 1 && apres[0].cite);
-    w.poserBloc(w.R.blocsOfferts(w.S).findIndex(b => b.type === "terme"), 0);
-    check("et le geste s'arrête là : la phrase s'est close toute seule",
-      w.S.compo.length === 0 && w.S.prete !== null);
-    // livrée, elle s'ouvre — et pour tous les empans, sans préférence
-    const w2 = boot();
-    H.livrerTout(w2);
-    for (const pid of Object.keys(w2.JEU.pieces)) w2.ouvrirPiece(pid);
-    H.surligner(w2, e.id);
-    w2.poserBloc(w2.R.blocsOfferts(w2.S).findIndex(b => b.type === "terme"), 0);
-    check("une fois la pièce livrée, le second empan est offert",
-      w2.R.blocsOfferts(w2.S).some(b => b.type === "terme" && b.deduit));
-    check("et la citation reste offerte à côté : deux voies, pas une bascule",
-      w2.R.blocsOfferts(w2.S).some(b => b.cite));
+    w.poserBloc(H.iTermeChamp(w), 0);
+    check("un empan posé, le second est offert — et pour tous, sans préférence",
+      w.R.blocsOfferts(w.S).some(b => b.type === "terme" && b.deduit));
+    check("la citation est là à côté : deux voies, pas une bascule",
+      !!w.R.clotureImplicite(w.S));
+    check("et la phrase se tient déjà, dès le premier empan", w.R.peutEnvoyer(w.S));
+
+    /* LE MÊME CONTENU, la pièce du second empan repoussée au dernier lot : la
+       voie se referme, et il ne reste que la citation. C'est ce qui prouve que
+       le filtre de livraison ne fait pas d'exception pour les termes. */
+    if (second.piece) {
+      const c = H.contenuLivre();
+      const b2 = c.grammaire.blocs.find(b => b.type === "terme" && b.deduit);
+      for (const r of c.remises) r.pieces = (r.pieces || []).filter(p => p !== b2.piece);
+      const derniere = c.remises[c.remises.length - 1];
+      derniere.pieces = (derniere.pieces || []).concat([b2.piece]);
+      const w2 = H.boot({contenu: c});
+      for (const pid of Object.keys(w2.JEU.pieces)) w2.ouvrirPiece(pid);
+      H.surligner(w2, w2.CHAMPS[0].id);
+      w2.poserBloc(H.iTermeChamp(w2), 0);
+      check("pièce repoussée, aucun second empan n'est offert",
+        !w2.R.blocsOfferts(w2.S).some(b => b.type === "terme" && b.deduit));
+      check("seule la citation reste, et elle suffit à envoyer",
+        !!w2.R.clotureImplicite(w2.S) && w2.R.peutEnvoyer(w2.S));
+    }
   }
 }
 
@@ -308,10 +322,10 @@ console.log("\n=== Le premier geste, montré ===");
 
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut));
   const envoi = halo();
-  check("la phrase close, il montre le seul geste qui parle",
+  check("la phrase qui se tient, il montre le seul geste qui parle",
     !!envoi && envoi.classList.contains("envoi"));
 
-  w.envoyer(w.S.prete);
+  w.envoyerCompo();
   check("la réponse envoyée, il se tait", bandeau().hidden && !halo());
   check("et il ne reviendra pas", !!w.localStorage.getItem("iavocat_tuto"));
 }
@@ -355,8 +369,11 @@ console.log("\n=== Les répliques : seulement au versement ===");
   const i = H.composerLien(w, L);
   check("une phrase à réplique propre se compose", i >= 0);
   check("composée, elle ne dit rien", !discussion(w).includes(L.rep.slice(0, 25)));
-  // « sur place » = sous le canal, là où la phrase vient d'être écrite (§4.6)
-  check("close, elle attend SUR PLACE", w.S.prete === i && composeur(w).includes("Envoyer"));
+  /* Il n'y a plus de panneau « phrase close » : clore et envoyer sont un seul
+     geste (§4.5.4). Ce qui reste vrai, et c'est l'invariant, c'est que rien
+     n'est dit tant que rien n'est parti (§4.6). */
+  check("close, elle n'est pourtant pas partie",
+    w.S.prete === i && !w.S.brouillon[i].versee && w.S.plaidoirie.length === 0);
   w.envoyer(i);
   check("envoyée, la réplique du lien sort", discussion(w).includes(L.rep.slice(0, 25)));
   check("la phrase est marquée envoyée", w.S.brouillon[i].versee);

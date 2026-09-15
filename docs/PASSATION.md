@@ -1,16 +1,27 @@
 # IAvocat — Passation de contexte
 
-*À lire en tête d'une nouvelle conversation. **État au 15 août 2026.** Trois choses qu'aucun autre
+*À lire en tête d'une nouvelle conversation. **État au 15 septembre 2026.** Trois choses qu'aucun autre
 fichier ne dit : où on en est, ce qui mord, quoi faire ensuite. Court, et il doit le rester.*
 
 ## 1. Où en est le jeu
 
 **Le jeu tourne de bout en bout** : `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des
-trois fins. `npm test` est vert — 325 contrôles, 11 règles du gardien, ESLint. Le rangement est fini
+trois fins. `npm test` est vert — 338 contrôles, 11 règles du gardien, ESLint. Le rangement est fini
 sur les quatre territoires, et la prose l'est depuis le 15 août.
 
-**Ce qui n'a jamais été fait : jouer.** Toutes les décisions récentes sont des décisions de forme, et
-les points ouverts du §7 sont presque tous marqués *non éprouvés*. C'est le seul manque.
+**Le 15 septembre a changé deux choses, et toutes deux viennent d'une partie jouée** — pour une fois,
+pas d'un raisonnement sur le document :
+
+1. **La session 1 va jusqu'à la comparaison.** L'article 3 arrive avec le premier lot ; les trois
+   sessions sont devenues **deux** (§3). La session d'ouverture enseigne donc les deux régimes de
+   fondement au lieu d'un.
+2. **Clore et envoyer n'en font plus qu'un** : *« → Envoyer »* est le seul bouton du composeur et vaut
+   pour un empan, deux, ou deux et un article — **on envoie de la même manière** (§4.5.4). La
+   conséquence qu'il fallait payer : `vice_trouve` se lève désormais à l'**assemblage**, plus à la
+   clôture, sans quoi la Fin 2 devenait injouable (§4.7). *L'intervalle entre comprendre et dire n'a
+   pas disparu — il a reculé d'un cran.*
+
+Et ce qui n'a pas changé : **les points ouverts du §7 restent presque tous *non éprouvés***.
 
 *Les décisions ne se recopient pas ici : chacune est argumentée dans sa section, et
 `docs/HISTORIQUE.md` en donne la suite datée. Elles ne sont pas numérotées — on désigne par la date,
@@ -51,7 +62,9 @@ tenus par rien.
 - **`S.retenus` est sérialisé dans `localStorage`** et s'appelait `S.memoire` : la signature de contenu **ne protège pas** d'un renommage d'état — `restaurerPartie` porte la reprise, tout futur renommage a le même devoir.
 - **Le doublon banal porte tout le camouflage** (§4.4) : ne jamais désactiver son contrôle.
 - **Le tutoriel se termine sur `S.satisfaits`, pas sur `S.plaidoirie`.**
-- **La clôture automatique se déclenche sur un *compte* de blocs offerts** : ajouter un bloc de grammaire change le nombre de clics ailleurs.
+- **La clôture implicite se déclenche sur un compte de *liaisons* offertes**, les termes exclus — les puces de la mémoire ne sont pas des boutons. Ajouter une **liaison** à la grammaire change le nombre de clics ailleurs ; ajouter un terme, non.
+- **Poser un bloc ne clôt plus rien** : le refus de catégorie, qui tombait à la clôture, tombe maintenant au clic qui **déduit** une paire ou qui **achève** la phrase. Une composition en cours n'est jamais « fausse ».
+- **`R.clore` ne redessine pas, donc ne sauve pas** : la sauvegarde est un effet du rendu. Le harnais appelle `rendreTout()` derrière — sans quoi une suite éprouve un état que le joueur ne peut pas produire.
 - **Des chaînes de chrome sont épinglées par les suites** — la liste est au §16, et elle s'y **relève**.
 - **La relecture à l'œil des phrases composées reste irremplaçable** après toute retouche du contenu ou de la grammaire.
 
@@ -68,9 +81,13 @@ Le repli est de faire descendre la mémoire, **pas** de remonter le composeur.*
 
 **La prochaine session porte sur le SENS, et la seule façon de la commencer est de jouer.**
 
-1. **Jouer `app/index.html` en `file://`, de bout en bout, à froid** : la session 1 (la réponse par
-   citation *répond*-elle ?), l'écran allégé (l'aide unique suffit-elle ?), le va-et-vient.
-2. Si la boucle tient : écrire la session 4 et placer la porte de la Fin 3.
+1. **Rejouer `app/index.html` en `file://`, de bout en bout, à froid** — la session 1 ayant doublé de
+   contenu, c'est elle qu'il faut regarder : la réponse par citation *répond*-elle encore, et le
+   passage de la citation à la comparaison **dans la même session** se sent-il, ou s'avale-t-il ?
+   Puis l'écran allégé, et le va-et-vient.
+2. **Éprouver ce que le nouveau modèle rend possible** : envoyer une comparaison **nue** et voir si le
+   refus de Maître Auber enseigne (§4.5.3) — c'est du contenu qui n'avait jamais pu sortir.
+3. Si la boucle tient : écrire la session 3 et placer la porte de la Fin 3.
 3. Sinon, les deux replis ne coûtent aucune ligne de code : retirer les `question` une à une, ou
    rendre l'aide **et** le fantôme.
 

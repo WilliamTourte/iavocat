@@ -273,7 +273,7 @@ window.CONTENU = {
         "vers": "FIN",
         "cite": true,
         "texte": "",
-        "libelle": "Répondre — citer ce passage",
+        "libelle": "Répondre",
         "forme": "citation"
       },
       {
@@ -545,7 +545,8 @@ window.CONTENU = {
       "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Aide-moi à démonter l'accusation en pointant les incohérences du dossier.",
       "pieces": [
         "p_pv",
-        "t_voisin"
+        "t_voisin",
+        "r_temoin"
       ],
       "attentes": [
         {
@@ -555,21 +556,10 @@ window.CONTENU = {
         {
           "question": "Passons à l'audition du voisin. À quelle heure situe-t-il ces éclats de voix ?",
           "attend": "q_voix"
-        }
-      ]
-    },
-    {
-      "qui": "Maître Auber",
-      "texte": "Quel est le problème avec ces deux horaires ? Et sur quel article est-ce que je peux m'appuyer pour les rejeter ?",
-      "pieces": [
-        "r_temoin"
-      ],
-      "attentes": [
+        },
         {
           "attend": "temoin",
-          "apres": {
-            "replique": "Premier point acquis. L'instruction avance — je te transmets le reste : l'expertise, les deux pièces de prélèvement, et le protocole. C'est l'ADN qui les tient ; c'est là qu'il faut mordre."
-          }
+          "question": "Et sur quel article on peut s'appuyer pour rejeter son témoignage basé sur une incohérence ?"
         }
       ]
     },

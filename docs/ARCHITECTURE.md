@@ -96,7 +96,7 @@ porte le sien. **Le `nom` est optionnel** (§4.1) : absent, le `texte` en tient 
 |---|---|
 | `imbrique` | la liaison **emboîte** ce qui a été composé comme terme unique de sa forme |
 | `deduit` | le bloc **clôt une paire** : forme déduite des deux termes, puis rangés dans l'ordre canonique (§4.5) |
-| `piece` | offert seulement une fois cette pièce livrée. **Il porte sur les liaisons *et* sur les termes** — le bloc du second terme attend l'article 3, c'est ce qui ferme la comparaison en session 1 |
+| `piece` | offert seulement une fois cette pièce livrée. **Il porte sur les liaisons *et* sur les termes** — le bloc du second terme attend l'article qui le fondera. Le mécanisme sert à retarder une voie ; **l'affaire Kessler n'en retarde plus aucune**, l'article 3 arrivant avec le premier lot (§4.5.1) |
 | `libelle` | le texte du bouton, quand il diffère de ce qui s'écrira |
 | `cite` | la liaison fait écrire le terme qui la précède **par son nom et par sa citation**, avec sa pièce (§4.1) |
 
@@ -281,8 +281,8 @@ seule suite.**
 | `test_o5.js` (36) | le jeu, sur **`content.js`** | l'index du dossier ; tout empan cliquable, aucun marqueur qui fuit ; surligner et composer gratuits, illimités, dédoublonnés ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (39) | le jeu, contenus **mutés** | le décâblage : renommage de toutes les pièces, `declenche`/`une_fois`/`qui`, la liste d'attentes (question posée à son tour, désordre accepté), les trois drapeaux, dimensions renommées, contenu invalide refusé |
 | `test_autre_affaire.js` (20) | le jeu, **affaire de test** | le découplage : une affaire abstraite écrite à l'ancienne (source `note`) se joue de bout en bout, trois fins comprises |
-| `test_parcours.js` (114) | le jeu | l'ergonomie et le grain fin : composer bloc à bloc, retirer, effacer ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction (patron, ordre des clics indifférent) ; le filtre de livraison ; la continuation ; la Plaidoirie qui ne retient que les moyens ; la répétition |
-| `test_sauvegarde.js` (37) | le jeu | la partie survit au rechargement (mémoire, journal, plan, composition, phrase close, drapeaux) ; la signature jette une sauvegarde d'un autre contenu ; la fin efface |
+| `test_parcours.js` (118) | le jeu | l'ergonomie et le grain fin : composer bloc à bloc, retirer, effacer ; **le geste unique — poser ne clôt plus, l'envoi clôt et transmet** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction (patron, ordre des clics indifférent) ; le filtre de livraison, **termes compris, éprouvé sur un contenu muté** ; la continuation ; la Plaidoirie qui ne retient que les moyens ; la répétition |
+| `test_sauvegarde.js` (38) | le jeu | la partie survit au rechargement (mémoire, journal, plan, **composition assemblée et non envoyée** — c'est elle qui porte la Fin 2 —, drapeaux) ; la signature jette une sauvegarde d'un autre contenu ; la fin efface |
 | `smoke_atelier.js` (87) | l'atelier + le couple atelier→jeu | `content.js` réexporté à l'identique ; le diagnostic au complet ; migration 2→3 idempotente ; renommages ; le pas-à-pas sur `regles.js` ; export `schema: 3` joué par le moteur ; **l'écriture sur place et ses deux replis** (§10) ; autosave |
 
 **Les Manuels n'ont plus de suite** : sept contrôles éprouvaient `openManuels()`, orpheline à l'écran
@@ -325,7 +325,7 @@ elle se **calcule** en demandant son inventaire au gardien (§12). Deux règles 
 des idiomes voulus : un `catch` qui ignore délibérément sa raison, et les noms de haut niveau d'une
 page, qu'ESLint croirait morts faute de savoir lire un `onclick=`.
 
-Règle d'or : **une évolution n'est finie que quand les six suites sont vertes** (325 contrôles), le
+Règle d'or : **une évolution n'est finie que quand les six suites sont vertes** (338 contrôles), le
 gardien et ESLint compris. **Les suites d'abord** : le sens avant la forme.
 
 ## 17. Résumé en trois phrases
@@ -334,6 +334,8 @@ Trois modules, trois métiers, aucune copie : le **contenu** dans `content.js`, 
 `regles.js`, la **grammaire et les projections** dans `moteur.js` — et deux pages qui ne font que
 *montrer*, si bien que le pas-à-pas ne rejoue plus les règles, il les appelle. Côté sens, une seule
 chose compte : **rien ne se dit qui ne soit fondé, sous l'un des deux régimes** — un fait se cite, une
-relation se fonde sur un texte — d'où trois sessions, la première pour apprendre à lire, la deuxième à
-mettre en rapport, la troisième qui ne demande plus rien. `docs/CONCEPTION.md` reste l'arbitre du
+relation se fonde sur un texte — d'où deux sessions, la première pour apprendre à lire, à citer, puis
+à mettre en rapport, la seconde qui ne demande plus rien. Et **un seul geste au composeur** :
+*« → Envoyer »* clôt et transmet d'un coup, l'intervalle qui porte la Fin 2 s'étant déplacé de la
+clôture vers l'assemblage (§4.6, §4.7). `docs/CONCEPTION.md` reste l'arbitre du
 sens ; le diagnostic de l'atelier n'en est que le bras automatisé.

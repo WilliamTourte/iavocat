@@ -24,3 +24,5 @@ sont des sessions de travail, pas des dates de calendrier (`CLAUDE.md`).*
 - **14 août, V** — le document se scinde : le sens (§1 à §7) et le système (§9 à §17) ; les numéros restent uniques, **R11** tient la promesse.
 - **14 août, VI** — la passation redevient courte ; les décisions cessent d'être numérotées, on désigne par la date.
 - **15 août** — la prose du dépôt est dégraissée de deux tiers, documents **et** commentaires ; `LEXIQUE.md` fond dans `docs/CARTE.md`. Un argument que porte déjà un § devient un renvoi vers lui. Aucun titre numéroté ne bouge, aucun comportement non plus.
+- **15 septembre, I** — la session 1 va jusqu'à la comparaison : l'article 3 arrive avec le premier lot, les trois sessions deviennent **deux** (§3, §4.5.1).
+- **15 septembre, II** — **clore et envoyer n'en font plus qu'un** : *« → Envoyer »* est le seul bouton du composeur, la clôture qui n'ajoute rien s'y pose d'office, et la comparaison **nue** part — c'est l'avocat qui la refuse, plus la grammaire. `vice_trouve` se lève à l'**assemblage** pour garder la Fin 2 jouable (§4.5.3, §4.5.4, §4.5.6, §4.6, §4.7).

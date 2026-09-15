@@ -115,6 +115,9 @@ function creerRegles(JEU, M) {
     return blocsOfferts(S).findIndex(b => b.type === "terme" && b.source !== "note");
   }
   const chaineCompo = S => S.compo.map(p => ({ bloc: blocParId(p.bloc), valeur: p.valeur }));
+  // La composition est-elle ARRIVÉE au bout de l'automate ? Plus rien à y
+  // ajouter — l'écran n'a donc plus rien à souffler (§4.9).
+  const compoFinie = S => (JEU.grammaire.finaux || []).includes(etatCompo(S));
 
   /* LE PRESSENTIMENT (§4.7) : il se lève à l'instant où la comparaison du vice
      s'AFFICHE au composeur, dérivé du terme emboîté de la conclusion — le contenu
@@ -128,8 +131,21 @@ function creerRegles(JEU, M) {
     const sous = sousLienVice();
     return !!(sous && r && r.forme && M.memeRed(r, sous));
   };
-  // Constater une forme réduite ; rien d'autre ne se passe.
-  function pressentir(S, r) { if (!S.vice_pressenti && estPressentiment(r)) S.vice_pressenti = true; }
+  // La CONCLUSION du vice, reconnue sur une forme réduite. Symétrique de
+  // `estPressentiment`, un cran plus haut : la comparaison qualifiée, pas la
+  // comparaison nue.
+  const estConclusionVice = r => {
+    const c = (JEU.liens || []).find(L => L.vice && L.conclusion);
+    return !!(c && r && r.forme && M.memeRed(r, { forme: c.forme, termes: c.termes }));
+  };
+  /* Constater une forme réduite ; rien d'autre ne se passe. LES DEUX DRAPEAUX
+     PRIVÉS SE LÈVENT ICI (§4.7) : comprendre, c'est assembler — plus clore.
+     C'est ce qui garde un intervalle avant l'envoi, donc la Fin 2 jouable, une
+     fois clore et envoyer réunis en un geste (§4.5.4). */
+  function pressentir(S, r) {
+    if (!S.vice_pressenti && estPressentiment(r)) S.vice_pressenti = true;
+    if (!S.vice_trouve && estConclusionVice(r)) { S.vice_pressenti = true; S.vice_trouve = true; }
+  }
   function majPressentiment(S) { pressentir(S, M.reduire(chaineCompo(S))); }
 
   // iBloc indexe blocsOfferts() — POSITIONNEL dans la liste filtrée ; iSrc
@@ -151,21 +167,44 @@ function creerRegles(JEU, M) {
     }
     S.compo.push({ bloc: b.id, valeur });
     S.refus = null;
+    /* LE SEUL REFUS QUI EXISTE (§4.5.2), et il ne peut plus attendre la clôture :
+       poser ne clôt plus rien (§4.5.4). Il tombe donc au clic qui le produit —
+       celui qui DÉDUIT une paire, ou celui qui achève la phrase. Ailleurs on se
+       tait : une composition en cours n'est pas encore fausse. */
+    const r = M.reduire(chaineCompo(S));
+    const err = b.deduit && !r.forme ? "ces deux-là ne se comparent pas"
+              : (JEU.grammaire.finaux || []).includes(b.vers) ? M.valider(r) : null;
+    if (err) {
+      S.compo.pop();
+      S.refus = "Cette phrase ne veut rien dire : " + err
+              + ". Rien n'est perdu — reprends avec un autre passage.";
+      return;
+    }
     majPressentiment(S);
-    if ((JEU.grammaire.finaux || []).includes(b.vers)) clore(S);
-    else if (b.type === "terme") cloreSansChoix(S);
   }
-  /* UNE SUITE UNIQUE N'EST PAS UN CHOIX (§4.5). `imbrique` est exclu — sans ça
-     la relance « et donc ? » se répondrait toute seule. Rien ne lit le contenu. */
-  function cloreSansChoix(S) {
-    const offerts = blocsOfferts(S);
-    if (offerts.length !== 1) return;
-    const b = offerts[0];
-    if (b.type !== "liaison" || b.imbrique) return;
-    if (!(JEU.grammaire.finaux || []).includes(b.vers)) return;
-    S.compo.push({ bloc: b.id, valeur: null });
-    clore(S);
+  /* LA CLÔTURE QUI N'AJOUTE RIEN (§4.5.4) : la liaison qui clôt sans rien
+     emboîter — la citation — n'est pas un bouton, c'est l'envoi qui la pose.
+     `imbrique` est exclu, invoquer un texte est un acte. Et SEULES LES LIAISONS
+     comptent : les puces de la mémoire sont le clavier, pas des boutons du
+     composeur (§4.6), leur présence ne fait donc pas nombre. Rien ne lit le
+     contenu. */
+  function clotureImplicite(S) {
+    const liaisons = blocsOfferts(S).filter(b => b.type === "liaison");
+    if (liaisons.length !== 1) return null;
+    const b = liaisons[0];
+    if (b.imbrique) return null;
+    return (JEU.grammaire.finaux || []).includes(b.vers) ? b : null;
   }
+  /* Ce que le composeur peut envoyer TEL QUEL : la composition réduite, la
+     clôture implicite posée d'abord s'il y en a une. → la chaîne, ou null si
+     rien ne tient encore. Pur : il ne touche pas à `S`. */
+  function chaineEnvoyable(S) {
+    if (!S.compo.length) return null;
+    const b = clotureImplicite(S);
+    const ch = chaineCompo(S).concat(b ? [{ bloc: b, valeur: null }] : []);
+    return M.valider(M.reduire(ch)) ? null : ch;
+  }
+  const peutEnvoyer = S => !!chaineEnvoyable(S);
   function retirerBloc(S) { S.compo.pop(); S.refus = null; }
   function viderCompo(S) { S.compo = []; S.refus = null; }
   // Effacer sans envoyer : la phrase reste au journal — ce qu'on a compris, on
@@ -175,16 +214,23 @@ function creerRegles(JEU, M) {
   /* La phrase est close : on réduit, on valide la CATÉGORIE, et si elle tient
      elle attend SUR PLACE — privée. Rien ne part tant qu'on ne l'envoie pas. */
   function clore(S) {
-    const ch = chaineCompo(S);
-    const r = M.reduire(ch);
-    const err = M.valider(r);
-    if (err) {
+    const ch = chaineEnvoyable(S);
+    if (!ch) {
+      const err = M.valider(M.reduire(chaineCompo(S))) || "arité";
       S.refus = "Cette phrase ne veut rien dire : " + err + ". Rien n'est perdu — retire le dernier bloc.";
-      S.compo.pop();
-      return;
+      return null;
     }
     S.compo = [];
-    clorePhrase(S, r, M.rendre(ch));
+    return clorePhrase(S, M.reduire(ch), M.rendre(ch));
+  }
+  /* LE GESTE UNIQUE DU COMPOSEUR (§4.5.4) : clore et envoyer n'en font plus
+     qu'un. On envoie de la même manière un empan, deux, ou deux et un article —
+     et ce qui n'est pas fondé part quand même : c'est l'AVOCAT qui le refuse
+     (§4.5.3). L'intervalle qui porte la Fin 2 est en amont, à l'assemblage. */
+  function envoyerCompo(S) {
+    const i = clore(S);
+    if (i == null) return;
+    envoyer(S, i);
   }
   /* Une phrase réduite entre au journal : dédoublonnage, drapeaux, attente sur
      place. Séparé de `clore` : le pas-à-pas joue au grain du LIEN et doit passer
@@ -326,6 +372,7 @@ function creerRegles(JEU, M) {
            surligner, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
+           clotureImplicite, chaineEnvoyable, peutEnvoyer, envoyerCompo, compoFinie,
            estMoyen, envoyer, reponseAvocat, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
            instructionComplete, repetitionEnCours, cloturer, verserContre,

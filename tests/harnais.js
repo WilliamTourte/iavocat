@@ -130,7 +130,19 @@ function creerHarnais(dossier){
   function composerLien(w,L){
     const f=(J(w).grammaire.formes||{})[L.forme]||{};
     w.viderCompo();
-    const trouve = () => w.S.brouillon.findIndex(n=>w.M.memeRed(n.reduite,{forme:L.forme,termes:L.termes}));
+    /* POSER NE CLÔT PLUS (§4.5.4) : le jeu réunit clore et envoyer dans un seul
+       geste, et une suite qui veut la phrase AU JOURNAL sans l'envoyer passe
+       donc par `clore` — la même porte, prise un cran plus tôt (§12). */
+    const journaliser = () => {
+      if(!w.S.compo.length) return;
+      w.R.clore(w.S);
+      // `clore` seul ne redessine pas, donc ne SAUVE pas : la sauvegarde est
+      // un effet du rendu (§12). Sans ça une suite éprouverait un état que le
+      // joueur n'aurait jamais pu produire.
+      w.rendreTout();
+    };
+    const trouve = () => { journaliser();
+      return w.S.brouillon.findIndex(n=>w.M.memeRed(n.reduite,{forme:L.forme,termes:L.termes})); };
 
     if((f.arite||2)===1){
       const sous=(L.termes||[])[0]||{};
@@ -141,12 +153,11 @@ function creerHarnais(dossier){
         surligner(w,k);
         const bT=idBloc(w,blocChamp(w)); if(bT<0) return -1;
         w.poserBloc(bT,iRetenu(w,k));
-        /* L'automate a pu se refermer tout seul : une suite unique n'est pas un
-           choix (§4.5). Là où le choix existe encore, la liaison se pose. */
-        const deja=trouve(); if(deja>=0) return deja;
+        /* La liaison de citation n'ajoute rien : c'est l'envoi qui la pose
+           (§4.5.4). Une suite peut encore la poser à la main — elle est
+           offerte —, et `clore` la poserait de toute façon. */
         const bc=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && !x.imbrique);
-        if(bc<0) return -1;
-        w.poserBloc(bc);
+        if(bc>=0) w.poserBloc(bc);
         return trouve();
       }
       /* 1) LA CONTINUATION (§4.5) : poser la comparaison sans la clore, puis
@@ -162,9 +173,8 @@ function creerHarnais(dossier){
       if(i<0){ i=composerLien(w,{forme:sous.forme,termes:sous.termes}); if(i<0) return -1; }
       const b=idBloc(w,blocNote(w)); if(b<0) return -1;
       w.poserBloc(b,i);
-      const deja=trouve(); if(deja>=0) return deja;   // refermé tout seul (§4.5)
-      const bl=idBloc(w,blocForme(w,L.forme)); if(bl<0) return -1;
-      w.poserBloc(bl);
+      const bl=idBloc(w,blocForme(w,L.forme));
+      if(bl>=0) w.poserBloc(bl);
     } else {
       if(!poserComparaison(w,L)) return -1;
       cloreSurPlace(w);

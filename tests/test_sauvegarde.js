@@ -37,9 +37,9 @@ console.log("\n=== Les quatre surfaces survivent au rechargement ===");
 
 console.log("\n=== Une composition en cours survit aussi ===");
 {
-  /* Il faut livrer d'abord : une composition ne reste EN COURS que là où
-     l'état suivant offre un choix. Ailleurs elle se clôt seule (§4.5) — c'est
-     alors la phrase close en attente qui survit, éprouvée juste après. */
+  /* On livre d'abord, pour que l'état qui suit l'empan offre les deux voies.
+     Depuis le geste unique (§4.5.4) une composition reste EN COURS partout :
+     rien ne se clôt sans l'envoi. */
   const w1 = boot();
   H.livrerTout(w1);
   const pid = H.pidPremiereRemise(w1);
@@ -58,21 +58,30 @@ console.log("\n=== Une composition en cours survit aussi ===");
     w2.R.blocsOfferts(w2.S).map(b=>b.id).join() === w1.R.blocsOfferts(w1.S).map(b=>b.id).join());
 }
 {
-  // La phrase close qui attend SUR PLACE : c'est l'écart entre comprendre et
-  // dire (§4.7). Le perdre au rechargement effacerait la Fin 2.
+  /* L'ÉCART ENTRE COMPRENDRE ET DIRE (§4.7) : il est passé de la clôture à
+     l'ASSEMBLAGE, clore et envoyer n'étant plus qu'un geste (§4.5.4). Ce qui
+     doit donc survivre au rechargement, c'est la phrase assemblée au composeur
+     et le drapeau qu'elle a levé — le perdre effacerait la Fin 2. */
   const w1 = boot();
   H.livrerTout(w1);                           // l'article doit avoir été reçu (§4.5)
-  const i = H.composerLien(w1, H.lienConclusion(w1));
-  check("la conclusion est close et attend", w1.S.prete === i && i >= 0);
-  check("elle n'est pas partie", !w1.S.brouillon[i].versee && w1.S.plaidoirie.length === 0);
+  const C = H.lienConclusion(w1);
+  check("la comparaison du vice se pose", H.poserComparaison(w1, C.termes[0]));
+  const b = w1.R.blocsOfferts(w1.S).findIndex(x => x.forme === C.forme && x.imbrique);
+  check("et l'article qui la qualifie est offert", b >= 0);
+  w1.poserBloc(b);
+  check("la conclusion est assemblée, et prête à partir", w1.R.peutEnvoyer(w1.S));
+  check("elle a levé vice_trouve sans rien transmettre",
+    w1.S.vice_trouve && !w1.S.vice_expose && w1.S.plaidoirie.length === 0);
 
   const w2 = boot({[CLE]: sauvegarde(w1)});
-  check("la phrase en attente survit au rechargement", w2.S.prete === i);
-  check("elle s'affiche toujours sur place", H.composeur(w2).includes(w2.S.brouillon[i].texte));
+  check("la phrase assemblée survit au rechargement",
+    w2.S.compo.length === w1.S.compo.length && w2.R.peutEnvoyer(w2.S));
+  check("elle s'affiche toujours sur place, avec son geste",
+    H.composeur(w2).includes("Envoyer"));
   check("vice_trouve a survécu, vice_expose non", w2.S.vice_trouve && !w2.S.vice_expose);
-  w2.effacerPrete();
-  check("l'effacer ne la retire pas du journal", w2.S.prete === null && !!w2.S.brouillon[i]);
-  check("et ne retire pas ce qu'on avait compris", w2.S.vice_trouve);
+  w2.viderCompo();
+  check("la vider ne retire pas ce qu'on avait compris",
+    w2.S.compo.length === 0 && w2.S.vice_trouve);
 }
 
 console.log("\n=== Les drapeaux et les déclencheurs ===");

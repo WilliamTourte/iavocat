@@ -15,12 +15,12 @@
 
 | Fichier | ~lignes | Ce qu'il porte | Ce qu'il ne porte jamais |
 |---|---|---|---|
-| `app/content.js` | 657 | **le contenu** — une affaire, en un seul exemplaire | aucune règle |
-| `app/regles.js` | 342 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
+| `app/content.js` | 647 | **le contenu** — une affaire, en un seul exemplaire | aucune règle |
+| `app/regles.js` | 389 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
 | `app/moteur.js` | 212 | **la grammaire** — composer, valider, rendre — **et les projections du contenu** (§14) | aucune donnée |
 | `app/index.html` | 75 | **la structure du jeu** | aucun style, aucun script en ligne |
-| `app/jeu.css` | 206 | **la mise en forme du jeu** | rien que le JS relise |
-| `app/jeu.js` | 480 | **l'écran et les gestes** — rendu, sauvegarde, tutoriel | ne décide rien |
+| `app/jeu.css` | 216 | **la mise en forme du jeu** | rien que le JS relise |
+| `app/jeu.js` | 494 | **l'écran et les gestes** — rendu, sauvegarde, tutoriel | ne décide rien |
 | `app/atelier_v3.html` + `app/atelier/` | 133 + 260 (css) + 1955 (js) | **l'atelier** — écrire et diagnostiquer une affaire, un fichier par outil | ne recopie rien (§12), *y compris de lui-même* |
 
 Quatre dossiers : `app/` (le livrable), `docs/`, `tests/` (§16), `grammaire/` (le banc d'essai, qui
@@ -63,18 +63,18 @@ sur place, et les suites l'appellent pareil, en `w.R.xxx(w.S)`.
 | ce que l'écran souffle — une voix par état | *(dérivé de `S`)* | — | `souffle` | 4.9 |
 | le rappel de la question | `attenteCourante`, `remiseCourante` | — | `rappelQuestion` | 4.9 |
 | **poser un bloc** | `poserBloc`, `retirerBloc`, `viderCompo` | `reduire`, `deduire`, `ordonner` | `texteCompoPartiel` | 4.5 |
-| la clôture sans choix | `cloreSansChoix` | — | *(rien : le bouton disparaît)* | 4.5 |
+| la clôture qui n'ajoute rien | `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `valider`, `reduire` | `renderCompo` — elle n'est PAS un bouton | 4.5 |
 | le pressentiment ⚑ | `majPressentiment`, `pressentir`, `sousLienVice` | `memeRed` | *(rien : privé)* | 4.7 |
-| **clore la phrase** | `clore` → `clorePhrase` | `valider`, `rendre`, `lienDe` | `renderComposeur` (`#composeur`, **sous la Discussion**) | 4.5 |
-| **envoyer** — le seul geste transmis | `envoyer` → `reponseAvocat` → `avancerSurAttente` | — | `renderPlaidoirie`, `renderDiscussion` | 4.6 |
+| **clore la phrase** | `clore` → `clorePhrase` | `valider`, `rendre`, `lienDe` | *(aucune : plus de panneau « phrase close »)* | 4.5 |
+| **envoyer** — le seul geste du composeur | `envoyerCompo` → `clore` → `envoyer` → `reponseAvocat` → `avancerSurAttente` | — | `renderCompo` (`#composeur`, **sous la Discussion**), `renderPlaidoirie`, `renderDiscussion` | 4.5, 4.6 |
 | ce qui entre à la Plaidoirie | `estMoyen` | — | `renderPlaidoirie` — **cache sa colonne** tant que rien ne s'y inscrit | 4.6, 4.9 |
 | clôturer, répétition | `instructionComplete`, `cloturer`, `verserContre`, `avancerRepetition` | — | `majCloture` | 5 |
 | la fin | `finir` | — | `finir` (modale) | 5 |
 | **le tutoriel du premier geste** | *(aucune — il ne décide rien)* | — | `tutoAttendu`, `tutoEtape`, `majTutoriel` | 4.8 |
 
-**Les deux voies de clôture** (§4.5) sont le **même** `clore` ; ce qui les sépare vit dans le contenu
-— une liaison `cite:true`, lue par `citeDe`, contre une forme d'arité 2 déduite et écrite par son
-`patron`. Le tutoriel n'a pas de colonne « règle », et c'est le point ; seule exception,
+**Les deux voies de clôture** (§4.5) sont le **même** `clore`, appelé par le **même** `envoyerCompo` ;
+ce qui les sépare vit dans le contenu — une liaison `cite:true`, lue par `citeDe`, contre une forme
+d'arité 2 déduite et écrite par son `patron`. Le tutoriel n'a pas de colonne « règle », et c'est le point ; seule exception,
 `tutoAttendu` dérive du contenu ce que la question attend (§4.8).
 
 ## L'état `S`
@@ -104,13 +104,14 @@ d'autre ne les lit sur une remise (R9), hors `attentesEditables` (`frise.js`) et
 
 ## Les six suites, et les deux outils
 
-Point d'entrée unique : `tests/harnais.js`, `creerHarnais(dossier)` — **325 contrôles** ; ce que
+Point d'entrée unique : `tests/harnais.js`, `creerHarnais(dossier)` — **338 contrôles** ; ce que
 chacune prouve est au §16. Il **inline tout `<script src>` et tout `<link rel=stylesheet>`** au boot
 (§13). Ce qu'il expose est le **contrat d'interaction** : `boot` / `bootAtelier` ; les lectures
 d'écran, une par surface (`discussion`, `memoire`, `composeur`, `plaidoirie`, `plaidoirieVisible`) ;
 les désignations de contenu (`lienVice`, `lienConclusion`, `lienFaux`, `lienTag`, `citations`,
 `blocCite`, `comparaisons`, `attentesContenu`) ; les chemins (`surligner`, `composerLien`,
-`poserComparaison`, `cheminVers`, `cloreSurPlace`, `livrerTout`, `instruire`, `terminer`). Plus ce
+`poserComparaison`, `cheminVers`, `cloreSurPlace`, `livrerTout`, `instruire`, `terminer` — `composerLien`
+journalise par `R.clore` **puis redessine**, la sauvegarde étant un effet du rendu). Plus ce
 qu'il **ne décide pas lui-même** : `estRegle` (par `require`), `iTermeChamp`, `deK`. **Aucune suite
 ne nomme une pièce, un empan ou une valeur** (§16).
 
@@ -135,8 +136,8 @@ d'écran, c'est une fuite à corriger.
 | **Mémoire** | la surface du milieu : le dossier + les passages retenus | `S.retenus`, qui n'en couvre que la moitié |
 | **Plaidoirie** | la surface de droite, cachée tant que rien n'y entre | rien — le code dit `plaidoirie` |
 | **passage** | un fragment souligné, cliquable, dans une pièce | *empan* — même chose, nom de code |
-| **Ta réponse** / **Réponse** | la zone du composeur ; la bascule est **intentionnelle** (la phrase close ne lui appartient plus tout à fait) — ne pas uniformiser | *Envoyer*, le geste |
-| **→ Envoyer** | transmet la phrase close — irréversible | *Clôturer l'instruction* |
+| **Ta réponse** | la zone du composeur, et elle ne bascule plus : clore et envoyer n'étant qu'un geste, il n'y a plus de « Réponse » close à part | *Envoyer*, le geste |
+| **→ Envoyer** | **clôt et transmet d'un coup** — irréversible ; le seul bouton du composeur | *Clôturer l'instruction* |
 | **Clôturer l'instruction** | ferme l'affaire et déclenche une des trois fins | *clore* une phrase |
 
 | Terme de code | Ce qu'il désigne | Ne pas confondre avec |

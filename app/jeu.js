@@ -130,7 +130,9 @@ function tutoEtape(){
             dit: rate ? "Ce n'est pas ce qu'il demande. Rouvre la pièce et relis sa question."
                       : "Ouvre la pièce : ce qu'il te demande est écrit dedans."};
   }
-  if(S.prete==null)
+  /* Le 4ᵉ temps vient quand la phrase SE TIENT — clore et envoyer n'étant plus
+     qu'un geste, il n'y a plus de clôture à guetter (§4.5.4). */
+  if(!R.peutEnvoyer(S))
     return S.modalPiece
       ? {n:2, ou:"#modalRoot .close",
             dit:"Passage retenu. Referme la pièce."}
@@ -305,43 +307,54 @@ function renderRetenus(){
 function souffle(){
   const offerts=R.blocsOfferts(S);
   const second=offerts.some(b=>b.type==="terme"&&b.deduit);
-  const attendTerme=offerts.some(b=>b.type==="terme"&&b.source!=="note");
   if(!S.compo.length){
     if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
     return second ? "Sélectionne deux passages depuis ta mémoire…" : "Depuis ta mémoire, sélectionne un passage pour répondre";
   }
-  const citation=offerts.some(b=>b.cite);
-  if(citation && second) return "Ajouter un second passage ?";
-  if(citation) return "Quel article citer pour appuyer la déclaration ?";
-  if(attendTerme) return "Clique sur un second passage pour le mettre en relation";
-  /* LA RELANCE (§4.5) : elle ne se coupe pas — elle porte la contrainte de
-     fondement par la forme, et non par l'agacement de l'avocat (§4.9). */
+  /* LA PHRASE SE TIENT, ET RIEN NE RESTE À Y METTRE : on se tait. Le bouton dit
+     déjà le geste, et une voix qui répète un bouton est du chrome (§4.9). Deux
+     états sont dans ce cas — l'empan seul, que l'envoi citera, et la phrase
+     arrivée au bout de l'automate. */
+  if(offerts.some(b=>b.cite) || R.compoFinie(S)) return "";
+  if(offerts.some(b=>b.type==="terme"&&b.source!=="note"))
+    return "Clique sur un second passage pour le mettre en relation";
+  /* LA RELANCE (§4.5.6) : elle ne se coupe pas. Elle n'est plus un mur — la
+     comparaison nue s'envoie —, elle est ce qui empêche le refus de Maître
+     Auber d'arriver comme une surprise. */
   return offerts.length
     ? "Et donc ? Une comparaison ne se plaide pas seule — au regard de quel texte ?"
     : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
 }
 function texteCompoPartiel(){
-  const offerts=R.blocsOfferts(S);
   if(!S.compo.length) return `<span class="trou">${escapeAttr(souffle())}</span>`;
   const ch=R.chaineCompo(S);
-  /* Tant que le second empan n'est pas posé, la relation n'existe pas : on
-     montre le trou. La paire close, `rendre` écrit la phrase par son patron. */
+  /* Tant que le second empan n'est pas posé, la relation n'existe pas : la
+     phrase montre le premier empan, SEUL — rien n'y annonce le second, qui
+     n'est pas l'étape attendue (§4.9). La paire close, `rendre` écrit la
+     phrase par son patron. */
   const fini=ch.some(p=>p.bloc.deduit);
   if(fini) return `<span class="bl">${escapeAttr(M.rendre(ch).replace(/\.$/,""))}</span>`;
   return ch.map(p=>{
     if(p.bloc.type!=="terme") return `<span class="bl">${escapeAttr(p.bloc.texte)}</span>`;
     if(p.bloc.source==="note") return `<span class="bl terme">${escapeAttr(p.bloc.texte)}</span>`;
     const e=EMPAN[p.valeur];
-    return `<span class="bl terme" style="--dc:${couleurDim(e?e.dim:"")}">${escapeAttr(e?(e.nom||e.texte):p.valeur)}</span>`;
-  }).join(" ") + (offerts.some(b=>b.type==="terme"&&b.deduit)
-    ? ` <span class="trou">…et ?</span>` : "");
+    if(!e) return `<span class="bl terme">${escapeAttr(p.valeur)}</span>`;
+    /* Les deux lignes de la puce de mémoire, à l'identique (§4.9) : un empan
+       posé n'est pas une étiquette, il porte ce qu'il dit et d'où il le tient. */
+    return `<span class="bl terme pose" style="--dc:${couleurDim(e.dim)}">
+      <span class="nom">${escapeAttr(e.nom||e.texte)}</span>
+      <span class="prov"><span class="cit">« ${escapeAttr(e.texte)} »</span><span class="sig">— ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}</span></span>
+    </span>`;
+  }).join(" ");
 }
 /* iBloc indexe R.blocsOfferts(S) — POSITIONNEL dans la liste filtrée, donc
    dépendant de la session ; iSrc indexe la mémoire ou le brouillon. */
 function poserBloc(iBloc,iSrc){ R.poserBloc(S,iBloc,iSrc); rendreTout(); }
 function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
 function viderCompo(){ R.viderCompo(S); rendreTout(); }
-function effacerPrete(){ R.effacerPrete(S); rendreTout(); }
+/* LE GESTE UNIQUE (§4.5.4) : clore et envoyer n'en font plus qu'un — on envoie
+   de la même manière un empan, deux, ou deux et un article. */
+function envoyerCompo(){ R.envoyerCompo(S); rendreTout(); }
 /* La question en cours, rappelée au-dessus du composeur — sans préfixe : les
    guillemets et le filet de gauche disent déjà qui parle (§4.9). */
 function rappelQuestion(){
@@ -355,26 +368,22 @@ function rappelQuestion(){
   return `<div class="aide question">« ${escapeAttr(a.question)} »</div>`;
 }
 function renderCompo(){
-  /* Une phrase close attend LÀ, avec le seul geste qui parle (§4.6). */
-  if(S.prete!=null && S.brouillon[S.prete]){
-    return `<div class="zone"><div class="ztitle">Réponse</div><div class="compo prete">
-      ${rappelQuestion()}
-      <div class="phrase close">${escapeAttr(S.brouillon[S.prete].texte)}</div>
-      <div class="barre">
-        <button class="envoi" onclick="envoyer(${S.prete})">→ Envoyer</button>
-        <button onclick="effacerPrete()">effacer</button>
-      </div>
-      ${S.plaidoirie.length?"":`<div class="aide">Tant que tu ne l'envoies pas, personne ne la lit.</div>`}
-    </div></div>`;
-  }
   const offerts=R.blocsOfferts(S);
   let h=`<div class="zone"><div class="ztitle">Ta réponse</div><div class="compo">
     ${rappelQuestion()}
     <div class="phrase">${texteCompoPartiel()}</div>`;
+  /* LE SEUL GESTE QUI PARLE, et il vaut pour tout ce qui se tient (§4.5.4) :
+     un empan — l'envoi posera la citation —, deux, ou deux et un article. */
   if(S.compo.length)
-    h+=`<div class="barre"><button onclick="retirerBloc()">← retirer</button><button onclick="viderCompo()">tout effacer</button></div>`;
+    h+=`<div class="barre">
+      ${R.peutEnvoyer(S)?`<button class="envoi" onclick="envoyerCompo()">→ Envoyer</button>`:""}
+      <button onclick="retirerBloc()">← retirer</button><button onclick="viderCompo()">tout effacer</button></div>`;
   h+=`<div class="offre">`;
+  /* LA CLÔTURE QUI N'AJOUTE RIEN N'EST PAS UN BOUTON (§4.5.4) : « → Envoyer »
+     la pose. La laisser ici ferait deux boutons pour un seul geste. */
+  const implicite=R.clotureImplicite(S);
   offerts.forEach((b,i)=>{
+    if(implicite && b.id===implicite.id) return;
     if(b.type==="liaison"){
       // `libelle` quand le bouton dit autre chose que ce qui s'écrira ; `suite`
       // marque les continuations (§4.5). L'article annonce, ne filtre pas.
@@ -393,7 +402,12 @@ function renderCompo(){
   h+=`</div>`;
   /* La voix unique, et une seule fois : le fantôme l'a dite tant que la phrase
      était vide, c'est ici dès qu'elle porte quelque chose (§4.9). */
-  if(S.compo.length) h+=`<div class="aide">${escapeAttr(souffle())}</div>`;
+  const voix = S.compo.length ? souffle() : "";
+  if(voix) h+=`<div class="aide">${escapeAttr(voix)}</div>`;
+  /* Une des trois phrases qui ne se coupent pas (§4.9) — elle a suivi la
+     frontière morale, qui passe maintenant entre l'assemblage et l'envoi. */
+  if(R.peutEnvoyer(S) && !S.plaidoirie.length)
+    h+=`<div class="aide">Tant que tu ne l'envoies pas, personne ne la lit.</div>`;
   if(S.refus) h+=`<div class="refus">${escapeAttr(S.refus)}</div>`;
   h+=`</div></div>`;
   return h;

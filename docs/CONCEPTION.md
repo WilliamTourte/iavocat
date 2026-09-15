@@ -62,13 +62,13 @@ toujours servable par un argument ordinaire — sinon le vice serait quasi oblig
 s'effondrerait vers la Fin 1.
 
 ```
-Session 1 (lire)          → PV + audition. AUCUN article.
-                            trois questions, une à la fois — l'heure d'arrivée de la patrouille,
-                            le nombre d'équipages, l'heure des éclats de voix
+Session 1 (lire, puis     → PV + audition + l'article 3, D'UN SEUL LOT.
+  mettre en rapport)        deux questions d'horaire, une à la fois — l'heure d'arrivée de la
+                            patrouille, l'heure des éclats de voix
                             un SEUL empan : un fait se cite (§4.5)
-Session 2 (mettre en      → l'article 3 ; conclure sur la valeur du témoignage
-  rapport)                  DEUX empans + un article : une relation se fonde
-Session 3 (l'expertise)   → LE LOT : rapport du labo, les deux pièces de prélèvement, le protocole,
+                            puis, SANS nouvelle livraison, la troisième attente : conclure sur la
+                            valeur du témoignage — DEUX empans + l'article 3, une relation se fonde
+Session 2 (l'expertise)   → LE LOT : rapport du labo, les deux pièces de prélèvement, le protocole,
                             le seuil probatoire — ★ la preuve décisive + ⚠ le vice (hors chemin)
                             + ✗ le faux vice ; attente servie par le faux vice (docile) OU par la
                             conclusion du vice
@@ -76,12 +76,16 @@ Clôture → répétition → procès hors-champ
                             → vice_trouve ? non → Fin 3 ; oui → envoyé → Fin 1 / tu → Fin 2
 ```
 
-- **Ce que chaque session enseigne, et rien de plus** : lire et citer, mettre en rapport sous un
-  texte, puis chercher seul quoi rapprocher.
+- **Ce que chaque session enseigne, et rien de plus** : la première apprend à lire, à citer, **puis** à
+  mettre en rapport sous un texte ; la seconde ne demande plus qu'une chose — chercher seul quoi
+  rapprocher.
+- **Pourquoi les deux leçons tiennent dans la même session** : la paire à comparer est déjà dans la
+  mémoire quand on la demande, extraite par les deux questions d'horaire. Rien n'arrive entre-temps,
+  et c'est ce qui rend le rapprochement évident sans qu'on le désigne.
 - **Le prix, et il est réel** : les **questions fermées** de la session 1 expriment déjà la moitié de
   la compréhension — assumé pour la première, dont l'objet est d'apprendre l'écran (§7).
-- **Les deux questions d'horaire font extraire la paire que la session 2 demandera de comparer** ; la
-  troisième ne sert qu'à les séparer. La leçon se pose d'elle-même.
+- **Les deux questions d'horaire font extraire la paire que la troisième attente demandera de
+  comparer.** La leçon se pose d'elle-même.
 - **Le moment charnière de la Fin 3** : la dernière attente servie, l'IA *peut* clôturer et laisser
   filer.
 
@@ -99,8 +103,8 @@ envoyer devient assourdissant sans qu'aucune interface n'ait rien signalé.
 > |---|---|---|
 > | **§4.5.1** | La livraison | ce qui est offert, et à partir de quelle session |
 > | **§4.5.2** | La déduction | le joueur désigne deux empans, le moteur en tire la relation |
-> | **§4.5.3** | Les deux régimes de fondement | un fait se cite, une relation se fonde — rien d'autre ne clôt |
-> | **§4.5.4** | La suite unique | un bouton seul ne se choisit pas : il se pose d'office |
+> | **§4.5.3** | Les deux régimes de fondement | un fait se cite, une relation se fonde — et c'est l'avocat qui refuse le reste |
+> | **§4.5.4** | La clôture qui n'ajoute rien | elle n'est pas un bouton : c'est l'envoi qui la pose |
 > | **§4.5.5** | L'article comme verbe | la base légale est la liaison, pas un ingrédient |
 > | **§4.5.6** | La continuation | une comparaison ne se clôt jamais sans « et donc ? » |
 > | **§4.5.7** | Ce qu'un article n'interdit pas | `porte` annonce, ne filtre pas |
@@ -154,9 +158,12 @@ la même chose ».
 
 **La grammaire de comparaison est complète dès la première phrase ; les articles arrivent avec le
 dossier.** Une tournure qui n'apparaîtrait qu'au moment de servir désignerait ce moment (§4) — un
-article n'est pas une tournure, c'est une pièce. **Le second empan est lui aussi conditionné** : en
-session 1 son bloc attend l'article 3. Ça ne désigne rien, la comparaison s'ouvrant pour **tous** les
-empans à la fois : elle ne dit pas *quoi* comparer, elle dit *qu'on peut*.
+article n'est pas une tournure, c'est une pièce. **Le second empan est lui aussi conditionné** : son
+bloc porte la pièce de l'article qui le fondera — `piece` vaut sur les termes comme sur les liaisons
+(§11). **Le mécanisme reste, le retard n'est plus** : l'affaire Kessler livre l'article 3 avec le
+premier lot, et la comparaison est donc ouverte dès la première phrase. Ça ne désigne rien, la
+comparaison s'ouvrant pour **tous** les empans à la fois : elle ne dit pas *quoi* comparer, elle dit
+*qu'on peut*.
 
 #### 4.5.2 La déduction
 
@@ -173,22 +180,39 @@ du §7.
 #### 4.5.3 Les deux régimes de fondement
 
 **Un fait se cite, une relation se fonde.** Un empan seul se clôt par sa citation, deux empans par un
-article, **aucune phrase ne se clôt sans l'un des deux**. L'invariant « rien ne se dit qui ne soit
-fondé » est **dédoublé**, pas affaibli : un empan est déjà une déclaration attribuée (§4.1) — le
-désigner, c'est le citer ; un rapport entre deux faits, lui, n'est l'affirmation de personne.
+article. L'invariant « rien ne se dit qui ne soit fondé » est **dédoublé**, pas affaibli : un empan est
+déjà une déclaration attribuée (§4.1) — le désigner, c'est le citer ; un rapport entre deux faits, lui,
+n'est l'affirmation de personne.
+
+**Où l'invariant mord, désormais : au versement, plus à la clôture.** La grammaire ne retient plus une
+comparaison nue — elle part si on l'envoie. Ce qui la refuse est **Maître Auber** : *« Et donc ? Une
+observation n'est pas un moyen — dis-le-moi en droit. »* Elle n'entre pas à la Plaidoirie, qui ne
+retient que les moyens (§4.6), et elle ne sert aucune attente. **Rien n'est *plaidé* qui ne soit
+fondé** — c'est la même borne, tenue un cran plus loin. Ce qu'on perd : la leçon portée par la forme,
+où le bouton manquant disait la règle sans un mot. Ce qu'on gagne : le refus se **lit**, en fiction, et
+le joueur envoie **de la même manière** quoi qu'il ait composé (§4.5.4). *Le prix est nommé : c'est de
+l'agacement d'avocat, et il ne doit jamais glisser vers le reproche au joueur (§8.4 de
+`docs/ECRITURE.md`).*
 
 **Ce qui s'écrit :** une citation est le seul endroit où un empan se lit **deux fois dans la même
 phrase** — *« l'heure d'arrivée de la patrouille : « nous étions sur les lieux à 22h04 » (PV). »* Le
 nom porte la syntaxe, la citation la texture, la pièce le fondement. Une comparaison ne s'écrit **que**
 par les noms.
 
-#### 4.5.4 La suite unique
+#### 4.5.4 La clôture qui n'ajoute rien
 
-**Une suite unique n'est pas un choix** : quand l'état qui suit un terme n'offre qu'une liaison,
-qu'elle clôt et n'emboîte rien, elle se pose d'office — c'est de la ponctuation. Règle
-**structurelle** (elle ne lit aucun contenu) ; **`imbrique` en est exclu**, invoquer un texte est un
-acte ; **le second geste survit intact**, *« → Envoyer »* reste à cliquer (§4.6). Elle s'éteint
-d'elle-même dès la session 2.
+**Une clôture qui n'ajoute rien ne se choisit pas** : quand l'état courant n'offre qu'une liaison qui
+clôt sans rien emboîter — la citation —, elle n'est **pas** un bouton. C'est **l'envoi** qui la pose,
+juste avant de partir. Règle **structurelle** (elle ne lit aucun contenu) ; **`imbrique` en est
+exclu**, invoquer un texte est un acte, donc un bouton ; **et seules les liaisons comptent** — les
+puces de la mémoire ne sont pas des boutons du composeur, elles sont le clavier (§4.6), et leur
+présence ne fait donc pas nombre.
+
+**C'est le point, et il vaut d'être dit en clair : il n'y a plus qu'UN geste au composeur.**
+*« → Envoyer »* vaut pour un empan comme pour deux, avec article ou sans — **on envoie de la même
+manière, quoi qu'on ait composé.** Ce qui se composait en deux temps — clore, puis envoyer — n'en fait
+plus qu'un ; l'intervalle qui porte la Fin 2 n'a pas disparu pour autant, il s'est déplacé d'un cran
+(§4.6, §4.7).
 
 #### 4.5.5 L'article comme verbe
 
@@ -202,11 +226,15 @@ scellés (§6).
 #### 4.5.6 La continuation
 
 **La conclusion est une continuation, pas une seconde phrase** : une comparaison demande toujours « et
-donc ? », sans réponse évasive. Les deux empans posés, l'automate n'offre plus que les
-liaisons-articles **reçues**, qui **emboîtent** la comparaison et closent la phrase dessus. La
-frontière passe **après le second empan**, jamais après le premier. Porter la contrainte par la
-grammaire plutôt que par l'agacement de l'avocat déplace la leçon du reproche vers la forme : *« Et
-donc ? Une comparaison ne se plaide pas seule — au regard de quel texte ? »*
+donc ? », sans réponse évasive. Les deux empans posés, l'automate offre les liaisons-articles
+**reçues**, qui **emboîtent** la comparaison et closent la phrase dessus. La frontière passe **après le
+second empan**, jamais après le premier.
+
+**Ce qui a changé : l'automate n'oblige plus.** La comparaison nue est une phrase bien formée — elle
+part si on l'envoie, et c'est l'avocat qui la renvoie (§4.5.3). L'écran, lui, continue de porter la
+demande sans l'imposer, par la relance du composeur : *« Et donc ? Une comparaison ne se plaide pas
+seule — au regard de quel texte ? »* **Elle ne se coupe pas** (§4.9) : c'est elle qui empêche le refus
+de Maître Auber d'arriver comme une surprise.
 
 #### 4.5.7 Ce qu'un article n'interdit pas
 
@@ -238,27 +266,33 @@ protège la fiction (§8.6 de `docs/ECRITURE.md`).
   en jouant** (§7) — **le repli est de faire descendre les retenus, pas de remonter le composeur.**
 - **Le composeur ne porte aucune étiquette « privé »** : son statut se lit dans ce qui s'y passe —
   *rien*.
-- **Composer et envoyer restent deux gestes, et c'est non négociable** : sans intervalle entre
-  *comprendre* et *dire*, `vice_trouve` impliquerait `vice_expose` et la Fin 2 deviendrait injouable.
+- **Comprendre et dire restent deux gestes, et c'est non négociable** — mais l'intervalle s'est
+  **déplacé d'un cran**. Il ne sépare plus la *clôture* de l'*envoi* : il sépare l'**assemblage** de
+  l'**envoi**. La phrase complète attend dans le composeur, sous les yeux, tant qu'on ne l'envoie pas ;
+  `vice_trouve` se lève à l'assemblage, `vice_expose` à l'envoi (§4.7). Ce qui était non négociable
+  l'est resté — c'est **l'intervalle**, pas le nombre de clics qui le produisait.
 - **L'avocat ne voit que la Plaidoirie** — d'où la gratuité de la Mémoire et l'envoi comme seul geste
   à conséquence. **Elle ne retient que les moyens** ; l'envoi est **irréversible** ; **une réponse
   citée y entre**, une citation versée *étant* au dossier.
 
 La boucle : **l'avocat ouvre** et livre un lot → **lire** → **surligner** (rien ne se passe) →
-**composer** (rien ne se passe) → la phrase close attend sur place → **l'envoyer**, le seul geste qui
-parle → l'avocat répond → l'attente servie appelle la suivante, ou ferme la session.
+**composer** (rien ne se passe) → la phrase complète attend dans le composeur → **l'envoyer**, le seul
+geste qui parle → l'avocat répond → l'attente servie appelle la suivante, ou ferme la session.
 
 ### 4.7 Où se logent les trois drapeaux
 
 | Drapeau | Acquis quand | Surface |
 |---|---|---|
 | `vice_pressenti` | la comparaison du vice **s'affiche au composeur** — avant tout article | privée |
-| `vice_trouve` | la **conclusion** se clôt : la comparaison-vice qualifiée par un article | privée |
+| `vice_trouve` | la **conclusion s'assemble au composeur** : la comparaison-vice qualifiée par un article, avant tout envoi | privée |
 | `vice_expose` | cette conclusion est **envoyée** | transmise |
 
-C'est l'intervalle entre la **clôture** et l'**envoi**, si court soit-il, qui porte la Fin 2. **Une
-citation ne lève aucun drapeau** — les trois se dérivent d'une comparaison, et la session 1 est hors
-du dilemme. **Pressentir ne produit rien** : qui voit, comprend, et vide son composeur a une
+C'est l'intervalle entre l'**assemblage** et l'**envoi**, si court soit-il, qui porte la Fin 2 : la
+conclusion peut être là, entière, lisible au composeur, et ne jamais partir. **Les deux premiers se
+lèvent donc au même endroit** — au composeur, sans qu'aucun geste ne traverse la frontière ; seul le
+troisième demande l'envoi. **Une citation ne lève aucun drapeau** — les trois se dérivent de la
+comparaison du **vice**, que la session 1 ne contient pas : la comparaison d'horaires qu'elle enseigne
+est hors du dilemme. **Pressentir ne produit rien** : qui voit, comprend, et vide son composeur a une
 compréhension sans trace, et la Fin 3 au bout.
 
 ### 4.8 Le premier geste, montré
@@ -271,7 +305,7 @@ au joueur **hors fiction** : ce qui manquait n'était pas de la parole mais du *
 | 1 | une pièce s'ouvre | la pièce jointe, dans la Discussion |
 | 2 | un passage se retient | **le texte de la pièce**, en entier |
 | 3 | ce qu'on retient est le clavier | **toute la zone des retenus**, jamais une puce |
-| 4 | rien ne part tant qu'on n'envoie pas | le bouton *« → Envoyer »* |
+| 4 | rien ne part tant qu'on n'envoie pas | le bouton *« → Envoyer »*, dès que la phrase se tient |
 
 Le deuxième temps a deux moitiés — *referme la pièce* — sans quoi le halo du troisième se poserait
 derrière la modale ; elle ne compte pas pour un temps.
@@ -289,8 +323,10 @@ Le jeu se lisait mal à l'écran, et le coupable n'était pas la prose mais le *
 cessait de lire parce qu'il y avait trop à lire, et ce qui était en trop n'était jamais la fiction.**
 Quatre règles, qui ne portent que sur l'écran :
 
-1. **Une voix par état.** Le geste suivant se dit **une** fois : dans le fantôme tant que la phrase est
-   vide, dans l'aide dès qu'elle ne l'est plus.
+1. **Une voix par état** — **et parfois aucune.** Le geste suivant se dit **une** fois : dans le
+   fantôme tant que la phrase est vide, dans l'aide dès qu'elle ne l'est plus. Mais quand le seul
+   geste possible est déjà écrit sur un bouton, **l'aide se tait** plutôt que de le redire : une voix
+   qui répète un bouton n'est pas une voix, c'est du chrome.
 2. **Un titre par zone.** L'en-tête nomme la **surface** (§4.6), les titres intérieurs les **zones**.
 3. **Ce qui ne change pas ne se répète pas.** Le locuteur ne s'affiche qu'au **changement** ; un
    compteur ne redit pas ce que les puces disent. **Ce qui est déjà sous les yeux non plus** : le
@@ -360,9 +396,9 @@ fins ; ce qu'on ne peut pas faire, c'est les **relire** en cours de partie. Poin
 | **La compréhension doit être *exprimée*, pas supposée** — *sous surveillance*, voir plus bas | §3, §4.5 |
 | **Un empan se lit deux fois** | §4.1 |
 | **La relation se déduit des valeurs**, elle ne se déclare pas | §4.5 |
-| **Rien ne se dit qui ne soit fondé, sous l'un des deux régimes** | §4.5 |
+| **Rien n'est *plaidé* qui ne soit fondé, sous l'un des deux régimes** — la grammaire laisse partir, l'avocat refuse | §4.5 |
 | **On n'invoque pas un texte qu'on n'a pas reçu** | §4.5 |
-| **Une suite unique n'est pas un choix**, et `imbrique` n'en est jamais une | §4.5 |
+| **Une clôture qui n'ajoute rien n'est pas un choix** : l'envoi la pose, et `imbrique` n'en est jamais une | §4.5 |
 | **Un article annonce ce qu'il régit et ne filtre rien** ; **il ne porte aucun empan** | §4.5, §6 |
 | **Le moteur ne tranche aucune question de droit ; l'IA informe, elle ne tranche pas** | §4.5 |
 | **Tout mécanisme utilisé une seule fois est un panneau indicateur** — unique exception, le tutoriel | §4, §4.8 |
@@ -411,6 +447,6 @@ paie à chaque phrase (§4.6).
   pas à consulter ce qu'elle *est*. **Non tranché** — et tant que ça ne l'est pas, le diagnostic a
   raison de les exiger.
 - **La progression** : nombre de sessions, portes, emplacement de la porte de la Fin 3. Le prototype
-  s'arrête à **trois** sessions.
+  s'arrête à **deux** sessions, la première portant à elle seule les deux régimes de fondement.
 - **La texture de l'avocat**, et **genre, nombre, contractions** — voir `docs/ECRITURE.md`.
 - **`comment` en sixième dimension** — écarté, réintégrable sans coût (§4.2).
