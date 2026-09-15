@@ -421,8 +421,7 @@ function renderCompo(){
   if(voix) h+=`<div class="aide">${escapeAttr(voix)}</div>`;
   /* Une des trois phrases qui ne se coupent pas (§4.9) — elle a suivi la
      frontière morale, qui passe maintenant entre l'assemblage et l'envoi. */
-  if(R.peutEnvoyer(S) && !S.plaidoirie.length)
-    h+=`<div class="aide">Tant que tu ne l'envoies pas, personne ne la lit.</div>`;
+
   if(S.refus) h+=`<div class="refus">${escapeAttr(S.refus)}</div>`;
   h+=`</div></div>`;
   return h;
