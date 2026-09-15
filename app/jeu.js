@@ -288,7 +288,7 @@ function souffle(){
   if(offerts.some(b=>b.type==="terme"&&b.source!=="note"))
     return "Clique sur un second passage pour le mettre en relation";
   return offerts.length
-    ? "Et donc ? Une comparaison ne se plaide pas seule — au regard de quel texte ?"
+    ? "Sur quel article t'appuies-tu pour montrer qu'il y a une irrégularité ?"
     : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
 }
 function texteCompoPartiel(){
