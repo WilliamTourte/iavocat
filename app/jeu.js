@@ -271,6 +271,9 @@ function modalPieceHTML(pid){
    tutoriel (§4.8) : ne pas la viser par `:last-child`. */
 function renderRetenus(){
   const iT=R.indexTermeChamp(S);
+  // La dimension qu'un second empan devrait partager (§4.5.8) : `null` tant
+  // qu'aucun premier terme n'attend de partenaire — rien ne s'assombrit alors.
+  const dimReq=R.dimAttendue(S);
   let h=`<div class="zone" id="zoneRetenus">`;
   if(!S.retenus.length){
     // Le geste, c'est le composeur qui le nomme (§4.9) : la zone vide ne dit
@@ -280,13 +283,18 @@ function renderRetenus(){
     for(const d of JEU.dimensions||[]){
       const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
       if(!ks.length) continue;
-      h+=`<div class="dimgrp" style="--dc:${couleurDim(d)}"><div class="dnom">${escapeAttr(d)}</div>`;
+      // Assombri par DIMENSION, jamais empan par empan (§4.3) : ce groupe
+      // comparerait sans rien construire — le seul refus qui existe (§4.5.2).
+      // Rien n'est désactivé : le clic reste possible, et retombe sur le même
+      // refus qu'avant (§4.5.8).
+      const hors=dimReq && d!==dimReq;
+      h+=`<div class="dimgrp ${hors?"horsdim":""}" style="--dc:${couleurDim(d)}"><div class="dnom">${escapeAttr(d)}</div>`;
       for(const {k,j} of ks){
         const e=EMPAN[k];
         h+=`<div class="mchip" style="--dc:${couleurDim(d)}">
               <button class="corps" ${iT<0?"disabled":""} onclick="poserBloc(${iT},${j})"
                       title="« ${escapeAttr(e.texte)} » — ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}${
-                        iT<0?"\n(ta phrase n'attend pas un passage)":""}">
+                        iT<0?"\n(ta phrase n'attend pas un passage)":hors?"\n(comparerait sans rien construire : dimension différente)":""}">
                 <span class="nom">${escapeAttr(e.nom||e.texte)}</span>
                 <span class="prov"><span class="cit">« ${escapeAttr(e.texte)} »</span><span class="sig">— ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}</span></span>
               </button>
@@ -306,10 +314,14 @@ function renderRetenus(){
    vide, dans l'AIDE ensuite. Elle ne lit aucun contenu. */
 function souffle(){
   const offerts=R.blocsOfferts(S);
-  const second=offerts.some(b=>b.type==="terme"&&b.deduit);
+  // Un cran d'anticipation (§4.5.8) : à `S.compo` vide, l'état courant n'offre
+  // jamais que le PREMIER terme, jamais `deduit` — recalculer `second` sur
+  // place ici manquait donc toujours son moment. `comparaisonPossible` sonde
+  // l'état qui suivrait la pose de n'importe lequel des termes offerts.
+  const second=R.comparaisonPossible(S);
   if(!S.compo.length){
     if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
-    return second ? "Sélectionne deux passages depuis ta mémoire…" : "Depuis ta mémoire, sélectionne un passage pour répondre";
+    return second ? "Sélectionne un ou plusieurs passages de ta mémoire" : "Depuis ta mémoire, sélectionne un passage pour répondre";
   }
   /* LA PHRASE SE TIENT, ET RIEN NE RESTE À Y METTRE : on se tait. Le bouton dit
      déjà le geste, et une voix qui répète un bouton est du chrome (§4.9). Deux
@@ -385,9 +397,12 @@ function renderCompo(){
   offerts.forEach((b,i)=>{
     if(implicite && b.id===implicite.id) return;
     if(b.type==="liaison"){
-      // `libelle` quand le bouton dit autre chose que ce qui s'écrira ; `suite`
-      // marque les continuations (§4.5). L'article annonce, ne filtre pas.
-      h+=`<button class="bbloc${b.imbrique?" suite":""}" onclick="poserBloc(${i})">${escapeAttr(b.libelle||b.texte)}${
+      // `libelle` quand le bouton dit autre chose que ce qui s'écrira ;
+      // `fondement` marque les continuations qui FONDENT une comparaison
+      // (§4.5.5, §4.5.8) — nom propre à `.bbloc`, pour ne pas se confondre
+      // avec `.msg.suite` (même mot, sens sans rapport). L'article annonce,
+      // ne filtre pas.
+      h+=`<button class="bbloc ${b.imbrique?"fondement":""}" onclick="poserBloc(${i})">${escapeAttr(b.libelle||b.texte)}${
         b.piece?portePhrase(b.piece):""}</button>`;
     } else if(b.source==="note"){
       // Repli pour une affaire d'avant la continuation : plus dans le contenu

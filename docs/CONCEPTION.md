@@ -246,6 +246,31 @@ en essayant tous les articles) et le partage des rôles (dire qu'un texte ne s'a
 question de droit). Seules les erreurs de **catégorie** sont refusées ; une phrase sensée mais sans
 intérêt reste **gratuite**.
 
+#### 4.5.8 Ce que l'écran laisse deviner
+
+**Les deux régimes de fondement (§4.5.3) ne se distinguaient nulle part avant le clic.** Le geste
+reste unique (§4.5.4) : rien n'annonçait, avant de poser un premier empan, si la question ouvre une
+simple citation ou une comparaison — le joueur le découvrait à son second clic, pas avant. Ce n'est pas
+un geste de plus qui manquait, c'est une anticipation que l'écran ne faisait pas encore : la grammaire
+sait déjà, à l'état courant, si un second terme suivra (§4.5.2) — il suffit de la regarder un pas plus
+tôt.
+
+**Trois surfaces déjà en place, corrigées plutôt qu'ajoutées :**
+- **La voix unique (§4.9)** se trompait de moment : elle demandait « deux passages » en lisant l'état
+  *courant*, qui n'offre jamais qu'un premier terme — un message jamais atteignable avant le premier
+  clic. Corrigée, elle regarde un pas en avant : si poser n'importe lequel des empans offerts ouvre un
+  second terme, elle le dit tout de suite.
+- **La Mémoire** s'assombrit par dimension (§4.3), jamais empan par empan, dès qu'un premier terme est
+  posé et qu'un second est attendu — les dimensions qui ne compareraient pas (§4.5.2, le seul refus qui
+  existe) se voient AVANT le clic, pas après le refus. Rien n'est empêché : le clic reste possible, et
+  le refus au clic reste la seule sanction — la lisibilité change, pas la règle.
+- **Le bouton qui fonde** (une liaison-article, `imbrique`, §4.5.5) porte déjà une marque distincte de
+  celui qui compare : elle se voit mieux, elle ne se dit pas mieux — la relance (§4.5.6) nomme déjà ce
+  moment, une étiquette de plus ferait doublon (§4.9).
+
+**Ce que ça ne change pas :** aucun mode, aucun geste de plus, aucun refus nouveau — Maître Auber
+continue de trancher au versement (§4.5.3), pas la grammaire à la pose.
+
 ### 4.6 Les trois surfaces — la frontière morale
 
 **Un seul nom par surface, partout** : **Discussion**, **Mémoire**, **Plaidoirie**. Une seule
@@ -396,6 +421,7 @@ fins ; ce qu'on ne peut pas faire, c'est les **relire** en cours de partie. Poin
 | **La compréhension doit être *exprimée*, pas supposée** — *sous surveillance*, voir plus bas | §3, §4.5 |
 | **Un empan se lit deux fois** | §4.1 |
 | **La relation se déduit des valeurs**, elle ne se déclare pas | §4.5 |
+| **Le régime attendu — citer, ou comparer puis fonder — se voit avant le geste**, jamais seulement après | §4.5.8 |
 | **Rien n'est *plaidé* qui ne soit fondé, sous l'un des deux régimes** — la grammaire laisse partir, l'avocat refuse | §4.5 |
 | **On n'invoque pas un texte qu'on n'a pas reçu** | §4.5 |
 | **Une clôture qui n'ajoute rien n'est pas un choix** : l'envoi la pose, et `imbrique` n'en est jamais une | §4.5 |
@@ -427,7 +453,10 @@ paie à chaque phrase (§4.6).
 **Points ouverts (à trancher à l'écriture) :**
 
 - **Le critère qui décide de tout** : *« 22h30 est postérieur à 22h04 » se lit-il comme une pensée ou
-  comme un formulaire ?* Si c'est un formulaire, aucune mécanique ne le sauvera. **Non éprouvé.**
+  comme un formulaire ?* Si c'est un formulaire, aucune mécanique ne le sauvera. **Non éprouvé.** Le
+  §4.5.8 retire une confusion qui aggravait la question sans la trancher : que le joueur sache, avant
+  de cliquer, qu'il ouvre une comparaison n'est pas encore savoir s'il **pense** la comparaison — la
+  question reste ouverte, et volontairement laissée à l'épreuve du jeu, pas au code.
 - **La compréhension est-elle encore *exprimée* ?** **Non éprouvé.**
 - **Une question posée guide-t-elle trop ?** Repli sans code : retirer les `question` une à une,
   couper le tutoriel avant le 3ᵉ temps. **Non éprouvé.**

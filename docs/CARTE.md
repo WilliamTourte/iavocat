@@ -16,11 +16,11 @@
 | Fichier | ~lignes | Ce qu'il porte | Ce qu'il ne porte jamais |
 |---|---|---|---|
 | `app/content.js` | 647 | **le contenu** — une affaire, en un seul exemplaire | aucune règle |
-| `app/regles.js` | 389 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
+| `app/regles.js` | 416 | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
 | `app/moteur.js` | 212 | **la grammaire** — composer, valider, rendre — **et les projections du contenu** (§14) | aucune donnée |
 | `app/index.html` | 75 | **la structure du jeu** | aucun style, aucun script en ligne |
-| `app/jeu.css` | 216 | **la mise en forme du jeu** | rien que le JS relise |
-| `app/jeu.js` | 494 | **l'écran et les gestes** — rendu, sauvegarde, tutoriel | ne décide rien |
+| `app/jeu.css` | 217 | **la mise en forme du jeu** | rien que le JS relise |
+| `app/jeu.js` | 509 | **l'écran et les gestes** — rendu, sauvegarde, tutoriel | ne décide rien |
 | `app/atelier_v3.html` + `app/atelier/` | 133 + 260 (css) + 1955 (js) | **l'atelier** — écrire et diagnostiquer une affaire, un fichier par outil | ne recopie rien (§12), *y compris de lui-même* |
 
 Quatre dossiers : `app/` (le livrable), `docs/`, `tests/` (§16), `grammaire/` (le banc d'essai, qui
@@ -60,6 +60,7 @@ sur place, et les suites l'appellent pareil, en `w.R.xxx(w.S)`.
 | l'index du dossier | `piecesLivrees` | — | `renderDossier` | 4.5 |
 | **surligner** (privé, gratuit) | `surligner` | — | `renderRetenus` dans `renderMemoire` | 4.6 |
 | ce que le composeur offre | `blocsOfferts`, `etatCompo`, `indexTermeChamp` | `offerts` | `renderCompo` | 4.5 |
+| ce que l'écran laisse deviner, avant le clic | `comparaisonPossible`, `dimAttendue` | `dimDe` | `souffle`, `renderRetenus` | 4.5.8 |
 | ce que l'écran souffle — une voix par état | *(dérivé de `S`)* | — | `souffle` | 4.9 |
 | le rappel de la question | `attenteCourante`, `remiseCourante` | — | `rappelQuestion` | 4.9 |
 | **poser un bloc** | `poserBloc`, `retirerBloc`, `viderCompo` | `reduire`, `deduire`, `ordonner` | `texteCompoPartiel` | 4.5 |

@@ -102,17 +102,43 @@ function creerRegles(JEU, M) {
     for (const p of S.compo) { const b = blocParId(p.bloc); if (b) e = b.vers; }
     return e;
   }
-  // Les blocs de l'état courant, moins ceux dont la pièce n'est pas reçue (§4.5).
-  // SEUL endroit où une liste se restreint, et jamais par pertinence.
-  function blocsOfferts(S) {
-    const e = etatCompo(S), livrees = new Set(piecesLivrees(S));
+  // Les blocs offerts à UN ÉTAT DONNÉ, moins ceux dont la pièce n'est pas reçue
+  // (§4.5) — SEUL endroit où une liste se restreint, et jamais par pertinence.
+  // `blocsOfferts` en est le cas à l'état courant ; `comparaisonPossible`
+  // (§4.5.8) regarde un état pas encore atteint, donc le prend en paramètre.
+  function blocsDepuis(e, S) {
+    const livrees = new Set(piecesLivrees(S));
     return (JEU.grammaire.blocs || []).filter(b => b.de === e && (!b.piece || livrees.has(b.piece)));
   }
+  function blocsOfferts(S) { return blocsDepuis(etatCompo(S), S); }
   // Le rang, parmi les blocs offerts, du terme qui se remplit avec un empan.
   // -1 quand la phrase attend autre chose : les puces sont alors inertes.
   function indexTermeChamp(S) {
     if (S.prete != null) return -1;
     return blocsOfferts(S).findIndex(b => b.type === "terme" && b.source !== "note");
+  }
+  /* UN CRAN D'ANTICIPATION, jamais deux (§4.5.8) : avant tout empan posé, la
+     question n'est plus « quel terme choisir » mais « si j'en pose un
+     quelconque, un second suivra-t-il ? » — la comparaison s'ouvre pour tous
+     les empans à la fois (§4.5.1), un seul suffit donc à sonder. Un premier
+     terme déjà posé, la réponse est déjà dans `blocsOfferts`. */
+  function comparaisonPossible(S) {
+    const offerts = blocsOfferts(S);
+    if (S.compo.length) return offerts.some(b => b.type === "terme" && b.deduit);
+    return offerts.some(b => b.type === "terme"
+      && blocsDepuis(b.vers, S).some(x => x.type === "terme" && x.deduit));
+  }
+  /* LA DIMENSION QU'UN SECOND TERME DOIT PARTAGER (§4.5.2, le seul refus qui
+     existe — `M.deduire`) ; `null` si rien ne la contraint encore (pas de
+     premier terme posé, ou la phrase n'attend pas un second). Dérivé, rien de
+     neuf à décider — juste à l'afficher avant le clic plutôt qu'après (§4.5.8). */
+  function dimAttendue(S) {
+    const i = indexTermeChamp(S);
+    if (i < 0) return null;
+    const b = blocsOfferts(S)[i];
+    if (!b.deduit) return null;
+    const premier = S.compo.find(p => { const pb = blocParId(p.bloc); return pb && pb.type === "terme"; });
+    return premier ? M.dimDe(premier.valeur) : null;
   }
   const chaineCompo = S => S.compo.map(p => ({ bloc: blocParId(p.bloc), valeur: p.valeur }));
   // La composition est-elle ARRIVÉE au bout de l'automate ? Plus rien à y
@@ -370,6 +396,7 @@ function creerRegles(JEU, M) {
   return { etatInitial, signatureContenu, pousser, envoyerRemise, ouvrirPiece,
            piecesLivrees, estRegle, reglesLivrees, porteDe,
            surligner, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
+           comparaisonPossible, dimAttendue,
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, envoyerCompo, compoFinie,

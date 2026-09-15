@@ -214,6 +214,13 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
     check("et l'affaire la livre d'emblée",
       !second.piece || new Set(w.R.piecesLivrees(w.S)).has(second.piece));
     for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
+    /* §4.5.8 — L'ANTICIPATION, avant tout empan posé : la pièce du second
+       terme étant déjà livrée, la comparaison doit se voir sans qu'aucun clic
+       ne l'ait encore ouverte — sinon la voix unique retombe dans le bug
+       qu'elle corrige (elle se taisait jusqu'au premier clic). */
+    check("la comparaison se voit AVANT tout empan posé", w.R.comparaisonPossible(w.S));
+    check("et rien ne contraint encore un empan qu'on n'a pas posé",
+      w.R.dimAttendue(w.S) === null);
     const e = w.CHAMPS[0];
     H.surligner(w, e.id);
     w.poserBloc(H.iTermeChamp(w), 0);
@@ -222,6 +229,9 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
     check("la citation est là à côté : deux voies, pas une bascule",
       !!w.R.clotureImplicite(w.S));
     check("et la phrase se tient déjà, dès le premier empan", w.R.peutEnvoyer(w.S));
+    check("la comparaison reste vue, un premier empan posé", w.R.comparaisonPossible(w.S));
+    check("et la dimension attendue pour le second est celle du premier",
+      w.R.dimAttendue(w.S) === e.dim);
 
     /* LE MÊME CONTENU, la pièce du second empan repoussée au dernier lot : la
        voie se referme, et il ne reste que la citation. C'est ce qui prouve que
@@ -234,6 +244,8 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
       derniere.pieces = (derniere.pieces || []).concat([b2.piece]);
       const w2 = H.boot({contenu: c});
       for (const pid of Object.keys(w2.JEU.pieces)) w2.ouvrirPiece(pid);
+      check("pièce repoussée, la comparaison ne se voit pas non plus à l'avance",
+        !w2.R.comparaisonPossible(w2.S));
       H.surligner(w2, w2.CHAMPS[0].id);
       w2.poserBloc(H.iTermeChamp(w2), 0);
       check("pièce repoussée, aucun second empan n'est offert",

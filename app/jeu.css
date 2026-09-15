@@ -79,6 +79,10 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .empan .sig{font-size:11px;color:var(--muted);font-family:var(--mono)}
 /* --- mémoire : une seule liste, qui sert AUSSI de clavier au composeur --- */
 .dimgrp{margin-bottom:9px}
+/* Un groupe qui comparerait sans rien construire (§4.5.2, §4.5.8) : assombri,
+   jamais désactivé — le clic reste permis, le refus reste celui du clic (R10
+   ne bouge pas). */
+.dimgrp.horsdim{opacity:.45}
 .dimgrp .dnom{font-size:11px;color:var(--dc,var(--muted));text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
 .mchip{display:flex;align-items:stretch;margin:3px 0;background:var(--panel2);
   border:1px solid var(--line);border-left:3px solid var(--dc,var(--line));border-radius:6px;overflow:hidden}
@@ -126,7 +130,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .refus{color:#d99a9a;font-size:12.5px;margin-top:8px}
 .compo .barre .envoi{background:#12324a;color:#bfe0f2;border-color:var(--transmis);font-size:12.5px;padding:4px 12px}
 .compo .barre .envoi:hover{border-color:var(--accent);color:#eaf4fb}
-.bbloc.suite{background:#25313d;border-left:3px solid var(--transmis)}
+.bbloc.fondement{background:#25313d;border-left:3px solid var(--transmis)}
 /* Ce qu'un article régit — indicatif, jamais filtrant (§4.5) */
 .porte{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
 /* --- plaidoirie --- */
