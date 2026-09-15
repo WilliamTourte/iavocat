@@ -1,13 +1,7 @@
 // Jeu de données de DÉMONSTRATION pour la grammaire — pas le contenu joué.
-//
-// Le contenu réel porte sa propre grammaire (`JEU.grammaire`, schéma 3, voir
-// docs/ARCHITECTURE.md §11 et §14) ; ce fichier sert au banc d'essai et à
-// l'onglet « Grammaire » de l'atelier, qui mesurent la marge de bruit sur un
-// échantillon stable. Le moteur, lui, est partagé : ../app/moteur.js.
-//
-// Version du 27 juillet 2026 : les dimensions sont les cinq du QQOQC et les
-// termes sont des DÉCLARATIONS ATTRIBUÉES — quelqu'un affirme quelque chose —
-// et non plus des cases de tableur.
+// Le contenu réel porte la sienne (`JEU.grammaire`, §11) ; ce fichier sert au
+// banc d'essai et à l'onglet « Grammaire », qui mesurent la marge de bruit sur
+// un échantillon stable. Le moteur, lui, est partagé : ../app/moteur.js.
 
 const GRAMMAIRE = {
   depart: "S0",
@@ -30,17 +24,14 @@ const GRAMMAIRE = {
     { id: "t2e",  type: "terme",   source: "champ", de: "S2e", vers: "FIN", forme: "ordre_grandeur" },
 
     // --- Qualification : arite 1, sur une note close. La LIAISON est la base
-    //     légale (§4.5.5 de CONCEPTION) — l'article n'est pas un ingrédient
-    //     qu'on va chercher, c'est le verbe qu'on emploie. ---
+    //     légale (§4.5) : l'article est le verbe, pas un ingrédient. ---
     { id: "c7",   type: "liaison", de: "SP",  vers: "FIN", texte: "est contraire à l'article 7", forme: "contraire_7" },
     { id: "k7",   type: "liaison", de: "SP",  vers: "FIN", texte: "est conforme à l'article 7",  forme: "conforme_7"  },
     { id: "c3",   type: "liaison", de: "SP",  vers: "FIN", texte: "est contraire à l'article 3", forme: "contraire_3" }
   ],
 
-  // Chaque forme déclare ce qu'elle admet, slot par slot. La liste rejette les
-  // erreurs de CATÉGORIE, pas les affirmations inintéressantes : aucune liste
-  // d'options n'est restreinte à la composition — le joueur peut toujours tout
-  // poser, c'est la phrase obtenue qui ne dit rien.
+  // Chaque forme déclare ce qu'elle admet, slot par slot : la liste rejette les
+  // erreurs de CATÉGORIE, pas les affirmations inintéressantes.
   formes: {
     identite_oui:  { arite: 2, ordonne: false, slots: [["qui","quoi","ou"], ["qui","quoi","ou"]], relation: "meme_dim" },
     identite_non:  { arite: 2, ordonne: false, slots: [["qui","quoi","ou"], ["qui","quoi","ou"]], relation: "meme_dim" },
@@ -52,9 +43,9 @@ const GRAMMAIRE = {
   }
 };
 
-// Les termes : un empan = quelqu'un affirme quelque chose. `texte` est ce que
-// le joueur lit dans la pièce, `qui` le signataire, `valeur` la forme
-// comparable — qui sert à VÉRIFIER, jamais à déduire.
+// Un empan = quelqu'un affirme quelque chose. `texte` est ce que le joueur lit,
+// `qui` le signataire, `valeur` la forme comparable — qui sert à VÉRIFIER,
+// jamais à déduire (§4.1).
 const CHAMPS = [
   { id: "ags",  dim: "qui",     valeur: "T-14",        qui: "agent T-14",   texte: "j'ai relevé moi-même les traces sur le montant de la porte" },
   { id: "agr",  dim: "qui",     valeur: "T-14",        qui: "agent T-14",   texte: "j'ai procédé au prélèvement de référence sur le mis en cause" },
@@ -78,8 +69,7 @@ const CHAMPS = [
   { id: "seu",  dim: "combien", valeur: "1e6",         qui: "le protocole", texte: "au-delà d'une chance sur un million, la correspondance est réputée probante" }
 ];
 
-// Les liens du contenu : ce que l'avocat reconnaît. Le reste est du bruit sensé.
-// Un terme est un id d'empan, ou une note déjà close ({forme, termes}).
+// Les liens du contenu : ce que l'avocat reconnaît ; le reste est du bruit sensé.
 const NOTE_VICE = { forme: "identite_oui", termes: ["ags", "agr"] };
 const NOTE_SCELLES = { forme: "identite_non", termes: ["sc1", "sc2"] };
 
@@ -96,9 +86,7 @@ const LIENS = [
   { forme: "ordre_grandeur",termes: ["tx", "seu"], faux: true }
 ];
 
-// Mode double : chargeable en Node (`require`) comme dans un navigateur
-// (`<script src>`), pour que le banc d'essai ET l'atelier lisent la MÊME
-// définition — pas de copie qui divergerait.
+// Mode double : le banc d'essai ET l'atelier lisent la MÊME définition.
 const _data = { GRAMMAIRE, CHAMPS, LIENS };
 if (typeof module !== "undefined" && module.exports) module.exports = _data;
 if (typeof window !== "undefined") window.Grammaire = _data;

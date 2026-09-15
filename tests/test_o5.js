@@ -1,8 +1,6 @@
-// Le jeu sur le CONTENU LIVRÉ — app/content.js, le seul qui existe.
-// Ce qu'on prouve ici : l'index du dossier, la gratuité absolue des deux
-// surfaces privées, le dédoublonnage, le vice à canal unique, les trois fins.
-// Aucune pièce, aucun empan, aucune valeur n'est nommée : tout est dérivé
-// de la forme du contenu.
+// Le jeu sur le CONTENU LIVRÉ — app/content.js, le seul qui existe : l'index du
+// dossier, la gratuité des deux surfaces privées, le dédoublonnage, le vice à
+// canal unique, les trois fins. Rien du contenu n'est nommé (§16).
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, boot, discussion, memoire } = H;
 
@@ -72,11 +70,10 @@ console.log("\n=== Le vice a un seul canal ===");
   check("un seul article la porte", new Set(conclusions.map(L => L.forme)).size === 1);
   check("le pressentiment, lui, est la comparaison emboîtée — arité 2",
         H.arite(w, H.lienVice(w)) === 2);
-  /* DEUX RÉGIMES DE FONDEMENT (§4.5). Tout lien est d'arité 1 — aucune
-     comparaison ne se dit nue. Mais l'arité 1 couvre deux natures, que
-     l'emboîtement sépare : une CITATION porte un terme atomique (un fait se
-     cite), une QUALIFICATION porte une comparaison emboîtée (une relation se
-     fonde). Rien d'autre ne doit exister. */
+  /* DEUX RÉGIMES DE FONDEMENT (§4.5) : tout lien est d'arité 1 — aucune
+     comparaison ne se dit nue —, et l'emboîtement sépare les deux natures. Une
+     CITATION porte un terme atomique, une QUALIFICATION une comparaison
+     emboîtée. Rien d'autre ne doit exister. */
   check("aucune comparaison ne se dit nue : tout lien est d'arité 1",
         w.JEU.liens.every(L => H.arite(w, L) === 1));
   const cits = H.citations(w);

@@ -1,10 +1,6 @@
-/* ============================================================
-   ATELIER — L'INSPECTEUR : les formulaires, les mutations, les
-   suppressions en deux clics, les renommages d'identifiants.
-   ============================================================ */
-/* ============================================================
-   6) INSPECTEUR
-   ============================================================ */
+/* ATELIER — L'INSPECTEUR : formulaires, mutations, suppressions en deux clics,
+   renommages d'identifiants. */
+/* 6) INSPECTEUR */
 function renderInsp(){
   const el=$("insp");
   if(formPiece) return el.innerHTML=inspFormPiece();
@@ -16,7 +12,7 @@ function renderInsp(){
   el.innerHTML=`<div class="empty">Sélectionne un empan (ou un trait) pour l'éditer.<br>Deux empans → crée un lien.<br><br>Les liens de <b>qualification</b> (arité 1) se créent depuis un lien existant : clique son trait, puis « conclure par… ».</div>`
     + listeQualifications();
 }
-/* Les liens sans trait (arité 1) : ils se lisent ici, sinon ils seraient invisibles. */
+/* Les liens sans trait (arité 1) se lisent ici, sinon ils seraient invisibles. */
 function listeQualifications(){
   const q=(CONTENU.liens||[]).map((L,i)=>({L,i})).filter(x=>!paireVisible(x.L));
   if(!q.length) return "";
@@ -25,9 +21,8 @@ function listeQualifications(){
         ${x.L.vice?"⚑ ":""}${x.L.faux?"✗ ":""}${escapeH(labelLien(x.L))}</div>`).join("");
 }
 
-/* — formulaires de création (remplacent les dialogues natifs, bloqués en iframe sandboxée) —
-   Ouvrir un formulaire, c'est abandonner la sélection en cours : `reinitSelection`
-   (noyau.js) dit ce que ça veut dire, en un seul endroit. */
+/* Formulaires de création — les dialogues natifs sont bloqués en iframe
+   sandboxée. Ouvrir un formulaire abandonne la sélection : `reinitSelection`. */
 function formulairePiece(kind){ reinitSelection(); formPiece=kind; render(); }
 function inspFormPiece(){
   const regle=formPiece==='regle';
@@ -43,9 +38,9 @@ function inspFormPiece(){
       <button onclick="formPiece=null;render()">Annuler</button>
     </div>`;
 }
-/* La GARDE avant l'appel, la QUEUE après : `muter` porte `pushUndo` avant et
-   `autosave(); render()` après, et un `return` dans son argument n'y couperait
-   pas (§2 de la passation). */
+/* PIÈGE : la GARDE avant l'appel, la QUEUE après — `muter` porte `pushUndo`
+   avant et `autosave(); render()` après, et un `return` dans son argument n'y
+   couperait pas. */
 function creerPiece(){
   const pid=sanId($("npId").value);
   if(!pid){ toastInsp("Identifiant vide ou invalide."); return; }
@@ -59,8 +54,8 @@ function creerPiece(){
   });
   scrollVers(pid);
 }
-/* L'éditeur de pièce : son texte porte les marqueurs {{eid}}, donc c'est ici
-   que se règle la règle de surlignage (§4.3 — tout empan est marqué). */
+/* Le texte d'une pièce porte les marqueurs {{eid}} : c'est ici que se règle la
+   règle de surlignage (§4.3). */
 function formulairePieceEdit(pid){ reinitSelection(); formPieceEdit=pid; render(); }
 function inspPiece(pid){
   const p=CONTENU.pieces[pid];
@@ -181,7 +176,7 @@ function toastInsp(m){ $("insp").insertAdjacentHTML("afterbegin",`<div class="in
 /* ---- mutations — l'épilogue est dans `muter` (noyau.js) ---- */
 function majEmpan(pid,eid,prop,v){ muter(()=>{
   const e=CONTENU.pieces[pid].empans[eid];
-  // Le signataire vide se RETIRE : l'empan retombe alors sur celui de la pièce.
+  // Le signataire vide se RETIRE : l'empan retombe sur celui de la pièce.
   if(prop==="qui") poserOuRetirer(e,prop,v); else e[prop]=v;
 }); }
 function majPiece(pid,prop,v){ muter(()=>{ CONTENU.pieces[pid][prop]=v; }); }
@@ -191,20 +186,18 @@ function majBruit(pid,ch,on){ muter(()=>{
   if(on) CONTENU._bruit.push(k);
 }); }
 function majLien(i,prop,val){ muter(()=>{
-  // Les trois drapeaux et les deux textes se retirent quand ils sont vides —
-  // une clé vide partirait à l'export sans rien dire.
+  // Drapeaux et textes se retirent quand ils sont vides : une clé vide
+  // partirait à l'export sans rien dire.
   poserOuRetirer(CONTENU.liens[i],prop,val,{trim:true});
 }); }
 
-/* ---- suppressions en deux clics (plus de dialogue de confirmation natif) ----
-   La garde vit dans `demanderSuppr` (noyau.js), avec le bouton qui l'annonce. */
+/* ---- suppressions en deux clics ---- la garde vit dans `demanderSuppr`. */
 function demanderSupprLien(i){ demanderSuppr("lien:"+i,()=>{
   CONTENU.liens.splice(i,1); selEdge=null;
 }); }
-/* Supprimer un empan retire aussi son marqueur du texte, sans quoi le
-   diagnostic signale un « Marqueur orphelin » que l'atelier vient de créer.
-   ATTENTION AU MOTIF : quatre antislashs en font un LITTÉRAL dans la regex
-   compilée, qui ne correspond alors à rien. Deux suffisent. */
+/* Supprimer un empan retire aussi son marqueur, sans quoi le diagnostic signale
+   un « Marqueur orphelin » que l'atelier vient de créer. PIÈGE : quatre
+   antislashs en font un LITTÉRAL dans la regex compilée — deux suffisent. */
 function demanderSupprChamp(pid,ch){ demanderSuppr("champ:"+K(pid,ch),()=>{
   const p=CONTENU.pieces[pid], k=K(pid,ch);
   delete p.empans[ch];
@@ -213,9 +206,8 @@ function demanderSupprChamp(pid,ch){ demanderSuppr("champ:"+K(pid,ch),()=>{
   CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>x!==k);
   selA=selB=null;
 }); }
-/* ---- Renommage d'identifiants ---- le seul geste dangereux à la main : un id
-   de pièce est référencé par les liens, les remises et `_pos`, et tout est
-   réécrit d'un bloc. Rend null si OK, sinon le message d'erreur. */
+/* Le seul geste dangereux à la main : un id de pièce est référencé par les
+   liens, les remises et `_pos`, et tout est réécrit d'un bloc. */
 function idValide(neuf,existants,ancien){
   const n=String(neuf||"").trim();
   if(!n) return "id vide.";
@@ -235,9 +227,8 @@ function renommerPieceId(ancien,neuf){
   if(neuf===ancien) return null;
   muter(()=>{
     CONTENU.pieces=renommerClef(CONTENU.pieces,ancien,neuf);
-    /* Les termes des liens sont des « pid.eid » — emboîtés compris. La marche
-       récursive vit dans `reecrireTermes` (noyau.js) : ici on ne dit plus que ce
-       que devient une FEUILLE, et la même phrase sert au bruit. */
+    /* La marche récursive vit dans `reecrireTermes` (noyau.js) : ici on ne dit que
+       ce que devient une FEUILLE. */
     const renommer = k => { const [pid,eid]=deK(k); return pid===ancien ? K(neuf,eid) : k; };
     for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
     CONTENU._bruit=(CONTENU._bruit||[]).map(renommer);
@@ -248,7 +239,7 @@ function renommerPieceId(ancien,neuf){
   });
   return null;
 }
-/* Renommer un empan : sa clé, son marqueur dans le texte, les liens et le bruit. */
+/* Renommer un empan : clé, marqueur, liens et bruit. */
 function renommerEmpanId(pid,ancien,neuf){
   neuf=String(neuf||"").trim();
   const p=CONTENU.pieces[pid];
@@ -267,8 +258,7 @@ function renommerEmpanId(pid,ancien,neuf){
   });
   return null;
 }
-/* Demander un id, l'appliquer, dire pourquoi si c'est refusé. Les deux
-   renommages ne diffèrent que par la question posée et par le geste. */
+/* Les deux renommages ne diffèrent que par la question posée et le geste. */
 function demanderRenommage(question,actuel,appliquer){
   const neuf=prompt(question,actuel);
   if(neuf===null) return;

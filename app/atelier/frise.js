@@ -1,12 +1,8 @@
-/* ============================================================
-   ATELIER — LA FRISE : le TEMPS du dossier, éditable.
-   ============================================================ */
-/* ============================================================
-   7) ÉTAPES — A. LA FRISE (éditable)
-   Chaque texte édité ici écrit directement dans CONTENU.
-   Les blocs marqués ⚙ décrivent des règles du jeu (app/regles.js),
-   recopiées ici : à resynchroniser si le moteur change.
-   ============================================================ */
+/* ATELIER — LA FRISE : le TEMPS du dossier, éditable. */
+/* 7) ÉTAPES — A. LA FRISE. Chaque texte édité ici écrit directement dans
+   CONTENU. ATTENTION : les blocs marqués ⚙ DÉCRIVENT des règles du jeu
+   (app/regles.js) faute de pouvoir les appeler — c'est l'un des trois reflets,
+   à resynchroniser si le moteur change (§15). */
 function mir(txt){ return `<span class="mir" title="Règle du jeu (app/regles.js) — décrite ici, appliquée là-bas ; le pas-à-pas ci-dessous l'exécute pour de vrai">⚙ ${escapeH(txt)}</span>`; }
 
 const QOPT = pid => `<option value="${pid}">${escapeH(courtDe(pid))} (${pid})</option>`;
@@ -164,18 +160,17 @@ function renderFrise(){
 
 function allerPiece(pid){ vue('graphe'); scrollVers(pid); }
 
-/* mutations de la frise — toutes par `muter` (noyau.js) : c'est lui qui porte
-   `pushUndo` avant et `autosave(); render()` après. Ce qui reste écrit ici est
-   ce que chacune change, et rien d'autre. */
+/* Mutations — toutes par `muter` (noyau.js), qui porte `pushUndo` avant et
+   `autosave(); render()` après. */
 /* Ce que la SESSION porte en propre : expéditeur et message. Le tag et l'accusé
-   vivent sur l'ATTENTE (§3) — voir `majAttente`, plus bas. */
+   vivent sur l'ATTENTE (R9) — voir `majAttente`. */
 function majRemise(i,prop,v){ muter(()=>{ CONTENU.remises[i][prop]=v; }); }
 function retirerPieceRemise(i,pid){ muter(()=>{ CONTENU.remises[i].pieces=(CONTENU.remises[i].pieces||[]).filter(x=>x!==pid); }); }
 function ajouterPieceRemise(i,pid){ muter(()=>{ (CONTENU.remises[i].pieces=CONTENU.remises[i].pieces||[]).push(pid); }); }
 function ajouterRemise(){ muter(()=>{ CONTENU.remises.push({qui:"Maître Auber",texte:"",pieces:[]}); }); }
 function demanderSupprRemise(i){ demanderSuppr("remise:"+i,()=>{ CONTENU.remises.splice(i,1); }); }
-/* LES ATTENTES D'UNE SESSION (§3). Éditer une remise écrite à l'ancienne la
-   convertit en liste : on n'écrit plus qu'une forme, mais on lit les deux. */
+/* LES ATTENTES D'UNE SESSION (§3) : éditer une remise écrite à l'ancienne la
+   convertit en liste — on n'écrit plus qu'une forme, mais on lit les deux. */
 function attentesEditables(i){
   const r=CONTENU.remises[i];
   if(!Array.isArray(r.attentes)){
@@ -204,9 +199,8 @@ function retirerAttente(i,j){ muter(()=>{
   const as=attentesEditables(i);
   if(as.length>1) as.splice(j,1);
 }); }
-/* Les accusés de réception vivent sur l'ATTENTE, pas sur la session ni sur une
-   case (§3) : `majAttenteApres` / `majAttenteApresQui`, plus haut. Les deux
-   fonctions de session qui vivaient ici n'avaient plus d'appelant. */
+/* Les accusés vivent sur l'ATTENTE, pas sur la session (R9) : voir
+   `majAttenteApres` / `majAttenteApresQui`. */
 const declencheDe = pid => (CONTENU.pieces[pid].declenche = CONTENU.pieces[pid].declenche || {});
 function majDeclenche(pid,v){ muter(()=>{ CONTENU.pieces[pid].declenche={...(CONTENU.pieces[pid].declenche||{une_fois:true}),replique:v}; }); }
 function majDeclencheQui(pid,v){ muter(()=>{ poserOuRetirer(declencheDe(pid),"qui",v,{trim:true}); }); }

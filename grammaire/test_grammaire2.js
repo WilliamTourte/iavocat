@@ -1,10 +1,7 @@
-// Banc d'essai de la grammaire — démonstration, pas une suite pass/fail :
-// ce script imprime son verdict (✅/❌) sur chaque ligne, mais ne fixe pas
-// de code de sortie (non intégré à `npm test`, voir docs/ARCHITECTURE.md §10).
-//
-// Ce qu'il mesure vraiment : la MARGE DE BRUIT — le nombre de phrases sensées
-// qui ne portent aucun lien. Si elle tombait à 0, « sensé » vaudrait
-// « correct » et l'interface trahirait la réponse.
+// Banc d'essai de la grammaire — démonstration, pas une suite pass/fail : il
+// imprime son verdict mais ne fixe aucun code de sortie (hors `npm test`).
+// Ce qu'il mesure : la MARGE DE BRUIT, le nombre de phrases sensées qui ne
+// portent aucun lien. À 0, « sensé » vaudrait « correct » (§14).
 const { GRAMMAIRE, CHAMPS, LIENS } = require("./grammaire2.js");
 const M = require("../app/moteur.js").creerMoteur(GRAMMAIRE, CHAMPS, LIENS);
 const G = GRAMMAIRE;                                 // le moteur est partagé avec le jeu et l'atelier
@@ -22,8 +19,7 @@ while (z) { z = false; for (const b of G.blocs) if (prod.has(b.vers) && !prod.ha
 [...etats].every(e => prod.has(e)) ? ok("aucune impasse") : ko("impasse");
 G.blocs.filter(b => estFinal(b.vers) && !b.forme).length ? ko("clôture sans forme") : ok("toute clôture porte une forme");
 // Ce qu'un squelette annonce comme forme AVANT de connaître ses valeurs : une
-// liaison la déclare, un bloc `deduit` ne peut pas (elle se calcule des deux
-// empans). La grammaire de démonstration n'en a pas — la ligne le dit quand même.
+// liaison la déclare, un bloc `deduit` ne peut pas.
 const formeSquelette = s =>
   s.map(b => b.forme).filter(Boolean).pop() || (s.some(b => b.deduit) ? "déduite des valeurs" : "—");
 // Le squelette + une valeur par trou → la chaîne {bloc, valeur} du moteur.
@@ -79,12 +75,9 @@ for (const [r, txt] of chaine) {
 console.log("\n=== 5. Densité — « sensé » vaut-il « correct » ? ===");
 const notesPossibles = [n1, { forme: "identite_non", termes: ["sc1", "sc2"] },
   { forme: "anteriorite", termes: ["har", "hvo"] }];
-// On ne réécrit PAS la réduction : on construit la chaîne de blocs et on
-// appelle `reduire`, comme le composeur du jeu. Reconstruire la forme à la main
-// ignore `deduit` et `imbrique` — sur cette grammaire-ci, qui déclare toutes
-// ses formes sur des liaisons, les deux écritures donnent le même compte au
-// chiffre près ; sur celle de content.js, l'ancienne se trompait d'un facteur
-// quinze (docs/ARCHITECTURE.md §15).
+// PIÈGE : on ne réécrit PAS la réduction — on appelle `reduire`, comme le
+// composeur. Reconstruire la forme à la main ignore `deduit` et `imbrique` :
+// sur content.js, l'ancienne écriture se trompait d'un facteur quinze (§14).
 let total = 0, senses = 0, avecLien = 0;
 for (const s of squelettes) {
   const slots = s.filter(b => b.type === "terme");

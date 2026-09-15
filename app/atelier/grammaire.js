@@ -1,12 +1,7 @@
-/* ============================================================
-   ATELIER — L'ONGLET GRAMMAIRE : le geste de composition, pour le SENTIR.
-   ============================================================ */
-/* 10bis) ONGLET GRAMMAIRE — composer, pour le SENTIR. Branché sur LE CONTENU
-   COURANT (§14) : il le lit, ne l'écrit jamais. Le moteur est app/moteur.js,
-   chargé tel quel. Sous jsdom il est absent : on affiche un encart. */
+/* ATELIER — L'ONGLET GRAMMAIRE : le geste de composition, pour le SENTIR. */
+/* 10bis) ONGLET GRAMMAIRE — branché sur LE CONTENU COURANT (§14) : il le lit,
+   ne l'écrit jamais. Sous jsdom, le moteur est absent : on affiche un encart. */
 let GRAM={ squel:0, vals:{}, notes:[], _m:null };
-/* L'onglet Grammaire compose sur LE CONTENU COURANT : sa grammaire, ses
-   empans, ses liens. C'est le même moteur que le jeu (app/moteur.js). */
 function moteurGram(){
   const m=MG();
   if(!m) return null;
@@ -21,14 +16,12 @@ function moteurGram(){
 }
 /* les blocs-terme du squelette courant (les « trous » à remplir) */
 function gramTermes(sq){ return sq.filter(b=>b.type==="terme"); }
-/* Un squelette + une valeur par trou → la chaîne {bloc, valeur} que le moteur
-   attend. C'est le SEUL endroit qui sait dans quel ordre les trous se
-   remplissent : l'aperçu s'en sert pour un choix, la densité pour un million. */
+/* Le SEUL endroit qui sait dans quel ordre les trous se remplissent : l'aperçu
+   s'en sert pour un choix, la densité pour un million. */
 function chaineDe(sq,valeurs){
   let ti=0;
   return sq.map(bloc => bloc.type==="terme" ? {bloc, valeur:valeurs[ti++]} : {bloc, valeur:null});
 }
-/* construit la chaîne {bloc, valeur} pour le moteur, à partir des choix */
 function gramChaine(sq){
   // slot « note » : la valeur est la RÉDUCTION de la note gardée ;
   // slot « champ » : la valeur est l'id du champ.
@@ -51,11 +44,9 @@ function gramGarderNote(){
 }
 function gramSupprNote(i){ GRAM.notes.splice(i,1); GRAM.vals={}; renderGrammaire(); }
 /* DENSITÉ LIVE — le même calcul que le banc d'essai, pour UN chiffre : la marge
-   de bruit. Si elle tombait à 0, « sensé » vaudrait « correct » (§14).
-   ON NE RÉÉCRIT PAS LA RÉDUCTION : on bâtit la chaîne de blocs et on appelle
-   `reduire`, comme le composeur du jeu (§12, §15). L'avoir reconstruite à la
-   main annonçait 21 de marge au lieu de 315 — un reflet qui ment sans rien
-   casser, et qu'aucune suite ne voyait. */
+   de bruit, qui ne doit jamais tomber à 0 (§14). PIÈGE PAYÉ : ON NE RÉÉCRIT PAS
+   LA RÉDUCTION, on appelle `reduire` (§12) — reconstruite à la main, elle
+   annonçait 21 de marge au lieu de 315, un reflet qui ment sans rien casser. */
 function gramDensite(m){
   const {CHAMPS}=GRAM._data;
   const notes=GRAM.notes.map(n=>n.red);
@@ -72,9 +63,8 @@ function gramDensite(m){
   }
   return {total,senses,avecLien};
 }
-/* Ce qu'un squelette annonce comme forme AVANT de connaître ses valeurs : une
-   liaison la déclare, un bloc `deduit` ne peut pas. On le dit plutôt que
-   d'écrire « undefined ». */
+/* Ce qu'un squelette annonce AVANT de connaître ses valeurs : une liaison le
+   déclare, un bloc `deduit` ne peut pas. */
 const formeSquelette = s =>
   s.map(b=>b.forme).filter(Boolean).pop() || (s.some(b=>b.deduit) ? "déduite des valeurs" : "—");
 function renderGrammaire(){

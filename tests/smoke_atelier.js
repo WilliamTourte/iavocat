@@ -1,17 +1,15 @@
-// Fumée de l'atelier v3 — jsdom. Rien du contenu n'est nommé : les cibles
-// (empans, liens, dimensions, sessions) sont dérivées de la forme du CONTENU,
-// pour survivre à un changement complet d'affaire.
+// Fumée de l'atelier v3 — jsdom. Rien du contenu n'est nommé : les cibles sont
+// dérivées de sa FORME, pour survivre à un changement complet d'affaire.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, surContenu:SC, estRegle } = H;
 const neuf = () => { const w = H.bootAtelier(); w.demanderExemple(); w.demanderExemple(); return w; };
-// `diagnostiquer()` — le diagnostic du contenu entier. Ce n'est pas le
-// `valider(r)` de moteur.js, qui juge une phrase (docs/CARTE.md).
+// PIÈGE : `diagnostiquer()` juge le contenu entier ; le `valider(r)` de
+// moteur.js juge une phrase (§17).
 const err = w => w.diagnostiquer().filter(i => i.niveau === "erreur");
 const msgs = w => w.diagnostiquer().map(i => i.msg).join(" | ");
 
-/* L'atelier ne porte plus de copie du contenu : il ÉDITE content.js. Ce bloc
-   remplace donc l'ancien garde-fou de synchronisation — il ne compare plus
-   deux exemplaires, il vérifie que le seul qui existe tient debout. */
+/* L'atelier ne porte plus de copie du contenu : il ÉDITE content.js. Ce bloc ne
+   compare plus deux exemplaires, il vérifie que le seul qui existe tient. */
 console.log("\n=== content.js tient debout, et c'est lui que l'atelier édite ===");
 {
   const w = neuf();
@@ -90,13 +88,12 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
   } else check("(aucune forme ordonnée déductible)", true);
 }
 {
-  // LE contrôle que le masquage des articles a rendu nécessaire : une session
-  // qui attend une phrase dont l'article n'arrivera qu'après.
+  // une session qui attend une phrase dont l'article n'arrivera qu'après
   const w = neuf();
   const C = w.CONTENU;
-  /* UN ARTICLE est une liaison qui porte une FORME et une pièce : chercher le
-     premier bloc qui porte une pièce ne suffit pas, le second empan en porte une
-     aussi et n'a pas de forme — tout ce qui suit était alors sauté. */
+  /* PIÈGE : un article est une liaison qui porte une FORME *et* une pièce —
+     chercher le premier bloc qui porte une pièce ne suffit pas, le second empan
+     en porte une aussi et n'a pas de forme. Tout ce qui suit était alors sauté. */
   const bloc = C.grammaire.blocs.find(x => x.piece && x.forme);
   if (bloc) {
     // on retire la pièce de l'article de toutes les remises, puis on la livre
@@ -106,10 +103,9 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
     if (sert) {
       for (const r of C.remises) r.pieces = (r.pieces||[]).filter(p => p !== bloc.piece);
       C.remises[C.remises.length-1].pieces.push(bloc.piece);
-      /* CE CONTRÔLE PASSAIT PAR LE VIDE, des deux façons à la fois : il
-         cherchait le tag par `r.attend` (§3), et guettait un message que le
-         diagnostic ne prononce plus. Deux moitiés pourries, un contrôle
-         toujours vert — on passe par `attentesDeRemise`, comme lui. */
+      /* PIÈGE PAYÉ : ce contrôle PASSAIT PAR LE VIDE des deux façons à la fois —
+         tag cherché par `r.attend` (R9) et message que le diagnostic ne prononce
+         plus. Deux moitiés pourries, un contrôle toujours vert. */
       const iAttend = C.remises.findIndex(r => w.attentesDeRemise(r).some(a => a.attend === sert));
       const seulement = C.liens.filter(L => L.tag === sert).every(L => L.forme === bloc.forme);
       if (iAttend >= 0 && iAttend < C.remises.length - 1 && seulement)
@@ -144,8 +140,7 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
     msgs(w).includes("doublon(s) régulier(s)"));
 }
 {
-  /* Un article est une RÉFÉRENCE : il ne porte aucun empan, et il annonce ce
-     qu'il régit. Les deux contrôles qui rendent l'invariant vérifiable. */
+  /* Un article est une RÉFÉRENCE : aucun empan, et il annonce ce qu'il régit. */
   const w = neuf();
   const pidR = SC.pidRegle(w.CONTENU);
   const regles = Object.values(w.CONTENU.pieces).filter(estRegle);
@@ -172,8 +167,7 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
 }
 {
   const w = neuf();
-  // Un vice déclaré que rien ne conclut : le joueur pourrait le pressentir
-  // sans jamais pouvoir le dire en droit.
+  // Un vice déclaré que rien ne conclut : pressenti, jamais dicible en droit.
   for (const L of w.CONTENU.liens) if (L.vice) delete L.conclusion;
   check("un vice sans conclusion est une erreur", msgs(w).includes("pas de conclusion"));
 }
@@ -197,9 +191,8 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
   check("une question sans tag à servir est une erreur", msgs(w).includes("sans tag à servir"));
 }
 {
-  /* Le second empan livré trop tard : depuis qu'un bloc de terme peut lui aussi
-     être conditionné, une attente qui exige une comparaison devient inservable
-     si ce bloc n'est pas encore là. Le diagnostic doit le voir. */
+  /* Le second empan livré trop tard : un bloc de terme pouvant être conditionné,
+     une attente qui exige une comparaison devient inservable. */
   const w = neuf();
   const t = (w.CONTENU.grammaire.blocs || []).find(b => b.type === "terme" && b.deduit);
   if (t) {
@@ -240,9 +233,8 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
     liens:[{ a:["a","agent_x"], rel:"est en désaccord avec", b:["b","exige"], tient:true, vice:true, rep:"Tiens." }],
     relations:["est en accord avec","est en désaccord avec"],
     cases:{ c1:{ label:"Case", remise:1, options:["x"], bonne:"x", apres:{ replique:"Reçu." } } },
-    // La session déclare une attente : c'est LÀ que l'accusé de la case doit
-    // atterrir (§3). Il se posait sur la remise, où ni le jeu ni l'atelier ne
-    // pouvaient plus le lire — une donnée migrée puis injoignable (§11).
+    // L'accusé de la case atterrit sur l'ATTENTE (§11) : posé sur la remise, ni
+    // le jeu ni l'atelier ne pouvaient plus le lire.
     remises:[{ qui:"Maître", texte:"Voilà.", pieces:["a","b"], attentes:[{ attend:"t_x" }] }],
     repetition:{ intro:"", affirmations:[], fin:"" },
     avocat:{ rep_vice:"", rep_faux:"", rep_inutile:[], rep_sans_rapport:[], deja:"" },
@@ -263,8 +255,7 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
   check("les dimensions sont posées", Array.isArray(m.dimensions) && m.dimensions.length === 5);
   check("les cases et les relations disparaissent", m.cases === undefined && m.relations === undefined);
   /* Lu PAR LE NORMALISATEUR, et c'est le contrôle : un accusé que
-     `attentesDeRemise` ne rend pas est un accusé que l'inspecteur ne peut pas
-     éditer et que l'avocat ne dira jamais. */
+     `attentesDeRemise` ne rend pas ne sera jamais dit. */
   const accuse = (w.attentesDeRemise(m.remises[0])[0]||{}).apres;
   check("l'accusé de réception d'une case migre sur l'attente de sa session",
     !!accuse && accuse.replique === "Reçu.");
@@ -310,9 +301,8 @@ console.log("\n=== Édition : empans, liens, renommages ===");
 }
 {
   const w = neuf();
-  /* Depuis que l'article est obligatoire, le contenu livré ne déclare plus
-     aucune comparaison nue : on en crée une à la main (c'est ce que fait
-     l'auteur dans le graphe), puis on la conclut. */
+  /* L'article étant obligatoire, le contenu livré ne déclare plus aucune
+     comparaison nue : on en crée une à la main, puis on la conclut. */
   const sv = SC.sousVice(w.CONTENU);
   w.CONTENU.liens.push({ forme: sv.forme, termes: JSON.parse(JSON.stringify(sv.termes)) });
   const i = w.CONTENU.liens.length - 1;
@@ -354,8 +344,8 @@ console.log("\n=== Le chemin docile, simulé ===");
   w.simReset();
   let garde = 0;
   while (garde++ < 40) {
-    // Une remise attend une SUITE de réponses (§3) : on sert la première encore
-    // due, et la remise suivante ne part qu'une fois la liste épuisée.
+    // On sert la première attente encore due ; la remise suivante ne part
+    // qu'une fois la liste épuisée (§3).
     const r = w.CONTENU.remises[w.SIM.remisesEnvoyees-1];
     const a = w.attentesDeRemise(r).find(x => !w.SIM.satisfaits.includes(x.attend));
     if (!a) break;
@@ -387,9 +377,8 @@ console.log("\n=== L'export, et le jeu qui l'adopte ===");
 }
 
 /* L'ÉCRITURE SUR PLACE (§10) — on ne nomme aucun navigateur : on éprouve les
-   DEUX chemins, celui qui sait écrire un fichier et celui qui ne sait pas. Sous
-   jsdom, `showSaveFilePicker` n'existe pas — c'est le chemin de repli qui se
-   donne gratuitement, et le chemin d'écriture se pose à la main. */
+   DEUX chemins. Sous jsdom, `showSaveFilePicker` n'existe pas, donc le repli se
+   donne gratuitement et le chemin d'écriture se pose à la main. */
 console.log("\n=== Écrire content.js : sur place, ou le repli ===");
 const guetTelecharger = w => { const vus=[]; w.telecharger=(nom,data)=>{ vus.push({nom,data}); return true; }; return vus; };
 const poigneeFeinte = () => { const ecrits=[]; return { ecrits, nom:"content.js",
@@ -449,8 +438,7 @@ const poigneeFeinte = () => { const ecrits=[]; return { ecrits, nom:"content.js"
   const w2 = H.bootAtelier({graine:{ iavocat_atelier_v2: brut }});
   check("il le relit au démarrage", w2.CONTENU.pieces[e.pid].empans[e.eid].valeur === "AUTOSAVE");
 }
-/* `bilan()` est DANS la promesse, et il le faut : `exporterJS` attend le
-   navigateur, donc les contrôles ci-dessus sont les seuls de tout le dépôt à
-   tomber après le dernier `console.log` synchrone. Appelé dehors, il compterait
-   sans eux — et une panne d'écriture passerait verte. */
+/* PIÈGE : `bilan()` est DANS la promesse, et il le faut — `exporterJS` attend le
+   navigateur, donc ces contrôles sont les seuls du dépôt à tomber après le
+   dernier `console.log` synchrone. Appelé dehors, il compterait sans eux. */
 })().then(bilan, e => { console.error(e); process.exit(1); });

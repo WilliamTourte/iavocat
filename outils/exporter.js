@@ -1,12 +1,9 @@
 #!/usr/bin/env node
-/* `npm run export` — un seul fichier HTML, le JEU SEUL (jamais l'atelier),
- * prêt à envoyer par un canal qui n'accepte qu'un fichier (WhatsApp, mail…).
- *
- * Même inlinage que `tests/harnais.js` (§13) : les balises <script src> et
- * <link rel=stylesheet> d'app/index.html sont remplacées par leur contenu
- * lu sur disque, dans l'ORDRE des balises. Aucune réécriture au-delà — la
- * page qui en sort est celle qui tourne en file://, juste repliée en un seul
- * fichier. Le contenu (content.js) part avec : c'est le contenu livré.
+/* `npm run export` — un seul fichier HTML, le JEU SEUL (jamais l'atelier), pour
+ * un canal qui n'accepte qu'un fichier.
+ * Même inlinage que `tests/harnais.js` (§13) : les balises d'app/index.html sont
+ * remplacées par leur contenu, dans l'ORDRE. Aucune réécriture au-delà ; le
+ * contenu livré part avec.
  */
 const fs   = require("fs");
 const path = require("path");

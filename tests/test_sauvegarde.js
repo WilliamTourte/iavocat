@@ -1,6 +1,5 @@
-// Sauvegarde de partie — la partie survit au rafraîchissement, signée par
-// le contenu. Deux fenêtres jsdom simulent le rechargement en se passant
-// le localStorage via beforeParse.
+// Sauvegarde de partie — elle survit au rafraîchissement et elle est signée par
+// le contenu. Deux fenêtres jsdom simulent le rechargement via `beforeParse`.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan } = H;
 const boot = graine => H.boot({graine, url:"http://localhost/"});
@@ -37,9 +36,8 @@ console.log("\n=== Les quatre surfaces survivent au rechargement ===");
 
 console.log("\n=== Une composition en cours survit aussi ===");
 {
-  /* On livre d'abord, pour que l'état qui suit l'empan offre les deux voies.
-     Depuis le geste unique (§4.5.4) une composition reste EN COURS partout :
-     rien ne se clôt sans l'envoi. */
+  /* On livre d'abord, pour que l'état qui suit l'empan offre les deux voies :
+     rien ne se clôt sans l'envoi (§4.5). */
   const w1 = boot();
   H.livrerTout(w1);
   const pid = H.pidPremiereRemise(w1);
@@ -58,10 +56,9 @@ console.log("\n=== Une composition en cours survit aussi ===");
     w2.R.blocsOfferts(w2.S).map(b=>b.id).join() === w1.R.blocsOfferts(w1.S).map(b=>b.id).join());
 }
 {
-  /* L'ÉCART ENTRE COMPRENDRE ET DIRE (§4.7) : il est passé de la clôture à
-     l'ASSEMBLAGE, clore et envoyer n'étant plus qu'un geste (§4.5.4). Ce qui
-     doit donc survivre au rechargement, c'est la phrase assemblée au composeur
-     et le drapeau qu'elle a levé — le perdre effacerait la Fin 2. */
+  /* L'ÉCART ENTRE COMPRENDRE ET DIRE (§4.7) est passé à l'ASSEMBLAGE : ce qui
+     doit survivre au rechargement, c'est la phrase assemblée au composeur et le
+     drapeau qu'elle a levé — le perdre effacerait la Fin 2. */
   const w1 = boot();
   H.livrerTout(w1);                           // l'article doit avoir été reçu (§4.5)
   const C = H.lienConclusion(w1);
@@ -122,9 +119,9 @@ console.log("\n=== La signature du contenu ===");
 
 console.log("\n=== Une sauvegarde d'avant le renommage se reprend ===");
 {
-  /* `S.memoire` est devenu `S.retenus` (docs/CARTE.md). Le contenu n'ayant
-     pas changé, la signature ne jette PAS ces parties : sans reprise, le joueur
-     retrouverait la sienne avec zéro passage retenu et aucun message. */
+  /* PIÈGE : `S.memoire` est devenu `S.retenus` (§17). Le contenu n'ayant pas
+     changé, la signature ne jette PAS ces parties — sans reprise, le joueur
+     retrouverait la sienne vide de passages, sans un mot. */
   const w1 = boot();
   const pid = H.pidPremiereRemise(w1);
   w1.ouvrirPiece(pid);

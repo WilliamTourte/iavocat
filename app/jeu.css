@@ -1,20 +1,16 @@
-/* LE JEU — LA FEUILLE DE STYLE. Chargée par <link>. Elle ne décide rien : les
+/* LE JEU — LA FEUILLE DE STYLE, chargée par <link>. Elle ne décide rien : les
    seules valeurs calculées entrent par `--dc`, posée en style inline par
    `couleurDim` (§4.3) — la palette vit dans app/moteur.js, en un exemplaire. */
 :root{
   --bg:#0e1116; --panel:#161b22; --panel2:#1c232d; --line:#2b3440;
   --txt:#d7dde5; --muted:#8b97a6; --accent:#6fb3d6; --warn:#d6a96f;
-  /* LE BLEU DU TRANSMIS : il cerne ce qui a franchi la frontière ou s'apprête à
-     la franchir (§4.6). Il fut employé huit fois et défini nulle part — et une
-     `var()` introuvable rend la déclaration INVALIDE AU CALCUL : pour un
-     raccourci comme `border`, ça vide toutes ses longhands, donc pas de filet du
-     tout (R3 du gardien tient ça désormais). */
+  /* PIÈGE PAYÉ : ce bleu fut employé huit fois et défini nulle part. Une `var()`
+     introuvable rend la déclaration INVALIDE AU CALCUL — sur un raccourci comme
+     `border`, ça vide toutes ses longhands, donc pas de filet du tout. */
   --transmis:#23506e;
 
   --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  /* Les couleurs de dimension vivent dans app/moteur.js — le RANG, jamais la
-     pertinence (§4.3) ; `--dc` est posé en ligne par `couleurDim`. */
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.55}
@@ -22,18 +18,17 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .col{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
 .col > h2{margin:0;padding:9px 14px;font-size:13px;font-weight:600;color:var(--muted);
   text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:baseline}
-/* Le compte du plan monte dans l'en-tête : une seule zone, un seul titre (§4.9) */
 .col > h2 .zcount{float:none;margin-left:auto}
 
 .body{padding:12px 14px;overflow-y:auto;max-height:72vh}
-/* `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` : sans cette
-   ligne, cacher la Plaidoirie ne ferait rien. */
+/* PIÈGE : `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` — sans
+   cette ligne, cacher la Plaidoirie ne ferait rien. */
 .col[hidden]{display:none}
 /* Le composeur, ancré sous le fil : il ne défile pas avec lui (§4.6). */
 #composeur{border-top:1px solid var(--line);padding:12px 14px;background:var(--panel)}
 #composeur .zone{margin:0}
-/* Sans plan, deux colonnes (§4.9) ; `.cloture` est câblée sur trois, elle
-   suit — sinon elle déborde. */
+/* PIÈGE : sans plan, deux colonnes — `.cloture` est câblée sur trois, elle suit,
+   sinon elle déborde. */
 .wrap.sansPlan{grid-template-columns:1fr 1fr}
 .wrap.sansPlan .cloture{grid-column:1/3}
 @media (max-width:1100px){
@@ -54,16 +49,10 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .attach.seen{opacity:.6}
 /* --- zones --- */
 .zone{margin-bottom:12px}
-/* Le dossier et la mémoire partagent une colonne (§4.6) mais pas un sujet :
-   chacun a son propre cadre plein, pour rester visuellement deux blocs et
-   non un seul enchaînement (le composeur et les autres `.zone` gardent le
-   rendu simple, sans cadre — seuls ces deux-là le portent). Sans titre ni
-   compteur pour l'instant : le cadre seul suffit à les distinguer. */
+/* Le dossier et la mémoire partagent une colonne mais pas un sujet : chacun son
+   cadre plein, pour rester deux blocs et non un enchaînement. */
 #zoneDossier,#zoneRetenus{border:1px solid var(--line);border-radius:8px;
   background:var(--panel2);padding:10px 12px;margin-bottom:12px}
-/* Le cadre reprend celui des SURFACES (`.col > h2`) en plus discret : la
-   zone se distingue du texte courant sans rivaliser avec l'en-tête de
-   colonne qu'elle sert (§4.9). */
 .zone .ztitle{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;
   margin-bottom:8px;padding:5px 10px;border:1px solid var(--line);border-radius:6px;
   background:var(--panel2);display:flex;align-items:baseline;gap:8px}
@@ -79,22 +68,20 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .empan .sig{font-size:11px;color:var(--muted);font-family:var(--mono)}
 /* --- mémoire : une seule liste, qui sert AUSSI de clavier au composeur --- */
 .dimgrp{margin-bottom:9px}
-/* Un groupe qui comparerait sans rien construire (§4.5.2, §4.5.8) : assombri,
-   jamais désactivé — le clic reste permis, le refus reste celui du clic (R10
-   ne bouge pas). */
+/* Un groupe qui comparerait sans rien construire (§4.5) : assombri, jamais
+   désactivé — le clic reste permis, et le refus reste celui du clic. */
 .dimgrp.horsdim{opacity:.45}
 .dimgrp .dnom{font-size:11px;color:var(--dc,var(--muted));text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
 .mchip{display:flex;align-items:stretch;margin:3px 0;background:var(--panel2);
   border:1px solid var(--line);border-left:3px solid var(--dc,var(--line));border-radius:6px;overflow:hidden}
 .mchip:hover{border-color:var(--accent)}
-/* `min-width:0` : sans lui, un item de flex refuse de rétrécir sous son
+/* PIÈGE : sans `min-width:0`, un item de flex refuse de rétrécir sous son
    contenu — la citation pousserait la puce hors du cadre. */
 .mchip .corps{flex:1;min-width:0;text-align:left;background:none;border:none;color:var(--txt);
   padding:6px 9px;cursor:pointer;font:inherit;font-size:13px;line-height:1.4}
 .mchip .corps:disabled{cursor:default;opacity:.55}
 .mchip .nom{display:block}
-/* Deux lignes, pas trois (§4.9). La citation cède la place — elle se relit en
-   entier dans la pièce, et en infobulle ; la source, elle, ne cède jamais. */
+/* Deux lignes, pas trois (§4.9) : la citation cède la place, la source jamais. */
 .mchip .prov{display:flex;align-items:baseline;gap:6px;margin-top:2px}
 .mchip .cit{flex:1;min-width:0;font-size:11.5px;color:var(--muted);font-style:italic;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -108,8 +95,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .phrase .bl{border-bottom:1px solid var(--line);padding:0 2px}
 .phrase .bl.terme{border-bottom:2px solid var(--dc,var(--accent))}
 .phrase .trou{color:var(--muted);font-style:italic}
-/* Un empan POSÉ se relit comme dans la mémoire : les deux lignes de `.mchip`,
-   l'intitulé puis ce qu'il dit — la citation cède, la source jamais (§4.9). */
+/* Un empan POSÉ se relit comme dans la mémoire : les deux lignes de `.mchip`. */
 .phrase .bl.terme.pose{display:inline-block;vertical-align:top;max-width:100%;
   padding:2px 5px;margin:1px 0;border-radius:4px 4px 0 0;
   background:color-mix(in srgb, var(--dc,#888) 10%, transparent)}
@@ -158,7 +144,6 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .cloture button{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;
   padding:10px 20px;cursor:pointer;font-size:14px}
 .cloture button:disabled{opacity:.4;cursor:not-allowed}
-/* Le seul bouton de chrome de la clôture : il ne pèse pas comme elle. */
 #btnRecommencer{margin-left:auto;background:none;border:1px solid var(--line);
   color:var(--muted);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer}
 .cloture .hint{color:var(--muted);font-size:12px;margin-top:6px}
@@ -180,7 +165,6 @@ code{font-family:var(--mono);color:var(--accent)}
 /* Deux natures, deux BANDES pleine largeur : en colonnes, l'index s'empilait
    une ligne par pièce (§4.9). */
 .dossier{display:flex;flex-direction:column;gap:6px;padding:2px 0 4px}
-/* L'étiquette tient en gouttière : pas une ligne à elle (§4.9). */
 .dcol{min-width:0;display:flex;gap:8px;align-items:baseline}
 .dcol .dtitre{flex:none;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 .dcol .dchips{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
@@ -192,14 +176,12 @@ code{font-family:var(--mono);color:var(--accent)}
 .dchip.regle{border-color:#4a4030;color:var(--warn)}
 .zcount{float:right;font-size:11px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0}
 .panne{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;padding:12px;margin:16px 20px}
-/* --- le tutoriel (§4.8) : de la signalétique, pas de la mécanique. Le halo
-   ENTOURE la zone, jamais un empan (§4.3). Aucun voile : il intercepterait les
-   clics qu'il prétend montrer. --- */
+/* --- le tutoriel (§4.8) : le halo ENTOURE la zone, jamais un empan (§4.3).
+   Aucun voile : il intercepterait les clics qu'il prétend montrer. --- */
 [data-tuto]{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;
   animation:pouls 1.8s ease-in-out infinite}
 @keyframes pouls{0%,100%{outline-color:var(--accent)}50%{outline-color:transparent}}
-/* Pas le passage demandé : même halo, autre couleur. Rien n'est barré — le
-   geste reste permis, c'est le tutoriel qui ne suit pas (§4.8). */
+/* Pas le passage demandé : même halo, autre couleur. Rien n'est barré. */
 [data-tuto="alerte"]{outline-color:var(--warn);animation-name:poulsAlerte}
 @keyframes poulsAlerte{0%,100%{outline-color:var(--warn)}50%{outline-color:transparent}}
 @media (prefers-reduced-motion:reduce){ [data-tuto]{animation:none} }

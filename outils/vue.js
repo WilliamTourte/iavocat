@@ -1,20 +1,14 @@
 #!/usr/bin/env node
-/* `npm run vue` — voir le jeu tourner, pour de vrai. Ouvre `app/index.html` en
- * file:// dans Chromium, joue le chemin docile, capture dans `captures/`.
+/* `npm run vue` — voir le jeu tourner, pour de vrai : `app/index.html` en
+ * file:// dans Chromium, le chemin docile joué, des captures dans `captures/`.
  *
- * Deux choses qu'il est seul à faire : éprouver le VRAI chargement des balises
- * et de la feuille de style, là où le harnais les inline (§13) ; et permettre la
- * relecture à l'œil, irremplaçable (§2 de la passation).
+ * Seul à éprouver le VRAI chargement des balises et de la feuille de style, là
+ * où le harnais les inline (§13), et seul à permettre la relecture à l'œil.
+ * Ce n'est PAS une suite : aucune assertion, hors `npm test`, et il ne sort en 1
+ * que sur une erreur JS. Il n'implémente rien — il injecte `tests/harnais.js`.
  *
- * Ce n'est PAS une suite : aucune assertion, hors `npm test`. Il ne sort en 1
- * que sur une erreur JS de la page. Il ne réimplémente rien — il injecte
- * `tests/harnais.js` et appelle ses chemins, donc il joue ce que jouent les
- * suites, sans nommer aucune pièce ni aucun empan (§16).
- *
- * UN ÉCART À CONNAÎTRE : le chemin docile surligne sans ouvrir les pièces, dont
- * les puces restent « ● ». Artefact du pilote, pas du jeu.
- * CE QU'IL FAUT REGARDER : la mise en forme — seul endroit où le CSS se charge
- * pour de vrai, et aucun contrôle ne le vérifie.
+ * ÉCART À CONNAÎTRE : le chemin docile surligne sans ouvrir les pièces, dont les
+ * puces restent « ● ». Artefact du pilote, pas du jeu.
  */
 const fs   = require("fs");
 const path = require("path");
@@ -23,10 +17,8 @@ const RACINE   = path.join(__dirname, "..");
 const CAPTURES = path.join(RACINE, "captures");
 const JEU      = "file://" + path.join(RACINE, "app", "index.html");
 
-/* ---- Trouver un Chromium ------------------------------------------------
-   Le projet ne télécharge aucun navigateur : `playwright-core` n'en embarque
-   pas, et c'est délibéré — `npm install` reste léger pour un dépôt dont le
-   livrable n'a aucune dépendance. Le navigateur vient donc de la machine. */
+/* ---- Trouver un Chromium ---- le projet n'en télécharge aucun : `npm install`
+   reste léger pour un dépôt dont le livrable n'a aucune dépendance. */
 function trouverNavigateur() {
   const pistes = [];
   if (process.env.CHROMIUM_PATH) pistes.push(process.env.CHROMIUM_PATH);
@@ -41,9 +33,8 @@ function trouverNavigateur() {
   return pistes.find(p => { try { return fs.statSync(p).isFile(); } catch { return false; } });
 }
 
-/* ---- Le harnais, porté dans la page ---- ses fonctions de chemin prennent une
-   fenêtre et l'actionnent : trois bouchons suffisent à le faire vivre dans un
-   navigateur, et on évite d'en écrire une seconde version (§12). */
+/* ---- Le harnais, porté dans la page ---- trois bouchons suffisent à le faire
+   vivre dans un navigateur, et on évite une seconde version (§12). */
 function amorceHarnais() {
   const source = fs.readFileSync(path.join(RACINE, "tests", "harnais.js"), "utf8");
   return `(() => {
@@ -56,8 +47,7 @@ function amorceHarnais() {
 }
 
 /* ---- Le chemin docile, une étape à la fois ---- le corps d'`instruire()`,
-   déroulé pour capturer entre deux. La décision reste chez les autres :
-   l'attente vient de `regles.js`, le lien et sa composition du harnais. */
+   déroulé pour capturer entre deux. La décision reste chez les autres. */
 const UN_PAS = `(() => {
   const H = window.__H;
   const r = R.remiseCourante(S);
@@ -95,8 +85,8 @@ async function main() {
   const navigateur = await chromium.launch({ executablePath: exe, args: ["--no-sandbox"] });
   const page = await navigateur.newPage({ viewport: { width: 1440, height: 900 } });
 
-  /* Une erreur de page est un plantage, pas un jugement : jsdom ne la verrait
-     pas de la même façon, et c'est bien pour ça qu'on regarde ici. */
+  /* Une erreur de page est un plantage, pas un jugement : jsdom ne la verrait pas
+     de la même façon, et c'est pour ça qu'on regarde ici. */
   const pannes = [];
   page.on("pageerror", e => pannes.push("erreur JS : " + e.message));
   page.on("console", m => { if (m.type() === "error") pannes.push("console : " + m.text()); });

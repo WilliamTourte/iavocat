@@ -1,14 +1,11 @@
-// Harnais commun des suites IAvocat — jsdom, un seul endroit pour booter
-// le jeu (contenu livré, muté et injecté inline, ou graine localStorage) et
+// Harnais commun des suites — jsdom, un seul endroit pour booter le jeu et
 // l'atelier. Chaque suite garde ses assertions ; ici, que la tuyauterie.
+// Moteur et règles viennent des MÊMES fichiers que le jeu : une suite DÉSIGNE,
+// elle ne DÉCIDE pas — un prédicat recopié resterait vert en affirmant
+// l'ancienne vérité (§12, §16).
 const { JSDOM } = require("jsdom");
 const fs = require("fs");
-/* Les projections ne se recopient pas : le harnais lit le MÊME moteur.js que le
-   jeu et l'atelier (§12, §14). */
 const { champsDe, comparaisonsDe } = require("../app/moteur.js");
-/* …et les RÈGLES viennent de regles.js, pour la même raison. Une suite DÉSIGNE,
-   elle ne DÉCIDE pas (§16) — un prédicat recopié resterait vert en affirmant
-   l'ancienne vérité. */
 const { estRegle } = require("../app/regles.js");
 
 function creerHarnais(dossier){
@@ -21,22 +18,17 @@ function creerHarnais(dossier){
   function bilan(){ console.log(`\n${pass} ok, ${fail} échec(s)`); process.exit(fail?1:0); }
 
   /* jsdom ne charge NI <script src> NI <link rel=stylesheet> : on inline les
-     fichiers mêmes, relus à chaque boot, dans l'ORDRE des balises (§12, §13).
-     LE CSS AUSSI, bien qu'aucune suite ne lise de couleur — `getCSS()` en lit, et
-     jsdom rend "" pour un <link> : sans ce filet, sortir le CSS du HTML aurait
-     changé ce que le graphe dessine sous test sans qu'aucun contrôle ne bronche. */
+     fichiers mêmes, dans l'ORDRE des balises (§13). LE CSS AUSSI, bien
+     qu'aucune suite ne lise de couleur — `getCSS()` en lit, et jsdom rend ""
+     pour un <link>. */
   const injecter = h => h
     .replace(/<script src="([^"]+)"><\/script>/g, (_, f) => `<script>${lire(f)}</script>`)
     .replace(/<link rel="stylesheet" href="([^"]+)">/g, (_, f) => `<style>${lire(f)}</style>`);
 
-  /* boot({contenu, graine, url}) :
-     - contenu : objet → injecté inline à la place de content.js ;
-                 null → balise retirée (aucun contenu : le jeu affiche sa panne)
-                 absent → content.js, le contenu livré
-     - graine  : {clé:valeur} semé dans localStorage AVANT les scripts
-     - url     : origine (nécessaire pour localStorage ; posée d'office si graine) */
-  /* La fenêtre en un seul endroit : un semis de graine qui diverge, c'est une
-     suite de sauvegarde qui éprouve autre chose que ce qu'elle croit. */
+  /* boot({contenu, graine, url}) — contenu : objet → injecté à la place de
+     content.js, null → balise retirée (le jeu affiche sa panne), absent → le
+     contenu livré ; graine : semée dans localStorage AVANT les scripts ; url :
+     origine, posée d'office si graine. */
   const ouvrir = (html,url,graine) =>
     new JSDOM(injecter(html),{runScripts:"dangerously", ...(url?{url}:{}),
       beforeParse(win){ if(graine) for(const [k,v] of Object.entries(graine)) win.localStorage.setItem(k,v); }
@@ -51,94 +43,76 @@ function creerHarnais(dossier){
   }
   function bootAtelier(opts={}){
     if(htmlAtelier===null) htmlAtelier=fs.readFileSync(dossier + "/atelier_v3.html","utf8");
-    // l'atelier vit sur localStorage : il lui faut TOUJOURS une origine.
     return ouvrir(htmlAtelier, opts.url || "http://localhost/", opts.graine);
   }
-  /* Le contenu LIVRÉ — celui de content.js, le seul qui existe. Les suites qui
-     éprouvent le décâblage partent de lui et le mutent. */
+  /* Le contenu LIVRÉ : les suites du décâblage partent de lui et le mutent. */
   function contenuLivre(){ return JSON.parse(JSON.stringify(boot().JEU)); }
 
-  /* Les quatre surfaces, chacune sous le nom que l'écran lui donne
-     (docs/CARTE.md) — la Plaidoirie vide étant retirée, `plaidoirieVisible` dit
-     si la colonne existe (§4.9). */
+  /* Les surfaces, sous le nom que l'écran leur donne (§17). */
   const discussion = w => w.document.getElementById("discussion").textContent;
   const memoire  = w => w.document.getElementById("memoire").innerHTML;
   const composeur = w => w.document.getElementById("composeur").innerHTML;
   const plaidoirie = w => w.document.getElementById("plaidoirie").innerHTML;
   const plaidoirieVisible = w => !w.document.getElementById("colPlaidoirie").hidden;
 
-  /* ---- Sélecteurs par PROPRIÉTÉ ---- aucune suite ne nomme une pièce, un empan
-     ou une valeur : tout se dérive de la forme (§16). */
+  /* ---- Sélecteurs par PROPRIÉTÉ ---- aucune suite ne nomme une pièce, un
+     empan ni une valeur : tout se dérive de la forme (§16). */
   const J = w => w.JEU;
 
-  /* ---- LES PRÉDICATS, en un seul exemplaire ---- deux familles posent les
-     MÊMES questions, l'une depuis une fenêtre, l'autre depuis un contenu brut.
-     On met en commun le PRÉDICAT, jamais la fonction (§12). */
+  /* Les PRÉDICATS, en un exemplaire : deux familles posent les mêmes questions,
+     l'une depuis une fenêtre, l'autre depuis un contenu brut. */
   const estVice       = L => !!L.vice;
   const estConclusion = L => !!(L.vice && L.conclusion);
   const estViceNu     = L => !!(L.vice && !L.conclusion);
   const estFaux       = L => !!L.faux;
   const estNeutre     = L => !L.vice && !L.faux;
   const aDeclenche    = p => !!p.declenche;
-  // Le terme emboîté d'un lien, s'il en porte un — la comparaison du vice y
-  // vit depuis que l'article est obligatoire (§4.5).
+  // La comparaison du vice vit dans le terme emboîté de la conclusion (§4.5).
   const sousTerme = L => { const t = L && (L.termes||[])[0];
                            return (t && typeof t === "object") ? t : null; };
 
-  // Liens, par leur rôle déclaré
-  /* LE PRESSENTIMENT : la comparaison du vice est le TERME EMBOÎTÉ de la
-     conclusion. On la lit là — ou comme lien nu, à l'ancienne. */
+  // Liens, par leur rôle déclaré — lien nu, ou terme emboîté à l'ancienne.
   const lienVice = w =>
     J(w).liens.find(estViceNu) || sousTerme(lienConclusion(w)) || undefined;
   const lienConclusion = w => J(w).liens.find(estConclusion);
   const lienFaux       = w => J(w).liens.find(estFaux);
-  /* Le lien qui porte un tag d'attente ; `docile` prend celui qui ne passe pas
-     par le vice — c'est le parcours de la Fin 3 (§3). */
+  /* `docile` prend le lien qui ne passe pas par le vice : la Fin 3 (§3). */
   const lienTag = (w,tag,{docile=true}={}) => {
     const cands=J(w).liens.filter(L=>L.tag===tag);
     return (docile ? cands.find(L=>!estVice(L)) : cands.find(estVice)) || cands[0];
   };
   const liensNeutres   = w => J(w).liens.filter(estNeutre);
-  /* Les COMPARAISONS (arité 2) du contenu, emboîtées comprises — la marche est
-     celle de moteur.js. */
   const comparaisons = w => comparaisonsDe(J(w).liens, J(w).grammaire.formes);
   const arite = (w,L) => ((J(w).grammaire.formes||{})[L.forme]||{}).arite || 2;
-  /* Les CITATIONS : arité 1, terme ATOMIQUE — l'emboîtement, et lui seul, les
+  /* CITATIONS : arité 1, terme ATOMIQUE — l'emboîtement, et lui seul, les
      sépare d'une qualification (§4.5). */
   const citations = w => J(w).liens.filter(L =>
     arite(w,L)===1 && typeof (L.termes||[])[0]==="string");
-  // Le bloc qui clôt sur une citation, s'il existe.
   const blocCite = w => (J(w).grammaire.blocs||[]).find(b=>b.cite && b.forme);
-  /* La liste d'attentes CÔTÉ CONTENU : les objets rendus sont ceux du contenu,
-     pour qu'une suite les retouche avant le boot. */
+  /* Les objets rendus sont ceux du contenu, retouchables avant le boot. */
   const attentesContenu = r => Array.isArray(r.attentes) ? r.attentes : [r];
 
   // --- composer : le geste du jeu, joué par les fonctions du moteur ---
   const idBloc = (w,id) => w.R.blocsOfferts(w.S).findIndex(b=>b.id===id);
-  /* Le TERME QUI PREND UN EMPAN, parmi les blocs offerts — le calcul vit dans
-     regles.js (§16). À ne pas confondre : le second empan porte en plus `deduit`,
-     et `blocChamp` cherche un ID de bloc, pas un rang. */
+  /* PIÈGE : le second empan porte en plus `deduit`, et `blocChamp` cherche un
+     ID de bloc, pas un rang. */
   const iTermeChamp = w => w.R.indexTermeChamp(w.S);
-  /* Défaire une clé « pid.eid », comme le `deK` de l'atelier : on coupe au
-     PREMIER point — c'est le pid qui ne peut pas en contenir, pas l'eid. */
+  /* On coupe au PREMIER point : c'est le pid qui ne peut pas en contenir. */
   const deK = k => { const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; };
   const surligner = (w,k) => { const [pid,eid]=deK(k); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
-  /* Compose la phrase qui réalise un lien : surligner, puis parcourir l'automate
-     vers la forme voulue. Rend l'index au brouillon, ou -1. */
+  /* Compose la phrase qui réalise un lien → index au brouillon, ou -1. */
   function composerLien(w,L){
     const f=(J(w).grammaire.formes||{})[L.forme]||{};
     w.viderCompo();
-    /* POSER NE CLÔT PLUS (§4.5.4) : le jeu réunit clore et envoyer dans un seul
-       geste, et une suite qui veut la phrase AU JOURNAL sans l'envoyer passe
-       donc par `clore` — la même porte, prise un cran plus tôt (§12). */
+    /* POSER NE CLÔT PLUS (§4.5) : une suite qui veut la phrase AU JOURNAL sans
+       l'envoyer passe par `clore`, la même porte un cran plus tôt (§12). */
     const journaliser = () => {
       if(!w.S.compo.length) return;
       w.R.clore(w.S);
-      // `clore` seul ne redessine pas, donc ne SAUVE pas : la sauvegarde est
-      // un effet du rendu (§12). Sans ça une suite éprouverait un état que le
-      // joueur n'aurait jamais pu produire.
+      // PIÈGE : `clore` ne redessine pas, donc ne SAUVE pas — la sauvegarde est
+      // un effet du rendu. Sans ça, on éprouve un état injouable.
       w.rendreTout();
     };
     const trouve = () => { journaliser();
@@ -146,28 +120,23 @@ function creerHarnais(dossier){
 
     if((f.arite||2)===1){
       const sous=(L.termes||[])[0]||{};
-      /* 0) LA CITATION (§4.5) : un empan, clos par une liaison qui n'emboîte
-            rien — pas d'article, il n'y a pas de raisonnement à fonder. */
+      /* 0) LA CITATION : un empan, clos par une liaison qui n'emboîte rien. */
       if(typeof (L.termes||[])[0]==="string"){
         const k=(L.termes||[])[0];
         surligner(w,k);
         const bT=idBloc(w,blocChamp(w)); if(bT<0) return -1;
         w.poserBloc(bT,iRetenu(w,k));
-        /* La liaison de citation n'ajoute rien : c'est l'envoi qui la pose
-           (§4.5.4). Une suite peut encore la poser à la main — elle est
-           offerte —, et `clore` la poserait de toute façon. */
+        /* C'est l'envoi qui la pose (§4.5) ; une suite peut encore le faire. */
         const bc=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && !x.imbrique);
         if(bc>=0) w.poserBloc(bc);
         return trouve();
       }
-      /* 1) LA CONTINUATION (§4.5) : poser la comparaison sans la clore, puis
-            la liaison qui l'emboîte — le chemin du contenu d'aujourd'hui. */
+      /* 1) LA CONTINUATION : la comparaison, puis la liaison qui l'emboîte. */
       if(sous.forme && poserComparaison(w,sous)){
         const b=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && x.imbrique);
         if(b>=0){ w.poserBloc(b); const i=trouve(); if(i>=0) return i; }
       }
-      /* 2) LE REPLI : la source `note`, pour une affaire écrite avant la
-            continuation. C'est ce qui prouve la rétrocompatibilité (§11). */
+      /* 2) LE REPLI `note` : la rétrocompatibilité, éprouvée (§11). */
       w.viderCompo();
       let i=w.S.brouillon.findIndex(n=>w.M.memeRed(n.reduite,sous));
       if(i<0){ i=composerLien(w,{forme:sous.forme,termes:sous.termes}); if(i<0) return -1; }
@@ -181,23 +150,21 @@ function creerHarnais(dossier){
     }
     return trouve();
   }
-  /* Les deux termes d'une forme d'arité 2, SANS chercher à clore : selon la
-     grammaire, on finit à la fin (à l'ancienne) ou sur « et donc ? » (§4.5). */
+  /* Les deux termes d'une forme d'arité 2, SANS chercher à clore. */
   function poserComparaison(w,L){
     const G=J(w).grammaire;
     const [t0,t1]=L.termes||[];
     if(typeof t0!=="string" || typeof t1!=="string") return false;
     surligner(w,t0); surligner(w,t1);
     const bT=idBloc(w,blocChamp(w)); if(bT<0) return false;
-    /* Une SONDE : en session 1, poser le premier terme suffit à clore une
-       citation (§4.5) — et une sonde qui échoue ne laisse rien au journal. */
+    /* Une SONDE : poser le premier terme peut suffire à clore une citation
+       (§4.5) — celle qui échoue ne laisse rien au journal. */
     const n0=w.S.brouillon.length, p0=w.S.prete;
     const echec=()=>{ w.S.brouillon.length=n0; w.S.prete=p0; w.viderCompo(); return false; };
     w.poserBloc(bT,iRetenu(w,t0));
-    // Grammaire à DÉDUCTION : le second terme clôt la paire, rien entre les deux.
     const bD=w.R.blocsOfferts(w.S).findIndex(x=>x.type==="terme"&&x.source!=="note"&&x.deduit);
     if(bD>=0){ w.poserBloc(bD,iRetenu(w,t1)); return true; }
-    // Grammaire à liaisons explicites (à l'ancienne) : on parcourt l'automate.
+    // À l'ancienne (liaisons explicites) : on parcourt l'automate.
     const chemin=cheminVers(w,L.forme);
     if(!chemin.length) return echec();
     for(const etape of chemin){
@@ -207,16 +174,14 @@ function creerHarnais(dossier){
     }
     return true;
   }
-  /* Fait partir toutes les remises sans jouer l'instruction : les
-     liaisons-articles étant filtrées par livraison (§4.5), une suite qui compose
-     une conclusion doit d'abord avoir reçu le texte. */
+  /* Toutes les remises partent sans jouer l'instruction : les liaisons-articles
+     étant filtrées par livraison, il faut d'abord avoir reçu le texte (§4.5). */
   function livrerTout(w){
     let garde=0;
     while(w.S.remisesEnvoyees < J(w).remises.length && garde++<20) w.R.envoyerRemise(w.S);
     w.rendreTout();
   }
-  /* « En rester là » : le bloc qui clôt sans rien qualifier. Sans effet si
-     l'automate a déjà refermé la phrase tout seul. */
+  /* « En rester là » — sans effet si l'automate a déjà refermé la phrase. */
   function cloreSurPlace(w){
     if(!w.S.compo.length) return;
     const G=J(w).grammaire, e=w.R.etatCompo(w.S), finaux=new Set(G.finaux||[]);
@@ -226,8 +191,7 @@ function creerHarnais(dossier){
   const blocChamp = w => (J(w).grammaire.blocs.find(b=>b.type==="terme"&&b.source!=="note"&&b.de===J(w).grammaire.depart)||{}).id;
   const blocNote  = w => (J(w).grammaire.blocs.find(b=>b.type==="terme"&&b.source==="note"&&b.de===J(w).grammaire.depart)||{}).id;
   const blocForme = (w,forme) => (J(w).grammaire.blocs.find(b=>b.forme===forme)||{}).id;
-  /* Le chemin de blocs, depuis l'état où l'on est, jusqu'au bloc qui porte
-     la forme voulue. Recherche en largeur — aucun identifiant en dur. */
+  /* Recherche en largeur jusqu'au bloc qui porte la forme — aucun id en dur. */
   function cheminVers(w,forme){
     const G=J(w).grammaire;
     const file=[[w.R.etatCompo(w.S),[]]], vus=new Set();
@@ -242,15 +206,13 @@ function creerHarnais(dossier){
     }
     return [];
   }
-  /* Les liaisons-articles offertes ici et maintenant : celles dont la pièce a
-     été livrée. Vide pour une affaire écrite à l'ancienne. */
+  /* Celles dont la pièce est livrée ; vide pour une affaire à l'ancienne. */
   const articlesDisponibles = w => {
     const livrees=new Set(w.R.piecesLivrees(w.S));
     return (J(w).grammaire.blocs||[]).filter(b=>b.imbrique && b.forme && (!b.piece || livrees.has(b.piece)));
   };
-  /* Des phrases sensées qui ne portent AUCUN lien : la marge de bruit — une
-     comparaison quelconque QUALIFIÉE par un article quelconque, bien formée,
-     fondée, sans intérêt. « Sensé » ne doit jamais valoir « correct » (§14). */
+  /* La MARGE DE BRUIT : des phrases bien formées, fondées et sans intérêt.
+     « Sensé » ne doit jamais valoir « correct » (§14). */
   function phrasesBruit(w,n){
     const G=J(w).grammaire;
     const emp=w.CHAMPS;
@@ -263,7 +225,6 @@ function creerHarnais(dossier){
       for(let k=i+1;k<emp.length&&fait<n;k++){
         const a=emp[i], b=emp[k];
         if(a.dim!==b.dim) continue;
-        // La forme n'est plus choisie : c'est celle que le moteur DÉDUIRA.
         let nomForme;
         if(deduction) nomForme=w.M.deduire(a.id,b.id);
         else { nomForme=forme2[0];
@@ -271,8 +232,6 @@ function creerHarnais(dossier){
         if(!nomForme) continue;
         const termes=w.M.ordonner ? w.M.ordonner(nomForme,[a.id,b.id]) : [a.id,b.id];
         const comparaison={forme:nomForme,termes};
-        // Chaque continuation possible fait une phrase de bruit de plus ; sans
-        // continuation (affaire à l'ancienne), la comparaison se clôt seule.
         const cands = arts.length
           ? arts.map(bl=>({forme:bl.forme, termes:[comparaison]}))
           : [comparaison];
@@ -283,9 +242,8 @@ function creerHarnais(dossier){
           if(composerLien(w,cand)>=0) fait++;
         }
       }
-    /* Chaque empan est à lui seul une phrase close possible : elle ne se fonde
-       que sur elle-même, donc ne sert pas à chercher — mais compte dans la
-       marge (§4.5). */
+    /* Chaque empan est à lui seul une phrase close possible, qui compte dans
+       la marge (§4.5). */
     const bc=blocCite(w);
     if(bc) for(let i=0;i<emp.length&&fait<n;i++){
       const cand={forme:bc.forme,termes:[emp[i].id]};
@@ -296,23 +254,19 @@ function creerHarnais(dossier){
     return fait;
   }
 
-  // Pièces, par leur forme
   /* La famille fenêtre passe par `surContenu` là où la question est la même :
-     `J(w)` EST un contenu (`surContenu` est déclaré plus bas — ces flèches ne
-     s'évaluent qu'à l'appel). */
+     `J(w)` EST un contenu. Déclaré plus bas — ces flèches ne s'évaluent qu'à
+     l'appel. */
   const pidAvecDeclenche = w => surContenu.pidDeclenche(J(w));
   const pidRegle = w => surContenu.pidRegle(J(w));
   const pidPremiereRemise = w => (J(w).remises[0].pieces||[])[0];
   const empansDe = (w,pid) => Object.keys(J(w).pieces[pid].empans||{}).map(e=>pid+"."+e);
 
-  /* Amène le jeu au bout de l'instruction : pour chaque session, compose et
-     verse la phrase qui porte le tag attendu. C'est le chemin docile. */
+  /* Le chemin docile : pour chaque session, la phrase qui porte le tag. */
   function instruire(w){
     let garde=0;
     while(garde++<40){
-      // Une remise attend une SUITE de réponses (§3). La normalisation vit
-      // dans regles.js, en un seul exemplaire : on l'appelle, on ne la recopie
-      // pas — une affaire à l'ancienne y devient une liste à un élément.
+      // La normalisation vit dans regles.js : on l'appelle, on ne la recopie pas.
       const r=w.R.remiseCourante(w.S);
       const a=w.R.attenteCourante(w.S,r);
       if(!a) break;
@@ -324,12 +278,10 @@ function creerHarnais(dossier){
     }
   }
 
-  // Déroule la répétition de plaidoirie jusqu'au bout, puis confirme.
   function terminer(w){
     w.cloturer();
-    // Garde : si la clôture ne s'ouvre pas (attente inservable, article livré
-    // trop tard…), `repetitionIdx` reste à -1. Mieux vaut rendre "" et faire
-    // échouer le contrôle que tourner en rond sans rien dire.
+    // GARDE : clôture qui ne s'ouvre pas (article livré trop tard…) →
+    // `repetitionIdx` reste à -1. Rendre "" plutôt que tourner en rond.
     let garde=0;
     while(w.S.repetitionIdx >= 0
           && w.S.repetitionIdx < J(w).repetition.affirmations.length
@@ -340,17 +292,14 @@ function creerHarnais(dossier){
   }
   const numeroFin = txt => (txt.match(/Fin (\d)/)||[])[1];
 
-  /* Les mêmes sélecteurs, mais sur un CONTENU brut (l'atelier expose son
-     objet, pas une fenêtre de jeu). Objet à part pour éviter toute confusion. */
+  /* Les mêmes sélecteurs sur un CONTENU brut : l'atelier expose son objet, pas
+     une fenêtre. Objet à part, pour éviter la confusion. */
   const surContenu = {
     empans: c => champsDe(c),
     dim: (c,k) => { const [pid,eid]=deK(k); return ((c.pieces[pid]||{}).empans||{})[eid]?.dim; },
-    // Le lien qui PORTE le vice : la conclusion, depuis que l'article est
-    // obligatoire ; le pressentiment nu si l'affaire l'expose encore.
     iLienVice: c => { const i=c.liens.findIndex(estViceNu);
                       return i>=0 ? i : c.liens.findIndex(estVice); },
     iLienConclusion: c => c.liens.findIndex(estConclusion),
-    // La comparaison du vice, où qu'elle vive : lien nu, ou terme emboîté.
     sousVice: c => { const L=c.liens.find(estConclusion) || c.liens.find(estVice);
                      return L ? (sousTerme(L) || L) : null; },
     iLienNeutre: c => c.liens.findIndex(estNeutre),

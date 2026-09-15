@@ -1,62 +1,36 @@
 # IAvocat — Architecture
 
-*Comment le jeu est fait : qui fait quoi, où vit la vérité, et quoi resynchroniser quand. Le sens est
-l'arbitre et il est ailleurs — `docs/CONCEPTION.md` (§1 à §7). Où vit une chose et comment elle
-s'appelle : `docs/CARTE.md`. **Le corps décrit l'état actuel. État au 15 août 2026.***
+*Comment le jeu est fait, où vit la vérité, où vit quoi. Le sens arbitre et il est ailleurs :
+`docs/CONCEPTION.md` (§1 à §8). L'état du jour : `docs/PASSATION.md`.*
 
-## 9. Disposition du dépôt
+## 9. Le rangement
 
-**L'inventaire est dans `docs/CARTE.md`** — quel fichier porte quoi, avec sa taille à titre indicatif :
-plus vérifiée automatiquement depuis le 15 septembre (le gardien s'est allégé), elle peut dériver d'un
-gros changement sans que rien ne le signale. *La carte localise, ce § explique.* Quatre dossiers : `app/` (le livrable, c'est lui qu'on zippe),
-`docs/`, `tests/` (§16), `grammaire/` (le banc d'essai, qui consomme `../app/moteur.js` et prouve en
-permanence la rétrocompatibilité du §11).
+**La règle :** *le contenu ne contient aucune règle, les règles ne contiennent aucun contenu,
+l'interface ne décide rien, et l'atelier ne recopie rien.*
 
-**La règle de rangement, en une phrase :** *le contenu ne contient aucune règle, les règles ne
-contiennent aucun contenu, l'interface ne décide rien, et l'atelier ne recopie rien.*
-
-**Une page ne porte que sa structure** : CSS en `<link>`, JS en `<script src>`, aucun build. Ça ne
-change rien à l'exécution — un script classique externe partage la même portée globale, et les
-déclarations de fonction restent des propriétés de `window`, ce dont dépendent tous les `onclick=` du
-HTML engendré.
-
-**Le corollaire, qui a mordu :** un nom de haut niveau dans `moteur.js` ou `regles.js` est un nom
-**pris dans la page qui les charge**. Les projections du §14 et `estRegle` sont donc **cloîtrés** dans
-une fermeture et ne sortent que par `MoteurGrammaire.x` / `ReglesJeu.x`.
-
-**« L'atelier ne recopie rien » vaut aussi de lui-même** : `noyau.js` porte en section *2 bis* les
-quatre gestes que tous les autres refont, et deux formats. Ce ne sont **pas** des règles du jeu et ils
-ne doivent jamais le devenir — `regles.js` reste la seule maison de ce qui décide (§12).
-
-Les modules de l'atelier se chargent en **portée globale classique**, jamais en modules ES : c'est ce
-qui laisse intacts les cinquante-neuf `onclick=` et préserve le zéro build. Les fonctions se voient
-par *hoisting* ; seul `noyau.js` exécute son corps au chargement, il vient donc en premier.
-
-Le contenu **n'existe qu'en un exemplaire** : pas de copie de secours. S'il manque ou s'il est d'un
-schéma inconnu, le jeu ne joue pas autre chose en douce — il le dit et ne démarre pas (§13).
+- Quatre dossiers : `app/` (le livrable), `docs/`, `tests/` (§16), `grammaire/` (le banc d'essai, qui
+  consomme `../app/moteur.js` et prouve la rétrocompatibilité du §11). Inventaire : §17.
+- **Une page ne porte que sa structure** : CSS en `<link>`, JS en `<script src>`, aucun build — un
+  script classique externe partage la portée globale, ce dont dépendent tous les `onclick=`.
+- **Corollaire payé** : un nom de haut niveau dans `moteur.js` ou `regles.js` est un nom **pris dans la
+  page**. Les projections (§14) et `estRegle` sont **cloîtrés** et ne sortent que par
+  `MoteurGrammaire.x` / `ReglesJeu.x`.
+- **Les modules de l'atelier se chargent en portée globale classique**, jamais en modules ES ; les
+  fonctions se voient par *hoisting*, et `noyau.js` vient **en premier**, seul dont le corps s'exécute
+  au chargement.
+- **Le contenu n'existe qu'en un exemplaire** : manquant ou d'un schéma inconnu, le jeu ne joue pas
+  autre chose en douce — il le dit et ne démarre pas (§13).
 
 ## 10. Le cycle d'écriture
 
-```
-┌────────────────────┐    Écrire content.js    ┌─────────────┐   <script src>   ┌────────────────────┐
-│  atelier_v3.html   │ ──────────────────────► │  content.js │ ───────────────► │     index.html     │
-│  (écriture +       │                         │ (LE CONTENU,│                  │  (l'interface)     │
-│   diagnostic +     │ ◄────────────────────── │  exemplaire │ ◄─────────────── └────────────────────┘
-│   pas-à-pas)       │      <script src>       │   unique)   │   moteur.js + regles.js
-└────────────────────┘                         └─────────────┘
-```
+`atelier_v3.html` **écrit** `app/content.js`, que le jeu et l'atelier lisent tous deux par
+`<script src>` : un cycle, pas une chaîne — plus d'amont ni d'aval, donc plus de dérive.
 
-L'atelier et le jeu lisent le même fichier, et l'export **remplace celui qu'on vient de lire** : c'est
-un cycle, pas une chaîne — plus d'amont ni d'aval, donc plus de dérive possible.
-
-**Et il le remplace sur place.** Le navigateur ne choisit pas où il écrit, mais il écrit dans un
-fichier **que l'auteur lui désigne** — File System Access, disponible jusqu'en `file://` sous Chrome
-et Edge. On désigne `app/content.js` une fois ; la poignée est retenue dans IndexedDB, et les fois
-suivantes tiennent en un clic — Chrome redemande seulement le droit d'écrire, qu'il ne garde pas d'une
-session à l'autre. **Alt+clic** désigne un autre fichier, quand la poignée retenue n'est plus la
-bonne. Là où l'API manque (Firefox, Safari) ou si le droit est refusé, le bouton **retombe sur le
-téléchargement d'avant**, et le dit sur lui-même : c'est la commodité qui dépend du navigateur, jamais
-le cycle.
+**L'export remplace le fichier sur place** (File System Access, jusqu'en `file://` sous Chrome et
+Edge) : on désigne `app/content.js` une fois, la poignée est retenue dans IndexedDB, les fois suivantes
+tiennent en un clic ; **Alt+clic** en désigne un autre. Sans l'API (Firefox, Safari) ou sur droit
+refusé, le bouton **retombe sur le téléchargement** et le dit sur lui-même : la commodité dépend du
+navigateur, jamais le cycle.
 
 ## 11. Le contenu — schéma 3
 
@@ -87,125 +61,85 @@ le cycle.
 }
 ```
 
-**Le texte à empans** s'écrit avec des marqueurs `{{eid}}` — pas d'appariement de sous-chaînes, donc
-pas de marquage qui glisse quand on corrige une virgule. Le diagnostic exige que tout empan déclaré
-porte le sien. **Le `nom` est optionnel** (§4.1) : absent, le `texte` en tient lieu.
-
-**Attributs optionnels d'un bloc**, sans effet quand ils sont absents :
-
-| | |
-|---|---|
-| `imbrique` | la liaison **emboîte** ce qui a été composé comme terme unique de sa forme |
-| `deduit` | le bloc **clôt une paire** : forme déduite des deux termes, puis rangés dans l'ordre canonique (§4.5) |
-| `piece` | offert seulement une fois cette pièce livrée. **Il porte sur les liaisons *et* sur les termes** — le bloc du second terme attend l'article qui le fondera. Le mécanisme sert à retarder une voie ; **l'affaire Kessler n'en retarde plus aucune**, l'article 3 arrivant avec le premier lot (§4.5.1) |
-| `libelle` | le texte du bouton, quand il diffère de ce qui s'écrira |
-| `cite` | la liaison fait écrire le terme qui la précède **par son nom et par sa citation**, avec sa pièce (§4.1) |
-
-**Attributs optionnels d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`), le
-prédicat qu'évalue `deduire` ; `sens` (`"asc"` par défaut), l'ordre canonique d'une forme
-`ordonne:true` ; `patron`, la phrase écrite d'un bloc, `{a}`/`{b}` — **le seul endroit où l'accord se
-joue** (§8.8 de `docs/ECRITURE.md`). **L'ordre de déclaration des formes est signifiant** : `deduire`
-rend la première dont la dimension convient et dont le prédicat tient.
-
-**Les attentes d'une remise** sont servies dans l'ordre : `question` est poussée dans la Discussion
-quand l'attente devient courante, `attend` est le tag comparé à celui du lien versé, `apres` l'accusé
-de réception. L'ancienne forme (`attend`/`apres` sur la remise) reste valide et se lit comme une liste
-à un élément ; **le schéma reste 3** ; répondre **dans le désordre** est accepté.
-
-**L'attribut optionnel d'une pièce** : `porte`, sur une pièce de type « règle » uniquement — affiché,
-**jamais lu par le moteur**. Une pièce de type « règle » ne porte aucun empan : contrôle du
-diagnostic, pas contrainte du moteur.
-
-**Un terme** est soit `"pid.eid"`, soit un `{forme, termes}` **imbriqué**. La liste des dimensions vit
-dans le contenu, mais le moteur ne lit aucun de ces noms : ajouter `comment` est un geste d'atelier.
-
-**Ce que le moteur garde alors que le contenu ne s'en sert plus** : la source `note` et la clôture
-sans forme — `test_autre_affaire.js` les emploie. *On ne retire pas une capacité du moteur parce que
-le contenu du jour ne s'en sert pas.*
-
-**Migration 2 → 3** (`migrerContenu()`, silencieuse) : les `champs` deviennent des `empans`, le texte
-reçoit ses marqueurs, les `liens` par paires deviennent `{forme, termes}`, l'accusé migre sur la
-**première attente**, `cases`/`relations` partent. Elle **écrit la forme du §3, jamais l'ancienne**, et
-**n'invente aucune attente** — une attente sans `attend` bloquerait la session pour toujours. **Le
-jeu, lui, ne migre pas** : un schéma 2 est refusé par `contenuValide()`.
+- **Marqueurs `{{eid}}`**, pas d'appariement de sous-chaînes : un marquage ne glisse pas quand on
+  corrige une virgule. `nom` absent → le `texte` en tient lieu.
+- **Attributs d'un bloc** : `imbrique` (la liaison **emboîte** l'acquis comme terme unique) · `deduit`
+  (le bloc **clôt une paire** : forme déduite, termes rangés dans l'ordre canonique) · `piece` (offert
+  une fois la pièce livrée — **sur les liaisons *et* sur les termes**, §4.5) · `libelle` (le texte du
+  bouton) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa pièce).
+- **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`) · `sens` (`"asc"` par
+  défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8).
+  **L'ordre de déclaration est signifiant** : `deduire` rend la première forme qui convient.
+- **Attribut d'une pièce** : `porte`, sur une pièce « règle » seulement — affiché, **jamais lu par le
+  moteur** ; une telle pièce ne porte aucun empan (diagnostic, pas moteur).
+- **Les attentes** sont servies dans l'ordre — `question` poussée quand l'attente devient courante,
+  `attend` comparé au tag du lien versé, `apres` l'accusé de réception ; le **désordre est accepté**.
+  L'ancienne forme (`attend`/`apres` sur la remise) se lit comme une liste à un élément.
+- **Un terme** est `"pid.eid"` ou un `{forme, termes}` imbriqué. Les dimensions vivent dans le contenu,
+  le moteur ne lit aucun de ces noms : ajouter `comment` est un geste d'atelier.
+- **Migration 2 → 3** (`migrerContenu()`, silencieuse) : `champs` → `empans`, marqueurs posés, liens par
+  paires → `{forme, termes}`, accusé migré sur la **première attente**, `cases`/`relations` retirés.
+  Elle **n'invente aucune attente** (sans `attend`, la session bloquerait pour toujours) ; **le jeu ne
+  migre pas** — un schéma 2 est refusé par `contenuValide()`.
+- *On ne retire pas du moteur une capacité que le contenu du jour n'emploie pas* : la source `note`, la
+  clôture sans forme.
 
 ## 12. Où est la source de vérité ?
 
-Pas *une* source mais **quatre**, une par nature d'information — et aucune n'a de copie.
+Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 
-| Nature | Source de vérité | Copies |
-|---|---|---|
-| **Le contenu** (pièces, empans, dimensions, grammaire, liens, sessions, répliques, fins) | **`app/content.js`** — chargé par le jeu *et* par l'atelier | aucune |
-| **Les règles du jeu** (sessions, drapeaux, Plaidoirie, répétition, fins) | **`app/regles.js`** | aucune |
-| **La grammaire** et **les projections du contenu** (§14) | **`app/moteur.js`** | aucune |
-| **Le sens** (invariants, arbitrages) | **`docs/CONCEPTION.md`** | le diagnostic en encode une partie : un extrait, pas le doc |
+| Nature | Source |
+|---|---|
+| **Le contenu** (pièces, empans, dimensions, grammaire, liens, sessions, répliques, fins) | `app/content.js` |
+| **Les règles** (sessions, drapeaux, Plaidoirie, répétition, fins) | `app/regles.js` |
+| **La grammaire** et les **projections** (§14) | `app/moteur.js` |
+| **Le sens** (invariants, arbitrages) | `docs/CONCEPTION.md` — le diagnostic n'en encode qu'un extrait |
 
-`app/regles.js` est **pur** : `creerRegles(JEU, M)` rend des fonctions qui prennent `S` en argument
-explicite, sans DOM ni `localStorage` ; celles qui « parlent » poussent dans `S.fil`, qui est de
-l'état. Le pas-à-pas de l'atelier appelle **les mêmes fonctions sur le même état** : il ne peut pas
-dériver. Restent propres à l'atelier : diagnostic, graphe, frise, migration, export.
+- `creerRegles(JEU, M)` est **pur** : ses fonctions prennent `S` en argument explicite, sans DOM ni
+  `localStorage` ; celles qui « parlent » poussent dans `S.fil`, qui est de l'état. Le pas-à-pas appelle
+  **les mêmes fonctions sur le même état**, il ne peut donc pas dériver.
+- **Ce qui redessine reste une fonction de `jeu.js` ; ce qui lit s'écrit `R.x(S)` sur place.** Restent
+  les seules cibles de `onclick` — `poserBloc`, `envoyer`, `surligner`, `cloturer` — qui font
+  `R.x(S, …)` **puis** `rendreTout()`. **Les suites lisent pareil**, en `w.R.x(w.S)` : un contrat, pas
+  une commodité.
+- Une seule différence de nature : le pas-à-pas joue au grain du lien, le jeu bloc à bloc ; les deux
+  passent par `clorePhrase`.
 
-**`index.html` n'enveloppe pas `regles.js`** :
+## 13. Le chargement, et `content.js` manquant
 
-> **Ce qui redessine reste une fonction d'ici ; ce qui lit s'écrit `R.x(S)` sur place.**
+- **Aucun repli** : un repli silencieux ferait *jouer autre chose* sans le dire. Fichier absent, schéma
+  antérieur à 3, clé vitale manquante → un **bandeau** nomme le cas, aucune session n'est livrée.
+- **La sauvegarde est signée par le contenu** (`localStorage`, `iavocat_partie`) : livrer un nouveau
+  `content.js` invalide les parties en cours.
+- **Le harnais inline tout `<script src>` et tout `<link rel=stylesheet>`** au boot, dans l'ordre des
+  balises — jsdom n'en charge aucun. Le CSS aussi, alors qu'aucune suite ne lit de couleur : `getCSS()`
+  en lit (`graphe.js`), et jsdom rend `""` pour un `<link>`.
+- **Trois règles sur la balise de `jeu.js`**, en commentaire dans `index.html` : **une ligne, sans
+  attribut** ; **ni `defer` ni `async`** ; **après `content.js`**. Un attribut de plus empêche l'inlinage
+  *entièrement*. R1 tient la forme.
+- **Le harnais ne prouve jamais que les balises se chargent pour de vrai** : seul `npm run vue` y
+  touche, qui n'asserte rien non plus — il sort en 1 sur une erreur JS et dépose des captures. **La
+  preuve du CSS est à l'œil.**
 
-Restent donc les seules cibles de `onclick` — `poserBloc`, `envoyer`, `surligner`, `cloturer` — qui
-font `R.x(S, …)` **puis** `rendreTout()`. **Les suites lisent de la même façon**, en `w.R.x(w.S)` :
-c'est un contrat, pas une commodité. Une seule différence subsiste, de nature et non de règle : le
-pas-à-pas joue **au grain du lien**, le jeu **bloc à bloc** ; les deux passent par `clorePhrase`.
+## 14. Le moteur
 
-## 13. Ce qui se passe quand `content.js` manque
+`creerMoteur(GRAMMAIRE, CHAMPS, LIENS)` est **pur, sans données** — `valider`, `reduire`, `lienDe`,
+`rendre`, `squelettes`… — chargé tel quel par le jeu, l'atelier et le banc d'essai.
 
-Il n'y a pas de repli, et c'est un bon prix : un repli silencieux ferait *jouer autre chose* sans le
-dire. Fichier absent, schéma antérieur à 3, clé vitale manquante → un **bandeau** nomme le cas, aucune
-session n'est livrée. **La sauvegarde de partie est signée par le contenu** (`localStorage`, clé
-`iavocat_partie`) : livrer un nouveau `content.js` invalide les parties en cours.
+- **Accumuler, pas écraser** : `reduire(ch)` empile les termes en retenant la forme courante ; à un bloc
+  `imbrique`, l'acquis devient le **terme unique** de la nouvelle forme. `rendre(ch)` écrit le `nom`,
+  avec repli sur `texte`.
+- **La déduction** tient sur trois fonctions : `comparer(a, b)` (numérique quand les deux valeurs le
+  sont, `hh:mm` compris ; lexicographique sinon), `deduire(idA, idB)` (la forme, ou `null` sur
+  dimensions différentes — le seul refus qui existe), `ordonner(forme, [a, b])`.
+- **Rétrocompatibilité** : sans `deduit`, sans `deduction`, sans `patron`, `reduire` et `rendre` se
+  comportent comme un automate à liaisons explicites — le banc d'essai (`grammaire/`) l'exerce.
+- **`valider(r)` descend dans les termes emboîtés**, sans quoi l'article obligatoire ouvrirait un trou,
+  « affirmation » étant une catégorie que tout objet satisfait.
+- **Le flag `cite` est porté par la liaison, jamais par le terme** — sinon la voie de comparaison, qui
+  partage le bloc de premier terme, serait cassée.
 
-Le harnais **inline tout `<script src>` ET tout `<link rel=stylesheet>`** au boot — jsdom n'en charge
-aucun. Ce sont les fichiers mêmes, relus à chaque boot : c'est ce qui permet au contenu de n'exister
-qu'en un exemplaire tout en restant testable. L'injection est **générique**, dans l'ordre des balises.
-
-**Le CSS aussi**, alors qu'aucune suite ne lit de couleur : parce que `getCSS()` en lit
-(`app/atelier/graphe.js`, seul endroit où du CSS traverse vers du JS), et que jsdom rend `""` pour un
-`<link>`. Sans ce filet, sortir le CSS du HTML aurait changé ce que le graphe dessine sous test **sans
-qu'aucun contrôle ne bronche**.
-
-**Trois règles sur la balise de `jeu.js`**, portées en commentaire dans `index.html` : sur **une
-ligne, sans attribut** ; **ni `defer` ni `async`** ; **après `content.js`**. La regex est si stricte
-qu'un attribut de plus empêche l'inlinage **entièrement** — rien ne se charge, quatre contrôles
-tombent. R1 tient la forme.
-
-**Ce que le harnais ne prouve jamais :** que les balises se chargent pour de vrai. C'est le seul
-emploi de `npm run vue`, qui n'asserte rien non plus — il sort en 1 sur une erreur JS et dépose des
-captures. **La preuve du CSS est à l'œil, sur les captures.**
-
-## 14. La grammaire — branchée
-
-`app/moteur.js` est **pur, sans données** : `creerMoteur(GRAMMAIRE, CHAMPS, LIENS)` rend `valider`,
-`reduire`, `lienDe`, `rendre`, `squelettes`… chargé tel quel par le jeu, l'atelier et le banc d'essai.
-
-**Accumuler, pas écraser** : `reduire(ch)` empile les termes en retenant la forme courante ; à un bloc
-`imbrique`, ce qui a été accumulé devient le **terme unique** de la nouvelle forme. `rendre(ch)` écrit
-le `nom` d'un empan, avec repli sur `texte`.
-
-**La déduction** tient sur trois fonctions : `comparer(a, b)` — numérique quand les deux valeurs le
-sont (`hh:mm` compris), lexicographique sinon ; `deduire(idA, idB)` — la forme, ou `null` (dimensions
-différentes → `null`, le seul refus qui existe) ; `ordonner(forme, [a, b])`.
-
-**Le contrat de rétrocompatibilité :** sans `deduit`, sans `deduction`, sans `patron`, `reduire` et
-`rendre` se comportent comme un automate à liaisons explicites — `test_autre_affaire.js` le vérifie.
-
-**`valider(r)` descend dans les termes emboîtés** : sans ça l'article obligatoire ouvrirait un trou,
-« affirmation » étant une catégorie que tout objet satisfait. La qualification étant le seul chemin de
-clôture, c'est le seul endroit où la catégorie peut trancher — elle doit donc trancher jusqu'au fond.
-
-**Une liaison `cite`** réécrit le fragment du terme qui la précède : nom, citation, `court` de la
-pièce. Le flag est porté par la **liaison**, non par le terme, pour que la voie de comparaison — même
-bloc de premier terme — reste intacte.
-
-### Les projections du contenu — dans ce fichier, et nulle part ailleurs
-
-Elles ne se lient à rien : on passe un contenu, on reçoit une vue. C'est leur seule maison.
+**Les projections** ne se lient à rien : on passe un contenu, on reçoit une vue. Leur seule maison.
 
 | Projection | Qui l'appelle |
 |---|---|
@@ -213,132 +147,153 @@ Elles ne se lient à rien : on passe un contenu, on reçoit une vue. C'est leur 
 | `comparaisonsDe(liens, formes)` — les comparaisons d'arité 2, emboîtées comprises, dédoublonnées | l'atelier, le harnais |
 | `couleurDim(dimensions, d)` — le **rang**, jamais la pertinence (§4.3) ; `null` si inconnue | le jeu, l'atelier |
 
-`champsDe` est **exactement l'argument `CHAMPS` que `creerMoteur` attend**. `couleurDim` rend `null`
-plutôt qu'une couleur de repli : le jeu grise, l'atelier montre en rouge — c'est une erreur d'écriture
-chez lui. Les **données**, elles, ont trois provenances : le jeu lit `JEU.grammaire` / `champsDe(JEU)`
-/ `JEU.liens`, l'atelier les mêmes depuis `CONTENU`, le banc d'essai tout depuis `grammaire2.js`.
-L'automate et les formes **vivent dans le contenu** : c'est de l'écriture, pas du code.
+`champsDe` est **exactement l'argument `CHAMPS` de `creerMoteur`**. `couleurDim` rend `null` plutôt
+qu'une couleur de repli : le jeu grise, l'atelier montre en rouge — chez lui, c'est une erreur
+d'écriture. **La marge de bruit doit rester non nulle**, sinon « sensé » vaudrait « correct » : mesurée
+en direct par l'onglet Grammaire, jamais recopiée ici.
 
-**La marge de bruit doit rester non nulle** — sinon « sensé » vaudrait « correct ». Mesurée en direct
-par l'onglet Grammaire, pas mémorisée ici : un chiffre figé se périmerait au premier contenu ajouté.
+## 15. Les trois reflets
 
-## 15. Ce qu'il reste à resynchroniser
+Les règles vivent dans `regles.js`, que le jeu et l'atelier **appellent**. Restent trois endroits où
+l'atelier *décrit* le jeu faute de pouvoir l'appeler : la **frise** et les **pastilles** du pas-à-pas
+(le déroulé, les drapeaux), le **diagnostic** et les **formulaires** (le schéma, §11), l'onglet
+**Grammaire** (`moteur.js`).
 
-**Presque rien** : les règles vivent dans `app/regles.js`, que le jeu et l'atelier appellent. Restent
-trois **reflets** de l'atelier sur le jeu — trois endroits où il *décrit* le jeu faute de pouvoir
-l'appeler.
+**C'est le danger le plus coûteux du dépôt** : un reflet laissé derrière ne casse rien, ne lève rien,
+aucune suite ne le voit — il ment tous les jours à celui qui écrit l'affaire. Le remède n'est pas une
+checklist : que le reflet **appelle** ce qu'il reflète (§12), et là où il ne le peut pas, qu'une règle
+du gardien tienne l'écart (§16).
 
-| Ce qui change | Ce qu'il faut suivre |
+**Ce que le diagnostic contrôle** : la règle de surlignage (empan sans marqueur → erreur), le nom
+d'empan (absent → avertissement), le doublon banal dans les deux sens, la grammaire (impasse, clôture
+sans forme, forme indicible, lien insensé, emboîtement dans le vide, forme ordonnée sans `sens`,
+dimension sans forme déductible), les articles, le vice, les sessions — plus l'article livré **trop
+tard**, qui rend une session inclôturable.
+
+- **« Forme indicible »** : une forme existe de **deux façons** — déclarée par une liaison, ou déduite
+  par un bloc `deduit` ; celle-là n'est nommée par aucun bloc.
+- **L'ombrage n'est délibérément pas signalé** : `deduire` rend la **première** forme qui convient, et
+  le signaler reviendrait à interdire le mécanisme qui tranche les ambiguïtés.
+- **Point ouvert** : la frise édite `rep_inutile` et `rep_sans_rapport`, **pas `rep_hors_sujet`**.
+
+Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) → relancer les suites.
+
+## 16. Les suites, le gardien, ESLint
+
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **318 contrôles**. Ce qu'il expose — boot,
+une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
+
+| Suite | Ce qu'elle prouve |
 |---|---|
-| Une règle du jeu (`app/regles.js`) | Rien de mécanique. Que la **frise** décrive toujours le déroulé en mots justes, et que les **pastilles** du pas-à-pas nomment les bons drapeaux |
-| Le schéma du contenu (§11) | Le **diagnostic** et les **formulaires** de l'inspecteur |
-| La grammaire (`app/moteur.js`) | L'onglet **Grammaire**, qui l'exerce sur le contenu courant |
+| `test_o5.js` (36) | l'index du dossier ; tout empan cliquable, aucun marqueur qui fuit ; surligner et composer gratuits et illimités ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
+| `test_declencheurs.js` (34) | le décâblage, sur contenus **mutés** : `declenche`/`une_fois`/`qui`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
+| `test_parcours.js` (123) | le grain fin : composer, retirer, effacer ; **le geste unique — poser ne clôt plus, l'envoi clôt et transmet** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la Plaidoirie ; la répétition |
+| `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère ; la fin efface |
+| `smoke_atelier.js` (87) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et ses deux replis (§10), autosave |
 
-**Le danger de ces trois-là est le plus coûteux du dépôt** : un reflet laissé derrière ne casse rien,
-ne lève rien, **aucune suite ne le voit** — il ment tous les jours à celui qui écrit l'affaire. Le
-remède n'est pas une checklist : c'est que le reflet **appelle** ce qu'il reflète (§12), et là où il
-ne le peut pas, qu'une règle du gardien tienne l'écart (§16 bis).
+- **Le contrat de lecture : `w.R.x(w.S)`** — une suite demande aux *règles*, pas à l'écran ; ce que la
+  fenêtre expose en propre, ce sont les **gestes**, parce qu'eux redessinent.
+- **Une suite ne redécide rien** : un prédicat recopié ne casse pas, ne lève pas, et reste vert en
+  affirmant l'ancienne vérité — et **les suites ne se lisent pas elles-mêmes**.
+- **Les tests ne nomment aucun contenu** : ni pièce, ni empan, ni valeur ; tout se dérive de la *forme*,
+  si bien que **changer d'affaire ne casse pas une seule suite**. Sont épinglées, en revanche, des
+  chaînes de chrome (`Envoyer`, `effacer`, `Opposer une phrase`, `déjà envoyée`, `● `, `✓ `,
+  `zoneRetenus`) : on les renomme si on veut, jamais sans toucher au test qui les nomme.
+- *Les Manuels n'ont plus de suite — on éprouvait un chemin que le joueur ne peut pas prendre. La règle
+  reste dans `regles.js`, mais `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par le jeu.*
 
-**Le point ouvert du jour :** la frise édite `rep_inutile` et `rep_sans_rapport`, **pas
-`rep_hors_sujet`** — le contenu la porte, `reponseAvocat` la lit, l'atelier ne sait pas l'écrire.
+**Le gardien** (`outils/gardien.js`, dans `npm test` après les suites) rend opposables les conventions
+qu'aucune suite ne voit : **six règles, six pannes réellement vécues**, chacune citant son § — *la liste
+vit dans son en-tête*. Il ne connaît ni pièce, ni empan, ni valeur.
 
-Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (le fichier du jeu est réécrit sur
-place, §10) → relancer les suites.
+- **Ce qu'une règle a le droit d'être** : le constat d'une panne payée, pas une préférence de style ; un
+  motif vérifiable sur le source, pas une intention.
+- **Sur quel territoire elle marche** — première question avant d'en ajouter une, et la réponse n'est
+  pas « `app/` » par défaut : `tests/` et `outils/` *reflètent* les règles du jeu.
+- **Ce n'est pas une cinquième source de vérité** (§12) : si une règle et son § divergent, c'est le §
+  qui a raison. Les renvois sont des **numéros nus**, l'ancre d'un lien Markdown se calculant sur le
+  titre, que renommer casserait en silence.
 
-**Ce que le diagnostic contrôle**, au-delà du câblage : la règle de surlignage (empan sans marqueur →
-erreur), le nom d'empan (absent → avertissement), le doublon banal dans les deux sens, la grammaire
-(impasse, clôture sans forme, forme indicible, lien insensé, emboîtement dans le vide, forme ordonnée
-sans `sens`, dimension sans forme déductible), les articles, le vice, les sessions. Plus un contrôle à
-part : un article livré **trop tard** rend une session inclôturable — le genre de piège qu'aucune
-relecture ne rattrape et qu'une partie de test ne révèle qu'après vingt minutes.
+**`eslint.config.js`**, l'autre bout, générique : identifiant fautif, variable morte, clé dupliquée. Sa
+liste de globals ne s'écrit pas, elle se **calcule** en demandant son inventaire au gardien. Deux
+assouplissements, pour des idiomes voulus : un `catch` qui ignore délibérément sa raison, et les noms de
+haut niveau d'une page, qu'ESLint croirait morts faute de savoir lire un `onclick=`.
 
-**« Forme indicible » : une forme existe de DEUX façons** — une liaison peut la **déclarer**, un bloc
-`deduit` peut la faire **déduire**, et celle-là n'est nommée par aucun bloc. **« Déductible » se lit
-comme `deduire` le lit, et sur CE dossier** : `deduction`, arité 2, un premier slot qui accepte au
-moins une dimension déclarée — plus un bloc qui porte `deduit`, sans quoi rien ne déclenche le calcul.
+**Règle d'or : une évolution n'est finie que quand les cinq suites sont vertes**, gardien et ESLint
+compris. **Les suites d'abord** : le sens avant la forme.
 
-**Ce qui n'est délibérément PAS signalé : l'ombrage.** `deduire` rend la **première** forme qui
-convient : **l'ordre de déclaration est signifiant** (§11), et le signaler reviendrait à interdire le
-mécanisme qui tranche les ambiguïtés.
+## 17. La carte
 
-## 16. Les harnais de test
+*Où vit une chose, et comment elle s'appelle. **Ce § n'explique jamais** ; en cas d'écart, c'est le code
+qui a raison.*
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), qui inline tout `<script src>` et tout
-`<link rel=stylesheet>` au boot (§13). Ce qu'il expose est listé dans `docs/CARTE.md`.
-
-**Le contrat de lecture : `w.R.x(w.S)`.** Une suite qui veut savoir ce que le jeu offre demande aux
-*règles*, pas à l'écran ; ce que la fenêtre expose en propre, ce sont les **gestes**, parce qu'eux
-redessinent. **Et une suite ne REDÉCIDE rien non plus** : un prédicat recopié ne casse pas, ne lève
-pas, et reste vert en affirmant l'ancienne vérité — et personne ne peut le voir, puisque **les suites
-ne se lisent pas elles-mêmes**. *Une suite désigne, elle ne décide pas* — discipline tenue à la
-relecture, plus par une règle du gardien depuis le 15 septembre.
-
-**Les tests ne nomment aucun contenu** : ni pièce, ni empan, ni valeur ; tout se dérive de la *forme*.
-Conséquence, et c'est ce qui justifie la discipline : **changer entièrement d'affaire ne casse pas une
-seule suite.**
-
-| Suite | Cible | Ce qu'elle prouve |
+| Fichier | Ce qu'il porte | Ce qu'il ne porte jamais |
 |---|---|---|
-| `test_o5.js` (36) | le jeu, sur **`content.js`** | l'index du dossier ; tout empan cliquable, aucun marqueur qui fuit ; surligner et composer gratuits, illimités, dédoublonnés ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
-| `test_declencheurs.js` (34) | le jeu, contenus **mutés** | le décâblage : `declenche`/`une_fois`/`qui`, la liste d'attentes (question posée à son tour, désordre accepté), les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (123) | le jeu | l'ergonomie et le grain fin : composer bloc à bloc, retirer, effacer ; **le geste unique — poser ne clôt plus, l'envoi clôt et transmet** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction (patron, ordre des clics indifférent) ; le filtre de livraison, **termes compris, éprouvé sur un contenu muté** ; la continuation ; la Plaidoirie qui ne retient que les moyens ; la répétition |
-| `test_sauvegarde.js` (38) | le jeu | la partie survit au rechargement (mémoire, journal, plan, **composition assemblée et non envoyée** — c'est elle qui porte la Fin 2 —, drapeaux) ; la signature jette une sauvegarde d'un autre contenu ; la fin efface |
-| `smoke_atelier.js` (87) | l'atelier + le couple atelier→jeu | `content.js` réexporté à l'identique ; le diagnostic au complet ; migration 2→3 idempotente ; renommages ; le pas-à-pas sur `regles.js` ; export `schema: 3` joué par le moteur ; **l'écriture sur place et ses deux replis** (§10) ; autosave |
+| `app/content.js` | **le contenu** — une affaire, en un exemplaire | aucune règle |
+| `app/regles.js` | **les règles** — tout ce qui décide | aucun contenu, aucun DOM |
+| `app/moteur.js` | **la grammaire** et les **projections** (§14) | aucune donnée |
+| `app/index.html` · `app/jeu.css` | la **structure** · la **mise en forme** | aucun script en ligne · rien que le JS relise |
+| `app/jeu.js` | **l'écran et les gestes** — rendu, sauvegarde, tutoriel | ne décide rien |
+| `app/atelier_v3.html` + `app/atelier/` | **l'atelier**, un fichier par outil | ne recopie rien, *y compris de lui-même* |
 
-**Les Manuels n'ont plus de suite** : sept contrôles éprouvaient `openManuels()`, orpheline à l'écran
-— on éprouvait un chemin que le joueur ne pouvait pas prendre, ce qui est pire que de ne pas
-l'éprouver. La **règle** reste dans `regles.js`. *Conséquence : `JEU.directives` et
-`JEU.avis_exploitation` ne sont plus lus par le jeu, alors que la frise les édite et que le diagnostic
-avertit de leur absence.*
+`regles.js` et `moteur.js` sont en **mode double** — `require` ou `<script src>` — et exposent une
+**fabrique**. Hors fabrique et cloîtrés (§9) : `MoteurGrammaire.champsDe`, `.comparaisonsDe`,
+`.couleurDim`, `ReglesJeu.estRegle`.
 
-**Des chaînes de chrome sont épinglées**, en revanche : `Envoyer`, `effacer`, `Opposer une phrase`,
-`déjà envoyée`, les marqueurs `● ` et `✓ `, l'id `zoneRetenus` — les repères par lesquels une suite
-atteint une zone sans la nommer par sa structure. On les renomme si on veut, jamais sans toucher au
-test qui les nomme. *Cette liste et ces comptes se **relèvent** sur les suites, jamais ne se
-recopient : une laisse qu'on croit tendue fait hésiter à renommer ce que personne ne tient.*
+**Les huit modules de l'atelier, dans l'ordre de chargement** : `noyau.js` (contenu chargé, outils, état
+d'interface, annulation, onglets — **et les quatre gestes** ci-dessous ; en premier) · `graphe.js` (le
+canevas ; seul endroit où du CSS traverse vers du JS, `getCSS`) · `diagnostic.js` · `inspecteur.js`
+(formulaires, mutations, renommages) · `frise.js` (remises et attentes) · `pasapas.js` (**appelle**
+`regles.js`) · `contenu-io.js` (import, export, migration, autosave) · `grammaire.js`.
 
-## 16 bis. Ce que les suites ne voient pas — le gardien
+**Les quatre gestes que tout l'atelier refait** (`noyau.js`, section *2 bis*) : `muter(f)` — annuler,
+persister, redessiner, **toute** mutation passe par lui —, `poserOuRetirer(o,p,v)`,
+`reinitSelection({garderEmpans})`, `demanderSuppr(cle,f)` + `btnSuppr(…)`. Plus deux formats : `deK(k)`,
+l'inverse de `K(pid,ch)`, et `reecrireTermes(t,f)`, la marche sur les termes emboîtés.
 
-Les suites éprouvent le **sens** ; elles ne lisent jamais la forme d'une balise, jamais l'inventaire
-des noms globaux d'une page — et elles ne se lisent pas **elles-mêmes**.
+| Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
+|---|---|---|
+| l'avocat ouvre une session | `envoyerRemise` → `poserQuestion` | `renderDiscussion` |
+| ouvrir une pièce ; l'index du dossier | `ouvrirPiece` (+ `declenche`), `piecesLivrees` | `modalPieceHTML`, `rendreTexte`, `renderDossier` |
+| **surligner** (privé, gratuit) | `surligner` | `renderRetenus` dans `renderMemoire` |
+| ce que le composeur offre | `blocsOfferts`, `etatCompo`, `indexTermeChamp` | `renderCompo` |
+| ce qui se devine avant le clic ; la voix | `comparaisonPossible`, `dimAttendue`, `attenteCourante` | `souffle`, `rappelQuestion` |
+| **poser un bloc** | `poserBloc`, `retirerBloc`, `viderCompo` | `texteCompoPartiel` |
+| la clôture qui n'ajoute rien | `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `renderCompo` — elle n'est PAS un bouton |
+| le pressentiment ⚑ | `majPressentiment`, `pressentir`, `sousLienVice` | *(rien : privé)* |
+| **clore la phrase** | `clore` → `clorePhrase` | *(aucun panneau)* |
+| **envoyer** — le seul geste | `envoyerCompo` → `clore` → `envoyer` → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **sous la Discussion**), `renderPlaidoirie` |
+| ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie` — **cache sa colonne** tant que rien ne s'y inscrit |
+| clôturer, répétition, fin | `instructionComplete`, `cloturer`, `verserContre`, `avancerRepetition`, `finir` | `majCloture`, `finir` (modale) |
+| le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoEtape`, `majTutoriel` |
 
-**`outils/gardien.js`** (`npm run gardien`, dans `npm test` après les suites) rend ces conventions
-opposables : **six règles, six pannes réellement vécues**, chacune citant le § qui la tranche. *La
-liste vit dans son en-tête — la seule que le code puisse contredire.* Il ne connaît ni pièce, ni
-empan, ni valeur, même discipline que les suites. Cinq autres (var CSS non définie, famille CSS
-orpheline, reste du schéma 2, carte de tailles menteuse, prédicat recopié) ont été retirées le 15
-septembre : de la cérémonie de style pour un dépôt à un seul auteur, plus que des pannes qui reviennent
-— voir l'en-tête du fichier pour le détail de chacune.
+- **Les deux voies de clôture** sont le **même** `clore`, appelé par le **même** `envoyerCompo` ; ce qui
+  les sépare vit dans le contenu — une liaison `cite:true` (`citeDe`) contre une forme d'arité 2 déduite
+  et écrite par son `patron`.
+- **L'état `S`** : `etatInitial`, en tête de `regles.js`, où les vingt champs sont commentés un par un.
+- **Deux fonctions normalisent l'ancienne forme `attend`/`apres`, et c'est voulu** : `attentesDe`
+  (`regles.js`) rend une paire fabriquée, `attentesDeRemise` (`noyau.js`) rend **la remise elle-même**,
+  pour que l'inspecteur l'édite en place. Personne d'autre ne les lit sur une remise (R9), hors
+  `attentesEditables` et `migrerContenu`.
 
-Ce qui se décide **ici**, et nulle part ailleurs :
+**Les mots.** Le joueur ne lit jamais `empan`, `bloc`, `lien`, `forme`, `terme` : dans une chaîne
+d'écran, c'est une fuite. À l'écran : **Discussion**, **Mémoire**, **Plaidoirie** (§4.6) ; **passage**
+(un empan, vu du côté joueur) ; **Ta réponse** (la zone du composeur) ; **→ Envoyer** (clôt et transmet,
+irréversible) ; **Clôturer l'instruction** (ferme l'affaire).
 
-- **Ce qu'une règle a le droit d'être** : le constat d'une panne payée, pas une préférence de style ;
-  et un motif vérifiable sur le source, pas une intention.
-- **Sur quel territoire elle marche** — première question à poser avant d'en ajouter une, et la
-  réponse n'est pas « `app/` » par défaut : `tests/` et `outils/` *reflètent* les règles du jeu.
-- **Ce n'est pas une cinquième source de vérité** : le jour où une règle et son § divergent, c'est le
-  § qui a raison et la règle qui se corrige.
-- **Pourquoi des numéros nus et pas des liens** : l'ancre d'un lien Markdown se calcule sur le texte
-  du titre, donc renommer un titre le casse en silence — la panne qu'on voulait fuir. Et la plupart
-  des renvois vivent dans des commentaires JS, où un lien ne se clique pas.
+| Dans le code | Ce que ça désigne |
+|---|---|
+| **pièce** | un document (`JEU.pieces`) — pas *le dossier*, qui est l'ensemble des pièces livrées |
+| **empan** | un fragment marqué : `texte`, `dim`, `valeur`, `qui`, `nom` |
+| **citation** / **nom** | son écriture dans la pièce (`e.texte`) / comme sujet d'une phrase (`e.nom`) |
+| **terme** | un empan (ou un lien imbriqué) **une fois posé** : un rôle, pas un objet |
+| **bloc** / **liaison** | une transition offerte par l'automate, rendue comme bouton — mots interchangeables |
+| **lien** | un triplet `{forme, termes}` **reconnu** (`JEU.liens`, `lienDe`) : le résultat, quand la liaison est le geste |
+| **forme** | le patron grammatical d'une comparaison (`deduction`, `sens`, `patron`) |
+| **attente** / **remise** | `{question?, attend, apres?}` / un envoi de pièces avec sa liste — « session » est le mot du sens |
+| **atelier** | `app/atelier_v3.html`, et rien d'autre |
+| **`S.retenus`** / **`S.plaidoirie`** / **`S.fil`** | les empans surlignés / ce qui est entré au plan / le journal affiché |
 
-**`eslint.config.js`** est l'autre bout, générique : aucune des six pannes ne s'y voit, mais il
-attrape l'identifiant fautif, la variable morte, la clé dupliquée. Sa liste de globals ne s'écrit pas,
-elle se **calcule** en demandant son inventaire au gardien (§12). Deux règles y sont assouplies, pour
-des idiomes voulus : un `catch` qui ignore délibérément sa raison, et les noms de haut niveau d'une
-page, qu'ESLint croirait morts faute de savoir lire un `onclick=`.
-
-Règle d'or : **une évolution n'est finie que quand les cinq suites sont vertes** (318 contrôles), le
-gardien et ESLint compris. **Les suites d'abord** : le sens avant la forme.
-
-## 17. Résumé en trois phrases
-
-Trois modules, trois métiers, aucune copie : le **contenu** dans `content.js`, les **règles** dans
-`regles.js`, la **grammaire et les projections** dans `moteur.js` — et deux pages qui ne font que
-*montrer*, si bien que le pas-à-pas ne rejoue plus les règles, il les appelle. Côté sens, une seule
-chose compte : **rien ne se dit qui ne soit fondé, sous l'un des deux régimes** — un fait se cite, une
-relation se fonde sur un texte — d'où deux sessions, la première pour apprendre à lire, à citer, puis
-à mettre en rapport, la seconde qui ne demande plus rien. Et **un seul geste au composeur** :
-*« → Envoyer »* clôt et transmet d'un coup, l'intervalle qui porte la Fin 2 s'étant déplacé de la
-clôture vers l'assemblage (§4.6, §4.7). `docs/CONCEPTION.md` reste l'arbitre du
-sens ; le diagnostic de l'atelier n'en est que le bras automatisé.
+**Deux faux amis qui mordent encore** : `clore` ferme **une phrase**, `cloturer` ferme
+**l'instruction** et déclenche une fin — jamais l'un pour l'autre, commentaires compris ; `empan` ne
+fuit jamais à l'écran, `passage` n'entre jamais dans `content.js` ni `moteur.js`.
