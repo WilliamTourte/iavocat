@@ -440,9 +440,9 @@ function renderComposeur(){
 /* Un seul titre, celui de la colonne (§4.9) ; le compte monte dans le `<h2>`. */
 function renderPlaidoirie(){
   const gardes=S.plaidoirie.filter(x=>S.brouillon[x.b] && R.estMoyen(S.brouillon[x.b].lien));
-  /* Vide, la colonne n'existe pas (§4.9) : elle apparaît au premier moyen versé,
-     et c'est cette apparition qui l'enseigne. */
-  const vide = !gardes.length;
+  /* Escamoté pour le moment : la colonne ne s'affiche plus jamais, quel que
+     soit le contenu de S.plaidoirie (mécanique de jeu inchangée derrière). */
+  const vide = true;
   { const c=$("colPlaidoirie"); if(c) c.hidden=vide; }
   { const w=document.querySelector(".wrap"); if(w) w.classList.toggle("sansPlan",vide); }
   { const c=$("plaidoirieCount"); if(c) c.textContent=gardes.length||""; }

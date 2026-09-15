@@ -434,7 +434,9 @@ console.log("\n=== Le plan ne retient que les moyens ===");
   const j = H.composerLien(w, moyen);
   w.envoyer(j);
   check("un moyen, lui, s'y inscrit", plaidoirie(w).includes(w.S.brouillon[j].texte));
-  check("et fait apparaître la colonne", plaidoirieVisible(w));
+  /* La colonne est escamotée pour le moment (§4.9 suspendu) : le moyen
+     s'inscrit toujours dans S.plaidoirie, mais l'écran ne l'affiche plus. */
+  check("mais la colonne reste hors écran", !plaidoirieVisible(w));
 }
 {
   const w = boot();
