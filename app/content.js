@@ -292,7 +292,7 @@ window.CONTENU = {
         "vers": "FIN",
         "imbrique": true,
         "piece": "r_temoin",
-        "texte": ", au regard de l'article 3",
+        "texte": ", en contradiction avec l'article 3",
         "forme": "article_3"
       },
       {
@@ -302,7 +302,7 @@ window.CONTENU = {
         "vers": "FIN",
         "imbrique": true,
         "piece": "r_protocole",
-        "texte": ", au regard de l'article 7",
+        "texte": ", en contradiction avec l'article 7",
         "forme": "article_7"
       },
       {
@@ -312,7 +312,7 @@ window.CONTENU = {
         "vers": "FIN",
         "imbrique": true,
         "piece": "r_seuil",
-        "texte": ", au regard de l'article 12",
+        "texte": ", en contradiction avec l'article 12",
         "forme": "article_12"
       }
     ],
