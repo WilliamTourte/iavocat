@@ -18,7 +18,7 @@ window.CONTENU = {
       "type": "procès-verbal",
       "qui": "brigadier N.",
       "resume": "L'appel, l'heure d'arrivée, l'état de la porte.",
-      "texte": "Le 12 mars, {{e_app}}. {{e_arr}}, {{e_equip}} engagés. {{e_porte}}. Constatations faites {{e_sig}}.",
+      "texte": "Le 12 mars, {{e_app}} ; {{e_arr}}, {{e_equip}} engagés ; {{e_porte}}. Constatations faites {{e_sig}}.",
       "empans": {
         "e_app": {
           "dim": "quand",

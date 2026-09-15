@@ -345,7 +345,7 @@ function pointer(ref){
   if(!ref) return render();
   if(ref.edge!=null){ selEdge=ref.edge; }
   /* Les empans à surligner d'un LOT de liens. Cette ligne dépliait `l.a`/`l.b`,
-     du SCHÉMA 2, et levait une TypeError sur le seul chemin qui l'appelle (R7).
+     du SCHÉMA 2, et levait une TypeError sur le seul chemin qui l'appelle.
      `feuillesLien` rend les feuilles quel que soit l'emboîtement. */
   if(ref.edges){ ref.edges.forEach(i=>{ const l=CONTENU.liens[i]; if(!l) return;
     for(const k of feuillesLien(l)) flagged.add(k); }); }

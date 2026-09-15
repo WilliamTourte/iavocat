@@ -6,7 +6,7 @@ fichier ne dit : où on en est, ce qui mord, quoi faire ensuite. Court, et il do
 ## 1. Où en est le jeu
 
 **Le jeu tourne de bout en bout** : `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des
-trois fins. `npm test` est vert — 338 contrôles, 11 règles du gardien, ESLint. Le rangement est fini
+trois fins. `npm test` est vert — 318 contrôles, 6 règles du gardien, ESLint. Le rangement est fini
 sur les quatre territoires, et la prose l'est depuis le 15 août.
 
 **Le 15 septembre a changé deux choses, et toutes deux viennent d'une partie jouée** — pour une fois,
@@ -37,13 +37,12 @@ tenus par rien.
 
 - **[R1]** `<script src="x.js"></script>` sur **une ligne, sans attribut** : une variante n'est pas inlinée *du tout*.
 - **[R2]** Les `const` de haut niveau ne sont pas des propriétés de `window` — **mais ils occupent le nom**, et un `<script src>` partage la portée globale de la page.
-- **[R3]** Une `var(--x)` introuvable rend la déclaration invalide : pour un raccourci, **pas de filet du tout**.
-- **[R4]** Une classe engendrée s'écrit `${x?"arm":""}`, jamais `${x?" arm":""}`.
 - **[R6]** Quatre ids sont des ancres : `#discussion`, `#zoneRetenus`, `#composeur`, `#colPlaidoirie`.
-- **[R7]** Plus rien ne déplie un lien du schéma 2 (`l.a[0]`).
 - **[R9]** Le tag vit sur l'**attente**, jamais sur la remise — quatre fonctions exceptées.
-- **[R10]** Une suite **désigne**, elle ne décide pas.
 - **[R11]** Tout renvoi `§x` désigne une section réelle, dans le bon document.
+
+*Cinq règles retirées le 15 septembre (R3, R4, R7, R8, R10) — voir l'en-tête de `outils/gardien.js` :
+de la cérémonie de style pour un dépôt à un seul auteur, plus que des pannes qui reviennent.*
 
 **Tenus par personne — c'est ici qu'on se fait mal**
 

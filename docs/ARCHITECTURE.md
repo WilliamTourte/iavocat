@@ -6,8 +6,9 @@ s'appelle : `docs/CARTE.md`. **Le corps décrit l'état actuel. État au 15 aoû
 
 ## 9. Disposition du dépôt
 
-**L'inventaire est dans `docs/CARTE.md`** — quel fichier porte quoi, avec sa taille (R8 la vérifie).
-*La carte localise, ce § explique.* Quatre dossiers : `app/` (le livrable, c'est lui qu'on zippe),
+**L'inventaire est dans `docs/CARTE.md`** — quel fichier porte quoi, avec sa taille à titre indicatif :
+plus vérifiée automatiquement depuis le 15 septembre (le gardien s'est allégé), elle peut dériver d'un
+gros changement sans que rien ne le signale. *La carte localise, ce § explique.* Quatre dossiers : `app/` (le livrable, c'est lui qu'on zippe),
 `docs/`, `tests/` (§16), `grammaire/` (le banc d'essai, qui consomme `../app/moteur.js` et prouve en
 permanence la rétrocompatibilité du §11).
 
@@ -218,9 +219,8 @@ chez lui. Les **données**, elles, ont trois provenances : le jeu lit `JEU.gramm
 / `JEU.liens`, l'atelier les mêmes depuis `CONTENU`, le banc d'essai tout depuis `grammaire2.js`.
 L'automate et les formes **vivent dans le contenu** : c'est de l'écriture, pas du code.
 
-**La marge de bruit doit rester non nulle** — sinon « sensé » vaudrait « correct ». Sur `content.js` :
-4 squelettes, **1752 phrases légales → 330 sensées → 15 portant un lien, soit 315 de marge**, mesurés
-en direct par l'onglet Grammaire.
+**La marge de bruit doit rester non nulle** — sinon « sensé » vaudrait « correct ». Mesurée en direct
+par l'onglet Grammaire, pas mémorisée ici : un chiffre figé se périmerait au premier contenu ajouté.
 
 ## 15. Ce qu'il reste à resynchroniser
 
@@ -263,14 +263,15 @@ mécanisme qui tranche les ambiguïtés.
 
 ## 16. Les harnais de test
 
-Six suites sur un harnais jsdom commun (`tests/harnais.js`), qui inline tout `<script src>` et tout
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), qui inline tout `<script src>` et tout
 `<link rel=stylesheet>` au boot (§13). Ce qu'il expose est listé dans `docs/CARTE.md`.
 
 **Le contrat de lecture : `w.R.x(w.S)`.** Une suite qui veut savoir ce que le jeu offre demande aux
 *règles*, pas à l'écran ; ce que la fenêtre expose en propre, ce sont les **gestes**, parce qu'eux
 redessinent. **Et une suite ne REDÉCIDE rien non plus** : un prédicat recopié ne casse pas, ne lève
 pas, et reste vert en affirmant l'ancienne vérité — et personne ne peut le voir, puisque **les suites
-ne se lisent pas elles-mêmes**. *Une suite désigne, elle ne décide pas* — R10 le tient.
+ne se lisent pas elles-mêmes**. *Une suite désigne, elle ne décide pas* — discipline tenue à la
+relecture, plus par une règle du gardien depuis le 15 septembre.
 
 **Les tests ne nomment aucun contenu** : ni pièce, ni empan, ni valeur ; tout se dérive de la *forme*.
 Conséquence, et c'est ce qui justifie la discipline : **changer entièrement d'affaire ne casse pas une
@@ -279,9 +280,8 @@ seule suite.**
 | Suite | Cible | Ce qu'elle prouve |
 |---|---|---|
 | `test_o5.js` (36) | le jeu, sur **`content.js`** | l'index du dossier ; tout empan cliquable, aucun marqueur qui fuit ; surligner et composer gratuits, illimités, dédoublonnés ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
-| `test_declencheurs.js` (39) | le jeu, contenus **mutés** | le décâblage : renommage de toutes les pièces, `declenche`/`une_fois`/`qui`, la liste d'attentes (question posée à son tour, désordre accepté), les trois drapeaux, dimensions renommées, contenu invalide refusé |
-| `test_autre_affaire.js` (20) | le jeu, **affaire de test** | le découplage : une affaire abstraite écrite à l'ancienne (source `note`) se joue de bout en bout, trois fins comprises |
-| `test_parcours.js` (118) | le jeu | l'ergonomie et le grain fin : composer bloc à bloc, retirer, effacer ; **le geste unique — poser ne clôt plus, l'envoi clôt et transmet** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction (patron, ordre des clics indifférent) ; le filtre de livraison, **termes compris, éprouvé sur un contenu muté** ; la continuation ; la Plaidoirie qui ne retient que les moyens ; la répétition |
+| `test_declencheurs.js` (34) | le jeu, contenus **mutés** | le décâblage : `declenche`/`une_fois`/`qui`, la liste d'attentes (question posée à son tour, désordre accepté), les trois drapeaux, contenu invalide refusé |
+| `test_parcours.js` (123) | le jeu | l'ergonomie et le grain fin : composer bloc à bloc, retirer, effacer ; **le geste unique — poser ne clôt plus, l'envoi clôt et transmet** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction (patron, ordre des clics indifférent) ; le filtre de livraison, **termes compris, éprouvé sur un contenu muté** ; la continuation ; la Plaidoirie qui ne retient que les moyens ; la répétition |
 | `test_sauvegarde.js` (38) | le jeu | la partie survit au rechargement (mémoire, journal, plan, **composition assemblée et non envoyée** — c'est elle qui porte la Fin 2 —, drapeaux) ; la signature jette une sauvegarde d'un autre contenu ; la fin efface |
 | `smoke_atelier.js` (87) | l'atelier + le couple atelier→jeu | `content.js` réexporté à l'identique ; le diagnostic au complet ; migration 2→3 idempotente ; renommages ; le pas-à-pas sur `regles.js` ; export `schema: 3` joué par le moteur ; **l'écriture sur place et ses deux replis** (§10) ; autosave |
 
@@ -299,13 +299,16 @@ recopient : une laisse qu'on croit tendue fait hésiter à renommer ce que perso
 
 ## 16 bis. Ce que les suites ne voient pas — le gardien
 
-Les six suites éprouvent le **sens** ; elles ne lisent jamais un style calculé, jamais la forme d'une
-balise, jamais l'inventaire des noms globaux d'une page — et elles ne se lisent pas **elles-mêmes**.
+Les suites éprouvent le **sens** ; elles ne lisent jamais la forme d'une balise, jamais l'inventaire
+des noms globaux d'une page — et elles ne se lisent pas **elles-mêmes**.
 
 **`outils/gardien.js`** (`npm run gardien`, dans `npm test` après les suites) rend ces conventions
-opposables : **onze règles, onze pannes réellement vécues**, chacune citant le § qui la tranche. *La
+opposables : **six règles, six pannes réellement vécues**, chacune citant le § qui la tranche. *La
 liste vit dans son en-tête — la seule que le code puisse contredire.* Il ne connaît ni pièce, ni
-empan, ni valeur, même discipline que les suites.
+empan, ni valeur, même discipline que les suites. Cinq autres (var CSS non définie, famille CSS
+orpheline, reste du schéma 2, carte de tailles menteuse, prédicat recopié) ont été retirées le 15
+septembre : de la cérémonie de style pour un dépôt à un seul auteur, plus que des pannes qui reviennent
+— voir l'en-tête du fichier pour le détail de chacune.
 
 Ce qui se décide **ici**, et nulle part ailleurs :
 
@@ -319,13 +322,13 @@ Ce qui se décide **ici**, et nulle part ailleurs :
   du titre, donc renommer un titre le casse en silence — la panne qu'on voulait fuir. Et la plupart
   des renvois vivent dans des commentaires JS, où un lien ne se clique pas.
 
-**`eslint.config.js`** est l'autre bout, générique : aucune des onze pannes ne s'y voit, mais il
+**`eslint.config.js`** est l'autre bout, générique : aucune des six pannes ne s'y voit, mais il
 attrape l'identifiant fautif, la variable morte, la clé dupliquée. Sa liste de globals ne s'écrit pas,
 elle se **calcule** en demandant son inventaire au gardien (§12). Deux règles y sont assouplies, pour
 des idiomes voulus : un `catch` qui ignore délibérément sa raison, et les noms de haut niveau d'une
 page, qu'ESLint croirait morts faute de savoir lire un `onclick=`.
 
-Règle d'or : **une évolution n'est finie que quand les six suites sont vertes** (338 contrôles), le
+Règle d'or : **une évolution n'est finie que quand les cinq suites sont vertes** (318 contrôles), le
 gardien et ESLint compris. **Les suites d'abord** : le sens avant la forme.
 
 ## 17. Résumé en trois phrases

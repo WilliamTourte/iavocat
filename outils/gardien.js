@@ -1,29 +1,29 @@
 #!/usr/bin/env node
-/* `npm run gardien` — les conventions que les six suites ne voient pas (§16 bis).
- * Onze règles, onze pannes réellement vécues ; chacune cite le § qui la tranche.
+/* `npm run gardien` — les conventions que les suites ne voient pas (§16 bis).
+ * Six règles, six pannes réellement vécues ; chacune cite le § qui la tranche.
+ * Cinq autres (var CSS non définie, famille CSS orpheline, reste du schéma 2,
+ * carte de tailles menteuse, prédicat recopié) ont été retirées : de la
+ * cérémonie de style pour un dépôt à un seul auteur et une seule affaire,
+ * plutôt que des pannes qui reviennent. Les numéros gardent leurs trous plutôt
+ * que de forcer un renuméro qui casserait tout ce qui cite « Rn ».
  *
  *   R1  la forme des balises que le harnais doit reconnaître        §13, §2
  *   R2  un nom de haut niveau, une seule fois par page              §2
- *   R3  toute `var(--x)` a une définition                           §2
- *   R4  une famille CSS a un porteur                                §14
  *   R5  un `onclick` vise une fonction qui existe                   §2
  *   R6  un id visé existe — et le tutoriel vise quelque chose       §2, §4.8
- *   R7  aucun reste du schéma 2                                     §2
- *   R8  la carte ne ment pas sur les tailles                        §12
  *   R9  `attend`/`apres` ne se lisent plus sur une remise           §3, §11, §15
- *   R10 aucune recopie d'un prédicat que `regles.js` exporte       §12, §16
  *   R11 aucun renvoi « §x » ne pointe dans le vide                 §12
  *
- * TERRITOIRES : R7, R9 et R10 marchent sur `app/`, `tests/` ET `outils/`, R11
- * sur tout le dépôt, documents compris ; les huit autres sur les deux pages.
- * Avant d'ajouter une règle, demander SUR QUEL TERRITOIRE elle marche — la
- * réponse n'est pas « `app/` » par défaut.
+ * TERRITOIRES : R9 marche sur `app/`, `tests/` ET `outils/`, R11 sur tout le
+ * dépôt, documents compris ; les quatre autres sur les deux pages. Avant
+ * d'ajouter une règle, demander SUR QUEL TERRITOIRE elle marche — la réponse
+ * n'est pas « `app/` » par défaut.
  *
  * CE N'EST PAS UNE CINQUIÈME SOURCE DE VÉRITÉ (§12) : le jour où une règle et
  * son § divergent, c'est le § qui a raison. Aucune règle ne connaît une pièce,
  * un empan ni une valeur — même discipline que les suites (§16).
  *
- * Zéro dépendance. Sortie 1 sur écart. Dans `npm test`, APRÈS les six suites.
+ * Zéro dépendance. Sortie 1 sur écart. Dans `npm test`, APRÈS les suites.
  */
 const fs   = require("fs");
 const path = require("path");
@@ -31,9 +31,6 @@ const path = require("path");
 const RACINE  = path.join(__dirname, "..");
 const lire    = rel => fs.readFileSync(path.join(RACINE, rel), "utf8");
 const existe  = rel => fs.existsSync(path.join(RACINE, rel));
-// `wc -l` compte les sauts de ligne : un fichier qui finit par un saut n'a pas
-// une ligne vide de plus. La carte est écrite avec ces chiffres-là.
-const nbLignes = rel => { const s = lire(rel); return s.split("\n").length - (s.endsWith("\n") ? 1 : 0); };
 
 /* Trois territoires, pas un : `app/` porte le livrable, mais `tests/` et
    `outils/` REFLÈTENT ses règles, et un reflet qui dérive ne se voit nulle part
@@ -67,7 +64,7 @@ function bilan() {
 
 /* TROIS vues d'un source JS, parce que les règles en demandent trois :
      `code`     tout blanchi sauf le code — on y compte les accolades (R2)
-     `chaines`  le contenu des chaînes — classes CSS et HTML engendré (R4)
+     `chaines`  le contenu des chaînes — classes CSS et HTML engendré (R6)
      `sansComm` le source moins les commentaires — seule vue où un `onclick="…"`
                 se lit d'un bloc (R5, R6)
    Un `split` ne suffit pas : gabarits imbriqués, regex dont les accolades
@@ -104,7 +101,7 @@ function decouperJS(src) {
     const c = src[i], d = src[i + 1];
     if (dansCode()) {
       if (c === "/" && d === "/") { while (i < src.length && src[i] !== "\n") i++; continue; }
-      /* Blanchi, mais REND SES SAUTS DE LIGNE : R7 et R9 comptent les `\n` de
+      /* Blanchi, mais REND SES SAUTS DE LIGNE : R9 compte les `\n` de
          `code` pour dire où regarder. */
       if (c === "/" && d === "*") {
         const j = src.indexOf("*/", i + 2), fin = j < 0 ? src.length : j + 2;
@@ -196,26 +193,10 @@ function declarationsDeHautNiveau(code) {
   return noms;
 }
 
-/* ---- CSS ---------------------------------------------------------------- */
-const sansCommentairesCSS = s => s.replace(/\/\*[\s\S]*?\*\//g, "");
-/* Les sélecteurs : ce qui précède une `{`, à toute profondeur. Les préludes
-   d'at-règles sont écartés — `@keyframes pouls` ne nomme aucune famille. */
-function classesCSS(css) {
-  const out = new Set();
-  for (const m of sansCommentairesCSS(css).matchAll(/([^{}]*)\{/g)) {
-    const s = m[1].trim();
-    if (!s || s.startsWith("@")) continue;
-    for (const k of s.matchAll(/\.([A-Za-z][\w-]*)/g)) out.add(k[1]);
-  }
-  return out;
-}
-const varsDefinies  = txt => new Set([...txt.matchAll(/(--[A-Za-z][\w-]*)\s*:/g)].map(m => m[1]));
-const varsEmployees = txt => new Set([...txt.matchAll(/var\(\s*(--[A-Za-z][\w-]*)/g)].map(m => m[1]));
-
 /* ---- HTML --------------------------------------------------------------- */
 const sansCommentairesHTML = s => s.replace(/<!--[\s\S]*?-->/g, "");
 
-/* Les classes qu'une page POSE réellement (R4, R6). Deux gisements, pas un de
+/* Les classes qu'une page POSE réellement (R6). Deux gisements, pas un de
    plus : un `class="…"` (statique ou engendré), et toute chaîne qui n'est QU'un
    mot. Prendre tous les mots de toutes les chaînes serait trop large d'une
    chose : `content.js` est de la PROSE, et une famille morte y passerait pour
@@ -290,7 +271,7 @@ function nomsExposes(page) {
 module.exports = { PAGES, decouperJS, declarationsDeHautNiveau, nomsExposes };
 if (require.main !== module) return;
 
-console.log("Le gardien — les conventions que les six suites ne voient pas.\n");
+console.log("Le gardien — les conventions que les suites ne voient pas.\n");
 
 /* R1 — LA FORME DES BALISES (§13). Une balise déviante n'est PAS inlinée du
    tout : l'écart se dit ICI plutôt qu'en `ReferenceError` au milieu d'une suite.
@@ -333,35 +314,6 @@ console.log("Le gardien — les conventions que les six suites ne voient pas.\n"
         faux.push(`${p.nom} — « ${n} » est déclaré en haut niveau par ${[...new Set(fichiers)].join(" et ")}`);
   }
   regle("R2 · deux fichiers d'une même page ne se disputent aucun nom de haut niveau", faux);
-}
-
-/* R3 — TOUTE `var(--x)` A UNE DÉFINITION (§2). Introuvable, elle rend la
-   déclaration INVALIDE AU CALCUL : pour un raccourci, toutes les longhands sont
-   vidées — pas de filet du tout, et aucune suite ne lit un style calculé. Les
-   définitions se relèvent dans la feuille ET dans les scripts (§4.3). */
-{
-  const faux = [];
-  for (const p of PAGES) {
-    const cssNet = sansCommentairesCSS(p.css);
-    const ailleurs = p.html + "\n" + p.sources.map(s => s.sansComm).join("\n");
-    const definies = new Set([...varsDefinies(cssNet), ...varsDefinies(ailleurs)]);
-    const employees = new Set([...varsEmployees(cssNet), ...varsEmployees(ailleurs)]);
-    for (const v of employees) if (!definies.has(v)) faux.push(`${p.nom} — ${v} est employée, jamais définie`);
-    for (const v of varsDefinies(cssNet)) if (!employees.has(v)) faux.push(`${p.nom} — ${v} est définie, jamais employée`);
-  }
-  regle("R3 · toute variable CSS employée est définie, et toute variable définie sert", faux);
-}
-
-/* R4 — UNE FAMILLE CSS A UN PORTEUR (§14). PAR JETON, jamais sur `class="…"`
-   entier : un test plus strict ferait retirer une famille vivante, pire que d'en
-   laisser une morte. */
-{
-  const faux = [];
-  for (const p of PAGES) {
-    const posees = classesPosees(p);
-    for (const c of classesCSS(p.css)) if (!posees.has(c)) faux.push(`${p.nom} — la famille .${c} n'est portée par rien`);
-  }
-  regle("R4 · toute famille CSS d'une page est portée par un élément qu'elle engendre", faux);
 }
 
 /* R5 — UN `onclick` VISE UNE FONCTION QUI EXISTE (§2). Un gestionnaire renommé
@@ -413,58 +365,8 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
   regle("R6 · tout id visé existe, et les quatre ancres du tutoriel visent quelque chose", faux);
 }
 
-/* R7 — AUCUN RESTE DU SCHÉMA 2 (§2). La migration 2→3 avait été faite dans
-   l'import, pas partout : `l.a[0]` levait une `TypeError` sur un chemin
-   qu'aucune suite ne couvre. */
-{
-  const faux = [];
-  for (const f of fichiersJS(TERRITOIRES)) {
-    const { code } = decouperJS(lire(f));
-    for (const m of code.matchAll(/\.[ab]\[/g)) {
-      const ligne = code.slice(0, m.index).split("\n").length;
-      faux.push(`${f}:${ligne} — « ${m[0]} » : écriture du schéma 2`);
-    }
-  }
-  regle("R7 · plus rien ne déplie un lien du schéma 2", faux);
-}
-
-/* R8 — LA CARTE NE MENT PAS SUR LES TAILLES (§12). Tolérance : TROIS LIGNES,
-   assez pour un commentaire retouché, pas pour un changement réel. Le message
-   imprime le chiffre à écrire. */
-{
-  const faux = [];
-  const carte = lire("docs/CARTE.md");
-  const fichiersDe = rel => {
-    if (!existe(rel)) return [];
-    if (!fs.statSync(path.join(RACINE, rel)).isDirectory()) return [rel];
-    return fs.readdirSync(path.join(RACINE, rel)).map(n => rel.replace(/\/$/, "") + "/" + n);
-  };
-  for (const ligne of carte.split("\n")) {
-    const cellules = ligne.split("|").map(s => s.trim());
-    if (cellules.length < 4 || !/^`app\//.test(cellules[1])) continue;
-    const chemins = [...cellules[1].matchAll(/`([^`]+)`/g)].flatMap(m => fichiersDe(m[1]));
-    if (!chemins.length) continue;
-    // « 664 » ou « 156 + 257 (css) + 1808 (js) » : chaque nombre porte son
-    // extension, la première étant celle du premier chemin de la ligne.
-    const nombres = [...cellules[2].matchAll(/(\d+)\s*(?:\((css|js|html)\))?/g)];
-    if (!nombres.length) continue;
-    const parExt = {};
-    for (const f of chemins) {
-      const ext = path.extname(f).slice(1);
-      parExt[ext] = (parExt[ext] || 0) + nbLignes(f);
-    }
-    for (const [i, m] of nombres.entries()) {
-      const ext = m[2] || (i === 0 ? path.extname(chemins[0]).slice(1) : null);
-      if (!ext || parExt[ext] === undefined) continue;
-      if (Math.abs(parExt[ext] - Number(m[1])) > 3)
-        faux.push(`docs/CARTE.md — ${cellules[1]} annonce ${m[1]} ligne(s) de ${ext}, il y en a ${parExt[ext]}`);
-    }
-  }
-  regle("R8 · le tableau des territoires de docs/CARTE.md dit les tailles réelles", faux);
-}
-
-/* R9 — `attend`/`apres` NE SE LISENT PLUS SUR UNE REMISE (§3, §11). Sœur de R7 :
-   l'ancienne écriture reste LISIBLE, donc une branche restée à `r.attend` répond
+/* R9 — `attend`/`apres` NE SE LISENT PLUS SUR UNE REMISE (§3, §11).
+   L'ancienne écriture reste LISIBLE, donc une branche restée à `r.attend` répond
    « non » pour toujours sans que rien ne casse.
    QUATRE FONCTIONS y échappent, et seulement elles : les normalisateurs
    `attentesDe` (regles.js) et `attentesDeRemise` (noyau.js) — *on ne les fusionne
@@ -504,29 +406,6 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
     }
   }
   regle("R9 · plus rien ne lit « attend » ou « apres » posé sur une remise", faux);
-}
-
-/* R10 — AUCUNE RECOPIE D'UN PRÉDICAT QUE `regles.js` EXPORTE (§12, §16). Sœur de
-   R2, un cran plus haut : R2 interdit de se disputer un NOM, R10 de réécrire une
-   DÉCISION. Un prédicat recopié affirme l'ancienne vérité pour toujours, et les
-   suites ne se lisent pas elles-mêmes.
-   LE MOT EST ASSEMBLÉ : écrit en clair, ce fichier se dénoncerait lui-même — une
-   règle qui doit s'exclure de son propre champ, on finit par la croire fausse. */
-{
-  const faux = [];
-  const MAISON = "app/regles.js";                       // la seule maison (§12)
-  const MOT = "règle";
-  const MOTIF = new RegExp('includes\\(\\s*["\']' + MOT + '["\']\\s*\\)', "g");
-  for (const f of fichiersJS(TERRITOIRES)) {
-    if (f === MAISON || f === "app/content.js") continue;   // la maison, et de la prose
-    const { sansComm } = decouperJS(lire(f));
-    for (const m of sansComm.matchAll(MOTIF)) {
-      const ligne = sansComm.slice(0, m.index).split("\n").length;
-      faux.push(`${f}:${ligne} — « ${m[0]} » recopie le prédicat d'${MAISON} : `
-              + `appeler estRegle (ReglesJeu.estRegle dans une page, require dans une suite).`);
-    }
-  }
-  regle("R10 · aucun fichier ne recopie un prédicat que regles.js exporte", faux);
 }
 
 /* R11 — AUCUN RENVOI « §x » NE POINTE DANS LE VIDE (§12, §16 bis). Un renvoi

@@ -182,9 +182,8 @@ function demanderSuppr(cle,faire){
   if(pendingDel!==cle){ pendingDel=cle; return render(); }
   pendingDel=null; muter(faire);
 }
-/* Le fragment s'écrit `${arme?"arm":""}`, jamais `${arme?" arm":""}` : R4 relève
-   une classe dans une chaîne qui n'est QU'un mot — un espace en tête, et `.arm`
-   passe pour une famille morte. */
+/* Le fragment s'écrit `${arme?"arm":""}`, jamais `${arme?" arm":""}` : un espace
+   en tête casserait le nom de la classe CSS engendrée. */
 function btnSuppr(cle,cls,appel,mot,motArme){
   const arme = pendingDel===cle;
   return `<button class="${cls} ${arme?"arm":""}" onclick="${appel}">${arme?motArme:mot}</button>`;

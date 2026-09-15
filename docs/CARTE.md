@@ -103,9 +103,9 @@ pour que l'inspecteur l'édite en place. *On ne les fusionne pas, on dit lequel 
 d'autre ne les lit sur une remise (R9), hors `attentesEditables` (`frise.js`) et `migrerContenu`
 (`contenu-io.js`).
 
-## Les six suites, et les deux outils
+## Les cinq suites, et les deux outils
 
-Point d'entrée unique : `tests/harnais.js`, `creerHarnais(dossier)` — **338 contrôles** ; ce que
+Point d'entrée unique : `tests/harnais.js`, `creerHarnais(dossier)` — **318 contrôles** ; ce que
 chacune prouve est au §16. Il **inline tout `<script src>` et tout `<link rel=stylesheet>`** au boot
 (§13). Ce qu'il expose est le **contrat d'interaction** : `boot` / `bootAtelier` ; les lectures
 d'écran, une par surface (`discussion`, `memoire`, `composeur`, `plaidoirie`, `plaidoirieVisible`) ;
@@ -118,7 +118,7 @@ ne nomme une pièce, un empan ou une valeur** (§16).
 
 | Outil | Commande | Ce qu'il éprouve, et que rien d'autre n'éprouve |
 |---|---|---|
-| `outils/gardien.js` | `npm run gardien` (dans `npm test`) | **les onze conventions** — la liste vit dans son en-tête, le §16 bis dit ce qu'une règle a le droit d'être. R7, R9, R10 marchent sur `app/`, `tests/` et `outils/`, R11 sur tout le dépôt ; les huit autres sur les deux pages |
+| `outils/gardien.js` | `npm run gardien` (dans `npm test`) | **les six conventions** — la liste vit dans son en-tête, le §16 bis dit ce qu'une règle a le droit d'être. R9 marche sur `app/`, `tests/` et `outils/`, R11 sur tout le dépôt ; les quatre autres sur les deux pages |
 | `outils/vue.js` | `npm run vue` (hors `npm test`) | **le vrai chargement**, dans un Chromium en `file://`, et la relecture à l'œil |
 
 Le gardien est en **mode double** : lancé il contrôle, `require` il rend son inventaire — c'est par là
@@ -169,16 +169,3 @@ d'écran, c'est une fuite à corriger.
   `content.js` ni `moteur.js`.
 - **`dossier` / `Dossier` / `pièce`** — un concept, une bande, un document. On ne dit pas « ouvrir le
   dossier » pour « ouvrir une pièce ».
-
-**Trois collisions d'identifiants, refermées** — les deux sens y étaient *incompatibles*, dans une
-même portée globale :
-
-| Identifiant | Ici | …et là | Tranché |
-|---|---|---|---|
-| `piecesLivrees` | `regles.js` : les pièces livrées **à ce stade** | l'atelier : celles de n'importe quelle remise | `toutesPiecesLivrees()` |
-| `dimDe` | `moteur.js` : la dimension d'un **terme réduit** | l'atelier : celle d'un **empan** | `dimEmpan(pid, eid)` |
-| `valider` | `moteur.js` : le refus d'**une phrase** | l'atelier : les anomalies **du contenu entier** | `diagnostiquer()` |
-
-*La dernière a tenu longtemps parce que les deux rendent « rien » quand tout va bien.* À l'inverse,
-`esc` (jeu) et `escapeH` (atelier) restent deux noms pour une chose, et c'est accepté : **deux noms
-pour une chose se remarquent ; un nom pour deux choses se subit.**

@@ -7,8 +7,8 @@ const fs = require("fs");
    jeu et l'atelier (§12, §14). */
 const { champsDe, comparaisonsDe } = require("../app/moteur.js");
 /* …et les RÈGLES viennent de regles.js, pour la même raison. Une suite DÉSIGNE,
-   elle ne DÉCIDE pas (§16) — un prédicat recopié reste vert en affirmant
-   l'ancienne vérité, et R10 le tient. */
+   elle ne DÉCIDE pas (§16) — un prédicat recopié resterait vert en affirmant
+   l'ancienne vérité. */
 const { estRegle } = require("../app/regles.js");
 
 function creerHarnais(dossier){

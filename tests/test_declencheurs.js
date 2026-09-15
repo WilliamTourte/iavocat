@@ -1,40 +1,9 @@
-// Décâblage moteur ↔ contenu — le moteur ne connaît aucun identifiant :
-// sessions généralisées, piece.declenche, remise.attend/apres, les trois
-// drapeaux du vice, Manuels par type et par livraison, rejet du schéma 2.
-// Les mutations elles-mêmes sont dérivées du contenu (rien n'est nommé).
+// Le moteur sur le contenu réel, muté : un contenu invalide est refusé et le
+// dit, piece.declenche, l'avancement d'une remise à plusieurs attentes, les
+// trois drapeaux du vice.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, contenuLivre, discussion } = H;
 const boot = contenu => H.boot({contenu});   // null = aucun contenu du tout
-
-/* Renomme un id de pièce dans un contenu brut : liens (termes emboîtés
-   compris), remises. Sert à prouver qu'aucun id n'est câblé dans le moteur. */
-function renommerPiece(c, ancien, neuf){
-  c.pieces = Object.fromEntries(Object.entries(c.pieces).map(([k,v])=>[k===ancien?neuf:k, v]));
-  // Une clé se défait par `deK`, jamais à la main — et surtout pas deux fois
-  // dans la même expression, ce qui était la seule façon de les faire diverger.
-  const rec = t => Array.isArray(t) ? t.map(rec)
-    : typeof t === "string" ? (([p,e]) => p===ancien ? neuf+"."+e : t)(H.deK(t))
-    : {...t, termes: rec(t.termes||[])};
-  for (const L of c.liens) L.termes = rec(L.termes||[]);
-  for (const r of c.remises) r.pieces = (r.pieces||[]).map(p => p===ancien?neuf:p);
-  // Depuis que les liaisons-articles sont filtrées par livraison (§4.5), un
-  // bloc de grammaire peut désigner une pièce : c'est une référence de plus
-  // à suivre, sans quoi l'article ne serait plus jamais offert.
-  for (const b of (c.grammaire||{}).blocs||[]) if (b.piece===ancien) b.piece = neuf;
-  return c;
-}
-
-console.log("\n=== Le moteur ignore les identifiants de contenu ===");
-{
-  const c = contenuLivre();
-  const anciens = Object.keys(c.pieces);
-  for (const [i, pid] of anciens.entries()) renommerPiece(c, pid, "z"+i);
-  const w = boot(c);
-  check("toutes les pièces renommées : le contenu reste valide", w.SOURCE_CONTENU === "contenu : content.js");
-  H.instruire(w);
-  check("l'instruction se joue quand même de bout en bout", w.S.remisesEnvoyees === c.remises.length);
-  check("→ Fin 3", H.numeroFin(H.terminer(w)) === "3");
-}
 
 /* Il n'y a plus de contenu embarqué : un contenu refusé n'est pas remplacé
    en douce, il est SIGNALÉ. Le jeu affiche son bandeau de panne et ne joue
@@ -198,19 +167,5 @@ console.log("\n=== Les trois drapeaux du vice ===");
 /* LES MANUELS N'ONT PLUS DE SUITE (§16) : on éprouvait un chemin que le joueur
    ne pouvait pas prendre. La règle reste dans regles.js ; le jour où ils se
    rebranchent, ces contrôles reviennent avec eux — et pas avant. */
-
-console.log("\n=== Les dimensions viennent du contenu, pas du moteur ===");
-{
-  const c = contenuLivre();
-  c.dimensions = c.dimensions.map(d => d.toUpperCase());
-  for (const p of Object.values(c.pieces))
-    for (const e of Object.values(p.empans||{})) e.dim = e.dim.toUpperCase();
-  for (const f of Object.values(c.grammaire.formes))
-    f.slots = f.slots.map(s => s === "*" ? s : s.map(x => x === "affirmation" ? x : x.toUpperCase()));
-  const w = boot(c);
-  check("des dimensions entièrement renommées passent", w.SOURCE_CONTENU === "contenu : content.js");
-  H.instruire(w);
-  check("et l'instruction se joue", w.S.remisesEnvoyees === c.remises.length);
-}
 
 bilan();

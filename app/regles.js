@@ -84,8 +84,7 @@ function creerRegles(JEU, M) {
       for (const pid of (JEU.remises[i].pieces || [])) out.push(pid);
     return out;
   }
-  // Le prédicat vit dans l'API du module : un exemplaire, posable sans `JEU`
-  // lié (R10).
+  // Le prédicat vit dans l'API du module : un exemplaire, posable sans `JEU` lié.
   const estRegle = p => _apiRegles.estRegle(p);
 
   /* ---- LA MÉMOIRE — privée, gratuite, illimitée --------------------- */
@@ -407,7 +406,7 @@ function creerRegles(JEU, M) {
 }
 
 /* Une pièce est-elle un article ? Ne dépend d'aucun état : hors fabrique, pour
-   que l'atelier la pose sans `JEU` lié (R10) — et cloîtrée (§9). */
+   que l'atelier la pose sans `JEU` lié — et cloîtrée (§9). */
 const _apiRegles = (function () {
   const estRegle = p => ((p || {}).type || "").includes("règle");
   return { creerRegles, estRegle };

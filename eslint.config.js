@@ -1,5 +1,5 @@
 /* ESLint — le filet GÉNÉRIQUE ; le filet propre au dépôt est `outils/gardien.js`,
-   et aucune de ses onze pannes n'est visible d'ici. Ce qu'ESLint attrape seul :
+   et aucune de ses six pannes n'est visible d'ici. Ce qu'ESLint attrape seul :
    identifiant fautif, variable morte, clé dupliquée.
 
    TROIS BLOCS pour trois natures de fichiers, et une seule difficulté : les pages

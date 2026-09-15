@@ -3,7 +3,7 @@
 Un jeu à dominante textuelle : on incarne une **IA** qu'un **avocat de la défense** interroge session
 après session, pour lui préparer de quoi réfuter l'accusation. Le vrai sujet est un cas de conscience.
 Le dépôt porte le **jeu** (`app/`), l'**atelier** qui l'écrit (`app/atelier_v3.html` + `app/atelier/`)
-et six suites. **Zéro build, zéro serveur, zéro dépendance à l'exécution** : `app/index.html` s'ouvre
+et cinq suites. **Zéro build, zéro serveur, zéro dépendance à l'exécution** : `app/index.html` s'ouvre
 en `file://` et joue. Une page ne porte que sa **structure** — CSS par `<link>`, JS par `<script src>`.
 
 > **Ce fichier oriente, il ne tranche pas** : le §12 pose les quatre sources de vérité, et le document
@@ -32,10 +32,10 @@ en `file://` et joue. Une page ne porte que sa **structure** — CSS par `<link>
 ## Les commandes
 
 ```sh
-npm test               # les six suites (338 contrôles), PUIS le gardien, PUIS ESLint.
+npm test               # les cinq suites (318 contrôles), PUIS le gardien, PUIS ESLint.
                        # Tout vert, ou ce n'est pas fini (§16)
-npm run suites         # les six suites seules — le sens avant la forme
-npm run gardien        # les onze conventions que les suites ne voient pas (§16 bis)
+npm run suites         # les cinq suites seules — le sens avant la forme
+npm run gardien        # les six conventions que les suites ne voient pas (§16 bis)
 npm run lint           # ESLint, le filet générique
 npm run vue            # le jeu dans un VRAI Chromium en file://, joué, capturé dans captures/
 npm run demo:grammaire # banc d'essai de la grammaire. Hors `npm test`
