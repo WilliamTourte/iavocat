@@ -1,9 +1,8 @@
 /* ATELIER — LE DIAGNOSTIC : le dossier tient-il ? La plus grosse pièce, et
    c'est normal : elle porte ce qu'aucune suite ne peut attraper. */
-/* Les anomalies du CONTENU ENTIER. ELLE NE S'APPELLE PLUS `valider` : celui de
-   `moteur.js` juge UNE phrase, les deux fichiers sont chargés par la même page,
-   et tous deux rendent « rien » quand tout va bien — la pire collision, celle
-   qui ne se voit pas tant que rien ne va mal (docs/CARTE.md). */
+/* PIÈGE — les anomalies du CONTENU ENTIER ne s'appellent plus `valider` : le
+   `valider` de moteur.js juge UNE phrase, les deux fichiers sont chargés par la
+   même page, et tous deux rendent « rien » quand tout va bien (R2, §17). */
 function diagnostiquer(){
   const out=[]; const P=CONTENU.pieces||{}, LI=CONTENU.liens||[];
   const add=(niveau,msg,detail,ref)=>out.push({niveau,msg,detail,ref});
@@ -17,10 +16,6 @@ function diagnostiquer(){
     add("erreur","Grammaire absente","Sans « grammaire » (automate + formes), le jeu refuse le contenu : plus aucune phrase n'est composable.",{});
   } else {
     const finaux=new Set(G.finaux||[]);
-    /* Les états qu'on peut atteindre depuis le départ SANS qu'aucune forme
-       n'ait encore été fixée. Un bloc « en rester là » (sans forme, menant à
-       un final) est légitime tant qu'on ne peut pas l'atteindre par là. */
-    // Un bloc FIXE une forme s'il en déclare une, ou s'il la fait déduire.
     const fixeUneForme = b => !!b.forme || !!b.deduit;
     const sansForme=new Set([G.depart]); let zf=true;
     while(zf){ zf=false; for(const b of G.blocs)
@@ -33,12 +28,9 @@ function diagnostiquer(){
       if(b.piece && !P[b.piece])
         add("erreur",`Bloc « ${b.id} » attend une pièce inconnue`,`« ${b.piece} » n'existe pas : ce bloc ne serait jamais offert au joueur.`,{});
     }
-    // Une forme ordonnée qui se déduit doit dire dans quel sens elle se lit.
     for(const [nom,f] of Object.entries(G.formes||{}))
       if(f.deduction==="ordre" && f.ordonne && !f.sens)
         add("avert",`Forme « ${nom} » ordonnée sans « sens »`,"Sans « sens », les deux termes sont rangés par ordre croissant de valeur. Écris-le (asc/desc) plutôt que de le subir : c'est ce qui décide de la lecture de la phrase.",{});
-    // Une dimension qu'aucune forme déductible n'accepte : ses empans seraient
-    // surlignables mais jamais comparables — cliquables pour rien.
     if((G.blocs||[]).some(b=>b.deduit))
       for(const d of dims){
         const prise=Object.values(G.formes||{}).some(f=>{
@@ -48,19 +40,11 @@ function diagnostiquer(){
         if(!prise) add("avert",`Dimension « ${d} » sans forme déductible`,
           "Aucune forme ne se déduit sur cette dimension : ses empans seraient surlignables, mais deux d'entre eux ne se compareraient jamais.",{});
       }
-    // impasses : tout état doit pouvoir atteindre un final
     const prod=new Set(finaux); let z=true;
     while(z){ z=false; for(const b of G.blocs) if(prod.has(b.vers)&&!prod.has(b.de)){ prod.add(b.de); z=true; } }
     const etats=new Set([G.depart,...G.blocs.flatMap(b=>[b.de,b.vers])]);
     for(const e of etats) if(!prod.has(e))
       add("erreur",`Impasse dans l'automate : état « ${e} »`,"Aucun chemin ne mène de cet état à une fin de phrase — le joueur y resterait coincé.",{});
-    /* UNE FORME EXISTE DE DEUX FAÇONS (§15) : une liaison peut la DÉCLARER,
-       un bloc `deduit` peut la faire DÉDUIRE — et celle-là n'est nommée par
-       aucun bloc. « Déductible » se lit comme `deduire` le lit, et SUR CE
-       DOSSIER : prédicat, arité 2, un slot qui accepte une dimension déclarée.
-       Chacune manque autrement, donc se dit autrement.
-       L'OMBRAGE n'est pas signalé : l'ordre de déclaration est signifiant (§11),
-       l'alerter reviendrait à interdire ce qui tranche les ambiguïtés. */
     const parDeduction=(G.blocs||[]).some(b=>b.deduit);
     const slotOuvert=F=>{ const s=F.slots&&F.slots[0];
       return s==="*" || (Array.isArray(s) && s.some(d=>dims.includes(d))); };
@@ -100,8 +84,6 @@ function diagnostiquer(){
     }
     for(const mk of marques) if(!(p.empans||{})[mk])
       add("erreur",`Marqueur orphelin {{${mk}}} dans « ${p.court} »`,"Le texte appelle un empan qui n'existe pas : il s'afficherait tel quel.",{piece:pid});
-    // règle de surlignage : une valeur qui se lit comme une heure ou un nombre,
-    // hors marqueur, est probablement un empan oublié.
     const hors=txt.replace(/\{\{[A-Za-z0-9_]+\}\}/g," ");
     const susp=[...hors.matchAll(/\b\d{1,2}\s?h\s?\d{2}\b|\b\d{2}:\d{2}\b/g)].map(x=>x[0]);
     if(susp.length) add("avert",`Valeur non marquée dans « ${p.court} » : ${susp.join(", ")}`,
@@ -131,10 +113,9 @@ function diagnostiquer(){
     if(L.conclusion && (f.arite||2)!==1)
       add("avert",`Lien ${i} marqué « conclusion » sans être une qualification`,
         "Seule une liaison d'arité 1 (sur une note close) conclut — c'est elle qui porte la base légale.",{edge:i});
-    /* Le tag vit sur l'ATTENTE, plus sur la remise (§3). Cette ligne demandait
-       `r.attend` et répondait « non » pour TOUS les tags : six informations
-       mensongères par ouverture, et une bande toujours pleine s'apprend à ne
-       plus se lire. Passer par `attentesDeRemise` (R9). */
+    /* PIÈGE PAYÉ : cette ligne demandait `r.attend` et répondait « non » pour TOUS
+       les tags — six informations mensongères par ouverture. Le tag vit sur
+       l'ATTENTE (R9) : passer par `attentesDeRemise`. */
     if(L.tag && !(CONTENU.remises||[]).some(r=>attentesDeRemise(r).some(a=>a.attend===L.tag)))
       add("info",`Lien ${i} : tag « ${L.tag} » attendu par aucune remise`,"Le versement de cette phrase ne fera avancer aucune session.",{edge:i});
   });
@@ -143,8 +124,7 @@ function diagnostiquer(){
       add("avert",`Liens dupliqués (${i} et ${j})`,`« ${labelLien(LI[i])} » apparaît deux fois.`,{edge:j});
 
   /* ---- les articles : des RÉFÉRENCES, jamais des porteurs d'empan ----
-     L'invariant du §4.5 rendu vérifiable. `porte` est indicatif : le moteur ne
-     le lit jamais, le joueur en a besoin. */
+     L'invariant du §4.5 rendu vérifiable ; `porte` est indicatif. */
   for(const [pid,p] of Object.entries(P)){
     if(!estRegle(p)) continue;
     const n=Object.keys(p.empans||{}).length;
@@ -220,8 +200,6 @@ function diagnostiquer(){
   /* ---- les remises et leurs attentes ---- */
   const R=CONTENU.remises||[];
   const tags=new Set(LI.map(l=>l.tag).filter(Boolean));
-  /* Un chemin de composition existe-t-il avec les seules pièces reçues à ce
-     stade ? Recherche en largeur, blocs livrés seulement. */
   const formeComposable=(forme,dispo)=>{
     const G=CONTENU.grammaire||{}, fins=new Set(G.finaux||[]);
     const vus=new Set(), file=[[G.depart,false]];
@@ -243,15 +221,12 @@ function diagnostiquer(){
         `« ${pid} » n'existe pas — le jeu planterait en la livrant.`,{});
     if(!(r.pieces||[]).length)
       add("info",`Remise ${i+1} ne livre aucune pièce`,"Session purement narrative ?",{});
-    /* Une remise attend une SUITE de réponses (§3) ; l'ancienne forme se lit
-       comme une liste à un élément. */
     const attentes=attentesDeRemise(r);
     if(!attentes.length)
       add("erreur",`Remise ${i+1} sans attente`,
         i<R.length-1
           ? `La remise ${i+2} ne partirait jamais : c'est le versement d'une phrase portant ce tag qui ferme la session.`
           : "La clôture ne s'ouvrirait jamais — la dernière remise doit elle aussi attendre quelque chose.",{});
-    // Les pièces reçues à ce stade : celles de cette remise et de toutes les précédentes.
     const dispo=new Set();
     for(let k=0;k<=i;k++) for(const pid of (R[k].pieces||[])) dispo.add(pid);
     attentes.forEach((a,j)=>{
@@ -266,10 +241,6 @@ function diagnostiquer(){
           "Aucune phrase composable ne satisfait cette attente — la session serait sans issue.",{});
         return;
       }
-      /* LE BLOC LIVRÉ TROP TARD : les blocs étant filtrés par livraison (§4.5),
-         une attente devient inservable si toutes les phrases qui la servent
-         exigent une pièce plus tardive — article comme second empan. Aucune
-         relecture n'attrape ça ; une partie de test, après vingt minutes. */
       const servables=(CONTENU.liens||[]).filter(L=>L.tag===a.attend && formeComposable(L.forme,dispo));
       if(!servables.length)
         add("erreur",`Remise ${i+1}${ou} attend « ${a.attend} », mais de quoi l'écrire n'est pas encore livré`,
@@ -311,7 +282,6 @@ function diagnostiquer(){
 
   return out;
 }
-/* « pid.eid » → « court·eid ». Accepte aussi l'ancienne paire [pid,eid]. */
 function cflabel(k){
   const [pid,eid]=Array.isArray(k)?k:deK(k);
   const p=CONTENU.pieces[pid];
@@ -337,16 +307,13 @@ function renderDiag(){
   });
   $("diag").innerHTML=h;
 }
-/* Cliquer une ligne du diagnostic : tout ce qui était sélectionné tombe, puis on
-   désigne. Écrit à la main, ce nettoyage oubliait `formPieceEdit` et ne montrait
-   RIEN ; `reinitSelection` ne peut plus l'oublier pour personne. */
 function pointer(ref){
   reinitSelection();
   if(!ref) return render();
   if(ref.edge!=null){ selEdge=ref.edge; }
-  /* Les empans à surligner d'un LOT de liens. Cette ligne dépliait `l.a`/`l.b`,
-     du SCHÉMA 2, et levait une TypeError sur le seul chemin qui l'appelle.
-     `feuillesLien` rend les feuilles quel que soit l'emboîtement. */
+  /* PIÈGE PAYÉ : cette ligne dépliait `l.a`/`l.b`, du SCHÉMA 2, et levait une
+     TypeError sur le seul chemin qui l'appelle. `feuillesLien` rend les feuilles
+     quel que soit l'emboîtement. */
   if(ref.edges){ ref.edges.forEach(i=>{ const l=CONTENU.liens[i]; if(!l) return;
     for(const k of feuillesLien(l)) flagged.add(k); }); }
   if(ref.champ){ flagged.add(K(ref.champ[0],ref.champ[1])); scrollVers(ref.champ[0]); }

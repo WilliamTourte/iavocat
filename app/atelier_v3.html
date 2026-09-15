@@ -6,13 +6,10 @@
 <title>IAvocat — Atelier v3 · banc de diagnostic du dossier</title>
 <!--
   IAvocat — ATELIER DE CONCEPTION v3 (l'outil, pas le jeu). Quatre onglets :
-  Graphe & diagnostic (l'ESPACE du dossier), Étapes du jeu (le TEMPS : la frise
-  éditable et le pas-à-pas), JSON, Grammaire.
-
-  LES RÈGLES NE SONT PAS RECOPIÉES ICI : elles vivent dans app/regles.js, que
-  cette page CHARGE et APPELLE comme le jeu — le pas-à-pas ne peut pas dériver
-  (§12). Restent propres à l'atelier : le diagnostic, le graphe, la frise, la
-  migration, l'export.
+  Graphe & diagnostic (l'ESPACE du dossier), Étapes du jeu (le TEMPS), JSON,
+  Grammaire. LES RÈGLES NE SONT PAS RECOPIÉES ICI : elles vivent dans
+  app/regles.js, que cette page CHARGE et APPELLE comme le jeu (§12). Restent
+  propres à l'atelier : diagnostic, graphe, frise, migration, export.
 -->
 <link rel="stylesheet" href="atelier/atelier.css">
 </head>
@@ -63,7 +60,6 @@
     <div id="insp"></div>
   </div>
 
-  <!-- ============ ÉTAPES DU JEU ============ -->
   <div id="etapes">
     <div class="fcol" id="frise"></div>
     <div id="simcol">
@@ -87,29 +83,21 @@
     <div id="jsonmsg"></div>
   </div>
 
-  <!-- ============ GRAMMAIRE (prototype, non branché) ============ -->
   <div id="grampane"></div>
 </main>
 
-<!-- Le moteur de grammaire : le MÊME fichier que le jeu et le banc d'essai,
-     jamais une copie. Sous jsdom il ne se charge pas, et l'onglet le dit. -->
 <script src="moteur.js"></script>
 
-<!-- LE CONTENU — le même fichier que celui du jeu. L'atelier ne porte plus de
-     copie : il ÉDITE content.js et le RÉÉCRIT par-dessus, sur place (§10). Une
-     seule maison pour le contenu (docs/ARCHITECTURE.md §12). -->
 <script src="regles.js"></script>
 <script src="content.js"></script>
 
-<!-- L'ATELIER, PAR ONGLET — un fichier par outil. Portée globale CLASSIQUE,
+<!-- L'ATELIER, PAR ONGLET — un fichier par outil, portée globale CLASSIQUE et
      aucun module ES : c'est ce qui laisse intacts les cinquante-neuf `onclick=`
-     du HTML ci-dessus, et le « zéro build, file:// ».
-     L'ORDRE COMPTE, mais moins qu'il n'y paraît : les fonctions se voient par
-     hoisting ; seul `noyau.js` exécute son corps au chargement, il vient donc
-     en premier.
+     et le « zéro build, file:// ». L'ORDRE compte peu (hoisting), sauf
+     `noyau.js`, seul dont le corps s'exécute au chargement : il vient en premier.
      PIÈGE : un `const`/`let` de haut niveau n'est PAS une propriété de `window`
-     (§2 de la passation) — les `window.X = X` explicites d'`undo`, `adopter`,
-     `demanderExemple` et `simReset` sont ce par quoi les suites lisent. -->
+     (R2) — d'où les `window.X = X` explicites d'`undo`, `adopter`,
+     `demanderExemple` et `simReset`, par lesquels les suites lisent. -->
 <script src="atelier/noyau.js"></script>
 <script src="atelier/graphe.js"></script>
 <script src="atelier/diagnostic.js"></script>
@@ -120,8 +108,6 @@
 <script src="atelier/grammaire.js"></script>
 
 <script>
-/* Le seul code qui s'exécute au chargement, et il reste sur la page : c'est
-   elle qu'on démarre, pas un module. */
 window.addEventListener("resize",renderEdges);
 if(!chargerAuto()) CONTENU=contenuLivre();
 window.CONTENU=CONTENU;   // exposé pour bidouiller en console (comme window.JEU dans le jeu)

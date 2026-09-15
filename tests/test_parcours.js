@@ -1,15 +1,12 @@
-// Parcours & ergonomie — ce que les autres suites ne couvrent pas : le
-// composeur pas à pas et le retour en arrière, la modale de pièce, les
-// répliques de l'avocat (faux, rep de lien, escalades séparées, deja) et le
-// grain fin de la répétition de plaidoirie. Contenu embarqué.
+// Parcours & ergonomie — le composeur pas à pas et le retour en arrière, la
+// modale de pièce, les répliques de l'avocat, le grain fin de la répétition.
+// Contenu embarqué.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, discussion, memoire, composeur, plaidoirie, plaidoirieVisible } = H;
 const boot = () => H.boot();
 
 console.log("\n=== Le composeur, bloc par bloc ===");
 {
-  /* On livre tout d'abord. Depuis le geste unique (§4.5.4), poser ne clôt
-     JAMAIS : la composition reste ouverte tant qu'on n'envoie pas. */
   const w = boot();
   H.livrerTout(w);
   check("au départ, la phrase est vide", w.S.compo.length === 0);
@@ -38,12 +35,9 @@ console.log("\n=== Refus de catégorie : le seul refus qui existe ===");
   const b = w.CHAMPS.find(c => c.dim !== a.dim);
   H.surligner(w, a.id); H.surligner(w, b.id);
   check("aucune relation ne se déduit entre deux dimensions", w.M.deduire(a.id, b.id) === null);
-  // On désigne quand même les deux : rien n'est jamais interdit à la pose,
-  // c'est à la clôture que la catégorie tranche (§4.5).
   const iT = () => H.iTermeChamp(w);
   w.poserBloc(iT(), w.S.retenus.indexOf(a.id));
   w.poserBloc(iT(), w.S.retenus.indexOf(b.id));
-  // C'est l'article — le seul moyen de clore — qui déclenche la validation.
   const iArt = w.R.blocsOfferts(w.S).findIndex(x => x.imbrique);
   if (iArt >= 0) w.poserBloc(iArt); else H.cloreSurPlace(w);
   check("deux dimensions différentes : la phrase est refusée", !!w.S.refus);
@@ -58,9 +52,6 @@ console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
 {
   const w = boot();
   H.livrerTout(w);
-  // Le contrôle central : pour CHAQUE lien d'arité 2 du contenu, désigner ses
-  // deux empans doit produire exactement la forme déclarée — sans que le
-  // joueur ait rien eu à choisir.
   let tous = true, n = 0;
   for (const L of H.comparaisons(w)) {
     n++;
@@ -69,14 +60,11 @@ console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
   check(`les ${n} relations déclarées se déduisent toutes des valeurs`, n > 0 && tous);
 
   /* Le PATRON doit s'écrire : une régression ne casse aucune forme réduite, mais
-     le verbe disparaît et le joueur lit « l'heure d'arrivée l'heure des
-     éclats ». C'est la relecture à l'œil qui l'avait attrapé. */
+     le verbe disparaît — c'est la relecture à l'œil qui l'avait attrapé. */
   let patronsOk = true, vus = 0;
   for (const L of H.comparaisons(w)) {
     const f = w.JEU.grammaire.formes[L.forme];
     if (!f.patron) continue;
-    // La comparaison ne peut plus se clore seule : on la lit dans le composeur,
-    // là où le joueur la voit avant de choisir son article.
     w.viderCompo();
     if (!H.poserComparaison(w, L)) { patronsOk = false; continue; }
     vus++;
@@ -88,8 +76,6 @@ console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
   w.viderCompo();
   check(`les ${vus} phrases déduites s'écrivent par leur patron, verbe compris`, vus > 0 && patronsOk);
 
-  // L'ordre canonique : une forme ordonnée range ses termes selon son `sens`,
-  // quel que soit l'ordre dans lequel le joueur a cliqué.
   const ord = H.comparaisons(w).find(L => (w.JEU.grammaire.formes[L.forme]||{}).ordonne);
   if (ord) {
     const [x, y] = ord.termes;
@@ -97,8 +83,6 @@ console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
       JSON.stringify(w.M.ordonner(ord.forme, [y, x])) === JSON.stringify([x, y]));
   } else check("(aucune forme ordonnée dans ce contenu)", true);
 
-  // Deux valeurs égales dans une dimension d'écart restent composables : ce
-  // sont des doublons banals, ils doivent vivre (§4.4).
   const paires = [];
   for (let i = 0; i < w.CHAMPS.length; i++)
     for (let j = i + 1; j < w.CHAMPS.length; j++) {
@@ -120,7 +104,6 @@ console.log("\n=== On n'invoque pas un texte qu'on n'a pas reçu ===");
   const G = w.JEU.grammaire;
   const avecPiece = G.blocs.filter(b => b.piece);
   check("des blocs sont conditionnés à une pièce", avecPiece.length > 0);
-  // amener la composition en S4, où les articles sont offerts
   const C = H.lienConclusion(w);
   H.livrerTout(w);
   H.poserComparaison(w, C.termes[0]);
@@ -128,7 +111,6 @@ console.log("\n=== On n'invoque pas un texte qu'on n'a pas reçu ===");
   check("tout ce qui est offert a sa pièce",
     offerts.every(b => !b.piece || new Set(w.R.piecesLivrees(w.S)).has(b.piece)));
 
-  // Le même, sans rien livrer : l'article du vice n'est pas encore là.
   const w0 = boot();
   const livrees0 = new Set(w0.R.piecesLivrees(w0.S));
   const manquant = avecPiece.find(b => b.imbrique && !livrees0.has(b.piece));
@@ -137,7 +119,6 @@ console.log("\n=== On n'invoque pas un texte qu'on n'a pas reçu ===");
     !H.cheminVers(w0, (manquant||{}).forme).length
     || !w0.R.blocsOfferts(w0.S).some(b => b.id === (manquant||{}).id));
 
-  // une fois la pièce livrée, la même liaison apparaît
   const w2 = boot();
   H.livrerTout(w2);
   H.poserComparaison(w2, C.termes[0]);
@@ -147,9 +128,6 @@ console.log("\n=== On n'invoque pas un texte qu'on n'a pas reçu ===");
 
 console.log("\n=== Un fait se cite, une relation se fonde ===");
 {
-  /* LA SECONDE VOIE DE CLÔTURE (§4.5). Un empan seul se clôt par sa citation :
-     le désigner, c'est déjà citer une pièce, et le fondement est dans le geste.
-     Aucun article n'est requis — il n'y a pas de raisonnement à fonder. */
   const w = boot();
   const cits = H.citations(w);
   check("le contenu déclare des citations", cits.length > 0);
@@ -161,16 +139,11 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
   H.surligner(w, L.termes[0]);
   const iT = H.iTermeChamp(w);
   w.poserBloc(iT, w.S.retenus.indexOf(L.termes[0]));
-  /* LA CLÔTURE QUI N'AJOUTE RIEN (§4.5.4) : l'empan seul SE TIENT déjà — la
-     liaison qui le citera n'est pas un bouton, c'est l'envoi qui la pose. Le
-     geste est donc : désigner, puis envoyer, et c'est tout. */
   check("un seul empan posé, la phrase se tient déjà", w.S.compo.length === 1);
   check("et elle s'envoie telle quelle", w.R.peutEnvoyer(w.S));
   const imp = w.R.clotureImplicite(w.S);
   check("la clôture qui la citera est celle du contenu", !!imp && imp.id === bc.id);
   check("et aucun article n'est requis pour cette voie", !bc.piece);
-  /* L'INTERVALLE QUI PORTE LA FIN 2 (§4.6) : composer ne dit rien. Il s'est
-     déplacé de la clôture vers l'assemblage, il n'a pas disparu. */
   check("composer ne met rien au journal", w.S.brouillon.length === 0);
   check("ni ne transmet quoi que ce soit", w.S.plaidoirie.length === 0);
   w.envoyerCompo();
@@ -181,17 +154,12 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
   check("son terme est resté ATOMIQUE — rien n'a été emboîté",
     typeof w.S.brouillon[0].reduite.termes[0] === "string");
 
-  /* L'ÉCRITURE : un empan s'y lit DEUX FOIS — son nom, puis sa citation, puis
-     la pièce d'où elle sort. C'est ce qui fait qu'une réponse répond au lieu
-     de reformuler la question (§4.1). */
   const e = w.CHAMPS.find(c => c.id === L.termes[0]);
   const txt = w.S.brouillon[0].texte;
   check("la phrase porte le nom de l'empan", txt.includes(e.nom));
   check("et sa citation", txt.includes(e.texte));
   check("et la pièce d'où elle vient", !e.court || txt.includes(e.court));
 
-  // Une comparaison, elle, ne s'écrit QUE par les noms — sinon on retomberait
-  // sur l'empilement de citations que le nom avait soigné (§8.8 de docs/ECRITURE.md).
   const w2 = boot();
   H.livrerTout(w2);
   const C = H.lienConclusion(w2);
@@ -201,11 +169,6 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
     j >= 0 && feuilles.every(c => !w2.S.brouillon[j].texte.includes(c.texte)));
 }
 {
-  /* LES DEUX VOIES SONT OUVERTES D'EMBLÉE (§3, §4.5.1) : la première session
-     va jusqu'à la comparaison, l'article arrivant avec le premier lot. Le
-     MÉCANISME qui permettrait de la retarder reste entier — `piece` porte sur
-     les termes comme sur les liaisons (§11) —, et c'est lui qu'on éprouve, en
-     déplaçant la pièce sans jamais la nommer. */
   const w = boot();
   const G = w.JEU.grammaire;
   const second = (G.blocs || []).find(b => b.type === "terme" && b.deduit);
@@ -214,10 +177,9 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
     check("et l'affaire la livre d'emblée",
       !second.piece || new Set(w.R.piecesLivrees(w.S)).has(second.piece));
     for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
-    /* §4.5.8 — L'ANTICIPATION, avant tout empan posé : la pièce du second
-       terme étant déjà livrée, la comparaison doit se voir sans qu'aucun clic
-       ne l'ait encore ouverte — sinon la voix unique retombe dans le bug
-       qu'elle corrige (elle se taisait jusqu'au premier clic). */
+    /* L'ANTICIPATION (§4.5), avant tout empan posé : la comparaison doit se voir
+       sans qu'aucun clic ne l'ait ouverte — sinon la voix unique retombe dans le
+       bug qu'elle corrige, où elle se taisait jusqu'au premier clic. */
     check("la comparaison se voit AVANT tout empan posé", w.R.comparaisonPossible(w.S));
     check("et rien ne contraint encore un empan qu'on n'a pas posé",
       w.R.dimAttendue(w.S) === null);
@@ -233,9 +195,8 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
     check("et la dimension attendue pour le second est celle du premier",
       w.R.dimAttendue(w.S) === e.dim);
 
-    /* LE MÊME CONTENU, la pièce du second empan repoussée au dernier lot : la
-       voie se referme, et il ne reste que la citation. C'est ce qui prouve que
-       le filtre de livraison ne fait pas d'exception pour les termes. */
+    /* LE MÊME CONTENU, pièce du second empan repoussée : la voie se referme, et
+       le filtre de livraison ne fait donc pas d'exception pour les termes. */
     if (second.piece) {
       const c = H.contenuLivre();
       const b2 = c.grammaire.blocs.find(b => b.type === "terme" && b.deduit);
@@ -269,8 +230,6 @@ console.log("\n=== La continuation : une comparaison demande toujours « et donc
   check("toutes les liaisons-articles sont offertes, pas seulement la bonne",
     offerts.filter(b => b.imbrique).length > 1);
 
-  /* LE « CF ARTICLE » OBLIGATOIRE : rien ne clôt une comparaison qu'un
-     article. Tout ce que l'IA dit est fondé — il n'y a pas d'issue nue. */
   check("aucun bloc ne clôt sans qualifier", !offerts.some(b => !b.forme && !b.imbrique));
   check("tous les blocs offerts portent un article", offerts.every(b => b.imbrique && b.forme));
   const w2 = boot();
@@ -280,7 +239,6 @@ console.log("\n=== La continuation : une comparaison demande toujours « et donc
   check("mais le pressentiment, lui, a bien eu lieu au composeur", w2.S.vice_pressenti);
   check("et il n'a rien transmis", w2.S.plaidoirie.length === 0 && !w2.S.vice_expose);
 
-  // continuer : on obtient la forme emboîtée, en UNE phrase
   const i = H.composerLien(w, C);
   check("la continuation produit exactement la forme du lien déclaré",
     i >= 0 && w.M.memeRed(w.S.brouillon[i].reduite, {forme: C.forme, termes: C.termes}));
@@ -294,8 +252,6 @@ console.log("\n=== La continuation : une comparaison demande toujours « et donc
 
 console.log("\n=== Le premier geste, montré ===");
 {
-  /* LE TUTORIEL (§4.8) : de la signalétique, pas de la mécanique — il pointe la
-     ZONE, jamais le bon empan, et il ne décide rien. */
   const w = H.boot({url:"http://localhost/"});
   const halo = () => w.document.querySelector("[data-tuto]");
   const bandeau = () => w.document.getElementById("tuto");
@@ -312,8 +268,6 @@ console.log("\n=== Le premier geste, montré ===");
   check("et tous les empans y restent marqués pareil — aucune lampe torche",
     ![...cible.querySelectorAll(".empan")].some(e => e.hasAttribute("data-tuto")));
 
-  /* LE MAUVAIS PASSAGE. Le tutoriel n'avance pas et le dit — mais il
-     n'empêche rien : la mémoire retient quand même, gratuite et réversible. */
   const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
   const autre = H.empansDe(w, pid).find(k => k !== veut);
   H.surligner(w, autre);
@@ -342,7 +296,6 @@ console.log("\n=== Le premier geste, montré ===");
   check("et il ne reviendra pas", !!w.localStorage.getItem("iavocat_tuto"));
 }
 {
-  /* IL NE DÉCIDE RIEN : le jeu est exactement le même sans lui. */
   const avec = H.boot({url:"http://localhost/"});
   const sans = H.boot({graine:{iavocat_tuto:"1"}});
   check("déjà vu, il ne s'affiche plus",
@@ -381,9 +334,6 @@ console.log("\n=== Les répliques : seulement au versement ===");
   const i = H.composerLien(w, L);
   check("une phrase à réplique propre se compose", i >= 0);
   check("composée, elle ne dit rien", !discussion(w).includes(L.rep.slice(0, 25)));
-  /* Il n'y a plus de panneau « phrase close » : clore et envoyer sont un seul
-     geste (§4.5.4). Ce qui reste vrai, et c'est l'invariant, c'est que rien
-     n'est dit tant que rien n'est parti (§4.6). */
   check("close, elle n'est pourtant pas partie",
     w.S.prete === i && !w.S.brouillon[i].versee && w.S.plaidoirie.length === 0);
   w.envoyer(i);
@@ -397,16 +347,11 @@ console.log("\n=== Les répliques : seulement au versement ===");
 
 console.log("\n=== L'économie de l'écran : ce qui est déjà sous les yeux ===");
 {
-  /* Le composeur vit SOUS le fil (§4.6) : le rappel ne redit la question que
-     lorsqu'elle a cessé d'être le dernier mot (§4.9). */
   const w = boot();
   const q = w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
   check("au départ, la question vient d'être posée : elle est le dernier mot",
     !!q && !!q.question && w.S.fil[w.S.fil.length - 1].texte === q.question);
   check("le composeur ne la répète donc pas", !composeur(w).includes(q.question));
-  /* On fait reparler l'avocat par le geste qui le fait toujours parler : ouvrir
-     une pièce qui porte un `declenche`. C'est le déclencheur, pas la pièce, qui
-     compte ici — l'assertion porte sur l'écran, pas sur un chemin de partie. */
   w.ouvrirPiece(H.pidAvecDeclenche(w));
   check("l'avocat ayant repris la parole, la question n'est plus le dernier mot",
     w.S.fil[w.S.fil.length - 1].texte !== q.question);
@@ -417,7 +362,6 @@ console.log("\n=== Le plan ne retient que les moyens ===");
 {
   const w = boot();
   H.livrerTout(w);   // toutes les tournures reçues, pour atteindre l'observation
-  // une observation : reconnue, commentée, mais impossible à plaider
   const obs = w.JEU.liens.find(x => !x.tag && !x.conclusion && !x.faux);
   const i = H.composerLien(w, obs);
   check("l'observation se compose", i >= 0);
@@ -425,17 +369,11 @@ console.log("\n=== Le plan ne retient que les moyens ===");
   check("l'observation est bien partie", w.S.brouillon[i].versee);
   check("l'avocat y a répondu", w.S.fil.length > 1);
   check("mais elle n'entre pas au plan", !plaidoirie(w).includes(w.S.brouillon[i].texte));
-  /* Tant que rien ne s'y inscrit, la colonne du plan n'existe pas (§4.9) : une
-     phrase envoyée mais non plaidable ne l'ouvre pas. On éprouve les deux
-     états, pas seulement le second. */
   check("et le plan n'a pas encore de colonne à l'écran", !plaidoirieVisible(w));
-  // un moyen : ce qui sert une attente de session
   const moyen = H.lienTag(w, w.R.attentesDe(w.JEU.remises[0])[0].attend);
   const j = H.composerLien(w, moyen);
   w.envoyer(j);
   check("un moyen, lui, s'y inscrit", plaidoirie(w).includes(w.S.brouillon[j].texte));
-  /* La colonne est escamotée pour le moment (§4.9 suspendu) : le moyen
-     s'inscrit toujours dans S.plaidoirie, mais l'écran ne l'affiche plus. */
   check("mais la colonne reste hors écran", !plaidoirieVisible(w));
 }
 {
@@ -454,9 +392,6 @@ console.log("\n=== Le plan ne retient que les moyens ===");
   H.phrasesBruit(w, 3);
   const n = w.S.brouillon.length;
   for (let i = 0; i < n; i++) w.envoyer(i);
-  /* Une phrase de bruit est une QUALIFICATION qui ne se rattache à rien :
-     c'est `rep_sans_rapport` qui monte, les comparaisons nues ne pouvant plus se
-     clore. `rep_inutile` reste un filet pour une affaire à l'ancienne. */
   check("les phrases sans lien font monter l'escalade « sans rapport »", w.S.incompris >= 2);
   check("la seconde réplique n'est pas la première",
     discussion(w).includes(w.JEU.avocat.rep_sans_rapport[1].slice(0, 20)));
@@ -464,9 +399,6 @@ console.log("\n=== Le plan ne retient que les moyens ===");
     w.S.inutiles === 0);
 }
 {
-  /* TROIS façons de rater, trois agacements. Une citation hors sujet n'est ni
-     une comparaison nue ni un article mal rattaché : c'est une réponse qui ne
-     répond pas, et elle a son escalade à elle (§4.5). */
   const w = boot();
   const bc = H.blocCite(w);
   if (bc) {
@@ -511,12 +443,9 @@ console.log("\n=== La répétition de plaidoirie ===");
   const w = boot();
   H.instruire(w);   // le chemin docile envoie tout ce qu'il compose
   w.cloturer();
-  // La continuation (§4.5) écrit la conclusion d'un trait : la comparaison ne
-  // se dépose plus au journal comme une phrase orpheline jamais transmise.
   check("la continuation ne laisse aucune prémisse orpheline",
     w.S.brouillon.every(n => n.versee));
   check("et marque « déjà envoyée » celles qui sont parties", discussion(w).includes("déjà envoyée"));
-  // une phrase close mais gardée reste proposée par le présentoir
   const w2 = boot();
   H.instruire(w2);
   H.composerLien(w2, H.lienConclusion(w2));
@@ -527,7 +456,6 @@ console.log("\n=== La répétition de plaidoirie ===");
     w2.S.vice_trouve && !w2.S.vice_expose);
 }
 {
-  // le cas limite : rien d'écrit au moment de la répétition
   const w = boot();
   H.instruire(w);
   const garde = w.S.brouillon.slice();

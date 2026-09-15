@@ -9,13 +9,12 @@
 <body>
 
 <div class="wrap">
-  <!-- Un en-tête nomme la SURFACE (§4.6), jamais les zones qu'elle contient :
-       elles portent déjà leur titre, plus bas (§4.9). -->
+  <!-- Un en-tête nomme la SURFACE (§4.6), jamais les zones qu'elle contient. -->
   <section class="col">
     <h2>Discussion</h2>
     <div class="body" id="discussion"></div>
-    <!-- On répond SOUS la question (§4.6). `#composeur` est le FRÈRE de
-         `#discussion`, jamais son enfant : le fil se recale en bas à chaque
+    <!-- On répond SOUS la question (§4.6). PIÈGE : `#composeur` est le FRÈRE de
+         `#discussion`, jamais son enfant — le fil se recale en bas à chaque
          message, la phrase qu'on écrit ne doit pas partir avec lui. -->
     <div id="composeur"></div>
   </section>
@@ -23,8 +22,6 @@
     <h2>Mémoire</h2>
     <div class="body" id="memoire"></div>
   </section>
-  <!-- Caché tant que rien ne s'y inscrit : ce qui n'existe pas encore ne
-       s'affiche pas (§4.9). C'est `renderPlaidoirie` qui pose le `hidden`. -->
   <section class="col" id="colPlaidoirie" hidden>
     <h2>Plaidoirie<span class="zcount" id="plaidoirieCount"></span></h2>
     <div class="body" id="plaidoirie"></div>
@@ -38,38 +35,24 @@
 
 <div id="modalRoot"></div>
 
-<!-- Le tutoriel parle depuis le CHROME, hors de la fiction : l'avocat, lui,
-     n'explique rien (§8.6 de docs/ECRITURE.md). Le bandeau ne bouge jamais ; seul son texte
-     change, et le halo se déplace d'un élément à l'autre (§4.8). -->
 <div id="tuto" hidden>
   <span class="pas" id="tutoPas"></span>
   <span class="dit" id="tutoDit"></span>
   <button class="passer" onclick="tutoPasser()">je sais faire</button>
 </div>
 
-<!-- ============================================================
-     LA GRAMMAIRE — fonctions pures, partagées avec l'atelier et le
-     banc d'essai. Aucune donnée dedans (docs/ARCHITECTURE.md §14).
-     ============================================================ -->
 <script src="moteur.js"></script>
 
-<!-- ============================================================
-     LES RÈGLES DU JEU — pures elles aussi, et partagées avec le
-     pas-à-pas de l'atelier, qui ne les recopie plus (§12).
-     ============================================================ -->
 <script src="regles.js"></script>
 
-<!-- LE CONTENU — produit par l'atelier. content.js va à côté de ce fichier :
-     c'est le seul exemplaire (§12). Marche en file:// et sur itch.io. -->
 <script src="content.js"></script>
 
 <!-- LE JEU — l'écran et les gestes ; il ne décide rien (§9).
      TROIS RÈGLES SUR CETTE BALISE, aucune n'est cosmétique :
      • sur UNE ligne, sans attribut — la forme exacte que le harnais inline ;
      • ni `defer` ni `async`, JAMAIS : un attribut de plus et la balise n'est
-       PAS inlinée du tout, rien ne se charge, quatre contrôles tombent (§13).
-       R1 du gardien tient la forme ;
-     • APRÈS content.js — le démarrage lit `window.CONTENU`. -->
+       PAS inlinée du tout, rien ne se charge, quatre contrôles tombent (§13) ;
+     • APRÈS content.js — le démarrage lit `window.CONTENU`. R1 tient la forme. -->
 <script src="jeu.js"></script>
 </body>
 </html>

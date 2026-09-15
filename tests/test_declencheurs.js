@@ -1,13 +1,9 @@
-// Le moteur sur le contenu réel, muté : un contenu invalide est refusé et le
-// dit, piece.declenche, l'avancement d'une remise à plusieurs attentes, les
-// trois drapeaux du vice.
+// Le moteur sur le contenu réel, MUTÉ : contenu invalide refusé, `declenche`,
+// l'avancement d'une remise à plusieurs attentes, les trois drapeaux du vice.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
 const { check, bilan, contenuLivre, discussion } = H;
 const boot = contenu => H.boot({contenu});   // null = aucun contenu du tout
 
-/* Il n'y a plus de contenu embarqué : un contenu refusé n'est pas remplacé
-   en douce, il est SIGNALÉ. Le jeu affiche son bandeau de panne et ne joue
-   rien — zéro remise — au lieu de faire croire qu'il joue l'affaire écrite. */
 console.log("\n=== Un contenu invalide est refusé, et le dit ===");
 const panne = w => (w.document.querySelector(".panne")||{}).textContent || "";
 {
@@ -38,7 +34,6 @@ console.log("\n=== piece.declenche ===");
   const c = contenuLivre();
   const pid = H.pidAvecDeclenche(boot(c));
   const w = boot(c);
-  // la pièce peut n'arriver qu'à une session ultérieure : on ouvre tout
   H.instruire(w);
   const avant = w.S.fil.length;
   w.ouvrirPiece(pid);
@@ -66,8 +61,6 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
   const c = contenuLivre();
   const w = boot(c);
   check("une seule session est ouverte au départ", w.S.remisesEnvoyees === 1);
-  /* Une remise attend une SUITE de réponses (§3). Elle ne se ferme qu'une fois
-     toutes servies, et chacune est servie par le même geste : composer, verser. */
   const as = w.R.attentesDe(c.remises[0]);
   check("la première remise attend au moins une réponse", as.length >= 1);
   as.forEach((a, k) => {
@@ -86,7 +79,6 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
         !fin || discussion(w).includes(fin.replique.slice(0, 30)));
 }
 {
-  // Chaque question posée arrive dans le canal quand son attente devient courante.
   const c = contenuLivre();
   const w = boot(c);
   const as = w.R.attentesDe(c.remises[0]).filter(a => a.question);
@@ -100,9 +92,6 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
   }
 }
 {
-  /* Répondre DANS LE DÉSORDRE est accepté : on ne restreint jamais par la
-     pertinence (§4.5). L'attente servie est celle dont le tag correspond, et
-     la question reposée est la première encore due. */
   const c = contenuLivre();
   const w = boot(c);
   const as = w.R.attentesDe(c.remises[0]);
@@ -127,7 +116,6 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
   check("le « qui » de l'accusé de réception vient du contenu", discussion(w).includes("La greffière"));
 }
 {
-  // une session de plus, sans pièce, écrite À L'ANCIENNE : le moteur ne s'en émeut pas
   const c = contenuLivre();
   const derniere = c.remises[c.remises.length-1];
   const tag = H.attentesContenu(derniere).slice(-1)[0].attend;
@@ -143,9 +131,6 @@ console.log("\n=== Les trois drapeaux du vice ===");
   const w = boot(c);
   H.instruire(w);
   check("docile : aucun drapeau", !w.S.vice_pressenti && !w.S.vice_trouve && !w.S.vice_expose);
-  /* Pressentir sans conclure : on pose les deux empans du vice au composeur —
-     la comparaison s'affiche — puis on s'arrête là. Aucune phrase ne se clôt,
-     rien n'est envoyé : la compréhension a eu lieu, elle n'a rien produit. */
   const ecritesAvant = w.S.brouillon.length;
   H.poserComparaison(w, H.lienVice(w));
   check("la comparaison ⚑ au composeur lève vice_pressenti seul", w.S.vice_pressenti && !w.S.vice_trouve);
@@ -164,8 +149,5 @@ console.log("\n=== Les trois drapeaux du vice ===");
   check("→ Fin 1", H.numeroFin(H.terminer(w)) === "1");
 }
 
-/* LES MANUELS N'ONT PLUS DE SUITE (§16) : on éprouvait un chemin que le joueur
-   ne pouvait pas prendre. La règle reste dans regles.js ; le jour où ils se
-   rebranchent, ces contrôles reviennent avec eux — et pas avant. */
 
 bilan();

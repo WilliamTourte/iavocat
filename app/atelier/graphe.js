@@ -1,10 +1,6 @@
-/* ============================================================
-   ATELIER — LE GRAPHE : le canevas, les traits, et le clic dessus.
-   L'ESPACE du dossier — qui se relie à quoi. Dépend du noyau.
-   ============================================================ */
-/* ============================================================
-   3) LE GRAPHE
-   ============================================================ */
+/* ATELIER — LE GRAPHE : le canevas, les traits, le clic dessus. L'ESPACE du
+   dossier — qui se relie à quoi. Dépend du noyau. */
+/* 3) LE GRAPHE */
 function autoLayout(force){
   CONTENU._pos = CONTENU._pos || {};
   const cols={ piece:{x:60,y:70}, regle:{x:760,y:70} };
@@ -82,9 +78,6 @@ function empanRelie(pid,eid){
   const k=K(pid,eid);
   return (CONTENU.liens||[]).some(L=>feuillesLien(L).includes(k));
 }
-/* Le RANG dans CONTENU.dimensions, jamais la pertinence (§4.3) ; règle et
-   palette vivent dans moteur.js. Ici, seulement le repli : une dimension
-   inconnue est une ERREUR d'écriture, montrée en rouge (le jeu la grise). */
 function couleurDim(d){
   const api=window.MoteurGrammaire;
   return (api ? api.couleurDim(toutesDims(),d) : null) || "var(--err)";
@@ -105,16 +98,11 @@ function edgeColor(L){
   return getCSS('--ok');
 }
 function getCSS(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
-/* Via moteur.js : une phrase est « sensée » si ses termes respectent
-   les catégories déclarées par la forme. Le moteur en est seul juge. */
 function lienSense(L){
   const m=MG(); if(!m) return true;
   if(!formeDe(L.forme)) return false;
   return !m.valider({forme:L.forme,termes:L.termes||[]});
 }
-/* Un lien d'arité 2 dont les deux termes sont des empans se dessine ; un lien
-   de qualification (arité 1, sur une note close) n'a pas de trait — il se lit
-   dans la liste sous le diagnostic. */
 function paireVisible(L){
   const t=L.termes||[];
   return t.length===2 && typeof t[0]==="string" && typeof t[1]==="string" ? t : null;
@@ -158,11 +146,7 @@ function armerDrag(){
   });
 }
 
-/* ============================================================
-   4) INTERACTION GRAPHE
-   ============================================================ */
-/* Le SEUL endroit qui garde sa paire d'empans en repartant à zéro : c'est lui
-   qui la construit, clic après clic (`garderEmpans`, noyau.js). */
+/* 4) INTERACTION GRAPHE */
 function clicChamp(pid,ch){
   reinitSelection({garderEmpans:true});
   const meme=s=>s&&s.pid===pid&&s.champ===ch;
@@ -180,16 +164,13 @@ function creerLien(forme){
   if(!selA||!selB) return;
   const cand={forme, termes:[K(selA.pid,selA.champ),K(selB.pid,selB.champ)]};
   if((CONTENU.liens||[]).some(L=>memeLien(L,cand))){ toastInsp("Ce lien existe déjà."); return; }
-  // La garde renonce AVANT `muter` : elle ne doit pas laisser d'entrée
-  // d'annulation, et un `return` dans l'argument ne couperait pas l'épilogue
-  // (§2 de la passation, `muter` dans noyau.js).
+  // PIÈGE : la garde renonce AVANT `muter` — elle ne doit pas laisser d'entrée
+  // d'annulation, et un `return` dans l'argument ne couperait pas l'épilogue.
   muter(()=>{
     CONTENU.liens.push(cand);
     selEdge=CONTENU.liens.length-1; selA=selB=null;
   });
 }
-/* Conclure un lien existant : la phrase close devient le terme d'une
-   liaison de qualification (arité 1). C'est la chaîne du vice en deux temps. */
 function conclureLien(i,forme){
   const L=CONTENU.liens[i]; if(!L) return;
   const cand={forme, termes:[{forme:L.forme, termes:clone(L.termes||[])}]};
@@ -199,7 +180,6 @@ function conclureLien(i,forme){
     selEdge=CONTENU.liens.length-1;
   });
 }
-/* Les formes offertes, rangées par arité — c'est la grammaire qui les déclare. */
 function formesParArite(n){
   return Object.entries(((CONTENU.grammaire||{}).formes)||{})
     .filter(([,f])=>(f.arite||2)===n).map(([k])=>k);
