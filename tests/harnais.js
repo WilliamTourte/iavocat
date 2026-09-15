@@ -279,7 +279,7 @@ function creerHarnais(dossier){
 
   return { check, bilan, boot, bootAtelier, contenuLivre, estRegle,
            discussion, memoire, composeur, plaidoirie, plaidoirieVisible,
-           lienVice, lienConclusion, lienFaux, lienTag, liensNeutres, comparaisons, arite,
+           lienVice, lienConclusion, lienFaux, lienTag, sousTerme, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
            cloreSurPlace, poserComparaison, livrerTout,
            surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,

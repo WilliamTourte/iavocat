@@ -250,7 +250,7 @@ console.log("\n=== La continuation : une comparaison demande toujours « et donc
             .every(c => w.S.brouillon[i].texte.includes(c.nom)));
 }
 
-console.log("\n=== Le premier geste, montré ===");
+console.log("\n=== Les deux gestes, montrés ===");
 {
   const w = H.boot({url:"http://localhost/"});
   const halo = () => w.document.querySelector("[data-tuto]");
@@ -293,6 +293,42 @@ console.log("\n=== Le premier geste, montré ===");
 
   w.envoyerCompo();
   check("la réponse envoyée, il se tait", bandeau().hidden && !halo());
+  check("mais il ne ferme pas encore : la comparaison reste à montrer",
+    !w.localStorage.getItem("iavocat_tuto"));
+
+  // Le second geste — même session, dès que Maître Auber attend une
+  // comparaison au lieu d'une simple citation (§4.8).
+  const attenteSuivante = () => w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
+  const veut2 = H.lienTag(w, attenteSuivante().attend).termes[0];
+  const [pid2] = H.deK(veut2);
+  w.ouvrirPiece(pid2);
+  H.surligner(w, veut2);
+  w.closeModal();
+  check("une deuxième citation, geste déjà connu, ne rallume pas le halo",
+    bandeau().hidden && !halo());
+  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut2));
+  w.envoyerCompo();
+  check("elle non plus ne ferme rien pour de bon",
+    !w.localStorage.getItem("iavocat_tuto"));
+  check("Maître Auber attend maintenant une comparaison",
+    !!H.sousTerme(H.lienTag(w, attenteSuivante().attend)));
+  check("et le halo revient aussitôt : deux passages sont requis, pas un",
+    !!halo() && halo().id === "zoneRetenus");
+  const veutA = attenteSuivante().attend;
+  const [tA, tB] = H.sousTerme(H.lienTag(w, veutA)).termes;
+  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(tA));
+  check("un premier passage posé, le halo reste sur la mémoire — il en faut un second",
+    halo() && halo().id === "zoneRetenus");
+  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(tB));
+  check("les deux posés, le halo montre les propositions de l'article",
+    !!halo() && halo().classList.contains("offre"));
+  const bArticle = w.R.blocsOfferts(w.S).findIndex(b => b.type === "liaison" && b.imbrique);
+  w.poserBloc(bArticle);
+  check("l'article choisi, le halo revient sur le seul geste qui parle",
+    !!halo() && halo().classList.contains("envoi"));
+  w.envoyerCompo();
+  check("les deux gestes montrés, le tutoriel se tait pour de bon",
+    bandeau().hidden && !halo());
   check("et il ne reviendra pas", !!w.localStorage.getItem("iavocat_tuto"));
 }
 {

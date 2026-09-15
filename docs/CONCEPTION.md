@@ -169,7 +169,10 @@ session 1. **Pressentir ne produit rien** : qui comprend et vide son composeur a
 ### 4.8 Le premier geste, montré
 
 **Le tutoriel pointe *où le geste a lieu*, jamais *quoi répondre*** — seul endroit où l'écran s'adresse
-au joueur hors fiction.
+au joueur hors fiction. Il enseigne **deux gestes**, chacun la première fois qu'il se présente : la
+citation d'abord, puis — dans la même session, dès que Maître Auber attend une comparaison — la mise en
+relation. Entre les deux, et une fois les deux acquis, il se tait ; il ne réapparaît pas pour un geste
+déjà montré (une seconde citation, par exemple).
 
 | | Ce qu'on apprend | Ce que le halo entoure |
 |---|---|---|
@@ -177,10 +180,18 @@ au joueur hors fiction.
 | 2 | un passage se retient | **le texte de la pièce**, en entier (puis : refermer) |
 | 3 | ce qu'on retient est le clavier | **toute la zone des retenus**, jamais une puce |
 | 4 | rien ne part tant qu'on n'envoie pas | *« → Envoyer »*, dès que la phrase se tient |
+| 5 | une comparaison prend **deux** passages qui se contredisent, pas un | **toute la zone des retenus**, au premier passage comme au second |
+| 6 | la comparaison seule ne suffit pas : il lui faut un article qui la fonde | **la zone des propositions**, dans le composeur |
+
+Le geste 5-6 partage l'étape 4 pour l'envoi — c'est le même bouton, la même leçon. **Ce qui distingue
+les deux gestes** n'est pas un compteur de clics mais le **contenu** : une attente dont le lien attendu
+emboîte une forme (une comparaison sous un article) plutôt qu'un simple empan. Le tutoriel le lit dans
+`JEU.liens`, jamais dans un nom d'attente câblé en dur.
 
 **Le halo entoure la zone, jamais le bon empan** (§4.3). **Il corrige, il n'empêche pas** : rien n'est
 refusé, il ne dit jamais lequel c'était, et la dérivation par laquelle il sait ce qu'attend la question
-**s'éteint avec lui**. **Il ne décide rien** — aucun état neuf, aucune règle, et il peut se taire.
+**s'éteint avec lui**. **Il ne décide rien** — aucun état neuf, aucune règle, et il peut se taire — y
+compris entre le geste 4 et le geste 5, le temps d'une citation déjà connue.
 
 ### 4.9 L'économie de l'écran
 

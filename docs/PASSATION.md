@@ -49,7 +49,9 @@ rien.
   **ne protège pas** d'un renommage d'état — `restaurerPartie` porte la reprise, et tout futur
   renommage aura le même devoir.
 - **Le doublon banal porte tout le camouflage** (§4.4) : ne jamais désactiver son contrôle.
-- **Le tutoriel se termine sur `S.satisfaits`, pas sur `S.plaidoirie`.**
+- **Le tutoriel enseigne deux gestes, la citation puis la comparaison, et ne ferme pour de bon
+  qu'à la fin de la session 1** (`S.remisesEnvoyees>1`) — pas au premier `S.satisfaits`, qui ne
+  marque que la fin du premier geste. Entre les deux, il se tait sans se fermer.
 - **La clôture implicite compte les *liaisons* offertes**, les termes exclus : ajouter une liaison à la
   grammaire change le nombre de clics ailleurs, ajouter un terme non.
 - **Poser un bloc ne clôt plus rien** : le refus de catégorie tombe au clic qui **déduit** une paire ou

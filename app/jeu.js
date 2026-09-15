@@ -89,22 +89,33 @@ function recommencer(){
   effacerPartie(); effacerTuto(); location.reload();
 }
 
-/* ---- Le tutoriel du premier geste (§4.8) — de l'écran, pas de la règle ----
-   Son temps se dérive de `S` : le retirer laisserait le jeu identique. */
+/* ---- Le tutoriel des deux premiers gestes (§4.8) — de l'écran, pas de la
+   règle. Son temps se dérive de `S` : le retirer laisserait le jeu identique.
+   DEUX gestes, chacun montré une fois : citer, puis — dans la même session,
+   dès que Maître Auber attend une comparaison — mettre en relation. */
 const CLE_TUTO="iavocat_tuto";
+const TUTO_TOTAL=6;
 let tutoFait=false;
 try{ tutoFait = !!localStorage.getItem(CLE_TUTO); }catch(e){}
 function effacerTuto(){ try{ localStorage.removeItem(CLE_TUTO); }catch(e){} }
 function tutoClore(){ tutoFait=true; try{ localStorage.setItem(CLE_TUTO,"1"); }catch(e){} }
 function tutoPasser(){ tutoClore(); majTutoriel(); }
-function tutoAttendu(){
+/* Le lien de l'attente active : PIÈGE, c'est lui qui dit si le geste attendu
+   est une simple citation (un terme, une chaîne) ou une comparaison (un
+   terme emboîte une forme) — jamais un nom d'attente câblé en dur. */
+function tutoLienAttente(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
-  const L=a&&a.attend&&(JEU.liens||[]).find(x=>x.tag===a.attend);
-  const t=L&&(L.termes||[])[0];
-  return typeof t==="string" ? t : null;
+  return (a&&a.attend&&(JEU.liens||[]).find(x=>x.tag===a.attend)) || null;
 }
-function tutoEtape(){
-  if(S.remisesEnvoyees!==1 || S.satisfaits.length) return null;
+function tutoAttendu(){
+  const t=tutoLienAttente(), p=t&&(t.termes||[])[0];
+  return typeof p==="string" ? p : null;
+}
+function tutoAttenteComparaison(){
+  const t=tutoLienAttente(), p=t&&(t.termes||[])[0];
+  return !!p && typeof p==="object";
+}
+function tutoEtapeCitation(){
   const veut=tutoAttendu();
   if(veut ? !S.retenus.includes(veut) : !S.retenus.length){
     const rate = !!veut && S.retenus.length>0;
@@ -125,21 +136,43 @@ function tutoEtape(){
   return  {n:4, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
 }
+function tutoEtapeComparaison(){
+  if(R.indexTermeChamp(S)>=0)
+    return {n:5, ou:"#zoneRetenus",
+      dit: S.compo.length
+        ? "Prends un second passage : celui qui contredit le premier."
+        : "Cette fois, la réponse tient à deux passages qui se contredisent, pas un seul."};
+  if(S.compo.length && R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
+    return {n:6, ou:"#composeur .offre",
+      dit:"Une comparaison seule ne suffit pas : choisis l'article qui la fonde."};
+  if(R.peutEnvoyer(S))
+    return {n:4, ou:"#composeur button.envoi",
+            dit:"Clique sur → Envoyer"};
+  return null;
+}
+/* Entre les deux gestes, et une fois les deux acquis, il se tait — sans se
+   fermer pour autant : `majTutoriel` seul décide de la fermeture définitive. */
+function tutoEtape(){
+  if(S.remisesEnvoyees!==1) return null;
+  if(tutoAttenteComparaison()) return tutoEtapeComparaison();
+  if(!S.satisfaits.length) return tutoEtapeCitation();
+  return null;
+}
 /* PIÈGE : on marque par un ATTRIBUT, pas par une classe — la sérialisation
    laisse ainsi intactes les `class="…"` que des suites lisent. */
 let tutoCible=null;
 function majTutoriel(){
   const banniere=$("tuto"); if(!banniere) return;
   if(tutoCible){ tutoCible.removeAttribute("data-tuto"); tutoCible=null; }
+  /* La session 1 finie (remise 2 livrée), les deux gestes ont eu leur chance :
+     fermeture définitive, qu'une leçon ait ou non été vue jusqu'au bout. */
+  if(!tutoFait && S.remisesEnvoyees>1) tutoClore();
   const e = tutoFait ? null : tutoEtape();
-  if(!e){
-    if(!tutoFait && S.remisesEnvoyees>=1) tutoClore();
-    banniere.hidden=true; return;
-  }
+  if(!e){ banniere.hidden=true; return; }
   tutoCible=document.querySelector(e.ou);
   if(tutoCible) tutoCible.setAttribute("data-tuto", e.alerte?"alerte":"");
   banniere.toggleAttribute("data-alerte", !!e.alerte);
-  $("tutoPas").textContent=e.n+"/4";
+  $("tutoPas").textContent=e.n+"/"+TUTO_TOTAL;
   $("tutoDit").textContent=e.dit;
   banniere.hidden=false;
 }
