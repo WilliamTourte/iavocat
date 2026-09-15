@@ -27,7 +27,7 @@
   <button class="tbtn" onclick="document.getElementById('file').click()">Importer JSON</button>
   <button class="tbtn warnstyle" onclick="demanderExemple()" title="Jeter le travail en cours et repartir de content.js">Recharger content.js</button>
   <button class="tbtn" onclick="exporter()">Exporter JSON</button>
-  <button class="tbtn" onclick="exporterJS()" title="window.CONTENU = {…} — à poser à côté de index.html">Exporter content.js</button>
+  <button class="tbtn" id="btnEcrire" onclick="exporterJS(event)" title="Réécrit app/content.js sur place — le fichier que le jeu charge. Alt+clic : désigner un autre fichier. Navigateur sans écriture de fichier : téléchargement, comme avant">Écrire content.js</button>
 </header>
 
 <nav class="tabs">
@@ -96,8 +96,8 @@
 <script src="moteur.js"></script>
 
 <!-- LE CONTENU — le même fichier que celui du jeu. L'atelier ne porte plus de
-     copie : il ÉDITE content.js et le réexporte par-dessus. Une seule maison
-     pour le contenu (docs/ARCHITECTURE.md §12). -->
+     copie : il ÉDITE content.js et le RÉÉCRIT par-dessus, sur place (§10). Une
+     seule maison pour le contenu (docs/ARCHITECTURE.md §12). -->
 <script src="regles.js"></script>
 <script src="content.js"></script>
 

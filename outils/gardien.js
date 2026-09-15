@@ -148,7 +148,11 @@ function decouperJS(src) {
 /* Les déclarations à PROFONDEUR D'ACCOLADE ZÉRO — les seules qui prennent un nom
    dans la page. Sans le compte, une fermeture (§9) passerait pour une collision,
    et on ferait retirer ce qui protège du vrai piège. */
-const DECLARATION = /(function|const|let|var|class)\s+([A-Za-z_$][\w$]*)/y;
+/* `async` en tête compte pour une déclaration comme une autre : `async function
+   f(){}` pose `f` sur la page tout pareil. Sans le préfixe, R5 tenait un tel
+   gestionnaire pour inexistant, R2 n'aurait pas vu sa collision, et ESLint
+   l'aurait manqué dans les globals du voisinage. */
+const DECLARATION = /(?:async\s+)?(function|const|let|var|class)\s+([A-Za-z_$][\w$]*)/y;
 function declarationsDeHautNiveau(code) {
   const noms = [];
   let prof = 0, precedent = "";

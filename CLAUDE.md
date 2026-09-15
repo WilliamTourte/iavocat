@@ -32,7 +32,7 @@ en `file://` et joue. Une page ne porte que sa **structure** — CSS par `<link>
 ## Les commandes
 
 ```sh
-npm test               # les six suites (325 contrôles), PUIS le gardien, PUIS ESLint.
+npm test               # les six suites (333 contrôles), PUIS le gardien, PUIS ESLint.
                        # Tout vert, ou ce n'est pas fini (§16)
 npm run suites         # les six suites seules — le sens avant la forme
 npm run gardien        # les onze conventions que les suites ne voient pas (§16 bis)

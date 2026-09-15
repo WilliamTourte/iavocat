@@ -386,7 +386,60 @@ console.log("\n=== L'export, et le jeu qui l'adopte ===");
   check("→ Fin 3", H.numeroFin(H.terminer(g)) === "3");
 }
 
-console.log("\n=== L'autosave ===");
+/* L'ÉCRITURE SUR PLACE (§10) — on ne nomme aucun navigateur : on éprouve les
+   DEUX chemins, celui qui sait écrire un fichier et celui qui ne sait pas. Sous
+   jsdom, `showSaveFilePicker` n'existe pas — c'est le chemin de repli qui se
+   donne gratuitement, et le chemin d'écriture se pose à la main. */
+console.log("\n=== Écrire content.js : sur place, ou le repli ===");
+const guetTelecharger = w => { const vus=[]; w.telecharger=(nom,data)=>{ vus.push({nom,data}); return true; }; return vus; };
+const poigneeFeinte = () => { const ecrits=[]; return { ecrits, nom:"content.js",
+  poignee:{ name:"content.js", queryPermission:async()=>"granted",
+            createWritable:async()=>({ write:async t=>ecrits.push(t), close:async()=>{} }) } }; };
+
+(async () => {
+  {
+    const w = neuf();
+    const texte = w.sourceContenuJS();
+    check("le texte écrit est un module : window.CONTENU = {…}", /^\/\*[\s\S]*\*\/\nwindow\.CONTENU = \{/.test(texte));
+    const json = texte.slice(texte.indexOf("{"), texte.lastIndexOf("}") + 1);
+    check("et son JSON est exactement l'export",
+      JSON.stringify(JSON.parse(json)) === JSON.stringify(w.nettoyerPourJeu(w.CONTENU)));
+  }
+  {
+    const w = neuf();
+    const vus = guetTelecharger(w);
+    await w.exporterJS();
+    check("sans écriture de fichier, le bouton retombe sur le téléchargement", vus.length === 1 && vus[0].nom === "content.js");
+    check("et c'est le même texte qui part", vus[0].data === w.sourceContenuJS());
+  }
+  {
+    const w = neuf();
+    const vus = guetTelecharger(w);
+    const f = poigneeFeinte();
+    w.showSaveFilePicker = async () => f.poignee;
+    await w.exporterJS();
+    check("avec l'écriture de fichier, content.js est réécrit sur place", f.ecrits.length === 1 && f.ecrits[0] === w.sourceContenuJS());
+    check("et rien n'est téléchargé", vus.length === 0);
+  }
+  {
+    const w = neuf();
+    const vus = guetTelecharger(w);
+    const f = poigneeFeinte();
+    f.poignee.queryPermission = async () => "prompt";
+    f.poignee.requestPermission = async () => "denied";
+    w.showSaveFilePicker = async () => f.poignee;
+    await w.exporterJS();
+    check("un droit d'écriture refusé ne perd pas le travail : téléchargement", vus.length === 1 && !f.ecrits.length);
+  }
+  {
+    const w = neuf();
+    const vus = guetTelecharger(w);
+    w.showSaveFilePicker = async () => { const e = new Error("annulé"); e.name = "AbortError"; throw e; };
+    await w.exporterJS();
+    check("fichier non désigné : rien n'a lieu, ni écriture ni téléchargement", vus.length === 0);
+  }
+
+  console.log("\n=== L'autosave ===");
 {
   const w = neuf();
   const e = SC.unEmpan(w.CONTENU);
@@ -396,5 +449,8 @@ console.log("\n=== L'autosave ===");
   const w2 = H.bootAtelier({graine:{ iavocat_atelier_v2: brut }});
   check("il le relit au démarrage", w2.CONTENU.pieces[e.pid].empans[e.eid].valeur === "AUTOSAVE");
 }
-
-bilan();
+/* `bilan()` est DANS la promesse, et il le faut : `exporterJS` attend le
+   navigateur, donc les contrôles ci-dessus sont les seuls de tout le dépôt à
+   tomber après le dernier `console.log` synchrone. Appelé dehors, il compterait
+   sans eux — et une panne d'écriture passerait verte. */
+})().then(bilan, e => { console.error(e); process.exit(1); });

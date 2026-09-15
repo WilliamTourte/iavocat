@@ -1,7 +1,7 @@
 /* LE CONTENU DE L'AFFAIRE — l'unique exemplaire. Le jeu (index.html) et
    l'atelier (atelier_v3.html) chargent ce même fichier ; il n'y a plus ni
    copie embarquée ni graine d'atelier. On l'écrit dans l'atelier, qui le
-   réexporte par-dessus (« Exporter content.js »). Voir docs/ARCHITECTURE.md §12. */
+   réécrit par-dessus (« Écrire content.js »). Voir docs/ARCHITECTURE.md §12. */
 window.CONTENU = {
   "schema": 3,
   "dimensions": [
@@ -542,32 +542,25 @@ window.CONTENU = {
   "remises": [
     {
       "qui": "Maître Auber",
-      "texte": "On me confie la défense de Kessler. Je ne te demande pas ce qui s'est passé — je te demande de quoi démonter ce qu'ils avancent. Mais avant de me dire quoi que ce soit : montre-moi que tu sais lire un dossier. Deux pièces, trois questions.",
+      "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Aide-moi à démonter l'accusation en pointant les incohérences du dossier.",
       "pieces": [
         "p_pv",
         "t_voisin"
       ],
       "attentes": [
         {
-          "question": "Le procès-verbal, d'abord. À quelle heure la patrouille est-elle arrivée sur les lieux ?",
+          "question": "Penche-toi sur le procès-verbal d'abord. À quelle heure la patrouille est-elle arrivée sur les lieux ?",
           "attend": "q_arrivee"
         },
         {
-          "question": "Bien. Toujours au procès-verbal : combien d'équipages ont été engagés ?",
-          "attend": "q_equipages"
-        },
-        {
           "question": "Passons à l'audition du voisin. À quelle heure situe-t-il ces éclats de voix ?",
-          "attend": "q_voix",
-          "apres": {
-            "replique": "Tu sais lire, c'est déjà ça. Et tu as maintenant les deux heures sous les yeux — celle de la patrouille et celle du voisin. Voilà l'article 3 : à partir d'ici, je ne te demande plus ce qui est écrit, je te demande ce que tu en tires."
-          }
+          "attend": "q_voix"
         }
       ]
     },
     {
       "qui": "Maître Auber",
-      "texte": "Ces deux heures, donc. Qu'est-ce qu'elles disent l'une de l'autre — et au regard de quel texte ?",
+      "texte": "Quel est le problème avec ces deux horaires ? Et sur quel article est-ce que je peux m'appuyer pour les rejeter ?",
       "pieces": [
         "r_temoin"
       ],

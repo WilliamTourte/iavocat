@@ -37,7 +37,7 @@ schéma inconnu, le jeu ne joue pas autre chose en douce — il le dit et ne dé
 ## 10. Le cycle d'écriture
 
 ```
-┌────────────────────┐   Exporter content.js   ┌─────────────┐   <script src>   ┌────────────────────┐
+┌────────────────────┐    Écrire content.js    ┌─────────────┐   <script src>   ┌────────────────────┐
 │  atelier_v3.html   │ ──────────────────────► │  content.js │ ───────────────► │     index.html     │
 │  (écriture +       │                         │ (LE CONTENU,│                  │  (l'interface)     │
 │   diagnostic +     │ ◄────────────────────── │  exemplaire │ ◄─────────────── └────────────────────┘
@@ -47,6 +47,15 @@ schéma inconnu, le jeu ne joue pas autre chose en douce — il le dit et ne dé
 
 L'atelier et le jeu lisent le même fichier, et l'export **remplace celui qu'on vient de lire** : c'est
 un cycle, pas une chaîne — plus d'amont ni d'aval, donc plus de dérive possible.
+
+**Et il le remplace sur place.** Le navigateur ne choisit pas où il écrit, mais il écrit dans un
+fichier **que l'auteur lui désigne** — File System Access, disponible jusqu'en `file://` sous Chrome
+et Edge. On désigne `app/content.js` une fois ; la poignée est retenue dans IndexedDB, et les fois
+suivantes tiennent en un clic — Chrome redemande seulement le droit d'écrire, qu'il ne garde pas d'une
+session à l'autre. **Alt+clic** désigne un autre fichier, quand la poignée retenue n'est plus la
+bonne. Là où l'API manque (Firefox, Safari) ou si le droit est refusé, le bouton **retombe sur le
+téléchargement d'avant**, et le dit sur lui-même : c'est la commodité qui dépend du navigateur, jamais
+le cycle.
 
 ## 11. Le contenu — schéma 3
 
@@ -233,8 +242,8 @@ ne le peut pas, qu'une règle du gardien tienne l'écart (§16 bis).
 **Le point ouvert du jour :** la frise édite `rep_inutile` et `rep_sans_rapport`, **pas
 `rep_hors_sujet`** — le contenu la porte, `reponseAvocat` la lit, l'atelier ne sait pas l'écrire.
 
-Méthode (contenu) : écrire dans l'atelier → « Exporter content.js » → poser le fichier dans `app/` →
-relancer les suites.
+Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (le fichier du jeu est réécrit sur
+place, §10) → relancer les suites.
 
 **Ce que le diagnostic contrôle**, au-delà du câblage : la règle de surlignage (empan sans marqueur →
 erreur), le nom d'empan (absent → avertissement), le doublon banal dans les deux sens, la grammaire
@@ -274,7 +283,7 @@ seule suite.**
 | `test_autre_affaire.js` (20) | le jeu, **affaire de test** | le découplage : une affaire abstraite écrite à l'ancienne (source `note`) se joue de bout en bout, trois fins comprises |
 | `test_parcours.js` (114) | le jeu | l'ergonomie et le grain fin : composer bloc à bloc, retirer, effacer ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction (patron, ordre des clics indifférent) ; le filtre de livraison ; la continuation ; la Plaidoirie qui ne retient que les moyens ; la répétition |
 | `test_sauvegarde.js` (37) | le jeu | la partie survit au rechargement (mémoire, journal, plan, composition, phrase close, drapeaux) ; la signature jette une sauvegarde d'un autre contenu ; la fin efface |
-| `smoke_atelier.js` (79) | l'atelier + le couple atelier→jeu | `content.js` réexporté à l'identique ; le diagnostic au complet ; migration 2→3 idempotente ; renommages ; le pas-à-pas sur `regles.js` ; export `schema: 3` joué par le moteur ; autosave |
+| `smoke_atelier.js` (87) | l'atelier + le couple atelier→jeu | `content.js` réexporté à l'identique ; le diagnostic au complet ; migration 2→3 idempotente ; renommages ; le pas-à-pas sur `regles.js` ; export `schema: 3` joué par le moteur ; **l'écriture sur place et ses deux replis** (§10) ; autosave |
 
 **Les Manuels n'ont plus de suite** : sept contrôles éprouvaient `openManuels()`, orpheline à l'écran
 — on éprouvait un chemin que le joueur ne pouvait pas prendre, ce qui est pire que de ne pas

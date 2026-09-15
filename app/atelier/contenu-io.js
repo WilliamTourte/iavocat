@@ -17,13 +17,95 @@ function telecharger(nom,data,type){
 function exporter(){
   telecharger("content.json", JSON.stringify(nettoyerPourJeu(CONTENU),null,2), "application/json");
 }
-function exporterJS(){
-  const data="/* LE CONTENU DE L'AFFAIRE — l'unique exemplaire. Le jeu (index.html) et\n"
+/* LE TEXTE DU FICHIER, en un seul exemplaire : l'écriture sur place l'écrit, le
+   repli le télécharge, la suite le relit. */
+function sourceContenuJS(){
+  return "/* LE CONTENU DE L'AFFAIRE — l'unique exemplaire. Le jeu (index.html) et\n"
     + "   l'atelier (atelier_v3.html) chargent ce même fichier ; il n'y a plus ni\n"
     + "   copie embarquée ni graine d'atelier. On l'écrit dans l'atelier, qui le\n"
-    + "   réexporte par-dessus (« Exporter content.js »). Voir docs/ARCHITECTURE.md §12. */\n"
+    + "   réécrit par-dessus (« Écrire content.js »). Voir docs/ARCHITECTURE.md §12. */\n"
     + "window.CONTENU = " + JSON.stringify(nettoyerPourJeu(CONTENU),null,2) + ";\n";
-  telecharger("content.js", data, "text/javascript");
+}
+
+/* LA POIGNÉE DU FICHIER, RETENUE D'UNE SESSION À L'AUTRE. Une poignée ne se met
+   pas en texte : `localStorage` ne peut pas la garder, IndexedDB si — et elle
+   marche en file:// (éprouvé sous Chrome). Toute panne de rangement se tait :
+   sans poignée retenue, on redésigne le fichier, c'est tout ce qu'on perd. */
+const IDB_BASE="iavocat_atelier", IDB_LOT="poignees", IDB_CLE="content.js";
+function idb(){
+  return new Promise((ok,ko)=>{
+    const r=indexedDB.open(IDB_BASE,1);
+    r.onupgradeneeded=()=>r.result.createObjectStore(IDB_LOT);
+    r.onsuccess=()=>ok(r.result); r.onerror=()=>ko(r.error);
+  });
+}
+async function poigneeRangee(){
+  try{
+    const db=await idb();
+    return await new Promise((ok,ko)=>{
+      const q=db.transaction(IDB_LOT).objectStore(IDB_LOT).get(IDB_CLE);
+      q.onsuccess=()=>ok(q.result||null); q.onerror=()=>ko(q.error);
+    });
+  }catch(e){ return null; }
+}
+async function rangerPoignee(h){
+  try{
+    const db=await idb();
+    await new Promise((ok,ko)=>{
+      const t=db.transaction(IDB_LOT,"readwrite");
+      t.objectStore(IDB_LOT).put(h,IDB_CLE);
+      t.oncomplete=ok; t.onerror=()=>ko(t.error);
+    });
+  }catch(e){}
+}
+/* Chrome retient la POIGNÉE, jamais le DROIT : il se redemande à chaque session,
+   et seulement sous un geste de l'auteur — le clic du bouton, et rien d'autre.
+   C'est pourquoi rien ici ne s'écrit au chargement ni sur un `render`. */
+async function droitEcriture(h){
+  if(!h || typeof h.queryPermission!=="function") return false;
+  const quoi={mode:"readwrite"};
+  if(await h.queryPermission(quoi)==="granted") return true;
+  return await h.requestPermission(quoi)==="granted";
+}
+
+/* « Écrire content.js » — le fichier que le jeu charge, réécrit sur place (§10).
+   ALT+CLIC redésigne le fichier, quand la poignée retenue n'est plus la bonne.
+   AUCUN ÉCHEC MUET : sans File System Access (Firefox, Safari), sur un droit
+   refusé ou une poignée devenue creuse, on retombe sur le téléchargement, et le
+   bouton le dit. Une poignée qui a échoué est jetée : le clic suivant redésigne
+   plutôt que de réessayer la même impasse. */
+async function exporterJS(ev){
+  const data=sourceContenuJS();
+  const replier=mot=>{ if(telecharger("content.js",data,"text/javascript")) direSurBouton(mot); };
+  if(typeof window.showSaveFilePicker!=="function"){ replier("téléchargé — à poser dans app/"); return; }
+  let h = (ev && ev.altKey) ? null : await poigneeRangee();
+  try{
+    if(!h){
+      h=await window.showSaveFilePicker({ id:"iavocat_contenu", suggestedName:"content.js",
+        types:[{ description:"Le contenu du jeu", accept:{"text/javascript":[".js"]} }] });
+      await rangerPoignee(h);
+    }
+    if(!await droitEcriture(h)) throw new Error("droit d'écriture refusé");
+    const flux=await h.createWritable();
+    await flux.write(data); await flux.close();
+    direSurBouton("✓ "+h.name+" écrit");
+  }catch(e){
+    if(e && e.name==="AbortError"){ direSurBouton(null); return; }   // fichier non désigné : rien n'a eu lieu
+    await rangerPoignee(null);
+    replier("écriture impossible — téléchargé");
+  }
+}
+/* LE BOUTON DIT CE QUI VIENT DE SE PASSER, et pas le `hint` de la barre d'outils :
+   celle-ci n'est visible que dans l'onglet Graphe, le bouton l'est partout. Son
+   mot d'origine se retient au premier passage — comme `hint` retient le sien,
+   plutôt que d'en garder une copie ici. */
+let _motBouton=null, _minuteurBouton=null;
+function direSurBouton(txt){
+  const b=$("btnEcrire"); if(!b) return;
+  if(_motBouton===null) _motBouton=b.textContent;
+  if(_minuteurBouton) clearTimeout(_minuteurBouton);
+  b.textContent = txt || _motBouton;
+  _minuteurBouton = txt ? setTimeout(()=>{ b.textContent=_motBouton; }, 4000) : null;
 }
 $("file").addEventListener("change",e=>{
   const f=e.target.files[0]; if(!f) return;
