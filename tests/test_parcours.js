@@ -2,7 +2,7 @@
 // modale de pièce, les répliques de l'avocat, le grain fin de la répétition.
 // Contenu embarqué.
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, discussion, memoire, composeur, plaidoirie, plaidoirieVisible } = H;
+const { check, bilan, discussion, contexte, composeur, plaidoirie, plaidoirieVisible } = H;
 const boot = () => H.boot();
 
 console.log("\n=== Le composeur, bloc par bloc ===");
@@ -284,7 +284,7 @@ console.log("\n=== Les deux gestes, montrés ===");
     !w.document.getElementById("tuto").hasAttribute("data-alerte"));
   w.closeModal();
   const zone = halo();
-  check("et il montre la mémoire", !!zone && zone.contains(w.document.querySelector(".mchip")));
+  check("et il montre le contexte", !!zone && zone.contains(w.document.querySelector(".mchip")));
 
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut));
   const envoi = halo();
@@ -317,7 +317,7 @@ console.log("\n=== Les deux gestes, montrés ===");
   const veutA = attenteSuivante().attend;
   const [tA, tB] = H.sousTerme(H.lienTag(w, veutA)).termes;
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(tA));
-  check("un premier passage posé, le halo reste sur la mémoire — il en faut un second",
+  check("un premier passage posé, le halo reste sur le contexte — il en faut un second",
     halo() && halo().id === "zoneRetenus");
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(tB));
   check("les deux posés, le halo montre les propositions de l'article",
@@ -352,10 +352,10 @@ console.log("\n=== La modale de pièce ===");
   w.surligner(pid, eid);
   check("l'empan surligné se marque « pris » dans la modale", m().includes("empan pris"));
   const empan = w.JEU.pieces[pid].empans[eid];
-  check("et apparaît en mémoire",
-    memoire(w).includes("zoneRetenus") && memoire(w).includes(empan.nom || empan.texte));
+  check("et apparaît dans le contexte",
+    contexte(w).includes("zoneRetenus") && contexte(w).includes(empan.nom || empan.texte));
   w.closeModal();
-  check("fermer la modale n'efface pas la mémoire", w.S.retenus.length === 1);
+  check("fermer la modale n'efface pas le contexte", w.S.retenus.length === 1);
   const pidR = H.pidRegle(w);
   if (!Object.keys(w.JEU.pieces[pidR].empans || {}).length) {
     w.ouvrirPiece(pidR);

@@ -244,7 +244,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
 | l'avocat ouvre une session ; ouvrir une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion`, `ouvrirPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion`, `modalPieceHTML`, `rendreTexte`, `renderDossier` |
-| **surligner** (privé, gratuit) | `surligner` | `renderRetenus` dans `renderMemoire` |
+| **surligner** (ajoute, privé, gratuit) ; **oublier** (retire, Contexte seul) | `surligner`, `oublier` | `renderRetenus` dans `renderContexte` |
 | ce que le composeur offre ; ce qui se devine avant le clic ; la voix | `blocsOfferts`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante` | `renderCompo`, `souffle`, `rappelQuestion` |
 | **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
@@ -262,7 +262,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
   `attentesEditables` et `migrerContenu`.
 
 **Les mots.** Le joueur ne lit jamais `empan`, `bloc`, `lien`, `forme`, `terme` : dans une chaîne
-d'écran, c'est une fuite. À l'écran : **Discussion**, **Mémoire**, **Plaidoirie** (§4.6) ; **passage**
+d'écran, c'est une fuite. À l'écran : **Discussion**, **Contexte**, **Plaidoirie** (§4.6) ; **passage**
 (un empan, vu du côté joueur) ; **Ta réponse** (la zone du composeur) ; **→ Envoyer** (clôt et transmet,
 irréversible) ; **Clôturer l'instruction** (ferme l'affaire).
 

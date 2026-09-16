@@ -69,7 +69,7 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   sans code : retirer les `question` une à une, couper le tutoriel avant le 3ᵉ temps.
 - **Le va-et-vient entre les deux colonnes** (§4.6) — le plus concret, à regarder sur une session
   entière : le regard qui cherche où le texte est parti, la main qui repose un empan. Repli : faire
-  descendre la mémoire, **pas** remonter le composeur.
+  descendre le contexte, **pas** remonter le composeur.
 - **L'aide unique en dit-elle assez ?** (§4.9) Repli le plus court du dépôt : rendre l'aide **et** le
   fantôme, un `if`.
 - **La tension de l'IA partisane** (§1) : tranchée en mécanique, à valider en contenu. Idem le rythme

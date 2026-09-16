@@ -7,7 +7,7 @@ const GRAMMAIRE = {
   depart: "S0",
   finaux: ["FIN"],
   blocs: [
-    // --- entrées : un empan de la mémoire, ou une note déjà close ---
+    // --- entrées : un empan du contexte, ou une note déjà close ---
     { id: "t0",   type: "terme",   source: "champ", de: "S0",  vers: "S1" },
     { id: "prec", type: "terme",   source: "note",  de: "S0",  vers: "SP", texte: "ce qui précède" },
 

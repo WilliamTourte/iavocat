@@ -63,7 +63,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .empan:hover{background:color-mix(in srgb, var(--dc,#888) 28%, transparent)}
 .empan.pris{background:color-mix(in srgb, var(--dc,#888) 30%, transparent);font-weight:600}
 .empan .sig{font-size:11px;color:var(--muted);font-family:var(--mono)}
-/* --- mémoire : une seule liste, qui sert AUSSI de clavier au composeur --- */
+/* --- contexte : une seule liste, qui sert AUSSI de clavier au composeur --- */
 .dimgrp{margin-bottom:9px}
 .dimgrp.horsdim{opacity:.45}
 .dimgrp .dnom{font-size:11px;color:var(--dc,var(--muted));text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}

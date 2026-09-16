@@ -80,10 +80,17 @@ function creerRegles(JEU, M) {
   }
   const estRegle = p => _apiRegles.estRegle(p);
 
-  /* ---- LA MÉMOIRE — privée, gratuite, illimitée ; re-cliquer oublie ---- */
+  /* ---- LE CONTEXTE — privé, gratuit, illimité ---- */
+  // PIÈGE : `surligner` (la pièce) N'AJOUTE QUE — re-cliquer un passage déjà
+  // retenu ne fait rien ; seul `oublier` (le Contexte) retire. Une pièce ne
+  // peut plus désélectionner, pour éviter une mauvaise manipulation.
   function surligner(S, pid, eid) {
+    const k = pid + "." + eid;
+    if (!S.retenus.includes(k)) S.retenus.push(k);
+  }
+  function oublier(S, pid, eid) {
     const k = pid + "." + eid, i = S.retenus.indexOf(k);
-    if (i >= 0) S.retenus.splice(i, 1); else S.retenus.push(k);
+    if (i >= 0) S.retenus.splice(i, 1);
   }
 
   /* ---- LE COMPOSEUR -------------------------------------------------- */
@@ -141,7 +148,7 @@ function creerRegles(JEU, M) {
   function majPressentiment(S) { pressentir(S, M.reduire(chaineCompo(S))); }
 
   // PIÈGE : iBloc indexe blocsOfferts() — POSITIONNEL dans la liste filtrée,
-  // donc dépendant de la session ; iSrc indexe la mémoire ou le brouillon.
+  // donc dépendant de la session ; iSrc indexe le contexte ou le brouillon.
   function poserBloc(S, iBloc, iSrc) {
     S.prete = null;              // reprendre abandonne la phrase qui attendait
     const b = blocsOfferts(S)[iBloc]; if (!b) return;
@@ -169,7 +176,7 @@ function creerRegles(JEU, M) {
     majPressentiment(S);
   }
   /* LA CLÔTURE QUI N'AJOUTE RIEN (§4.5) : c'est l'envoi qui la pose, `imbrique`
-     exclu. PIÈGE : SEULES LES LIAISONS comptent — les puces de la mémoire sont
+     exclu. PIÈGE : SEULES LES LIAISONS comptent — les puces du contexte sont
      le clavier, pas des boutons (§4.6), leur présence ne fait pas nombre. */
   function clotureImplicite(S) {
     const liaisons = blocsOfferts(S).filter(b => b.type === "liaison");
@@ -318,7 +325,7 @@ function creerRegles(JEU, M) {
 
   return { etatInitial, signatureContenu, pousser, envoyerRemise, ouvrirPiece,
            piecesLivrees, estRegle, reglesLivrees, porteDe,
-           surligner, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
+           surligner, oublier, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
            comparaisonPossible, dimAttendue,
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,

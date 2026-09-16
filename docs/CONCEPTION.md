@@ -124,29 +124,29 @@ réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte 
 - **Un article n'interdit rien** : `porte` annonce, le moteur ne le lit jamais — un refus se
   contournerait en essayant tous les articles. **Seules les erreurs de catégorie sont refusées.**
 - **Ce que l'écran laisse deviner, avant le clic** — aucun mode, aucun refus nouveau : la **voix**
-  regarde un pas en avant et annonce la comparaison ; la **Mémoire** s'assombrit **par dimension**
+  regarde un pas en avant et annonce la comparaison ; le **Contexte** s'assombrit **par dimension**
   (§4.3), jamais empan par empan ; le **bouton qui fonde** porte une marque distincte.
 
 ### 4.6 Les trois surfaces — la frontière morale
 
-**Un seul nom par surface, partout** : **Discussion**, **Mémoire**, **Plaidoirie**. Une seule frontière
+**Un seul nom par surface, partout** : **Discussion**, **Contexte**, **Plaidoirie**. Une seule frontière
 de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui protège la fiction (§8.6).
 
 | Surface | Statut | Rôle |
 |---|---|---|
 | La **Discussion** + les pièces | lecture | l'entrée |
 | **Le composeur** — *sous la Discussion* | **privé** | la phrase qu'on écrit — jamais jugée |
-| La **Mémoire** | **privé** | le dossier et les empans retenus (`S.retenus`) — jamais jugés |
+| Le **Contexte** | **privé** | le dossier et les empans retenus (`S.retenus`) — jamais jugés |
 | La **Plaidoirie** | **transmis** | ce que l'avocat retient (`S.plaidoirie`) |
 
-- **Un empan retenu n'existe qu'une fois à l'écran** : les puces de la mémoire **sont** les boutons de
+- **Un empan retenu n'existe qu'une fois à l'écran** : les puces du contexte **sont** les boutons de
   terme. Le composeur ne porte aucune étiquette « privé » — son statut se lit dans ce qui s'y passe.
-- **On écrit sa réponse sous la question** : le clavier reste dans la Mémoire, la phrase s'écrit dans
+- **On écrit sa réponse sous la question** : le clavier reste dans le Contexte, la phrase s'écrit dans
   la Discussion. Arbitrage ouvert ; **le repli est de faire descendre les retenus, pas de remonter le
   composeur.**
 - **Comprendre et dire restent deux gestes, non négociable** — l'intervalle sépare l'**assemblage** de
   l'**envoi** : c'est lui qui compte, pas le nombre de clics.
-- **L'avocat ne voit que la Plaidoirie**, d'où la gratuité de la Mémoire. Elle **ne retient que les
+- **L'avocat ne voit que la Plaidoirie**, d'où la gratuité du Contexte. Il **ne retient que les
   moyens** et l'envoi est **irréversible** ; une citation versée étant au dossier, une réponse citée
   y entre.
 

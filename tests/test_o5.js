@@ -2,7 +2,7 @@
 // dossier, la gratuité des deux surfaces privées, le dédoublonnage, le vice à
 // canal unique, les trois fins. Rien du contenu n'est nommé (§16).
 const H = require("./harnais").creerHarnais(__dirname+"/../app");
-const { check, bilan, boot, discussion, memoire } = H;
+const { check, bilan, boot, discussion, contexte } = H;
 
 console.log("\n=== L'index du dossier ===");
 {
@@ -11,11 +11,11 @@ console.log("\n=== L'index du dossier ===");
   check("moteur.js est chargé — la grammaire est branchée", !!w.M);
   check("regles.js est chargé — les règles sont branchées", !!w.R);
   check("les pièces viennent d'abord, les règles ensuite",
-        memoire(w).indexOf("Les pièces") < memoire(w).indexOf("Les règles"));
+        contexte(w).indexOf("Les pièces") < contexte(w).indexOf("Les règles"));
   const pid = H.pidPremiereRemise(w);
-  check("une pièce non consultée porte le marqueur ●", memoire(w).includes("● "));
+  check("une pièce non consultée porte le marqueur ●", contexte(w).includes("● "));
   w.ouvrirPiece(pid);
-  check("consultée, elle porte ✓", memoire(w).includes("✓ "));
+  check("consultée, elle porte ✓", contexte(w).includes("✓ "));
 }
 
 console.log("\n=== Tout empan est marqué et cliquable ===");
@@ -36,13 +36,15 @@ console.log("\n=== Surligner : privé, gratuit, illimité ===");
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   const tous = w.CHAMPS.map(c => c.id);
   for (const k of tous) H.surligner(w, k);
-  check(`les ${tous.length} empans tiennent en mémoire — aucun plafond`, w.S.retenus.length === tous.length);
+  check(`les ${tous.length} empans tiennent dans le contexte — aucun plafond`, w.S.retenus.length === tous.length);
   const avant = w.S.fil.length;
   H.surligner(w, tous[0]);
   check("surligner deux fois ne double pas", w.S.retenus.filter(k => k === tous[0]).length === 1);
   const [pid, eid] = H.deK(tous[0]);
   w.surligner(pid, eid);
-  check("re-cliquer oublie", !w.S.retenus.includes(tous[0]));
+  check("re-cliquer dans la pièce ne l'oublie plus", w.S.retenus.includes(tous[0]));
+  w.oublier(pid, eid);
+  check("oublier — le geste du Contexte — le retire", !w.S.retenus.includes(tous[0]));
   check("rien n'a été transmis dans le canal", w.S.fil.length === avant);
   check("le plan de plaidoirie reste vide", w.S.plaidoirie.length === 0);
 }

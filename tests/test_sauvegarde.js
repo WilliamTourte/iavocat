@@ -23,7 +23,7 @@ console.log("\n=== Les quatre surfaces survivent au rechargement ===");
   check("la partie est écrite dans localStorage", !!sauvegarde(w1));
 
   const w2 = boot({[CLE]: sauvegarde(w1)});
-  check("la mémoire est restaurée à l'identique", w2.S.retenus.join() === avant.retenus.join());
+  check("le contexte est restauré à l'identique", w2.S.retenus.join() === avant.retenus.join());
   check("le brouillon aussi", w2.S.brouillon.length === avant.brouillon);
   check("le plan de plaidoirie aussi", w2.S.plaidoirie.length === avant.plaidoirie);
   check("les pièces consultées aussi", w2.S.examinees.join() === avant.examinees.join());

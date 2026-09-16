@@ -122,9 +122,9 @@ function tutoEtapeCitation(){
     return S.modalPiece
       ? {n:2, ou:"#modalRoot .piecetexte", alerte:rate,
             dit: rate ? "Ce n'est pas ce qu'il demande. Relis sa question, et prends le passage qui y répond."
-                      : "Les passages soulignés se retiennent d'un clic. Prends celui qui répond."}
+                      : "Clique sur un passage souligné pour l'ajouter à ton CONTEXTE."}
       : {n:1, ou:"#discussion .attach", alerte:rate,
-            dit: rate ? "Ce n'est pas ce qu'il demande. Rouvre la pièce et relis sa question."
+            dit: rate ? "Ce n'est pas ce qu'il demande. Relis sa question et ouvre la bonne pièce."
                       : "Ouvre la pièce : ce qu'il te demande est écrit dedans."};
   }
   if(!R.peutEnvoyer(S))
@@ -132,7 +132,7 @@ function tutoEtapeCitation(){
       ? {n:2, ou:"#modalRoot .close",
             dit:"Passage retenu. Referme la pièce."}
       : {n:3, ou:"#zoneRetenus",
-            dit:"Pour répondre, sélectionne le passage pertinent"};
+            dit:"Clique sur le passage pertinent pour l'ajouter à ton CONTEXTE"};
   return  {n:4, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
 }
@@ -187,7 +187,7 @@ function modal(html){
      </div>`;
 }
 function escapeAttr(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function rendreTout(){ renderDiscussion(); renderComposeur(); renderMemoire(); renderPlaidoirie(); majCloture(); majTutoriel(); sauverPartie(); }
+function rendreTout(){ renderDiscussion(); renderComposeur(); renderContexte(); renderPlaidoirie(); majCloture(); majTutoriel(); sauverPartie(); }
 
 /* ---- Le canal : un fil de messages ---- */
 function renderDiscussion(){
@@ -258,11 +258,15 @@ function renderDossier(){
     <div class="dossier">${colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div></div>`;
 }
 
-/* 5) LA MÉMOIRE — privée, gratuite, illimitée, et CLAVIER du composeur (§4.6).
+/* 5) LE CONTEXTE — privé, gratuit, illimité, et CLAVIER du composeur (§4.6).
       Surligner ne produit RIEN : c'est voulu. */
 function surligner(pid,eid){
-  R.surligner(S,pid,eid);          // re-cliquer oublie
+  R.surligner(S,pid,eid);          // la pièce n'ajoute que — jamais n'oublie
   if(S.modalPiece) modal(modalPieceHTML(S.modalPiece));
+  rendreTout();
+}
+function oublier(pid,eid){
+  R.oublier(S,pid,eid);            // le Contexte seul peut retirer
   rendreTout();
 }
 function modalPieceHTML(pid){
@@ -278,7 +282,7 @@ function renderRetenus(){
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
   let h=`<div class="zone" id="zoneRetenus">`;
   if(!S.retenus.length){
-    h+=`<div class="aide">Alimente ta mémoire en sélectionnant des passages du dossier .</div>`;
+    h+=`<div class="aide">Alimente ton contexte en sélectionnant des passages du dossier .</div>`;
   } else {
     for(const d of JEU.dimensions||[]){
       const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
@@ -294,7 +298,7 @@ function renderRetenus(){
                 <span class="nom">${escapeAttr(e.nom||e.texte)}</span>
                 <span class="prov"><span class="cit">« ${escapeAttr(e.texte)} »</span><span class="sig">— ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}</span></span>
               </button>
-              <button class="del" onclick="surligner('${e.pid}','${e.eid}')" title="Oublier">×</button>
+              <button class="del" onclick="oublier('${e.pid}','${e.eid}')" title="Oublier">×</button>
             </div>`;
       }
       h+=`</div>`;
@@ -315,7 +319,7 @@ function souffle(){
   const second=R.comparaisonPossible(S);
   if(!S.compo.length){
     if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
-    return second ? "Sélectionne un ou plusieurs passages de ta mémoire" : "Depuis ta mémoire, sélectionne un passage pour répondre";
+    return second ? "Sélectionne un ou plusieurs passages de ton contexte" : "Depuis ton contexte, sélectionne un passage pour répondre";
   }
   if(offerts.some(b=>b.cite) || R.compoFinie(S)) return "";
   if(offerts.some(b=>b.type==="terme"&&b.source!=="note"))
@@ -341,7 +345,7 @@ function texteCompoPartiel(){
   }).join(" ");
 }
 /* iBloc indexe R.blocsOfferts(S) — POSITIONNEL dans la liste filtrée, donc
-   dépendant de la session ; iSrc indexe la mémoire ou le brouillon. */
+   dépendant de la session ; iSrc indexe le contexte ou le brouillon. */
 function poserBloc(iBloc,iSrc){ R.poserBloc(S,iBloc,iSrc); rendreTout(); }
 function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
 function viderCompo(){ R.viderCompo(S); rendreTout(); }
@@ -390,8 +394,8 @@ function renderCompo(){
 
 /* 7) LES SURFACES — l'avocat ne voit QUE la Plaidoirie, et n'y inscrit que les
       MOYENS (§4.6). */
-function renderMemoire(){
-  $("memoire").innerHTML = renderDossier() + renderRetenus();
+function renderContexte(){
+  $("contexte").innerHTML = renderDossier() + renderRetenus();
 }
 function renderComposeur(){
   $("composeur").innerHTML = renderCompo();

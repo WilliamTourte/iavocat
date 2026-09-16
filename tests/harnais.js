@@ -44,7 +44,7 @@ function creerHarnais(dossier){
   function contenuLivre(){ return JSON.parse(JSON.stringify(boot().JEU)); }
 
   const discussion = w => w.document.getElementById("discussion").textContent;
-  const memoire  = w => w.document.getElementById("memoire").innerHTML;
+  const contexte = w => w.document.getElementById("contexte").innerHTML;
   const composeur = w => w.document.getElementById("composeur").innerHTML;
   const plaidoirie = w => w.document.getElementById("plaidoirie").innerHTML;
   const plaidoirieVisible = w => !w.document.getElementById("colPlaidoirie").hidden;
@@ -278,7 +278,7 @@ function creerHarnais(dossier){
   };
 
   return { check, bilan, boot, bootAtelier, contenuLivre, estRegle,
-           discussion, memoire, composeur, plaidoirie, plaidoirieVisible,
+           discussion, contexte, composeur, plaidoirie, plaidoirieVisible,
            lienVice, lienConclusion, lienFaux, lienTag, sousTerme, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
            cloreSurPlace, poserComparaison, livrerTout,
