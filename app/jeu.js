@@ -282,7 +282,7 @@ function renderRetenus(){
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
   let h=`<div class="zone" id="zoneRetenus">`;
   if(!S.retenus.length){
-    h+=`<div class="aide">Alimente ton contexte en sélectionnant des passages du dossier .</div>`;
+    h+=`<div class="aide">Alimente ton contexte en sélectionnant des passages du dossier.</div>`;
   } else {
     for(const d of JEU.dimensions||[]){
       const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
@@ -319,11 +319,11 @@ function souffle(){
   const second=R.comparaisonPossible(S);
   if(!S.compo.length){
     if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
-    return second ? "Sélectionne un ou plusieurs passages de ton contexte" : "Depuis ton contexte, sélectionne un passage pour répondre";
+    return second ? "Sélectionne un ou plusieurs passages de ton contexte." : "Depuis ton contexte, sélectionne un passage pour répondre.";
   }
   if(offerts.some(b=>b.cite) || R.compoFinie(S)) return "";
   if(offerts.some(b=>b.type==="terme"&&b.source!=="note"))
-    return "Clique sur un second passage pour le mettre en relation";
+    return "Clique sur un second passage pour le mettre en relation.";
   return offerts.length
     ? "Sur quel article t'appuies-tu pour montrer qu'il y a une irrégularité ?"
     : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";

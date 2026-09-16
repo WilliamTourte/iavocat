@@ -79,17 +79,21 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
         !fin || discussion(w).includes(fin.replique.slice(0, 30)));
 }
 {
+  /* PIÈGE : une attente peut n'avoir AUCUNE question — la remise la porte
+     alors dans son texte. Ce qui se vérifie n'est donc pas « la première
+     question », mais que seule l'attente COURANTE parle (§4.9). */
   const c = contenuLivre();
   const w = boot(c);
-  const as = w.R.attentesDe(c.remises[0]).filter(a => a.question);
-  if (as.length) {
-    check("la première question est posée au démarrage", discussion(w).includes(as[0].question));
-    if (as.length > 1) {
-      check("la suivante ne l'est pas encore", !discussion(w).includes(as[1].question));
-      w.envoyer(H.composerLien(w, H.lienTag(w, as[0].attend)));
-      check("elle est posée dès que la précédente est servie", discussion(w).includes(as[1].question));
-    }
-  }
+  const as = w.R.attentesDe(c.remises[0]);
+  const dite = k => !as[k].question || discussion(w).includes(as[k].question);
+  const tue  = k => !as[k].question || !discussion(w).includes(as[k].question);
+  check("au démarrage, l'attente courante a posé sa question", dite(0));
+  check("aucune des suivantes n'a parlé", as.every((_, k) => k === 0 || tue(k)));
+  as.forEach((a, k) => {
+    w.envoyer(H.composerLien(w, H.lienTag(w, a.attend)));
+    if (k + 1 < as.length)
+      check("servir une attente pose la question de la suivante", dite(k + 1));
+  });
 }
 {
   const c = contenuLivre();

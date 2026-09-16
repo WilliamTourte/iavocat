@@ -21,7 +21,7 @@ l'interface ne décide rien, et l'atelier ne recopie rien.*
 - **Le contenu n'existe qu'en un exemplaire** : manquant ou d'un schéma inconnu, le jeu le dit et ne
   démarre pas (§13).
 
-## 10. Le cycle d'écriture
+## 10. Le cycle d'écriture, et de relecture
 
 `atelier_v3.html` **écrit** `app/content.js`, que le jeu et l'atelier lisent tous deux par
 `<script src>` : un cycle, pas une chaîne — plus d'amont ni d'aval, donc plus de dérive.
@@ -30,6 +30,40 @@ l'interface ne décide rien, et l'atelier ne recopie rien.*
 Edge) : on désigne `app/content.js` une fois, la poignée est retenue dans IndexedDB, **Alt+clic** en
 désigne un autre. Sans l'API (Firefox, Safari) ou sur droit refusé, le bouton **retombe sur le
 téléchargement** et le dit : la commodité dépend du navigateur, jamais le cycle.
+
+### Le fichier reprend la main
+
+L'atelier tient un **brouillon** en `localStorage` (`iavocat_atelier_v2`), pour qu'un onglet fermé ne
+coûte rien. Ce brouillon a longtemps **masqué le fichier** : adopté au démarrage sans même le regarder,
+il faisait qu'un `content.js` changé au dehors — un `git pull`, une main dans l'éditeur, une écriture
+depuis une autre machine — n'entrait jamais, **même en rechargeant la page**. Deux exemplaires, et
+c'était la copie qui gagnait (§9).
+
+**La règle : le fichier a raison, sauf s'il y a du travail à perdre.**
+
+| L'état | Ce qui se passe |
+|---|---|
+| le fichier n'a pas bougé depuis le dernier accord | rien |
+| le fichier a bougé, le brouillon **non** | il est **adopté en silence** — le cas courant |
+| **les deux** ont bougé | un **bandeau** : *adopter le fichier* / *garder mon brouillon* |
+
+**L'accord** est une signature — `JSON.stringify` de ce que l'écriture produirait (`nettoyerPourJeu`),
+rangée à côté du brouillon (`iavocat_atelier_accord`). Deux contenus qui s'exporteraient à l'identique
+sont d'accord, donc les clés en `_` n'y entrent pas : déplacer un nœud du graphe n'est pas du travail
+à perdre, et **les positions survivent à une adoption**. C'est l'idiome de la sauvegarde de partie
+(§13), appliqué à l'atelier. L'accord se note à quatre moments, et quatre seulement : au démarrage sans
+brouillon, à une adoption, à un « garder mon brouillon », et **à une écriture réussie sur le disque** —
+jamais sur un repli par téléchargement, qui ne touche pas le fichier.
+
+**Quand on regarde** : au démarrage — `LIVRE`, chargé par la balise, **est** le fichier frais, il n'y a
+rien à relire — et **au retour sur l'onglet** (`visibilitychange`), le moment où l'on revient de son
+éditeur ou de `git`. Aucun minuteur : un atelier laissé ouvert ne lit rien.
+
+**Relire sans recharger la page** passe par une balise `<script src="content.js?relu=…">` ré-injectée,
+jamais par la poignée : c'est le seul chemin qui marche **en `file://`, dans tous les navigateurs, et
+sans redemander un droit** — Chrome retient la poignée, jamais la permission (§10, le piège de
+l'écriture). PIÈGE : le fichier écrit `window.CONTENU`, qui est *aussi* le miroir de l'état courant de
+l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le même tour**.
 
 ## 11. Le contenu — schéma 3
 
@@ -45,7 +79,8 @@ téléchargement** et le dit : la commodité dépend du navigateur, jamais le cy
       texte: "Appel reçu à {{e_appel}}, sur place à {{e_arr}}.",
       empans: { e_appel:{ dim:"quand", valeur:"21:52",
                           texte:"l'appel nous est parvenu à 21h52",  // ce qui se lit dans la pièce
-                          nom:"l'heure de l'appel" }, … },           // ce qui parle dans une phrase
+                          nom:"l'heure de l'appel",                  // ce qui parle dans une phrase
+                          bruit:true }, … },                         // leurre assumé (optionnel)
       declenche: { une_fois:true, qui, replique }            // optionnel
     }
   },
@@ -69,6 +104,10 @@ téléchargement** et le dit : la commodité dépend du navigateur, jamais le cy
 - **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`) · `sens` (`"asc"` par
   défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8).
   **L'ordre de déclaration est signifiant** : `deduire` rend la première forme qui convient.
+- **Attribut d'un empan** : `bruit` — *leurre assumé*, que le diagnostic cesse de signaler comme
+  inerte (§15). Il vit **sur l'empan** : il suit les renommages et meurt avec lui, et l'atelier n'en
+  tient aucune liste à côté. Une telle liste a existé (`_bruit`), que l'export jetait ; `migrerContenu`
+  la replie.
 - **Attribut d'une pièce** : `porte`, sur une pièce « règle » seulement — affiché, **jamais lu par le
   moteur** ; une telle pièce ne porte aucun empan (diagnostic, pas moteur).
 - **Les attentes** sont servies dans l'ordre, et le **désordre est accepté** ; l'ancienne forme
@@ -171,16 +210,16 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **318 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **343 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
-| `test_o5.js` (36) | l'index du dossier ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
-| `test_declencheurs.js` (34) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (123) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition |
+| `test_o5.js` (37) | l'index du dossier ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
+| `test_declencheurs.js` (35) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
+| `test_parcours.js` (132) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
-| `smoke_atelier.js` (87) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place (§10) |
+| `smoke_atelier.js` (101) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
 - **Le contrat de lecture : `w.R.x(w.S)`** — une suite demande aux *règles*, pas à l'écran ; ce que la
   fenêtre expose en propre, ce sont les **gestes**, parce qu'eux redessinent.
@@ -235,9 +274,9 @@ qui a raison.*
 d'interface, annulation, onglets — **et les quatre gestes** ci-dessous ; en premier) · `graphe.js` (le
 canevas ; seul endroit où du CSS traverse vers du JS, `getCSS`) · `diagnostic.js` · `inspecteur.js`
 (formulaires, mutations, renommages) · `frise.js` (remises et attentes) · `pasapas.js` (**appelle**
-`regles.js`) · `contenu-io.js` (import, export, migration, autosave) · `grammaire.js`.
+`regles.js`) · `contenu-io.js` (import, export, migration, autosave, **relecture du fichier et accord**, §10) · `grammaire.js`.
 
-**Les quatre gestes que tout l'atelier refait** (`noyau.js`, section *2 bis*) : `muter(f)` — **toute**
+**Les quatre gestes que tout l'atelier refait** (`noyau.js`, section *Les quatre gestes*) : `muter(f)` — **toute**
 mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`, `demanderSuppr` +
 `btnSuppr`. Plus deux formats : `deK(k)`, l'inverse de `K(pid,ch)`, et `reecrireTermes(t,f)`.
 
@@ -249,7 +288,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
 | **envoyer** — le seul geste | `envoyerCompo` → `clore` → `envoyer` → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **sous la Discussion**), `renderPlaidoirie` |
-| ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie` — **cache sa colonne** tant que rien ne s'y inscrit |
+| ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie` — colonne **escamotée provisoirement** (`vide = true`), la mécanique intacte derrière (§4.9) |
 | clôturer, répétition, fin | `instructionComplete`, `cloturer`, `verserContre`, `avancerRepetition`, `finir` | `majCloture`, `finir` (modale) |
 | le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoEtape`, `majTutoriel` |
 

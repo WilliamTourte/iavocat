@@ -243,8 +243,12 @@ console.log("\n=== La continuation : une comparaison demande toujours « et donc
   check("la continuation produit exactement la forme du lien déclaré",
     i >= 0 && w.M.memeRed(w.S.brouillon[i].reduite, {forme: C.forme, termes: C.termes}));
   check("en une seule phrase, sans passer par une liste", w.S.brouillon.length === 1);
+  /* PIÈGE : ce qui se vérifie est le RECOLLEMENT, jamais le libellé — le texte
+     de la liaison vient du contenu et change avec l'affaire (§16). */
+  const liaison = (w.JEU.grammaire.blocs || []).find(b => b.imbrique && b.forme === C.forme);
   check("la phrase se lit d'un trait, ponctuation recollée",
-    /, au regard /.test(w.S.brouillon[i].texte) && !/ ,/.test(w.S.brouillon[i].texte));
+    !!liaison && w.S.brouillon[i].texte.includes(liaison.texte)
+             && !/ ,/.test(w.S.brouillon[i].texte));
   check("elle est écrite avec les NOMS des empans, pas les citations",
     w.CHAMPS.filter(c => sous.termes.includes(c.id))
             .every(c => w.S.brouillon[i].texte.includes(c.nom)));
@@ -384,8 +388,13 @@ console.log("\n=== Les répliques : seulement au versement ===");
 console.log("\n=== L'économie de l'écran : ce qui est déjà sous les yeux ===");
 {
   const w = boot();
-  const q = w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
-  check("au départ, la question vient d'être posée : elle est le dernier mot",
+  /* PIÈGE : l'attente courante n'a pas toujours de question — la remise peut la
+     porter dans son TEXTE. On avance jusqu'à celle qui en pose une. */
+  const courante = () => w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
+  while (courante() && !courante().question)
+    w.envoyer(H.composerLien(w, H.lienTag(w, courante().attend)));
+  const q = courante();
+  check("la question vient d'être posée : elle est le dernier mot",
     !!q && !!q.question && w.S.fil[w.S.fil.length - 1].texte === q.question);
   check("le composeur ne la répète donc pas", !composeur(w).includes(q.question));
   w.ouvrirPiece(H.pidAvecDeclenche(w));

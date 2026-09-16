@@ -1,30 +1,21 @@
 /* ATELIER — LE NOYAU : le contenu chargé, les outils, l'état d'interface,
    l'annulation, les onglets, l'échappement. Il se charge EN PREMIER — seul
    fichier dont le corps s'exécute au chargement (§13). */
-/* 1) LE CONTENU — celui de content.js, et lui seul. */
+/* ---- LE CONTENU — celui de content.js, et lui seul ---- */
 const LIVRE = (typeof window!=="undefined" && window.CONTENU)
             ? JSON.parse(JSON.stringify(window.CONTENU)) : null;
 if(typeof window!=="undefined") window.LIVRE=LIVRE;   // exposé (console, tests)
-
-const ANNOTATIONS = {
-  _bruit:["p_pv.e_app","p_pv.e_equip","p_pv.e_porte","t_voisin.e_vehic","t_voisin.e_pal",
-          "p_adn.e_scA","p_adn.e_scB","p_scene.e_ou","p_scene.e_h","p_scene.e_hg",
-          "p_ref.e_h2","p_ref.e_hg2"]
-};
 
 const CONTENU_VIDE = () => ({ schema:3, dimensions:["quand","qui","ou","quoi","combien"],
   pieces:{}, grammaire:{ depart:"S0", finaux:["FIN"], blocs:[], formes:{} },
   liens:[], remises:[], repetition:{ intro:"", affirmations:[], fin:"" },
   avocat:{}, directives:[], fins:{} });
-function contenuLivre(){
-  const c = LIVRE ? clone(LIVRE) : CONTENU_VIDE();
-  return Object.assign(c, clone(ANNOTATIONS));
-}
+function contenuLivre(){ return LIVRE ? clone(LIVRE) : CONTENU_VIDE(); }
 
 let CONTENU = contenuLivre();
 
 
-/* 2) OUTILS */
+/* ---- OUTILS ---- */
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 const $ = id => document.getElementById(id);
 const joli = k => k.replace(/_/g," ");
@@ -46,7 +37,10 @@ function empanExiste(pid,eid){ return !!empanDe(pid,eid); }
    `moteur.js` donne à celle d'un TERME RÉDUIT. Deux questions, deux noms. */
 function dimEmpan(pid,eid){ const e=empanDe(pid,eid); return e && e.dim; }
 function toutesDims(){ return [...(CONTENU.dimensions||[])]; }
-function estBruit(pid,eid){ return (CONTENU._bruit||[]).includes(K(pid,eid)); }
+/* PIÈGE — `bruit` est porté par l'EMPAN, jamais par une liste à côté : une
+   liste se serait réparée à la main à chaque renommage et à chaque suppression,
+   et l'export l'aurait jetée (§9). */
+function estBruit(pid,eid){ const e=empanDe(pid,eid); return !!(e && e.bruit); }
 /* PIÈGE — TOUTES les pièces qu'une remise livre ; `piecesLivrees(S)` de
    regles.js est PROGRESSIF. Deux questions, deux noms. */
 function toutesPiecesLivrees(){
@@ -118,7 +112,7 @@ function undo(){
   majUndoBtn(); autosave(); render();
 }
 
-/* 2 bis) LES QUATRE GESTES QUE TOUT L'ATELIER REFAIT — ils ne décident rien.
+/* LES QUATRE GESTES QUE TOUT L'ATELIER REFAIT — ils ne décident rien.
    TOUS SONT DES `function` DÉCLARÉES, et il le faut : `btnSuppr` engendre un
    `onclick` qui vise `demanderSuppr`, et seule une déclaration de fonction est
    une propriété de `window` (R2, R5). */
@@ -172,7 +166,7 @@ function hint(msg,err){
 }
 
 
-/* 10) ONGLETS */
+/* ---- ONGLETS ---- */
 function vue(v){
   VUE=v;
   $("main").classList.toggle("jsonmode",v==="json");
@@ -196,6 +190,6 @@ function appliquerJson(){
 }
 
 
-/* 11) L'ÉCHAPPEMENT — le même couple de noms que le jeu (§17) */
+/* ---- L'ÉCHAPPEMENT — le même couple de noms que le jeu (§17) ---- */
 function escapeH(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function escapeAttr(s){ return escapeH(s).replace(/"/g,"&quot;"); }
