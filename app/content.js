@@ -24,7 +24,8 @@ window.CONTENU = {
           "dim": "quand",
           "valeur": "21:52",
           "texte": "l'appel nous est parvenu à 21h52",
-          "nom": "l'heure de l'appel"
+          "nom": "l'heure de l'appel",
+          "bruit": true
         },
         "e_arr": {
           "dim": "quand",
@@ -36,13 +37,15 @@ window.CONTENU = {
           "dim": "combien",
           "valeur": "2",
           "texte": "deux équipages",
-          "nom": "le nombre d'équipages engagés"
+          "nom": "le nombre d'équipages engagés",
+          "bruit": true
         },
         "e_porte": {
           "dim": "ou",
           "valeur": "porte",
           "texte": "la porte de l'appartement ne portait aucune trace d'effraction",
-          "nom": "la porte de l'appartement"
+          "nom": "la porte de l'appartement",
+          "bruit": true
         },
         "e_sig": {
           "dim": "qui",
@@ -72,14 +75,16 @@ window.CONTENU = {
           "valeur": "2",
           "texte": "Quand j'ai regardé, il y avait déjà deux véhicules en bas",
           "qui": "le voisin",
-          "nom": "le nombre de véhicules aperçus"
+          "nom": "le nombre de véhicules aperçus",
+          "bruit": true
         },
         "e_pal": {
           "dim": "ou",
           "valeur": "palier",
           "texte": "Ça venait du palier",
           "qui": "le voisin",
-          "nom": "le palier de l'immeuble"
+          "nom": "le palier de l'immeuble",
+          "bruit": true
         },
         "e_sig2": {
           "dim": "qui",
@@ -113,13 +118,15 @@ window.CONTENU = {
           "dim": "quoi",
           "valeur": "S-2",
           "texte": "S-2",
-          "nom": "le scellé S-2"
+          "nom": "le scellé S-2",
+          "bruit": true
         },
         "e_scB": {
           "dim": "quoi",
           "valeur": "S-7",
           "texte": "S-7",
-          "nom": "le scellé S-7"
+          "nom": "le scellé S-7",
+          "bruit": true
         },
         "e_tx": {
           "dim": "combien",
@@ -157,13 +164,15 @@ window.CONTENU = {
           "dim": "ou",
           "valeur": "porte",
           "texte": "sur le montant de la porte",
-          "nom": "le montant de la porte"
+          "nom": "le montant de la porte",
+          "bruit": true
         },
         "e_h": {
           "dim": "quand",
           "valeur": "14:02",
           "texte": "à 14h02",
-          "nom": "l'heure de fin du relevé sur la scène"
+          "nom": "l'heure de fin du relevé sur la scène",
+          "bruit": true
         },
         "e_sc": {
           "dim": "quoi",
@@ -175,7 +184,8 @@ window.CONTENU = {
           "dim": "quand",
           "valeur": "15:10",
           "texte": "à 15h10",
-          "nom": "l'heure de remise au greffe de l'échantillon de scène"
+          "nom": "l'heure de remise au greffe de l'échantillon de scène",
+          "bruit": true
         },
         "e_grf": {
           "dim": "qui",
@@ -204,7 +214,8 @@ window.CONTENU = {
           "dim": "quand",
           "valeur": "14:47",
           "texte": "à 14h47",
-          "nom": "l'heure de fin du prélèvement de référence"
+          "nom": "l'heure de fin du prélèvement de référence",
+          "bruit": true
         },
         "e_sc2": {
           "dim": "quoi",
@@ -216,7 +227,8 @@ window.CONTENU = {
           "dim": "quand",
           "valeur": "15:10",
           "texte": "à 15h10",
-          "nom": "l'heure de remise au greffe du prélèvement de référence"
+          "nom": "l'heure de remise au greffe du prélèvement de référence",
+          "bruit": true
         },
         "e_grf2": {
           "dim": "qui",

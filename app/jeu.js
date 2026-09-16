@@ -319,11 +319,11 @@ function souffle(){
   const second=R.comparaisonPossible(S);
   if(!S.compo.length){
     if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
-    return second ? "Sélectionne un ou plusieurs passages de ton contexte" : "Depuis ton contexte, sélectionne un passage pour répondre";
+    return second ? "Sélectionne un ou plusieurs passages de ton contexte." : "Depuis ton contexte, sélectionne un passage pour répondre.";
   }
   if(offerts.some(b=>b.cite) || R.compoFinie(S)) return "";
   if(offerts.some(b=>b.type==="terme"&&b.source!=="note"))
-    return "Clique sur un second passage pour le mettre en relation";
+    return "Clique sur un second passage pour le mettre en relation.";
   return offerts.length
     ? "Sur quel article t'appuies-tu pour montrer qu'il y a une irrégularité ?"
     : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";

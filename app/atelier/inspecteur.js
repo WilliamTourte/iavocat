@@ -173,11 +173,7 @@ function majEmpan(pid,eid,prop,v){ muter(()=>{
   if(prop==="qui") poserOuRetirer(e,prop,v); else e[prop]=v;
 }); }
 function majPiece(pid,prop,v){ muter(()=>{ CONTENU.pieces[pid][prop]=v; }); }
-function majBruit(pid,ch,on){ muter(()=>{
-  const k=K(pid,ch);
-  CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>x!==k);
-  if(on) CONTENU._bruit.push(k);
-}); }
+function majBruit(pid,ch,on){ muter(()=>{ poserOuRetirer(empanDe(pid,ch),"bruit",on); }); }
 function majLien(i,prop,val){ muter(()=>{
   poserOuRetirer(CONTENU.liens[i],prop,val,{trim:true});
 }); }
@@ -194,7 +190,6 @@ function demanderSupprChamp(pid,ch){ demanderSuppr("champ:"+K(pid,ch),()=>{
   delete p.empans[ch];
   p.texte=String(p.texte||"").replace(new RegExp("\\s*\\{\\{"+ch+"\\}\\}",""),"");
   CONTENU.liens=CONTENU.liens.filter(L=>!feuillesLien(L).includes(k));
-  CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>x!==k);
   selA=selB=null;
 }); }
 function idValide(neuf,existants,ancien){
@@ -218,7 +213,6 @@ function renommerPieceId(ancien,neuf){
     CONTENU.pieces=renommerClef(CONTENU.pieces,ancien,neuf);
     const renommer = k => { const [pid,eid]=deK(k); return pid===ancien ? K(neuf,eid) : k; };
     for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
-    CONTENU._bruit=(CONTENU._bruit||[]).map(renommer);
     for(const r of (CONTENU.remises||[]))
       if(Array.isArray(r.pieces)) r.pieces=r.pieces.map(p=>p===ancien?neuf:p);
     if(CONTENU._pos && CONTENU._pos[ancien]) CONTENU._pos=renommerClef(CONTENU._pos,ancien,neuf);
@@ -238,7 +232,6 @@ function renommerEmpanId(pid,ancien,neuf){
     const av=K(pid,ancien), ap=K(pid,neuf);
     const renommer = k => k===av ? ap : k;
     for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
-    CONTENU._bruit=(CONTENU._bruit||[]).map(renommer);
     if(selA&&selA.pid===pid&&selA.champ===ancien) selA={pid,champ:neuf};
     pendingDel=null; simReset();
   });
@@ -263,7 +256,6 @@ function demanderSupprPiece(pid){ demanderSuppr("piece:"+pid,()=>{
   delete CONTENU.pieces[pid];
   delete CONTENU._pos[pid];
   CONTENU.liens=(CONTENU.liens||[]).filter(L=>!feuillesLien(L).some(k=>deK(k)[0]===pid));
-  CONTENU._bruit=(CONTENU._bruit||[]).filter(x=>deK(x)[0]!==pid);
   for(const r of CONTENU.remises||[]) r.pieces=(r.pieces||[]).filter(x=>x!==pid);
   if(selA&&selA.pid===pid) selA=null;
   if(selB&&selB.pid===pid) selB=null;

@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 16 septembre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins. `npm test` est vert —
-329 contrôles, 6 règles du gardien, ESLint.
+331 contrôles, 6 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -16,9 +16,15 @@ Fin 2 devenait injouable, §4.7).
 Le 16 septembre est une session d'**écriture**, pas de mécanique : la liaison-article dit désormais
 *« en contradiction avec »* et non *« au regard de »* (§4.5), la première question descend dans le
 **texte de la remise**, le tutoriel est repris, un empan ne se désélectionne plus depuis sa pièce, et
-la **colonne Plaidoirie est escamotée** — mécanique intacte derrière (§4.9). Deux de ces gestes ont
-fait tomber **cinq contrôles** qui nommaient du contenu au lieu de le dériver : ils sont réécrits, et
-la doc est remise d'aplomb sur ce que le code fait.
+la **colonne Plaidoirie est escamotée** — provisoirement, mécanique intacte derrière (§4.9). Deux de
+ces gestes ont fait tomber **cinq contrôles** qui nommaient du contenu au lieu de le dériver : ils sont
+réécrits, et la doc est remise d'aplomb sur ce que le code fait.
+
+Trois arbitrages de l'auteur, le même jour, qui **ferment** des questions plutôt qu'elles n'en ouvrent :
+la liaison-article **n'a pas à être neutre**, la phrase *« Tant que tu ne l'envoies pas… »* **n'a pas à
+revenir**, et l'escamotage de la Plaidoirie est **provisoire** (§3). Quatrième : `_bruit` cesse d'être
+une liste recopiée dans l'atelier — le drapeau passe **sur l'empan** (§11), donc il s'exporte, suit les
+renommages et meurt avec lui.
 
 ## 2. Points de vigilance
 
@@ -79,14 +85,10 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 - **Le va-et-vient entre les deux colonnes** (§4.6) — le plus concret, à regarder sur une session
   entière : le regard qui cherche où le texte est parti, la main qui repose un empan. Repli : faire
   descendre le contexte, **pas** remonter le composeur.
-- **La liaison-article n'est plus neutre** (§4.5) : *« en contradiction avec l'article 7 »* dit déjà la
-  conclusion que le joueur croyait tirer. Ou bien le geste y gagne en clarté, ou bien l'article cesse
-  d'être un choix. Repli sans code : rendre *« au regard de »* aux trois liaisons du contenu.
-- **Plus rien ne dit que composer ne transmet pas** : la phrase qui le disait est coupée (§4.9), le
-  tutoriel le montre une fois puis se tait — et c'est l'**intervalle** de la Fin 2 qui repose là-dessus.
-- **La colonne Plaidoirie est escamotée** (§4.9) : plus rien à l'écran ne distingue *envoyé* de *retenu
-  comme moyen*. Provisoire ou définitif ? Un `const` d'une ligne (`vide`, dans `renderPlaidoirie`)
-  sépare les deux, et les suites tiennent déjà les deux cas.
+- **La Plaidoirie est escamotée, et c'est PROVISOIRE** (§4.9) : plus rien à l'écran ne distingue
+  *envoyé* de *retenu comme moyen*. Ce qu'on éprouve pendant ce congé, c'est **ce que son absence
+  coûte** — et la question au retour sera *où*, pas *si*. Un `const` d'une ligne la rallume (`vide`,
+  dans `renderPlaidoirie`) ; les suites tiennent déjà les deux cas.
 - **L'aide unique en dit-elle assez ?** (§4.9) Repli le plus court du dépôt : rendre l'aide **et** le
   fantôme, un `if`.
 - **La tension de l'IA partisane** (§1) : tranchée en mécanique, à valider en contenu. Idem le rythme
@@ -98,9 +100,7 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   pas à consulter ce qu'elle *est*. Non tranché, donc le diagnostic a raison de les exiger.
 - **La progression** : nombre de sessions, portes, emplacement de la porte de la Fin 3 — le prototype
   s'arrête à deux. Et **`comment` en sixième dimension**, écarté, réintégrable sans coût.
-- Côté outil : la frise n'édite pas `rep_hors_sujet` (§15), et **`ANNOTATIONS._bruit` est une liste de
-  douze empans recopiée dans `noyau.js`** — l'export jette les clés en `_`, donc un bruit marqué dans
-  l'atelier ne survit qu'en `localStorage`. Le seul endroit où l'atelier recopie du contenu (§9).
+- Côté outil : la frise n'édite pas `rep_hors_sujet` (§15).
 
 ## 4. Prochaine étape
 
@@ -143,6 +143,8 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
 - **16 septembre** — une session d'écriture (§1), puis une passe de **cohérence** : cinq contrôles qui
   nommaient du contenu au lieu de le dériver sont réécrits ; quatre affirmations que le code avait
   démenties sont recalées — le libellé de la liaison-article, la phrase de l'envoi, la colonne
-  Plaidoirie, les ancres du tutoriel (§4.5, §4.9, §17) ; les comptes (cinq suites, 329 contrôles) sont
+  Plaidoirie, les ancres du tutoriel (§4.5, §4.9, §17) ; les comptes (cinq suites, 331 contrôles) sont
   repris partout, CI et hook compris. Côté commentaires, la numérotation héritée du temps où l'atelier
-  était **un seul fichier** disparaît : chaque module n'a plus qu'un en-tête.
+  était **un seul fichier** disparaît : chaque module n'a plus qu'un en-tête. Enfin **`bruit` passe sur
+  l'empan** : la liste `_bruit` de `noyau.js` disparaît avec les cinq endroits qui l'entretenaient, et
+  `migrerContenu` replie celles qui traînent (§11).

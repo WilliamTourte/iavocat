@@ -102,10 +102,25 @@ const RABAT_DIM = { agent:"qui", personne:"qui", signature:"qui", greffier:"qui"
                     scellé:"quoi", scelle:"quoi", charge:"quoi", conclusion:"quoi",
                     sanction:"quoi", logistique:"quoi", source:"quoi",
                     seuil:"combien", nombre:"combien", montant:"combien" };
+/* L'ANCIENNE LISTE `_bruit` SE REPLIE SUR LES EMPANS. Elle vivait à côté du
+   contenu, donc l'export la jetait (clé en `_`) : une sauvegarde d'atelier ou un
+   JSON d'avant en porte encore une. Silencieuse, et sur TOUS les schémas.
+   PIÈGE : elle se replie APRÈS `champs` → `empans`, jamais avant — au schéma 2,
+   l'empan sur lequel poser le drapeau n'existe pas encore. */
+function replierBruit(j){
+  if(!Array.isArray(j._bruit)) return;
+  for(const k of j._bruit){
+    const [pid,eid]=deK(k);
+    const e=((j.pieces||{})[pid]||{}).empans||{};
+    if(e[eid]) e[eid].bruit=true;
+  }
+  delete j._bruit;
+}
+
 function migrerContenu(j){
   if(!j||typeof j!=="object") return j;
   const dep=j.schema||2;
-  if(dep>=3){ j.schema=3; return j; }
+  if(dep>=3){ replierBruit(j); j.schema=3; return j; }
 
   // -- 1. les dimensions --
   const dimsAvant = k => ({}).hasOwnProperty.call(RABAT_DIM,k) ? RABAT_DIM[k] : null;
@@ -161,6 +176,9 @@ function migrerContenu(j){
   const A=j.avocat||{};
   delete A.tentation_adn; delete A.ack_decisive;
 
+  // -- 7. le bruit : d'une liste à côté vers les empans, qui existent enfin --
+  replierBruit(j);
+
   j.schema=3;
   return j;
 }
@@ -181,7 +199,7 @@ function adopter(j){
     if(!uniq.some(M=>memeLien(M,L))) uniq.push(L);
   }
   j.liens=uniq;
-  j._pos=j._pos||{}; j._bruit=j._bruit||[];
+  j._pos=j._pos||{};
   muter(()=>{
     CONTENU=j; window.CONTENU=CONTENU;
     reinitSelection();

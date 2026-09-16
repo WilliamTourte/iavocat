@@ -19,6 +19,13 @@ console.log("\n=== content.js tient debout, et c'est lui que l'atelier édite ==
   const exporte = JSON.stringify(w.nettoyerPourJeu(w.CONTENU), null, 2);
   check("et le réexporter le rend à l'identique — aucune dérive possible",
     exporte === JSON.stringify(w.nettoyerPourJeu(JSON.parse(JSON.stringify(w.LIVRE))), null, 2));
+  /* PIÈGE PAYÉ : ce bruit a vécu dans une liste À CÔTÉ du contenu, que l'export
+     jetait (clé en `_`) — le réexport « à l'identique » ci-dessus restait vert
+     parce que la perte était symétrique. Il vit sur l'empan, donc il part. */
+  const bruits = c => Object.values(c.pieces||{})
+    .flatMap(q => Object.values(q.empans||{})).filter(e => e.bruit).length;
+  check("le bruit déclaré part avec — l'atelier ne garde rien pour lui",
+    bruits(w.CONTENU) > 0 && bruits(JSON.parse(exporte)) === bruits(w.CONTENU));
   check("aucune dimension sans doublon", !msgs(w).includes("aucun doublon"));
   check("aucun empan non marqué", !msgs(w).includes("Empan non marqué"));
   check("aucune valeur oubliée hors marqueur", !msgs(w).includes("Valeur non marquée"));
@@ -224,7 +231,8 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
     repetition:{ intro:"", affirmations:[], fin:"" },
     avocat:{ rep_vice:"", rep_faux:"", rep_inutile:[], rep_sans_rapport:[], deja:"" },
     fins:{1:{},2:{},3:{}},
-    attention:3
+    attention:3,
+    _bruit:["a.heure_y"]          // l'annotation d'atelier d'avant, à côté du contenu
   };
   const m = w.migrerContenu(JSON.parse(JSON.stringify(vieux)));
   check("le schéma passe à 3", m.schema === 3);
@@ -243,6 +251,9 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
   check("l'accusé de réception d'une case migre sur l'attente de sa session",
     !!accuse && accuse.replique === "Reçu.");
   check("la clé attention est retirée", m.attention === undefined);
+  check("l'ancienne liste `_bruit` se replie sur l'empan, et disparaît",
+    m.pieces.a.empans.heure_y.bruit === true && m._bruit === undefined
+    && m.pieces.a.empans.agent_x.bruit === undefined);
   check("la migration est idempotente",
     JSON.stringify(w.migrerContenu(JSON.parse(JSON.stringify(m)))) === JSON.stringify(m));
 }
@@ -273,11 +284,16 @@ console.log("\n=== Édition : empans, liens, renommages ===");
 }
 {
   const w = neuf();
-  const pid = SC.pidAutreQue(w.CONTENU, SC.pidRegle(w.CONTENU));
+  const bruits = p => Object.values((w.CONTENU.pieces[p]||{}).empans||{}).filter(e => e.bruit).length;
+  /* On renomme une pièce QUI PORTE DU BRUIT, sans quoi le contrôle d'après
+     passerait par le vide. */
+  const pid = Object.keys(w.CONTENU.pieces).find(p => bruits(p) > 0)
+           || SC.pidAutreQue(w.CONTENU, SC.pidRegle(w.CONTENU));
+  const avant = bruits(pid);
   check("renommer une pièce réussit", w.renommerPieceId(pid, "renomme_x") === null);
   check("les remises suivent", w.CONTENU.remises.some(r => (r.pieces||[]).includes("renomme_x")));
   check("les liens suivent", !JSON.stringify(w.CONTENU.liens).includes('"'+pid+"."));
-  check("le bruit déclaré suit", !(w.CONTENU._bruit||[]).some(k => k.startsWith(pid+".")));
+  check("le bruit déclaré suit", avant > 0 && bruits("renomme_x") === avant);
   check("le diagnostic reste sans erreur", err(w).length === 0);
   check("un id déjà pris est refusé",
     typeof w.renommerPieceId("renomme_x", SC.pidRegle(w.CONTENU)) === "string");

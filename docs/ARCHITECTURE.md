@@ -45,7 +45,8 @@ téléchargement** et le dit : la commodité dépend du navigateur, jamais le cy
       texte: "Appel reçu à {{e_appel}}, sur place à {{e_arr}}.",
       empans: { e_appel:{ dim:"quand", valeur:"21:52",
                           texte:"l'appel nous est parvenu à 21h52",  // ce qui se lit dans la pièce
-                          nom:"l'heure de l'appel" }, … },           // ce qui parle dans une phrase
+                          nom:"l'heure de l'appel",                  // ce qui parle dans une phrase
+                          bruit:true }, … },                         // leurre assumé (optionnel)
       declenche: { une_fois:true, qui, replique }            // optionnel
     }
   },
@@ -69,6 +70,10 @@ téléchargement** et le dit : la commodité dépend du navigateur, jamais le cy
 - **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`) · `sens` (`"asc"` par
   défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8).
   **L'ordre de déclaration est signifiant** : `deduire` rend la première forme qui convient.
+- **Attribut d'un empan** : `bruit` — *leurre assumé*, que le diagnostic cesse de signaler comme
+  inerte (§15). Il vit **sur l'empan** : il suit les renommages et meurt avec lui, et l'atelier n'en
+  tient aucune liste à côté. Une telle liste a existé (`_bruit`), que l'export jetait ; `migrerContenu`
+  la replie.
 - **Attribut d'une pièce** : `porte`, sur une pièce « règle » seulement — affiché, **jamais lu par le
   moteur** ; une telle pièce ne porte aucun empan (diagnostic, pas moteur).
 - **Les attentes** sont servies dans l'ordre, et le **désordre est accepté** ; l'ancienne forme
@@ -171,7 +176,7 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **329 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **331 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
@@ -180,7 +185,7 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
 | `test_declencheurs.js` (35) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
 | `test_parcours.js` (132) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
-| `smoke_atelier.js` (87) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place (§10) |
+| `smoke_atelier.js` (89) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place (§10) |
 
 - **Le contrat de lecture : `w.R.x(w.S)`** — une suite demande aux *règles*, pas à l'écran ; ce que la
   fenêtre expose en propre, ce sont les **gestes**, parce qu'eux redessinent.
@@ -249,7 +254,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
 | **envoyer** — le seul geste | `envoyerCompo` → `clore` → `envoyer` → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **sous la Discussion**), `renderPlaidoirie` |
-| ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie` — **colonne escamotée** (`vide = true`), la mécanique intacte derrière (§4.9) |
+| ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie` — colonne **escamotée provisoirement** (`vide = true`), la mécanique intacte derrière (§4.9) |
 | clôturer, répétition, fin | `instructionComplete`, `cloturer`, `verserContre`, `avancerRepetition`, `finir` | `majCloture`, `finir` (modale) |
 | le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoEtape`, `majTutoriel` |
 

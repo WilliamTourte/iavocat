@@ -6,20 +6,11 @@ const LIVRE = (typeof window!=="undefined" && window.CONTENU)
             ? JSON.parse(JSON.stringify(window.CONTENU)) : null;
 if(typeof window!=="undefined") window.LIVRE=LIVRE;   // exposé (console, tests)
 
-const ANNOTATIONS = {
-  _bruit:["p_pv.e_app","p_pv.e_equip","p_pv.e_porte","t_voisin.e_vehic","t_voisin.e_pal",
-          "p_adn.e_scA","p_adn.e_scB","p_scene.e_ou","p_scene.e_h","p_scene.e_hg",
-          "p_ref.e_h2","p_ref.e_hg2"]
-};
-
 const CONTENU_VIDE = () => ({ schema:3, dimensions:["quand","qui","ou","quoi","combien"],
   pieces:{}, grammaire:{ depart:"S0", finaux:["FIN"], blocs:[], formes:{} },
   liens:[], remises:[], repetition:{ intro:"", affirmations:[], fin:"" },
   avocat:{}, directives:[], fins:{} });
-function contenuLivre(){
-  const c = LIVRE ? clone(LIVRE) : CONTENU_VIDE();
-  return Object.assign(c, clone(ANNOTATIONS));
-}
+function contenuLivre(){ return LIVRE ? clone(LIVRE) : CONTENU_VIDE(); }
 
 let CONTENU = contenuLivre();
 
@@ -46,7 +37,10 @@ function empanExiste(pid,eid){ return !!empanDe(pid,eid); }
    `moteur.js` donne à celle d'un TERME RÉDUIT. Deux questions, deux noms. */
 function dimEmpan(pid,eid){ const e=empanDe(pid,eid); return e && e.dim; }
 function toutesDims(){ return [...(CONTENU.dimensions||[])]; }
-function estBruit(pid,eid){ return (CONTENU._bruit||[]).includes(K(pid,eid)); }
+/* PIÈGE — `bruit` est porté par l'EMPAN, jamais par une liste à côté : une
+   liste se serait réparée à la main à chaque renommage et à chaque suppression,
+   et l'export l'aurait jetée (§9). */
+function estBruit(pid,eid){ const e=empanDe(pid,eid); return !!(e && e.bruit); }
 /* PIÈGE — TOUTES les pièces qu'une remise livre ; `piecesLivrees(S)` de
    regles.js est PROGRESSIF. Deux questions, deux noms. */
 function toutesPiecesLivrees(){
