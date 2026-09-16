@@ -102,7 +102,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .bbloc{text-align:left;background:#20303f;color:var(--txt);border:1px solid var(--line);
   border-radius:6px;padding:6px 9px;cursor:pointer;font-size:13px}
 .bbloc:hover{border-color:var(--accent)}
-.compo .barre{display:flex;gap:6px;margin-bottom:8px}
+.compo .barre{display:flex;gap:6px;margin:8px 0}
 .compo .barre button{background:none;border:1px solid var(--line);color:var(--muted);
   border-radius:5px;padding:3px 9px;cursor:pointer;font-size:12px}
 .compo .barre button:hover{border-color:var(--accent);color:var(--txt)}

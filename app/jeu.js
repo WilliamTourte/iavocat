@@ -132,7 +132,7 @@ function tutoEtapeCitation(){
       ? {n:2, ou:"#modalRoot .close",
             dit:"Passage retenu. Referme la pièce."}
       : {n:3, ou:"#zoneRetenus",
-            dit:"Clique sur le passage pertinent pour l'ajouter à ton CONTEXTE"};
+            dit:"Clique sur le passage pertinent pour l'utiliser dans ta réponse"};
   return  {n:4, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
 }
@@ -141,10 +141,10 @@ function tutoEtapeComparaison(){
     return {n:5, ou:"#zoneRetenus",
       dit: S.compo.length
         ? "Prends un second passage : celui qui contredit le premier."
-        : "Cette fois, la réponse tient à deux passages qui se contredisent, pas un seul."};
+        : "Sélectionne les deux passages se contredisant pour soulever une irrégularité."};
   if(S.compo.length && R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
     return {n:6, ou:"#composeur .offre",
-      dit:"Une comparaison seule ne suffit pas : choisis l'article qui la fonde."};
+      dit:"Une comparaison seule ne suffit pas : sélectionne l'article sur lequel s'appuyer."};
   if(R.peutEnvoyer(S))
     return {n:4, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
@@ -362,10 +362,6 @@ function renderCompo(){
   let h=`<div class="zone"><div class="ztitle">Ta réponse</div><div class="compo">
     ${rappelQuestion()}
     <div class="phrase">${texteCompoPartiel()}</div>`;
-  if(S.compo.length)
-    h+=`<div class="barre">
-      ${R.peutEnvoyer(S)?`<button class="envoi" onclick="envoyerCompo()">→ Envoyer</button>`:""}
-      <button onclick="retirerBloc()">← retirer</button><button onclick="viderCompo()">tout effacer</button></div>`;
   h+=`<div class="offre">`;
   const implicite=R.clotureImplicite(S);
   offerts.forEach((b,i)=>{
@@ -385,6 +381,10 @@ function renderCompo(){
     }
   });
   h+=`</div>`;
+  if(S.compo.length)
+    h+=`<div class="barre">
+      ${R.peutEnvoyer(S)?`<button class="envoi" onclick="envoyerCompo()">→ Envoyer</button>`:""}
+      <button onclick="retirerBloc()">← retirer</button><button onclick="viderCompo()">tout effacer</button></div>`;
   const voix = S.compo.length ? souffle() : "";   // une seule voix par état (§4.9)
   if(voix) h+=`<div class="aide">${escapeAttr(voix)}</div>`;
   if(S.refus) h+=`<div class="refus">${escapeAttr(S.refus)}</div>`;
