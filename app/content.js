@@ -542,7 +542,7 @@ window.CONTENU = {
   "remises": [
     {
       "qui": "Maître Auber",
-      "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Aide-moi à démonter l'accusation en pointant les incohérences du dossier.",
+      "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Aide-moi à démonter l'accusation en pointant les incohérences du dossier.\nPenche-toi sur le procès-verbal d'abord. À quelle heure la patrouille est-elle arrivée sur les lieux ?",
       "pieces": [
         "p_pv",
         "t_voisin",
@@ -550,7 +550,6 @@ window.CONTENU = {
       ],
       "attentes": [
         {
-          "question": "Penche-toi sur le procès-verbal d'abord. À quelle heure la patrouille est-elle arrivée sur les lieux ?",
           "attend": "q_arrivee"
         },
         {
