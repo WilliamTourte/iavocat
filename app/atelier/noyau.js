@@ -1,7 +1,7 @@
 /* ATELIER — LE NOYAU : le contenu chargé, les outils, l'état d'interface,
    l'annulation, les onglets, l'échappement. Il se charge EN PREMIER — seul
    fichier dont le corps s'exécute au chargement (§13). */
-/* 1) LE CONTENU — celui de content.js, et lui seul. */
+/* ---- LE CONTENU — celui de content.js, et lui seul ---- */
 const LIVRE = (typeof window!=="undefined" && window.CONTENU)
             ? JSON.parse(JSON.stringify(window.CONTENU)) : null;
 if(typeof window!=="undefined") window.LIVRE=LIVRE;   // exposé (console, tests)
@@ -24,7 +24,7 @@ function contenuLivre(){
 let CONTENU = contenuLivre();
 
 
-/* 2) OUTILS */
+/* ---- OUTILS ---- */
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
 const $ = id => document.getElementById(id);
 const joli = k => k.replace(/_/g," ");
@@ -118,7 +118,7 @@ function undo(){
   majUndoBtn(); autosave(); render();
 }
 
-/* 2 bis) LES QUATRE GESTES QUE TOUT L'ATELIER REFAIT — ils ne décident rien.
+/* LES QUATRE GESTES QUE TOUT L'ATELIER REFAIT — ils ne décident rien.
    TOUS SONT DES `function` DÉCLARÉES, et il le faut : `btnSuppr` engendre un
    `onclick` qui vise `demanderSuppr`, et seule une déclaration de fonction est
    une propriété de `window` (R2, R5). */
@@ -172,7 +172,7 @@ function hint(msg,err){
 }
 
 
-/* 10) ONGLETS */
+/* ---- ONGLETS ---- */
 function vue(v){
   VUE=v;
   $("main").classList.toggle("jsonmode",v==="json");
@@ -196,6 +196,6 @@ function appliquerJson(){
 }
 
 
-/* 11) L'ÉCHAPPEMENT — le même couple de noms que le jeu (§17) */
+/* ---- L'ÉCHAPPEMENT — le même couple de noms que le jeu (§17) ---- */
 function escapeH(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function escapeAttr(s){ return escapeH(s).replace(/"/g,"&quot;"); }

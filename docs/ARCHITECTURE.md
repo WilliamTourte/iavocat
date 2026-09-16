@@ -171,14 +171,14 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **318 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **329 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
-| `test_o5.js` (36) | l'index du dossier ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
-| `test_declencheurs.js` (34) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (123) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition |
+| `test_o5.js` (37) | l'index du dossier ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
+| `test_declencheurs.js` (35) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
+| `test_parcours.js` (132) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
 | `smoke_atelier.js` (87) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place (§10) |
 
@@ -237,7 +237,7 @@ canevas ; seul endroit où du CSS traverse vers du JS, `getCSS`) · `diagnostic.
 (formulaires, mutations, renommages) · `frise.js` (remises et attentes) · `pasapas.js` (**appelle**
 `regles.js`) · `contenu-io.js` (import, export, migration, autosave) · `grammaire.js`.
 
-**Les quatre gestes que tout l'atelier refait** (`noyau.js`, section *2 bis*) : `muter(f)` — **toute**
+**Les quatre gestes que tout l'atelier refait** (`noyau.js`, section *Les quatre gestes*) : `muter(f)` — **toute**
 mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`, `demanderSuppr` +
 `btnSuppr`. Plus deux formats : `deK(k)`, l'inverse de `K(pid,ch)`, et `reecrireTermes(t,f)`.
 
@@ -249,7 +249,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
 | **envoyer** — le seul geste | `envoyerCompo` → `clore` → `envoyer` → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **sous la Discussion**), `renderPlaidoirie` |
-| ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie` — **cache sa colonne** tant que rien ne s'y inscrit |
+| ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie` — **colonne escamotée** (`vide = true`), la mécanique intacte derrière (§4.9) |
 | clôturer, répétition, fin | `instructionComplete`, `cloturer`, `verserContre`, `avancerRepetition`, `finir` | `majCloture`, `finir` (modale) |
 | le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoEtape`, `majTutoriel` |
 

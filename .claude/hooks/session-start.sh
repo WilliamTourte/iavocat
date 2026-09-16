@@ -18,6 +18,6 @@ cd "$CLAUDE_PROJECT_DIR"
 # conteneur a déjà servi, là où `ci` efface node_modules à chaque fois.
 npm install --no-audit --no-fund
 
-# Les six suites tournent sous jsdom, qui lit les fichiers de `app/` sur le
+# Les cinq suites tournent sous jsdom, qui lit les fichiers de `app/` sur le
 # disque ; le gardien et ESLint les suivent dans `npm test`. Rien d'autre à
 # préparer : pas de build, pas de service, pas de base.

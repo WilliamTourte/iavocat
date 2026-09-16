@@ -1,7 +1,7 @@
-/* ATELIER — LE PAS-À-PAS : la simulation du déroulé. */
-/* 8) ÉTAPES — B. LE PAS-À-PAS. Il APPELLE les mêmes fonctions que le jeu, sur le
-   même état : il ne peut pas dériver (§12). Deux écarts assumés — il joue au
-   grain du LIEN plutôt que bloc à bloc, et il narre ses gestes privés. */
+/* ATELIER — LE PAS-À-PAS : la simulation du déroulé. Il APPELLE les mêmes
+   fonctions que le jeu, sur le même état : il ne peut pas dériver (§12). Deux
+   écarts assumés — il joue au grain du LIEN plutôt que bloc à bloc, et il narre
+   ses gestes privés. */
 let SIM=null, SIMACT=[];
 let _rg=null, _rgSig=null;
 function RG(){

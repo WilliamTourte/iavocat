@@ -454,7 +454,7 @@ window.CONTENU = {
         "t_voisin.e_voix"
       ],
       "tag": "q_voix",
-      "rep": "« Ce n'est pas logique, c'est postérieur à l'heure d'arrivée de la patrouille."
+      "rep": "Ce n'est pas logique : c'est postérieur à l'heure d'arrivée de la patrouille."
     },
     {
       "forme": "article_3",

@@ -1,8 +1,7 @@
-/* ATELIER — LA FRISE : le TEMPS du dossier, éditable. */
-/* 7) ÉTAPES — A. LA FRISE. Chaque texte édité ici écrit directement dans
-   CONTENU. ATTENTION : les blocs marqués ⚙ DÉCRIVENT des règles du jeu
-   (app/regles.js) faute de pouvoir les appeler — c'est l'un des trois reflets,
-   à resynchroniser si le moteur change (§15). */
+/* ATELIER — LA FRISE : le TEMPS du dossier, éditable. Chaque texte édité ici
+   écrit directement dans CONTENU. ATTENTION : les blocs marqués ⚙ DÉCRIVENT des
+   règles du jeu (app/regles.js) faute de pouvoir les appeler — c'est l'un des
+   trois reflets, à resynchroniser si le moteur change (§15). */
 function mir(txt){ return `<span class="mir" title="Règle du jeu (app/regles.js) — décrite ici, appliquée là-bas ; le pas-à-pas ci-dessous l'exécute pour de vrai">⚙ ${escapeH(txt)}</span>`; }
 
 const QOPT = pid => `<option value="${pid}">${escapeH(courtDe(pid))} (${pid})</option>`;

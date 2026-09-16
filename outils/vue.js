@@ -58,8 +58,11 @@ const UN_PAS = `(() => {
   const i = H.composerLien(window, L);
   if (i < 0) return { echec: "la phrase n'a pas pu se former" };
   const phrase = (S.brouillon[i] || {}).texte || "";
+  // PIÈGE : le numéro se lit AVANT l'envoi — servir la dernière attente ouvre la
+  // remise suivante, et la capture serait nommée d'après un écran qui n'existe pas.
+  const remise = S.remisesEnvoyees;
   envoyer(i);
-  return { tag: a.attend, question: a.question || null, phrase, remise: S.remisesEnvoyees };
+  return { tag: a.attend, question: a.question || null, phrase, remise };
 })();`;
 
 const CANAL = `document.getElementById("discussion").innerText.trim()`;
@@ -103,13 +106,12 @@ async function main() {
   console.log("Le jeu, dans un vrai navigateur — " + JEU + "\n");
   console.log("  " + await capturer("depart"));
 
-  let remiseVue = 0, garde = 0;
+  let garde = 0;
   while (garde++ < 40) {
     const pas = await page.evaluate(UN_PAS);
     if (!pas) break;
     if (pas.echec) { console.log("\n  ARRÊT — " + pas.echec); break; }
 
-    if (pas.remise > remiseVue) { remiseVue = pas.remise; }
     console.log("  " + await capturer("remise" + pas.remise + "-" + pas.tag));
     if (pas.question) console.log("      question — " + pas.question);
     console.log("      envoyé   — " + pas.phrase);

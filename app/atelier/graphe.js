@@ -1,6 +1,5 @@
 /* ATELIER — LE GRAPHE : le canevas, les traits, le clic dessus. L'ESPACE du
    dossier — qui se relie à quoi. Dépend du noyau. */
-/* 3) LE GRAPHE */
 function autoLayout(force){
   CONTENU._pos = CONTENU._pos || {};
   const cols={ piece:{x:60,y:70}, regle:{x:760,y:70} };
@@ -146,7 +145,7 @@ function armerDrag(){
   });
 }
 
-/* 4) INTERACTION GRAPHE */
+/* ---- L'INTERACTION : sélection, glisser, clic sur un trait ---- */
 function clicChamp(pid,ch){
   reinitSelection({garderEmpans:true});
   const meme=s=>s&&s.pid===pid&&s.champ===ch;

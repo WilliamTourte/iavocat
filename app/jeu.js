@@ -282,7 +282,7 @@ function renderRetenus(){
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
   let h=`<div class="zone" id="zoneRetenus">`;
   if(!S.retenus.length){
-    h+=`<div class="aide">Alimente ton contexte en sélectionnant des passages du dossier .</div>`;
+    h+=`<div class="aide">Alimente ton contexte en sélectionnant des passages du dossier.</div>`;
   } else {
     for(const d of JEU.dimensions||[]){
       const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);

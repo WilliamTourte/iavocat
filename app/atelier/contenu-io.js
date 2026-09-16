@@ -1,5 +1,4 @@
 /* ATELIER — IMPORT / EXPORT / MIGRATION / PERSISTANCE. */
-/* 9) IMPORT / EXPORT / PERSISTANCE */
 function nettoyerPourJeu(obj){ const o=clone(obj); for(const k of Object.keys(o)) if(k.startsWith("_")) delete o[k]; o.schema=3; return o; }
 function telecharger(nom,data,type){
   try{

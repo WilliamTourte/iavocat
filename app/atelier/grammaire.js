@@ -1,6 +1,6 @@
-/* ATELIER — L'ONGLET GRAMMAIRE : le geste de composition, pour le SENTIR. */
-/* 10bis) ONGLET GRAMMAIRE — branché sur LE CONTENU COURANT (§14) : il le lit,
-   ne l'écrit jamais. Sous jsdom, le moteur est absent : on affiche un encart. */
+/* ATELIER — L'ONGLET GRAMMAIRE : le geste de composition, pour le SENTIR.
+   Branché sur LE CONTENU COURANT (§14) : il le lit, ne l'écrit jamais. Sous
+   jsdom, le moteur est absent : on affiche un encart. */
 let GRAM={ squel:0, vals:{}, notes:[], _m:null };
 function moteurGram(){
   const m=MG();

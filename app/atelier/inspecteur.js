@@ -1,6 +1,5 @@
 /* ATELIER — L'INSPECTEUR : formulaires, mutations, suppressions en deux clics,
    renommages d'identifiants. */
-/* 6) INSPECTEUR */
 function renderInsp(){
   const el=$("insp");
   if(formPiece) return el.innerHTML=inspFormPiece();

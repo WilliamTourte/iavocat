@@ -116,8 +116,10 @@ réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte 
 - **La clôture qui n'ajoute rien n'est pas un bouton** : l'envoi la pose. Règle structurelle ;
   `imbrique` en est exclu ; seules les **liaisons** comptent, les puces étant le clavier (§4.6). D'où
   **un seul geste** : *« → Envoyer »*, pour un empan comme pour deux.
-- **L'article est le verbe** : la liaison *« …, au regard de l'article 7 »* **est** la base légale ;
-  qualification **neutre**, une par article. **Le moteur ne tranche aucune question de droit.**
+- **L'article est le verbe** : la liaison *« …, en contradiction avec l'article 7 »* **est** la base
+  légale, une par article — et **le moteur ne tranche aucune question de droit** : il ne lit ni le
+  numéro ni `porte`. Le libellé a cessé d'être **neutre** le 16 septembre ; il annonce désormais la
+  contradiction, donc une part du verdict. Point ouvert au §3 de `docs/PASSATION.md`.
 - **La continuation** — les liaisons-articles reçues emboîtent la comparaison et closent la phrase
   dessus : la frontière passe **après le second empan**. L'automate n'oblige plus, mais la relance
   *« Et donc ? »* ne se coupe pas, sans quoi le refus arrive comme une surprise.
@@ -137,7 +139,7 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 | La **Discussion** + les pièces | lecture | l'entrée |
 | **Le composeur** — *sous la Discussion* | **privé** | la phrase qu'on écrit — jamais jugée |
 | Le **Contexte** | **privé** | le dossier et les empans retenus (`S.retenus`) — jamais jugés |
-| La **Plaidoirie** | **transmis** | ce que l'avocat retient (`S.plaidoirie`) |
+| La **Plaidoirie** | **transmis** | ce que l'avocat retient (`S.plaidoirie`) — hors écran (§4.9) |
 
 - **Un empan retenu n'existe qu'une fois à l'écran** : les puces du contexte **sont** les boutons de
   terme. Le composeur ne porte aucune étiquette « privé » — son statut se lit dans ce qui s'y passe.
@@ -202,12 +204,16 @@ Quatre règles d'écran — le coupable d'une page illisible est le **chrome**, 
 2. **Un titre par zone** : l'en-tête nomme la **surface** (§4.6), les titres intérieurs les zones.
 3. **Ce qui ne change pas ne se répète pas** : le locuteur ne s'affiche qu'au changement, le rappel de
    la question seulement quand elle a cessé d'être le dernier mot de l'avocat.
-4. **Ce qui n'existe pas encore ne s'affiche pas** : la Plaidoirie reste cachée tant que rien ne s'y
-   inscrit, et **c'est son apparition qui l'enseigne**.
+4. **Ce qui n'existe pas encore ne s'affiche pas** : la Plaidoirie n'avait de colonne qu'une fois
+   quelque chose inscrit dedans, et c'était son apparition qui l'enseignait. Elle est **escamotée
+   depuis le 16 septembre** — la colonne ne s'affiche plus jamais, la mécanique intacte derrière
+   (§17). L'écran ne porte donc plus que deux surfaces ; ce qui entre au plan ne se voit nulle part.
 
 **La densité ne touche pas au sens** : une phrase de chrome se coupe parce qu'elle explique, une phrase
-qui *est* le jeu reste. Trois ne se coupent pas : *« Tant que tu ne l'envoies pas, personne ne la
-lit. »*, *« → Envoyer »*, *« Et donc ? »*.
+qui *est* le jeu reste. **Deux** ne se coupent pas : *« → Envoyer »* et *« Et donc ? »*. La troisième,
+*« Tant que tu ne l'envoies pas, personne ne la lit. »*, a été coupée le 16 septembre : seul le
+tutoriel porte encore la leçon, et une fois qu'il s'est tu, plus rien ne la redit. Point ouvert au
+§3 de `docs/PASSATION.md`.
 
 ## 5. Les directives (le manuel de soi)
 

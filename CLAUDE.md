@@ -20,13 +20,15 @@ qu'aucun ne pointe dans le vide. **En cas de doute, le document renvoyé a toujo
 ## Les commandes
 
 ```sh
-npm test               # les cinq suites (318 contrôles), PUIS le gardien, PUIS ESLint.
+npm test               # les cinq suites (329 contrôles), PUIS le gardien, PUIS ESLint.
                        # Tout vert, ou ce n'est pas fini (§16)
 npm run suites         # les cinq suites seules — le sens avant la forme
 npm run gardien        # les six conventions que les suites ne voient pas (§16)
 npm run lint           # ESLint, le filet générique
 npm run vue            # le jeu dans un VRAI Chromium en file://, joué, capturé dans captures/
 npm run demo:grammaire # banc d'essai de la grammaire. Hors `npm test`
+npm run export         # le JEU SEUL replié en UN fichier HTML (export/) — à ne pas
+                       # confondre avec « Écrire content.js », l'export de l'atelier (§10)
 ```
 
 Rien à préparer : en session distante, `.claude/hooks/session-start.sh` a déjà posé `node_modules`.
@@ -41,11 +43,9 @@ les règles dans `app/regles.js` (pur, sans DOM), la grammaire et les projection
 (pur, sans données). Ce qui redessine est une fonction d'écran ; ce qui lit s'écrit `R.x(S)` sur place,
 et les suites lisent pareil, en `w.R.x(w.S)`.
 
-**Les pièges déjà payés sont au §2 de `docs/PASSATION.md`**, à lire avant de toucher au moteur ou à la
-grammaire. Les quatre qui reviennent : les `const` de haut niveau ne sont pas des propriétés de
-`window` **mais occupent quand même le nom** ; un module chargé par `<script src>` partage la portée
-globale de la page ; l'index `iBloc` de `poserBloc` est **positionnel dans la liste filtrée** ; le flag
-`cite` est porté par la **liaison**, jamais par le terme.
+**Les pièges déjà payés sont au §2 de `docs/PASSATION.md`** — le concentré de ce qui a mordu, un trait
+chacun, et chacun argumenté là où il mord. **À lire avant** de toucher au moteur ou à la grammaire,
+pas après : c'est le seul endroit qui les rassemble, et il n'est recopié nulle part.
 
 ## La méthode, demandée par l'auteur
 
