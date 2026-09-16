@@ -27,6 +27,10 @@
   <button class="tbtn" id="btnEcrire" onclick="exporterJS(event)" title="Réécrit app/content.js sur place — le fichier que le jeu charge. Alt+clic : désigner un autre fichier. Navigateur sans écriture de fichier : téléchargement, comme avant">Écrire content.js</button>
 </header>
 
+<!-- Le bandeau d'arbitrage (§10) : visible dans les quatre onglets, parce qu'il
+     vit HORS de #main. Caché tant que rien ne diverge. -->
+<div id="accord" hidden></div>
+
 <nav class="tabs">
   <button id="tabGraphe" class="on" onclick="vue('graphe')">Graphe &amp; diagnostic</button>
   <button id="tabEtapes" onclick="vue('etapes')">Étapes du jeu</button>
@@ -96,8 +100,9 @@
      et le « zéro build, file:// ». L'ORDRE compte peu (hoisting), sauf
      `noyau.js`, seul dont le corps s'exécute au chargement : il vient en premier.
      PIÈGE : un `const`/`let` de haut niveau n'est PAS une propriété de `window`
-     (R2) — d'où les `window.X = X` explicites d'`undo`, `adopter`,
-     `demanderExemple` et `simReset`, par lesquels les suites lisent. -->
+     (R2) — d'où `undo`, `adopter`, `demanderExemple`, `simReset`, et les deux
+     boutons du bandeau, écrits en `function` DÉCLARÉES : c'est ce qui les pose
+     sur `window`, donc ce par quoi les `onclick` et les suites les atteignent. -->
 <script src="atelier/noyau.js"></script>
 <script src="atelier/graphe.js"></script>
 <script src="atelier/diagnostic.js"></script>
@@ -109,8 +114,8 @@
 
 <script>
 window.addEventListener("resize",renderEdges);
-if(!chargerAuto()) CONTENU=contenuLivre();
-window.CONTENU=CONTENU;   // exposé pour bidouiller en console (comme window.JEU dans le jeu)
+demarrer();               // le brouillon, confronté au fichier que la balise vient de charger (§10)
+guetterLeFichier();       // et relu à chaque retour sur l'onglet
 simReset();
 autoLayout(false);
 render();

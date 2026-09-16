@@ -71,6 +71,7 @@ function render(){
   renderInsp();
   renderEtapes();
   majUndoBtn();
+  majAccord();
 }
 
 function empanRelie(pid,eid){

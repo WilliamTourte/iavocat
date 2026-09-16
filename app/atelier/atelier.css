@@ -24,6 +24,12 @@ header .spacer{flex:1}
 .tbtn:hover{border-color:var(--accent)}
 .tbtn:disabled{opacity:.4;cursor:not-allowed}
 .tbtn.warnstyle:hover{border-color:var(--warn)}
+/* Le bandeau d'arbitrage du §10 — hors de #main, donc visible dans les quatre
+   onglets. `[hidden]` suffit ici : rien ne lui impose d'affichage (§4.9). */
+#accord{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:8px 14px;font-size:13px;color:var(--txt);
+  background:var(--panel2);border-bottom:1px solid var(--warn)}
+#accord b{color:var(--warn)}
 
 nav.tabs{display:flex;gap:2px;padding:0 18px;border-bottom:1px solid var(--line);flex:0 0 auto}
 nav.tabs button{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);

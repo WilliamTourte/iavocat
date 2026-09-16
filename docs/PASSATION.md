@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 16 septembre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins. `npm test` est vert —
-331 contrôles, 6 règles du gardien, ESLint.
+343 contrôles, 6 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -19,6 +19,12 @@ Le 16 septembre est une session d'**écriture**, pas de mécanique : la liaison-
 la **colonne Plaidoirie est escamotée** — provisoirement, mécanique intacte derrière (§4.9). Deux de
 ces gestes ont fait tomber **cinq contrôles** qui nommaient du contenu au lieu de le dériver : ils sont
 réécrits, et la doc est remise d'aplomb sur ce que le code fait.
+
+**L'atelier et le fichier ne se perdent plus de vue** (§10) : le brouillon `localStorage` masquait
+`content.js` au démarrage — un `git pull` ou une édition à la main n'entrait jamais, *même en
+rechargeant la page*. Désormais le fichier a raison, **sauf s'il y a du travail à perdre** : adopté en
+silence quand le brouillon n'a pas bougé, annoncé par un bandeau quand les deux ont bougé. Il se relit
+au démarrage et **à chaque retour sur l'onglet**, sans recharger.
 
 Trois arbitrages de l'auteur, le même jour, qui **ferment** des questions plutôt qu'elles n'en ouvrent :
 la liaison-article **n'a pas à être neutre**, la phrase *« Tant que tu ne l'envoies pas… »* **n'a pas à
@@ -71,6 +77,9 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Poser un bloc ne clôt plus rien** : le refus de catégorie tombe au clic qui **déduit** une paire ou
   **achève** la phrase. Une composition en cours n'est jamais « fausse ».
 - **`R.clore` ne redessine pas, donc ne sauve pas** : la sauvegarde est un effet du rendu.
+- **Relire `content.js` réaffecte `window.CONTENU`**, qui est *aussi* le miroir de l'état de l'atelier :
+  `relireFichier` le met de côté et le remet dans le même tour (§10). Et **il faut DEUX déclencheurs** —
+  `visibilitychange` ne voit que le changement d'onglet, jamais le retour depuis l'éditeur.
 - **La relecture à l'œil des phrases composées reste irremplaçable.**
 
 ## 3. Ce qui reste ouvert
@@ -147,4 +156,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   repris partout, CI et hook compris. Côté commentaires, la numérotation héritée du temps où l'atelier
   était **un seul fichier** disparaît : chaque module n'a plus qu'un en-tête. Enfin **`bruit` passe sur
   l'empan** : la liste `_bruit` de `noyau.js` disparaît avec les cinq endroits qui l'entretenaient, et
-  `migrerContenu` replie celles qui traînent (§11).
+  `migrerContenu` replie celles qui traînent (§11). Enfin **le fichier reprend la main sur le
+  brouillon** (§10) — relecture à chaque retour sur l'onglet, arbitrage silencieux quand il n'y a rien
+  à perdre. Écrit au document d'abord, puis appliqué ; les quatre cas joués dans un vrai Chromium,
+  parce qu'aucune suite ne peut éprouver `visibilitychange` ni une balise qui va vraiment lire.

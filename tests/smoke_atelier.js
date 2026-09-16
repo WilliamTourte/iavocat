@@ -432,6 +432,85 @@ const poigneeFeinte = () => { const ecrits=[]; return { ecrits, nom:"content.js"
   check("l'atelier écrit son autosave", !!brut);
   const w2 = H.bootAtelier({graine:{ iavocat_atelier_v2: brut }});
   check("il le relit au démarrage", w2.CONTENU.pieces[e.pid].empans[e.eid].valeur === "AUTOSAVE");
+  check("et, faute d'accord connu, il annonce la divergence plutôt que de trancher",
+    !w2.document.getElementById("accord").hidden);
+}
+
+console.log("\n=== Le fichier reprend la main sur le brouillon (§10) ===");
+/* Ce que jsdom NE peut pas éprouver : la relecture elle-même (aucune balise
+   n'est allée chercher `content.js?relu=…`) ni les déclencheurs. Ce qui se
+   contrôle ici est LA POLITIQUE — qui gagne, et ce qui survit. */
+{
+  const w = neuf();
+  const brouillon = JSON.parse(JSON.stringify(w.CONTENU));
+  const e = SC.unEmpan(brouillon);
+  brouillon.pieces[e.pid].empans[e.eid].valeur = "VENU DU DISQUE";      // « le fichier », modifié au dehors
+  const accord = w.signatureContenu(w.CONTENU);
+  check("l'accord est noté au démarrage", !!accord && accord === w.localStorage.getItem("iavocat_atelier_accord"));
+
+  w.CONTENU._pos.__repere = { x: 7, y: 7 };                             // une annotation d'atelier
+  w.confronter(JSON.parse(JSON.stringify(brouillon)));
+  check("le fichier a bougé, le brouillon non : il est adopté EN SILENCE",
+    w.CONTENU.pieces[e.pid].empans[e.eid].valeur === "VENU DU DISQUE"
+    && w.document.getElementById("accord").hidden);
+  check("et les positions du graphe traversent l'adoption",
+    !!(w.CONTENU._pos && w.CONTENU._pos.__repere));
+  check("le nouvel accord est noté — un second coup d'œil ne refait rien",
+    w.signatureContenu(w.CONTENU) === w.localStorage.getItem("iavocat_atelier_accord"));
+}
+{
+  const w = neuf();
+  const e = SC.unEmpan(w.CONTENU);
+  const fichier = JSON.parse(JSON.stringify(w.CONTENU));
+  fichier.pieces[e.pid].empans[e.eid].valeur = "DISQUE";
+  w.majEmpan(e.pid, e.eid, "nom", "MON BROUILLON");                     // du travail non écrit
+  w.confronter(JSON.parse(JSON.stringify(fichier)));
+  check("les deux ont bougé : un bandeau, et rien n'est adopté d'office",
+    !w.document.getElementById("accord").hidden
+    && w.CONTENU.pieces[e.pid].empans[e.eid].nom === "MON BROUILLON"
+    && w.CONTENU.pieces[e.pid].empans[e.eid].valeur !== "DISQUE");
+  check("le bandeau offre les deux issues, et rien d'autre",
+    w.document.querySelectorAll("#accord button").length === 2);
+  w.adopterFichier();
+  check("« adopter » prend le fichier et referme le bandeau",
+    w.CONTENU.pieces[e.pid].empans[e.eid].valeur === "DISQUE"
+    && w.document.getElementById("accord").hidden);
+}
+{
+  /* LE CAS COURANT : on fait un `git pull`, on rouvre l'atelier. Le brouillon
+     est d'accord avec ce que le fichier disait ; le fichier a changé depuis.
+     PIÈGE : l'adoption a lieu AU DÉMARRAGE, donc `render()` y tourne avant le
+     `simReset()` de la page — c'est ce chemin-là qui casserait en silence. */
+  const w0 = neuf();
+  const e = SC.unEmpan(w0.CONTENU);
+  const vieux = JSON.parse(JSON.stringify(w0.CONTENU));
+  vieux.pieces[e.pid].empans[e.eid].valeur = "CE QUE LE FICHIER DISAIT";
+  const w = H.bootAtelier({ graine: {
+    iavocat_atelier_v2: JSON.stringify(vieux),
+    iavocat_atelier_accord: w0.signatureContenu(vieux)
+  }});
+  check("au démarrage, un fichier plus frais est adopté sans un mot",
+    w.CONTENU.pieces[e.pid].empans[e.eid].valeur !== "CE QUE LE FICHIER DISAIT"
+    && w.document.getElementById("accord").hidden);
+  check("et la page a fini de se dessiner — le pas-à-pas compris",
+    !!w.document.getElementById("canvas").querySelector(".card") && !!w.SIM);
+}
+{
+  const w = neuf();
+  const e = SC.unEmpan(w.CONTENU);
+  const fichier = JSON.parse(JSON.stringify(w.CONTENU));
+  fichier.pieces[e.pid].empans[e.eid].valeur = "DISQUE";
+  w.majEmpan(e.pid, e.eid, "nom", "MON BROUILLON");
+  w.confronter(JSON.parse(JSON.stringify(fichier)));
+  w.garderBrouillon();
+  check("« garder » laisse le brouillon intact",
+    w.CONTENU.pieces[e.pid].empans[e.eid].nom === "MON BROUILLON"
+    && w.document.getElementById("accord").hidden);
+  /* PIÈGE PAYÉ : garder, c'est PRENDRE ACTE — sans ça le bandeau reviendrait à
+     chaque coup d'œil pour une divergence déjà tranchée. */
+  w.confronter(JSON.parse(JSON.stringify(fichier)));
+  check("et le même fichier ne rappelle plus le bandeau",
+    w.document.getElementById("accord").hidden);
 }
 /* PIÈGE : `bilan()` est DANS la promesse, et il le faut — `exporterJS` attend le
    navigateur, donc ces contrôles sont les seuls du dépôt à tomber après le

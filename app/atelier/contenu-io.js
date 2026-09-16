@@ -71,6 +71,7 @@ async function exporterJS(ev){
     if(!await droitEcriture(h)) throw new Error("droit d'écriture refusé");
     const flux=await h.createWritable();
     await flux.write(data); await flux.close();
+    noterAccord(signatureContenu(CONTENU));   // le disque et nous sommes d'accord (§10)
     direSurBouton("✓ "+h.name+" écrit");
   }catch(e){
     if(e && e.name==="AbortError"){ direSurBouton(null); return; }   // fichier non désigné : rien n'a eu lieu
@@ -211,9 +212,106 @@ function adopter(j){
 function demanderExemple(){
   if(pendingDel!=="exemple"){ pendingDel="exemple"; hint("Recharger content.js efface le contenu courant — reclique pour confirmer.",true); return; }
   pendingDel=null; hint();
-  muter(()=>{ CONTENU=contenuLivre(); window.CONTENU=CONTENU; simReset(); autoLayout(true); });
+  const frais = fichierEnAttente || contenuLivre();
+  fichierEnAttente=null;
+  muter(()=>{ CONTENU=frais; window.CONTENU=CONTENU; simReset(); autoLayout(true); });
+  noterAccord(signatureContenu(CONTENU));
+  /* `LIVRE` date du chargement de la page. On relit pour de bon — l'accord
+     venant d'être noté, un fichier plus frais sera adopté EN SILENCE, et le
+     bandeau ne peut pas surgir derrière un geste qui vient de tout remettre. */
+  relireFichier().then(confronter);
 }
 
-function autosave(){ try{ localStorage.setItem("iavocat_atelier_v2",JSON.stringify(CONTENU)); }catch(e){} }
-function chargerAuto(){ try{ const s=localStorage.getItem("iavocat_atelier_v2"); if(s){ CONTENU=migrerContenu(JSON.parse(s)); return true; } }catch(e){} return false; }
+/* ---- LE BROUILLON, ET L'ACCORD AVEC LE FICHIER (§10) ---------------------
+   LA RÈGLE : le fichier a raison, SAUF s'il y a du travail à perdre. */
+const CLE_BROUILLON="iavocat_atelier_v2", CLE_ACCORD="iavocat_atelier_accord";
+
+/* La signature EST ce que l'écriture produirait : deux contenus qui s'exportent
+   pareil sont d'accord. Les clés en `_` en sont donc exclues — déplacer un nœud
+   du graphe n'est pas du travail à perdre. */
+function signatureContenu(c){ try{ return JSON.stringify(nettoyerPourJeu(c)); }catch(e){ return null; } }
+function accordRange(){ try{ return localStorage.getItem(CLE_ACCORD); }catch(e){ return null; } }
+function noterAccord(sig){ try{ if(sig) localStorage.setItem(CLE_ACCORD,sig); }catch(e){} }
+
+function autosave(){ try{ localStorage.setItem(CLE_BROUILLON,JSON.stringify(CONTENU)); }catch(e){} }
+function brouillonRange(){
+  try{ const s=localStorage.getItem(CLE_BROUILLON); return s ? migrerContenu(JSON.parse(s)) : null; }
+  catch(e){ return null; }
+}
+
+/* Au démarrage, `LIVRE` EST le fichier frais — la balise vient de le charger,
+   il n'y a rien à relire. */
+function demarrer(){
+  const brouillon=brouillonRange();
+  if(!brouillon){ CONTENU=contenuLivre(); window.CONTENU=CONTENU; noterAccord(signatureContenu(CONTENU)); return; }
+  CONTENU=brouillon; window.CONTENU=CONTENU;
+  confronter(LIVRE ? clone(LIVRE) : null);
+}
+
+/* RELIRE LE FICHIER SANS RECHARGER LA PAGE (§10) — une balise ré-injectée, et
+   non la poignée : seul chemin qui marche en `file://`, partout, sans redemander
+   un droit.
+   PIÈGE : le fichier écrit `window.CONTENU`, qui est AUSSI le miroir de l'état
+   courant de l'atelier. On le met de côté et on le remet DANS LE MÊME TOUR. */
+function relireFichier(){
+  return new Promise(ok=>{
+    const s=document.createElement("script");
+    s.src="content.js?relu="+Date.now();
+    const rendre=frais=>{ window.CONTENU=CONTENU; s.remove(); ok(frais); };
+    s.onload =()=>{ const f=window.CONTENU; rendre(f && f!==CONTENU ? migrerContenu(clone(f)) : null); };
+    s.onerror=()=>rendre(null);
+    document.head.appendChild(s);
+  });
+}
+/* DEUX déclencheurs, et il en faut DEUX : `visibilitychange` ne voit que le
+   changement d'ONGLET, jamais le retour depuis une AUTRE APPLICATION — or c'est
+   par là qu'on revient de son éditeur, la fenêtre du navigateur n'ayant jamais
+   été masquée. Le `focus` de la fenêtre, lui, le voit.
+   Le verrou évite deux lectures qui se croisent, `focus` pouvant pleuvoir. */
+let relectureEnCours=false;
+function guetterLeFichier(){
+  const regarder=async()=>{
+    if(relectureEnCours || document.visibilityState==="hidden") return;
+    relectureEnCours=true;
+    try{ confronter(await relireFichier()); } finally{ relectureEnCours=false; }
+  };
+  document.addEventListener("visibilitychange",regarder);
+  window.addEventListener("focus",regarder);
+}
+
+/* Le fichier en attente d'arbitrage — non nul veut dire : LE BANDEAU EST LÀ. */
+let fichierEnAttente=null;
+function confronter(frais){
+  if(!frais) return;
+  const accord=accordRange();
+  if(signatureContenu(frais)===accord) return;             // le fichier n'a pas bougé
+  if(signatureContenu(CONTENU)===accord){ prendreFichier(frais); return; }   // rien à perdre
+  fichierEnAttente=frais; majAccord();                     // les deux : l'auteur tranche
+}
+/* Les annotations d'atelier (clés en `_`) ne vivent pas dans le fichier : elles
+   traversent l'adoption, sans quoi le graphe sauterait à chaque relecture. */
+function prendreFichier(frais){
+  fichierEnAttente=null;
+  for(const k of Object.keys(CONTENU)) if(k.startsWith("_")) frais[k]=CONTENU[k];
+  muter(()=>{ CONTENU=frais; window.CONTENU=CONTENU; reinitSelection(); simReset(); autoLayout(false); });
+  noterAccord(signatureContenu(CONTENU));
+  hint("content.js a changé au dehors — adopté.");
+}
+function adopterFichier(){ if(fichierEnAttente) prendreFichier(fichierEnAttente); majAccord(); }
+/* Garder son brouillon, c'est PRENDRE ACTE du fichier : sans ça, le bandeau
+   reviendrait à chaque coup d'œil pour la même divergence. */
+function garderBrouillon(){
+  if(fichierEnAttente) noterAccord(signatureContenu(fichierEnAttente));
+  fichierEnAttente=null; majAccord();
+}
+function majAccord(){
+  const el=$("accord"); if(!el) return;
+  el.hidden=!fichierEnAttente;
+  /* PIÈGE : le `gap` du flex sépare TOUS les enfants — la phrase tient donc dans
+     UN seul `<span>`, sans quoi une espace s'ouvre avant sa virgule (§8.8). */
+  el.innerHTML = fichierEnAttente
+    ? `<span><b>content.js a changé au dehors</b>, et tu as du travail non écrit ici.</span>
+       <button class="tbtn" onclick="adopterFichier()">Adopter le fichier</button>
+       <button class="tbtn warnstyle" onclick="garderBrouillon()">Garder mon brouillon</button>` : "";
+}
 
