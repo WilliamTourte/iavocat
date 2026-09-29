@@ -62,9 +62,11 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Rien ne prouve automatiquement qu'un CSS externe se charge** : la preuve est à l'œil, sur les
   captures — qui **ne se comparent pas à l'octet** (le halo pulse).
 - **`#composeur` est le frère de `#discussion`, jamais son enfant** — `renderDiscussion` finit par
-  `scrollTop = scrollHeight`.
+  `scrollTop = scrollHeight`. Enfant direct de `.wrap`, en bandeau plein largeur après les trois
+  `.col` — jamais dans une section colonne.
 - **`.col{display:flex}` bat `[hidden]{display:none}`** : cacher la Plaidoirie demande
-  `.col[hidden]{display:none}`, et `.cloture` est câblée sur trois colonnes (`.wrap.sansPlan`).
+  `.col[hidden]{display:none}`, et `.cloture` **et `#composeur`** sont câblés sur trois colonnes
+  (`.wrap.sansPlan`).
 - **`S.retenus` est sérialisé dans `localStorage`** et s'appelait `S.memoire` : la signature de contenu
   **ne protège pas** d'un renommage d'état — `restaurerPartie` porte la reprise, et tout futur
   renommage aura le même devoir.
@@ -92,8 +94,9 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 - **La compréhension est-elle encore *exprimée* ?** Et **une question posée guide-t-elle trop ?** Repli
   sans code : retirer les `question` une à une, couper le tutoriel avant le 3ᵉ temps.
 - **Le va-et-vient entre les deux colonnes** (§4.6) — le plus concret, à regarder sur une session
-  entière : le regard qui cherche où le texte est parti, la main qui repose un empan. Repli : faire
-  descendre le contexte, **pas** remonter le composeur.
+  entière : le regard qui cherche où le texte est parti, la main qui repose un empan. Repli
+  **appliqué** : un clic dans le composeur fait descendre le Contexte (`attirerContexte`,
+  `app/jeu.js`), **pas** remonter le composeur — reste à l'éprouver sur une session jouée.
 - **La Plaidoirie est escamotée, et c'est PROVISOIRE** (§4.9) : plus rien à l'écran ne distingue
   *envoyé* de *retenu comme moyen*. Ce qu'on éprouve pendant ce congé, c'est **ce que son absence
   coûte** — et la question au retour sera *où*, pas *si*. Un `const` d'une ligne la rallume (`vide`,

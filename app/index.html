@@ -13,10 +13,6 @@
   <section class="col">
     <h2>Discussion</h2>
     <div class="body" id="discussion"></div>
-    <!-- On répond SOUS la question (§4.6). PIÈGE : `#composeur` est le FRÈRE de
-         `#discussion`, jamais son enfant — le fil se recale en bas à chaque
-         message, la phrase qu'on écrit ne doit pas partir avec lui. -->
-    <div id="composeur"></div>
   </section>
   <section class="col">
     <h2>Contexte</h2>
@@ -26,6 +22,12 @@
     <h2>Plaidoirie<span class="zcount" id="plaidoirieCount"></span></h2>
     <div class="body" id="plaidoirie"></div>
   </section>
+  <!-- On répond SOUS la question (§4.6). PIÈGE : `#composeur` est le FRÈRE de
+       `#discussion`, jamais son enfant — le fil se recale en bas à chaque
+       message, la phrase qu'on écrit ne doit pas partir avec lui. Enfant
+       direct de `.wrap`, en bandeau plein largeur : même gabarit que
+       `.cloture` ci-dessous. -->
+  <div id="composeur"></div>
   <div class="cloture">
     <button id="btnCloture" onclick="cloturer()" disabled>Clôturer l'instruction</button>
     <div class="hint" id="clotureHint">Maître Auber attend encore quelque chose.</div>

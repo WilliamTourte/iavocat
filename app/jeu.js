@@ -456,10 +456,25 @@ function portePhrase(pid){
   return d.length ? `<span class="porte">porte sur : ${d.map(escapeAttr).join(", ")}</span>` : "";
 }
 
+// §4.6 : un clic n'importe où dans le composeur ramène le Contexte dans le champ
+// de vision. Écouteur posé UNE FOIS sur le conteneur (jamais recréé, contrairement
+// à son innerHTML, régénéré à chaque rendreTout()) — délégation d'événement, sans
+// conflit avec les onclick="poserBloc(...)" inline déjà posés dessus.
+function attirerContexte(){
+  const col = $("contexte").closest(".col");
+  if(!col) return;
+  const reduit = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  col.scrollIntoView({behavior: reduit ? "auto" : "smooth", block:"nearest"});
+  col.classList.remove("attireContexte");
+  void col.offsetWidth;               // force le reflow : relance l'animation si déjà en cours
+  col.classList.add("attireContexte");
+}
+
 /* ---- Démarrage ---- */
 window.JEU = JEU; window.S = S; window.M = M; window.R = R; window.CHAMPS = CHAMPS;
 /* `SOURCE_CONTENU` n'est plus affiché nulle part, mais reste exposé : quatre
    suites le lisent pour savoir quel contenu a été adopté (§13). */
 window.SOURCE_CONTENU = SOURCE_CONTENU;
+$("composeur").addEventListener("click", attirerContexte);
 if(!restaurerPartie()) R.envoyerRemise(S);   // la remise 1 arrive d'elle-même
 rendreTout();

@@ -137,7 +137,7 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 | Surface | Statut | Rôle |
 |---|---|---|
 | La **Discussion** + les pièces | lecture | l'entrée |
-| **Le composeur** — *sous la Discussion* | **privé** | la phrase qu'on écrit — jamais jugée |
+| **Le composeur** — *bandeau plein largeur, sous les trois colonnes* | **privé** | la phrase qu'on écrit — jamais jugée |
 | Le **Contexte** | **privé** | le dossier et les empans retenus (`S.retenus`) — jamais jugés |
 | La **Plaidoirie** | **transmis** | ce que l'avocat retient (`S.plaidoirie`) — hors écran pour l'instant (§4.9) |
 
