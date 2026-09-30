@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* `npm run gardien` — les conventions que les suites ne voient pas (§16).
- * Six règles, six pannes réellement vécues. Les numéros gardent leurs trous :
+ * Sept règles, sept pannes réellement vécues. Les numéros gardent leurs trous :
  * cinq règles ont été retirées (var CSS non définie, famille CSS orpheline,
  * reste du schéma 2, carte de tailles menteuse, prédicat recopié), et renuméroter
  * casserait tout ce qui cite « Rn ».
@@ -11,9 +11,10 @@
  *   R6  un id visé existe — et le tutoriel vise quelque chose       §4.8
  *   R9  `attend`/`apres` ne se lisent plus sur une remise           §11, §15
  *   R11 aucun renvoi « §x » ne pointe dans le vide                  §12
+ *   R12 l'export commité est celui que produit `npm run export`  §16
  *
  * TERRITOIRES : R9 marche sur `app/`, `tests/` ET `outils/`, R11 sur tout le
- * dépôt, documents compris ; les quatre autres sur les deux pages. Avant
+ * dépôt, documents compris, R12 sur `export/` ; les quatre autres sur les deux pages. Avant
  * d'ajouter une règle, demander SUR QUEL TERRITOIRE elle marche.
  *
  * Ce n'est pas une cinquième source de vérité (§12) : le jour où une règle et
@@ -411,6 +412,24 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
     }
   }
   regle("R11 · tout renvoi « §x » désigne une section qui existe, et une seule", faux);
+}
+
+/* R12 — L'EXPORT COMMITÉ EST CELUI QUE PRODUIT `npm run export` (§16).
+   `export/iavocat.html` est dans le dépôt : c'est donc une COPIE de la vérité,
+   et le pire des reflets (§15), puisque les cinq suites lisent `app/` et
+   restent vertes pendant qu'il décrirait un jeu qui n'existe plus. Rien
+   d'autre que cette comparaison ne l'en empêche.
+   PIÈGE : elle ne REFAIT pas l'inlinage — elle appelle l'exporteur, en mode
+   double. Un prédicat recopié resterait vert en affirmant l'ancienne vérité,
+   et une règle a déjà été retirée d'ici pour exactement ça. */
+{
+  const faux = [];
+  const REL = "export/iavocat.html";
+  if (!existe(REL))
+    faux.push(REL + " manque — lancer `npm run export`");
+  else if (lire(REL) !== require("./exporter.js").construire())
+    faux.push(REL + " ne décrit plus ce que produit app/ — lancer `npm run export`");
+  regle("R12 · l'export commité est celui que produit `npm run export`", faux);
 }
 
 bilan();

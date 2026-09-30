@@ -1,3 +1,6 @@
 node_modules/
 captures/
-export/
+# L'export est COMMITÉ (R12 du gardien le tient à jour) ; le reste du dossier
+# n'a pas à l'être.
+export/*
+!export/iavocat.html

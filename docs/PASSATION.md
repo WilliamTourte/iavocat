@@ -64,6 +64,7 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **[R6]** Quatre ids sont des ancres du tutoriel : `#discussion`, `#modalRoot`, `#zoneRetenus`, `#composeur`.
 - **[R9]** Le tag vit sur l'**attente**, jamais sur la remise — quatre fonctions exceptées.
 - **[R11]** Tout renvoi `§x` désigne une section réelle, dans le bon document.
+- **[R12]** L'export commité est bien celui que produit `npm run export`.
 
 **Tenus par personne — c'est ici qu'on se fait mal :**
 
@@ -102,6 +103,11 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   ne se replie pas en une boucle : le tutoriel les vise quand le panneau est fermé, et **R6 ne sait pas
   lire un id fabriqué par interpolation** — il l'a refusé, à raison. Même exigence pour les deux
   sélecteurs `ou:` du tutoriel, qui doivent rester des littéraux.
+- **`export/iavocat.html` est COMMITÉ, donc c'est une copie de `app/`** — et aucune suite ne le lit.
+  **[R12]** le tient, en appelant l'exporteur (passé en mode double) plutôt qu'en refaisant son
+  inlinage : un prédicat recopié resterait vert en affirmant l'ancienne vérité, et une règle a déjà été
+  retirée d'ici pour ça. Un hook régénère et stage l'export avant chaque `git commit` — mais **le hook
+  ne protège que cette machine**, R12 protège tout le monde, CI comprise.
 - **Rien ne prouve automatiquement qu'un CSS externe se charge** : la preuve est à l'œil, sur les
   captures — qui **ne se comparent pas à l'octet** (le halo pulse).
 - **`#composeur` est le frère de `#discussion`, jamais son enfant** — `renderDiscussion` finit par

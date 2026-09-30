@@ -233,8 +233,8 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
   le jeu, alors que la frise les édite.*
 
 **Le gardien** (`outils/gardien.js`, dans `npm test` après les suites) rend opposables les conventions
-qu'aucune suite ne voit : **six règles, six pannes réellement vécues**, chacune citant son § — *la liste
-vit dans son en-tête*. Il ne connaît ni pièce, ni empan, ni valeur.
+qu'aucune suite ne voit : **sept règles, sept pannes réellement vécues**, chacune citant son § — *la
+liste vit dans son en-tête*. Il ne connaît ni pièce, ni empan, ni valeur.
 
 - **Ce qu'une règle a le droit d'être** : le constat d'une panne payée, pas une préférence de style ; un
   motif vérifiable sur le source, pas une intention.
@@ -243,6 +243,14 @@ vit dans son en-tête*. Il ne connaît ni pièce, ni empan, ni valeur.
 - **Ce n'est pas une cinquième source de vérité** (§12) : si une règle et son § divergent, c'est le §
   qui a raison. Les renvois sont des **numéros nus** — l'ancre d'un lien Markdown se calcule sur le
   titre, que renommer casserait en silence.
+
+**L'export est commité, et R12 est ce qui l'empêche de mentir.** `export/iavocat.html` — le jeu replié
+en un fichier, sans dépendance — est dans le dépôt pour qui veut jouer sans cloner. C'est donc une
+**copie** de `app/`, et le pire des reflets possibles (§15) : les cinq suites lisent `app/` et resteraient
+vertes pendant que le livrable décrirait un jeu disparu. Deux choses le tiennent — **l'exporteur est
+déterministe** (pure substitution : ni date, ni aléa, donc comparable à l'octet) et **R12 compare en
+appelant l'exporteur**, jamais en refaisant son inlinage. La CI lançant `npm test` à chaque push et
+chaque PR, oublier `npm run export` coûte un build rouge, jamais un mensonge silencieux.
 
 **`eslint.config.js`**, l'autre bout, générique : identifiant fautif, variable morte, clé dupliquée. Sa
 liste de globals se **calcule** en demandant son inventaire au gardien. Deux assouplissements pour des

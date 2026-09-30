@@ -19,9 +19,14 @@ function inliner(html, dossier) {
     .replace(/<link rel="stylesheet" href="([^"]+)">/g, (_, f) => `<style>\n${lire(f)}\n</style>`);
 }
 
+/* Ce que l'export SERAIT, sans rien écrire — c'est par là que R12 compare le
+   fichier commité, au lieu de recopier l'inlinage et de mentir avec lui (§16). */
+function construire() {
+  return inliner(fs.readFileSync(SOURCE, "utf8"), path.dirname(SOURCE));
+}
+
 function main() {
-  const html = fs.readFileSync(SOURCE, "utf8");
-  const replie = inliner(html, path.dirname(SOURCE));
+  const replie = construire();
 
   fs.mkdirSync(path.dirname(SORTIE), { recursive: true });
   fs.writeFileSync(SORTIE, replie);
@@ -31,4 +36,7 @@ function main() {
   console.log("Un seul fichier, aucune dépendance : s'ouvre en double-clic, en file://.");
 }
 
-main();
+/* MODE DOUBLE, comme `regles.js` et `moteur.js` (§17) : lancé, il écrit ;
+   requis, il ne fait que construire. */
+if (require.main === module) main();
+module.exports = { construire, SORTIE };

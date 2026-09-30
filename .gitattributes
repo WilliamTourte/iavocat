@@ -1,0 +1,4 @@
+# `export/iavocat.html` est ENGENDRÉ par `npm run export` (R12). Son diff
+# n'apprend rien — c'est app/ qu'on relit — et sa seule résolution de conflit
+# correcte est de le régénérer.
+export/iavocat.html -diff linguist-generated

@@ -23,12 +23,14 @@ qu'aucun ne pointe dans le vide. **En cas de doute, le document renvoyé a toujo
 npm test               # les cinq suites (373 contrôles), PUIS le gardien, PUIS ESLint.
                        # Tout vert, ou ce n'est pas fini (§16)
 npm run suites         # les cinq suites seules — le sens avant la forme
-npm run gardien        # les six conventions que les suites ne voient pas (§16)
+npm run gardien        # les sept conventions que les suites ne voient pas (§16)
 npm run lint           # ESLint, le filet générique
 npm run vue            # le jeu dans un VRAI Chromium en file://, joué, capturé dans captures/
 npm run demo:grammaire # banc d'essai de la grammaire. Hors `npm test`
 npm run export         # le JEU SEUL replié en UN fichier HTML (export/) — à ne pas
-                       # confondre avec « Écrire content.js », l'export de l'atelier (§10)
+                       # confondre avec « Écrire content.js », l'export de l'atelier (§10).
+                       # Le fichier est COMMITÉ : R12 refuse qu'il prenne du retard sur
+                       # app/, et un hook le régénère avant chaque commit
 ```
 
 Rien à préparer : en session distante, `.claude/hooks/session-start.sh` a déjà posé `node_modules`.
