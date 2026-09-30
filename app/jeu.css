@@ -1,115 +1,160 @@
 /* LE JEU — LA FEUILLE DE STYLE, chargée par <link>. Elle ne décide rien : les
-   seules valeurs calculées entrent par `--dc`, posée en style inline par
-   `couleurDim` (§4.3) — la palette vit dans app/moteur.js, en un exemplaire. */
+   seules valeurs calculées entrent par `--dc` et `--ds`, posées en style inline
+   par `couleurDim` et `traitDim` (§4.3) — palette et traits vivent dans
+   app/moteur.js, en un exemplaire. Le papier des pièces les FONCE ici, il ne
+   les double pas. */
 :root{
+  color-scheme:dark;
   --bg:#0e1116; --panel:#161b22; --panel2:#1c232d; --line:#2b3440;
   --txt:#d7dde5; --muted:#8b97a6; --accent:#6fb3d6; --warn:#d6a96f;
   /* PIÈGE PAYÉ : ce bleu fut employé huit fois et défini nulle part. Une `var()`
      introuvable rend la déclaration INVALIDE AU CALCUL — sur un raccourci comme
      `border`, ça vide toutes ses longhands, donc pas de filet du tout. */
   --transmis:#23506e;
+  /* Le papier des pièces (§4.6) : ce qu'on lit vient du monde. */
+  --papier:#f4efe4; --encre:#27231d; --encre2:#665d4f; --filet:#d8cfbb;
 
   --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"DejaVu Serif","Liberation Serif",serif;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.55}
-.wrap{display:flex;flex-direction:column;gap:14px;padding:16px 20px;max-width:1000px;margin:0 auto}
+/* §4.6 — LA COLONNE TIENT DANS LA FENÊTRE : la page ne défile pas, chaque bande
+   défile pour son compte, et la conversation est la SEULE bande élastique.
+   PIÈGE : sans `min-height:0`, un item de flex refuse de rétrécir sous son
+   contenu — la conversation pousserait le composeur sous le pli, exactement ce
+   que cette mise en page existe pour empêcher. */
+body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
+  background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.55}
+.wrap{flex:1 1 auto;min-height:0;width:100%;max-width:1000px;margin:0 auto;
+  display:flex;flex-direction:column;gap:12px;padding:14px 20px 12px}
 .col{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
-.col > h2{margin:0;padding:9px 14px;font-size:13px;font-weight:600;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:baseline}
-
-.body{padding:12px 14px;overflow-y:auto;max-height:72vh}
-/* §4.6 : le panneau s'ouvre ENTRE la conversation et le composeur, sans rien
-   recouvrir. Les deux se partagent alors la hauteur — la conversation reste
-   lisible, la question sous les yeux, et le composeur sous l'écran sans avoir à
-   défiler. C'est la seule chose que la classe `avecPanneau` décide. */
-.wrap.avecPanneau #discussion{max-height:25vh}
-.panneau .body{max-height:31vh}
+.col > h2{flex:none;margin:0;padding:8px 14px;font-size:14px;font-weight:600;color:var(--muted);
+  border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center}
+.body{padding:12px 14px;overflow-y:auto;min-height:0;flex:1 1 auto}
+.col.fil{flex:1 1 0;min-height:130px}
+/* Un panneau ouvert, la conversation peut céder davantage — c'est tout ce que la
+   classe `avecPanneau` décide. */
+.wrap.avecPanneau .col.fil{min-height:96px}
+.panneau{flex:0 1 auto;max-height:32vh;min-height:0}
 /* PIÈGE : `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` — sans
    cette ligne, cacher la Plaidoirie ne ferait rien. */
 .col[hidden]{display:none}
-#composeur{background:var(--panel);border:1px solid var(--line);
-  border-radius:10px;padding:14px 18px}
+#composeur{flex:none;max-height:46vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);
+  border-radius:10px;padding:12px 16px}
 #composeur .zone{margin:0}
-/* PIÈGE : les deux parts ouvertes doivent rester SOUS la hauteur fermée, en-tête
-   du panneau et gouttière compris — sinon ouvrir allonge la page au lieu de la
-   partager, et la clôture s'enfonce. */
-@media (max-width:1100px){
-  .body{max-height:44vh}
-  .wrap.avecPanneau #discussion{max-height:16vh}
-  .panneau .body{max-height:20vh}
+/* Trop bas pour trois bandes : on rend la main au défilement de la page. */
+@media (max-height:560px){
+  body{height:auto}
+  .wrap{flex:none}
+  .col.fil{flex:none}
+  .fil .body{max-height:50vh}
+  .panneau{max-height:none}
+  .panneau .body{max-height:45vh}
+  #composeur{max-height:none}
 }
-/* La croix d'un panneau, et la barre qui y mène depuis le composeur. Les deux
-   portes doivent TRANCHER sur le panneau qui les porte : bord accentué et texte
-   plein, jamais le gris d'une étiquette. Ouverte, la porte s'inverse — on lit
-   d'un coup d'œil quelle surface est sous les yeux. */
-.col > h2 .fermer{margin-left:auto;background:none;border:none;color:var(--muted);
-  font-size:18px;line-height:1;padding:0 2px;cursor:pointer}
-.col > h2 .fermer:hover{color:var(--txt)}
+/* --- ce qui se lit au clavier (§4.10) --- un double anneau en `box-shadow`,
+   qui ne se bat pas avec l'`outline` du halo du tutoriel. */
+:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bg),0 0 0 4px #e6edf3}
+.sr{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);
+  border-bottom-width:2px;border-radius:4px;padding:0 5px;line-height:1.5}
+/* Les croix : un nom, une cible, et Échap lisible là où il agit (§4.10). Les deux
+   portes de la barre doivent TRANCHER sur le panneau qui les porte : bord
+   accentué et texte plein, jamais le gris d'une étiquette. Ouverte, la porte
+   s'inverse — on lit d'un coup d'œil quelle surface est sous les yeux. */
+.col > h2 .fermer,.modal .close{display:inline-flex;align-items:center;gap:7px;min-height:32px;
+  padding:3px 8px 3px 10px;background:none;border:1px solid var(--line);border-radius:7px;
+  color:var(--txt);font:inherit;font-size:13px;cursor:pointer}
+.col > h2 .fermer{margin-left:auto}
+.col > h2 .fermer:hover,.modal .close:hover{border-color:var(--accent)}
+.fermer .x,.close .x{font-size:20px;line-height:1}
 .ztitle .surfaces{margin-left:auto;display:flex;gap:6px}
 .versSurface{background:#20303f;border:1px solid var(--accent);border-radius:7px;
-  color:var(--txt);font-size:12.5px;font-weight:600;text-transform:none;letter-spacing:0;
+  color:var(--txt);font-size:13px;font-weight:600;text-transform:none;letter-spacing:0;
   padding:5px 12px;cursor:pointer}
 .versSurface:hover{background:#2b4259}
 .versSurface.ouvert{background:var(--accent);border-color:var(--accent);color:#0e1116}
 /* --- canal --- */
 .msg{margin-bottom:10px}
-.msg.suite{margin-top:-4px}   
-.msg .who{font-size:12px;color:var(--muted);margin-bottom:3px}
-.msg .bubble{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-.msg.ia .who{color:#5b8aa6}
-.msg.ia .bubble{background:#0f2230;border-color:var(--transmis);font-family:var(--mono);font-size:13px;color:#bfe0f2}
+.msg.suite{margin-top:-4px}
+.msg .who{font-size:12.5px;color:var(--muted);margin-bottom:3px}
+/* Soixante-dix signes à la ligne, pas cent quinze (§4.9). */
+.msg .bubble{max-width:68ch;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.msg.ia .who{color:#6d9cb8}
+.msg.ia .bubble{background:#0f2230;border-color:var(--transmis);font-family:var(--mono);font-size:13.5px;color:#bfe0f2}
 .attach{display:inline-flex;align-items:center;gap:6px;margin:6px 6px 0 0;padding:6px 10px;
-  background:#12324a;border:1px solid var(--transmis);border-radius:8px;color:#bfe0f2;cursor:pointer;font-size:13px}
+  background:#12324a;border:1px solid var(--transmis);border-radius:8px;color:#bfe0f2;cursor:pointer;
+  font:inherit;font-size:13.5px}
 .attach:hover{border-color:var(--accent)}
-.attach.seen{opacity:.6}
+/* Lue : un ✓, et une teinte qui s'apaise sans perdre son contraste — jamais le
+   gris d'un bouton désactivé (§4.10 règle 5). */
+.attach.seen{background:#15222e;border-color:#2b4254;color:#a9c3d3}
 /* --- zones --- */
 .zone{margin-bottom:12px}
 #zoneDossier,#zoneRetenus{border:1px solid var(--line);border-radius:8px;
   background:var(--panel2);padding:10px 12px;margin-bottom:12px}
-.zone .ztitle{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;
-  margin-bottom:8px;padding:5px 10px;border:1px solid var(--line);border-radius:6px;
-  background:var(--panel2);display:flex;align-items:baseline;gap:8px}
-.zone .ztitle .zcount{float:none;margin-left:auto}
-.aide{display:block;color:var(--muted);font-size:12px;margin-top:8px;font-style:italic}
+.zone .ztitle{font-size:14px;font-weight:600;color:var(--muted);
+  margin-bottom:8px;padding:4px 0 6px;display:flex;align-items:center;gap:8px}
+.aide{display:block;color:var(--muted);font-size:13px;margin-top:8px;font-style:italic}
 /* §4.9 règle 1 : la voix se clique quand le geste qu'elle nomme a lieu dans
    l'autre colonne. Elle ne ressemble PAS à un `.bbloc` — celui-là POSE un bloc,
-   celle-ci ne fait que montrer où aller. */
-.versContexte{display:inline-block;text-align:left;background:none;color:inherit;font:inherit;
-  border:1px dashed var(--line);border-radius:6px;padding:5px 9px;cursor:pointer}
-.versContexte:hover{border-color:var(--accent);color:var(--txt)}
+   celle-ci ne fait que montrer où aller. Et plus de pointillés : dans le cadre
+   du composeur, elle passait pour un champ vide, ou une zone de dépôt. */
+.versContexte{display:inline-flex;align-items:center;gap:10px;text-align:left;
+  background:#1a2a38;color:var(--txt);font:inherit;font-size:13.5px;font-style:normal;
+  border:1px solid var(--accent);border-radius:7px;padding:6px 12px;cursor:pointer}
+.versContexte:hover{background:#223a4e}
+.versContexte .fl{color:var(--accent);font-weight:700}
+/* PIÈGE : `.phrase .trou` (le fantôme) vient plus loin, à spécificité égale —
+   d'où la double classe : sans elle, la voix cliquable repassait en italique
+   grisé, l'air d'un champ vide. */
+.phrase .trou.versContexte{color:var(--txt);font-style:normal}
 .aide.question{margin-top:0;margin-bottom:10px;color:var(--txt);border-left:2px solid var(--muted);padding-left:8px}
-/* --- les empans dans le texte d'une pièce --- */
+/* --- les empans dans le texte d'une pièce --- la couleur ET le trait (§4.3) ;
+   le soulignement est une DÉCORATION, pas une bordure : il suit la coupure de
+   ligne, et l'épaisser ne décale rien. Retenu, le fond se remplit — jamais de
+   graisse, qui décalait le texte autour. */
 .piecetexte{line-height:1.9}
-.empan{border-bottom:2px solid var(--dc,var(--muted));border-radius:2px;padding:1px 2px;cursor:pointer;
-  background:color-mix(in srgb, var(--dc,#888) 12%, transparent)}
-.empan:hover{background:color-mix(in srgb, var(--dc,#888) 28%, transparent)}
-.empan.pris{background:color-mix(in srgb, var(--dc,#888) 30%, transparent);font-weight:600}
-.empan .sig{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.empan{text-decoration-line:underline;text-decoration-style:var(--ds,solid);
+  text-decoration-color:var(--dc,var(--muted));text-decoration-thickness:2px;
+  text-underline-offset:.26em;text-decoration-skip-ink:none;
+  border-radius:2px;padding:1px 1px;cursor:pointer;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;
+  background:color-mix(in srgb, var(--dc,#888) 10%, transparent)}
+.empan:hover{background:color-mix(in srgb, var(--dc,#888) 24%, transparent)}
+.empan.pris{background:color-mix(in srgb, var(--dc,#888) 32%, transparent);text-decoration-thickness:3px}
 /* --- contexte : une seule liste, qui sert AUSSI de clavier au composeur --- */
 .dimgrp{margin-bottom:9px}
-.dimgrp.horsdim{opacity:.45}
-.dimgrp .dnom{font-size:11px;color:var(--dc,var(--muted));text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.dimgrp .dnom{font-size:12px;color:var(--dc,var(--muted));text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+/* §4.5 : le Contexte s'assombrit PAR DIMENSION — par la couleur, plus par une
+   transparence qui éteignait le contraste (§4.10 règle 5). */
+.dimgrp.horsdim .dnom{color:var(--muted)}
+.dimgrp.horsdim .mchip{border-left-color:var(--line);background:#181e27}
+.dimgrp.horsdim .mchip .corps{color:var(--muted)}
 .mchip{display:flex;align-items:stretch;margin:3px 0;background:var(--panel2);
   border:1px solid var(--line);border-left:3px solid var(--dc,var(--line));border-radius:6px;overflow:hidden}
 .mchip:hover{border-color:var(--accent)}
 /* PIÈGE : sans `min-width:0`, un item de flex refuse de rétrécir sous son
    contenu — la citation pousserait la puce hors du cadre. */
 .mchip .corps{flex:1;min-width:0;text-align:left;background:none;border:none;color:var(--txt);
-  padding:6px 9px;cursor:pointer;font:inherit;font-size:13px;line-height:1.4}
-.mchip .corps:disabled{cursor:default;opacity:.55}
+  padding:6px 9px;cursor:pointer;font:inherit;font-size:13.5px;line-height:1.4}
+.mchip .corps:disabled{cursor:default;color:var(--muted)}
 .mchip .nom{display:block}
 .mchip .prov{display:flex;align-items:baseline;gap:6px;margin-top:2px}
-.mchip .cit{flex:1;min-width:0;font-size:11.5px;color:var(--muted);font-style:italic;
+.mchip .cit{flex:1;min-width:0;font-size:12.5px;color:var(--muted);font-style:italic;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mchip .sig{flex:none;font-size:11px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
+.mchip .sig{flex:none;font-size:12px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
 .mchip .del{background:none;border:none;border-left:1px solid var(--line);color:var(--muted);
-  font-size:13px;padding:0 9px;cursor:pointer;align-self:stretch}
-.mchip .del:hover{color:#d99a9a}
-/* --- composeur --- */
-.compo{border:1px dashed var(--line);border-radius:8px;padding:9px 11px;background:#141a21}
-.phrase{min-height:34px;font-size:14px;line-height:1.7;margin-bottom:9px}
+  font-size:16px;min-width:34px;padding:0 9px;cursor:pointer;align-self:stretch}
+.mchip .del:hover{color:#e6b0b0}
+/* La puce rogne ce qui déborde (`overflow:hidden`) : l'anneau passe DEDANS. */
+.mchip .corps:focus-visible,.mchip .del:focus-visible{box-shadow:inset 0 0 0 2px #e6edf3}
+/* --- composeur --- un trait plein : les pointillés dans les pointillés
+   faisaient croire à une zone de dépôt (§4.9). */
+.compo{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#141a21}
+.phrase{min-height:34px;font-size:14.5px;line-height:1.7;margin-bottom:9px}
 .phrase .bl{border-bottom:1px solid var(--line);padding:0 2px}
 .phrase .bl.terme{border-bottom:2px solid var(--dc,var(--accent))}
 .phrase .trou{color:var(--muted);font-style:italic}
@@ -118,80 +163,109 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
   background:color-mix(in srgb, var(--dc,#888) 10%, transparent)}
 .phrase .bl.terme.pose .nom{display:block;line-height:1.35}
 .phrase .bl.terme.pose .prov{display:flex;align-items:baseline;gap:6px;margin-top:1px}
-.phrase .bl.terme.pose .cit{flex:1;min-width:0;font-size:11.5px;color:var(--muted);font-style:italic;
+.phrase .bl.terme.pose .cit{flex:1;min-width:0;font-size:12.5px;color:var(--muted);font-style:italic;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.phrase .bl.terme.pose .sig{flex:none;font-size:11px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
+.phrase .bl.terme.pose .sig{flex:none;font-size:12px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
 .offre{display:flex;flex-direction:column;gap:4px}
-.offre .lab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:6px}
+.offre .lab{font-size:12.5px;color:var(--muted);margin-top:6px}
 .bbloc{text-align:left;background:#20303f;color:var(--txt);border:1px solid var(--line);
-  border-radius:6px;padding:6px 9px;cursor:pointer;font-size:13px}
+  border-radius:6px;padding:6px 9px;cursor:pointer;font:inherit;font-size:13.5px}
 .bbloc:hover{border-color:var(--accent)}
-.compo .barre{display:flex;gap:6px;margin:8px 0}
-.compo .barre button{background:none;border:1px solid var(--line);color:var(--muted);
-  border-radius:5px;padding:3px 9px;cursor:pointer;font-size:12px}
-.compo .barre button:hover{border-color:var(--accent);color:var(--txt)}
-.refus{color:#d99a9a;font-size:12.5px;margin-top:8px}
-.compo .barre .envoi{background:#12324a;color:#bfe0f2;border-color:var(--transmis);font-size:12.5px;padding:4px 12px}
-.compo .barre .envoi:hover{border-color:var(--accent);color:#eaf4fb}
+/* Le geste qui parle pèse plus que ceux qui défont (§4.9). */
+.compo .barre{display:flex;align-items:center;gap:6px;margin:8px 0}
+.compo .barre button{background:none;border:1px solid transparent;color:var(--muted);
+  border-radius:6px;padding:4px 9px;cursor:pointer;font:inherit;font-size:13px}
+.compo .barre button:hover{border-color:var(--line);color:var(--txt)}
+.compo .barre .envoi{margin-left:auto;background:var(--accent);border-color:var(--accent);color:#0b1620;
+  font-size:15px;font-weight:700;padding:8px 20px;border-radius:8px}
+.compo .barre .envoi:hover{background:#8ec8e6;border-color:#8ec8e6;color:#0b1620}
+.refus{color:#e6b0b0;font-size:13px;margin-top:8px}
 .bbloc.fondement{background:#25313d;border-left:3px solid var(--transmis)}
-.porte{display:block;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:2px}
+.porte{display:block;font-size:12px;color:var(--muted);font-family:var(--mono);margin-top:2px}
 /* --- plaidoirie --- */
 .liste{list-style:none;padding:0;margin:0}
-.liste li{font-size:13px;padding:8px 0;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}
+.liste li{font-size:13.5px;padding:8px 0;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}
 .liste li:first-child{border-top:none}
 .liste li .txt{flex:1;line-height:1.45}
 .liste li .up{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis);border-radius:5px;
-  padding:3px 8px;cursor:pointer;font-size:12px;white-space:nowrap}
+  padding:3px 8px;cursor:pointer;font-size:12.5px;white-space:nowrap}
 .liste li .up:hover{border-color:var(--accent)}
-.liste li .sent{color:#5b8aa6;font-size:12px;white-space:nowrap}
+.liste li .sent{color:#6d9cb8;font-size:12.5px;white-space:nowrap}
 .plaid li{border-left:3px solid var(--transmis);padding-left:9px}
-.plaid li .contre{display:block;font-size:11px;color:var(--muted);font-family:var(--mono)}
+.plaid li .contre{display:block;font-size:12px;color:var(--muted);font-family:var(--mono)}
 /* répétition de plaidoirie */
 .repet{border:1px dashed #5a3a3a;border-radius:8px;padding:11px;background:#1a1416;margin-bottom:14px}
-.repet .rtitle{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.repet .rnote{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);padding:5px 0}
+.repet .rtitle{font-size:13.5px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.repet .rnote{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding:5px 0}
 .repet .rnote .txt{flex:1}
 .repet .rnote.vide{font-style:italic}
-.repet .up{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:12px}
-.repet .btn{margin-top:8px;width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px;cursor:pointer}
+.repet .up{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:12.5px}
+.repet .btn{margin-top:8px;width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px;cursor:pointer;font:inherit;font-size:13.5px}
 .repet .btn:hover{border-color:var(--accent)}
-/* --- clôture / fin --- */
-.cloture{text-align:center;padding:4px 0 20px}
-.cloture button{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;
-  padding:10px 20px;cursor:pointer;font-size:14px}
-.cloture button:disabled{opacity:.4;cursor:not-allowed}
-#btnRecommencer{margin-left:auto;background:none;border:1px solid var(--line);
-  color:var(--muted);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer}
-.cloture .hint{color:var(--muted);font-size:12px;margin-top:6px}
+/* --- clôture / fin --- sur une ligne : la colonne tient dans la fenêtre. */
+.cloture{flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;padding:0 2px}
+.cloture #btnCloture{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;
+  padding:8px 18px;cursor:pointer;font:inherit;font-size:14px}
+.cloture #btnCloture:disabled{background:#1b1719;color:#9a8e92;border-color:#3a3033;cursor:not-allowed}
+.cloture .hint{flex:1;min-width:220px;color:var(--muted);font-size:13px}
+.cloture .recommencer{margin-left:auto;display:flex;gap:6px}
+.cloture .recommencer button{background:none;border:1px solid var(--line);
+  color:var(--muted);font:inherit;font-size:12.5px;padding:4px 10px;border-radius:6px;cursor:pointer}
+.cloture .recommencer button:hover{color:var(--txt);border-color:var(--muted)}
+#btnRecommencer.confirmer{color:#f0c4c4;border-color:#8a4a4a;background:#2a1c1c}
+#btnAnnulerRecommencer[hidden]{display:none}
 /* modal générique */
 .overlay{position:fixed;inset:0;background:rgba(6,8,11,.72);display:flex;align-items:center;
   justify-content:center;padding:24px;z-index:50}
-.modal{background:var(--panel);border:1px solid var(--line);border-radius:12px;max-width:620px;width:100%;
+.modal{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;max-width:620px;width:100%;
   max-height:82vh;overflow-y:auto;padding:20px}
-.modal h3{margin:0 0 8px;font-size:16px}
-.modal .close{float:right;cursor:pointer;color:var(--muted);border:none;background:none;font-size:18px}
+.modal h3{margin:0 0 8px;padding-right:112px;font-size:17px}
+/* Le titre n'est qu'un point d'arrivée du focus (§4.10) : pas d'anneau, qui
+   déborderait sur la croix. L'id bat `.modal.piece :focus-visible`. */
+#modalTitre:focus{outline:none;box-shadow:none}
+.modal .close{position:absolute;top:14px;right:14px}
 .modal .btnrow{margin-top:10px}
 .modal .btnrow button{width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);
-  border-radius:6px;padding:8px;cursor:pointer}
-.fin h3{font-size:18px}
+  border-radius:6px;padding:8px;cursor:pointer;font:inherit}
+.fin h3{font-size:19px}
 .fin .verdict{font-family:var(--mono);color:var(--warn);margin:4px 0 14px}
 small.note{color:var(--muted)}
 code{font-family:var(--mono);color:var(--accent)}
+/* --- LE PAPIER (§4.6) : la pièce ouverte vient du monde, pas de la machine.
+   Les teintes des passages y sont FONCÉES dans l'espace OKLab — la palette ne se
+   double pas — et restent au-dessus de 3:1 sur le papier, mesurées. --- */
+.modal.piece{color-scheme:light;background:var(--papier);color:var(--encre);border-color:var(--filet);
+  font-family:var(--serif);max-width:680px;padding:26px 30px 24px;box-shadow:0 18px 50px rgba(0,0,0,.55)}
+.modal.piece h3{font-family:var(--serif);font-size:21px;font-weight:600;color:var(--encre)}
+.modal.piece small.note{display:block;color:var(--encre2);font-style:italic;font-size:14.5px;
+  padding-bottom:10px;border-bottom:1px solid var(--filet);margin-bottom:6px}
+.modal.piece .piecetexte{font-size:17px;line-height:1.8;margin:14px 0 6px}
+.modal.piece .empan{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
+  text-decoration-color:var(--dcp);background:color-mix(in srgb, var(--dcp) 9%, transparent)}
+.modal.piece .empan:hover{background:color-mix(in srgb, var(--dcp) 18%, transparent)}
+.modal.piece .empan.pris{background:color-mix(in srgb, var(--dcp) 26%, transparent)}
+.modal.piece .close{color:var(--encre);border-color:var(--filet);font-family:var(--sans)}
+.modal.piece .close:hover{border-color:var(--encre2)}
+.modal.piece kbd{color:var(--encre2);border-color:var(--filet)}
+.modal.piece :focus-visible{box-shadow:0 0 0 2px var(--papier),0 0 0 4px #1d3b57}
+/* Un article n'est pas un témoignage : un double filet le distingue. */
+.modal.piece.regle{border-left:6px double #b3a37f}
+.modal.piece .rappel{margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--encre2);
+  background:#ebe4d4;color:var(--encre);font-family:var(--sans);font-size:14px}
 /* --- l'index du dossier : les pièces d'abord, les règles ensuite --- */
 .dossier{display:flex;flex-direction:column;gap:6px;padding:2px 0 4px}
 .dcol{min-width:0;display:flex;gap:8px;align-items:baseline}
-.dcol .dtitre{flex:none;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.dcol .dtitre{flex:none;font-size:12.5px;font-weight:600;color:var(--muted)}
 .dcol .dchips{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.dcol .dvide{color:var(--muted);font-size:11.5px;font-style:italic}
+.dcol .dvide{color:var(--muted);font-size:12.5px;font-style:italic}
 /* La puce porte le TITRE de la pièce, celui sous lequel la Discussion l'a
    transmise (§4.6) : de la prose, donc ni mono ni corps de matricule. */
-.dchip{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;
+.dchip{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:13px;
   border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:4px 8px;cursor:pointer;color:var(--txt)}
 .dchip:hover{border-color:var(--accent)}
-.dchip.vu{opacity:.55}
+.dchip.vu{color:var(--muted);background:#181e27}
 .dchip.regle{border-color:#4a4030;color:var(--warn)}
-.zcount{float:right;font-size:11px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0}
-.panne{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;padding:12px;margin:16px 20px}
+.panne{flex:none;background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;padding:12px;margin:16px 20px}
 /* --- le tutoriel (§4.8) : le halo ENTOURE la zone, jamais un empan (§4.3).
    Aucun voile : il intercepterait les clics qu'il prétend montrer. --- */
 [data-tuto]{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px;
@@ -200,13 +274,13 @@ code{font-family:var(--mono);color:var(--accent)}
 [data-tuto="alerte"]{outline-color:var(--warn);animation-name:poulsAlerte}
 @keyframes poulsAlerte{0%,100%{outline-color:var(--warn)}50%{outline-color:transparent}}
 @media (prefers-reduced-motion:reduce){ [data-tuto]{animation:none} }
-/* EN TÊTE ET DANS LE FLUX (§4.8) : collant, il réserve sa place et pousse le
-   jeu vers le bas — il ne peut donc jamais recouvrir ses propres ancres. Ce
-   qu'un `position:fixed` faisait, et c'est pour ça qu'il n'en est plus un. */
-#tuto{position:sticky;top:0;z-index:60;width:fit-content;margin:12px auto 0;
+/* EN TÊTE ET DANS LE FLUX (§4.8) : il réserve sa place et pousse le jeu vers le
+   bas — il ne peut donc jamais recouvrir ses propres ancres. Ce qu'un
+   `position:fixed` faisait, et c'est pour ça qu'il n'en est plus un. */
+#tuto{flex:none;position:sticky;top:0;z-index:60;width:fit-content;margin:12px auto 0;
   display:flex;align-items:baseline;gap:16px;max-width:min(640px,calc(100vw - 32px));
   background:#20303f;border:2px solid var(--accent);border-radius:10px;
-  padding:18px 22px;font-size:15px;box-shadow:0 10px 34px rgba(0,0,0,.6)}
+  padding:16px 22px;font-size:15px;box-shadow:0 10px 34px rgba(0,0,0,.6)}
 #tuto[hidden]{display:none}
 /* Le bandeau parlant, la pièce ouverte se range DESSOUS au lieu de se centrer :
    `--haut` est le seul nombre, et la hauteur maximale s'en déduit — la modale
@@ -217,8 +291,8 @@ code{font-family:var(--mono);color:var(--accent)}
 #tuto:not([hidden]) ~ #modalRoot .modal{max-height:calc(100vh - var(--haut) - 24px)}
 #tuto[data-alerte]{border-color:var(--warn)}
 #tuto[data-alerte] .dit{color:var(--warn)}
-#tuto .pas{color:var(--muted);font-family:var(--mono);font-size:12px}
+#tuto .pas{color:var(--muted);font-family:var(--mono);font-size:12.5px}
 #tuto .dit{flex:1}
-#tuto .passer{background:none;border:none;color:var(--muted);font-size:12.5px;
+#tuto .passer{background:none;border:none;color:var(--muted);font:inherit;font-size:13px;
   cursor:pointer;text-decoration:underline;padding:0;white-space:nowrap}
 #tuto .passer:hover{color:var(--txt)}

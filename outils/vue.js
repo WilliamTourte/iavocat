@@ -125,6 +125,39 @@ async function main() {
   console.log("\n──────── la fin atteinte ────────\n");
   console.log(fin ? fin.trim() : "(aucune — la clôture ne s'est pas ouverte)");
 
+  /* ---- Le portable du playtest : 1280×800 (§4.6) ---- une partie neuve, dans
+     un contexte neuf — tutoriel compris, puisque c'est lui qui prend la place.
+     La colonne doit tenir dans la fenêtre : on le DIT, on ne l'asserte pas. */
+  console.log("\n──────── 1280×800 ────────\n");
+  const etroit = await navigateur.newContext({ viewport: { width: 1280, height: 800 } });
+  const p2 = await etroit.newPage();
+  p2.on("pageerror", e => pannes.push("erreur JS (1280×800) : " + e.message));
+  await p2.goto(JEU);
+  await p2.waitForFunction("window.JEU && window.R && window.S");
+  await p2.evaluate(amorceHarnais());
+  const capturer2 = async nom => {
+    const f = path.join(CAPTURES, String(n++).padStart(2, "0") + "-1280-" + nom + ".png");
+    await p2.screenshot({ path: f });
+    return path.relative(RACINE, f);
+  };
+  console.log("  " + await capturer2("depart"));
+  await p2.evaluate(`ouvrirPiece(__H.pidPremiereRemise(window))`);
+  console.log("  " + await capturer2("piece"));
+  await p2.evaluate(`(() => {
+    const H = window.__H;
+    const veut = H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend).termes[0];
+    H.surligner(window, veut); closeModal(); basculerPanneau("contexte");
+    poserBloc(H.iTermeChamp(window), S.retenus.indexOf(veut));
+  })()`);
+  console.log("  " + await capturer2("contexte"));
+  const pli = await p2.evaluate(`(() => {
+    const e = document.querySelector(".envoi");
+    return { envoi: e ? Math.round(e.getBoundingClientRect().bottom) : null, fenetre: innerHeight,
+             page: document.documentElement.scrollHeight };
+  })()`);
+  console.log(`      → Envoyer ${pli.envoi !== null && pli.envoi <= pli.fenetre ? "au-dessus du" : "SOUS LE"} pli`
+            + ` (bas ${pli.envoi}px, fenêtre ${pli.fenetre}px, page ${pli.page}px)`);
+
   await navigateur.close();
 
   if (pannes.length) {

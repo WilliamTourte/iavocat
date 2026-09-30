@@ -170,13 +170,24 @@ function comparaisonsDe(liens, formes) {
   return out;
 }
 
-const PALETTE_DIM = ["#7fb3d5", "#d99a9a", "#9dc98c", "#c9ab6a", "#b79ad6", "#7fc9c1"];
+/* La dimension se lit par la couleur ET par le trait, au même rang (§4.3,
+   §4.10). PIÈGE PAYÉ : l'ancienne palette opposait un rouge (qui) à un vert
+   (où) et un bleu à un mauve — indiscernables sous deutéranopie. Celle-ci n'a
+   plus de rouge ; elle a été choisie à la mesure (distance OKLab minimale
+   entre paires, en vision normale et sous trois déficiences simulées), sur le
+   fond sombre comme sur le papier des pièces, où `jeu.css` la fonce. */
+const PALETTE_DIM = ["#5ab4ea", "#f0a020", "#2fbf8f", "#e8dc5a", "#d886b6", "#c8ccd2"];
+const TRAITS_DIM  = ["solid", "double", "dotted", "dashed", "wavy"];
 function couleurDim(dimensions, d) {
   const i = (dimensions || []).indexOf(d);
   return i < 0 ? null : PALETTE_DIM[i % PALETTE_DIM.length];
 }
+function traitDim(dimensions, d) {
+  const i = (dimensions || []).indexOf(d);
+  return i < 0 ? null : TRAITS_DIM[i % TRAITS_DIM.length];
+}
 
-  return { champsDe, comparaisonsDe, couleurDim, PALETTE_DIM };
+  return { champsDe, comparaisonsDe, couleurDim, traitDim, PALETTE_DIM, TRAITS_DIM };
 })();
 
 const _api = { creerMoteur, ..._projections };

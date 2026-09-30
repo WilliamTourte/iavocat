@@ -601,4 +601,131 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   check("la croix referme", !ouvert("Contexte"));
 }
 
+/* §4.10 — Un playtest mené au clavier : le premier geste du jeu était
+   impossible sans souris, et aucune suite ne le voyait. Ce qui se lit ici se
+   lit sur le DOM rendu, jamais sur le contenu. */
+console.log("\n=== Le jeu se joue au clavier ===");
+{
+  const w = H.boot({url:"http://localhost/"});
+  const d = w.document;
+  const touche = (el, key) => el.dispatchEvent(new w.KeyboardEvent("keydown", {key, bubbles:true}));
+  const actif = () => d.activeElement;
+  const cleActive = () => actif() && actif().getAttribute("data-f");
+  const annonce = () => d.getElementById("annonce").textContent;
+  const inerte = () => d.querySelector(".wrap").hasAttribute("inert");
+  /* Tout ce qui porte un `onclick` s'atteint au clavier : un <button>, ou un
+     élément qui se déclare bouton ET entre dans l'ordre de tabulation. Seul le
+     voile de la pièce en est dispensé — Échap et la croix le doublent. */
+  const injoignables = () => [...d.querySelectorAll("[onclick]")].filter(el =>
+    el.tagName !== "BUTTON" && !el.classList.contains("overlay")
+    && !(el.getAttribute("role") === "button" && el.getAttribute("tabindex") === "0"));
+
+  check("au premier écran, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
+  check("rien ne s'annonce au démarrage : la page se lit dans l'ordre", annonce() === "");
+
+  const pid = H.pidPremiereRemise(w);
+  const jointe = d.querySelector(`#discussion [data-f="a:${pid}"]`);
+  check("la pièce jointe est un vrai bouton", !!jointe && jointe.tagName === "BUTTON");
+  jointe.focus(); jointe.click();
+  const boite = d.querySelector("#modalRoot .modal");
+  check("la pièce ouverte est une boîte de dialogue",
+    !!boite && boite.getAttribute("role") === "dialog" && boite.getAttribute("aria-modal") === "true"
+    && !!d.getElementById(boite.getAttribute("aria-labelledby")));
+  check("le jeu derrière devient inerte, le bandeau du tutoriel non",
+    inerte() && !d.getElementById("tuto").closest("[inert]"));
+  check("le focus entre dans la pièce", boite.contains(actif()));
+  check("la consigne neuve du tutoriel s'annonce", /Tutoriel/.test(annonce()));
+  check("pièce ouverte, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
+
+  const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
+  const passage = k => d.querySelector(`#modalRoot [data-f="e:${k}"]`);
+  const autre = H.empansDe(w, pid).find(k => k !== veut);
+  passage(autre).focus();
+  touche(passage(autre), "Enter");
+  check("Entrée sur un passage le retient", w.S.retenus.includes(autre));
+  check("et le focus reste sur CE passage, bien que la pièce ait été redessinée",
+    cleActive() === "e:" + autre && actif() !== null && d.contains(actif()));
+  check("un passage retenu le dit à qui ne voit pas le fond",
+    /retenu/.test(passage(autre).textContent));
+  check("mais ce n'est pas un interrupteur : aucun aria-pressed",
+    ![...d.querySelectorAll(".empan")].some(e => e.hasAttribute("aria-pressed")));
+  check("chaque passage dit sa dimension, sans la couleur",
+    w.CHAMPS.filter(c => c.pid === pid).every(c => passage(c.id).textContent.includes(c.dim)));
+
+  touche(passage(autre), " ");
+  check("Espace sur un passage retenu ne l'oublie pas", w.S.retenus.includes(autre));
+  check("mais l'écran dit où l'on retire", !!d.querySelector("#modalRoot .rappel")
+    && /Contexte/.test(d.querySelector("#modalRoot .rappel").textContent));
+  check("et le dit à l'oreille", /Contexte/.test(annonce()));
+  w.rendreTout();                       // un redessin qui n'est PAS un reclic
+  check("le rappel ne vit qu'un rendu", !d.querySelector("#modalRoot .rappel"));
+  touche(passage(veut), "Enter");
+
+  touche(d.body, "Escape");
+  check("Échap referme la pièce, et le jeu redevient vivant", !w.S.modalPiece && !inerte());
+  check("le focus revient à la pièce jointe qui l'avait ouverte", cleActive() === "a:" + pid);
+  check("lue, elle le dit par son nom — pas par un gris",
+    /déjà lue/.test(d.querySelector(`#discussion [data-f="a:${pid}"]`).getAttribute("aria-label") || ""));
+
+  w.basculerPanneau("contexte");
+  check("Contexte ouvert, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
+  const puce = d.querySelector(`#contexte [data-f="c:${veut}"]`);
+  puce.focus();
+  w.rendreTout();
+  check("le focus survit au redessin d'une puce du Contexte",
+    cleActive() === "c:" + veut && actif() !== puce);
+  // Les GESTES désignent leur élément par sa clé ; seuls les contrôles de focus
+  // lisent le focus — sans quoi une panne en amont en masquerait une en aval.
+  d.querySelector(`#contexte [data-f="c:${veut}"]`).click();
+  check("phrase en cours, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
+  const croix = [...d.querySelectorAll(".fermer, #modalRoot .close, .mchip .del")];
+  check("chaque croix a un nom, et ce nom n'est pas « × »",
+    croix.length > 0 && croix.every(c => (c.getAttribute("aria-label") || "").length > 1));
+
+  const envoi = d.querySelector('#composeur [data-f="envoi"]');
+  envoi.focus(); envoi.click();
+  const derniere = w.S.fil.filter(m => !m.ia).pop();
+  const brut = h => { const x = d.createElement("div"); x.innerHTML = h; return x.textContent.replace(/\s+/g, " ").trim(); };
+  check("la réplique de l'avocat s'annonce, texte seul", annonce().includes(brut(derniere.texte)));
+  check("le bouton envoyé disparu, le focus reste dans le composeur",
+    !!actif() && d.getElementById("composeur").contains(actif()));
+}
+{
+  // Le trait double la couleur : une dimension, un trait ; deux dimensions,
+  // deux traits — dans la limite de ce que CSS sait tracer. PIÈGE : ce nombre
+  // ne se lit PAS dans `TRAITS_DIM`, sans quoi une liste réduite à un seul
+  // trait se déclarerait conforme à elle-même.
+  const STYLES_CSS = 5;                 // plein, double, pointillé, tirets, ondulé
+  const w = boot();
+  const d = w.document;
+  const vus = new Map();
+  for (const pid of Object.keys(w.JEU.pieces)) {
+    w.ouvrirPiece(pid);
+    for (const e of d.querySelectorAll("#modalRoot .empan")) {
+      const dim = w.CHAMPS.find(c => "e:" + c.id === e.getAttribute("data-f")).dim;
+      const trait = (/--ds:\s*([\w-]+)/.exec(e.getAttribute("style") || "") || [])[1];
+      vus.set(dim, new Set([...(vus.get(dim) || []), trait]));
+    }
+    w.closeModal();
+  }
+  const traits = [...vus.values()].map(s => [...s]);
+  check("chaque dimension porte un seul trait, et il est posé",
+    traits.length > 1 && traits.every(t => t.length === 1 && !!t[0]));
+  check("deux dimensions ne partagent jamais un trait",
+    new Set(traits.map(t => t[0])).size === Math.min(traits.length, STYLES_CSS));
+}
+{
+  // La confirmation attend qu'on réponde (§4.10 règle 6) : aucun minuteur.
+  const w = H.boot({url:"http://localhost/"});
+  let arme = false;
+  w.setTimeout = () => { arme = true; };
+  w.recommencer();
+  const b = w.document.getElementById("btnRecommencer"), a = w.document.getElementById("btnAnnulerRecommencer");
+  check("« recommencer » demande confirmation, sans minuteur qui la retire", /effacer/.test(b.textContent) && !arme);
+  check("et offre d'annuler, focus dessus", !a.hidden && w.document.activeElement === a);
+  w.annulerRecommencer();
+  check("annuler rend le bouton, sans rien effacer",
+    !/effacer/.test(b.textContent) && a.hidden && !!w.localStorage.getItem("iavocat_partie"));
+}
+
 bilan();

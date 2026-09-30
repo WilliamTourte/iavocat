@@ -47,6 +47,9 @@ if(!M){
 const EMPAN = Object.fromEntries(CHAMPS.map(c=>[c.id,c]));
 const couleurDim = d =>
   (MoteurAPI.couleurDim ? MoteurAPI.couleurDim(JEU.dimensions,d) : null) || "var(--muted)";
+/* La couleur ET le trait : aucune dimension ne se lit à la couleur seule (§4.3). */
+const traitDim = d =>
+  (MoteurAPI.traitDim ? MoteurAPI.traitDim(JEU.dimensions,d) : null) || "solid";
 
 /* 3) L'ÉTAT ET LES RÈGLES — tout ce qui décide vit dans regles.js. */
 const R = (window.ReglesJeu||{}).creerRegles
@@ -77,16 +80,28 @@ function restaurerPartie(){
   }catch(e){ return false; }
 }
 function effacerPartie(){ try{ localStorage.removeItem(CLE_PARTIE); }catch(e){} }
+/* La confirmation ATTEND qu'on réponde (§4.10) : elle se retirait d'elle-même
+   au bout de 2,5 s, trop tôt pour qui lit lentement ou écoute l'écran. */
 let confirmRecommencer=false;
 function recommencer(){
-  const b=$("btnRecommencer");
   if(!confirmRecommencer){
-    confirmRecommencer=true;
-    if(b) b.textContent="tout effacer ?";
-    setTimeout(()=>{ confirmRecommencer=false; if(b) b.textContent="⟲ recommencer"; },2500);
+    confirmRecommencer=true; majRecommencer();
+    annoncer("Tout effacer et repartir de la remise 1 ? Confirme, ou annule.");
+    publierAnnonces();
+    const a=$("btnAnnulerRecommencer"); if(a) a.focus();
     return;
   }
   effacerPartie(); effacerTuto(); location.reload();
+}
+function annulerRecommencer(){
+  confirmRecommencer=false; majRecommencer();
+  const b=$("btnRecommencer"); if(b) b.focus();
+}
+function majRecommencer(){
+  const b=$("btnRecommencer"), a=$("btnAnnulerRecommencer");
+  if(b){ b.textContent = confirmRecommencer ? "Oui, tout effacer" : "⟲ recommencer";
+         b.classList.toggle("confirmer", confirmRecommencer); }
+  if(a) a.hidden = !confirmRecommencer;
 }
 
 /* ---- Le tutoriel des deux premiers gestes (§4.8) — de l'écran, pas de la
@@ -99,7 +114,12 @@ let tutoFait=false;
 try{ tutoFait = !!localStorage.getItem(CLE_TUTO); }catch(e){}
 function effacerTuto(){ try{ localStorage.removeItem(CLE_TUTO); }catch(e){} }
 function tutoClore(){ tutoFait=true; try{ localStorage.setItem(CLE_TUTO,"1"); }catch(e){} }
-function tutoPasser(){ tutoClore(); majTutoriel(); }
+/* Le bandeau disparu emporte son bouton : le focus va au jeu, pas à la page. */
+function tutoPasser(){
+  tutoClore(); majTutoriel();
+  const el=premierFocalisable(document.querySelector("#modalRoot .modal")) || premierFocalisable($("discussion"));
+  if(el) el.focus();
+}
 /* Le lien de l'attente active : PIÈGE, c'est lui qui dit si le geste attendu
    est une simple citation (un terme, une chaîne) ou une comparaison (un
    terme emboîte une forme) — jamais un nom d'attente câblé en dur. */
@@ -166,7 +186,7 @@ function tutoEtape(){
 }
 /* PIÈGE : on marque par un ATTRIBUT, pas par une classe — la sérialisation
    laisse ainsi intactes les `class="…"` que des suites lisent. */
-let tutoCible=null;
+let tutoCible=null, tutoDernierDit=null, tutoAnnonce=null;
 function majTutoriel(){
   const banniere=$("tuto"); if(!banniere) return;
   if(tutoCible){ tutoCible.removeAttribute("data-tuto"); tutoCible=null; }
@@ -174,6 +194,10 @@ function majTutoriel(){
      fermeture définitive, qu'une leçon ait ou non été vue jusqu'au bout. */
   if(!tutoFait && S.remisesEnvoyees>1) tutoClore();
   const e = tutoFait ? null : tutoEtape();
+  /* Le halo ne se voit pas à l'oreille : une consigne NEUVE s'annonce (§4.10),
+     une consigne répétée par un redessin, non. */
+  if(e && e.dit!==tutoDernierDit) tutoAnnonce="Tutoriel, "+e.n+" sur "+TUTO_TOTAL+" : "+e.dit;
+  tutoDernierDit = e ? e.dit : null;
   if(!e){ banniere.hidden=true; return; }
   tutoCible=document.querySelector(e.ou);
   if(tutoCible) tutoCible.setAttribute("data-tuto", e.alerte?"alerte":"");
@@ -185,15 +209,114 @@ function majTutoriel(){
 
 /* 4) RENDU COMMUN */
 const modalRoot = $("modalRoot");
-function closeModal(){ S.modalPiece=null; modalRoot.innerHTML=""; rendreTout(); }
-function modal(html){
+/* §4.10 règle 3 — LA PIÈCE OUVERTE EST UNE BOÎTE DE DIALOGUE : le jeu derrière
+   devient inerte, le focus entre dans la pièce et revient, à la fermeture, à
+   ce qui l'a ouverte — retrouvé par sa CLÉ, l'élément ayant été redessiné.
+   PIÈGE : pas de `<dialog>.showModal()`. Sa couche supérieure rend inerte TOUT
+   le reste, bandeau du tutoriel compris, que le §4.8 veut lisible et cliquable
+   par-dessus la pièce. `inert` ne touche donc que `.wrap` — `#tuto`,
+   `#modalRoot` et `#annonce` vivent hors d'elle, et c'est ce qui les garde. */
+let ouvreur=null;
+function closeModal(){
+  S.modalPiece=null; modalRoot.innerHTML="";
+  const w=document.querySelector(".wrap"); if(w) w.removeAttribute("inert");
+  focusVoulu=ouvreur; ouvreur=null;
+  rendreTout();
+}
+function modal(html, classe){
   modalRoot.innerHTML =
     `<div class="overlay" onclick="if(event.target===this)closeModal()">
-       <div class="modal"><button class="close" onclick="closeModal()">×</button>${html}</div>
+       <div class="modal ${classe||""}" role="dialog" aria-modal="true" aria-labelledby="modalTitre">${html}
+         <button class="close" onclick="closeModal()" aria-label="Fermer (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button>
+       </div>
      </div>`;
+  const w=document.querySelector(".wrap"); if(w) w.setAttribute("inert","");
 }
 function escapeAttr(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function rendreTout(){ renderDiscussion(); renderComposeur(); renderContexte(); renderPlaidoirie(); majCloture(); majPanneaux(); majTutoriel(); sauverPartie(); }
+
+/* §4.10 règle 2 — LE FOCUS SURVIT AU REDESSIN. Chaque zone est réécrite à
+   chaque geste : l'élément qui avait le focus n'existe plus. PIÈGE : on le
+   retrouve par sa CLÉ (`data-f`, ou l'id), jamais par l'élément ; et s'il a
+   disparu, on reste dans sa ZONE. Un geste qui sait mieux — ouvrir ou fermer
+   la pièce — pose `focusVoulu`, qui passe devant. */
+const ZONES_FOCUS = "#zoneRetenus, #zoneDossier, .modal, #plaidoirie, #composeur, #discussion, .cloture";
+const FOCALISABLES = ['[data-f="envoi"]','[data-f="voix"]','.offre .bbloc',
+  '[role="button"][tabindex="0"]','button:not([disabled])'];
+let focusVoulu=null;
+function memoFocus(){
+  const a=document.activeElement;
+  if(!a || a===document.body || !a.getAttribute) return null;
+  const cle = a.getAttribute("data-f") || (a.id ? "#"+a.id : null);
+  const z = a.closest(ZONES_FOCUS);
+  return { cle, zone: z ? (z.id ? "#"+z.id : "."+z.classList[0]) : null };
+}
+function focalisable(el){
+  return !!el && document.contains(el) && !el.disabled && !el.closest("[hidden],[inert]");
+}
+function premierFocalisable(zone){
+  if(!zone) return null;
+  for(const sel of FOCALISABLES){
+    const el=[...zone.querySelectorAll(sel)].find(focalisable);
+    if(el) return el;
+  }
+  return zone.hasAttribute("tabindex") && focalisable(zone) ? zone : null;
+}
+function rendreFocus(m, force){
+  if(!m) return;
+  const a=document.activeElement;
+  if(!force && a && a!==document.body && document.contains(a)) return;   // rien de perdu
+  let el = !m.cle ? null
+    : m.cle[0]==="#" ? document.querySelector(m.cle)
+    : [...document.querySelectorAll("[data-f]")].find(x=>x.getAttribute("data-f")===m.cle);
+  // Le même élément retrouvé était sous les yeux : on ne fait pas défiler.
+  if(focalisable(el)){ el.focus({preventScroll:true}); return; }
+  el = premierFocalisable(m.zone && document.querySelector(m.zone));
+  if(!focalisable(el)) el = premierFocalisable($("composeur"));
+  if(el) el.focus();
+}
+
+/* §4.10 règle 4 — CE QUI ARRIVE S'ANNONCE, par une voix unique : `#annonce`,
+   hors de `.wrap` (une région inerte se tait). PIÈGE : jamais `role="log"` sur
+   la Discussion — elle se réécrit à chaque geste, et un lecteur d'écran la
+   relirait d'un bout à l'autre. */
+let annonces=[], vusFil=-1, dernierRefus=null;
+function annoncer(txt){ if(txt) annonces.push(txt); }
+function publierAnnonces(){
+  const el=$("annonce");
+  if(!el || !annonces.length) return;
+  const t=annonces.join(" "); annonces=[];
+  el.textContent = el.textContent===t ? t+" " : t;   // la même phrase, redite
+}
+function texteBrut(html){
+  const t=document.createElement("template"); t.innerHTML=String(html||"");
+  return t.content.textContent.replace(/\s+/g," ").trim();
+}
+/* Au démarrage, rien ne s'annonce : la page se lit dans l'ordre. Ensuite, les
+   répliques de l'avocat (celles de l'IA, le joueur vient de les écrire), un
+   refus neuf, puis la consigne neuve du tutoriel. */
+function annoncerNouveautes(){
+  if(vusFil<0){ vusFil=S.fil.length; dernierRefus=S.refus||null; tutoAnnonce=null; return; }
+  for(const m of S.fil.slice(vusFil)) if(!m.ia){
+    const n=(m.pieces||[]).length;
+    annoncer(`${m.qui} : ${texteBrut(m.texte)}${n ? ` (${n} pièce${n>1?"s":""} jointe${n>1?"s":""})` : ""}`);
+  }
+  vusFil=S.fil.length;
+  if(S.refus && S.refus!==dernierRefus) annoncer(S.refus);
+  dernierRefus=S.refus||null;
+  if(tutoAnnonce){ annoncer(tutoAnnonce); tutoAnnonce=null; }
+}
+
+function rendreTout(){
+  const force=!!focusVoulu, m=focusVoulu || memoFocus(); focusVoulu=null;
+  const enBas=filEnBas();
+  if(S.modalPiece) majPiece();
+  renderDiscussion(); renderComposeur(); renderContexte(); renderPlaidoirie(); majCloture(); majPanneaux(); majTutoriel();
+  recalerFil(enBas);
+  rendreFocus(m, force);
+  rappelRetrait=null;
+  annoncerNouveautes(); publierAnnonces();
+  sauverPartie();
+}
 
 /* ---- Le canal : un fil de messages ---- */
 function renderDiscussion(){
@@ -204,9 +327,12 @@ function renderDiscussion(){
     const meme = m.qui===dernier; dernier=m.qui;
     h+=`<div class="msg ${m.ia?'ia':''} ${meme?'suite':''}">${
       meme?"":`<div class="who">${escapeAttr(m.qui)}</div>`}<div class="bubble">${m.ia?escapeAttr(m.texte):m.texte}<div>`;
+    // Une pièce lue porte un ✓, comme dans l'index — jamais un gris qui la
+    // ferait passer pour désactivée (§4.10 règle 5).
     for(const pid of m.pieces){
-      const seen=S.examinees.includes(pid)?"seen":"";
-      h+=`<span class="attach ${seen}" onclick="ouvrirPiece('${pid}')">📎 ${escapeAttr(JEU.pieces[pid].titre)}</span>`;
+      const lue=S.examinees.includes(pid), titre=JEU.pieces[pid].titre;
+      h+=`<button type="button" class="attach ${lue?'seen':''}" data-f="a:${pid}" onclick="ouvrirPiece('${pid}')"
+            aria-label="${escapeAttr(titre)}${lue?", déjà lue":""}"><span aria-hidden="true">${lue?"✓":"📎"}</span> ${escapeAttr(titre)}</button>`;
     }
     h+=`</div></div></div>`;
   }
@@ -215,13 +341,25 @@ function renderDiscussion(){
     h+=`<div class="repet"><div class="rtitle">Opposer une phrase à cette affirmation ?</div>${
       dispo.length ? dispo.map(x=>
         `<div class="rnote"><span class="txt">${escapeAttr(x.n.texte)}</span>
-         ${x.n.versee?`<span class="sent">déjà envoyée</span>`:`<button class="up" onclick="verserContre(${x.i})">envoyer</button>`}</div>`).join("")
+         ${x.n.versee?`<span class="sent">déjà envoyée</span>`:`<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">envoyer</button>`}</div>`).join("")
       : `<div class="rnote vide">tu n'as écrit aucune phrase à y opposer</div>`
-    }<button class="btn" onclick="avancerRepetition()">Ne rien envoyer — continuer</button></div>`;
+    }<button class="btn" data-f="rsuite" onclick="avancerRepetition()">Ne rien envoyer — continuer</button></div>`;
   }
+  $("discussion").innerHTML=h;
+}
+/* Le fil se recale en bas s'il y ÉTAIT — nouveau message, panneau ouvert, phrase
+   qui s'allonge : la question reste sous les yeux. Remonté pour relire (ou pour
+   suivre le focus), il n'est plus arraché vers le bas à chaque geste. PIÈGE :
+   le recalage vient APRÈS `majPanneaux` — c'est lui qui change la hauteur. */
+let filLongueur=-1;
+function filEnBas(){
   const el=$("discussion");
-  el.innerHTML=h;
-  el.scrollTop=el.scrollHeight;
+  return !el || el.scrollHeight - el.scrollTop - el.clientHeight < 8;
+}
+function recalerFil(enBas){
+  const el=$("discussion"); if(!el) return;
+  const neuf = S.fil.length!==filLongueur; filLongueur=S.fil.length;
+  if(enBas || neuf) el.scrollTop=el.scrollHeight;
 }
 
 /* ---- Les pièces ---- le marquage ne varie jamais avec la pertinence (§4.3). */
@@ -234,19 +372,38 @@ function rendreTexte(pid){
     h+=escapeAttr(reste.slice(0,m.index));
     const eid=m[1], e=(p.empans||{})[eid];
     if(e){
+      /* PIÈGE : un SPAN qui se déclare bouton, jamais un <button> — celui-ci est
+         une boîte insécable même en `display:inline`, et un passage long
+         sauterait à la ligne d'un bloc au lieu de couler dans la prose (§4.10).
+         Entrée et Espace passent par `clavier`. Pas d'`aria-pressed` : ce n'est
+         pas un interrupteur, la pièce n'ajoute que (§4.3). */
       const k=pid+"."+eid, pris=S.retenus.includes(k);
-      h+=`<span class="empan ${pris?'pris':''}" style="--dc:${couleurDim(e.dim)}"
-            onclick="surligner('${pid}','${eid}')" title="${escapeAttr(e.dim)} — ${escapeAttr(e.qui||p.qui||'')}">${escapeAttr(e.texte)}</span>`;
+      h+=`<span class="empan ${pris?'pris':''}" role="button" tabindex="0" data-f="e:${k}"
+            style="--dc:${couleurDim(e.dim)};--ds:${traitDim(e.dim)}"
+            onclick="surligner('${pid}','${eid}')" title="${escapeAttr(e.dim)} — ${escapeAttr(e.qui||p.qui||'')}">${
+            escapeAttr(e.texte)}<span class="sr"> — ${escapeAttr(e.dim)}${pris?", retenu":""}</span></span>`;
     } else h+=escapeAttr(m[0]);
     reste=reste.slice(m.index+m[0].length);
   }
   h+=escapeAttr(reste);
   return h;
 }
+/* `rendreTout` redessine la pièce ouverte, sous la même mémoire de focus que le
+   reste : on n'appelle plus `modal` que par lui. */
 function ouvrirPiece(pid){
+  ouvreur = memoFocus();
   R.ouvrirPiece(S,pid);
-  modal(modalPieceHTML(pid));
+  focusVoulu = { cle:"#modalTitre", zone:".modal" };
   rendreTout();
+}
+function classePiece(pid){ return "piece" + (R.estRegle(JEU.pieces[pid]) ? " regle" : ""); }
+/* Redessinée à chaque geste, la pièce garde son défilement : retenir un passage
+   en bas d'une longue pièce ne la ramène pas en haut. */
+function majPiece(){
+  const avant=document.querySelector("#modalRoot .modal");
+  const haut = avant && avant.classList.contains("piece") ? avant.scrollTop : 0;
+  modal(modalPieceHTML(S.modalPiece), classePiece(S.modalPiece));
+  const apres=document.querySelector("#modalRoot .modal"); if(apres) apres.scrollTop=haut;
 }
 function renderDossier(){
   if(!S.remisesEnvoyees) return "";
@@ -255,8 +412,9 @@ function renderDossier(){
     const p=JEU.pieces[pid], vu=S.examinees.includes(pid);
     // La puce porte le TITRE, celui de la pièce jointe : une pièce ne porte
     // qu'un nom (§4.6). D'où plus de `title` — il disait déjà ça (§4.9).
-    return `<span class="dchip ${vu?'vu':''} ${R.estRegle(p)?'regle':''}"
-      onclick="ouvrirPiece('${pid}')">${vu?'✓':'●'} ${escapeAttr(p.titre)}</span>`;
+    // Le marqueur reste en tête du texte ; l'état se dit par le nom accessible.
+    return `<button type="button" class="dchip ${vu?'vu':''} ${R.estRegle(p)?'regle':''}" data-f="d:${pid}"
+      aria-label="${escapeAttr(p.titre)}${vu?", déjà lue":""}" onclick="ouvrirPiece('${pid}')">${vu?'✓':'●'} ${escapeAttr(p.titre)}</button>`;
   };
   const colonne=(titre,pids)=>`<div class="dcol"><span class="dtitre">${titre}</span>
     <div class="dchips">${pids.length?pids.map(chip).join(""):`<span class="dvide">—</span>`}</div></div>`;
@@ -268,9 +426,16 @@ function renderDossier(){
 
 /* 5) LE CONTEXTE — privé, gratuit, illimité, et CLAVIER du composeur (§4.6).
       Surligner ne produit RIEN : c'est voulu. */
+/* La pièce n'ajoute que — jamais n'oublie (§4.3). Mais recliquer un passage déjà
+   retenu ne passe plus sous silence : l'écran dit où l'on retire. `rappelRetrait`
+   vit le temps d'un rendu. */
+let rappelRetrait=null;
+const RAPPEL_RETRAIT="Déjà dans ton Contexte — c'est là qu'on le retire.";
 function surligner(pid,eid){
-  R.surligner(S,pid,eid);          // la pièce n'ajoute que — jamais n'oublie
-  if(S.modalPiece) modal(modalPieceHTML(S.modalPiece));
+  const k=pid+"."+eid;
+  rappelRetrait = S.retenus.includes(k) ? k : null;
+  R.surligner(S,pid,eid);
+  annoncer(rappelRetrait ? RAPPEL_RETRAIT : "Retenu dans ton Contexte.");
   rendreTout();
 }
 function oublier(pid,eid){
@@ -279,9 +444,9 @@ function oublier(pid,eid){
 }
 function modalPieceHTML(pid){
   const p=JEU.pieces[pid];
-  return `<h3>${escapeAttr(p.titre)}</h3><small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
+  return `<h3 id="modalTitre" tabindex="-1">${escapeAttr(p.titre)}</h3><small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
     <p class="piecetexte">${rendreTexte(pid)}</p>
-    `;
+    ${rappelRetrait && rappelRetrait.startsWith(pid+".") ? `<p class="rappel">${RAPPEL_RETRAIT}</p>` : ""}`;
 }
 /* PIÈGE : `#zoneRetenus` est l'ancre des temps 3 et 5 du tutoriel (R6), à ne
    jamais viser par `:last-child`. Et depuis qu'elle vit dans un PANNEAU, elle
@@ -303,13 +468,14 @@ function renderRetenus(){
       for(const {k,j} of ks){
         const e=EMPAN[k];
         h+=`<div class="mchip" style="--dc:${couleurDim(d)}">
-              <button class="corps" ${iT<0?"disabled":""} onclick="poserBloc(${iT},${j})"
+              <button class="corps" data-f="c:${k}" ${iT<0?"disabled":""} onclick="poserBloc(${iT},${j})"
                       title="« ${escapeAttr(e.texte)} » — ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}${
                         iT<0?"\n(ta phrase n'attend pas un passage)":hors?"\n(comparerait sans rien construire : dimension différente)":""}">
                 <span class="nom">${escapeAttr(e.nom||e.texte)}</span>
                 <span class="prov"><span class="cit">« ${escapeAttr(e.texte)} »</span><span class="sig">— ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}</span></span>
               </button>
-              <button class="del" onclick="oublier('${e.pid}','${e.eid}')" title="Oublier">×</button>
+              <button class="del" data-f="x:${k}" onclick="oublier('${e.pid}','${e.eid}')" title="Oublier"
+                      aria-label="Retirer « ${escapeAttr(e.nom||e.texte)} » du Contexte">×</button>
             </div>`;
       }
       h+=`</div>`;
@@ -347,8 +513,10 @@ function souffle(){
    bouton ni rien à dire : le Contexte reste ouvert et les puces suffisent. */
 function rendreVoix(txt, classe){
   if(!txt) return "";
+  // Cliquable, elle a l'air d'un bouton — jamais d'un champ vide (§4.9 règle 1) :
+  // la flèche montre où le panneau s'ouvre, au-dessus.
   return R.indexTermeChamp(S) >= 0
-    ? `<button class="${classe} versContexte" onclick="ouvrirContexte()">${escapeAttr(txt)}</button>`
+    ? `<button class="${classe} versContexte" data-f="voix" onclick="ouvrirContexte()">${escapeAttr(txt)}<span class="fl" aria-hidden="true">↑</span></button>`
     : `<span class="${classe}">${escapeAttr(txt)}</span>`;
 }
 function texteCompoPartiel(){
@@ -415,22 +583,24 @@ function renderCompo(){
     if(b.type==="liaison"){
       // PIÈGE : `fondement` est propre à `.bbloc` ; `.msg.suite` est le même
       // mot pour un sens sans rapport.
-      h+=`<button class="bbloc ${b.imbrique?"fondement":""}" onclick="poserBloc(${i})">${escapeAttr(b.libelle||b.texte)}${
+      h+=`<button class="bbloc ${b.imbrique?"fondement":""}" data-f="b:${escapeAttr(b.id)}" onclick="poserBloc(${i})">${escapeAttr(b.libelle||b.texte)}${
         b.piece?portePhrase(b.piece):""}</button>`;
     } else if(b.source==="note"){
       // Repli pour une affaire d'avant la continuation : hors du contenu livré,
       // toujours supporté — on ne retire pas une capacité du moteur (§11).
       if(S.brouillon.length){
         h+=`<div class="lab">${escapeAttr(b.texte)} — une phrase déjà close</div>`;
-        S.brouillon.forEach((n,j)=>{ h+=`<button class="bbloc" onclick="poserBloc(${i},${j})">${escapeAttr(n.texte)}</button>`; });
+        S.brouillon.forEach((n,j)=>{ h+=`<button class="bbloc" data-f="n:${j}" onclick="poserBloc(${i},${j})">${escapeAttr(n.texte)}</button>`; });
       }
     }
   });
   h+=`</div>`;
+  // Le geste qui parle pèse plus que ceux qui défont (§4.9) : Envoyer est le seul
+  // bouton plein, à droite ; retirer et effacer restent discrets, à gauche.
   if(S.compo.length)
     h+=`<div class="barre">
-      ${R.peutEnvoyer(S)?`<button class="envoi" onclick="envoyerCompo()">→ Envoyer</button>`:""}
-      <button onclick="retirerBloc()">← retirer</button><button onclick="viderCompo()">tout effacer</button></div>`;
+      <button class="defaire" data-f="retirer" onclick="retirerBloc()">← retirer</button><button class="defaire" data-f="effacer" onclick="viderCompo()">tout effacer</button>
+      ${R.peutEnvoyer(S)?`<button class="envoi" data-f="envoi" onclick="envoyerCompo()">→ Envoyer</button>`:""}</div>`;
   const voix = S.compo.length ? souffle() : "";   // une seule voix par état (§4.9)
   if(voix) h+=rendreVoix(voix,"aide");
   if(S.refus) h+=`<div class="refus">${escapeAttr(S.refus)}</div>`;
@@ -489,11 +659,12 @@ function avancerRepetition(){ R.avancerRepetition(S); rendreTout(); }
 function finir(){
   const f=R.finir(S);
   effacerPartie();
-  modal(`<div class="fin"><h3>${escapeAttr(f.titre)}</h3>
+  modal(`<div class="fin"><h3 id="modalTitre" tabindex="-1">${escapeAttr(f.titre)}</h3>
     <div class="verdict">${escapeAttr(f.verdict)}</div>
     <p>${f.texte}</p>
     <div class="btnrow"><button onclick="location.reload()">Recommencer</button></div>
   </div>`);
+  const t=$("modalTitre"); if(t) t.focus();
 }
 
 /* Indicatif, jamais filtrant (§4.5). */
@@ -520,20 +691,31 @@ function majPanneaux(){
   if(panneau==="contexte" && panneauSuit && R.indexTermeChamp(S) < 0){ panneau=null; panneauSuit=false; }
   { const p=$("panContexte");   if(p) p.hidden = panneau!=="contexte"; }
   { const p=$("panPlaidoirie"); if(p) p.hidden = panneau!=="plaidoirie"; }
-  // La conversation rétrécit pour lui faire place, au lieu de disparaître
-  // dessous : c'est tout ce que la classe décide, et c'est du CSS (§9).
+  // La conversation, seule bande élastique, cède d'elle-même la place (§4.6) ;
+  // la classe ne décide que jusqu'où elle peut céder, et c'est du CSS (§9).
   { const w=document.querySelector(".wrap"); if(w) w.classList.toggle("avecPanneau", !!panneau); }
 }
 function ouvrirContexte(){ panneau="contexte"; panneauSuit=true; rendreTout(); }
 function basculerPanneau(nom){ panneau = panneau===nom ? null : nom; panneauSuit=false; rendreTout(); }
 function fermerPanneau(){ panneau=null; panneauSuit=false; rendreTout(); }
 
-/* Échap referme ce qui est posé PAR-DESSUS, du plus haut au plus bas : la pièce
-   ouverte d'abord, le panneau ensuite. */
-function echapper(e){
-  if(e.key!=="Escape") return;
-  if(S.modalPiece) closeModal();
-  else if(panneau) fermerPanneau();
+/* LE CLAVIER (§4.10). Échap referme ce qui est posé PAR-DESSUS, du plus haut au
+   plus bas : la pièce ouverte, la confirmation en attente, le panneau. Entrée et
+   Espace font d'un SPAN qui se déclare bouton — un passage — un vrai bouton ;
+   les <button> n'ont besoin de personne. */
+function clavier(e){
+  if(e.key==="Escape"){
+    if(S.modalPiece) closeModal();
+    else if(confirmRecommencer) annulerRecommencer();
+    else if(panneau) fermerPanneau();
+    return;
+  }
+  const t=e.target;
+  if((e.key==="Enter" || e.key===" ") && t && t.getAttribute
+     && t.getAttribute("role")==="button" && t.tagName!=="BUTTON"){
+    e.preventDefault();
+    t.click();
+  }
 }
 
 /* ---- Démarrage ---- */
@@ -541,6 +723,6 @@ window.JEU = JEU; window.S = S; window.M = M; window.R = R; window.CHAMPS = CHAM
 /* `SOURCE_CONTENU` n'est plus affiché nulle part, mais reste exposé : quatre
    suites le lisent pour savoir quel contenu a été adopté (§13). */
 window.SOURCE_CONTENU = SOURCE_CONTENU;
-document.addEventListener("keydown", echapper);
+document.addEventListener("keydown", clavier);
 if(!restaurerPartie()) R.envoyerRemise(S);   // la remise 1 arrive d'elle-même
 rendreTout();

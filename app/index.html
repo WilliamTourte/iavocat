@@ -23,8 +23,8 @@
 
 <div class="wrap">
   <!-- Un en-tête nomme la SURFACE (§4.6), jamais les zones qu'elle contient. -->
-  <section class="col">
-    <h2>Discussion</h2>
+  <section class="col fil" aria-labelledby="titreDiscussion">
+    <h2 id="titreDiscussion">Discussion</h2>
     <div class="body" id="discussion"></div>
   </section>
   <!-- LES DEUX SURFACES DE CÔTÉ (§4.6) — PIÈGE : leur PLACE DANS LE DOCUMENT est
@@ -32,29 +32,41 @@
        SANS rien recouvrir : on garde la question sous les yeux et on voit la
        phrase se construire. Les déplacer ailleurs dans `.wrap`, ou les sortir du
        flux, défait exactement ça — et aucune suite ne voit une géométrie. -->
-  <section class="col panneau" id="panContexte" hidden>
-    <h2>Contexte<button class="fermer" onclick="fermerPanneau()" title="Fermer">×</button></h2>
+  <!-- Les croix ont un NOM, et Échap s'y lit (§4.10) : `title` n'était qu'une
+       description, le lecteur d'écran annonçait « × ». -->
+  <section class="col panneau" id="panContexte" hidden aria-labelledby="titreContexte">
+    <h2><span id="titreContexte">Contexte</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer le Contexte (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="contexte"></div>
   </section>
-  <section class="col panneau" id="panPlaidoirie" hidden>
+  <section class="col panneau" id="panPlaidoirie" hidden aria-labelledby="titrePlaidoirie">
     <!-- Pas de compte ici : la barre du composeur le porte, et il reste
          visible panneau ouvert ou fermé (§4.9 règle 3). -->
-    <h2>Plaidoirie<button class="fermer" onclick="fermerPanneau()" title="Fermer">×</button></h2>
+    <h2><span id="titrePlaidoirie">Plaidoirie</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer la Plaidoirie (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="plaidoirie"></div>
   </section>
   <!-- On répond SOUS la question (§4.6). PIÈGE : `#composeur` est le FRÈRE de
        `#discussion`, jamais son enfant — le fil se recale en bas à chaque
        message, la phrase qu'on écrit ne doit pas partir avec lui. Il est aussi
        le frère de `.scene`, et c'est ce qui le garde visible sous un panneau. -->
-  <div id="composeur"></div>
+  <div id="composeur" role="region" aria-label="Ta réponse"></div>
+  <!-- Sur une ligne : la colonne tient dans la fenêtre (§4.6). La confirmation
+       de « recommencer » attend qu'on réponde — jamais un minuteur (§4.10). -->
   <div class="cloture">
     <button id="btnCloture" onclick="cloturer()" disabled>Clôturer l'instruction</button>
     <div class="hint" id="clotureHint">Maître Auber attend encore quelque chose.</div>
-    <button id="btnRecommencer" onclick="recommencer()" title="Effacer la partie en cours et repartir de la remise 1">⟲ recommencer</button>
+    <span class="recommencer">
+      <button id="btnRecommencer" onclick="recommencer()" title="Effacer la partie en cours et repartir de la remise 1">⟲ recommencer</button>
+      <button id="btnAnnulerRecommencer" onclick="annulerRecommencer()" hidden>annuler</button>
+    </span>
   </div>
 </div>
 
 <div id="modalRoot"></div>
+
+<!-- LA VOIX D'ANNONCE (§4.10) — PIÈGE : dans le HTML STATIQUE, et HORS de
+     `.wrap`. Une région créée au moment d'annoncer ne dit pas sa première
+     phrase ; une région dans `.wrap` se tait quand la pièce la rend inerte. -->
+<div id="annonce" class="sr" aria-live="polite"></div>
 
 <script src="moteur.js"></script>
 

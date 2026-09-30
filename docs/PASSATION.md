@@ -1,12 +1,12 @@
 # IAvocat — Passation de contexte
 
 *À lire en tête d'une nouvelle conversation : où on en est, ce qui mord, ce qui reste ouvert, quoi faire
-ensuite. **Court, et il doit le rester.** État au 16 septembre 2026.*
+ensuite. **Court, et il doit le rester.** État au 30 septembre 2026.*
 
 ## 1. Où en est le jeu
 
-`app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins. `npm test` est vert —
-373 contrôles, 6 règles du gardien, ESLint.
+`app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
+clavier seul**. `npm test` est vert — 404 contrôles, 7 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -46,6 +46,16 @@ rechargeant la page*. Désormais le fichier a raison, **sauf s'il y a du travail
 silence quand le brouillon n'a pas bougé, annoncé par un bandeau quand les deux ont bougé. Il se relit
 au démarrage et **à chaque retour sur l'onglet**, sans recharger.
 
+**Un playtest mené au clavier** (Chromium 141, 1280×800) a trouvé le jeu **injouable sans souris** : pièces
+jointes, passages et puces étaient des `<span onclick>`, le redessin jetait le focus, la pièce ouverte
+n'était pas une boîte de dialogue, rien ne s'annonçait. Tout est repris sous un nouveau **§4.10** —
+*jouer sans la souris, lire sans la couleur* — écrit d'abord, appliqué ensuite, et **joué au clavier
+seul** dans un vrai Chromium. Au passage : la dimension se lit au **trait** autant qu'à la couleur, sur
+une palette **sans rouge** mesurée sous trois daltonismes (§4.3) ; la colonne **tient dans la fenêtre**,
+« → Envoyer » ne passe plus sous le pli ; les pièces prennent la matière du **papier** (§4.6) ;
+Envoyer pèse plus que ce qui défait, plancher de 12 px (§4.9). L'arbitrage du 16 — **la pièce n'ajoute
+que** — est reconduit : recliquer un passage retenu ne l'oublie toujours pas, mais l'écran le dit.
+
 Trois arbitrages de l'auteur, le même jour, qui **ferment** des questions plutôt qu'elles n'en ouvrent :
 la liaison-article **n'a pas à être neutre**, la phrase *« Tant que tu ne l'envoies pas… »* **n'a pas à
 revenir**, et l'escamotage de la Plaidoirie est **provisoire** (§3). Quatrième : `_bruit` cesse d'être
@@ -81,7 +91,8 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **L'ordre des `<script src>` de l'atelier compte** (`noyau.js` en premier), et les `window.X = X`
   explicites (`undo`, `adopter`, `demanderExemple`, `simReset`) sont ce par quoi `smoke_atelier.js` lit.
 - **`#tuto` est le PREMIER enfant de `<body>`, avant `.wrap`** : collant dans le flux, il réserve sa
-  place — c'est ce qui l'empêche de recouvrir ses propres ancres. Son `z-index:60` le garde lisible
+  place — c'est ce qui l'empêche de recouvrir ses propres ancres. **Hors de `.wrap`**, il reste aussi
+  vivant quand la pièce ouverte la rend `inert` — d'où, aussi, pas de `<dialog>.showModal()`. Son `z-index:60` le garde lisible
   par-dessus l'`.overlay` (50) de la pièce ouverte, et c'est sa position *avant* `#modalRoot` qui fait
   mordre le sélecteur décalant la modale. Le remettre en fin de `<body>` ne casse **aucune** suite : il
   recouvre à nouveau, en silence.
@@ -89,10 +100,22 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   `#composeur`, dans le flux. Les déplacer ailleurs dans `.wrap`, ou les repasser en `position:absolute`
   (ce qu'ils ont été une heure), leur refait recouvrir la conversation — et **rien ne le dirait**,
   aucune suite ne voyant une géométrie.
-- **Les deux parts ouvertes doivent rester SOUS la hauteur fermée**, en-tête de panneau et gouttière
-  compris : `25vh + 31vh` contre `72vh`, `16vh + 20vh` contre `44vh` sous 1100px. Sinon ouvrir
-  **allonge** la page au lieu de la partager, et la clôture s'enfonce. Mesuré à trois tailles, pas
-  déduit.
+- **La colonne tient dans la fenêtre, et la conversation est la SEULE bande élastique** (§4.6) :
+  `body` en colonne de `100dvh`, la conversation en `flex:1` **avec `min-height:0`** — sans lui, elle
+  refuse de rétrécir et pousse « → Envoyer » sous le pli. Aucune suite ne voit une géométrie :
+  `npm run vue` le **dit** en 1280×800 (« au-dessus du pli »), il ne l'asserte pas.
+- **Un passage est un `span[role=button][tabindex=0]`, jamais un `<button>`** : un bouton est une
+  boîte insécable même en `display:inline` (mesuré, Chromium 141) — un passage long sauterait à la
+  ligne d'un bloc. Entrée et Espace passent par `clavier`, délégué sur `document`.
+- **Le focus se retrouve par CLÉ** (`data-f`, ou l'id), jamais par l'élément, que le redessin a
+  détruit ; un geste qui sait mieux pose `focusVoulu`. Tout nouvel élément cliquable redessiné veut
+  sa clé — sinon le joueur au clavier repart de la zone.
+- **`#annonce` vit dans le HTML statique, HORS de `.wrap`** : une région créée au moment d'annoncer
+  ne dit pas sa première phrase, une région dans `.wrap` se tait quand la pièce la rend inerte. Et
+  **jamais `role="log"` sur la Discussion**, réécrite à chaque geste.
+- **Un contrôle clavier désigne son élément par sa clé, jamais par `activeElement`** : cliquer
+  `actif()` faisait tomber la suite au premier focus perdu, et masquait les contrôles d'après. Les
+  31 contrôles clavier ont chacun été **cassés une fois** pour les voir tomber.
 - **Le panneau ouvert se referme sur ce que la phrase ACCEPTE, jamais sur ce que la voix RÉCLAME** :
   un passage posé, la voix se tait — la phrase se tient — mais la grammaire ne sait pas encore si c'est
   une citation ou le premier temps d'une comparaison (§4.5). Suivre la voix retirerait le clavier au
@@ -164,6 +187,11 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   pas à consulter ce qu'elle *est*. Non tranché, donc le diagnostic a raison de les exiger.
 - **La progression** : nombre de sessions, portes, emplacement de la porte de la Fin 3 — le prototype
   s'arrête à deux. Et **`comment` en sixième dimension**, écarté, réintégrable sans coût.
+- **Le papier et le clavier, jamais joués par un autre que nous** : la matière des pièces se juge à
+  l'œil (contraste avec la machine, ou simple dépaysement ?), et le testeur a annoncé un **audit de
+  contraste** — les états par opacité sont passés en couleurs, pas encore mesurés un à un. En
+  1280×800, Contexte ouvert **et** tutoriel affiché, la conversation n'a plus que ~160 px : la
+  question peut sortir du cadre (les pièces jointes restent visibles).
 - Côté outil : la frise n'édite pas `rep_hors_sujet` (§15).
 
 ## 4. Prochaine étape
@@ -177,6 +205,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
    contenu qui n'a jamais pu sortir.
 3. Si la boucle tient : écrire la session 3 et placer la porte de la Fin 3. Sinon, prendre l'un des
    replis du §3, qui ne coûtent aucune ligne de code.
+4. **Rendre la partie au testeur du clavier**, lecteur d'écran allumé (NVDA, VoiceOver) : les annonces
+   tombent-elles au bon moment, et en disent-elles trop ? Aucune suite ne l'entend (§4.10).
 
 **Méthode à conserver** : toute évolution part du document — on le réécrit, on le fait relire, puis on
 applique au code. Et la question à poser avant de déclarer une passe finie n'est pas « qu'est-ce qui
@@ -228,3 +258,8 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   au clic, puis ramené à **un tiers** de la largeur ; l'index du dossier qui nomme les pièces **comme
   la Discussion les transmet**. Rien de tout cela n'est visible d'une suite — le seul juge est
   `npm run vue` et la relecture à l'œil (§13, §16).
+- **30 septembre, playtest au clavier** — le jeu devient jouable sans souris (§4.10, nouveau) :
+  vrais boutons, passages en `role=button`, focus qui survit au redessin, pièce en boîte de dialogue
+  (`inert` sur `.wrap`), voix d'annonce unique. La dimension gagne un **trait** et une palette sans
+  rouge (§4.3), la colonne tient dans la fenêtre, les pièces passent au **papier** (§4.6). Retenir
+  reste un ajout seul, mais le reclic le dit. Document d'abord, code ensuite, en deux commits.
