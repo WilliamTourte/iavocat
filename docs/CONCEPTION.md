@@ -91,8 +91,15 @@ de l'IA, et c'est pour ça qu'à la fin elle ne saura pas si elle a bien fait.
 ### 4.3 Le surlignage
 
 **Tout empan portant une valeur est marqué et cliquable, et le marquage ne varie jamais** — sinon
-l'interface désignerait la réponse à la lampe torche. **La couleur code la dimension**, jamais la
-pertinence.
+l'interface désignerait la réponse à la lampe torche. **La couleur et le trait codent la dimension**,
+jamais la pertinence : chaque dimension a sa couleur *et* son soulignement — plein, double, pointillé,
+tirets, ondulé —, si bien qu'aucune ne se lit à la couleur seule (§4.10). C'est le **rang** qui les
+attribue, jamais le contenu.
+
+**Retenir a lieu dans la pièce, retirer dans le Contexte.** Recliquer un passage déjà retenu ne
+l'oublie pas — arbitré le 16 septembre, reconduit le 30 après un playtest qui attendait un
+interrupteur — mais **l'écran le dit** : une ligne sous la pièce renvoie au Contexte. Un passage retenu
+se marque **par son fond, jamais par sa graisse** : le texte autour ne bouge pas.
 
 ### 4.4 Le doublon banal
 
@@ -150,6 +157,12 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   fois. Deux portes y mènent, et ce sont deux registres : **la voix du composeur enseigne** — elle dit
   le geste et ouvre le Contexte — **la barre nomme** les deux surfaces, donne leur compte et y donne
   accès à tout moment. Les portes **tranchent sur le fond** : ce sont des outils, pas des étiquettes.
+- **La colonne tient dans la fenêtre** : la page ne défile pas, chaque bande défile pour son compte, et
+  la conversation est **la seule bande élastique** — c'est elle qui cède quand un panneau s'ouvre ou
+  que la phrase s'allonge. *« → Envoyer »* ne passe donc jamais sous le pli, même sur un portable bas.
+- **Deux matières** : les pièces ont celle du **papier** — fond clair, caractères à empattements —, la
+  machine celle de l'**écran**. Ce qu'on lit vient du monde, ce qu'on écrit sort de l'IA ; la chasse
+  fixe de ses messages dans la Discussion est le même contraste, pris dans l'autre sens.
 - **Un panneau ne s'ouvre jamais tout seul**, et deux fermetures coexistent, selon la porte par
   laquelle il est venu. **Ouvert pour ÉCRIRE** (par la voix), il suit la phrase : il se referme dès
   qu'elle ne peut plus recevoir de passage, et à son départ. **Ouvert pour CONSULTER** (par la barre),
@@ -216,7 +229,8 @@ compris entre le geste 4 et le geste 5, le temps d'une citation déjà connue.
 
 **Le bandeau se tient en tête de page, dans le flux** : il réserve sa place et pousse le jeu vers le
 bas au lieu de le recouvrir — aucune des quatre ancres ne peut se retrouver dessous. Il reste épinglé
-au défilement, et lisible par-dessus la pièce ouverte.
+au défilement, et lisible par-dessus la pièce ouverte. Ses consignes s'**annoncent** aussi, à qui ne
+voit pas le halo (§4.10).
 
 ### 4.9 L'économie de l'écran
 
@@ -226,7 +240,9 @@ Quatre règles d'écran — le coupable d'une page illisible est le **chrome**, 
    que la phrase est vide, dans l'aide ensuite ; si un bouton le dit déjà, l'aide se tait. **Et la voix
    elle-même se clique quand le geste qu'elle nomme a lieu dans l'autre colonne** — elle mène alors au
    Contexte et l'ouvre ; elle reste du texte quand le geste a lieu ici même, choisir l'article ou
-   envoyer. Un bouton ne promet ainsi jamais un effet qu'il ne produit pas (§4.5).
+   envoyer. Un bouton ne promet ainsi jamais un effet qu'il ne produit pas (§4.5). Cliquable, elle a
+   l'air d'un bouton — jamais d'un champ vide ni d'une zone de dépôt, ce que son cadre en pointillés
+   dans un autre cadre en pointillés faisait croire.
 2. **Un titre par zone** : l'en-tête nomme la **surface** (§4.6), les titres intérieurs les zones.
 3. **Ce qui reste LISIBLE ne se répète pas** : le locuteur ne s'affiche qu'au changement, et la
    question ne se rappelle que lorsqu'elle a cessé d'être le dernier mot de l'avocat. Un panneau
@@ -243,6 +259,36 @@ qui *est* le jeu reste. **Deux** ne se coupent pas : *« → Envoyer »* et *« 
 *« Tant que tu ne l'envoies pas, personne ne la lit. »*, a été coupée le 16 septembre **et ne revient
 pas** : le tutoriel montre le geste une fois, puis l'écran se tait. *Rien ne part tant qu'on n'envoie
 pas* s'apprend en le faisant, pas en le lisant — c'est la règle 1 appliquée à elle-même.
+
+**Le geste qui parle pèse plus que ceux qui défont** : *« → Envoyer »* est le seul bouton plein du
+composeur, à droite ; *retirer* et *tout effacer* restent discrets. Et **l'écran se lit sans plisser les
+yeux** : pas de texte sous 12 px, les petites capitales réservées aux noms de dimension, une bulle
+qui ne dépasse pas soixante-dix signes à la ligne.
+
+### 4.10 Jouer sans la souris, lire sans la couleur
+
+*Venu d'un playtest mené au clavier, le 30 septembre : le premier geste du jeu était impossible sans
+souris.* Ce ne sont pas des options — c'est l'écran, pour tout le monde.
+
+1. **Tout geste est un bouton** : on l'atteint par Tab, il part sur Entrée ou Espace, et un lecteur
+   d'écran le présente comme tel. Les pièces jointes, les puces du dossier et celles du Contexte sont
+   de vrais boutons. **Les passages restent de la prose** : un bouton ne sait pas se couper en fin de
+   ligne, et un passage long sauterait à la ligne d'un bloc. Ils se *déclarent* boutons sans en être.
+2. **Le focus survit au redessin** : l'écran se redessine à chaque geste, le joueur au clavier reste
+   pourtant où il était — sur le même passage, la même puce —, et si la chose a disparu, dans la même
+   zone.
+3. **La pièce ouverte est une boîte de dialogue** : le jeu derrière devient inerte, le focus entre dans
+   la pièce et revient, à la fermeture, à ce qui l'a ouverte. Le bandeau du tutoriel reste vivant
+   par-dessus (§4.8) — c'est pourquoi elle n'est pas un `<dialog>` natif, qui l'aurait rendu inerte
+   avec le reste.
+4. **Ce qui arrive s'annonce** : une réplique de l'avocat, une consigne du tutoriel, un refus — par une
+   voix d'annonce unique, jamais par le fil entier, qui se réécrit à chaque geste et se relirait
+   d'un bout à l'autre.
+5. **Rien ne se dit par la couleur seule** (§4.3), ni par une transparence qui éteint le contraste : un
+   état s'écrit (✓, « retenu ») ou se colore franchement. Une pièce déjà lue porte un ✓, elle n'est pas
+   grisée comme un bouton désactivé.
+6. **Aucune confirmation ne se retire d'elle-même** : elle attend qu'on réponde. Et **Échap se lit à
+   l'écran**, là où il agit — sur la croix de la pièce et sur celle des panneaux.
 
 ## 5. Les directives (le manuel de soi)
 
@@ -290,6 +336,7 @@ au §3 de `docs/PASSATION.md`.*
 | Un article annonce, ne filtre rien, ne porte aucun empan ; le moteur ne dit pas le droit | §4.5, §6 |
 | Un mécanisme utilisé une seule fois est un panneau indicateur — sauf le tutoriel | §4, §4.8 |
 | Rien ne se passe tant que rien n'est envoyé ; composer et envoyer restent deux gestes | §4.6 |
+| Tout geste se fait au clavier ; rien ne se dit par la couleur seule | §4.3, §4.10 |
 | Le contenu n'existe qu'en un exemplaire, les règles qu'en un seul endroit | §12 |
 
 *Deux choses tranchées qu'on redit parce qu'on y revient : le **budget d'attention** est retiré

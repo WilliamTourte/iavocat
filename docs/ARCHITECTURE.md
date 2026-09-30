@@ -178,6 +178,7 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 | `champsDe(contenu)` — les empans aplatis en `"pid.eid"`, avec `nom`, `qui`, `court` | le jeu, l'atelier, le harnais |
 | `comparaisonsDe(liens, formes)` — les comparaisons d'arité 2, emboîtées comprises, dédoublonnées | l'atelier, le harnais |
 | `couleurDim(dimensions, d)` — le **rang**, jamais la pertinence (§4.3) ; `null` si inconnue | le jeu, l'atelier |
+| `traitDim(dimensions, d)` — le **soulignement** au même rang que la couleur, pour qu'aucune dimension ne se lise à la couleur seule (§4.3) | le jeu |
 
 `couleurDim` rend `null` plutôt qu'une couleur de repli : le jeu grise, l'atelier montre en rouge —
 chez lui, c'est une erreur d'écriture. **La marge de bruit doit rester non nulle**, sinon « sensé »
@@ -217,7 +218,7 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
 |---|---|
 | `test_o5.js` (38) | l'index du dossier ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (35) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (161) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition |
+| `test_parcours.js` (161) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition ; **le clavier** (§4.10) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
 | `smoke_atelier.js` (101) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
@@ -276,7 +277,7 @@ qui a raison.*
 
 `regles.js` et `moteur.js` sont en **mode double** — `require` ou `<script src>` — et exposent une
 **fabrique**. Hors fabrique et cloîtrés (§9) : `MoteurGrammaire.champsDe`, `.comparaisonsDe`,
-`.couleurDim`, `ReglesJeu.estRegle`.
+`.couleurDim`, `.traitDim`, `ReglesJeu.estRegle`.
 
 **Les huit modules de l'atelier, dans l'ordre de chargement** : `noyau.js` (contenu, outils, état
 d'interface, annulation, onglets — **et les quatre gestes** ci-dessous ; en premier) · `graphe.js` (le
@@ -291,10 +292,11 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
 | l'avocat ouvre une session ; ouvrir une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion`, `ouvrirPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion`, `modalPieceHTML`, `rendreTexte`, `renderDossier` |
-| **surligner** (ajoute, privé, gratuit) ; **oublier** (retire, Contexte seul) | `surligner`, `oublier` | `renderRetenus` dans `renderContexte` |
+| **surligner** (ajoute, privé, gratuit) ; **oublier** (retire, Contexte seul) | `surligner`, `oublier` | `renderRetenus` dans `renderContexte` ; `rappelRetrait` quand on reclique un passage retenu |
 | ce que le composeur offre ; ce qui se devine avant le clic ; la voix | `blocsOfferts`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
 | **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du Contexte | `rendreVoix`, `ouvrirContexte`, `majPanneaux` |
-| ouvrir et fermer une surface de côté | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `echapper` |
+| ouvrir et fermer une surface de côté | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `clavier` (Échap) |
+| **le clavier et la voix d'annonce** (§4.10) — le focus qui survit, la pièce en boîte de dialogue, ce qui s'annonce | *(aucune — l'écran seul)* | `clavier`, `memoFocus` → `rendreFocus` (par la clé `data-f`), `modal`/`closeModal` (`inert` sur `.wrap`), `annoncer` → `#annonce` |
 | **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
 | **envoyer** — le seul geste | `envoyerCompo` → `clore` → `envoyer` → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPlaidoirie` |
