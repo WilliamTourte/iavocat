@@ -25,9 +25,18 @@ function creerHarnais(dossier){
      content.js, null → balise retirée (le jeu affiche sa panne), absent → le
      contenu livré ; graine : semée dans localStorage AVANT les scripts ; url :
      origine, posée d'office si graine. */
+  /* PIÈGE : jsdom n'a NI `matchMedia` NI `scrollIntoView`. Sans ces deux bouchons,
+     `attirerContexte` jette — et c'était, jusqu'ici, la seule fonction d'écran
+     qu'aucune suite ne pouvait appeler. Rien d'autre du dépôt ne lit ces API. */
+  const bouchonsNavigateur = win => {
+    win.matchMedia = q => ({ matches:false, media:q,
+      addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} });
+    win.Element.prototype.scrollIntoView = function(){};
+  };
   const ouvrir = (html,url,graine) =>
     new JSDOM(injecter(html),{runScripts:"dangerously", ...(url?{url}:{}),
-      beforeParse(win){ if(graine) for(const [k,v] of Object.entries(graine)) win.localStorage.setItem(k,v); }
+      beforeParse(win){ bouchonsNavigateur(win);
+        if(graine) for(const [k,v] of Object.entries(graine)) win.localStorage.setItem(k,v); }
     }).window;
 
   function boot(opts={}){
@@ -47,7 +56,8 @@ function creerHarnais(dossier){
   const contexte = w => w.document.getElementById("contexte").innerHTML;
   const composeur = w => w.document.getElementById("composeur").innerHTML;
   const plaidoirie = w => w.document.getElementById("plaidoirie").innerHTML;
-  const plaidoirieVisible = w => !w.document.getElementById("colPlaidoirie").hidden;
+  // Dit maintenant : le PANNEAU Plaidoirie est ouvert (§4.6).
+  const plaidoirieVisible = w => !w.document.getElementById("panPlaidoirie").hidden;
 
   /* ---- Sélecteurs par PROPRIÉTÉ ---- aucune suite ne nomme une pièce, un
      empan ni une valeur : tout se dérive de la forme (§16). */

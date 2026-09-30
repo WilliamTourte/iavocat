@@ -8,25 +8,44 @@
 </head>
 <body>
 
+<!-- LE TUTORIEL (§4.8) — PIÈGE : PREMIER enfant de <body>, avant `.wrap`.
+     Collant dans le flux, il RÉSERVE sa place et pousse le jeu vers le bas :
+     c'est ce qui l'empêche de recouvrir ses propres ancres. Son z-index le
+     garde lisible par-dessus l'`.overlay` de la pièce ouverte, et c'est sa
+     position AVANT `#modalRoot` qui fait mordre le sélecteur décalant la
+     modale. Le renvoyer en fin de page ne casse aucune suite : il recouvre
+     à nouveau, en silence. -->
+<div id="tuto" hidden>
+  <span class="pas" id="tutoPas"></span>
+  <span class="dit" id="tutoDit"></span>
+  <button class="passer" onclick="tutoPasser()">je sais faire</button>
+</div>
+
 <div class="wrap">
   <!-- Un en-tête nomme la SURFACE (§4.6), jamais les zones qu'elle contient. -->
   <section class="col">
     <h2>Discussion</h2>
     <div class="body" id="discussion"></div>
   </section>
-  <section class="col">
-    <h2>Contexte</h2>
+  <!-- LES DEUX SURFACES DE CÔTÉ (§4.6) — PIÈGE : leur PLACE DANS LE DOCUMENT est
+       toute la mécanique. Entre la conversation et le composeur, elles s'ouvrent
+       SANS rien recouvrir : on garde la question sous les yeux et on voit la
+       phrase se construire. Les déplacer ailleurs dans `.wrap`, ou les sortir du
+       flux, défait exactement ça — et aucune suite ne voit une géométrie. -->
+  <section class="col panneau" id="panContexte" hidden>
+    <h2>Contexte<button class="fermer" onclick="fermerPanneau()" title="Fermer">×</button></h2>
     <div class="body" id="contexte"></div>
   </section>
-  <section class="col" id="colPlaidoirie" hidden>
-    <h2>Plaidoirie<span class="zcount" id="plaidoirieCount"></span></h2>
+  <section class="col panneau" id="panPlaidoirie" hidden>
+    <!-- Pas de compte ici : la barre du composeur le porte, et il reste
+         visible panneau ouvert ou fermé (§4.9 règle 3). -->
+    <h2>Plaidoirie<button class="fermer" onclick="fermerPanneau()" title="Fermer">×</button></h2>
     <div class="body" id="plaidoirie"></div>
   </section>
   <!-- On répond SOUS la question (§4.6). PIÈGE : `#composeur` est le FRÈRE de
        `#discussion`, jamais son enfant — le fil se recale en bas à chaque
-       message, la phrase qu'on écrit ne doit pas partir avec lui. Enfant
-       direct de `.wrap`, en bandeau plein largeur : même gabarit que
-       `.cloture` ci-dessous. -->
+       message, la phrase qu'on écrit ne doit pas partir avec lui. Il est aussi
+       le frère de `.scene`, et c'est ce qui le garde visible sous un panneau. -->
   <div id="composeur"></div>
   <div class="cloture">
     <button id="btnCloture" onclick="cloturer()" disabled>Clôturer l'instruction</button>
@@ -36,12 +55,6 @@
 </div>
 
 <div id="modalRoot"></div>
-
-<div id="tuto" hidden>
-  <span class="pas" id="tutoPas"></span>
-  <span class="dit" id="tutoDit"></span>
-  <button class="passer" onclick="tutoPasser()">je sais faire</button>
-</div>
 
 <script src="moteur.js"></script>
 

@@ -287,8 +287,11 @@ console.log("\n=== Les deux gestes, montrés ===");
   check("le bon passage retenu, l'alerte tombe",
     !w.document.getElementById("tuto").hasAttribute("data-alerte"));
   w.closeModal();
+  check("le contexte étant un panneau FERMÉ, il montre la porte, pas la zone cachée",
+    !!halo() && halo().id === "btnContexte");
+  w.basculerPanneau("contexte");
   const zone = halo();
-  check("et il montre le contexte", !!zone && zone.contains(w.document.querySelector(".mchip")));
+  check("et une fois ouvert, il montre le contexte", !!zone && zone.contains(w.document.querySelector(".mchip")));
 
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut));
   const envoi = halo();
@@ -317,7 +320,9 @@ console.log("\n=== Les deux gestes, montrés ===");
   check("Maître Auber attend maintenant une comparaison",
     !!H.sousTerme(H.lienTag(w, attenteSuivante().attend)));
   check("et le halo revient aussitôt : deux passages sont requis, pas un",
-    !!halo() && halo().id === "zoneRetenus");
+    !!halo() && halo().id === "btnContexte");
+  w.basculerPanneau("contexte");
+  check("le panneau rouvert, il montre de nouveau la zone", halo().id === "zoneRetenus");
   const veutA = attenteSuivante().attend;
   const [tA, tB] = H.sousTerme(H.lienTag(w, veutA)).termes;
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(tA));
@@ -414,12 +419,16 @@ console.log("\n=== Le plan ne retient que les moyens ===");
   check("l'observation est bien partie", w.S.brouillon[i].versee);
   check("l'avocat y a répondu", w.S.fil.length > 1);
   check("mais elle n'entre pas au plan", !plaidoirie(w).includes(w.S.brouillon[i].texte));
-  check("et le plan n'a pas encore de colonne à l'écran", !plaidoirieVisible(w));
+  check("et rien n'ouvre le plan de soi-même", !plaidoirieVisible(w));
+  check("mais sa porte est là dès le premier écran",
+    !!w.document.getElementById("btnPlaidoirie"));
   const moyen = H.lienTag(w, w.R.attentesDe(w.JEU.remises[0])[0].attend);
   const j = H.composerLien(w, moyen);
   w.envoyer(j);
   check("un moyen, lui, s'y inscrit", plaidoirie(w).includes(w.S.brouillon[j].texte));
-  check("mais la colonne reste hors écran", !plaidoirieVisible(w));
+  check("et le panneau ne s'ouvre toujours pas tout seul", !plaidoirieVisible(w));
+  w.basculerPanneau("plaidoirie");
+  check("c'est sa porte qui l'ouvre", plaidoirieVisible(w));
 }
 {
   const w = boot();
@@ -508,6 +517,88 @@ console.log("\n=== La répétition de plaidoirie ===");
   w.cloturer();
   check("journal vide → présentoir vide, sans planter", discussion(w).includes("aucune phrase à y opposer"));
   w.S.brouillon.push(...garde);
+}
+
+console.log("\n=== Les deux surfaces, en panneaux ===");
+{
+  const w = boot();
+  const ouvert  = n => !w.document.getElementById("pan"+n).hidden;
+  const bouton  = () => w.document.querySelector("#composeur button.versContexte");
+  const attente = () => w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
+  const question = () => attente().question;
+
+  check("au premier écran, aucun panneau n'est ouvert", !ouvert("Contexte") && !ouvert("Plaidoirie"));
+  check("les deux portes sont là, dans le titre du composeur",
+    !!w.document.getElementById("btnContexte") && !!w.document.getElementById("btnPlaidoirie"));
+  check("la phrase attend un passage, donc la voix se clique aussi", !!bouton());
+
+  /* LA VOIX — elle ouvre POUR ÉCRIRE, donc le panneau suivra la phrase. */
+  w.ouvrirContexte();
+  check("la voix ouvre le Contexte", ouvert("Contexte"));
+
+  const veut = H.lienTag(w, attente().attend).termes[0];
+  const [pid] = H.deK(veut);
+  w.ouvrirPiece(pid); H.surligner(w, veut); w.closeModal();
+  check("ouvrir une pièce depuis le panneau ne le referme pas", ouvert("Contexte"));
+  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, veut));
+  check("un passage posé, la voix se tait — plus de bouton", !bouton());
+  check("mais le panneau RESTE ouvert : la phrase accepterait encore un passage", ouvert("Contexte"));
+  w.envoyerCompo();
+  check("c'est le DÉPART de la phrase qui referme", !ouvert("Contexte"));
+
+  /* §4.9 règle 3 — ce qui reste LISIBLE ne se répète pas. Le panneau ne couvre
+     RIEN : il s'ouvre entre la conversation et le composeur, et la conversation
+     rétrécit pour lui faire place. La question reste donc sous les yeux, et le
+     composeur n'a jamais à la redire. (La PREMIÈRE attente n'a pas de
+     `question` : elle est descendue dans le texte de la remise.) */
+  check("l'avocat vient de poser une question", !!question());
+  check("elle est son dernier mot, donc le composeur ne la redit pas",
+    !composeur(w).includes(question()));
+  const partage = () => w.document.querySelector(".wrap").classList.contains("avecPanneau");
+  check("aucun panneau ouvert, la conversation a toute la hauteur", !partage());
+  w.basculerPanneau("contexte");
+  check("le panneau ouvert, les deux se partagent la hauteur", partage());
+  check("et la question, toujours lisible, ne se répète toujours pas",
+    !composeur(w).includes(question()));
+  w.fermerPanneau();
+  check("refermé, la conversation reprend toute la hauteur", !partage());
+
+  /* LA BARRE — on consulte : le panneau ne suit plus la phrase. */
+  w.basculerPanneau("contexte");
+  check("la porte ouvre", ouvert("Contexte"));
+  w.basculerPanneau("contexte");
+  check("et referme — c'est une bascule", !ouvert("Contexte"));
+  w.basculerPanneau("plaidoirie");
+  check("l'autre porte ouvre la Plaidoirie", ouvert("Plaidoirie"));
+  check("et une seule surface à la fois", !ouvert("Contexte"));
+  w.fermerPanneau();
+
+  /* LA COMPARAISON — le panneau doit tenir entre les DEUX passages. */
+  const veut2 = H.lienTag(w, attente().attend).termes[0];
+  const [pid2] = H.deK(veut2);
+  w.ouvrirPiece(pid2); H.surligner(w, veut2); w.closeModal();
+  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, veut2));
+  w.envoyerCompo();
+  const sous = H.sousTerme(H.lienTag(w, attente().attend));
+  check("Maître Auber attend maintenant une comparaison", !!sous);
+  const [tA, tB] = sous.termes;
+  w.ouvrirContexte();
+  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tA));
+  check("le PREMIER des deux posé, il en faut un second : le panneau RESTE ouvert", ouvert("Contexte"));
+  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tB));
+  check("les deux posés, seul l'article manque : il s'est refermé", !ouvert("Contexte"));
+  check("et la voix qui réclame l'article n'est plus un bouton — le geste est ICI",
+    !bouton() && !!w.document.querySelector("#composeur span.aide"));
+
+  /* CONSULTER N'EST PAS ÉCRIRE — ouverte depuis la barre, elle ne se referme pas
+     bien que la phrase n'accepte plus aucun passage. */
+  w.basculerPanneau("contexte");
+  check("depuis la barre, le panneau s'ouvre même quand plus aucun passage n'est posable",
+    ouvert("Contexte"));
+  w.rendreTout();
+  check("et il ne se referme pas tout seul : on consulte, on n'écrit pas", ouvert("Contexte"));
+  w.fermerPanneau();
+  check("la croix referme", !ouvert("Contexte"));
 }
 
 bilan();

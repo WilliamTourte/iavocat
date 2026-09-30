@@ -131,17 +131,23 @@ function tutoEtapeCitation(){
     return S.modalPiece
       ? {n:2, ou:"#modalRoot .close",
             dit:"Passage retenu. Referme la pièce."}
-      : {n:3, ou:"#zoneRetenus",
-            dit:"Clique sur le passage pertinent pour l'utiliser dans ta réponse"};
+      : panneau==="contexte"
+        ? {n:3, ou:"#zoneRetenus",
+            dit:"Clique sur le passage pertinent pour l'utiliser dans ta réponse"}
+        : {n:3, ou:"#btnContexte",
+            dit:"Ouvre ton contexte : le passage que tu viens de retenir s'y trouve."};
   return  {n:4, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
 }
 function tutoEtapeComparaison(){
-  if(R.indexTermeChamp(S)>=0)
-    return {n:5, ou:"#zoneRetenus",
-      dit: S.compo.length
-        ? "Prends un second passage : celui qui contredit le premier."
-        : "Sélectionne les deux passages se contredisant pour soulever une irrégularité."};
+  if(R.indexTermeChamp(S)>=0){
+    const dit = S.compo.length
+      ? "Prends un second passage : celui qui contredit le premier."
+      : "Sélectionne les deux passages se contredisant pour soulever une irrégularité.";
+    return panneau==="contexte"
+      ? {n:5, ou:"#zoneRetenus", dit}
+      : {n:5, ou:"#btnContexte", dit:"Ouvre ton contexte : "+dit[0].toLowerCase()+dit.slice(1)};
+  }
   if(S.compo.length && R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
     return {n:6, ou:"#composeur .offre",
       dit:"Une comparaison seule ne suffit pas : sélectionne l'article sur lequel s'appuyer."};
@@ -187,7 +193,7 @@ function modal(html){
      </div>`;
 }
 function escapeAttr(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function rendreTout(){ renderDiscussion(); renderComposeur(); renderContexte(); renderPlaidoirie(); majCloture(); majTutoriel(); sauverPartie(); }
+function rendreTout(){ renderDiscussion(); renderComposeur(); renderContexte(); renderPlaidoirie(); majCloture(); majPanneaux(); majTutoriel(); sauverPartie(); }
 
 /* ---- Le canal : un fil de messages ---- */
 function renderDiscussion(){
@@ -247,8 +253,10 @@ function renderDossier(){
   const livres=R.piecesLivrees(S);
   const chip=pid=>{
     const p=JEU.pieces[pid], vu=S.examinees.includes(pid);
+    // La puce porte le TITRE, celui de la pièce jointe : une pièce ne porte
+    // qu'un nom (§4.6). D'où plus de `title` — il disait déjà ça (§4.9).
     return `<span class="dchip ${vu?'vu':''} ${R.estRegle(p)?'regle':''}"
-      onclick="ouvrirPiece('${pid}')" title="${escapeAttr(p.titre)}">${vu?'✓':'●'} ${escapeAttr(p.court)}</span>`;
+      onclick="ouvrirPiece('${pid}')">${vu?'✓':'●'} ${escapeAttr(p.titre)}</span>`;
   };
   const colonne=(titre,pids)=>`<div class="dcol"><span class="dtitre">${titre}</span>
     <div class="dchips">${pids.length?pids.map(chip).join(""):`<span class="dvide">—</span>`}</div></div>`;
@@ -275,8 +283,11 @@ function modalPieceHTML(pid){
     <p class="piecetexte">${rendreTexte(pid)}</p>
     `;
 }
-/* PIÈGE : `#zoneRetenus` est l'ancre du 3ᵉ temps du tutoriel (R6), à ne jamais
-   viser par `:last-child`. */
+/* PIÈGE : `#zoneRetenus` est l'ancre des temps 3 et 5 du tutoriel (R6), à ne
+   jamais viser par `:last-child`. Et depuis qu'elle vit dans un PANNEAU, elle
+   peut être cachée : le tutoriel vise alors `#btnContexte`, la porte. Les deux
+   sélecteurs restent des LITTÉRAUX — R6 ne scanne pas un sélecteur calculé, et
+   ne dirait rien le jour où l'un des deux cesserait d'exister. */
 function renderRetenus(){
   const iT=R.indexTermeChamp(S);
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
@@ -328,8 +339,20 @@ function souffle(){
     ? "Sur quel article t'appuies-tu pour montrer qu'il y a une irrégularité ?"
     : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
 }
+/* §4.9 règle 1 — LA VOIX DEVIENT UN BOUTON quand le geste qu'elle nomme a lieu
+   dans l'AUTRE colonne. Le prédicat est `indexTermeChamp`, le MÊME qui active
+   les puces du Contexte (`renderRetenus`) : une seule vérité pour les deux
+   surfaces. Sinon elle reste du texte — l'article et l'envoi se cliquent ici.
+   Quand la voix se tait — un passage posé, la phrase se tient — il n'y a ni
+   bouton ni rien à dire : le Contexte reste ouvert et les puces suffisent. */
+function rendreVoix(txt, classe){
+  if(!txt) return "";
+  return R.indexTermeChamp(S) >= 0
+    ? `<button class="${classe} versContexte" onclick="ouvrirContexte()">${escapeAttr(txt)}</button>`
+    : `<span class="${classe}">${escapeAttr(txt)}</span>`;
+}
 function texteCompoPartiel(){
-  if(!S.compo.length) return `<span class="trou">${escapeAttr(souffle())}</span>`;
+  if(!S.compo.length) return rendreVoix(souffle(),"trou");
   const ch=R.chaineCompo(S);
   const fini=ch.some(p=>p.bloc.deduit);
   if(fini) return `<span class="bl">${escapeAttr(M.rendre(ch).replace(/\.$/,""))}</span>`;
@@ -349,17 +372,40 @@ function texteCompoPartiel(){
 function poserBloc(iBloc,iSrc){ R.poserBloc(S,iBloc,iSrc); rendreTout(); }
 function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
 function viderCompo(){ R.viderCompo(S); rendreTout(); }
-function envoyerCompo(){ R.envoyerCompo(S); rendreTout(); }
+/* La phrase PARTIE, on revient lire l'avocat : le panneau se referme, quelle que
+   soit la porte par laquelle il a été ouvert. Effacer sa phrase, non — on n'en a
+   pas fini avec le Contexte pour autant. */
+function envoyerCompo(){ R.envoyerCompo(S); panneau=null; panneauSuit=false; rendreTout(); }
 function rappelQuestion(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
   if(!a || !a.question) return "";
   const dernier=S.fil[S.fil.length-1];
+  // §4.9 règle 3 : ce qui reste LISIBLE ne se répète pas. Un panneau ne couvre
+  // plus la conversation — il la rétrécit — donc la question reste lisible et
+  // n'a jamais à être redite tant qu'elle est le dernier mot de l'avocat.
   if(dernier && dernier.texte===a.question) return "";
   return `<div class="aide question">« ${escapeAttr(a.question)} »</div>`;
 }
+/* La barre des deux surfaces (§4.6) : elle NOMME ce qu'on a, et y donne accès à
+   tout moment — l'autre porte, celle de qui sait déjà, la voix restant celle qui
+   enseigne. Les comptes se dérivent ; les ids sont les ancres du tutoriel (R6). */
+function barreSurfaces(){
+  const etat = nom => panneau===nom ? "versSurface ouvert" : "versSurface";
+  const compte = c => c ? ` · ${c}` : "";
+  /* PIÈGE : les deux ids sont écrits EN TOUTES LETTRES, et la barre ne se replie
+     donc pas en une boucle. Le tutoriel les vise (R6), et le gardien ne sait pas
+     lire un id fabriqué par interpolation — il ne dirait rien le jour où l'un
+     des deux disparaîtrait. */
+  return `<span class="surfaces">
+    <button id="btnContexte" class="${etat("contexte")}"
+      onclick="basculerPanneau('contexte')">Contexte${compte(S.retenus.length)}</button>
+    <button id="btnPlaidoirie" class="${etat("plaidoirie")}"
+      onclick="basculerPanneau('plaidoirie')">Plaidoirie${compte(moyensRetenus().length)}</button>
+  </span>`;
+}
 function renderCompo(){
   const offerts=R.blocsOfferts(S);
-  let h=`<div class="zone"><div class="ztitle">Ta réponse</div><div class="compo">
+  let h=`<div class="zone"><div class="ztitle">Ta réponse${barreSurfaces()}</div><div class="compo">
     ${rappelQuestion()}
     <div class="phrase">${texteCompoPartiel()}</div>`;
   h+=`<div class="offre">`;
@@ -386,7 +432,7 @@ function renderCompo(){
       ${R.peutEnvoyer(S)?`<button class="envoi" onclick="envoyerCompo()">→ Envoyer</button>`:""}
       <button onclick="retirerBloc()">← retirer</button><button onclick="viderCompo()">tout effacer</button></div>`;
   const voix = S.compo.length ? souffle() : "";   // une seule voix par état (§4.9)
-  if(voix) h+=`<div class="aide">${escapeAttr(voix)}</div>`;
+  if(voix) h+=rendreVoix(voix,"aide");
   if(S.refus) h+=`<div class="refus">${escapeAttr(S.refus)}</div>`;
   h+=`</div></div>`;
   return h;
@@ -400,15 +446,15 @@ function renderContexte(){
 function renderComposeur(){
   $("composeur").innerHTML = renderCompo();
 }
+function moyensRetenus(){
+  return S.plaidoirie.filter(x=>S.brouillon[x.b] && R.estMoyen(S.brouillon[x.b].lien));
+}
 function renderPlaidoirie(){
-  const gardes=S.plaidoirie.filter(x=>S.brouillon[x.b] && R.estMoyen(S.brouillon[x.b].lien));
-  /* ESCAMOTÉE pour le moment : la colonne ne s'affiche plus jamais, quel que
-     soit `S.plaidoirie` — mécanique de jeu inchangée derrière. */
-  const vide = true;
-  { const c=$("colPlaidoirie"); if(c) c.hidden=vide; }
-  { const w=document.querySelector(".wrap"); if(w) w.classList.toggle("sansPlan",vide); }
-  { const c=$("plaidoirieCount"); if(c) c.textContent=gardes.length||""; }
+  const gardes=moyensRetenus();
   let h=`<div class="zone">`;
+  // Son bouton est là dès le premier écran : le panneau doit donc savoir dire
+  // qu'il est vide, et le dire dans la fiction (§4.6).
+  if(!gardes.length) h+=`<div class="aide">Maître Auber n'a encore rien retenu de toi.</div>`;
   h+=`<ul class="liste plaid">${gardes.map(x=>
     `<li><span class="txt">${escapeAttr(S.brouillon[x.b].texte)}${
       x.contre!=null && JEU.repetition.affirmations[x.contre]
@@ -456,18 +502,38 @@ function portePhrase(pid){
   return d.length ? `<span class="porte">porte sur : ${d.map(escapeAttr).join(", ")}</span>` : "";
 }
 
-// §4.6 : un clic n'importe où dans le composeur ramène le Contexte dans le champ
-// de vision. Écouteur posé UNE FOIS sur le conteneur (jamais recréé, contrairement
-// à son innerHTML, régénéré à chaque rendreTout()) — délégation d'événement, sans
-// conflit avec les onclick="poserBloc(...)" inline déjà posés dessus.
-function attirerContexte(){
-  const col = $("contexte").closest(".col");
-  if(!col) return;
-  const reduit = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  col.scrollIntoView({behavior: reduit ? "auto" : "smooth", block:"nearest"});
-  col.classList.remove("attireContexte");
-  void col.offsetWidth;               // force le reflow : relance l'animation si déjà en cours
-  col.classList.add("attireContexte");
+/* §4.6 — LES DEUX SURFACES DE CÔTÉ SONT DES PANNEAUX, qui s'ouvrent ENTRE la
+   conversation et le composeur et ne recouvrent RIEN : la question reste sous
+   les yeux, et on voit la phrase se construire en cliquant les passages.
+   DEUX variables d'ÉCRAN, hors de `S`, qui est sérialisé — on ne recharge pas
+   une partie sur un panneau resté ouvert. `panneau` dit laquelle est ouverte ;
+   `panneauSuit` dit qu'elle a été ouverte POUR ÉCRIRE, par la voix du composeur,
+   et c'est la seule qui se referme d'elle-même. Ouverte depuis la barre, on la
+   consulte : elle reste jusqu'à ce qu'on la ferme.
+   PIÈGE : la fermeture automatique suit `indexTermeChamp`, ce que la phrase
+   ACCEPTE, et non la voix, qui se tait dès qu'un passage est posé. À cet instant
+   la grammaire ne sait pas encore si le joueur cite ou entame une comparaison
+   (§4.5) : refermer là retirerait le clavier au milieu du geste le plus difficile
+   du jeu. */
+let panneau = null, panneauSuit = false;
+function majPanneaux(){
+  if(panneau==="contexte" && panneauSuit && R.indexTermeChamp(S) < 0){ panneau=null; panneauSuit=false; }
+  { const p=$("panContexte");   if(p) p.hidden = panneau!=="contexte"; }
+  { const p=$("panPlaidoirie"); if(p) p.hidden = panneau!=="plaidoirie"; }
+  // La conversation rétrécit pour lui faire place, au lieu de disparaître
+  // dessous : c'est tout ce que la classe décide, et c'est du CSS (§9).
+  { const w=document.querySelector(".wrap"); if(w) w.classList.toggle("avecPanneau", !!panneau); }
+}
+function ouvrirContexte(){ panneau="contexte"; panneauSuit=true; rendreTout(); }
+function basculerPanneau(nom){ panneau = panneau===nom ? null : nom; panneauSuit=false; rendreTout(); }
+function fermerPanneau(){ panneau=null; panneauSuit=false; rendreTout(); }
+
+/* Échap referme ce qui est posé PAR-DESSUS, du plus haut au plus bas : la pièce
+   ouverte d'abord, le panneau ensuite. */
+function echapper(e){
+  if(e.key!=="Escape") return;
+  if(S.modalPiece) closeModal();
+  else if(panneau) fermerPanneau();
 }
 
 /* ---- Démarrage ---- */
@@ -475,6 +541,6 @@ window.JEU = JEU; window.S = S; window.M = M; window.R = R; window.CHAMPS = CHAM
 /* `SOURCE_CONTENU` n'est plus affiché nulle part, mais reste exposé : quatre
    suites le lisent pour savoir quel contenu a été adopté (§13). */
 window.SOURCE_CONTENU = SOURCE_CONTENU;
-$("composeur").addEventListener("click", attirerContexte);
+document.addEventListener("keydown", echapper);
 if(!restaurerPartie()) R.envoyerRemise(S);   // la remise 1 arrive d'elle-même
 rendreTout();

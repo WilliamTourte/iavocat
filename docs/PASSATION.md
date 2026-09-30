@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 16 septembre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins. `npm test` est vert —
-343 contrôles, 6 règles du gardien, ESLint.
+373 contrôles, 6 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -19,6 +19,26 @@ Le 16 septembre est une session d'**écriture**, pas de mécanique : la liaison-
 la **colonne Plaidoirie est escamotée** — provisoirement, mécanique intacte derrière (§4.9). Deux de
 ces gestes ont fait tomber **cinq contrôles** qui nommaient du contenu au lieu de le dériver : ils sont
 réécrits, et la doc est remise d'aplomb sur ce que le code fait.
+
+**Deux passes de retours playtest** ont suivi, sur la même partie jouée. La première a rendu le
+tutoriel plus lisible, fait de `#composeur` un bandeau plein largeur et appliqué le repli du §4.6 — un
+clic dans le composeur fait descendre le Contexte. La seconde reprend ce que cette partie montrait
+encore : **le Contexte tombe à un tiers de la largeur** (la Discussion prend les deux autres, et le
+tiers ne bougera pas au retour de la Plaidoirie), **l'index nomme les pièces comme la Discussion les a
+transmises** — plus d'abréviation à faire de tête au moment de retrouver une pièce —, et **le bandeau
+du tutoriel monte en tête de page, dans le flux** : il pousse le jeu au lieu de le recouvrir (§4.6,
+§4.8).
+
+**Les deux surfaces de côté sont devenues des PANNEAUX** (§4.6, §4.9). L'écran n'a plus qu'une colonne,
+empilée en **trois bandes** : la conversation, le panneau ouvert, le composeur. Le Contexte et la
+Plaidoirie s'ouvrent **entre** les deux autres et **ne recouvrent rien** — la conversation rétrécit
+pour leur faire place, si bien que la question reste sous les yeux pendant qu'on choisit un passage et
+qu'on voit la phrase se construire. Deux portes y mènent : **la voix du composeur**, qui devient un bouton quand le geste qu'elle nomme a lieu
+ailleurs, et **une barre** dans le titre de « Ta réponse », qui nomme les deux surfaces et donne leur
+compte. Un panneau ouvert *pour écrire* suit la phrase et se referme avec elle ; ouvert *pour
+consulter*, il reste. **La Plaidoirie sort de son escamotage** par la même occasion, et la colonne qui
+s'élargissait — essayée la veille — est annulée : avec elle tombent la grille de `.wrap` et **deux
+PIÈGES** qu'elle avait coûtés.
 
 **L'atelier et le fichier ne se perdent plus de vue** (§10) : le brouillon `localStorage` masquait
 `content.js` au démarrage — un `git pull` ou une édition à la main n'entrait jamais, *même en
@@ -59,6 +79,29 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   sa garde *avant* l'appel.
 - **L'ordre des `<script src>` de l'atelier compte** (`noyau.js` en premier), et les `window.X = X`
   explicites (`undo`, `adopter`, `demanderExemple`, `simReset`) sont ce par quoi `smoke_atelier.js` lit.
+- **`#tuto` est le PREMIER enfant de `<body>`, avant `.wrap`** : collant dans le flux, il réserve sa
+  place — c'est ce qui l'empêche de recouvrir ses propres ancres. Son `z-index:60` le garde lisible
+  par-dessus l'`.overlay` (50) de la pièce ouverte, et c'est sa position *avant* `#modalRoot` qui fait
+  mordre le sélecteur décalant la modale. Le remettre en fin de `<body>` ne casse **aucune** suite : il
+  recouvre à nouveau, en silence.
+- **La PLACE DES PANNEAUX DANS LE DOCUMENT est toute la mécanique** : entre la section Discussion et
+  `#composeur`, dans le flux. Les déplacer ailleurs dans `.wrap`, ou les repasser en `position:absolute`
+  (ce qu'ils ont été une heure), leur refait recouvrir la conversation — et **rien ne le dirait**,
+  aucune suite ne voyant une géométrie.
+- **Les deux parts ouvertes doivent rester SOUS la hauteur fermée**, en-tête de panneau et gouttière
+  compris : `25vh + 31vh` contre `72vh`, `16vh + 20vh` contre `44vh` sous 1100px. Sinon ouvrir
+  **allonge** la page au lieu de la partager, et la clôture s'enfonce. Mesuré à trois tailles, pas
+  déduit.
+- **Le panneau ouvert se referme sur ce que la phrase ACCEPTE, jamais sur ce que la voix RÉCLAME** :
+  un passage posé, la voix se tait — la phrase se tient — mais la grammaire ne sait pas encore si c'est
+  une citation ou le premier temps d'une comparaison (§4.5). Suivre la voix retirerait le clavier au
+  milieu du geste le plus difficile ; d'où `indexTermeChamp`. **Et cette fermeture ne vaut QUE pour un
+  panneau ouvert par la voix** (`panneauSuit`) : ouvert depuis la barre, on consulte, et il reste.
+  Trois contrôles tiennent ce point.
+- **Les ids de la barre sont écrits EN TOUTES LETTRES** (`btnContexte`, `btnPlaidoirie`), donc la barre
+  ne se replie pas en une boucle : le tutoriel les vise quand le panneau est fermé, et **R6 ne sait pas
+  lire un id fabriqué par interpolation** — il l'a refusé, à raison. Même exigence pour les deux
+  sélecteurs `ou:` du tutoriel, qui doivent rester des littéraux.
 - **Rien ne prouve automatiquement qu'un CSS externe se charge** : la preuve est à l'œil, sur les
   captures — qui **ne se comparent pas à l'octet** (le halo pulse).
 - **`#composeur` est le frère de `#discussion`, jamais son enfant** — `renderDiscussion` finit par
@@ -93,14 +136,17 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   c'est un formulaire, aucune mécanique ne le sauvera.
 - **La compréhension est-elle encore *exprimée* ?** Et **une question posée guide-t-elle trop ?** Repli
   sans code : retirer les `question` une à une, couper le tutoriel avant le 3ᵉ temps.
-- **Le va-et-vient entre les deux colonnes** (§4.6) — le plus concret, à regarder sur une session
-  entière : le regard qui cherche où le texte est parti, la main qui repose un empan. Repli
-  **appliqué** : un clic dans le composeur fait descendre le Contexte (`attirerContexte`,
-  `app/jeu.js`), **pas** remonter le composeur — reste à l'éprouver sur une session jouée.
-- **La Plaidoirie est escamotée, et c'est PROVISOIRE** (§4.9) : plus rien à l'écran ne distingue
-  *envoyé* de *retenu comme moyen*. Ce qu'on éprouve pendant ce congé, c'est **ce que son absence
-  coûte** — et la question au retour sera *où*, pas *si*. Un `const` d'une ligne la rallume (`vide`,
-  dans `renderPlaidoirie`) ; les suites tiennent déjà les deux cas.
+- **Trois bandes empilées : une pensée, ou un tableau de bord ?** La question qui remplace celle du
+  va-et-vient entre deux colonnes, close faute d'objet : il n'y en a plus qu'une (§4.6). Tout est
+  désormais visible en même temps — ce qu'on me demande, ce dont je dispose, ce que j'écris — et c'est
+  précisément le risque : le §3 redoute depuis le début que la phrase composée se lise comme un
+  **formulaire**. Trois bandes alignées peuvent y pousser. Rien de cela n'a été joué.
+- **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
+  accès. Le §4.9 interdit de redire, pas d'offrir deux chemins — mais seul un joueur dira si le second
+  sert ou encombre.
+- **La Plaidoirie est revenue** (§4.9) — en panneau, porte visible d'emblée, comme le §3 l'avait
+  annoncé (*où*, pas *si*). Ce qui reste à voir : **son apparition enseigne-t-elle que l'envoi
+  transmet ?** Son compte dans la barre suffit-il à distinguer *envoyé* de *retenu comme moyen* ?
 - **L'aide unique en dit-elle assez ?** (§4.9) Repli le plus court du dépôt : rendre l'aide **et** le
   fantôme, un `if`.
 - **La tension de l'IA partisane** (§1) : tranchée en mécanique, à valider en contenu. Idem le rythme
@@ -163,3 +209,16 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   brouillon** (§10) — relecture à chaque retour sur l'onglet, arbitrage silencieux quand il n'y a rien
   à perdre. Écrit au document d'abord, puis appliqué ; les quatre cas joués dans un vrai Chromium,
   parce qu'aucune suite ne peut éprouver `visibilitychange` ni une balise qui va vraiment lire.
+- **30 septembre, troisième passe** — **les deux surfaces de côté passent en panneaux**, d'abord
+  par-dessus la conversation, puis — même session, sur retour de l'auteur — **dans le flux, entre elle
+  et le composeur**, avec des portes qui tranchent sur le fond. Le rappel de la question sous panneau,
+  écrit et éprouvé, a été **retiré** dans la foulée : plus rien n'est couvert, donc plus rien à redire.
+  La bascule : l'élargissement de la colonne, essayé la passe d'avant, est annulé, et la Plaidoirie
+  sort de son escamotage du 16 septembre (§4.6, §4.9). L'écran tombe à une colonne, `.wrap` cesse
+  d'être une grille, et deux PIÈGES disparaissent avec elle. Le tutoriel apprend à viser une porte
+  quand sa cible est cachée.
+- **30 septembre** — six retours d'une partie jouée, en deux passes : tutoriel plus lisible puis monté
+  **en tête de page, dans le flux** ; `#composeur` en bandeau plein largeur ; le Contexte qui descend
+  au clic, puis ramené à **un tiers** de la largeur ; l'index du dossier qui nomme les pièces **comme
+  la Discussion les transmet**. Rien de tout cela n'est visible d'une suite — le seul juge est
+  `npm run vue` et la relecture à l'œil (§13, §16).

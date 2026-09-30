@@ -136,16 +136,35 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 
 | Surface | Statut | Rôle |
 |---|---|---|
-| La **Discussion** + les pièces | lecture | l'entrée |
-| **Le composeur** — *bandeau plein largeur, sous les trois colonnes* | **privé** | la phrase qu'on écrit — jamais jugée |
-| Le **Contexte** | **privé** | le dossier et les empans retenus (`S.retenus`) — jamais jugés |
-| La **Plaidoirie** | **transmis** | ce que l'avocat retient (`S.plaidoirie`) — hors écran pour l'instant (§4.9) |
+| La **Discussion** + les pièces — *la bande du haut* | lecture | l'entrée |
+| Le **Contexte** — *panneau, au milieu* | **privé** | le dossier et les empans retenus (`S.retenus`) — jamais jugés |
+| La **Plaidoirie** — *panneau, au milieu* | **transmis** | ce que l'avocat retient (`S.plaidoirie`) |
+| **Le composeur** — *bandeau du bas* | **privé** | la phrase qu'on écrit — jamais jugée |
 
 - **Un empan retenu n'existe qu'une fois à l'écran** : les puces du contexte **sont** les boutons de
   terme. Le composeur ne porte aucune étiquette « privé » — son statut se lit dans ce qui s'y passe.
-- **On écrit sa réponse sous la question** : le clavier reste dans le Contexte, la phrase s'écrit dans
-  la Discussion. Arbitrage ouvert ; **le repli est de faire descendre les retenus, pas de remonter le
-  composeur.**
+- **Les deux surfaces de côté sont des PANNEAUX qui s'ouvrent ENTRE la conversation et le composeur**,
+  et **ne recouvrent rien** : la conversation **rétrécit pour leur faire place**. L'écran montre alors
+  ses trois temps d'un coup, de haut en bas — *ce qu'on me demande*, *ce dont je dispose*, *ce que
+  j'écris* — et la question reste sous les yeux pendant qu'on choisit un passage. Une surface à la
+  fois. Deux portes y mènent, et ce sont deux registres : **la voix du composeur enseigne** — elle dit
+  le geste et ouvre le Contexte — **la barre nomme** les deux surfaces, donne leur compte et y donne
+  accès à tout moment. Les portes **tranchent sur le fond** : ce sont des outils, pas des étiquettes.
+- **Un panneau ne s'ouvre jamais tout seul**, et deux fermetures coexistent, selon la porte par
+  laquelle il est venu. **Ouvert pour ÉCRIRE** (par la voix), il suit la phrase : il se referme dès
+  qu'elle ne peut plus recevoir de passage, et à son départ. **Ouvert pour CONSULTER** (par la barre),
+  il reste jusqu'à ce qu'on le ferme — regarder n'est pas écrire. La nuance de la première n'est pas un
+  détail : un passage posé, la voix se tait parce que la phrase se tient, mais **la grammaire ne sait
+  pas encore** si le joueur cite ou entame une comparaison (§4.5). Refermer là retirerait le clavier au
+  milieu du geste le plus difficile du jeu.
+- **Une pièce porte un seul nom** : l'index du Contexte l'appelle exactement comme la Discussion l'a
+  transmise. Le nom court ne survit que dans la **provenance** d'un passage retenu et dans la phrase
+  composée — là, il *référence*, il ne *nomme* pas.
+- **On écrit sa réponse sous la question** : le clavier est dans le Contexte, la phrase s'écrit sous la
+  conversation. L'arbitrage du **va-et-vient entre deux colonnes** est **clos, faute d'objet** : il n'y
+  a plus deux colonnes, et la conversation ne quitte jamais l'écran. Une autre question s'ouvre à sa
+  place, et elle n'a jamais été éprouvée — *trois bandes empilées, est-ce une pensée ou un tableau de
+  bord ?* (§3)
 - **Comprendre et dire restent deux gestes, non négociable** — l'intervalle sépare l'**assemblage** de
   l'**envoi** : c'est lui qui compte, pas le nombre de clics.
 - **L'avocat ne voit que la Plaidoirie**, d'où la gratuité du Contexte. Il **ne retient que les
@@ -195,20 +214,29 @@ refusé, il ne dit jamais lequel c'était, et la dérivation par laquelle il sai
 **s'éteint avec lui**. **Il ne décide rien** — aucun état neuf, aucune règle, et il peut se taire — y
 compris entre le geste 4 et le geste 5, le temps d'une citation déjà connue.
 
+**Le bandeau se tient en tête de page, dans le flux** : il réserve sa place et pousse le jeu vers le
+bas au lieu de le recouvrir — aucune des quatre ancres ne peut se retrouver dessous. Il reste épinglé
+au défilement, et lisible par-dessus la pièce ouverte.
+
 ### 4.9 L'économie de l'écran
 
 Quatre règles d'écran — le coupable d'une page illisible est le **chrome**, jamais la fiction :
 
 1. **Une voix par état — et parfois aucune** : le geste suivant se dit une fois, dans le fantôme tant
-   que la phrase est vide, dans l'aide ensuite ; si un bouton le dit déjà, l'aide se tait.
+   que la phrase est vide, dans l'aide ensuite ; si un bouton le dit déjà, l'aide se tait. **Et la voix
+   elle-même se clique quand le geste qu'elle nomme a lieu dans l'autre colonne** — elle mène alors au
+   Contexte et l'ouvre ; elle reste du texte quand le geste a lieu ici même, choisir l'article ou
+   envoyer. Un bouton ne promet ainsi jamais un effet qu'il ne produit pas (§4.5).
 2. **Un titre par zone** : l'en-tête nomme la **surface** (§4.6), les titres intérieurs les zones.
-3. **Ce qui ne change pas ne se répète pas** : le locuteur ne s'affiche qu'au changement, le rappel de
-   la question seulement quand elle a cessé d'être le dernier mot de l'avocat.
-4. **Ce qui n'existe pas encore ne s'affiche pas** : la Plaidoirie n'a de colonne qu'une fois quelque
-   chose inscrit dedans, et **c'est son apparition qui l'enseigne**. Elle est **escamotée
-   provisoirement** depuis le 16 septembre — la colonne ne s'affiche plus, la mécanique intacte
-   derrière (§17) : l'écran ne porte que deux surfaces le temps qu'on éprouve ce que son absence
-   coûte. La règle, elle, ne bouge pas ; c'est la colonne qui est en congé.
+3. **Ce qui reste LISIBLE ne se répète pas** : le locuteur ne s'affiche qu'au changement, et la
+   question ne se rappelle que lorsqu'elle a cessé d'être le dernier mot de l'avocat. Un panneau
+   ouvert ne fait pas exception, et c'est ce qui l'a fait ouvrir dans le flux plutôt que par-dessus :
+   **ce qui reste à l'écran n'a pas à être redit**.
+4. **Ce qui n'existe pas encore ne s'affiche pas** — mais ce qui *peut* exister garde sa porte. **La
+   Plaidoirie est revenue** de son escamotage du 16 septembre, et le §3 avait annoncé que la question à
+   son retour serait *où*, pas *si* : la réponse est **en panneau, à la demande**. Sa porte est là dès
+   le premier écran, avec son compte ; le panneau dit son propre vide, dans la fiction — *« Maître
+   Auber n'a encore rien retenu de toi. »* — jusqu'à la première réponse envoyée.
 
 **La densité ne touche pas au sens** : une phrase de chrome se coupe parce qu'elle explique, une phrase
 qui *est* le jeu reste. **Deux** ne se coupent pas : *« → Envoyer »* et *« Et donc ? »*. La troisième,

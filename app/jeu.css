@@ -14,38 +14,45 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:15px;line-height:1.55}
-.wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;padding:16px 20px;max-width:1400px;margin:0 auto}
+.wrap{display:flex;flex-direction:column;gap:14px;padding:16px 20px;max-width:1000px;margin:0 auto}
 .col{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
 .col > h2{margin:0;padding:9px 14px;font-size:13px;font-weight:600;color:var(--muted);
   text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:baseline}
-.col > h2 .zcount{float:none;margin-left:auto}
 
 .body{padding:12px 14px;overflow-y:auto;max-height:72vh}
+/* §4.6 : le panneau s'ouvre ENTRE la conversation et le composeur, sans rien
+   recouvrir. Les deux se partagent alors la hauteur — la conversation reste
+   lisible, la question sous les yeux, et le composeur sous l'écran sans avoir à
+   défiler. C'est la seule chose que la classe `avecPanneau` décide. */
+.wrap.avecPanneau #discussion{max-height:25vh}
+.panneau .body{max-height:31vh}
 /* PIÈGE : `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` — sans
    cette ligne, cacher la Plaidoirie ne ferait rien. */
 .col[hidden]{display:none}
-#composeur{grid-column:1/4;background:var(--panel);border:1px solid var(--line);
+#composeur{background:var(--panel);border:1px solid var(--line);
   border-radius:10px;padding:14px 18px}
 #composeur .zone{margin:0}
-/* PIÈGE : sans plan, deux colonnes — `.cloture` et `#composeur` sont câblés sur
-   trois colonnes, ils suivent, sinon ils débordent. */
-.wrap.sansPlan{grid-template-columns:1fr 1fr}
-.wrap.sansPlan .cloture{grid-column:1/3}
-.wrap.sansPlan #composeur{grid-column:1/3}
+/* PIÈGE : les deux parts ouvertes doivent rester SOUS la hauteur fermée, en-tête
+   du panneau et gouttière compris — sinon ouvrir allonge la page au lieu de la
+   partager, et la clôture s'enfonce. */
 @media (max-width:1100px){
-  .wrap,.wrap.sansPlan{grid-template-columns:1fr}
-  .cloture,.wrap.sansPlan .cloture,#composeur,.wrap.sansPlan #composeur{grid-column:1 !important}
   .body{max-height:44vh}
+  .wrap.avecPanneau #discussion{max-height:16vh}
+  .panneau .body{max-height:20vh}
 }
-/* §4.6 : cliquer dans le composeur fait descendre le Contexte dans le champ de
-   vision — un signal bref, une seule fois, jamais en boucle. Classe distincte de
-   [data-tuto], réservé au tutoriel (§4.8, R6). */
-@keyframes attireContexte{
-  0%{box-shadow:0 0 0 0 rgba(111,179,214,.55)}
-  100%{box-shadow:0 0 0 10px rgba(111,179,214,0)}
-}
-.attireContexte{animation:attireContexte .7s ease-out}
-@media (prefers-reduced-motion:reduce){ .attireContexte{animation:none} }
+/* La croix d'un panneau, et la barre qui y mène depuis le composeur. Les deux
+   portes doivent TRANCHER sur le panneau qui les porte : bord accentué et texte
+   plein, jamais le gris d'une étiquette. Ouverte, la porte s'inverse — on lit
+   d'un coup d'œil quelle surface est sous les yeux. */
+.col > h2 .fermer{margin-left:auto;background:none;border:none;color:var(--muted);
+  font-size:18px;line-height:1;padding:0 2px;cursor:pointer}
+.col > h2 .fermer:hover{color:var(--txt)}
+.ztitle .surfaces{margin-left:auto;display:flex;gap:6px}
+.versSurface{background:#20303f;border:1px solid var(--accent);border-radius:7px;
+  color:var(--txt);font-size:12.5px;font-weight:600;text-transform:none;letter-spacing:0;
+  padding:5px 12px;cursor:pointer}
+.versSurface:hover{background:#2b4259}
+.versSurface.ouvert{background:var(--accent);border-color:var(--accent);color:#0e1116}
 /* --- canal --- */
 .msg{margin-bottom:10px}
 .msg.suite{margin-top:-4px}   
@@ -65,7 +72,13 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
   margin-bottom:8px;padding:5px 10px;border:1px solid var(--line);border-radius:6px;
   background:var(--panel2);display:flex;align-items:baseline;gap:8px}
 .zone .ztitle .zcount{float:none;margin-left:auto}
-.aide{color:var(--muted);font-size:12px;margin-top:8px;font-style:italic}
+.aide{display:block;color:var(--muted);font-size:12px;margin-top:8px;font-style:italic}
+/* §4.9 règle 1 : la voix se clique quand le geste qu'elle nomme a lieu dans
+   l'autre colonne. Elle ne ressemble PAS à un `.bbloc` — celui-là POSE un bloc,
+   celle-ci ne fait que montrer où aller. */
+.versContexte{display:inline-block;text-align:left;background:none;color:inherit;font:inherit;
+  border:1px dashed var(--line);border-radius:6px;padding:5px 9px;cursor:pointer}
+.versContexte:hover{border-color:var(--accent);color:var(--txt)}
 .aide.question{margin-top:0;margin-bottom:10px;color:var(--txt);border-left:2px solid var(--muted);padding-left:8px}
 /* --- les empans dans le texte d'une pièce --- */
 .piecetexte{line-height:1.9}
@@ -143,7 +156,7 @@ body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);font
 .repet .btn{margin-top:8px;width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px;cursor:pointer}
 .repet .btn:hover{border-color:var(--accent)}
 /* --- clôture / fin --- */
-.cloture{grid-column:1/4;text-align:center;padding:4px 0 20px}
+.cloture{text-align:center;padding:4px 0 20px}
 .cloture button{background:#2a1c1c;color:#e0b7b7;border:1px solid #5a3a3a;border-radius:8px;
   padding:10px 20px;cursor:pointer;font-size:14px}
 .cloture button:disabled{opacity:.4;cursor:not-allowed}
@@ -170,7 +183,9 @@ code{font-family:var(--mono);color:var(--accent)}
 .dcol .dtitre{flex:none;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 .dcol .dchips{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .dcol .dvide{color:var(--muted);font-size:11.5px;font-style:italic}
-.dchip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11.5px;
+/* La puce porte le TITRE de la pièce, celui sous lequel la Discussion l'a
+   transmise (§4.6) : de la prose, donc ni mono ni corps de matricule. */
+.dchip{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;
   border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:4px 8px;cursor:pointer;color:var(--txt)}
 .dchip:hover{border-color:var(--accent)}
 .dchip.vu{opacity:.55}
@@ -185,11 +200,21 @@ code{font-family:var(--mono);color:var(--accent)}
 [data-tuto="alerte"]{outline-color:var(--warn);animation-name:poulsAlerte}
 @keyframes poulsAlerte{0%,100%{outline-color:var(--warn)}50%{outline-color:transparent}}
 @media (prefers-reduced-motion:reduce){ [data-tuto]{animation:none} }
-#tuto{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:60;
+/* EN TÊTE ET DANS LE FLUX (§4.8) : collant, il réserve sa place et pousse le
+   jeu vers le bas — il ne peut donc jamais recouvrir ses propres ancres. Ce
+   qu'un `position:fixed` faisait, et c'est pour ça qu'il n'en est plus un. */
+#tuto{position:sticky;top:0;z-index:60;width:fit-content;margin:12px auto 0;
   display:flex;align-items:baseline;gap:16px;max-width:min(640px,calc(100vw - 32px));
   background:#20303f;border:2px solid var(--accent);border-radius:10px;
   padding:18px 22px;font-size:15px;box-shadow:0 10px 34px rgba(0,0,0,.6)}
 #tuto[hidden]{display:none}
+/* Le bandeau parlant, la pièce ouverte se range DESSOUS au lieu de se centrer :
+   `--haut` est le seul nombre, et la hauteur maximale s'en déduit — la modale
+   tient donc entre le bandeau et le bas, à n'importe quelle taille d'écran.
+   Le sélecteur ne mord que parce que `#tuto` est en tête de <body>, donc frère
+   AVANT `#modalRoot`. */
+#tuto:not([hidden]) ~ #modalRoot .overlay{--haut:112px;align-items:flex-start;padding-top:var(--haut)}
+#tuto:not([hidden]) ~ #modalRoot .modal{max-height:calc(100vh - var(--haut) - 24px)}
 #tuto[data-alerte]{border-color:var(--warn)}
 #tuto[data-alerte] .dit{color:var(--warn)}
 #tuto .pas{color:var(--muted);font-family:var(--mono);font-size:12px}

@@ -16,6 +16,12 @@ console.log("\n=== L'index du dossier ===");
   check("une pièce non consultée porte le marqueur ●", contexte(w).includes("● "));
   w.ouvrirPiece(pid);
   check("consultée, elle porte ✓", contexte(w).includes("✓ "));
+  // Une pièce ne porte qu'un nom (§4.6) : on compare les deux surfaces entre
+  // elles, sans qu'aucun titre soit écrit ici.
+  const puces = [...w.document.querySelectorAll("#contexte .dchip")];
+  check("l'index nomme les pièces comme la Discussion les a transmises",
+    puces.length > 0 && puces.every(c =>
+      discussion(w).includes(c.textContent.replace(/^[●✓]\s*/, "").trim())));
 }
 
 console.log("\n=== Tout empan est marqué et cliquable ===");
