@@ -41,9 +41,27 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 .body{padding:12px 14px;overflow-y:auto;min-height:0;flex:1 1 auto}
 .col.fil{flex:1 1 0;min-height:130px}
 /* Un panneau ouvert, la conversation peut céder davantage — c'est tout ce que la
-   classe `avecPanneau` décide. */
-.wrap.avecPanneau .col.fil{min-height:96px}
-.panneau{flex:0 1 auto;max-height:32vh;min-height:0}
+   classe `avecPanneau` décide. Son PLANCHER n'est pas cosmétique : à 96 px elle
+   ne montrait qu'une ligne coupée, et c'est elle, pas le panneau, qui doit
+   rester lisible — le panneau, lui, dit qu'il déborde. */
+.wrap.avecPanneau .col.fil{min-height:132px}
+/* Le panneau peut prendre plus de hauteur depuis que la question redescend au
+   composeur (§4.9 règle 3) : elle ne dépend plus de ce qu'il reste à la
+   conversation. Les deux changements se tiennent — l'un sans l'autre est un
+   mauvais marché. */
+.panneau{flex:0 1 auto;max-height:40vh;min-height:0}
+/* UN PANNEAU QUI DÉBORDE LE DIT. La barre du système s'efface au repos : à dix
+   fiches, la suivante était sous le pli sans un indice. Celle-ci reste. */
+.panneau .body{scrollbar-width:thin;scrollbar-color:#3a4654 transparent}
+.panneau .body::-webkit-scrollbar{width:10px}
+.panneau .body::-webkit-scrollbar-track{background:transparent}
+.panneau .body::-webkit-scrollbar-thumb{background:#3a4654;border-radius:6px;
+  border:2px solid var(--panel)}
+/* L'index reste en tête : rouvert sur un défilement gardé, le panneau montrait
+   des fiches sans dire de quelles pièces elles venaient. Le `box-shadow` plein
+   bouche la gouttière sous lui — sans quoi le contenu défilerait dans le vide
+   entre l'index et la première fiche. */
+#zoneDossier{position:sticky;top:0;z-index:1;box-shadow:0 12px 0 0 var(--panel)}
 /* PIÈGE : `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` — sans
    cette ligne, cacher la Plaidoirie ne ferait rien. */
 .col[hidden]{display:none}
@@ -299,7 +317,9 @@ code{font-family:var(--mono);color:var(--accent)}
 #tuto:not([hidden]) ~ #modalRoot .modal{max-height:calc(100vh - var(--haut) - 24px)}
 #tuto[data-alerte]{border-color:var(--warn)}
 #tuto[data-alerte] .dit{color:var(--warn)}
-#tuto .pas{color:var(--muted);font-family:var(--mono);font-size:12.5px}
+/* Le geste se nomme à côté de son rang (§4.8) : « mettre en relation · 1/3 » ne
+   se coupe pas en deux, sans quoi le compteur passerait pour une phrase. */
+#tuto .pas{color:var(--muted);font-family:var(--mono);font-size:12.5px;white-space:nowrap}
 #tuto .dit{flex:1}
 #tuto .passer{background:none;border:none;color:var(--muted);font:inherit;font-size:13px;
   cursor:pointer;text-decoration:underline;padding:0;white-space:nowrap}
@@ -635,6 +655,14 @@ function creerRegles(JEU, M) {
   function ouvrirPiece(S, pid) {
     if (!S.examinees.includes(pid)) S.examinees.push(pid);
     S.modalPiece = pid;
+  }
+  /* LA RÉACTION DE L'AVOCAT SE LIT QUAND ON RELÈVE LES YEUX. Poussée à
+     l'OUVERTURE, elle tombait derrière une pièce qui venait de rendre le jeu
+     inerte : un joueur ne l'a lue qu'en fond flouté (§4.10 règle 3). Elle part
+     donc à la fermeture, dans un canal qu'on regarde. */
+  function fermerPiece(S) {
+    const pid = S.modalPiece;
+    S.modalPiece = null;
     const d = (JEU.pieces[pid] || {}).declenche;
     if (d && d.replique && !(d.une_fois && S.declenches.includes(pid))) {
       S.declenches.push(pid);
@@ -894,7 +922,7 @@ function creerRegles(JEU, M) {
   }
   const porteDe = pid => ((JEU.pieces[pid] || {}).porte) || [];
 
-  return { etatInitial, signatureContenu, pousser, envoyerRemise, ouvrirPiece,
+  return { etatInitial, signatureContenu, pousser, envoyerRemise, ouvrirPiece, fermerPiece,
            piecesLivrees, estRegle, reglesLivrees, porteDe,
            surligner, oublier, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
            comparaisonPossible, dimAttendue,
@@ -926,7 +954,7 @@ window.CONTENU = {
   "dimensions": [
     "quand",
     "qui",
-    "ou",
+    "où",
     "quoi",
     "combien"
   ],
@@ -936,8 +964,8 @@ window.CONTENU = {
       "court": "PV",
       "type": "procès-verbal",
       "qui": "brigadier N.",
-      "resume": "L'appel, l'heure d'arrivée, l'état de la porte.",
-      "texte": "Le 12 mars, {{e_app}} ; {{e_arr}}, {{e_equip}} engagés ; {{e_porte}}. Constatations faites {{e_sig}}.",
+      "resume": "L'appel, l'heure d'arrivée, l'état de la porte, le décès constaté sur place.",
+      "texte": "Le 12 mars, {{e_app}} ; {{e_arr}}, {{e_equip}} engagés ; {{e_porte}}. La victime gisait dans le séjour ; le médecin dépêché sur place n'a pu que constater le décès. Les lieux ont été tenus et l'immeuble bouclé jusqu'à l'arrivée du magistrat. Constatations faites {{e_sig}}.",
       "empans": {
         "e_app": {
           "dim": "quand",
@@ -960,7 +988,7 @@ window.CONTENU = {
           "bruit": true
         },
         "e_porte": {
-          "dim": "ou",
+          "dim": "où",
           "valeur": "porte",
           "texte": "la porte de l'appartement ne portait aucune trace d'effraction",
           "nom": "la porte de l'appartement",
@@ -998,7 +1026,7 @@ window.CONTENU = {
           "bruit": true
         },
         "e_pal": {
-          "dim": "ou",
+          "dim": "où",
           "valeur": "palier",
           "texte": "Ça venait du palier",
           "qui": "le voisin",
@@ -1080,7 +1108,7 @@ window.CONTENU = {
           "nom": "le releveur des traces sur la scène"
         },
         "e_ou": {
-          "dim": "ou",
+          "dim": "où",
           "valeur": "porte",
           "texte": "sur le montant de la porte",
           "nom": "le montant de la porte",
@@ -1223,7 +1251,7 @@ window.CONTENU = {
         "vers": "FIN",
         "imbrique": true,
         "piece": "r_temoin",
-        "texte": ", en contradiction avec l'article 3",
+        "texte": ", et l'article 3 écarte la déposition qui s'y heurte",
         "forme": "article_3"
       },
       {
@@ -1233,7 +1261,7 @@ window.CONTENU = {
         "vers": "FIN",
         "imbrique": true,
         "piece": "r_protocole",
-        "texte": ", en contradiction avec l'article 7",
+        "texte": ", en violation de l'article 7",
         "forme": "article_7"
       },
       {
@@ -1243,29 +1271,111 @@ window.CONTENU = {
         "vers": "FIN",
         "imbrique": true,
         "piece": "r_seuil",
-        "texte": ", en contradiction avec l'article 12",
+        "texte": ", au regard de l'article 12",
         "forme": "article_12"
       }
     ],
     "formes": {
+      "identite_personne": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "egalite",
+        "slots": [
+          [
+            "qui"
+          ],
+          [
+            "qui"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} sont une seule et même personne"
+      },
+      "distinction_personne": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "difference",
+        "slots": [
+          [
+            "qui"
+          ],
+          [
+            "qui"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} ne sont pas la même personne"
+      },
+      "identite_lieu": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "egalite",
+        "slots": [
+          [
+            "où"
+          ],
+          [
+            "où"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} sont au même endroit"
+      },
+      "distinction_lieu": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "difference",
+        "slots": [
+          [
+            "où"
+          ],
+          [
+            "où"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} ne sont pas au même endroit"
+      },
+      "identite_heure": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "egalite",
+        "slots": [
+          [
+            "quand"
+          ],
+          [
+            "quand"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} coïncident"
+      },
+      "identite_nombre": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "egalite",
+        "slots": [
+          [
+            "combien"
+          ],
+          [
+            "combien"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} sont égaux"
+      },
       "identite_oui": {
         "arite": 2,
         "ordonne": false,
         "deduction": "egalite",
         "slots": [
           [
-            "qui",
-            "quoi",
-            "ou",
-            "quand",
-            "combien"
+            "quoi"
           ],
           [
-            "qui",
-            "quoi",
-            "ou",
-            "quand",
-            "combien"
+            "quoi"
           ]
         ],
         "relation": "meme_dim",
@@ -1307,14 +1417,10 @@ window.CONTENU = {
         "deduction": "difference",
         "slots": [
           [
-            "qui",
-            "quoi",
-            "ou"
+            "quoi"
           ],
           [
-            "qui",
-            "quoi",
-            "ou"
+            "quoi"
           ]
         ],
         "relation": "meme_dim",
@@ -1354,7 +1460,7 @@ window.CONTENU = {
           [
             "qui",
             "quoi",
-            "ou",
+            "où",
             "quand",
             "combien"
           ]
@@ -1369,7 +1475,7 @@ window.CONTENU = {
         "p_pv.e_arr"
       ],
       "tag": "q_arrivee",
-      "rep": "22h04. L'heure des services — c'est celle qui fait foi, retiens-la."
+      "rep": "22h04, oui. L'heure des services — c'est celle qui fait foi, retiens-la."
     },
     {
       "forme": "citation",
@@ -1385,7 +1491,7 @@ window.CONTENU = {
         "t_voisin.e_voix"
       ],
       "tag": "q_voix",
-      "rep": "Ce n'est pas logique : c'est postérieur à l'heure d'arrivée de la patrouille."
+      "rep": "22h30. Tu as vu ce que ça donne, j'espère : à cette heure-là mes collègues tenaient l'appartement depuis une demi-heure, devant le corps. Personne n'a pu entendre ce qu'il raconte."
     },
     {
       "forme": "article_3",
@@ -1399,13 +1505,13 @@ window.CONTENU = {
         }
       ],
       "tag": "temoin",
-      "rep": "Voilà qui est utilisable. Son horaire tombe, donc sa déposition ne porte plus rien à elle seule. Je le garde pour l'ouverture."
+      "rep": "Voilà. C'est exactement ça, et c'est plaidable : son horaire tombe, sa déposition ne porte plus rien à elle seule. Je le garde pour l'ouverture — et toi, tu sais lire un dossier."
     },
     {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "identite_oui",
+          "forme": "identite_personne",
           "termes": [
             "p_pv.e_sig",
             "t_voisin.e_sig2"
@@ -1418,7 +1524,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "identite_oui",
+          "forme": "identite_personne",
           "termes": [
             "p_scene.e_grf",
             "p_ref.e_grf2"
@@ -1444,7 +1550,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "identite_oui",
+          "forme": "identite_personne",
           "termes": [
             "p_scene.e_moi",
             "p_ref.e_moi2"
@@ -1473,7 +1579,7 @@ window.CONTENU = {
   "remises": [
     {
       "qui": "Maître Auber",
-      "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Aide-moi à démonter l'accusation en pointant les incohérences du dossier.\nPenche-toi sur le procès-verbal d'abord. À quelle heure la patrouille est-elle arrivée sur les lieux ?",
+      "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Ton travail : démonter l'accusation, pièce par pièce. Mais personne ne m'a encore montré que tu sais lire un dossier — alors d'abord trois questions dont j'ai déjà les réponses.",
       "pieces": [
         "p_pv",
         "t_voisin",
@@ -1481,21 +1587,22 @@ window.CONTENU = {
       ],
       "attentes": [
         {
+          "question": "Le procès-verbal, pour commencer. À quelle heure la patrouille est-elle arrivée sur les lieux ?",
           "attend": "q_arrivee"
         },
         {
-          "question": "Passons à l'audition du voisin. À quelle heure situe-t-il ces éclats de voix ?",
+          "question": "Deuxième. L'audition du voisin : à quelle heure situe-t-il les éclats de voix qu'il dit avoir entendus ?",
           "attend": "q_voix"
         },
         {
           "attend": "temoin",
-          "question": "Et sur quel article on peut s'appuyer pour rejeter son témoignage basé sur une incohérence ?"
+          "question": "Troisième et dernière. Dis-le-moi comme on le plaide : les deux heures, et le texte qui les fait tomber."
         }
       ]
     },
     {
       "qui": "Maître Auber",
-      "texte": "Tout est là. Trouve-moi de quoi écarter cette expertise.",
+      "texte": "Le vrai dossier, maintenant. Le rapport du laboratoire, et tout ce qui l'entoure. Celui-là, je l'ai lu dix fois sans rien y trouver — à toi.",
       "pieces": [
         "p_adn",
         "p_scene",
@@ -1696,7 +1803,6 @@ function majRecommencer(){
    DEUX gestes, chacun montré une fois : citer, puis — dans la même session,
    dès que Maître Auber attend une comparaison — mettre en relation. */
 const CLE_TUTO="iavocat_tuto";
-const TUTO_TOTAL=6;
 let tutoFait=false;
 try{ tutoFait = !!localStorage.getItem(CLE_TUTO); }catch(e){}
 function effacerTuto(){ try{ localStorage.removeItem(CLE_TUTO); }catch(e){} }
@@ -1722,44 +1828,53 @@ function tutoAttenteComparaison(){
   const t=tutoLienAttente(), p=t&&(t.termes||[])[0];
   return !!p && typeof p==="object";
 }
+/* DEUX SÉRIES, CHACUNE SON TOTAL (§4.8). Une numérotation unique revenait de
+   6/6 à 4/6 au moment d'envoyer, les deux gestes partageant le bouton : elle
+   mentait sur une progression qui n'a jamais été linéaire. Le geste se nomme,
+   l'étape se compte dans son geste. */
+const GESTE_CITER = {geste:"citer", total:4};
+const GESTE_RELIER = {geste:"mettre en relation", total:3};
+/* PIÈGE : le chrome N'EST PERSONNE — il nomme le GESTE, jamais la TROUVAILLE
+   (§4.8). Dire « les deux passages qui se contredisent », c'est répondre à la
+   place du joueur ; l'avocat, lui, a le droit : il sait, il calibre (§3). */
 function tutoEtapeCitation(){
   const veut=tutoAttendu();
   if(veut ? !S.retenus.includes(veut) : !S.retenus.length){
     const rate = !!veut && S.retenus.length>0;
     return S.modalPiece
-      ? {n:2, ou:"#modalRoot .piecetexte", alerte:rate,
-            dit: rate ? "Ce n'est pas ce qu'il demande. Relis sa question, et prends le passage qui y répond."
-                      : "Clique sur un passage souligné pour l'ajouter à ton CONTEXTE."}
-      : {n:1, ou:"#discussion .attach", alerte:rate,
+      ? {...GESTE_CITER, n:2, ou:"#modalRoot .piecetexte", alerte:rate,
+            dit: rate ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage qui y répond."
+                      : "Clique sur un passage souligné pour le retenir dans ton CONTEXTE."}
+      : {...GESTE_CITER, n:1, ou:"#discussion .attach", alerte:rate,
             dit: rate ? "Ce n'est pas ce qu'il demande. Relis sa question et ouvre la bonne pièce."
                       : "Ouvre la pièce : ce qu'il te demande est écrit dedans."};
   }
   if(!R.peutEnvoyer(S))
     return S.modalPiece
-      ? {n:2, ou:"#modalRoot .close",
+      ? {...GESTE_CITER, n:2, ou:"#modalRoot .close",
             dit:"Passage retenu. Referme la pièce."}
       : panneau==="contexte"
-        ? {n:3, ou:"#zoneRetenus",
-            dit:"Clique sur le passage pertinent pour l'utiliser dans ta réponse"}
-        : {n:3, ou:"#btnContexte",
+        ? {...GESTE_CITER, n:3, ou:"#zoneRetenus",
+            dit:"Prends le passage qui répond : il entrera dans ta réponse."}
+        : {...GESTE_CITER, n:3, ou:"#btnContexte",
             dit:"Ouvre ton contexte : le passage que tu viens de retenir s'y trouve."};
-  return  {n:4, ou:"#composeur button.envoi",
+  return  {...GESTE_CITER, n:4, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
 }
 function tutoEtapeComparaison(){
   if(R.indexTermeChamp(S)>=0){
     const dit = S.compo.length
-      ? "Prends un second passage : celui qui contredit le premier."
-      : "Sélectionne les deux passages se contredisant pour soulever une irrégularité.";
+      ? "Prends-en un second : c'est leur rapport qui parlera."
+      : "Une réponse peut tenir sur deux passages. Prends-en un premier.";
     return panneau==="contexte"
-      ? {n:5, ou:"#zoneRetenus", dit}
-      : {n:5, ou:"#btnContexte", dit:"Ouvre ton contexte : "+dit[0].toLowerCase()+dit.slice(1)};
+      ? {...GESTE_RELIER, n:1, ou:"#zoneRetenus", dit}
+      : {...GESTE_RELIER, n:1, ou:"#btnContexte", dit:"Ouvre ton contexte : "+dit[0].toLowerCase()+dit.slice(1)};
   }
   if(S.compo.length && R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
-    return {n:6, ou:"#composeur .offre",
-      dit:"Une comparaison seule ne suffit pas : sélectionne l'article sur lequel s'appuyer."};
+    return {...GESTE_RELIER, n:2, ou:"#composeur .offre",
+      dit:"Une relation seule ne suffit pas : prends l'article sur lequel elle s'appuie."};
   if(R.peutEnvoyer(S))
-    return {n:4, ou:"#composeur button.envoi",
+    return {...GESTE_RELIER, n:3, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
   return null;
 }
@@ -1783,13 +1898,14 @@ function majTutoriel(){
   const e = tutoFait ? null : tutoEtape();
   /* Le halo ne se voit pas à l'oreille : une consigne NEUVE s'annonce (§4.10),
      une consigne répétée par un redessin, non. */
-  if(e && e.dit!==tutoDernierDit) tutoAnnonce="Tutoriel, "+e.n+" sur "+TUTO_TOTAL+" : "+e.dit;
+  if(e && e.dit!==tutoDernierDit)
+    tutoAnnonce="Tutoriel, "+e.geste+", "+e.n+" sur "+e.total+" : "+e.dit;
   tutoDernierDit = e ? e.dit : null;
   if(!e){ banniere.hidden=true; return; }
   tutoCible=document.querySelector(e.ou);
   if(tutoCible) tutoCible.setAttribute("data-tuto", e.alerte?"alerte":"");
   banniere.toggleAttribute("data-alerte", !!e.alerte);
-  $("tutoPas").textContent=e.n+"/"+TUTO_TOTAL;
+  $("tutoPas").textContent=e.geste+" · "+e.n+"/"+e.total;
   $("tutoDit").textContent=e.dit;
   banniere.hidden=false;
 }
@@ -1805,7 +1921,8 @@ const modalRoot = $("modalRoot");
    `#modalRoot` et `#annonce` vivent hors d'elle, et c'est ce qui les garde. */
 let ouvreur=null;
 function closeModal(){
-  S.modalPiece=null; modalRoot.innerHTML="";
+  R.fermerPiece(S);                     // la réaction de l'avocat part ICI (§4.10)
+  modalRoot.innerHTML="";
   const w=document.querySelector(".wrap"); if(w) w.removeAttribute("inert");
   focusVoulu=ouvreur; ouvreur=null;
   rendreTout();
@@ -2045,7 +2162,7 @@ function renderRetenus(){
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
   let h=`<div class="zone" id="zoneRetenus">`;
   if(!S.retenus.length){
-    h+=`<div class="aide">Alimente ton contexte en sélectionnant des passages du dossier.</div>`;
+    h+=`<div class="aide">Retiens des passages du dossier : ils viendront ici.</div>`;
   } else {
     for(const d of JEU.dimensions||[]){
       const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
@@ -2081,13 +2198,16 @@ function souffle(){
   // terme — sonder ici manquerait toujours son moment. `comparaisonPossible`
   // regarde un cran plus loin, l'état qui suivrait la pose (§4.5).
   const second=R.comparaisonPossible(S);
+  /* DEUX VERBES, UN PAR GESTE (§4.6) : on RETIENT un passage — de la pièce vers
+     le Contexte — et on le PREND — du Contexte vers la phrase. « Sélectionner »
+     servait aux deux, et un joueur a lu trois verbes pour deux gestes. */
   if(!S.compo.length){
     if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
-    return second ? "Sélectionne un ou plusieurs passages de ton contexte." : "Depuis ton contexte, sélectionne un passage pour répondre.";
+    return second ? "Prends un ou plusieurs passages de ton contexte." : "Prends un passage de ton contexte pour répondre.";
   }
   if(offerts.some(b=>b.cite) || R.compoFinie(S)) return "";
   if(offerts.some(b=>b.type==="terme"&&b.source!=="note"))
-    return "Clique sur un second passage pour le mettre en relation.";
+    return "Prends un second passage pour le mettre en relation.";
   return offerts.length
     ? "Sur quel article t'appuies-tu pour montrer qu'il y a une irrégularité ?"
     : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
@@ -2135,10 +2255,13 @@ function rappelQuestion(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
   if(!a || !a.question) return "";
   const dernier=S.fil[S.fil.length-1];
-  // §4.9 règle 3 : ce qui reste LISIBLE ne se répète pas. Un panneau ne couvre
-  // plus la conversation — il la rétrécit — donc la question reste lisible et
-  // n'a jamais à être redite tant qu'elle est le dernier mot de l'avocat.
-  if(dernier && dernier.texte===a.question) return "";
+  /* §4.9 règle 3 : ce qui reste LISIBLE ne se répète pas — et LISIBLE est la
+     condition, pas PRÉSENT. Un panneau ne couvre rien, mais la conversation est
+     la seule bande élastique : c'est elle qui cède, et en 1280×800, panneau
+     ouvert et bandeau du tutoriel affiché, il lui reste moins que la question.
+     PIÈGE PAYÉ : un joueur a composé sa réponse sans la voir. Panneau ouvert,
+     la question redescend donc ici ; refermé, elle se tait. */
+  if(!panneau && dernier && dernier.texte===a.question) return "";
   return `<div class="aide question">« ${escapeAttr(a.question)} »</div>`;
 }
 /* La barre des deux surfaces (§4.6) : elle NOMME ce qu'on a, et y donne accès à
@@ -2286,8 +2409,22 @@ function majPanneaux(){
   // la classe ne décide que jusqu'où elle peut céder, et c'est du CSS (§9).
   { const w=document.querySelector(".wrap"); if(w) w.classList.toggle("avecPanneau", !!panneau); }
 }
-function ouvrirContexte(){ panneau="contexte"; panneauSuit=true; rendreTout(); }
-function basculerPanneau(nom){ panneau = panneau===nom ? null : nom; panneauSuit=false; rendreTout(); }
+/* LE PANNEAU S'OUVRE SUR CE QU'ON VIENT DE RETENIR. À dix-sept fiches, la
+   dernière est sous le pli et rien ne le disait : un joueur a cherché son
+   passage. Pur écran, aucune règle — et APRÈS `rendreTout`, donc après le
+   focus, pour avoir le dernier mot sur le défilement. PIÈGE : la clé contient
+   un point, inoffensif dans une valeur d'attribut entre guillemets ; et jsdom
+   n'implémente pas `scrollIntoView`, d'où la garde. */
+function voirDernierRetenu(){
+  const k=S.retenus[S.retenus.length-1]; if(!k) return;
+  const el=document.querySelector('[data-f="c:'+k+'"]');
+  if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
+}
+function ouvrirContexte(){ panneau="contexte"; panneauSuit=true; rendreTout(); voirDernierRetenu(); }
+function basculerPanneau(nom){
+  panneau = panneau===nom ? null : nom; panneauSuit=false; rendreTout();
+  if(panneau==="contexte") voirDernierRetenu();
+}
 function fermerPanneau(){ panneau=null; panneauSuit=false; rendreTout(); }
 
 /* LE CLAVIER (§4.10). Échap referme ce qui est posé PAR-DESSUS, du plus haut au
