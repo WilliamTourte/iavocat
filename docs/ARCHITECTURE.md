@@ -316,7 +316,8 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 **Les mots.** Le joueur ne lit jamais `empan`, `bloc`, `lien`, `forme`, `terme` : dans une chaîne
 d'écran, c'est une fuite. À l'écran : **Discussion**, **Contexte**, **Plaidoirie** (§4.6) ; **passage**
 (un empan, vu du côté joueur) ; **Ta réponse** (la zone du composeur) ; **→ Envoyer** (clôt et transmet,
-irréversible) ; **Clôturer l'instruction** (ferme l'affaire).
+irréversible) ; **Je n'ai rien d'autre**, puis **Je n'ai rien à opposer** (l'IA répond ; c'est l'avocat
+qui dépose et ferme l'affaire — §4.9).
 
 | Dans le code | Ce que ça désigne |
 |---|---|
@@ -329,6 +330,8 @@ irréversible) ; **Clôturer l'instruction** (ferme l'affaire).
 | **attente** / **remise** | `{question?, attend, apres?}` / un envoi de pièces avec sa liste — « session » est le mot du sens |
 | **`S.retenus`** / **`S.plaidoirie`** / **`S.fil`** | les empans surlignés / ce qui est entré au plan / le journal affiché |
 
-**Deux faux amis qui mordent encore** : `clore` ferme **une phrase**, `cloturer` ferme
-**l'instruction** et déclenche une fin — jamais l'un pour l'autre, commentaires compris ; `empan` ne
-fuit jamais à l'écran, `passage` n'entre jamais dans `content.js` ni `moteur.js`.
+**Deux faux amis qui mordent encore** : `clore` ferme **une phrase**, `cloturer` ouvre la **fin de
+l'affaire** et déclenche une fin — jamais l'un pour l'autre, commentaires compris ; `empan` ne
+fuit jamais à l'écran, `passage` n'entre jamais dans `content.js` ni `moteur.js`. `cloturer` et
+`clotureDemandee` **restent les mots du code** : ils ne paraissent sous aucune forme à l'écran, où
+l'IA ne fait que répondre (§4.9) — les renommer ne réparerait rien et coûterait ce faux ami.

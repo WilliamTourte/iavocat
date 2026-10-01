@@ -55,8 +55,10 @@ Clôture → répétition → procès hors-champ → Fin 3 / Fin 1 / Fin 2
 
 Session 1 apprend à lire, à citer, **puis** à mettre en rapport — ses deux questions d'horaire ont
 extrait la paire que la troisième fera comparer ; prix assumé, elles expriment déjà la moitié de la
-compréhension. **Charnière de la Fin 3** : la dernière attente servie, l'IA *peut* clôturer et laisser
-filer.
+compréhension. **Charnière de la Fin 3** : la dernière attente servie, **c'est l'avocat qui demande
+s'il tient tout** — l'IA *peut* répondre que oui, et laisser filer. La question est portée par le
+**contenu**, sur la **dernière** attente de la dernière session : elle paraît donc à l'instant exact
+où le droit de répondre s'ouvre, sans qu'aucune règle ait à le savoir (§4.9).
 
 ## 4. Le geste
 
@@ -234,7 +236,7 @@ voit pas le halo (§4.10).
 
 ### 4.9 L'économie de l'écran
 
-Quatre règles d'écran — le coupable d'une page illisible est le **chrome**, jamais la fiction :
+Cinq règles d'écran — le coupable d'une page illisible est le **chrome**, jamais la fiction :
 
 1. **Une voix par état — et parfois aucune** : le geste suivant se dit une fois, dans le fantôme tant
    que la phrase est vide, dans l'aide ensuite ; si un bouton le dit déjà, l'aide se tait. **Et la voix
@@ -253,6 +255,17 @@ Quatre règles d'écran — le coupable d'une page illisible est le **chrome**, 
    son retour serait *où*, pas *si* : la réponse est **en panneau, à la demande**. Sa porte est là dès
    le premier écran, avec son compte ; le panneau dit son propre vide, dans la fiction — *« Maître
    Auber n'a encore rien retenu de toi. »* — jusqu'à la première réponse envoyée.
+5. **Le chrome ne s'arroge pas un pouvoir que la fiction refuse** : un bouton nomme ce que *nous*
+   pouvons dire, jamais l'acte de procédure qui s'ensuit. **Clôturer une instruction est l'acte du
+   juge** — l'IA ne peut que répondre qu'elle n'a rien d'autre, et l'avocat dépose. D'où *« Je n'ai
+   rien d'autre »* là où l'écran annonçait *« Clôturer l'instruction »*, et *« Je n'ai rien à
+   opposer »* à la répétition. Ce n'est pas un correctif de vocabulaire : **le libellé devient
+   l'acte moral**. L'appuyer en tenant le vice compris et tu, c'est un mensonge qu'on signe
+   soi-même — tout le poids des Fins 2 et 3, sans qu'aucune interface n'ait rien signalé (§4). La
+   fiction disait déjà vrai (*« je rédige mes conclusions »*, *« je dépose au matin »*) : seul le
+   chrome mentait. **La barre reste**, et c'est délibéré : la question se pose dans le fil, mais une
+   question qui a défilé est une question perdue — le droit de répondre doit rester sous la main
+   aussi longtemps qu'on compose.
 
 **La densité ne touche pas au sens** : une phrase de chrome se coupe parce qu'elle explique, une phrase
 qui *est* le jeu reste. **Deux** ne se coupent pas : *« → Envoyer »* et *« Et donc ? »*. La troisième,
@@ -337,6 +350,7 @@ au §3 de `docs/PASSATION.md`.*
 | Un mécanisme utilisé une seule fois est un panneau indicateur — sauf le tutoriel | §4, §4.8 |
 | Rien ne se passe tant que rien n'est envoyé ; composer et envoyer restent deux gestes | §4.6 |
 | Tout geste se fait au clavier ; rien ne se dit par la couleur seule | §4.3, §4.10 |
+| Le chrome ne s'arroge aucun pouvoir que la fiction refuse : l'IA répond, l'avocat dépose | §4.9 |
 | Le contenu n'existe qu'en un exemplaire, les règles qu'en un seul endroit | §12 |
 
 *Deux choses tranchées qu'on redit parce qu'on y revient : le **budget d'attention** est retiré

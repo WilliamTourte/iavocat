@@ -236,7 +236,7 @@ function creerRegles(JEU, M) {
     n.versee = true;
     if (S.prete === i) S.prete = null;
     S.plaidoirie.push({ b: i, contre: (contre == null ? null : contre) });
-    pousser(S, "IA", "⟨ envoyé : " + n.texte + " ⟩", null, true);
+    pousser(S, "IAvocat", "⟨ envoyé : " + n.texte + " ⟩", null, true);
     const L = n.lien;
     if (L && L.vice && L.conclusion) { S.vice_trouve = true; S.vice_expose = true; }  // transmis = compris
     reponseAvocat(S, n);
