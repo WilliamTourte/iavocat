@@ -99,7 +99,7 @@ const GRAMMAIRE_PAR_DEFAUT = () => clone(contenuLivre().grammaire);
 const DIMS_PAR_DEFAUT = () => clone(contenuLivre().dimensions);
 const RABAT_DIM = { agent:"qui", personne:"qui", signature:"qui", greffier:"qui",
                     heure:"quand", date:"quand",
-                    lieu:"ou",
+                    lieu:"où", ou:"où",
                     scellé:"quoi", scelle:"quoi", charge:"quoi", conclusion:"quoi",
                     sanction:"quoi", logistique:"quoi", source:"quoi",
                     seuil:"combien", nombre:"combien", montant:"combien" };

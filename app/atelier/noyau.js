@@ -6,7 +6,7 @@ const LIVRE = (typeof window!=="undefined" && window.CONTENU)
             ? JSON.parse(JSON.stringify(window.CONTENU)) : null;
 if(typeof window!=="undefined") window.LIVRE=LIVRE;   // exposé (console, tests)
 
-const CONTENU_VIDE = () => ({ schema:3, dimensions:["quand","qui","ou","quoi","combien"],
+const CONTENU_VIDE = () => ({ schema:3, dimensions:["quand","qui","où","quoi","combien"],
   pieces:{}, grammaire:{ depart:"S0", finaux:["FIN"], blocs:[], formes:{} },
   liens:[], remises:[], repetition:{ intro:"", affirmations:[], fin:"" },
   avocat:{}, directives:[], fins:{} });

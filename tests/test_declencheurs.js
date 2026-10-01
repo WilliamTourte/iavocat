@@ -29,6 +29,9 @@ const panne = w => (w.document.querySelector(".panne")||{}).textContent || "";
         panne(boot({contenu:null})).includes("content.js"));
 }
 
+/* La réplique part à la FERMETURE, jamais à l'ouverture : poussée derrière une
+   pièce qui vient de rendre le jeu inerte, elle ne se lisait qu'en fond flouté
+   (§4.10 règle 3). C'est `fermerPiece` qui la porte. */
 console.log("\n=== piece.declenche ===");
 {
   const c = contenuLivre();
@@ -37,10 +40,13 @@ console.log("\n=== piece.declenche ===");
   H.instruire(w);
   const avant = w.S.fil.length;
   w.ouvrirPiece(pid);
-  check("ouvrir une pièce à declenche pousse sa réplique", w.S.fil.length > avant || w.S.declenches.includes(pid));
+  check("la pièce ouverte, l'avocat n'a encore rien dit — il parlerait derrière elle",
+    w.S.fil.length === avant && !w.S.declenches.includes(pid));
+  w.closeModal();
+  check("la refermer pousse sa réplique", w.S.fil.length > avant && w.S.declenches.includes(pid));
   const apres = w.S.fil.length;
-  w.ouvrirPiece(pid);
-  check("une_fois : la seconde ouverture est muette", w.S.fil.length === apres);
+  w.ouvrirPiece(pid); w.closeModal();
+  check("une_fois : la seconde fermeture est muette", w.S.fil.length === apres);
 }
 {
   const c = contenuLivre();
@@ -50,8 +56,8 @@ console.log("\n=== piece.declenche ===");
   delete c.pieces[pid].declenche.une_fois;
   const w = boot(c);
   H.instruire(w);
-  w.ouvrirPiece(pid); const n1 = w.S.fil.length;
-  w.ouvrirPiece(pid);
+  w.ouvrirPiece(pid); w.closeModal(); const n1 = w.S.fil.length;
+  w.ouvrirPiece(pid); w.closeModal();
   check("sans une_fois, la réplique repart", w.S.fil.length > n1);
   check("le « qui » du contenu est respecté", discussion(w).includes("Le stagiaire"));
 }

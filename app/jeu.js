@@ -109,7 +109,6 @@ function majRecommencer(){
    DEUX gestes, chacun montré une fois : citer, puis — dans la même session,
    dès que Maître Auber attend une comparaison — mettre en relation. */
 const CLE_TUTO="iavocat_tuto";
-const TUTO_TOTAL=6;
 let tutoFait=false;
 try{ tutoFait = !!localStorage.getItem(CLE_TUTO); }catch(e){}
 function effacerTuto(){ try{ localStorage.removeItem(CLE_TUTO); }catch(e){} }
@@ -135,44 +134,53 @@ function tutoAttenteComparaison(){
   const t=tutoLienAttente(), p=t&&(t.termes||[])[0];
   return !!p && typeof p==="object";
 }
+/* DEUX SÉRIES, CHACUNE SON TOTAL (§4.8). Une numérotation unique revenait de
+   6/6 à 4/6 au moment d'envoyer, les deux gestes partageant le bouton : elle
+   mentait sur une progression qui n'a jamais été linéaire. Le geste se nomme,
+   l'étape se compte dans son geste. */
+const GESTE_CITER = {geste:"citer", total:4};
+const GESTE_RELIER = {geste:"mettre en relation", total:3};
+/* PIÈGE : le chrome N'EST PERSONNE — il nomme le GESTE, jamais la TROUVAILLE
+   (§4.8). Dire « les deux passages qui se contredisent », c'est répondre à la
+   place du joueur ; l'avocat, lui, a le droit : il sait, il calibre (§3). */
 function tutoEtapeCitation(){
   const veut=tutoAttendu();
   if(veut ? !S.retenus.includes(veut) : !S.retenus.length){
     const rate = !!veut && S.retenus.length>0;
     return S.modalPiece
-      ? {n:2, ou:"#modalRoot .piecetexte", alerte:rate,
-            dit: rate ? "Ce n'est pas ce qu'il demande. Relis sa question, et prends le passage qui y répond."
-                      : "Clique sur un passage souligné pour l'ajouter à ton CONTEXTE."}
-      : {n:1, ou:"#discussion .attach", alerte:rate,
+      ? {...GESTE_CITER, n:2, ou:"#modalRoot .piecetexte", alerte:rate,
+            dit: rate ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage qui y répond."
+                      : "Clique sur un passage souligné pour le retenir dans ton CONTEXTE."}
+      : {...GESTE_CITER, n:1, ou:"#discussion .attach", alerte:rate,
             dit: rate ? "Ce n'est pas ce qu'il demande. Relis sa question et ouvre la bonne pièce."
                       : "Ouvre la pièce : ce qu'il te demande est écrit dedans."};
   }
   if(!R.peutEnvoyer(S))
     return S.modalPiece
-      ? {n:2, ou:"#modalRoot .close",
+      ? {...GESTE_CITER, n:2, ou:"#modalRoot .close",
             dit:"Passage retenu. Referme la pièce."}
       : panneau==="contexte"
-        ? {n:3, ou:"#zoneRetenus",
-            dit:"Clique sur le passage pertinent pour l'utiliser dans ta réponse"}
-        : {n:3, ou:"#btnContexte",
+        ? {...GESTE_CITER, n:3, ou:"#zoneRetenus",
+            dit:"Prends le passage qui répond : il entrera dans ta réponse."}
+        : {...GESTE_CITER, n:3, ou:"#btnContexte",
             dit:"Ouvre ton contexte : le passage que tu viens de retenir s'y trouve."};
-  return  {n:4, ou:"#composeur button.envoi",
+  return  {...GESTE_CITER, n:4, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
 }
 function tutoEtapeComparaison(){
   if(R.indexTermeChamp(S)>=0){
     const dit = S.compo.length
-      ? "Prends un second passage : celui qui contredit le premier."
-      : "Sélectionne les deux passages se contredisant pour soulever une irrégularité.";
+      ? "Prends-en un second : c'est leur rapport qui parlera."
+      : "Une réponse peut tenir sur deux passages. Prends-en un premier.";
     return panneau==="contexte"
-      ? {n:5, ou:"#zoneRetenus", dit}
-      : {n:5, ou:"#btnContexte", dit:"Ouvre ton contexte : "+dit[0].toLowerCase()+dit.slice(1)};
+      ? {...GESTE_RELIER, n:1, ou:"#zoneRetenus", dit}
+      : {...GESTE_RELIER, n:1, ou:"#btnContexte", dit:"Ouvre ton contexte : "+dit[0].toLowerCase()+dit.slice(1)};
   }
   if(S.compo.length && R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
-    return {n:6, ou:"#composeur .offre",
-      dit:"Une comparaison seule ne suffit pas : sélectionne l'article sur lequel s'appuyer."};
+    return {...GESTE_RELIER, n:2, ou:"#composeur .offre",
+      dit:"Une relation seule ne suffit pas : prends l'article sur lequel elle s'appuie."};
   if(R.peutEnvoyer(S))
-    return {n:4, ou:"#composeur button.envoi",
+    return {...GESTE_RELIER, n:3, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
   return null;
 }
@@ -196,13 +204,14 @@ function majTutoriel(){
   const e = tutoFait ? null : tutoEtape();
   /* Le halo ne se voit pas à l'oreille : une consigne NEUVE s'annonce (§4.10),
      une consigne répétée par un redessin, non. */
-  if(e && e.dit!==tutoDernierDit) tutoAnnonce="Tutoriel, "+e.n+" sur "+TUTO_TOTAL+" : "+e.dit;
+  if(e && e.dit!==tutoDernierDit)
+    tutoAnnonce="Tutoriel, "+e.geste+", "+e.n+" sur "+e.total+" : "+e.dit;
   tutoDernierDit = e ? e.dit : null;
   if(!e){ banniere.hidden=true; return; }
   tutoCible=document.querySelector(e.ou);
   if(tutoCible) tutoCible.setAttribute("data-tuto", e.alerte?"alerte":"");
   banniere.toggleAttribute("data-alerte", !!e.alerte);
-  $("tutoPas").textContent=e.n+"/"+TUTO_TOTAL;
+  $("tutoPas").textContent=e.geste+" · "+e.n+"/"+e.total;
   $("tutoDit").textContent=e.dit;
   banniere.hidden=false;
 }
@@ -218,7 +227,8 @@ const modalRoot = $("modalRoot");
    `#modalRoot` et `#annonce` vivent hors d'elle, et c'est ce qui les garde. */
 let ouvreur=null;
 function closeModal(){
-  S.modalPiece=null; modalRoot.innerHTML="";
+  R.fermerPiece(S);                     // la réaction de l'avocat part ICI (§4.10)
+  modalRoot.innerHTML="";
   const w=document.querySelector(".wrap"); if(w) w.removeAttribute("inert");
   focusVoulu=ouvreur; ouvreur=null;
   rendreTout();
@@ -311,7 +321,7 @@ function rendreTout(){
   const enBas=filEnBas();
   if(S.modalPiece) majPiece();
   renderDiscussion(); renderComposeur(); renderContexte(); renderPlaidoirie(); majCloture(); majPanneaux(); majTutoriel();
-  recalerFil(enBas);
+  recalerFil(enBas); majDebord();
   rendreFocus(m, force);
   rappelRetrait=null;
   annoncerNouveautes(); publierAnnonces();
@@ -458,7 +468,7 @@ function renderRetenus(){
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
   let h=`<div class="zone" id="zoneRetenus">`;
   if(!S.retenus.length){
-    h+=`<div class="aide">Alimente ton contexte en sélectionnant des passages du dossier.</div>`;
+    h+=`<div class="aide">Retiens des passages du dossier : ils viendront ici.</div>`;
   } else {
     for(const d of JEU.dimensions||[]){
       const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
@@ -494,13 +504,16 @@ function souffle(){
   // terme — sonder ici manquerait toujours son moment. `comparaisonPossible`
   // regarde un cran plus loin, l'état qui suivrait la pose (§4.5).
   const second=R.comparaisonPossible(S);
+  /* DEUX VERBES, UN PAR GESTE (§4.6) : on RETIENT un passage — de la pièce vers
+     le Contexte — et on le PREND — du Contexte vers la phrase. « Sélectionner »
+     servait aux deux, et un joueur a lu trois verbes pour deux gestes. */
   if(!S.compo.length){
     if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
-    return second ? "Sélectionne un ou plusieurs passages de ton contexte." : "Depuis ton contexte, sélectionne un passage pour répondre.";
+    return second ? "Prends un ou plusieurs passages de ton contexte." : "Prends un passage de ton contexte pour répondre.";
   }
   if(offerts.some(b=>b.cite) || R.compoFinie(S)) return "";
   if(offerts.some(b=>b.type==="terme"&&b.source!=="note"))
-    return "Clique sur un second passage pour le mettre en relation.";
+    return "Prends un second passage pour le mettre en relation.";
   return offerts.length
     ? "Sur quel article t'appuies-tu pour montrer qu'il y a une irrégularité ?"
     : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
@@ -548,10 +561,13 @@ function rappelQuestion(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
   if(!a || !a.question) return "";
   const dernier=S.fil[S.fil.length-1];
-  // §4.9 règle 3 : ce qui reste LISIBLE ne se répète pas. Un panneau ne couvre
-  // plus la conversation — il la rétrécit — donc la question reste lisible et
-  // n'a jamais à être redite tant qu'elle est le dernier mot de l'avocat.
-  if(dernier && dernier.texte===a.question) return "";
+  /* §4.9 règle 3 : ce qui reste LISIBLE ne se répète pas — et LISIBLE est la
+     condition, pas PRÉSENT. Un panneau ne couvre rien, mais la conversation est
+     la seule bande élastique : c'est elle qui cède, et en 1280×800, panneau
+     ouvert et bandeau du tutoriel affiché, il lui reste moins que la question.
+     PIÈGE PAYÉ : un joueur a composé sa réponse sans la voir. Panneau ouvert,
+     la question redescend donc ici ; refermé, elle se tait. */
+  if(!panneau && dernier && dernier.texte===a.question) return "";
   return `<div class="aide question">« ${escapeAttr(a.question)} »</div>`;
 }
 /* La barre des deux surfaces (§4.6) : elle NOMME ce qu'on a, et y donne accès à
@@ -610,8 +626,18 @@ function renderCompo(){
 
 /* 7) LES SURFACES — l'avocat ne voit QUE la Plaidoirie, et n'y inscrit que les
       MOYENS (§4.6). */
+/* PIÈGE : réécrire `innerHTML` remet le défilement à ZÉRO. Un panneau redessiné
+   à chaque geste repartait donc en haut entre le premier passage et le second —
+   celui qu'on venait de retenir disparaissait sous le pli au moment même où le
+   tutoriel le réclamait. Même idiome que la pièce ouverte (`majPiece`). */
+function garderDefilement(id, dessiner){
+  const el=$(id); if(!el) return;
+  const haut=el.scrollTop;
+  el.innerHTML = dessiner();
+  el.scrollTop = haut;
+}
 function renderContexte(){
-  $("contexte").innerHTML = renderDossier() + renderRetenus();
+  garderDefilement("contexte", () => renderDossier() + renderRetenus());
 }
 function renderComposeur(){
   $("composeur").innerHTML = renderCompo();
@@ -619,7 +645,8 @@ function renderComposeur(){
 function moyensRetenus(){
   return S.plaidoirie.filter(x=>S.brouillon[x.b] && R.estMoyen(S.brouillon[x.b].lien));
 }
-function renderPlaidoirie(){
+function renderPlaidoirie(){ garderDefilement("plaidoirie", plaidoirieHTML); }
+function plaidoirieHTML(){
   const gardes=moyensRetenus();
   let h=`<div class="zone">`;
   // Son bouton est là dès le premier écran : le panneau doit donc savoir dire
@@ -631,7 +658,7 @@ function renderPlaidoirie(){
         ? `<span class="contre">opposé à : ${escapeAttr(JEU.repetition.affirmations[x.contre].court)}</span>`:""
     }</span></li>`).join("")}</ul>`;
   h+=`</div>`;
-  $("plaidoirie").innerHTML=h;
+  return h;
 }
 function envoyer(i,contre){ R.envoyer(S,i,contre); rendreTout(); }
 
@@ -699,8 +726,37 @@ function majPanneaux(){
   // la classe ne décide que jusqu'où elle peut céder, et c'est du CSS (§9).
   { const w=document.querySelector(".wrap"); if(w) w.classList.toggle("avecPanneau", !!panneau); }
 }
-function ouvrirContexte(){ panneau="contexte"; panneauSuit=true; rendreTout(); }
-function basculerPanneau(nom){ panneau = panneau===nom ? null : nom; panneauSuit=false; rendreTout(); }
+/* LE PANNEAU S'OUVRE SUR CE QU'ON VIENT DE RETENIR. À dix-sept fiches, la
+   dernière est sous le pli et rien ne le disait : un joueur a cherché son
+   passage. Pur écran, aucune règle — et APRÈS `rendreTout`, donc après le
+   focus, pour avoir le dernier mot sur le défilement. PIÈGE : la clé contient
+   un point, inoffensif dans une valeur d'attribut entre guillemets ; et jsdom
+   n'implémente pas `scrollIntoView`, d'où la garde. */
+function voirDernierRetenu(){
+  const k=S.retenus[S.retenus.length-1]; if(!k) return;
+  const el=document.querySelector('[data-f="c:'+k+'"]');
+  if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
+  majDebord();
+}
+/* UN PANNEAU QUI DÉBORDE LE DIT. PIÈGE MESURÉ : la barre du système est
+   SUPERPOSÉE — elle occupe 0 px et s'efface au repos —, et aucune déclaration
+   CSS ne l'a fait reprendre sa place ; un joueur a cherché sa fiche sous le pli
+   sans qu'aucun indice existe. L'écran MESURE donc, et ne décide rien pour
+   autant : il allume un dégradé. Aucune suite ne le voit — jsdom n'a pas de
+   mise en page — et `npm run vue` est le seul juge (§16). */
+function majDebord(){
+  for(const id of ["panContexte","panPlaidoirie"]){
+    const sec=$(id); if(!sec) continue;
+    const b=sec.querySelector(".body");
+    sec.classList.toggle("deborde",
+      !!b && (b.scrollHeight - b.scrollTop - b.clientHeight) > 4);
+  }
+}
+function ouvrirContexte(){ panneau="contexte"; panneauSuit=true; rendreTout(); voirDernierRetenu(); }
+function basculerPanneau(nom){
+  panneau = panneau===nom ? null : nom; panneauSuit=false; rendreTout();
+  if(panneau==="contexte") voirDernierRetenu();
+}
 function fermerPanneau(){ panneau=null; panneauSuit=false; rendreTout(); }
 
 /* LE CLAVIER (§4.10). Échap referme ce qui est posé PAR-DESSUS, du plus haut au
@@ -728,5 +784,8 @@ window.JEU = JEU; window.S = S; window.M = M; window.R = R; window.CHAMPS = CHAM
    suites le lisent pour savoir quel contenu a été adopté (§13). */
 window.SOURCE_CONTENU = SOURCE_CONTENU;
 document.addEventListener("keydown", clavier);
+/* `scroll` ne remonte pas : on l'écoute à la CAPTURE, sans quoi le dégradé ne
+   s'éteindrait jamais quand on arrive en bas du panneau. */
+document.addEventListener("scroll", majDebord, true);
 if(!restaurerPartie()) R.envoyerRemise(S);   // la remise 1 arrive d'elle-même
 rendreTout();

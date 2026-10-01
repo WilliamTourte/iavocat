@@ -7,7 +7,7 @@ window.CONTENU = {
   "dimensions": [
     "quand",
     "qui",
-    "ou",
+    "où",
     "quoi",
     "combien"
   ],
@@ -17,8 +17,8 @@ window.CONTENU = {
       "court": "PV",
       "type": "procès-verbal",
       "qui": "brigadier N.",
-      "resume": "L'appel, l'heure d'arrivée, l'état de la porte.",
-      "texte": "Le 12 mars, {{e_app}} ; {{e_arr}}, {{e_equip}} engagés ; {{e_porte}}. Constatations faites {{e_sig}}.",
+      "resume": "L'appel, l'heure d'arrivée, l'état de la porte, le décès constaté sur place.",
+      "texte": "Le 12 mars, {{e_app}} ; {{e_arr}}, {{e_equip}} engagés ; {{e_porte}}. La victime gisait dans le séjour ; le médecin dépêché sur place n'a pu que constater le décès. Les lieux ont été tenus et l'immeuble bouclé jusqu'à l'arrivée du magistrat. Constatations faites {{e_sig}}.",
       "empans": {
         "e_app": {
           "dim": "quand",
@@ -41,7 +41,7 @@ window.CONTENU = {
           "bruit": true
         },
         "e_porte": {
-          "dim": "ou",
+          "dim": "où",
           "valeur": "porte",
           "texte": "la porte de l'appartement ne portait aucune trace d'effraction",
           "nom": "la porte de l'appartement",
@@ -79,7 +79,7 @@ window.CONTENU = {
           "bruit": true
         },
         "e_pal": {
-          "dim": "ou",
+          "dim": "où",
           "valeur": "palier",
           "texte": "Ça venait du palier",
           "qui": "le voisin",
@@ -161,7 +161,7 @@ window.CONTENU = {
           "nom": "le releveur des traces sur la scène"
         },
         "e_ou": {
-          "dim": "ou",
+          "dim": "où",
           "valeur": "porte",
           "texte": "sur le montant de la porte",
           "nom": "le montant de la porte",
@@ -304,7 +304,7 @@ window.CONTENU = {
         "vers": "FIN",
         "imbrique": true,
         "piece": "r_temoin",
-        "texte": ", en contradiction avec l'article 3",
+        "texte": ", et l'article 3 écarte la déposition qui s'y heurte",
         "forme": "article_3"
       },
       {
@@ -314,7 +314,7 @@ window.CONTENU = {
         "vers": "FIN",
         "imbrique": true,
         "piece": "r_protocole",
-        "texte": ", en contradiction avec l'article 7",
+        "texte": ", en violation de l'article 7",
         "forme": "article_7"
       },
       {
@@ -324,29 +324,111 @@ window.CONTENU = {
         "vers": "FIN",
         "imbrique": true,
         "piece": "r_seuil",
-        "texte": ", en contradiction avec l'article 12",
+        "texte": ", au regard de l'article 12",
         "forme": "article_12"
       }
     ],
     "formes": {
+      "identite_personne": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "egalite",
+        "slots": [
+          [
+            "qui"
+          ],
+          [
+            "qui"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} sont une seule et même personne"
+      },
+      "distinction_personne": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "difference",
+        "slots": [
+          [
+            "qui"
+          ],
+          [
+            "qui"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} ne sont pas la même personne"
+      },
+      "identite_lieu": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "egalite",
+        "slots": [
+          [
+            "où"
+          ],
+          [
+            "où"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} sont au même endroit"
+      },
+      "distinction_lieu": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "difference",
+        "slots": [
+          [
+            "où"
+          ],
+          [
+            "où"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} ne sont pas au même endroit"
+      },
+      "identite_heure": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "egalite",
+        "slots": [
+          [
+            "quand"
+          ],
+          [
+            "quand"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} coïncident"
+      },
+      "identite_nombre": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "egalite",
+        "slots": [
+          [
+            "combien"
+          ],
+          [
+            "combien"
+          ]
+        ],
+        "relation": "meme_dim",
+        "patron": "{a} et {b} sont égaux"
+      },
       "identite_oui": {
         "arite": 2,
         "ordonne": false,
         "deduction": "egalite",
         "slots": [
           [
-            "qui",
-            "quoi",
-            "ou",
-            "quand",
-            "combien"
+            "quoi"
           ],
           [
-            "qui",
-            "quoi",
-            "ou",
-            "quand",
-            "combien"
+            "quoi"
           ]
         ],
         "relation": "meme_dim",
@@ -388,14 +470,10 @@ window.CONTENU = {
         "deduction": "difference",
         "slots": [
           [
-            "qui",
-            "quoi",
-            "ou"
+            "quoi"
           ],
           [
-            "qui",
-            "quoi",
-            "ou"
+            "quoi"
           ]
         ],
         "relation": "meme_dim",
@@ -435,7 +513,7 @@ window.CONTENU = {
           [
             "qui",
             "quoi",
-            "ou",
+            "où",
             "quand",
             "combien"
           ]
@@ -450,7 +528,7 @@ window.CONTENU = {
         "p_pv.e_arr"
       ],
       "tag": "q_arrivee",
-      "rep": "22h04. L'heure des services — c'est celle qui fait foi, retiens-la."
+      "rep": "22h04, oui. L'heure des services — c'est celle qui fait foi, retiens-la."
     },
     {
       "forme": "citation",
@@ -466,7 +544,7 @@ window.CONTENU = {
         "t_voisin.e_voix"
       ],
       "tag": "q_voix",
-      "rep": "Ce n'est pas logique : c'est postérieur à l'heure d'arrivée de la patrouille."
+      "rep": "22h30. Tu as vu ce que ça donne, j'espère : à cette heure-là mes collègues tenaient l'appartement depuis une demi-heure, devant le corps. Personne n'a pu entendre ce qu'il raconte."
     },
     {
       "forme": "article_3",
@@ -480,13 +558,13 @@ window.CONTENU = {
         }
       ],
       "tag": "temoin",
-      "rep": "Voilà qui est utilisable. Son horaire tombe, donc sa déposition ne porte plus rien à elle seule. Je le garde pour l'ouverture."
+      "rep": "Voilà. C'est exactement ça, et c'est plaidable : son horaire tombe, sa déposition ne porte plus rien à elle seule. Je le garde pour l'ouverture — et toi, tu sais lire un dossier."
     },
     {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "identite_oui",
+          "forme": "identite_personne",
           "termes": [
             "p_pv.e_sig",
             "t_voisin.e_sig2"
@@ -499,7 +577,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "identite_oui",
+          "forme": "identite_personne",
           "termes": [
             "p_scene.e_grf",
             "p_ref.e_grf2"
@@ -525,7 +603,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "identite_oui",
+          "forme": "identite_personne",
           "termes": [
             "p_scene.e_moi",
             "p_ref.e_moi2"
@@ -554,7 +632,7 @@ window.CONTENU = {
   "remises": [
     {
       "qui": "Maître Auber",
-      "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Aide-moi à démonter l'accusation en pointant les incohérences du dossier.\nPenche-toi sur le procès-verbal d'abord. À quelle heure la patrouille est-elle arrivée sur les lieux ?",
+      "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Ton travail : démonter l'accusation, pièce par pièce. Mais personne ne m'a encore montré que tu sais lire un dossier — alors d'abord trois questions dont j'ai déjà les réponses.",
       "pieces": [
         "p_pv",
         "t_voisin",
@@ -562,21 +640,22 @@ window.CONTENU = {
       ],
       "attentes": [
         {
+          "question": "Le procès-verbal, pour commencer. À quelle heure la patrouille est-elle arrivée sur les lieux ?",
           "attend": "q_arrivee"
         },
         {
-          "question": "Passons à l'audition du voisin. À quelle heure situe-t-il ces éclats de voix ?",
+          "question": "Deuxième. L'audition du voisin : à quelle heure situe-t-il les éclats de voix qu'il dit avoir entendus ?",
           "attend": "q_voix"
         },
         {
           "attend": "temoin",
-          "question": "Et sur quel article on peut s'appuyer pour rejeter son témoignage basé sur une incohérence ?"
+          "question": "Troisième et dernière. Dis-le-moi comme on le plaide : les deux heures, et le texte qui les fait tomber."
         }
       ]
     },
     {
       "qui": "Maître Auber",
-      "texte": "Tout est là. Trouve-moi de quoi écarter cette expertise.",
+      "texte": "Le vrai dossier, maintenant. Le rapport du laboratoire, et tout ce qui l'entoure. Celui-là, je l'ai lu dix fois sans rien y trouver — à toi.",
       "pieces": [
         "p_adn",
         "p_scene",

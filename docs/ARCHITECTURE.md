@@ -103,7 +103,12 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   bouton) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa pièce).
 - **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`) · `sens` (`"asc"` par
   défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8).
-  **L'ordre de déclaration est signifiant** : `deduire` rend la première forme qui convient.
+  **L'ordre de déclaration est signifiant** : `deduire` rend la première forme qui convient. C'est
+  par là qu'une dimension obtient sa **langue** : `identite_personne` (slots `qui`, *« une seule et
+  même personne »*) déclarée **avant** `identite_oui` (slots : les cinq, *« la même chose »*), et
+  deux empans `qui` égaux prennent la première. Même prédicat, `slots` plus étroits, déclaration
+  plus haut : aucune ligne de moteur. **PIÈGE** : `lienDe` apparie sur `{forme, termes}` — tout lien
+  écrit sur l'ancienne forme doit suivre, **le vice compris**.
 - **Attribut d'un empan** : `bruit` — *leurre assumé*, que le diagnostic cesse de signaler comme
   inerte (§15). Il vit **sur l'empan** : il suit les renommages et meurt avec lui, et l'atelier n'en
   tient aucune liste à côté. Une telle liste a existé (`_bruit`), que l'export jetait ; `migrerContenu`
@@ -211,14 +216,14 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **404 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **406 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
 | `test_o5.js` (38) | l'index du dossier ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
-| `test_declencheurs.js` (35) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (192) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition ; **le clavier** (§4.10) |
+| `test_declencheurs.js` (36) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
+| `test_parcours.js` (193) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition ; **le clavier** (§4.10) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
 | `smoke_atelier.js` (101) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
@@ -292,12 +297,12 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
-| l'avocat ouvre une session ; ouvrir une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion`, `ouvrirPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion`, `modalPieceHTML`, `rendreTexte`, `renderDossier` |
-| **surligner** (ajoute, privé, gratuit) ; **oublier** (retire, Contexte seul) | `surligner`, `oublier` | `renderRetenus` dans `renderContexte` ; `rappelRetrait` quand on reclique un passage retenu |
+| l'avocat ouvre une session ; ouvrir et refermer une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion`, `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion`, `modalPieceHTML`, `rendreTexte`, `renderDossier` |
+| **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, Contexte seul) | `surligner`, `oublier` | `renderRetenus` dans `renderContexte` ; `rappelRetrait` quand on reclique un passage retenu ; `voirDernierRetenu` à l'ouverture du panneau |
 | ce que le composeur offre ; ce qui se devine avant le clic ; la voix | `blocsOfferts`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
 | **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du Contexte | `rendreVoix`, `ouvrirContexte`, `majPanneaux` |
 | ouvrir et fermer une surface de côté | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `clavier` (Échap) |
-| **le clavier et la voix d'annonce** (§4.10) — le focus qui survit, la pièce en boîte de dialogue, ce qui s'annonce | *(aucune — l'écran seul)* | `clavier`, `memoFocus` → `rendreFocus` (par la clé `data-f`), `modal`/`closeModal` (`inert` sur `.wrap`), `annoncer` → `#annonce` |
+| **le clavier et la voix d'annonce** (§4.10) — le focus qui survit, la pièce en boîte de dialogue, ce qui s'annonce | `fermerPiece`, seule règle que l'écran appelle en refermant | `clavier`, `memoFocus` → `rendreFocus` (par la clé `data-f`), `modal`/`closeModal` (`inert` sur `.wrap`), `annoncer` → `#annonce` |
 | **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
 | **envoyer** — le seul geste | `envoyerCompo` → `clore` → `envoyer` → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPlaidoirie` |
@@ -318,6 +323,10 @@ d'écran, c'est une fuite. À l'écran : **Discussion**, **Contexte**, **Plaidoi
 (un empan, vu du côté joueur) ; **Ta réponse** (la zone du composeur) ; **→ Envoyer** (clôt et transmet,
 irréversible) ; **Je n'ai rien d'autre**, puis **Je n'ai rien à opposer** (l'IA répond ; c'est l'avocat
 qui dépose et ferme l'affaire — §4.9).
+
+**Deux verbes, un par geste** (§4.6) : on **retient** un passage — de la pièce vers le Contexte,
+`surligner` dans le code — et on le **prend** — du Contexte vers la phrase, `poserBloc`. *Sélectionner*
+ne paraît plus à l'écran : il servait aux deux.
 
 | Dans le code | Ce que ça désigne |
 |---|---|

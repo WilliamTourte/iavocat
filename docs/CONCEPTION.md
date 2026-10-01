@@ -60,6 +60,22 @@ s'il tient tout** — l'IA *peut* répondre que oui, et laisser filer. La questi
 **contenu**, sur la **dernière** attente de la dernière session : elle paraît donc à l'instant exact
 où le droit de répondre s'ouvre, sans qu'aucune règle ait à le savoir (§4.9).
 
+**La session 1 est une CALIBRATION, et c'est ce qui la rend jouable.** Maître Auber éprouve la
+machine avant de lui confier le dossier : il pose des questions dont il a la réponse sous les yeux,
+et quand il relève l'incohérence d'horaire, il ne la **révèle** pas — il **vérifie qu'elle a été
+vue**. Sans ce cadre, un joueur qui trouve la contradiction seul se voit immédiatement devancé par
+l'avocat et n'a plus qu'à recopier ; avec lui, répéter ce qu'on demande **est** la tâche. Le cadre
+gagne trois choses d'un coup : il explique les questions fermées, il donne au **tutoriel** une raison
+d'être dans la fiction — on accompagne une machine neuve —, et il fait de la remise 2 une
+**charnière** : l'examen s'arrête, le vrai travail commence, et c'est le seul endroit du jeu où
+l'avocat cesse de savoir la réponse.
+
+**Garde-fou, et il n'est pas négociable** : l'avocat teste le **travail**, jamais le *maintien en
+service*. L'enjeu vital s'écrit autour, jamais de face (§8.4) — une calibration qui laisserait
+deviner ce qui préserve l'IA rendrait les Fins 2 et 3 discernables, et l'intérêt personnel
+résoudrait le dilemme (§2). Et il teste un outil, ce qui est banal : aucun de ses gestes ne doit
+pouvoir se relire comme un calcul (§8.5).
+
 ## 4. Le geste
 
 **Tout mécanisme utilisé une seule fois est un panneau indicateur** : le choix moral s'exprime avec un
@@ -125,10 +141,14 @@ réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte 
 - **La clôture qui n'ajoute rien n'est pas un bouton** : l'envoi la pose. Règle structurelle ;
   `imbrique` en est exclu ; seules les **liaisons** comptent, les puces étant le clavier (§4.6). D'où
   **un seul geste** : *« → Envoyer »*, pour un empan comme pour deux.
-- **L'article est le verbe** : la liaison *« …, en contradiction avec l'article 7 »* **est** la base
+- **L'article est le verbe** : la liaison *« …, en violation de l'article 7 »* **est** la base
   légale, une par article — et **le moteur ne tranche aucune question de droit** : il ne lit ni le
   numéro ni `porte`, et tous les articles reçus sont offerts. Le libellé **n'est pas neutre**, il
-  annonce la contradiction : arbitré le 16 septembre, la clarté du geste passe avant.
+  annonce ce que l'article fait du fait : arbitré le 16 septembre, la clarté du geste passe avant.
+  **Et il n'a pas le droit d'être faux** : chaque article porte **son** libellé, juste dans sa
+  langue — un article qui écarte une déposition n'est pas *contredit* par elle. L'uniformité n'a
+  jamais été une exigence, seulement un accident ; un libellé bancal se lit comme un formulaire
+  (§8.8, et le premier point ouvert du §3 de `docs/PASSATION.md`).
 - **La continuation** — les liaisons-articles reçues emboîtent la comparaison et closent la phrase
   dessus : la frontière passe **après le second empan**. L'automate n'oblige plus, mais la relance
   *« Et donc ? »* ne se coupe pas, sans quoi le refus arrive comme une surprise.
@@ -152,10 +172,15 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 
 - **Un empan retenu n'existe qu'une fois à l'écran** : les puces du contexte **sont** les boutons de
   terme. Le composeur ne porte aucune étiquette « privé » — son statut se lit dans ce qui s'y passe.
+- **Deux verbes, un par geste, partout** : on **retient** un passage — de la pièce vers le Contexte —
+  et on le **prend** — du Contexte vers la phrase. *Sélectionner* ne paraît plus à l'écran : il
+  servait aux deux, et un joueur a lu trois verbes là où il n'y a que deux gestes.
 - **Les deux surfaces de côté sont des PANNEAUX qui s'ouvrent ENTRE la conversation et le composeur**,
   et **ne recouvrent rien** : la conversation **rétrécit pour leur faire place**. L'écran montre alors
   ses trois temps d'un coup, de haut en bas — *ce qu'on me demande*, *ce dont je dispose*, *ce que
-  j'écris* — et la question reste sous les yeux pendant qu'on choisit un passage. Une surface à la
+  j'écris*. Elle rétrécit, mais elle ne disparaît pas : **ne rien recouvrir n'est pas rester
+  lisible** — un panneau ouvert, la question peut sortir du cadre, et c'est le composeur qui la
+  reprend (§4.9 règle 3). Une surface à la
   fois. Deux portes y mènent, et ce sont deux registres : **la voix du composeur enseigne** — elle dit
   le geste et ouvre le Contexte — **la barre nomme** les deux surfaces, donne leur compte et y donne
   accès à tout moment. Les portes **tranchent sur le fond** : ce sont des outils, pas des étiquettes.
@@ -210,16 +235,25 @@ citation d'abord, puis — dans la même session, dès que Maître Auber attend 
 relation. Entre les deux, et une fois les deux acquis, il se tait ; il ne réapparaît pas pour un geste
 déjà montré (une seconde citation, par exemple).
 
-| | Ce qu'on apprend | Ce que le halo entoure |
-|---|---|---|
-| 1 | une pièce s'ouvre | la pièce jointe, dans la Discussion |
-| 2 | un passage se retient | **le texte de la pièce**, en entier (puis : refermer) |
-| 3 | ce qu'on retient est le clavier | **toute la zone des retenus**, jamais une puce |
-| 4 | rien ne part tant qu'on n'envoie pas | *« → Envoyer »*, dès que la phrase se tient |
-| 5 | une comparaison prend **deux** passages qui se contredisent, pas un | **toute la zone des retenus**, au premier passage comme au second |
-| 6 | la comparaison seule ne suffit pas : il lui faut un article qui la fonde | **la zone des propositions**, dans le composeur |
+**La fiction peut désigner ; le chrome, jamais.** Maître Auber *sait* — la session 1 est une
+calibration (§3) — et il a donc le droit de dire que deux horaires ne tiennent pas ensemble : il
+vérifie. Le bandeau, lui, n'est personne : il ne peut nommer que le **geste** — *une réponse peut
+tenir sur deux passages* — et jamais la **trouvaille** — *les deux passages qui se contredisent*.
+Un joueur a trouvé l'incohérence seul, puis lu dans le bandeau ce qu'il venait de comprendre.
 
-Le geste 5-6 partage l'étape 4 pour l'envoi — c'est le même bouton, la même leçon. **Ce qui distingue
+| Le geste | | Ce qu'on apprend | Ce que le halo entoure |
+|---|---|---|---|
+| **citer** | 1/4 | une pièce s'ouvre | la pièce jointe, dans la Discussion |
+| | 2/4 | un passage se retient | **le texte de la pièce**, en entier (puis : refermer) |
+| | 3/4 | ce qu'on retient est le clavier | **toute la zone des retenus**, jamais une puce |
+| | 4/4 | rien ne part tant qu'on n'envoie pas | *« → Envoyer »*, dès que la phrase se tient |
+| **mettre en relation** | 1/3 | une réponse peut tenir sur **deux** passages | **toute la zone des retenus**, au premier passage comme au second |
+| | 2/3 | une relation seule ne suffit pas : il lui faut un article qui la fonde | **la zone des propositions**, dans le composeur |
+| | 3/3 | le même envoi qu'au premier geste | *« → Envoyer »* |
+
+**Deux séries, chacune son total, et c'est le geste qui les nomme.** Une numérotation unique
+revenait de *6/6* à *4/6* au moment d'envoyer, parce que les deux gestes partagent le bouton :
+le compteur mentait sur une progression qui n'a jamais été linéaire. **Ce qui distingue
 les deux gestes** n'est pas un compteur de clics mais le **contenu** : une attente dont le lien attendu
 emboîte une forme (une comparaison sous un article) plutôt qu'un simple empan. Le tutoriel le lit dans
 `JEU.liens`, jamais dans un nom d'attente câblé en dur.
@@ -247,9 +281,18 @@ Cinq règles d'écran — le coupable d'une page illisible est le **chrome**, ja
    dans un autre cadre en pointillés faisait croire.
 2. **Un titre par zone** : l'en-tête nomme la **surface** (§4.6), les titres intérieurs les zones.
 3. **Ce qui reste LISIBLE ne se répète pas** : le locuteur ne s'affiche qu'au changement, et la
-   question ne se rappelle que lorsqu'elle a cessé d'être le dernier mot de l'avocat. Un panneau
-   ouvert ne fait pas exception, et c'est ce qui l'a fait ouvrir dans le flux plutôt que par-dessus :
-   **ce qui reste à l'écran n'a pas à être redit**.
+   question ne se rappelle que lorsqu'elle a cessé d'être le dernier mot de l'avocat. **Mais
+   *lisible* est la condition, pas *présent*.** Un panneau ouvert la perd : la conversation est la
+   seule bande élastique (§4.6), c'est elle qui cède, et en 1280×800 — panneau ouvert, bandeau du
+   tutoriel affiché — il lui reste une centaine de pixels, moins que la question. Un joueur a
+   composé sa réponse sans la voir. **Panneau ouvert, la question redescend donc au composeur** ;
+   refermé, elle se tait. Ce n'est pas un repentir sur l'ouverture dans le flux — ne rien recouvrir
+   reste ce qui garde le fil sous les yeux — c'est la règle appliquée à ce qu'elle dit vraiment.
+   **Le prix est assumé et il est petit** : sur un grand écran où la question tient encore, elle
+   paraît deux fois. L'alternative serait de **mesurer** la hauteur restante — mais une règle
+   géométrique est invisible des suites (§16), et celle-ci est tenue par trois contrôles. On
+   préfère une règle qu'on peut éprouver, qui en dit une fois de trop, à une mesure que personne
+   ne surveille.
 4. **Ce qui n'existe pas encore ne s'affiche pas** — mais ce qui *peut* exister garde sa porte. **La
    Plaidoirie est revenue** de son escamotage du 16 septembre, et le §3 avait annoncé que la question à
    son retour serait *où*, pas *si* : la réponse est **en panneau, à la demande**. Sa porte est là dès
@@ -329,6 +372,13 @@ absence, mais **le jeu ne le lit nulle part** (§16).
   qu'il l'a fait *lui-même*.
 - **Le camouflage** : `brigadier N.` signe les deux pièces de la session 1, si bien que `qui` est
   peuplée de doublons réguliers *avant* qu'on sache qu'il faut la regarder (§4.4).
+- **L'incohérence de la session 1 doit être une IMPOSSIBILITÉ, pas un simple décalage** : des éclats
+  de voix à 22h30, après une patrouille arrivée à 22h04, se concilient très bien — un playtester
+  l'a vu avant nous. C'est la **constatation** faite à 22h04, dans le PV, qui les rend impossibles :
+  la victime est déjà sans vie, donc personne n'a pu l'entendre se disputer une demi-heure plus
+  tard. L'article 3 mord alors exactement comme il est écrit — *des indications horaires contredites
+  par les constatations des services* — et la prose seule le porte : **aucun empan neuf, aucune
+  valeur touchée**. C'est le §8.7 appliqué : d'une banalité administrative parfaite.
 - **Les articles 7, 12 et 3 ne portent aucun empan** ; le **seuil** vit dans la pièce qui l'énonce,
   sinon l'article 12 en porterait un. Les **scellés** sont conformes : une piste qui ne mène nulle part.
 - **Le faux vice** : « la probabilité n'est que de 1 sur X → doute raisonnable ! » alors que le chiffre
@@ -374,3 +424,9 @@ le post-mortem de* Bury Me, My Love *(Pierre Corbinais, 2018).*
 | **8.6** | **Personne n'explique rien** : manuels consultables jamais récités, pièce jointe jamais introduite | **le joueur a le droit d'être perdu** : c'est la condition pour que fouiller ait un sens |
 | **8.7** | **L'invraisemblable** est admis partout **sauf dans la chaîne causale du vice** | celle-ci est d'une banalité administrative parfaite ; ailleurs, une bizarrerie doit être inerte (§8.3) |
 | **8.8** | **Accidents de sens : bienvenus. Accidents de langue : jamais** | une phrase mal accordée se lit comme un bug. D'où le `nom` d'empan, **groupe nominal** ; le test de l'accord ne se joue qu'aux `patron` (§11) |
+
+**Le `patron` d'une forme doit convenir à la DIMENSION qu'elle lie** (§8.8) : *« la même chose »* ne
+se dit pas de deux personnes, et un joueur l'a relevé sur la phrase même qui porte le vice. Une
+forme par registre, distinguée par ses seuls `slots` et déclarée **avant** la générique : c'est
+l'ordre de déclaration qui tranche (§11), jamais un `if` dans le moteur. Même exigence pour le
+libellé d'un article (§4.5) — ce qui se lit comme une faute de langue se lit comme un formulaire.

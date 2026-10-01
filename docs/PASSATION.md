@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 1er octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 404 contrôles, 7 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 406 contrôles, 7 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -14,8 +14,9 @@ et **clore et envoyer n'en font plus qu'un** (`vice_trouve` se lève à l'**asse
 Fin 2 devenait injouable, §4.7).
 
 Le 16 septembre est une session d'**écriture**, pas de mécanique : la liaison-article dit désormais
-*« en contradiction avec »* et non *« au regard de »* (§4.5), la première question descend dans le
-**texte de la remise**, le tutoriel est repris, un empan ne se désélectionne plus depuis sa pièce, et
+*« en contradiction avec »* et non *« au regard de »* (§4.5 — tous deux refaits depuis, voir plus
+bas), la première question descend dans le **texte de la remise** (elle en est **ressortie** le
+1ᵉʳ octobre), le tutoriel est repris, un empan ne se désélectionne plus depuis sa pièce, et
 la **colonne Plaidoirie est escamotée** — provisoirement, mécanique intacte derrière (§4.9). Deux de
 ces gestes ont fait tomber **cinq contrôles** qui nommaient du contenu au lieu de le dériver : ils sont
 réécrits, et la doc est remise d'aplomb sur ce que le code fait.
@@ -73,6 +74,35 @@ répétition. Le bouton **n'est à l'écran que lorsqu'il agit** : absent avant 
 pendant la répétition, qui se joue dans le canal. Le libellé **devient l'acte moral** — l'appuyer en
 tenant le vice compris et tu, c'est un mensonge qu'on signe soi-même. Aucun champ de contenu neuf,
 aucune règle touchée ; le texte de la Fin 3 et les deux miroirs de l'atelier ont suivi.
+
+**Le 1ᵉʳ octobre, une PARTIE JOUÉE À L'AVEUGLE a été rapportée geste par geste** — le §4 réclamait
+de jouer, c'est fait. Son défaut majeur n'était pas mécanique : le joueur trouvait la contradiction
+seul, et Maître Auber la lui annonçait. **La session 1 devient donc une CALIBRATION** (§3) :
+l'avocat éprouve la machine avant de lui confier le dossier, il pose des questions dont il a les
+réponses, et relever l'incohérence n'est plus la révéler mais **vérifier qu'elle a été vue**. Trois
+choses suivent : *recopier* cesse d'être un défaut, le **tutoriel a une raison d'être dans la
+fiction**, et la remise 2 devient la **charnière** où l'avocat cesse de savoir. Le partage qui en
+découle : **la fiction peut désigner, le chrome jamais** (§4.8) — le bandeau ne dit plus *« les deux
+passages qui se contredisent »*, seulement *« une réponse peut tenir sur deux passages »*.
+
+**Deux défauts de justesse relevés par le même joueur, tous deux réels.** *« 22h30 contredit 22h04 »*
+ne contredisait rien — les deux heures se concilient très bien : le PV dit désormais ce que la
+patrouille **constate** à 22h04, et l'article 3 mord comme il est écrit, **par la prose seule, sans
+un empan neuf** (§6). Et *« en contradiction avec l'article 3 »* était juridiquement bancal : chaque
+article porte maintenant **son** libellé, l'uniformité n'ayant jamais été une exigence (§4.5). Même
+exigence sur les `patron` : *« la même chose »* ne se disait pas de deux personnes — quatre formes
+par registre, distinguées par leurs seuls `slots` et déclarées avant les génériques (§8.8, §11).
+La dimension `ou` s'écrit **`où`**, et deux reflets de l'atelier ont suivi (§15).
+
+**Quatre reprises d'écran, toutes venues de la même partie.** La **question redescend au composeur
+dès qu'un panneau est ouvert** — *lisible* était la condition, pas *présent*, et une capture du
+dépôt montrait la question coupée (§4.9 règle 3) ; la **première question quitte le texte de la
+remise** pour pouvoir être rappelée. Le **Contexte dit qu'il déborde** : barre toujours visible,
+index collant en tête, le dernier passage retenu amené dans le champ à l'ouverture, et le panneau
+monte à 40 vh — la conversation gardant un plancher qui montre vraiment trois lignes. Le **compteur
+du tutoriel cesse de reculer** : deux séries nommées (*citer · 2/4*, *mettre en relation · 1/3*) au
+lieu d'une numérotation qui revenait de 6/6 à 4/6. Et la **réplique `declenche` part à la fermeture
+de la pièce**, non à son ouverture, où elle tombait derrière une boîte de dialogue en fond flouté.
 
 ## 2. Points de vigilance
 
@@ -154,6 +184,18 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **`S.retenus` est sérialisé dans `localStorage`** et s'appelait `S.memoire` : la signature de contenu
   **ne protège pas** d'un renommage d'état — `restaurerPartie` porte la reprise, et tout futur
   renommage aura le même devoir.
+- **`lienDe` apparie sur `{forme, termes}`** : renommer une forme oblige à faire suivre **tous** les
+  liens qui l'écrivaient — **le vice compris**. Oublié, il cesse d'exister et sept contrôles de
+  `test_o5` tombent (vérifié en cassant, §16).
+- **La réplique `declenche` part à la FERMETURE de la pièce** : poussée à l'ouverture, elle tombait
+  derrière une boîte de dialogue qui venait de rendre `.wrap` inerte — lue en fond flouté, ou pas
+  lue du tout. `closeModal` est le seul endroit où l'écran appelle une règle en refermant.
+- **Le chrome n'est personne, la fiction peut l'être** : le bandeau nomme le **geste**, jamais la
+  **trouvaille** ; Maître Auber, lui, a le droit de désigner — il sait, il calibre (§3, §4.8).
+- **Panneau ouvert, la question redescend au composeur** : *lisible* est la condition, pas *présent*.
+  La règle s'applique un cran trop large — sur un grand écran la question paraît deux fois — et
+  c'est **voulu** : une mesure de hauteur serait invisible des suites, cette règle-ci est tenue par
+  trois contrôles (§4.9 règle 3).
 - **Le doublon banal porte tout le camouflage** (§4.4) : ne jamais désactiver son contrôle.
 - **Le tutoriel enseigne deux gestes, la citation puis la comparaison, et ne ferme pour de bon
   qu'à la fin de la session 1** (`S.remisesEnvoyees>1`) — pas au premier `S.satisfaits`, qui ne
@@ -180,18 +222,39 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de l'urgence.
 
 - **Le critère qui décide de tout** : *« l'heure d'arrivée de la patrouille précède l'heure des éclats
-  de voix, en contradiction avec l'article 3 » se lit-il comme une pensée ou comme un formulaire ?* Si
-  c'est un formulaire, aucune mécanique ne le sauvera.
+  de voix, et l'article 3 écarte la déposition qui s'y heurte » se lit-il comme une pensée ou comme un
+  formulaire ?* Si c'est un formulaire, aucune mécanique ne le sauvera. **Le 1ᵉʳ octobre a enlevé la
+  réponse la plus facile** — l'ancien libellé était juridiquement faux, et un joueur l'avait vu avant
+  nous. La question reste entière sur le nouveau.
+- **La CALIBRATION tient-elle ?** Première chose à regarder : la session 1 se sent-elle comme un
+  examen, et la remise 2 comme une charnière ? Si l'examen ne se sent pas, la session 1 redevient une
+  dictée — et c'est la seule chose que le recadrage du 1ᵉʳ octobre devait réparer (§3). **Non joué.**
 - **La compréhension est-elle encore *exprimée* ?** Et **une question posée guide-t-elle trop ?** Repli
-  sans code : retirer les `question` une à une, couper le tutoriel avant le 3ᵉ temps.
+  sans code : retirer les `question` une à une, couper le tutoriel avant le 3ᵉ temps. *Le rapport du
+  1ᵉʳ octobre tranche à moitié : les questions guident, et c'est désormais la fiction qui l'assume.*
 - **Trois bandes empilées : une pensée, ou un tableau de bord ?** La question qui remplace celle du
   va-et-vient entre deux colonnes, close faute d'objet : il n'y en a plus qu'une (§4.6). Tout est
   désormais visible en même temps — ce qu'on me demande, ce dont je dispose, ce que j'écris — et c'est
   précisément le risque : le §3 redoute depuis le début que la phrase composée se lise comme un
-  **formulaire**. Trois bandes alignées peuvent y pousser. Rien de cela n'a été joué.
+  **formulaire**. *Une partie jouée n'en a rien dit — ni plainte, ni éloge : à reposer.*
+- **`porte sur : quand`, sous chaque article, fait-il le tri à la place du joueur ?** Un joueur
+  l'écrit noir sur blanc : *deux fiches QUI → seul l'art. 7 colle*. Le moteur ne lit jamais `porte`
+  (§4.5), mais l'étiquette filtre **dans la tête** — et le choix entre l'article 7 et l'article 12
+  fait toute la session 2 (§6). Le retirer est une ligne ; **à juger sur une partie, le recadrage en
+  place.**
+- **L'article s'offre sans avoir été lu** : `blocsDepuis` filtre sur `piecesLivrees` — *reçu*, pas
+  *lu*. Passer à `S.examinees` est un mot, et l'invariant du §4.5 deviendrait *« on n'invoque pas un
+  texte qu'on n'a pas lu »*. Non tranché.
+- **Rien ne dit que la couleur et le trait CODENT une dimension** : il faut survoler un passage pour
+  l'apprendre (§4.3). Le Contexte l'enseigne, mais seulement une fois un passage retenu. Une légende
+  est du chrome que le §4.9 n'autorise pas sans preuve. **À jouer, pas à décider.**
+- **Le Contexte à dix-sept fiches** : les passages de la session 1 restent en tête et encombrent.
+  Trier, replier ou filtrer serait *juger* ce que le §4.6 promet de ne jamais juger — d'où, pour
+  l'instant, la seule barre visible et le dernier retenu amené dans le champ.
 - **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
-  accès. Le §4.9 interdit de redire, pas d'offrir deux chemins — mais seul un joueur dira si le second
-  sert ou encombre.
+  accès. Le §4.9 interdit de redire, pas d'offrir deux chemins. **Réponse partielle du 1ᵉʳ octobre :
+  elles coûtent avant de servir** — au premier écran, un joueur a noté *« Contexte / Plaidoirie :
+  rôle inconnu à ce stade »*. Elles ont servi ensuite ; reste à savoir si le début le justifie.
 - **La Plaidoirie est revenue** (§4.9) — en panneau, porte visible d'emblée, comme le §3 l'avait
   annoncé (*où*, pas *si*). Ce qui reste à voir : **son apparition enseigne-t-elle que l'envoi
   transmet ?** Son compte dans la barre suffit-il à distinguer *envoyé* de *retenu comme moyen* ?
@@ -211,23 +274,30 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   s'arrête à deux. Et **`comment` en sixième dimension**, écarté, réintégrable sans coût.
 - **Le papier et le clavier, jamais joués par un autre que nous** : la matière des pièces se juge à
   l'œil (contraste avec la machine, ou simple dépaysement ?), et le testeur a annoncé un **audit de
-  contraste** — les états par opacité sont passés en couleurs, pas encore mesurés un à un. En
-  1280×800, Contexte ouvert **et** tutoriel affiché, la conversation n'a plus que ~160 px : la
-  question peut sortir du cadre (les pièces jointes restent visibles).
+  contraste** — les états par opacité sont passés en couleurs, pas encore mesurés un à un. *Le
+  rognage de la conversation en 1280×800, lui, est réglé : la question redescend au composeur et le
+  plancher du fil montre trois lignes (§4.9 règle 3).*
 - Côté outil : la frise n'édite pas `rep_hors_sujet` (§15).
 
 ## 4. Prochaine étape
 
-**La prochaine session porte sur le SENS, et la seule façon de la commencer est de jouer.** La session
-1 a été rejouée le 16 et le contenu a bougé en conséquence ; ce qui n'a toujours pas été éprouvé :
+**La prochaine session porte sur le SENS, et la seule façon de la commencer est de jouer** — la
+précédente l'a prouvé : une partie rapportée geste par geste a valu plus que trois passes de
+relecture. **Il faut la rendre à un joueur neuf**, qui n'a pas lu ce qui précède :
 
-1. **Rejouer la session 1 avec le nouveau libellé** (*« en contradiction avec »*) : l'article **fonde**-t-il
-   encore, ou **nomme**-t-il la réponse ? C'est le premier point ouvert du §3.
-2. **Envoyer une comparaison nue** et voir si le refus de Maître Auber enseigne (§4.5) — c'est du
+1. **La calibration se sent-elle ?** La session 1 passe-t-elle pour un examen, et la remise 2 pour le
+   moment où l'avocat cesse de savoir ? Si l'examen ne se sent pas, la session 1 redevient la dictée
+   qu'un joueur a trouvée humiliante, et c'est tout ce que le recadrage devait réparer (§3).
+2. **Rejouer la session 1 avec les nouveaux libellés** (*« et l'article 3 écarte la déposition qui
+   s'y heurte »*) : la phrase composée se lit-elle comme une pensée ou comme un formulaire ? C'est le
+   premier point ouvert du §3 — et l'excuse la plus facile vient d'être retirée.
+3. **Envoyer une comparaison nue** et voir si le refus de Maître Auber enseigne (§4.5) — c'est du
    contenu qui n'a jamais pu sortir.
-3. Si la boucle tient : écrire la session 3 et placer la porte de la Fin 3. Sinon, prendre l'un des
+4. **Retirer `porte sur`** du composeur et rejouer la session 2 : le choix entre l'article 7 et
+   l'article 12 se fait-il encore, ou l'étiquette le faisait-elle seule (§3) ?
+5. Si la boucle tient : écrire la session 3 et placer la porte de la Fin 3. Sinon, prendre l'un des
    replis du §3, qui ne coûtent aucune ligne de code.
-4. **Rendre la partie au testeur du clavier**, lecteur d'écran allumé (NVDA, VoiceOver) : les annonces
+6. **Rendre la partie au testeur du clavier**, lecteur d'écran allumé (NVDA, VoiceOver) : les annonces
    tombent-elles au bon moment, et en disent-elles trop ? Aucune suite ne l'entend (§4.10).
 
 **Méthode à conserver** : toute évolution part du document — on le réécrit, on le fait relire, puis on
@@ -285,3 +355,14 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   (`inert` sur `.wrap`), voix d'annonce unique. La dimension gagne un **trait** et une palette sans
   rouge (§4.3), la colonne tient dans la fenêtre, les pièces passent au **papier** (§4.6). Retenir
   reste un ajout seul, mais le reclic le dit. Document d'abord, code ensuite, en deux commits.
+- **1ᵉʳ octobre** — l'IA ne clôture plus : elle répond, l'avocat dépose (§4.9 règle 5).
+- **1ᵉʳ octobre, le journal d'une partie à l'aveugle** — quinze constats, triés en quatre lots. La
+  **session 1 devient une calibration** (§3), ce qui rend la trouvaille au joueur sans rien retirer à
+  l'avocat et donne au tutoriel une raison d'être dans la fiction ; la **justesse** de l'affaire est
+  reprise — la constatation du PV rend 22h30 impossible, chaque article porte son libellé, quatre
+  formes donnent sa langue à chaque dimension, `ou` devient `où` ; l'**écran** rend la question sous
+  panneau, fait dire au Contexte qu'il déborde, arrête le compteur qui reculait et déplace la
+  réplique `declenche` à la fermeture de la pièce. Deux points — *« porte sur »* et l'article offert
+  sans être lu — sont **laissés ouverts exprès** (§3), à juger sur la partie suivante. Le filet a été
+  **vu tomber** : la forme du vice renommée sans suivre les liens, sept contrôles de `test_o5`
+  s'écroulent.

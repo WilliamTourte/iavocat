@@ -82,7 +82,7 @@ console.log("\n=== Les drapeaux et les déclencheurs ===");
   H.instruire(w1);
   H.composerLien(w1, H.lienConclusion(w1));
   const pidD = H.pidAvecDeclenche(w1);
-  w1.ouvrirPiece(pidD);
+  w1.ouvrirPiece(pidD); w1.closeModal();   // la réplique part à la fermeture (§4.10)
   check("vice_trouve est levé", w1.S.vice_trouve);
   check("le declenche a déjà joué", w1.S.declenches.includes(pidD));
 

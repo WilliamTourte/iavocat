@@ -83,11 +83,19 @@ console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
       JSON.stringify(w.M.ordonner(ord.forme, [y, x])) === JSON.stringify([x, y]));
   } else check("(aucune forme ordonnée dans ce contenu)", true);
 
+  /* L'ÉGALITÉ VAUT DANS LES CINQ DIMENSIONS (§4.2) — y compris dans celles
+     d'ÉCART, sans quoi les doublons banals cesseraient d'être composables et
+     inertes (§4.4). PIÈGE : ces dimensions se DÉRIVENT des formes ordonnées,
+     elles ne se nomment pas en dur — une liste recopiée ici a survécu au
+     renommage d'une dimension en affirmant l'ancienne vérité (§16). */
+  const dimsEcart = new Set();
+  for (const f of Object.values(w.JEU.grammaire.formes))
+    if (f.deduction === "ordre") for (const d of (f.slots || [])[0] || []) dimsEcart.add(d);
   const paires = [];
   for (let i = 0; i < w.CHAMPS.length; i++)
     for (let j = i + 1; j < w.CHAMPS.length; j++) {
       const a = w.CHAMPS[i], b = w.CHAMPS[j];
-      if (a.dim === b.dim && a.valeur === b.valeur && !["qui","quoi","ou"].includes(a.dim))
+      if (a.dim === b.dim && a.valeur === b.valeur && dimsEcart.has(a.dim))
         paires.push([a, b]);
     }
   if (paires.length) {
@@ -393,8 +401,9 @@ console.log("\n=== Les répliques : seulement au versement ===");
 console.log("\n=== L'économie de l'écran : ce qui est déjà sous les yeux ===");
 {
   const w = boot();
-  /* PIÈGE : l'attente courante n'a pas toujours de question — la remise peut la
-     porter dans son TEXTE. On avance jusqu'à celle qui en pose une. */
+  /* PIÈGE : une attente n'a pas forcément de question — une remise PEUT la
+     porter dans son texte, et le moteur l'accepte. On avance jusqu'à celle qui
+     en pose une, au lieu de parier sur le contenu du jour. */
   const courante = () => w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
   while (courante() && !courante().question)
     w.envoyer(H.composerLien(w, H.lienTag(w, courante().attend)));
@@ -402,7 +411,8 @@ console.log("\n=== L'économie de l'écran : ce qui est déjà sous les yeux ===
   check("la question vient d'être posée : elle est le dernier mot",
     !!q && !!q.question && w.S.fil[w.S.fil.length - 1].texte === q.question);
   check("le composeur ne la répète donc pas", !composeur(w).includes(q.question));
-  w.ouvrirPiece(H.pidAvecDeclenche(w));
+  // La réplique de `declenche` part à la FERMETURE de la pièce (§4.10 règle 3).
+  w.ouvrirPiece(H.pidAvecDeclenche(w)); w.closeModal();
   check("l'avocat ayant repris la parole, la question n'est plus le dernier mot",
     w.S.fil[w.S.fil.length - 1].texte !== q.question);
   check("le composeur la rappelle alors", composeur(w).includes(q.question));
@@ -546,11 +556,12 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   w.envoyerCompo();
   check("c'est le DÉPART de la phrase qui referme", !ouvert("Contexte"));
 
-  /* §4.9 règle 3 — ce qui reste LISIBLE ne se répète pas. Le panneau ne couvre
-     RIEN : il s'ouvre entre la conversation et le composeur, et la conversation
-     rétrécit pour lui faire place. La question reste donc sous les yeux, et le
-     composeur n'a jamais à la redire. (La PREMIÈRE attente n'a pas de
-     `question` : elle est descendue dans le texte de la remise.) */
+  /* §4.9 règle 3 — ce qui reste LISIBLE ne se répète pas, et LISIBLE est la
+     condition, pas PRÉSENT. Le panneau ne couvre rien, mais la conversation est
+     la seule bande élastique : c'est elle qui cède, et en 1280×800, panneau
+     ouvert et bandeau du tutoriel affiché, il lui reste moins que la question —
+     un joueur a composé sa réponse sans la voir. Panneau ouvert, elle redescend
+     au composeur ; refermé, elle se tait. */
   check("l'avocat vient de poser une question", !!question());
   check("elle est son dernier mot, donc le composeur ne la redit pas",
     !composeur(w).includes(question()));
@@ -558,10 +569,12 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   check("aucun panneau ouvert, la conversation a toute la hauteur", !partage());
   w.basculerPanneau("contexte");
   check("le panneau ouvert, les deux se partagent la hauteur", partage());
-  check("et la question, toujours lisible, ne se répète toujours pas",
-    !composeur(w).includes(question()));
+  check("la conversation ayant cédé sa place, le composeur reprend la question",
+    composeur(w).includes(question()));
   w.fermerPanneau();
   check("refermé, la conversation reprend toute la hauteur", !partage());
+  check("et la question, de nouveau lisible, se tait au composeur",
+    !composeur(w).includes(question()));
 
   /* LA BARRE — on consulte : le panneau ne suit plus la phrase. */
   w.basculerPanneau("contexte");

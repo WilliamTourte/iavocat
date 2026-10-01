@@ -20,7 +20,7 @@ qu'aucun ne pointe dans le vide. **En cas de doute, le document renvoyé a toujo
 ## Les commandes
 
 ```sh
-npm test               # les cinq suites (404 contrôles), PUIS le gardien, PUIS ESLint.
+npm test               # les cinq suites (406 contrôles), PUIS le gardien, PUIS ESLint.
                        # Tout vert, ou ce n'est pas fini (§16)
 npm run suites         # les cinq suites seules — le sens avant la forme
 npm run gardien        # les sept conventions que les suites ne voient pas (§16)

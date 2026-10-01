@@ -34,9 +34,36 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 .body{padding:12px 14px;overflow-y:auto;min-height:0;flex:1 1 auto}
 .col.fil{flex:1 1 0;min-height:130px}
 /* Un panneau ouvert, la conversation peut céder davantage — c'est tout ce que la
-   classe `avecPanneau` décide. */
-.wrap.avecPanneau .col.fil{min-height:96px}
-.panneau{flex:0 1 auto;max-height:32vh;min-height:0}
+   classe `avecPanneau` décide. Son PLANCHER n'est pas cosmétique : à 96 px elle
+   ne montrait qu'une ligne coupée, et c'est elle, pas le panneau, qui doit
+   rester lisible — le panneau, lui, dit qu'il déborde. */
+.wrap.avecPanneau .col.fil{min-height:132px}
+/* Le panneau peut prendre plus de hauteur depuis que la question redescend au
+   composeur (§4.9 règle 3) : elle ne dépend plus de ce qu'il reste à la
+   conversation. Les deux changements se tiennent — l'un sans l'autre est un
+   mauvais marché. */
+.panneau{flex:0 1 auto;max-height:40vh;min-height:0}
+/* UN PANNEAU QUI DÉBORDE LE DIT. PIÈGE MESURÉ, deux fois : la barre du système
+   est SUPERPOSÉE — 0 px de large, effacée au repos —, et ni `scrollbar-width`
+   ni `::-webkit-scrollbar` ne la font reprendre sa place dans ce Chromium. Un
+   joueur a donc cherché sa fiche sous le pli sans qu'aucun indice existe. Le
+   dégradé, lui, ne dépend d'aucune barre : `majDebord` allume `.deborde` tant
+   qu'il reste quelque chose dessous. Il est POSÉ SUR LA SECTION, jamais sur la
+   bande qui défile — un `::after` dans un cadre défilant part avec le contenu. */
+.col.panneau{position:relative}
+.col.panneau.deborde::after{content:"";position:absolute;left:1px;right:1px;bottom:0;height:30px;
+  pointer-events:none;border-radius:0 0 9px 9px;
+  background:linear-gradient(to top, var(--panel) 20%, rgba(22,27,34,0))}
+.panneau .body::-webkit-scrollbar{width:11px}
+.panneau .body::-webkit-scrollbar-track{background:#131920;border-radius:6px}
+.panneau .body::-webkit-scrollbar-thumb{background:#44525f;border-radius:6px;
+  border:2px solid var(--panel)}
+.panneau .body::-webkit-scrollbar-thumb:hover{background:#5a6b7a}
+/* L'index reste en tête : rouvert sur un défilement gardé, le panneau montrait
+   des fiches sans dire de quelles pièces elles venaient. Le `box-shadow` plein
+   bouche la gouttière sous lui — sans quoi le contenu défilerait dans le vide
+   entre l'index et la première fiche. */
+#zoneDossier{position:sticky;top:0;z-index:1;box-shadow:0 12px 0 0 var(--panel)}
 /* PIÈGE : `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` — sans
    cette ligne, cacher la Plaidoirie ne ferait rien. */
 .col[hidden]{display:none}
@@ -292,7 +319,9 @@ code{font-family:var(--mono);color:var(--accent)}
 #tuto:not([hidden]) ~ #modalRoot .modal{max-height:calc(100vh - var(--haut) - 24px)}
 #tuto[data-alerte]{border-color:var(--warn)}
 #tuto[data-alerte] .dit{color:var(--warn)}
-#tuto .pas{color:var(--muted);font-family:var(--mono);font-size:12.5px}
+/* Le geste se nomme à côté de son rang (§4.8) : « mettre en relation · 1/3 » ne
+   se coupe pas en deux, sans quoi le compteur passerait pour une phrase. */
+#tuto .pas{color:var(--muted);font-family:var(--mono);font-size:12.5px;white-space:nowrap}
 #tuto .dit{flex:1}
 #tuto .passer{background:none;border:none;color:var(--muted);font:inherit;font-size:13px;
   cursor:pointer;text-decoration:underline;padding:0;white-space:nowrap}

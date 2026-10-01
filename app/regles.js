@@ -64,6 +64,14 @@ function creerRegles(JEU, M) {
   function ouvrirPiece(S, pid) {
     if (!S.examinees.includes(pid)) S.examinees.push(pid);
     S.modalPiece = pid;
+  }
+  /* LA RÉACTION DE L'AVOCAT SE LIT QUAND ON RELÈVE LES YEUX. Poussée à
+     l'OUVERTURE, elle tombait derrière une pièce qui venait de rendre le jeu
+     inerte : un joueur ne l'a lue qu'en fond flouté (§4.10 règle 3). Elle part
+     donc à la fermeture, dans un canal qu'on regarde. */
+  function fermerPiece(S) {
+    const pid = S.modalPiece;
+    S.modalPiece = null;
     const d = (JEU.pieces[pid] || {}).declenche;
     if (d && d.replique && !(d.une_fois && S.declenches.includes(pid))) {
       S.declenches.push(pid);
@@ -323,7 +331,7 @@ function creerRegles(JEU, M) {
   }
   const porteDe = pid => ((JEU.pieces[pid] || {}).porte) || [];
 
-  return { etatInitial, signatureContenu, pousser, envoyerRemise, ouvrirPiece,
+  return { etatInitial, signatureContenu, pousser, envoyerRemise, ouvrirPiece, fermerPiece,
            piecesLivrees, estRegle, reglesLivrees, porteDe,
            surligner, oublier, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
            comparaisonPossible, dimAttendue,
