@@ -263,9 +263,12 @@ Cinq règles d'écran — le coupable d'une page illisible est le **chrome**, ja
    l'acte moral**. L'appuyer en tenant le vice compris et tu, c'est un mensonge qu'on signe
    soi-même — tout le poids des Fins 2 et 3, sans qu'aucune interface n'ait rien signalé (§4). La
    fiction disait déjà vrai (*« je rédige mes conclusions »*, *« je dépose au matin »*) : seul le
-   chrome mentait. **La barre reste**, et c'est délibéré : la question se pose dans le fil, mais une
-   question qui a défilé est une question perdue — le droit de répondre doit rester sous la main
-   aussi longtemps qu'on compose.
+   chrome mentait. Et **le bouton n'est à l'écran que lorsqu'il agit** — c'est la règle 4 appliquée
+   à lui : grisé dès le premier écran, il annonçait un pouvoir que personne n'a encore, et son aide
+   redisait ce que le fil dit déjà (règle 3). Il naît de la question et disparaît pendant la
+   répétition, qui se joue dans le canal. Une fois la question posée, en revanche, **la réponse
+   reste sous la main** aussi longtemps qu'on compose : une question qui a défilé est une question
+   perdue. *« ⟲ recommencer »*, lui, ne s'absente jamais.
 
 **La densité ne touche pas au sens** : une phrase de chrome se coupe parce qu'elle explique, une phrase
 qui *est* le jeu reste. **Deux** ne se coupent pas : *« → Envoyer »* et *« Et donc ? »*. La troisième,

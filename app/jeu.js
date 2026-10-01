@@ -639,14 +639,18 @@ function envoyer(i,contre){ R.envoyer(S,i,contre); rendreTout(); }
 function majCloture(){
   const btn=$("btnCloture"), hint=$("clotureHint");
   if(!btn) return;
-  const ok=R.instructionComplete(S);
-  if(!ok){ btn.disabled=true; btn.textContent="Clôturer l'instruction";
-           hint.textContent="Maître Auber attend encore quelque chose de cette session."; }
-  else if(!S.clotureDemandee){ btn.disabled=false; btn.textContent="Clôturer l'instruction";
-           hint.textContent="Le droit de clôturer est ouvert. Rien ne t'y oblige."; }
-  else if(R.repetitionEnCours(S)){ btn.disabled=true; btn.textContent="Confirmer la clôture";
-           hint.textContent="Répétition en cours — réponds à Maître Auber dans le canal."; }
-  else {   btn.disabled=false; btn.textContent="Confirmer la clôture";
+  /* §4.9 règle 5 — l'IA ne clôture rien : elle répond, et c'est l'avocat qui
+     dépose. Le bouton n'est donc à l'écran que lorsqu'il AGIT — avant la
+     question, il annoncerait un pouvoir que personne n'a ; pendant la
+     répétition, celle-ci se joue dans le canal. `disabled` double `hidden` :
+     le refus reste vrai même pour qui ne voit pas l'écran. */
+  const agit = R.instructionComplete(S) && !R.repetitionEnCours(S);
+  btn.hidden = hint.hidden = !agit;
+  btn.disabled = !agit;
+  if(!agit) return;
+  if(!S.clotureDemandee){ btn.textContent="Je n'ai rien d'autre";
+           hint.textContent="Tu peux encore écrire."; }
+  else {   btn.textContent="Je n'ai rien à opposer";
            hint.textContent="Dernier mot avant le dépôt. Tu peux encore écrire."; }
 }
 function cloturer(){

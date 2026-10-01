@@ -57,7 +57,7 @@ function renderFrise(){
       <div class="repline">${mir("une phrase portant le tag d'une attente est versée au plan → réplique « apres » → la question suivante est posée")}</div>
       <div class="repline">${mir(i<R.length-1
         ? "la DERNIÈRE attente de la liste servie → la session "+(i+2)+" part"
-        : "la DERNIÈRE attente de la liste servie → le bouton « Clôturer l'instruction » s'ouvre")}</div>
+        : "la DERNIÈRE attente de la liste servie → sa réplique « apres » pose la question ; « Je n'ai rien d'autre » paraît alors")}</div>
     </div>`;
   });
   h+=`<button class="addrow" onclick="ajouterRemise()">+ Session</button>`;
@@ -129,7 +129,7 @@ function renderFrise(){
     <textarea style="min-height:34px" onchange="majAvocat('deja',this.value)">${escapeH(A.deja||"")}</textarea>
     <label>Fin de la répétition</label>
     <textarea onchange="majRep('fin',this.value)">${escapeH(REP.fin||"")}</textarea>
-    <div class="repline">${mir("le bouton devient « Confirmer la clôture » → le procès a lieu hors-champ")}</div>
+    <div class="repline">${mir("le bouton devient « Je n'ai rien à opposer » → le procès a lieu hors-champ")}</div>
   </div>`;
 
   // ---- fins ----

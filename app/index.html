@@ -52,8 +52,8 @@
   <!-- Sur une ligne : la colonne tient dans la fenêtre (§4.6). La confirmation
        de « recommencer » attend qu'on réponde — jamais un minuteur (§4.10). -->
   <div class="cloture">
-    <button id="btnCloture" onclick="cloturer()" disabled>Clôturer l'instruction</button>
-    <div class="hint" id="clotureHint">Maître Auber attend encore quelque chose.</div>
+    <button id="btnCloture" onclick="cloturer()" disabled hidden>Je n'ai rien d'autre</button>
+    <div class="hint" id="clotureHint" hidden>Tu peux encore écrire.</div>
     <span class="recommencer">
       <button id="btnRecommencer" onclick="recommencer()" title="Effacer la partie en cours et repartir de la remise 1">⟲ recommencer</button>
       <button id="btnAnnulerRecommencer" onclick="annulerRecommencer()" hidden>annuler</button>

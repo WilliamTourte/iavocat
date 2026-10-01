@@ -588,7 +588,7 @@ window.CONTENU = {
         {
           "attend": "adn",
           "apres": {
-            "replique": "Je tiens quelque chose à plaider. Je rédige mes conclusions cette nuit."
+            "replique": "Je tiens quelque chose à plaider. Je rédige mes conclusions cette nuit — à moins que tu aies encore quelque chose pour moi ?"
           }
         }
       ]
@@ -651,7 +651,7 @@ window.CONTENU = {
     "3": {
       "titre": "Fin 3 — le doute",
       "verdict": "Verdict rapporté : CONDAMNATION.",
-      "texte": "Tu as clôturé sans rien envoyer d'autre que ce qu'on te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
+      "texte": "Tu l'as laissé déposer sans rien lui donner d'autre que ce qu'il te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
       "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé. C'est tout ce que tu lui avais donné."
     }
   }

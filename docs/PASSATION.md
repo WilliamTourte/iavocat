@@ -1,7 +1,7 @@
 # IAvocat — Passation de contexte
 
 *À lire en tête d'une nouvelle conversation : où on en est, ce qui mord, ce qui reste ouvert, quoi faire
-ensuite. **Court, et il doit le rester.** État au 30 septembre 2026.*
+ensuite. **Court, et il doit le rester.** État au 1er octobre 2026.*
 
 ## 1. Où en est le jeu
 
@@ -61,6 +61,18 @@ la liaison-article **n'a pas à être neutre**, la phrase *« Tant que tu ne l'e
 revenir**, et l'escamotage de la Plaidoirie est **provisoire** (§3). Quatrième : `_bruit` cesse d'être
 une liste recopiée dans l'atelier — le drapeau passe **sur l'empan** (§11), donc il s'exporte, suit les
 renommages et meurt avec lui.
+
+**Le 1er octobre, la Discussion devient une conversation** : nos répliques portent le nom d'**IAvocat**
+et s'alignent **à droite**, celles de Maître Auber à gauche, chaque bulle à la largeur de son texte.
+Le même jour, un défaut de fiction relevé par l'auteur : **« Clôturer l'instruction » est l'acte du
+juge**, que ni l'IA ni l'avocat ne peuvent poser — et le contenu faisait **déjà** déposer l'avocat,
+si bien que l'écran mentait seul. Un **§4.9 règle 5** l'acte : *le chrome ne s'arroge aucun pouvoir
+que la fiction refuse*. L'avocat **demande** — la réplique qui ferme la dernière session pose la
+question —, nous répondons **« Je n'ai rien d'autre »**, puis **« Je n'ai rien à opposer »** après la
+répétition. Le bouton **n'est à l'écran que lorsqu'il agit** : absent avant la question, absent
+pendant la répétition, qui se joue dans le canal. Le libellé **devient l'acte moral** — l'appuyer en
+tenant le vice compris et tu, c'est un mensonge qu'on signe soi-même. Aucun champ de contenu neuf,
+aucune règle touchée ; le texte de la Fin 3 et les deux miroirs de l'atelier ont suivi.
 
 ## 2. Points de vigilance
 
@@ -146,6 +158,13 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Le tutoriel enseigne deux gestes, la citation puis la comparaison, et ne ferme pour de bon
   qu'à la fin de la session 1** (`S.remisesEnvoyees>1`) — pas au premier `S.satisfaits`, qui ne
   marque que la fin du premier geste. Entre les deux, il se tait sans se fermer.
+- **Cacher la clôture, c'est cacher le BOUTON et son aide, jamais `.cloture`** : la barre porte aussi
+  *« ⟲ recommencer »*, qui ne s'absente jamais (§4.9). Et `disabled` **double** `hidden` — trois
+  contrôles lisent `btnCloture.disabled` pour dire que le refus est vrai, et il doit l'être aussi pour
+  qui ne voit pas l'écran.
+- **Le bouton naît de `instructionComplete`, la question qui l'appelle vit dans le CONTENU** — sur la
+  réplique `apres` de la **dernière** attente de la dernière session (§3). Rien ne lie les deux :
+  déplacer cette réplique ferait paraître la réponse sans question, et aucune suite ne le verrait.
 - **La clôture implicite compte les *liaisons* offertes**, les termes exclus : ajouter une liaison à la
   grammaire change le nombre de clics ailleurs, ajouter un terme non.
 - **Poser un bloc ne clôt plus rien** : le refus de catégorie tombe au clic qui **déduit** une paire ou
@@ -176,6 +195,9 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 - **La Plaidoirie est revenue** (§4.9) — en panneau, porte visible d'emblée, comme le §3 l'avait
   annoncé (*où*, pas *si*). Ce qui reste à voir : **son apparition enseigne-t-elle que l'envoi
   transmet ?** Son compte dans la barre suffit-il à distinguer *envoyé* de *retenu comme moyen* ?
+- **Plus rien n'annonce qu'une fin existe.** Le bouton grisé le disait dès le premier écran — à tort,
+  mais il le disait (§4.9). Un joueur qui ne voit la porte qu'à la toute fin sait-il qu'il *peut*
+  s'arrêter, et surtout qu'il peut **ne pas** tout dire ? La charnière de la Fin 3 en dépend. Non joué.
 - **L'aide unique en dit-elle assez ?** (§4.9) Repli le plus court du dépôt : rendre l'aide **et** le
   fantôme, un `if`.
 - **La tension de l'IA partisane** (§1) : tranchée en mécanique, à valider en contenu. Idem le rythme

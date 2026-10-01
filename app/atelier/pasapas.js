@@ -120,7 +120,7 @@ function simActions(){
     });
 
   if(phase==="instruction" && simInstructionComplete())
-    A.push({t:"Clôturer l'instruction", cls:"primary", f:simCloturer});
+    A.push({t:"Je n'ai rien d'autre", cls:"primary", f:simCloturer});
   if(phase==="repetition"){
     A.push({t:"Laisser passer l'affirmation", cls:"primary", f:simAvancer});
     SIM.brouillon.forEach((n,ni)=>{
@@ -128,7 +128,7 @@ function simActions(){
     });
   }
   if(phase==="confirmation")
-    A.push({t:"Confirmer la clôture → le procès (hors-champ)", cls:"primary", f:simConfirmer});
+    A.push({t:"Je n'ai rien à opposer → le procès (hors-champ)", cls:"primary", f:simConfirmer});
   return A;
 }
 
