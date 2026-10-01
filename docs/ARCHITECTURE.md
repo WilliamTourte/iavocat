@@ -70,7 +70,7 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
 ```js
 {
   schema: 3,
-  dimensions: ["quand","qui","ou","quoi","combien"],       // ordre d'affichage ; la couleur en découle
+  dimensions: ["quand","qui","où","quoi","combien"],       // ordre d'affichage ; la couleur en découle
   pieces: {
     p_pv: {
       titre, court, type, resume,                           // `resume` : atelier seulement

@@ -50,13 +50,22 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
    conversation. Les deux changements se tiennent — l'un sans l'autre est un
    mauvais marché. */
 .panneau{flex:0 1 auto;max-height:40vh;min-height:0}
-/* UN PANNEAU QUI DÉBORDE LE DIT. La barre du système s'efface au repos : à dix
-   fiches, la suivante était sous le pli sans un indice. Celle-ci reste. */
-.panneau .body{scrollbar-width:thin;scrollbar-color:#3a4654 transparent}
-.panneau .body::-webkit-scrollbar{width:10px}
-.panneau .body::-webkit-scrollbar-track{background:transparent}
-.panneau .body::-webkit-scrollbar-thumb{background:#3a4654;border-radius:6px;
+/* UN PANNEAU QUI DÉBORDE LE DIT. PIÈGE MESURÉ, deux fois : la barre du système
+   est SUPERPOSÉE — 0 px de large, effacée au repos —, et ni `scrollbar-width`
+   ni `::-webkit-scrollbar` ne la font reprendre sa place dans ce Chromium. Un
+   joueur a donc cherché sa fiche sous le pli sans qu'aucun indice existe. Le
+   dégradé, lui, ne dépend d'aucune barre : `majDebord` allume `.deborde` tant
+   qu'il reste quelque chose dessous. Il est POSÉ SUR LA SECTION, jamais sur la
+   bande qui défile — un `::after` dans un cadre défilant part avec le contenu. */
+.col.panneau{position:relative}
+.col.panneau.deborde::after{content:"";position:absolute;left:1px;right:1px;bottom:0;height:30px;
+  pointer-events:none;border-radius:0 0 9px 9px;
+  background:linear-gradient(to top, var(--panel) 20%, rgba(22,27,34,0))}
+.panneau .body::-webkit-scrollbar{width:11px}
+.panneau .body::-webkit-scrollbar-track{background:#131920;border-radius:6px}
+.panneau .body::-webkit-scrollbar-thumb{background:#44525f;border-radius:6px;
   border:2px solid var(--panel)}
+.panneau .body::-webkit-scrollbar-thumb:hover{background:#5a6b7a}
 /* L'index reste en tête : rouvert sur un défilement gardé, le panneau montrait
    des fiches sans dire de quelles pièces elles venaient. Le `box-shadow` plein
    bouche la gouttière sous lui — sans quoi le contenu défilerait dans le vide
@@ -1864,15 +1873,15 @@ function tutoEtapeCitation(){
 function tutoEtapeComparaison(){
   if(R.indexTermeChamp(S)>=0){
     const dit = S.compo.length
-      ? "Prends-en un second : c'est leur rapport qui parlera."
-      : "Une réponse peut tenir sur deux passages. Prends-en un premier.";
+      ? "A quel autre passage veux-tu le comparer ?"
+      : "Sélectionne les deux passages contradictoires";
     return panneau==="contexte"
       ? {...GESTE_RELIER, n:1, ou:"#zoneRetenus", dit}
       : {...GESTE_RELIER, n:1, ou:"#btnContexte", dit:"Ouvre ton contexte : "+dit[0].toLowerCase()+dit.slice(1)};
   }
   if(S.compo.length && R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
     return {...GESTE_RELIER, n:2, ou:"#composeur .offre",
-      dit:"Une relation seule ne suffit pas : prends l'article sur lequel elle s'appuie."};
+      dit:"Une contradiction seule ne suffit pas : indique l'article sur l'avocat peut s'appuyer."};
   if(R.peutEnvoyer(S))
     return {...GESTE_RELIER, n:3, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
@@ -2015,7 +2024,7 @@ function rendreTout(){
   const enBas=filEnBas();
   if(S.modalPiece) majPiece();
   renderDiscussion(); renderComposeur(); renderContexte(); renderPlaidoirie(); majCloture(); majPanneaux(); majTutoriel();
-  recalerFil(enBas);
+  recalerFil(enBas); majDebord();
   rendreFocus(m, force);
   rappelRetrait=null;
   annoncerNouveautes(); publierAnnonces();
@@ -2320,8 +2329,18 @@ function renderCompo(){
 
 /* 7) LES SURFACES — l'avocat ne voit QUE la Plaidoirie, et n'y inscrit que les
       MOYENS (§4.6). */
+/* PIÈGE : réécrire `innerHTML` remet le défilement à ZÉRO. Un panneau redessiné
+   à chaque geste repartait donc en haut entre le premier passage et le second —
+   celui qu'on venait de retenir disparaissait sous le pli au moment même où le
+   tutoriel le réclamait. Même idiome que la pièce ouverte (`majPiece`). */
+function garderDefilement(id, dessiner){
+  const el=$(id); if(!el) return;
+  const haut=el.scrollTop;
+  el.innerHTML = dessiner();
+  el.scrollTop = haut;
+}
 function renderContexte(){
-  $("contexte").innerHTML = renderDossier() + renderRetenus();
+  garderDefilement("contexte", () => renderDossier() + renderRetenus());
 }
 function renderComposeur(){
   $("composeur").innerHTML = renderCompo();
@@ -2329,7 +2348,8 @@ function renderComposeur(){
 function moyensRetenus(){
   return S.plaidoirie.filter(x=>S.brouillon[x.b] && R.estMoyen(S.brouillon[x.b].lien));
 }
-function renderPlaidoirie(){
+function renderPlaidoirie(){ garderDefilement("plaidoirie", plaidoirieHTML); }
+function plaidoirieHTML(){
   const gardes=moyensRetenus();
   let h=`<div class="zone">`;
   // Son bouton est là dès le premier écran : le panneau doit donc savoir dire
@@ -2341,7 +2361,7 @@ function renderPlaidoirie(){
         ? `<span class="contre">opposé à : ${escapeAttr(JEU.repetition.affirmations[x.contre].court)}</span>`:""
     }</span></li>`).join("")}</ul>`;
   h+=`</div>`;
-  $("plaidoirie").innerHTML=h;
+  return h;
 }
 function envoyer(i,contre){ R.envoyer(S,i,contre); rendreTout(); }
 
@@ -2419,6 +2439,21 @@ function voirDernierRetenu(){
   const k=S.retenus[S.retenus.length-1]; if(!k) return;
   const el=document.querySelector('[data-f="c:'+k+'"]');
   if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
+  majDebord();
+}
+/* UN PANNEAU QUI DÉBORDE LE DIT. PIÈGE MESURÉ : la barre du système est
+   SUPERPOSÉE — elle occupe 0 px et s'efface au repos —, et aucune déclaration
+   CSS ne l'a fait reprendre sa place ; un joueur a cherché sa fiche sous le pli
+   sans qu'aucun indice existe. L'écran MESURE donc, et ne décide rien pour
+   autant : il allume un dégradé. Aucune suite ne le voit — jsdom n'a pas de
+   mise en page — et `npm run vue` est le seul juge (§16). */
+function majDebord(){
+  for(const id of ["panContexte","panPlaidoirie"]){
+    const sec=$(id); if(!sec) continue;
+    const b=sec.querySelector(".body");
+    sec.classList.toggle("deborde",
+      !!b && (b.scrollHeight - b.scrollTop - b.clientHeight) > 4);
+  }
 }
 function ouvrirContexte(){ panneau="contexte"; panneauSuit=true; rendreTout(); voirDernierRetenu(); }
 function basculerPanneau(nom){
@@ -2452,6 +2487,9 @@ window.JEU = JEU; window.S = S; window.M = M; window.R = R; window.CHAMPS = CHAM
    suites le lisent pour savoir quel contenu a été adopté (§13). */
 window.SOURCE_CONTENU = SOURCE_CONTENU;
 document.addEventListener("keydown", clavier);
+/* `scroll` ne remonte pas : on l'écoute à la CAPTURE, sans quoi le dégradé ne
+   s'éteindrait jamais quand on arrive en bas du panneau. */
+document.addEventListener("scroll", majDebord, true);
 if(!restaurerPartie()) R.envoyerRemise(S);   // la remise 1 arrive d'elle-même
 rendreTout();
 

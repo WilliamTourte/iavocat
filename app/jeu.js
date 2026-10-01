@@ -170,15 +170,15 @@ function tutoEtapeCitation(){
 function tutoEtapeComparaison(){
   if(R.indexTermeChamp(S)>=0){
     const dit = S.compo.length
-      ? "Prends-en un second : c'est leur rapport qui parlera."
-      : "Une réponse peut tenir sur deux passages. Prends-en un premier.";
+      ? "A quel autre passage veux-tu le comparer ?"
+      : "Sélectionne les deux passages contradictoires";
     return panneau==="contexte"
       ? {...GESTE_RELIER, n:1, ou:"#zoneRetenus", dit}
       : {...GESTE_RELIER, n:1, ou:"#btnContexte", dit:"Ouvre ton contexte : "+dit[0].toLowerCase()+dit.slice(1)};
   }
   if(S.compo.length && R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
     return {...GESTE_RELIER, n:2, ou:"#composeur .offre",
-      dit:"Une relation seule ne suffit pas : prends l'article sur lequel elle s'appuie."};
+      dit:"Une contradiction seule ne suffit pas : indique l'article sur l'avocat peut s'appuyer."};
   if(R.peutEnvoyer(S))
     return {...GESTE_RELIER, n:3, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};

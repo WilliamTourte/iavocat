@@ -340,7 +340,10 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
 - **30 septembre, troisième passe** — **les deux surfaces de côté passent en panneaux**, d'abord
   par-dessus la conversation, puis — même session, sur retour de l'auteur — **dans le flux, entre elle
   et le composeur**, avec des portes qui tranchent sur le fond. Le rappel de la question sous panneau,
-  écrit et éprouvé, a été **retiré** dans la foulée : plus rien n'est couvert, donc plus rien à redire.
+  écrit et éprouvé, est **retiré** dans la foulée : rien n'est couvert, pense-t-on alors — *lisible*
+  n'est pas encore distingué de *présent*. Il **revient le 1ᵉʳ octobre** (§4.9 règle 3), quand une
+  capture du dépôt montre la question coupée alors même qu'aucun panneau ne la recouvre : rétrécie
+  pour leur faire place, la conversation peut perdre la question sans qu'elle soit cachée par rien.
   La bascule : l'élargissement de la colonne, essayé la passe d'avant, est annulé, et la Plaidoirie
   sort de son escamotage du 16 septembre (§4.6, §4.9). L'écran tombe à une colonne, `.wrap` cesse
   d'être une grille, et deux PIÈGES disparaissent avec elle. Le tutoriel apprend à viser une porte

@@ -528,7 +528,7 @@ window.CONTENU = {
         "p_pv.e_arr"
       ],
       "tag": "q_arrivee",
-      "rep": "22h04, oui. L'heure des services — c'est celle qui fait foi, retiens-la."
+      "rep": "22h04, oui. L'heure à laquelle la police dit être arrivée sur place. C'est elle qui fait foi, retiens-la."
     },
     {
       "forme": "citation",
@@ -536,7 +536,7 @@ window.CONTENU = {
         "p_pv.e_equip"
       ],
       "tag": "q_equipages",
-      "rep": "Deux. Ça n'a l'air de rien — retiens quand même que ce genre de chiffre se retrouve ailleurs, et qu'il ne veut pas dire grand-chose."
+      "rep": "Deux. Ça n'a l'air de rien, mais retiens quand même que ce genre de chiffre se retrouve ailleurs, et qu'il ne veut pas dire grand-chose."
     },
     {
       "forme": "citation",
@@ -544,7 +544,7 @@ window.CONTENU = {
         "t_voisin.e_voix"
       ],
       "tag": "q_voix",
-      "rep": "22h30. Tu as vu ce que ça donne, j'espère : à cette heure-là mes collègues tenaient l'appartement depuis une demi-heure, devant le corps. Personne n'a pu entendre ce qu'il raconte."
+      "rep": "22h30. Pourtant à ce moment la police était sur les lieux depuis une demi-heure, devant le corps. Les éclats de voix entendus ne peuvent pas correspondre au crime ."
     },
     {
       "forme": "article_3",
@@ -649,7 +649,7 @@ window.CONTENU = {
         },
         {
           "attend": "temoin",
-          "question": "Troisième et dernière. Dis-le-moi comme on le plaide : les deux heures, et le texte qui les fait tomber."
+          "question": "Maintenant qu'on a cette incohérence, sur quel article je peux me baser pour discréditer le témoignage du voisin ?"
         }
       ]
     },
