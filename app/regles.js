@@ -108,9 +108,20 @@ function creerRegles(JEU, M) {
     for (const p of S.compo) { const b = blocParId(p.bloc); if (b) e = b.vers; }
     return e;
   }
+  /* ON N'INVOQUE PAS UN TEXTE QU'ON N'A PAS LU (§4.5). Une TOURNURE se reçoit —
+     il suffit que sa pièce soit livrée ; un TEXTE s'invoque, et on n'invoque que
+     ce qu'on a ouvert. PIÈGE : la distinction se fait sur le TYPE DE BLOC, pas
+     sur la nature de la pièce — dans l'affaire du jour, le terme de comparaison
+     porte lui aussi une pièce-règle, et l'exiger lue couperait la grammaire de
+     comparaison, que le §4.5 veut complète dès la première phrase. */
   function blocsDepuis(e, S) {
     const livrees = new Set(piecesLivrees(S));
-    return (JEU.grammaire.blocs || []).filter(b => b.de === e && (!b.piece || livrees.has(b.piece)));
+    return (JEU.grammaire.blocs || []).filter(b => {
+      if (b.de !== e) return false;
+      if (!b.piece) return true;
+      if (!livrees.has(b.piece)) return false;
+      return b.type !== "liaison" || S.examinees.includes(b.piece);
+    });
   }
   function blocsOfferts(S) { return blocsDepuis(etatCompo(S), S); }
   function indexTermeChamp(S) {
@@ -251,9 +262,33 @@ function creerRegles(JEU, M) {
     avancerSurAttente(S, L);
   }
 
+  /* UNE PHRASE QUI MÉLANGE DEUX DOSSIERS (§4.6). Le Contexte est cumulatif et
+     gratuit : rien n'empêche de comparer un passage de la session 1 avec un de
+     la session 2, et ça produit des phrases qui n'ont pas de sens — 14h02 « avant »
+     22h04, deux jours différents. On n'INTERDIT rien (§4.5, seules les erreurs de
+     catégorie sont refusées) : l'avocat le dit, comme il refuse la comparaison nue.
+     PIÈGE : c'est une impatience de sa part, jamais un verdict — aucun défaut ne
+     doit pouvoir se relire comme un calcul (§8.5). */
+  function remiseDe(pid) {
+    return (JEU.remises || []).findIndex(r => (r.pieces || []).includes(pid));
+  }
+  function remisesCitees(r, vues) {
+    for (const t of (r && r.termes) || []) {
+      if (typeof t === "object") remisesCitees(t, vues);
+      else if (typeof t === "string") {
+        const i = remiseDe(t.slice(0, t.indexOf(".")));
+        if (i >= 0) vues.add(i);
+      }
+    }
+    return vues;
+  }
+  const melangeDeuxDossiers = r => remisesCitees(r, new Set()).size > 1;
+
   function reponseAvocat(S, n) {
     const L = n.lien, A = JEU.avocat || {};
     const esc1 = (liste, cpt) => liste[Math.min(S[cpt]++, liste.length - 1)];
+    if (!L && A.rep_deux_dossiers && melangeDeuxDossiers(n.reduite))
+      return pousser(S, "Maître Auber", A.rep_deux_dossiers);
     if (L && L.vice && L.conclusion) pousser(S, "Maître Auber", A.rep_vice);
     else if (L && L.faux)            pousser(S, "Maître Auber", A.rep_faux);
     else if (L && L.rep)             pousser(S, "Maître Auber", L.rep);
@@ -301,10 +336,24 @@ function creerRegles(JEU, M) {
     if (repetitionEnCours(S)) return null;
     return "fin";
   }
+  /* OPPOSER, PAS ENVOYER (§4.6). PIÈGE PAYÉ : depuis que clore et envoyer n'en
+     font qu'un (§4.5), toute phrase du journal est DÉJÀ versée — le présentoir
+     n'offrait que des lignes mortes, et cette réplique annonçait un geste
+     qu'elle ne faisait pas. Elle le fait : on pose la cible sur l'entrée de
+     plaidoirie qui existe déjà. Déjà opposée à CELLE-CI, on se tait : ce qui est
+     lisible à l'écran ne se redit pas (§4.9 règle 3). La voie « phrase gardée,
+     pas encore versée » reste — on ne retire pas du moteur une capacité que le
+     contenu du jour n'emploie pas (§11). */
   function verserContre(S, i) {
     const n = S.brouillon[i], aff = JEU.repetition.affirmations[S.repetitionIdx];
     if (!n || !aff) return;
-    if (n.versee) { pousser(S, "Maître Auber", JEU.avocat.deja); return; }
+    if (n.versee) {
+      const e = S.plaidoirie.find(x => x.b === i);
+      if (!e || e.contre === S.repetitionIdx) return;
+      e.contre = S.repetitionIdx;
+      pousser(S, "Maître Auber", JEU.avocat.deja);
+      return;
+    }
     envoyer(S, i, S.repetitionIdx);
   }
   function avancerRepetition(S) {
@@ -338,7 +387,7 @@ function creerRegles(JEU, M) {
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, envoyerCompo, compoFinie,
-           estMoyen, envoyer, reponseAvocat, avancerSurAttente,
+           estMoyen, envoyer, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
            instructionComplete, repetitionEnCours, cloturer, verserContre,
            avancerRepetition, finir };

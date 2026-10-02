@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* `npm run gardien` — les conventions que les suites ne voient pas (§16).
- * Sept règles, sept pannes réellement vécues. Les numéros gardent leurs trous :
+ * Huit règles, huit pannes réellement vécues. Les numéros gardent leurs trous :
  * cinq règles ont été retirées (var CSS non définie, famille CSS orpheline,
  * reste du schéma 2, carte de tailles menteuse, prédicat recopié), et renuméroter
  * casserait tout ce qui cite « Rn ».
@@ -12,10 +12,12 @@
  *   R9  `attend`/`apres` ne se lisent plus sur une remise           §11, §15
  *   R11 aucun renvoi « §x » ne pointe dans le vide                  §12
  *   R12 l'export commité est celui que produit `npm run export`  §16
+ *   R13 une suite ne passe pas par une porte que l'écran n'a pas  §16
  *
  * TERRITOIRES : R9 marche sur `app/`, `tests/` ET `outils/`, R11 sur tout le
- * dépôt, documents compris, R12 sur `export/` ; les quatre autres sur les deux pages. Avant
- * d'ajouter une règle, demander SUR QUEL TERRITOIRE elle marche.
+ * dépôt, documents compris, R12 sur `export/`, R13 sur `tests/` et `outils/` ;
+ * les quatre autres sur les deux pages. Avant d'ajouter une règle, demander
+ * SUR QUEL TERRITOIRE elle marche.
  *
  * Ce n'est pas une cinquième source de vérité (§12) : le jour où une règle et
  * son § divergent, c'est le § qui a raison. Zéro dépendance ; sortie 1 sur
@@ -430,6 +432,28 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
   else if (lire(REL) !== require("./exporter.js").construire())
     faux.push(REL + " ne décrit plus ce que produit app/ — lancer `npm run export`");
   regle("R12 · l'export commité est celui que produit `npm run export`", faux);
+}
+
+/* R13 — UNE SUITE NE PASSE PAS PAR UNE PORTE QUE L'ÉCRAN N'A PAS (§16).
+   PANNE VÉCUE : le harnais journalisait une phrase en appelant `R.clore` — « la
+   même porte un cran plus tôt ». Sauf que l'écran n'offre que `envoyerCompo`,
+   qui clôt ET envoie : l'état « close, pas encore versée » était inatteignable
+   en jeu. Trois contrôles de la répétition l'ont donc prouvé des semaines
+   durant, verts, pendant que le présentoir était mort pour tout joueur.
+   Elle ne garde qu'UNE porte, et c'est voulu : elle est nommée d'après la panne,
+   pas d'après une théorie. `clore` reste dans `regles.js` — c'est une capacité du
+   moteur (§11), pas un geste. Une suite qui veut « compris, pas dit » assemble au
+   composeur et n'envoie pas : `H.assembler`. */
+{
+  const faux = [];
+  for (const f of fichiersJS(["tests", "outils"])) {
+    const src = lire(f);
+    src.split("\n").forEach((ligne, i) => {
+      if (/\bR\.clore\s*\(/.test(ligne) || /\bw\.R\.clore\s*\(/.test(ligne))
+        faux.push(`${f}:${i + 1} appelle R.clore — l'écran n'a que « → Envoyer » (H.assembler pour s'arrêter avant)`);
+    });
+  }
+  regle("R13 · aucune suite ne journalise par `R.clore` : l'écran n'a pas cette porte", faux);
 }
 
 bilan();

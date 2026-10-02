@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 1er octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 406 contrôles, 7 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 412 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -94,6 +94,35 @@ exigence sur les `patron` : *« la même chose »* ne se disait pas de deux pers
 par registre, distinguées par leurs seuls `slots` et déclarées avant les génériques (§8.8, §11).
 La dimension `ou` s'écrit **`où`**, et deux reflets de l'atelier ont suivi (§15).
 
+**Le 2 octobre, la partie est rejouée à l'aveugle sur cette version** — et le journal est net :
+la moitié de ce qui avait été repris tient (le compteur par geste, la question épinglée, `où`,
+*« une seule et même personne »*, la réplique du labo qui attend la fermeture, le Contexte qui
+s'ouvre sur les dernières fiches), **et ce qui ne tient pas vient en bonne part de la passe
+elle-même**.
+
+**La régression** : l'index du dossier, rendu **collant** pour qu'il ne parte pas hors champ,
+occupait le panneau en permanence — à trois lignes, la moitié ; et le panneau, `min-height:0`
+devant un composeur `flex:none`, **cédait jusqu'à zéro**. À deux passages retenus, le joueur ne
+voyait plus qu'une fiche coupée ; la réponse grandissant, plus rien. L'index **ne colle plus** et
+se resserre, le panneau gagne un **plancher**, le composeur un **plafond** — et comme ce plafond
+faisait sortir *« → Envoyer »* du cadre, **la barre du composeur devient collante** : le geste qui
+parle ne passe plus sous le pli, quelle que soit la longueur de l'offre (§4.6).
+
+**Le code et le document se contredisaient** : le bandeau désignait à nouveau la trouvaille
+(*« Sélectionne les deux passages contradictoires »*) alors que le §4.8, écrit la veille, le
+réserve à la fiction. Arbitré dans le sens du document — **le chrome nomme le geste, l'avocat
+désigne** —, et le §4.8 gagne ce que le joueur a relevé deux fois : **les deux voix demandent la
+même chose**, un bandeau qui fait comparer deux passages pendant qu'Auber réclame un article étant
+deux consignes pour un geste. Quatre **accidents de langue** partent avec.
+
+**La répétition offrait un choix qui n'existait pas** : les neuf phrases étaient toutes *« déjà
+envoyée »*. Depuis que clore et envoyer n'en font qu'un, **aucune phrase ne peut être non versée** —
+et `verserContre` répondait *« Je le mets en face de celle-ci »* **sans rien enregistrer**. On n'y
+envoie plus, **on oppose** : la cible se pose sur l'entrée de plaidoirie, le présentoir ne montre
+que les **moyens** (neuf lignes pour cinq retenus), et la réplique cesse de mentir. Enfin, **la
+dimension s'apprend sans survol** : une **légende** nomme, sous chaque pièce, les dimensions qu'elle
+porte, avec leur couleur et leur trait (§4.3) — un `title` n'existait ni au clavier ni au toucher.
+
 **Quatre reprises d'écran, toutes venues de la même partie.** La **question redescend au composeur
 dès qu'un panneau est ouvert** — *lisible* était la condition, pas *présent*, et une capture du
 dépôt montrait la question coupée (§4.9 règle 3) ; la **première question quitte le texte de la
@@ -117,6 +146,7 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **[R9]** Le tag vit sur l'**attente**, jamais sur la remise — quatre fonctions exceptées.
 - **[R11]** Tout renvoi `§x` désigne une section réelle, dans le bon document.
 - **[R12]** L'export commité est bien celui que produit `npm run export`.
+- **[R13]** Aucune suite ne journalise par `R.clore` — `H.assembler` s'arrête au composeur.
 
 **Tenus par personne — c'est ici qu'on se fait mal :**
 
@@ -196,6 +226,11 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   La règle s'applique un cran trop large — sur un grand écran la question paraît deux fois — et
   c'est **voulu** : une mesure de hauteur serait invisible des suites, cette règle-ci est tenue par
   trois contrôles (§4.9 règle 3).
+- **[R13]** Une suite ne marche que les **portes du joueur** : `R.clore` n'en est pas une, et le
+  harnais y est passé des années — l'état « close, pas encore versée » étant inatteignable en jeu,
+  trois contrôles de la répétition sont restés verts pendant que le présentoir était mort. *Avant
+  d'ajouter un contrôle, demander par quelle PORTE D'ÉCRAN le joueur atteint cet état* : c'est la
+  variante coûteuse du *« une suite peut passer par le vide »* ci-dessus, et la seule que R13 voit.
 - **Le doublon banal porte tout le camouflage** (§4.4) : ne jamais désactiver son contrôle.
 - **Le tutoriel enseigne deux gestes, la citation puis la comparaison, et ne ferme pour de bon
   qu'à la fin de la session 1** (`S.remisesEnvoyees>1`) — pas au premier `S.satisfaits`, qui ne
@@ -245,12 +280,14 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 - **L'article s'offre sans avoir été lu** : `blocsDepuis` filtre sur `piecesLivrees` — *reçu*, pas
   *lu*. Passer à `S.examinees` est un mot, et l'invariant du §4.5 deviendrait *« on n'invoque pas un
   texte qu'on n'a pas lu »*. Non tranché.
-- **Rien ne dit que la couleur et le trait CODENT une dimension** : il faut survoler un passage pour
-  l'apprendre (§4.3). Le Contexte l'enseigne, mais seulement une fois un passage retenu. Une légende
-  est du chrome que le §4.9 n'autorise pas sans preuve. **À jouer, pas à décider.**
-- **Le Contexte à dix-sept fiches** : les passages de la session 1 restent en tête et encombrent.
-  Trier, replier ou filtrer serait *juger* ce que le §4.6 promet de ne jamais juger — d'où, pour
-  l'instant, la seule barre visible et le dernier retenu amené dans le champ.
+- *Fermé le 2 octobre : la **légende** de chaque pièce nomme les dimensions qu'elle porte (§4.3).
+  Deux playtests l'avaient demandée, et le `title` qui la remplaçait n'existait ni au clavier ni au
+  toucher. Reste à voir si elle suffit, ou si le joueur passe à côté.*
+- **Le Contexte à dix-sept fiches** : l'index du dossier grossit avec le dossier, et les passages de
+  la session 1 restent en tête. Trier, replier ou filtrer serait *juger* ce que le §4.6 promet de ne
+  jamais juger — d'où, pour l'instant, un plancher au panneau, un index resserré, le dernier retenu
+  amené dans le champ et le fondu qui dit qu'il en reste. **Sorti du panneau, l'index donnerait de
+  l'air** : écarté le 2 octobre pour ne pas ouvrir une troisième porte, à rouvrir si ça remord.
 - **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
   accès. Le §4.9 interdit de redire, pas d'offrir deux chemins. **Réponse partielle du 1ᵉʳ octobre :
   elles coûtent avant de servir** — au premier écran, un joueur a noté *« Contexte / Plaidoirie :
@@ -277,6 +314,21 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   contraste** — les états par opacité sont passés en couleurs, pas encore mesurés un à un. *Le
   rognage de la conversation en 1280×800, lui, est réglé : la question redescend au composeur et le
   plancher du fil montre trois lignes (§4.9 règle 3).*
+- **Les heures se comparent sans leur date** : *« l'heure de fin du relevé sur la scène précède
+  l'heure d'arrivée de la patrouille »* — 14h02 avant 22h04, mais pas le même jour. Une phrase
+  fausse se lit comme un bug (§8.8). Repli connu : dater les `valeur` en ISO, que `comparer` trierait
+  lexicographiquement **sans toucher au moteur**.
+- **Aucune barrière entre les affaires** : fiches et articles de la session 1 restent composables
+  dans la session 2. C'est voulu — le Contexte est gratuit et cumulatif (§4.6) — mais ça produit des
+  phrases qui n'ont pas de sens, et le joueur l'a essayé exprès.
+- **La croix d'un panneau et celle d'une fiche portent le même signe** : un joueur a fermé le
+  panneau en croyant retirer un passage.
+- **La question épinglée n'existe pas en session 2** : sa demande vit dans le *texte de la remise*,
+  qu'aucune règle ne sait rappeler (§4.9 règle 3). Le repli est connu — descendre la demande sur une
+  `question` d'attente, comme en session 1 — et il coûte zéro ligne de code.
+- **L'article 12 approuvé par l'avocat quand il se retourne contre la défense** : le joueur y a vu un
+  défaut. **C'est le faux vice** (§6, §8.5) — l'avocat ne sait pas, il y pousse lui-même, et les
+  `variante_faux` des fins le paient. À ne pas « corriger » ; peut-être à rendre plus lisible à la fin.
 - Côté outil : la frise n'édite pas `rep_hors_sujet` (§15).
 
 ## 4. Prochaine étape
@@ -286,18 +338,21 @@ précédente l'a prouvé : une partie rapportée geste par geste a valu plus que
 relecture. **Il faut la rendre à un joueur neuf**, qui n'a pas lu ce qui précède :
 
 1. **La calibration se sent-elle ?** La session 1 passe-t-elle pour un examen, et la remise 2 pour le
-   moment où l'avocat cesse de savoir ? Si l'examen ne se sent pas, la session 1 redevient la dictée
-   qu'un joueur a trouvée humiliante, et c'est tout ce que le recadrage devait réparer (§3).
-2. **Rejouer la session 1 avec les nouveaux libellés** (*« et l'article 3 écarte la déposition qui
+   moment où l'avocat cesse de savoir ? *Le 2 octobre a répondu à moitié — « l'affaire 1 assumée
+   comme examen » — mais le même joueur trouvait encore que l'avocat raisonne à sa place. Le bandeau
+   a cessé de le doubler depuis ; à rejouer.*
+2. **Le Contexte tient-il sous la composition ?** C'est la question du 2 octobre, et la seule que
+   `npm run vue` sait poser : à deux fiches pendant la comparaison, puis à dix-sept.
+3. **Rejouer la session 1 avec les nouveaux libellés** (*« et l'article 3 écarte la déposition qui
    s'y heurte »*) : la phrase composée se lit-elle comme une pensée ou comme un formulaire ? C'est le
    premier point ouvert du §3 — et l'excuse la plus facile vient d'être retirée.
-3. **Envoyer une comparaison nue** et voir si le refus de Maître Auber enseigne (§4.5) — c'est du
+4. **Envoyer une comparaison nue** et voir si le refus de Maître Auber enseigne (§4.5) — c'est du
    contenu qui n'a jamais pu sortir.
-4. **Retirer `porte sur`** du composeur et rejouer la session 2 : le choix entre l'article 7 et
+5. **Retirer `porte sur`** du composeur et rejouer la session 2 : le choix entre l'article 7 et
    l'article 12 se fait-il encore, ou l'étiquette le faisait-elle seule (§3) ?
-5. Si la boucle tient : écrire la session 3 et placer la porte de la Fin 3. Sinon, prendre l'un des
+6. Si la boucle tient : écrire la session 3 et placer la porte de la Fin 3. Sinon, prendre l'un des
    replis du §3, qui ne coûtent aucune ligne de code.
-6. **Rendre la partie au testeur du clavier**, lecteur d'écran allumé (NVDA, VoiceOver) : les annonces
+7. **Rendre la partie au testeur du clavier**, lecteur d'écran allumé (NVDA, VoiceOver) : les annonces
    tombent-elles au bon moment, et en disent-elles trop ? Aucune suite ne l'entend (§4.10).
 
 **Méthode à conserver** : toute évolution part du document — on le réécrit, on le fait relire, puis on
@@ -369,3 +424,12 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   sans être lu — sont **laissés ouverts exprès** (§3), à juger sur la partie suivante. Le filet a été
   **vu tomber** : la forme du vice renommée sans suivre les liens, sept contrôles de `test_o5`
   s'écroulent.
+- **2 octobre, la partie rejouée sur cette version** — la moitié des reprises tient, et ce qui ne
+  tient pas vient de la passe elle-même : l'index collant et le panneau sans plancher écrasaient le
+  Contexte (§4.6), d'où plancher, plafond, index resserré et **barre du composeur collante** pour que
+  *« → Envoyer »* ne passe plus sous le pli. Le bandeau cesse de désigner la trouvaille, que la
+  fiction porte seule (§4.8), avec quatre accidents de langue. **La répétition devient vraie** : on
+  n'y envoie plus, on **oppose**, et `verserContre` enregistre ce que sa réplique annonçait depuis
+  toujours (§4.6). Une **légende** apprend le code des soulignements sans survol (§4.3). Et un piège
+  neuf entre au §2 : *une suite peut prouver un chemin que le joueur ne peut pas marcher* — c'est
+  ce qui avait laissé le présentoir mourir, vert en test et mort en jeu.

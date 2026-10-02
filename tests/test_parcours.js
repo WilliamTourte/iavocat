@@ -127,10 +127,17 @@ console.log("\n=== On n'invoque pas un texte qu'on n'a pas reçu ===");
     !H.cheminVers(w0, (manquant||{}).forme).length
     || !w0.R.blocsOfferts(w0.S).some(b => b.id === (manquant||{}).id));
 
+  /* LIVRÉ NE SUFFIT PLUS : un texte s'invoque une fois LU (§4.5). La tournure,
+     elle, se reçoit — c'est pourquoi la comparaison se pose sans avoir rien ouvert. */
   const w2 = boot();
   H.livrerTout(w2);
   H.poserComparaison(w2, C.termes[0]);
-  check("livré, il est offert", w2.R.blocsOfferts(w2.S).some(b => b.id === (manquant||{}).id));
+  check("la comparaison se pose sans qu'aucun texte soit lu",
+    w2.S.compo.length > 0 && !w2.S.examinees.some(pid => w2.R.estRegle(w2.JEU.pieces[pid])));
+  check("livré mais pas lu, l'article n'est offert nulle part",
+    !w2.R.blocsOfferts(w2.S).some(b => b.id === (manquant||{}).id));
+  H.lireLeTexte(w2, (manquant||{}).forme);
+  check("lu, il est offert", w2.R.blocsOfferts(w2.S).some(b => b.id === (manquant||{}).id));
   check("et la conclusion devient composable", H.composerLien(w2, C) >= 0);
 }
 
@@ -228,14 +235,19 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
 console.log("\n=== La continuation : une comparaison demande toujours « et donc ? » ===");
 {
   const w = boot();
-  H.livrerTout(w);                            // l'article doit avoir été reçu (§4.5)
+  H.livrerTout(w);                            // l'article doit avoir été reçu…
   const C = H.lienConclusion(w);              // arité 1 : une comparaison qualifiée
+  H.lireLeTexte(w, C.forme);                  // …ET LU, pour pouvoir être invoqué (§4.5)
   const sous = C.termes[0];                   // la comparaison qu'elle emboîte
   H.poserComparaison(w, sous);
   check("la comparaison est posée mais PAS close", w.S.compo.length > 0 && w.S.brouillon.length === 0);
+  check("l'automate offre de continuer", w.R.blocsOfferts(w.S).some(b => b.imbrique));
+  /* §4.5 — le moteur ne tranche AUCUNE question de droit : tous les articles LUS
+     sont offerts, et c'est au joueur de choisir. (Reçus ne suffit plus — on
+     n'invoque pas un texte qu'on n'a pas ouvert.) */
+  for (const b of H.articlesDisponibles(w)) H.lireLeTexte(w, b.forme);
   const offerts = w.R.blocsOfferts(w.S);
-  check("l'automate offre de continuer", offerts.some(b => b.imbrique));
-  check("toutes les liaisons-articles sont offertes, pas seulement la bonne",
+  check("tous les articles lus sont offerts, pas seulement le bon",
     offerts.filter(b => b.imbrique).length > 1);
 
   check("aucun bloc ne clôt sans qualifier", !offerts.some(b => !b.forme && !b.imbrique));
@@ -337,7 +349,13 @@ console.log("\n=== Les deux gestes, montrés ===");
   check("un premier passage posé, le halo reste sur le contexte — il en faut un second",
     halo() && halo().id === "zoneRetenus");
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(tB));
-  check("les deux posés, le halo montre les propositions de l'article",
+  /* §4.5 — un texte s'invoque une fois LU. Tant que l'article n'est pas ouvert,
+     le bandeau montre OÙ LE LIRE : il ne pointe pas une proposition qui n'existe
+     pas, et il ne dit pas « Envoyer » alors que la leçon est l'article. */
+  check("les deux posés, le halo montre le dossier — l'article n'est pas lu",
+    !!halo() && halo().id === "zoneDossier");
+  H.lireLeTexte(w, H.lienTag(w, veutA).forme);
+  check("l'article lu, le halo montre enfin les propositions",
     !!halo() && halo().classList.contains("offre"));
   const bArticle = w.R.blocsOfferts(w.S).findIndex(b => b.type === "liaison" && b.imbrique);
   w.poserBloc(bArticle);
@@ -384,14 +402,16 @@ console.log("\n=== Les répliques : seulement au versement ===");
 {
   const w = boot();
   const L = w.JEU.liens.find(x => x.rep && !x.vice && !x.faux);
-  const i = H.composerLien(w, L);
-  check("une phrase à réplique propre se compose", i >= 0);
-  check("composée, elle ne dit rien", !discussion(w).includes(L.rep.slice(0, 25)));
-  check("close, elle n'est pourtant pas partie",
-    w.S.prete === i && !w.S.brouillon[i].versee && w.S.plaidoirie.length === 0);
-  w.envoyer(i);
+  /* PIÈGE PAYÉ : « composée mais pas partie » ne s'obtient PAS au journal — le
+     journal ne se remplit qu'à l'envoi, et `clore` n'est pas une porte d'écran
+     (§16). Ça s'obtient au COMPOSEUR, en n'envoyant pas : le geste du joueur. */
+  check("une phrase à réplique propre s'assemble", H.assembler(w, L));
+  check("assemblée, elle ne dit rien", !discussion(w).includes(L.rep.slice(0, 25)));
+  check("et rien n'est transmis", !w.S.brouillon.length && !w.S.plaidoirie.length);
+  w.envoyerCompo();
+  const i = w.S.brouillon.findIndex(n => w.M.memeRed(n.reduite, {forme: L.forme, termes: L.termes}));
   check("envoyée, la réplique du lien sort", discussion(w).includes(L.rep.slice(0, 25)));
-  check("la phrase est marquée envoyée", w.S.brouillon[i].versee);
+  check("la phrase est marquée envoyée", i >= 0 && w.S.brouillon[i].versee);
   check("l'envoi vide la phrase en attente", w.S.prete === null);
   const avant = w.S.plaidoirie.length;
   w.envoyer(i);
@@ -491,14 +511,24 @@ console.log("\n=== La répétition de plaidoirie ===");
     discussion(w).includes(w.JEU.repetition.affirmations[0].texte.slice(0, 20)));
   check("le présentoir propose ce qui a été écrit", discussion(w).includes("Opposer une phrase"));
   check("confirmer pendant la répétition est refusé", w.document.getElementById("btnCloture").disabled);
-  const i = w.S.brouillon.findIndex(n => !n.versee);
+  const i = w.S.brouillon.findIndex(n => w.R.estMoyen(n.lien));
   w.verserContre(i);
   check("verser contre une affirmation marque la cible", w.S.plaidoirie.some(x => x.contre === 0));
   check("l'affichage nomme l'affirmation opposée", plaidoirie(w).includes(w.JEU.repetition.affirmations[0].court));
+  /* OPPOSER EST LE DERNIER GESTE RÉEL (§4.6). Toute phrase du journal est DÉJÀ
+     versée — le journal ne se remplit qu'à l'envoi — donc c'est sur une phrase
+     déjà partie qu'il faut éprouver l'opposition. Le contrôle manquait, et son
+     absence a laissé le présentoir mourir en silence, vert en test et mort en jeu. */
   const avant = w.S.fil.length;
   w.verserContre(i);
-  check("ré-envoyer la même phrase donne « deja »",
-    discussion(w).includes(w.JEU.avocat.deja.slice(0, 15)) && w.S.fil.length > avant);
+  check("la ré-opposer à la MÊME affirmation ne redit rien", w.S.fil.length === avant);
+  if (w.JEU.repetition.affirmations.length > 1) {
+    w.avancerRepetition();
+    w.verserContre(i);
+    check("l'opposer à une AUTRE déplace sa cible, phrase déjà versée comprise",
+      w.S.plaidoirie.some(x => x.b === i && x.contre === w.S.repetitionIdx));
+    check("et l'avocat le dit", discussion(w).includes(w.JEU.avocat.deja.slice(0, 15)));
+  } else check("(une seule affirmation dans ce contenu)", true);
   while (w.S.repetitionIdx < w.JEU.repetition.affirmations.length) w.avancerRepetition();
   check("au bout, la répétition se clôt sur son texte de fin", discussion(w).includes(w.JEU.repetition.fin.slice(0, 15)));
   check("la clôture est de nouveau ouverte", !w.document.getElementById("btnCloture").disabled);
@@ -509,14 +539,22 @@ console.log("\n=== La répétition de plaidoirie ===");
   w.cloturer();
   check("la continuation ne laisse aucune prémisse orpheline",
     w.S.brouillon.every(n => n.versee));
-  check("et marque « déjà envoyée » celles qui sont parties", discussion(w).includes("déjà envoyée"));
+  /* Tout est versé — et le présentoir reste VIVANT. C'est tout le point : il
+     n'offrait auparavant que des lignes « déjà envoyée », un rituel sans choix. */
+  const offerts = w2n => (w2n.document.getElementById("discussion").innerHTML.match(/verserContre\(/g) || []).length;
+  check("tout étant parti, le présentoir offre quand même d'opposer", offerts(w) > 0);
+  check("et il ne montre que les moyens, comme la Plaidoirie",
+    offerts(w) === w.S.brouillon.filter(n => w.R.estMoyen(n.lien)).length);
+  /* LA CHARNIÈRE DE LA FIN 2, dans l'état où le joueur la tient vraiment : la
+     conclusion ASSEMBLÉE au composeur, comprise et tue, pendant que l'avocat
+     récite l'accusation. */
   const w2 = boot();
   H.instruire(w2);
-  H.composerLien(w2, H.lienConclusion(w2));
+  H.assembler(w2, H.lienConclusion(w2));
   w2.cloturer();
-  check("une phrase gardée reste offerte au présentoir",
-    /verserContre\(/.test(w2.document.getElementById("discussion").innerHTML));
-  check("c'est le dernier moment où la conclusion peut partir",
+  check("la conclusion assemblée traverse l'ouverture de la répétition",
+    w2.R.peutEnvoyer(w2.S));
+  check("c'est le dernier moment où elle peut partir",
     w2.S.vice_trouve && !w2.S.vice_expose);
 }
 {

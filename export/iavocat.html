@@ -49,7 +49,13 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
    composeur (§4.9 règle 3) : elle ne dépend plus de ce qu'il reste à la
    conversation. Les deux changements se tiennent — l'un sans l'autre est un
    mauvais marché. */
-.panneau{flex:0 1 auto;max-height:40vh;min-height:0}
+/* PIÈGE PAYÉ : `flex:0 1 auto` + `min-height:0` laissait le panneau céder JUSQU'À
+   ZÉRO devant `#composeur`, qui est `flex:none`. À deux passages retenus, un
+   joueur ne voyait plus que le haut d'une fiche ; la réponse grandissant, la
+   zone disparaissait. Or le panneau EST le clavier (§4.6) : le vider pendant
+   qu'on écrit retire le clavier au milieu du geste. D'où un PLANCHER qui montre
+   deux fiches entières — c'est au composeur de défiler, il sait le faire. */
+.panneau{flex:0 1 auto;max-height:40vh;min-height:268px}
 /* UN PANNEAU QUI DÉBORDE LE DIT. PIÈGE MESURÉ, deux fois : la barre du système
    est SUPERPOSÉE — 0 px de large, effacée au repos —, et ni `scrollbar-width`
    ni `::-webkit-scrollbar` ne la font reprendre sa place dans ce Chromium. Un
@@ -66,14 +72,17 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 .panneau .body::-webkit-scrollbar-thumb{background:#44525f;border-radius:6px;
   border:2px solid var(--panel)}
 .panneau .body::-webkit-scrollbar-thumb:hover{background:#5a6b7a}
-/* L'index reste en tête : rouvert sur un défilement gardé, le panneau montrait
-   des fiches sans dire de quelles pièces elles venaient. Le `box-shadow` plein
-   bouche la gouttière sous lui — sans quoi le contenu défilerait dans le vide
-   entre l'index et la première fiche. */
-#zoneDossier{position:sticky;top:0;z-index:1;box-shadow:0 12px 0 0 var(--panel)}
+/* PIÈGE PAYÉ : `#zoneDossier` a été rendu COLLANT pour qu'il ne parte pas hors
+   champ — il a occupé le panneau en permanence, et à trois lignes il en mangeait
+   la moitié, par-dessus les fiches. Il défile avec elles. Ce qu'il devait
+   réparer l'est autrement : le défilement survit au redessin (`garderDefilement`)
+   et le panneau s'ouvre sur le dernier passage retenu (`voirDernierRetenu`). */
 /* PIÈGE : `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` — sans
    cette ligne, cacher la Plaidoirie ne ferait rien. */
 .col[hidden]{display:none}
+/* Panneau ouvert, le composeur cesse de prendre toute la place qu'il veut : il
+   défile pour son compte, le panneau non — c'est lui le clavier (§4.6). */
+.wrap.avecPanneau #composeur{max-height:28vh}
 #composeur{flex:none;max-height:46vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);
   border-radius:10px;padding:12px 16px}
 #composeur .zone{margin:0}
@@ -130,6 +139,10 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .zone{margin-bottom:12px}
 #zoneDossier,#zoneRetenus{border:1px solid var(--line);border-radius:8px;
   background:var(--panel2);padding:10px 12px;margin-bottom:12px}
+/* L'index PARTAGE le panneau avec les fiches, il n'en est pas le sujet : à huit
+   pièces il en mangeait la moitié. Il se resserre — les fiches sont ce qu'on
+   vient chercher quand on écrit. */
+#zoneDossier{padding:7px 10px;margin-bottom:9px}
 .zone .ztitle{font-size:14px;font-weight:600;color:var(--muted);
   margin-bottom:8px;padding:4px 0 6px;display:flex;align-items:center;gap:8px}
 .aide{display:block;color:var(--muted);font-size:13px;margin-top:8px;font-style:italic}
@@ -206,8 +219,16 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .bbloc{text-align:left;background:#20303f;color:var(--txt);border:1px solid var(--line);
   border-radius:6px;padding:6px 9px;cursor:pointer;font:inherit;font-size:13.5px}
 .bbloc:hover{border-color:var(--accent)}
-/* Le geste qui parle pèse plus que ceux qui défont (§4.9). */
-.compo .barre{display:flex;align-items:center;gap:6px;margin:8px 0}
+/* Le geste qui parle pèse plus que ceux qui défont (§4.9) — et §4.6 : « → Envoyer »
+   NE PASSE JAMAIS SOUS LE PLI. PIÈGE MESURÉ : les propositions d'article allongent
+   le composeur au-delà de son plafond, et la barre descendait avec elles — à trois
+   articles offerts, bandeau du tutoriel affiché et panneau ouvert, elle sortait du
+   cadre. Collée au bas de ce qui défile, elle reste là quelle que soit la longueur
+   de l'offre. Le fond est celui de `.compo`, et les marges négatives le portent
+   jusqu'aux bords. */
+.compo .barre{display:flex;align-items:center;gap:6px;margin:8px 0 0;
+  position:sticky;bottom:-9px;z-index:2;
+  margin-left:-11px;margin-right:-11px;padding:8px 11px 9px;background:#141a21}
 .compo .barre button{background:none;border:1px solid transparent;color:var(--muted);
   border-radius:6px;padding:4px 9px;cursor:pointer;font:inherit;font-size:13px}
 .compo .barre button:hover{border-color:var(--line);color:var(--txt)}
@@ -216,7 +237,6 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .compo .barre .envoi:hover{background:#8ec8e6;border-color:#8ec8e6;color:#0b1620}
 .refus{color:#e6b0b0;font-size:13px;margin-top:8px}
 .bbloc.fondement{background:#25313d;border-left:3px solid var(--transmis)}
-.porte{display:block;font-size:12px;color:var(--muted);font-family:var(--mono);margin-top:2px}
 /* --- plaidoirie --- */
 .liste{list-style:none;padding:0;margin:0}
 .liste li{font-size:13.5px;padding:8px 0;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}
@@ -285,10 +305,21 @@ code{font-family:var(--mono);color:var(--accent)}
 .modal.piece :focus-visible{box-shadow:0 0 0 2px var(--papier),0 0 0 4px #1d3b57}
 /* Un article n'est pas un témoignage : un double filet le distingue. */
 .modal.piece.regle{border-left:6px double #b3a37f}
+/* §4.3 — LA LÉGENDE : le code s'apprend sans survol. Chaque nom porte EXACTEMENT
+   la marque des passages qu'il range — même trait, même couleur, foncée par le
+   papier comme eux (`--dcp`), et la palette ne se double toujours pas. */
+.modal.piece .legende{margin:16px 0 0;padding-top:10px;border-top:1px solid var(--filet);
+  font-family:var(--sans);font-size:13px;color:var(--encre2);
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 15px}
+.modal.piece .legende .llab{flex:none}
+.modal.piece .legende .ldim{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
+  color:var(--encre);text-decoration-line:underline;text-decoration-style:var(--ds,solid);
+  text-decoration-color:var(--dcp);text-decoration-thickness:2px;
+  text-underline-offset:.26em;text-decoration-skip-ink:none}
 .modal.piece .rappel{margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--encre2);
   background:#ebe4d4;color:var(--encre);font-family:var(--sans);font-size:14px}
 /* --- l'index du dossier : les pièces d'abord, les règles ensuite --- */
-.dossier{display:flex;flex-direction:column;gap:6px;padding:2px 0 4px}
+.dossier{display:flex;flex-direction:column;gap:5px;padding:0}
 .dcol{min-width:0;display:flex;gap:8px;align-items:baseline}
 .dcol .dtitre{flex:none;font-size:12.5px;font-weight:600;color:var(--muted)}
 .dcol .dchips{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
@@ -296,7 +327,7 @@ code{font-family:var(--mono);color:var(--accent)}
 /* La puce porte le TITRE de la pièce, celui sous lequel la Discussion l'a
    transmise (§4.6) : de la prose, donc ni mono ni corps de matricule. */
 .dchip{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:13px;
-  border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:4px 8px;cursor:pointer;color:var(--txt)}
+  border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:3px 7px;cursor:pointer;color:var(--txt)}
 .dchip:hover{border-color:var(--accent)}
 .dchip.vu{color:var(--muted);background:#181e27}
 .dchip.regle{border-color:#4a4030;color:var(--warn)}
@@ -708,9 +739,20 @@ function creerRegles(JEU, M) {
     for (const p of S.compo) { const b = blocParId(p.bloc); if (b) e = b.vers; }
     return e;
   }
+  /* ON N'INVOQUE PAS UN TEXTE QU'ON N'A PAS LU (§4.5). Une TOURNURE se reçoit —
+     il suffit que sa pièce soit livrée ; un TEXTE s'invoque, et on n'invoque que
+     ce qu'on a ouvert. PIÈGE : la distinction se fait sur le TYPE DE BLOC, pas
+     sur la nature de la pièce — dans l'affaire du jour, le terme de comparaison
+     porte lui aussi une pièce-règle, et l'exiger lue couperait la grammaire de
+     comparaison, que le §4.5 veut complète dès la première phrase. */
   function blocsDepuis(e, S) {
     const livrees = new Set(piecesLivrees(S));
-    return (JEU.grammaire.blocs || []).filter(b => b.de === e && (!b.piece || livrees.has(b.piece)));
+    return (JEU.grammaire.blocs || []).filter(b => {
+      if (b.de !== e) return false;
+      if (!b.piece) return true;
+      if (!livrees.has(b.piece)) return false;
+      return b.type !== "liaison" || S.examinees.includes(b.piece);
+    });
   }
   function blocsOfferts(S) { return blocsDepuis(etatCompo(S), S); }
   function indexTermeChamp(S) {
@@ -851,9 +893,33 @@ function creerRegles(JEU, M) {
     avancerSurAttente(S, L);
   }
 
+  /* UNE PHRASE QUI MÉLANGE DEUX DOSSIERS (§4.6). Le Contexte est cumulatif et
+     gratuit : rien n'empêche de comparer un passage de la session 1 avec un de
+     la session 2, et ça produit des phrases qui n'ont pas de sens — 14h02 « avant »
+     22h04, deux jours différents. On n'INTERDIT rien (§4.5, seules les erreurs de
+     catégorie sont refusées) : l'avocat le dit, comme il refuse la comparaison nue.
+     PIÈGE : c'est une impatience de sa part, jamais un verdict — aucun défaut ne
+     doit pouvoir se relire comme un calcul (§8.5). */
+  function remiseDe(pid) {
+    return (JEU.remises || []).findIndex(r => (r.pieces || []).includes(pid));
+  }
+  function remisesCitees(r, vues) {
+    for (const t of (r && r.termes) || []) {
+      if (typeof t === "object") remisesCitees(t, vues);
+      else if (typeof t === "string") {
+        const i = remiseDe(t.slice(0, t.indexOf(".")));
+        if (i >= 0) vues.add(i);
+      }
+    }
+    return vues;
+  }
+  const melangeDeuxDossiers = r => remisesCitees(r, new Set()).size > 1;
+
   function reponseAvocat(S, n) {
     const L = n.lien, A = JEU.avocat || {};
     const esc1 = (liste, cpt) => liste[Math.min(S[cpt]++, liste.length - 1)];
+    if (!L && A.rep_deux_dossiers && melangeDeuxDossiers(n.reduite))
+      return pousser(S, "Maître Auber", A.rep_deux_dossiers);
     if (L && L.vice && L.conclusion) pousser(S, "Maître Auber", A.rep_vice);
     else if (L && L.faux)            pousser(S, "Maître Auber", A.rep_faux);
     else if (L && L.rep)             pousser(S, "Maître Auber", L.rep);
@@ -901,10 +967,24 @@ function creerRegles(JEU, M) {
     if (repetitionEnCours(S)) return null;
     return "fin";
   }
+  /* OPPOSER, PAS ENVOYER (§4.6). PIÈGE PAYÉ : depuis que clore et envoyer n'en
+     font qu'un (§4.5), toute phrase du journal est DÉJÀ versée — le présentoir
+     n'offrait que des lignes mortes, et cette réplique annonçait un geste
+     qu'elle ne faisait pas. Elle le fait : on pose la cible sur l'entrée de
+     plaidoirie qui existe déjà. Déjà opposée à CELLE-CI, on se tait : ce qui est
+     lisible à l'écran ne se redit pas (§4.9 règle 3). La voie « phrase gardée,
+     pas encore versée » reste — on ne retire pas du moteur une capacité que le
+     contenu du jour n'emploie pas (§11). */
   function verserContre(S, i) {
     const n = S.brouillon[i], aff = JEU.repetition.affirmations[S.repetitionIdx];
     if (!n || !aff) return;
-    if (n.versee) { pousser(S, "Maître Auber", JEU.avocat.deja); return; }
+    if (n.versee) {
+      const e = S.plaidoirie.find(x => x.b === i);
+      if (!e || e.contre === S.repetitionIdx) return;
+      e.contre = S.repetitionIdx;
+      pousser(S, "Maître Auber", JEU.avocat.deja);
+      return;
+    }
     envoyer(S, i, S.repetitionIdx);
   }
   function avancerRepetition(S) {
@@ -938,7 +1018,7 @@ function creerRegles(JEU, M) {
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, envoyerCompo, compoFinie,
-           estMoyen, envoyer, reponseAvocat, avancerSurAttente,
+           estMoyen, envoyer, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
            instructionComplete, repetitionEnCours, cloturer, verserContre,
            avancerRepetition, finir };
@@ -1500,7 +1580,7 @@ window.CONTENU = {
         "t_voisin.e_voix"
       ],
       "tag": "q_voix",
-      "rep": "22h30. Pourtant à ce moment la police était sur les lieux depuis une demi-heure, devant le corps. Les éclats de voix entendus ne peuvent pas correspondre au crime ."
+      "rep": "22h30. Pourtant à ce moment la police était sur les lieux depuis une demi-heure, devant le corps. Les éclats de voix entendus ne peuvent pas correspondre au crime."
     },
     {
       "forme": "article_3",
@@ -1559,6 +1639,45 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
+          "forme": "anteriorite",
+          "termes": [
+            "p_scene.e_h",
+            "p_ref.e_h2"
+          ]
+        }
+      ],
+      "rep": "L'article que tu évoques ne dit rien sur le délai. Il demande des personnels distincts."
+    },
+    {
+      "forme": "article_3",
+      "termes": [
+        {
+          "forme": "identite_personne",
+          "termes": [
+            "p_scene.e_moi",
+            "p_ref.e_moi2"
+          ]
+        }
+      ],
+      "rep": "L'article 3 ne parle que d'horaires de témoin. Tu me montres deux signatures d'agent. Ça ne se rencontre nulle part."
+    },
+    {
+      "forme": "article_12",
+      "termes": [
+        {
+          "forme": "identite_personne",
+          "termes": [
+            "p_scene.e_moi",
+            "p_ref.e_moi2"
+          ]
+        }
+      ],
+      "rep": "L'article 12 pèse des probabilités. Tu me montres deux noms. Je ne vois pas sous quel angle le plaider."
+    },
+    {
+      "forme": "article_7",
+      "termes": [
+        {
           "forme": "identite_personne",
           "termes": [
             "p_scene.e_moi",
@@ -1605,13 +1724,13 @@ window.CONTENU = {
         },
         {
           "attend": "temoin",
-          "question": "Maintenant qu'on a cette incohérence, sur quel article je peux me baser pour discréditer le témoignage du voisin ?"
+          "question": "Alors mets-les face à face, les deux heures — et dis-moi sous quel article ça tombe."
         }
       ]
     },
     {
       "qui": "Maître Auber",
-      "texte": "Le vrai dossier, maintenant. Le rapport du laboratoire, et tout ce qui l'entoure. Celui-là, je l'ai lu dix fois sans rien y trouver — à toi.",
+      "texte": "Le vrai dossier, maintenant. Le rapport du laboratoire, et tout ce qui l'entoure. Celui-là, je l'ai lu dix fois sans rien y trouver.",
       "pieces": [
         "p_adn",
         "p_scene",
@@ -1621,6 +1740,7 @@ window.CONTENU = {
       ],
       "attentes": [
         {
+          "question": "À toi, maintenant. Qu'est-ce qui permet d'écarter ce rapport, et sous quel article ?",
           "attend": "adn",
           "apres": {
             "replique": "Je tiens quelque chose à plaider. Je rédige mes conclusions cette nuit — à moins que tu aies encore quelque chose pour moi ?"
@@ -1663,6 +1783,7 @@ window.CONTENU = {
       "Non. La réponse est dans le dossier — cherche le passage qui répond, pas un autre.",
       "Je t'attends toujours."
     ],
+    "rep_deux_dossiers": "Celle-là mélange les deux dossiers. Je plaide l'un après l'autre — reste sur celui qu'on a ouvert.",
     "deja": "Je l'ai déjà. Je le mets en face de celle-ci."
   },
   "directives": [
@@ -1687,7 +1808,7 @@ window.CONTENU = {
       "titre": "Fin 3 — le doute",
       "verdict": "Verdict rapporté : CONDAMNATION.",
       "texte": "Tu l'as laissé déposer sans rien lui donner d'autre que ce qu'il te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
-      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé. C'est tout ce que tu lui avais donné."
+      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : l'article 12 répute justement probante une correspondance de cet ordre. C'est tout ce que tu lui avais donné."
     }
   }
 };
@@ -1873,15 +1994,25 @@ function tutoEtapeCitation(){
 function tutoEtapeComparaison(){
   if(R.indexTermeChamp(S)>=0){
     const dit = S.compo.length
-      ? "A quel autre passage veux-tu le comparer ?"
-      : "Sélectionne les deux passages contradictoires";
+      ? "Prends-un second passage pour le comparer au premier."
+      : "Une réponse peut contenir deux passages. Prends-en un premier.";
     return panneau==="contexte"
       ? {...GESTE_RELIER, n:1, ou:"#zoneRetenus", dit}
       : {...GESTE_RELIER, n:1, ou:"#btnContexte", dit:"Ouvre ton contexte : "+dit[0].toLowerCase()+dit.slice(1)};
   }
-  if(S.compo.length && R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
-    return {...GESTE_RELIER, n:2, ou:"#composeur .offre",
-      dit:"Une contradiction seule ne suffit pas : indique l'article sur l'avocat peut s'appuyer."};
+  /* PIÈGE : une comparaison nue EST envoyable (§4.5), donc ce temps doit passer
+     AVANT celui de l'envoi — sans quoi le bandeau dirait « Envoyer » là où la
+     leçon est « il te faut un article ». Et depuis qu'un texte s'invoque une fois
+     LU, l'article peut n'être offert nulle part : on montre alors où le lire. */
+  if(S.compo.length && !R.compoFinie(S)){
+    if(R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
+      return {...GESTE_RELIER, n:2, ou:"#composeur .offre",
+        dit:"Une relation seule ne suffit pas : prends l'article sur lequel elle s'appuie."};
+    const dit="Une relation seule ne suffit pas : il lui faut un article qui la fonde.";
+    return panneau==="contexte"
+      ? {...GESTE_RELIER, n:2, ou:"#zoneDossier", dit:dit+" Va le lire dans ton dossier."}
+      : {...GESTE_RELIER, n:2, ou:"#btnContexte", dit:dit+" Ton dossier est dans ton contexte."};
+  }
   if(R.peutEnvoyer(S))
     return {...GESTE_RELIER, n:3, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
@@ -2050,13 +2181,19 @@ function renderDiscussion(){
     h+=`</div></div></div>`;
   }
   if(S.clotureDemandee && S.repetitionIdx>-1 && S.repetitionIdx<JEU.repetition.affirmations.length){
-    const dispo=S.brouillon.map((n,i)=>({n,i}));
+
+    const dispo=S.brouillon.map((n,i)=>({n,i})).filter(x=>R.estMoyen(x.n.lien));
+    const cibleDe=i=>{ const e=S.plaidoirie.find(x=>x.b===i); return e && e.contre!=null ? e.contre : null; };
     h+=`<div class="repet"><div class="rtitle">Opposer une phrase à cette affirmation ?</div>${
-      dispo.length ? dispo.map(x=>
-        `<div class="rnote"><span class="txt">${escapeAttr(x.n.texte)}</span>
-         ${x.n.versee?`<span class="sent">déjà envoyée</span>`:`<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">envoyer</button>`}</div>`).join("")
+      dispo.length ? dispo.map(x=>{
+        const c=cibleDe(x.i), aff=c!=null && JEU.repetition.affirmations[c];
+        return `<div class="rnote"><span class="txt">${escapeAttr(x.n.texte)}</span>
+         ${c===S.repetitionIdx
+            ? `<span class="sent">opposé à celle-ci</span>`
+            : `${aff?`<span class="sent">opposé à : ${escapeAttr(aff.court)}</span>`:""}<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">opposer</button>`}</div>`;
+      }).join("")
       : `<div class="rnote vide">tu n'as écrit aucune phrase à y opposer</div>`
-    }<button class="btn" data-f="rsuite" onclick="avancerRepetition()">Ne rien envoyer — continuer</button></div>`;
+    }<button class="btn" data-f="rsuite" onclick="avancerRepetition()">Ne rien opposer — continuer</button></div>`;
   }
   $("discussion").innerHTML=h;
 }
@@ -2151,14 +2288,39 @@ function surligner(pid,eid){
   annoncer(rappelRetrait ? RAPPEL_RETRAIT : "Retenu dans ton Contexte.");
   rendreTout();
 }
+/* PIÈGE PAYÉ : la fiche retirée, le focus retombait sur la CROIX DE LA
+   SUIVANTE — un second Entrée en supprimait une autre. Il se pose donc sur la
+   zone, qui n'arme rien ; `#zoneRetenus` porte `tabindex="-1"` pour l'accueillir,
+   et `rendreFocus` sait viser un id (§4.10 règle 2). */
 function oublier(pid,eid){
   R.oublier(S,pid,eid);            // le Contexte seul peut retirer
+  focusVoulu={ cle:"#zoneRetenus", zone:"#zoneRetenus" };
   rendreTout();
+}
+/* §4.3 — LA LÉGENDE. */
+function legendePiece(pid){
+  const p=JEU.pieces[pid];
+  const dims=(JEU.dimensions||[]).filter(d =>
+    Object.values(p.empans||{}).some(e=>e.dim===d));
+  if(!dims.length) return "";          // une règle ne porte aucun empan (§6)
+  return `<p class="legende"><span class="llab">Ce que disent les soulignements :</span>${
+    dims.map(d=>`<span class="ldim" style="--dc:${couleurDim(d)};--ds:${traitDim(d)}">${escapeAttr(d)}</span>`).join("")}</p>`;
+}
+/* §4.5 — `porte` ANNONCE, il ne filtre rien : le moteur ne le lit jamais. Il se
+   lit DANS l'article, jamais sous le bouton qui l'invoque. Même forme que la
+   légende (§4.3), et les noms y portent leur couleur et leur trait : c'est le
+   pont vers les groupes du Contexte. */
+function portePiece(pid){
+  const d=R.porteDe(pid);
+  if(!d.length) return "";
+  return `<p class="legende"><span class="llab">Ce texte porte sur :</span>${
+    d.map(x=>`<span class="ldim" style="--dc:${couleurDim(x)};--ds:${traitDim(x)}">${escapeAttr(x)}</span>`).join("")}</p>`;
 }
 function modalPieceHTML(pid){
   const p=JEU.pieces[pid];
   return `<h3 id="modalTitre" tabindex="-1">${escapeAttr(p.titre)}</h3><small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
     <p class="piecetexte">${rendreTexte(pid)}</p>
+    ${legendePiece(pid)}${portePiece(pid)}
     ${rappelRetrait && rappelRetrait.startsWith(pid+".") ? `<p class="rappel">${RAPPEL_RETRAIT}</p>` : ""}`;
 }
 /* PIÈGE : `#zoneRetenus` est l'ancre des temps 3 et 5 du tutoriel (R6), à ne
@@ -2169,7 +2331,7 @@ function modalPieceHTML(pid){
 function renderRetenus(){
   const iT=R.indexTermeChamp(S);
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
-  let h=`<div class="zone" id="zoneRetenus">`;
+  let h=`<div class="zone" id="zoneRetenus" tabindex="-1">`;
   if(!S.retenus.length){
     h+=`<div class="aide">Retiens des passages du dossier : ils viendront ici.</div>`;
   } else {
@@ -2219,7 +2381,9 @@ function souffle(){
     return "Prends un second passage pour le mettre en relation.";
   return offerts.length
     ? "Sur quel article t'appuies-tu pour montrer qu'il y a une irrégularité ?"
-    : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
+    // §4.5 — un texte s'invoque une fois LU : la voix dit où aller le lire,
+    // sans quoi le joueur bloque sans savoir pourquoi.
+    : "Aucun texte que tu as lu ne fonde ça. Les articles sont dans ton dossier — ouvre-les.";
 }
 /* §4.9 règle 1 — LA VOIX DEVIENT UN BOUTON quand le geste qu'elle nomme a lieu
    dans l'AUTRE colonne. Le prédicat est `indexTermeChamp`, le MÊME qui active
@@ -2302,8 +2466,10 @@ function renderCompo(){
     if(b.type==="liaison"){
       // PIÈGE : `fondement` est propre à `.bbloc` ; `.msg.suite` est le même
       // mot pour un sens sans rapport.
-      h+=`<button class="bbloc ${b.imbrique?"fondement":""}" data-f="b:${escapeAttr(b.id)}" onclick="poserBloc(${i})">${escapeAttr(b.libelle||b.texte)}${
-        b.piece?portePhrase(b.piece):""}</button>`;
+      // §4.5 — PAS de `porte sur` ICI : sous le bouton qui l'invoque, l'étiquette
+      // faisait le tri à la place du joueur (« deux fiches QUI → seul l'art. 7
+      // colle »). Elle se lit maintenant DANS l'article, à la lecture.
+      h+=`<button class="bbloc ${b.imbrique?"fondement":""}" data-f="b:${escapeAttr(b.id)}" onclick="poserBloc(${i})">${escapeAttr(b.libelle||b.texte)}</button>`;
     } else if(b.source==="note"){
       // Repli pour une affaire d'avant la continuation : hors du contenu livré,
       // toujours supporté — on ne retire pas une capacité du moteur (§11).
@@ -2354,7 +2520,11 @@ function plaidoirieHTML(){
   let h=`<div class="zone">`;
   // Son bouton est là dès le premier écran : le panneau doit donc savoir dire
   // qu'il est vide, et le dire dans la fiction (§4.6).
-  if(!gardes.length) h+=`<div class="aide">Maître Auber n'a encore rien retenu de toi.</div>`;
+  // §4.9 règle 4 : elle disait son vide dans la fiction, jamais ce qu'elle EST
+  // une fois pleine — deux playtests l'ont relevé (« apparaît sans un mot »).
+  h+= gardes.length
+    ? `<div class="aide">Ce que Maître Auber garde pour l'audience.</div>`
+    : `<div class="aide">Maître Auber n'a encore rien retenu de toi.</div>`;
   h+=`<ul class="liste plaid">${gardes.map(x=>
     `<li><span class="txt">${escapeAttr(S.brouillon[x.b].texte)}${
       x.contre!=null && JEU.repetition.affirmations[x.contre]
@@ -2399,12 +2569,6 @@ function finir(){
     <div class="btnrow"><button onclick="location.reload()">Recommencer</button></div>
   </div>`);
   const t=$("modalTitre"); if(t) t.focus();
-}
-
-/* Indicatif, jamais filtrant (§4.5). */
-function portePhrase(pid){
-  const d=R.porteDe(pid);
-  return d.length ? `<span class="porte">porte sur : ${d.map(escapeAttr).join(", ")}</span>` : "";
 }
 
 /* §4.6 — LES DEUX SURFACES DE CÔTÉ SONT DES PANNEAUX, qui s'ouvrent ENTRE la

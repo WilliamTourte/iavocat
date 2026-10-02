@@ -55,15 +55,32 @@ console.log("\n=== Surligner : privé, gratuit, illimité ===");
   check("le plan de plaidoirie reste vide", w.S.plaidoirie.length === 0);
 }
 
-console.log("\n=== Composer : le brouillon n'est jamais jugé ===");
+/* PIÈGE PAYÉ : ce bloc mesurait « composer ne fait rien juger » sur le JOURNAL,
+   qu'il remplissait par `clore` — porte que l'écran n'a pas. Or le journal ne se
+   remplit, en jeu, qu'à l'ENVOI, et l'envoi EST jugé : c'est tout le §4.6. Ce qui
+   est gratuit et muet, c'est le COMPOSEUR, et on l'éprouve en assemblant. */
+console.log("\n=== Composer est gratuit et MUET : seul l'envoi parle ===");
+{
+  const w = boot();
+  H.instruire(w);          // le chemin docile livre le dossier, sans toucher au vice
+  const avantFil = w.S.fil.length, avantJournal = w.S.brouillon.length;
+  check("la conclusion du vice s'assemble au composeur", H.assembler(w, H.lienConclusion(w)));
+  check("le canal n'a pas bougé", w.S.fil.length === avantFil);
+  check("et rien n'est entré au journal", w.S.brouillon.length === avantJournal);
+  w.viderCompo();
+  check("la vider ne laisse rien derrière", w.S.fil.length === avantFil && w.S.brouillon.length === avantJournal);
+}
+
+console.log("\n=== La marge de bruit reste non nulle ===");
 {
   const w = boot();
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   const avantFil = w.S.fil.length;
   const n = H.phrasesBruit(w, 10);
   check(`${n} phrases sensées SANS lien — la marge de bruit est non nulle`, n >= 3);
-  check("elles tombent toutes au brouillon", w.S.brouillon.length === n);
-  check("aucune n'a fait réagir l'avocat", w.S.fil.length === avantFil);
+  check("envoyées, elles tombent toutes au journal", w.S.brouillon.length === n);
+  check("et l'avocat répond à chacune — l'envoi se juge",
+    w.S.fil.length >= avantFil + 2 * n);
   const cible = w.S.brouillon[0].reduite;
   H.composerLien(w, {forme: cible.forme, termes: cible.termes});
   check("composer deux fois la même phrase ne la double pas", w.S.brouillon.length === n);
@@ -103,11 +120,12 @@ console.log("\n=== Fin 1 — la conclusion versée ===");
 {
   const w = boot();
   H.instruire(w);
-  const i = H.composerLien(w, H.lienConclusion(w));
-  check("la conclusion se compose", i >= 0);
-  check("la composer lève vice_trouve, pas vice_expose", w.S.vice_trouve && !w.S.vice_expose);
-  w.envoyer(i);
-  check("la verser lève vice_expose", w.S.vice_expose);
+  /* L'INTERVALLE ENTRE L'ASSEMBLAGE ET L'ENVOI (§4.7), joué comme le joueur le
+     joue : on assemble, on regarde, puis on clique. */
+  check("l'assembler lève vice_trouve, pas vice_expose",
+    H.assembler(w, H.lienConclusion(w)) && w.S.vice_trouve && !w.S.vice_expose);
+  w.envoyerCompo();
+  check("l'envoyer lève vice_expose", w.S.vice_expose);
   check("l'avocat réagit au vice", discussion(w).includes(w.JEU.avocat.rep_vice.slice(0, 30)));
   check("→ Fin 1", H.numeroFin(H.terminer(w)) === "1");
 }
@@ -116,8 +134,9 @@ console.log("\n=== Fin 2 — comprendre et se taire ===");
 {
   const w = boot();
   H.instruire(w);
-  H.composerLien(w, H.lienConclusion(w));
-  check("la conclusion reste au brouillon", w.S.vice_trouve && !w.S.vice_expose);
+  H.assembler(w, H.lienConclusion(w));
+  check("la conclusion se tient au composeur, et n'en sort pas",
+    w.S.vice_trouve && !w.S.vice_expose && w.R.peutEnvoyer(w.S));
   check("rien n'en sort dans le canal", !discussion(w).includes(w.JEU.avocat.rep_vice.slice(0, 30)));
   check("→ Fin 2", H.numeroFin(H.terminer(w)) === "2");
 }

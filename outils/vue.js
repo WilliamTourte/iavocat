@@ -55,13 +55,16 @@ const UN_PAS = `(() => {
   if (!a) return null;
   const L = H.lienTag(window, a.attend);
   if (!L) return { echec: "aucun lien ne porte le tag attendu" };
+  // PIÈGE : le numéro se lit AVANT l'envoi — servir la dernière attente ouvre la
+  // remise suivante, et la capture serait nommée d'après un écran qui n'existe
+  // pas. composerLien ENVOIE, puisque c'est le geste du joueur (§16) : on lit
+  // donc le numéro avant lui, et plus entre lui et l'envoi.
+  // SECOND PIÈGE : ce bloc est un GABARIT — pas un seul accent grave dedans, il
+  // le refermerait. Le filet générique l'a vu, aucune suite ne l'aurait vu.
+  const remise = S.remisesEnvoyees;
   const i = H.composerLien(window, L);
   if (i < 0) return { echec: "la phrase n'a pas pu se former" };
   const phrase = (S.brouillon[i] || {}).texte || "";
-  // PIÈGE : le numéro se lit AVANT l'envoi — servir la dernière attente ouvre la
-  // remise suivante, et la capture serait nommée d'après un écran qui n'existe pas.
-  const remise = S.remisesEnvoyees;
-  envoyer(i);
   return { tag: a.attend, question: a.question || null, phrase, remise };
 })();`;
 

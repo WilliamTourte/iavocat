@@ -58,6 +58,7 @@ console.log("\n=== Une composition en cours survit aussi ===");
   H.livrerTout(w1);                           // l'article doit avoir été reçu (§4.5)
   const C = H.lienConclusion(w1);
   check("la comparaison du vice se pose", H.poserComparaison(w1, C.termes[0]));
+  H.lireLeTexte(w1, C.forme);                // on n'invoque pas un texte qu'on n'a pas lu (§4.5)
   const b = w1.R.blocsOfferts(w1.S).findIndex(x => x.forme === C.forme && x.imbrique);
   check("et l'article qui la qualifie est offert", b >= 0);
   w1.poserBloc(b);
@@ -80,7 +81,9 @@ console.log("\n=== Les drapeaux et les déclencheurs ===");
 {
   const w1 = boot();
   H.instruire(w1);
-  H.composerLien(w1, H.lienConclusion(w1));
+  /* ASSEMBLÉE, pas versée : l'état de la Fin 2 (§4.7), et le seul que le joueur
+     atteigne — le journal, lui, ne se remplit qu'à l'envoi (§16). */
+  H.assembler(w1, H.lienConclusion(w1));
   const pidD = H.pidAvecDeclenche(w1);
   w1.ouvrirPiece(pidD); w1.closeModal();   // la réplique part à la fermeture (§4.10)
   check("vice_trouve est levé", w1.S.vice_trouve);

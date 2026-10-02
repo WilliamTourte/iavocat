@@ -304,12 +304,22 @@ console.log("\n=== Édition : empans, liens, renommages ===");
   w.CONTENU.liens.push({ forme: sv.forme, termes: JSON.parse(JSON.stringify(sv.termes)) });
   const i = w.CONTENU.liens.length - 1;
   const formes1 = Object.entries(w.CONTENU.grammaire.formes).filter(([,f]) => f.arite === 1).map(([k]) => k);
+  /* PIÈGE : il faut une qualification QUE LE CONTENU NE PORTE PAS DÉJÀ sur cette
+     comparaison — l'affaire en compte plusieurs, dont des impasses qui
+     enseignent pourquoi l'article ne tient pas. Sinon `conclureLien` a raison de
+     ne rien créer, et c'est le contrôle d'après qui le dit. */
+  const occupee = f => w.CONTENU.liens.some(L =>
+    L.forme === f && (L.termes||[]).length === 1 && typeof L.termes[0] === "object"
+    && L.termes[0].forme === sv.forme
+    && JSON.stringify(L.termes[0].termes) === JSON.stringify(sv.termes));
+  const forme1 = formes1.find(f => !occupee(f));
+  check("une qualification libre existe pour ce test", !!forme1);
   const avant = w.CONTENU.liens.length;
-  w.conclureLien(i, formes1[0]);
+  w.conclureLien(i, forme1);
   check("conclure un lien crée une qualification d'arité 1", w.CONTENU.liens.length === avant+1);
   check("son terme est la note visée, emboîtée",
     typeof w.CONTENU.liens[w.CONTENU.liens.length-1].termes[0] === "object");
-  w.conclureLien(i, formes1[0]);
+  w.conclureLien(i, forme1);
   check("la même conclusion n'est pas créée deux fois", w.CONTENU.liens.length === avant+1);
 }
 

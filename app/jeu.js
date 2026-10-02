@@ -170,15 +170,25 @@ function tutoEtapeCitation(){
 function tutoEtapeComparaison(){
   if(R.indexTermeChamp(S)>=0){
     const dit = S.compo.length
-      ? "A quel autre passage veux-tu le comparer ?"
-      : "Sélectionne les deux passages contradictoires";
+      ? "Prends-un second passage pour le comparer au premier."
+      : "Une réponse peut contenir deux passages. Prends-en un premier.";
     return panneau==="contexte"
       ? {...GESTE_RELIER, n:1, ou:"#zoneRetenus", dit}
       : {...GESTE_RELIER, n:1, ou:"#btnContexte", dit:"Ouvre ton contexte : "+dit[0].toLowerCase()+dit.slice(1)};
   }
-  if(S.compo.length && R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
-    return {...GESTE_RELIER, n:2, ou:"#composeur .offre",
-      dit:"Une contradiction seule ne suffit pas : indique l'article sur l'avocat peut s'appuyer."};
+  /* PIÈGE : une comparaison nue EST envoyable (§4.5), donc ce temps doit passer
+     AVANT celui de l'envoi — sans quoi le bandeau dirait « Envoyer » là où la
+     leçon est « il te faut un article ». Et depuis qu'un texte s'invoque une fois
+     LU, l'article peut n'être offert nulle part : on montre alors où le lire. */
+  if(S.compo.length && !R.compoFinie(S)){
+    if(R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
+      return {...GESTE_RELIER, n:2, ou:"#composeur .offre",
+        dit:"Une relation seule ne suffit pas : prends l'article sur lequel elle s'appuie."};
+    const dit="Une relation seule ne suffit pas : il lui faut un article qui la fonde.";
+    return panneau==="contexte"
+      ? {...GESTE_RELIER, n:2, ou:"#zoneDossier", dit:dit+" Va le lire dans ton dossier."}
+      : {...GESTE_RELIER, n:2, ou:"#btnContexte", dit:dit+" Ton dossier est dans ton contexte."};
+  }
   if(R.peutEnvoyer(S))
     return {...GESTE_RELIER, n:3, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
@@ -347,13 +357,19 @@ function renderDiscussion(){
     h+=`</div></div></div>`;
   }
   if(S.clotureDemandee && S.repetitionIdx>-1 && S.repetitionIdx<JEU.repetition.affirmations.length){
-    const dispo=S.brouillon.map((n,i)=>({n,i}));
+
+    const dispo=S.brouillon.map((n,i)=>({n,i})).filter(x=>R.estMoyen(x.n.lien));
+    const cibleDe=i=>{ const e=S.plaidoirie.find(x=>x.b===i); return e && e.contre!=null ? e.contre : null; };
     h+=`<div class="repet"><div class="rtitle">Opposer une phrase à cette affirmation ?</div>${
-      dispo.length ? dispo.map(x=>
-        `<div class="rnote"><span class="txt">${escapeAttr(x.n.texte)}</span>
-         ${x.n.versee?`<span class="sent">déjà envoyée</span>`:`<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">envoyer</button>`}</div>`).join("")
+      dispo.length ? dispo.map(x=>{
+        const c=cibleDe(x.i), aff=c!=null && JEU.repetition.affirmations[c];
+        return `<div class="rnote"><span class="txt">${escapeAttr(x.n.texte)}</span>
+         ${c===S.repetitionIdx
+            ? `<span class="sent">opposé à celle-ci</span>`
+            : `${aff?`<span class="sent">opposé à : ${escapeAttr(aff.court)}</span>`:""}<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">opposer</button>`}</div>`;
+      }).join("")
       : `<div class="rnote vide">tu n'as écrit aucune phrase à y opposer</div>`
-    }<button class="btn" data-f="rsuite" onclick="avancerRepetition()">Ne rien envoyer — continuer</button></div>`;
+    }<button class="btn" data-f="rsuite" onclick="avancerRepetition()">Ne rien opposer — continuer</button></div>`;
   }
   $("discussion").innerHTML=h;
 }
@@ -448,14 +464,39 @@ function surligner(pid,eid){
   annoncer(rappelRetrait ? RAPPEL_RETRAIT : "Retenu dans ton Contexte.");
   rendreTout();
 }
+/* PIÈGE PAYÉ : la fiche retirée, le focus retombait sur la CROIX DE LA
+   SUIVANTE — un second Entrée en supprimait une autre. Il se pose donc sur la
+   zone, qui n'arme rien ; `#zoneRetenus` porte `tabindex="-1"` pour l'accueillir,
+   et `rendreFocus` sait viser un id (§4.10 règle 2). */
 function oublier(pid,eid){
   R.oublier(S,pid,eid);            // le Contexte seul peut retirer
+  focusVoulu={ cle:"#zoneRetenus", zone:"#zoneRetenus" };
   rendreTout();
+}
+/* §4.3 — LA LÉGENDE. */
+function legendePiece(pid){
+  const p=JEU.pieces[pid];
+  const dims=(JEU.dimensions||[]).filter(d =>
+    Object.values(p.empans||{}).some(e=>e.dim===d));
+  if(!dims.length) return "";          // une règle ne porte aucun empan (§6)
+  return `<p class="legende"><span class="llab">Ce que disent les soulignements :</span>${
+    dims.map(d=>`<span class="ldim" style="--dc:${couleurDim(d)};--ds:${traitDim(d)}">${escapeAttr(d)}</span>`).join("")}</p>`;
+}
+/* §4.5 — `porte` ANNONCE, il ne filtre rien : le moteur ne le lit jamais. Il se
+   lit DANS l'article, jamais sous le bouton qui l'invoque. Même forme que la
+   légende (§4.3), et les noms y portent leur couleur et leur trait : c'est le
+   pont vers les groupes du Contexte. */
+function portePiece(pid){
+  const d=R.porteDe(pid);
+  if(!d.length) return "";
+  return `<p class="legende"><span class="llab">Ce texte porte sur :</span>${
+    d.map(x=>`<span class="ldim" style="--dc:${couleurDim(x)};--ds:${traitDim(x)}">${escapeAttr(x)}</span>`).join("")}</p>`;
 }
 function modalPieceHTML(pid){
   const p=JEU.pieces[pid];
   return `<h3 id="modalTitre" tabindex="-1">${escapeAttr(p.titre)}</h3><small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
     <p class="piecetexte">${rendreTexte(pid)}</p>
+    ${legendePiece(pid)}${portePiece(pid)}
     ${rappelRetrait && rappelRetrait.startsWith(pid+".") ? `<p class="rappel">${RAPPEL_RETRAIT}</p>` : ""}`;
 }
 /* PIÈGE : `#zoneRetenus` est l'ancre des temps 3 et 5 du tutoriel (R6), à ne
@@ -466,7 +507,7 @@ function modalPieceHTML(pid){
 function renderRetenus(){
   const iT=R.indexTermeChamp(S);
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
-  let h=`<div class="zone" id="zoneRetenus">`;
+  let h=`<div class="zone" id="zoneRetenus" tabindex="-1">`;
   if(!S.retenus.length){
     h+=`<div class="aide">Retiens des passages du dossier : ils viendront ici.</div>`;
   } else {
@@ -516,7 +557,9 @@ function souffle(){
     return "Prends un second passage pour le mettre en relation.";
   return offerts.length
     ? "Sur quel article t'appuies-tu pour montrer qu'il y a une irrégularité ?"
-    : "Tu n'as encore reçu aucun texte à invoquer. Ce que tu vois est vrai, et tu ne peux rien en dire.";
+    // §4.5 — un texte s'invoque une fois LU : la voix dit où aller le lire,
+    // sans quoi le joueur bloque sans savoir pourquoi.
+    : "Aucun texte que tu as lu ne fonde ça. Les articles sont dans ton dossier — ouvre-les.";
 }
 /* §4.9 règle 1 — LA VOIX DEVIENT UN BOUTON quand le geste qu'elle nomme a lieu
    dans l'AUTRE colonne. Le prédicat est `indexTermeChamp`, le MÊME qui active
@@ -599,8 +642,10 @@ function renderCompo(){
     if(b.type==="liaison"){
       // PIÈGE : `fondement` est propre à `.bbloc` ; `.msg.suite` est le même
       // mot pour un sens sans rapport.
-      h+=`<button class="bbloc ${b.imbrique?"fondement":""}" data-f="b:${escapeAttr(b.id)}" onclick="poserBloc(${i})">${escapeAttr(b.libelle||b.texte)}${
-        b.piece?portePhrase(b.piece):""}</button>`;
+      // §4.5 — PAS de `porte sur` ICI : sous le bouton qui l'invoque, l'étiquette
+      // faisait le tri à la place du joueur (« deux fiches QUI → seul l'art. 7
+      // colle »). Elle se lit maintenant DANS l'article, à la lecture.
+      h+=`<button class="bbloc ${b.imbrique?"fondement":""}" data-f="b:${escapeAttr(b.id)}" onclick="poserBloc(${i})">${escapeAttr(b.libelle||b.texte)}</button>`;
     } else if(b.source==="note"){
       // Repli pour une affaire d'avant la continuation : hors du contenu livré,
       // toujours supporté — on ne retire pas une capacité du moteur (§11).
@@ -651,7 +696,11 @@ function plaidoirieHTML(){
   let h=`<div class="zone">`;
   // Son bouton est là dès le premier écran : le panneau doit donc savoir dire
   // qu'il est vide, et le dire dans la fiction (§4.6).
-  if(!gardes.length) h+=`<div class="aide">Maître Auber n'a encore rien retenu de toi.</div>`;
+  // §4.9 règle 4 : elle disait son vide dans la fiction, jamais ce qu'elle EST
+  // une fois pleine — deux playtests l'ont relevé (« apparaît sans un mot »).
+  h+= gardes.length
+    ? `<div class="aide">Ce que Maître Auber garde pour l'audience.</div>`
+    : `<div class="aide">Maître Auber n'a encore rien retenu de toi.</div>`;
   h+=`<ul class="liste plaid">${gardes.map(x=>
     `<li><span class="txt">${escapeAttr(S.brouillon[x.b].texte)}${
       x.contre!=null && JEU.repetition.affirmations[x.contre]
@@ -696,12 +745,6 @@ function finir(){
     <div class="btnrow"><button onclick="location.reload()">Recommencer</button></div>
   </div>`);
   const t=$("modalTitre"); if(t) t.focus();
-}
-
-/* Indicatif, jamais filtrant (§4.5). */
-function portePhrase(pid){
-  const d=R.porteDe(pid);
-  return d.length ? `<span class="porte">porte sur : ${d.map(escapeAttr).join(", ")}</span>` : "";
 }
 
 /* §4.6 — LES DEUX SURFACES DE CÔTÉ SONT DES PANNEAUX, qui s'ouvrent ENTRE la

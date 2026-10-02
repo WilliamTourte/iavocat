@@ -216,31 +216,38 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **406 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **412 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
-| `test_o5.js` (38) | l'index du dossier ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
+| `test_o5.js` (41) | l'index du dossier ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (36) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (193) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition ; **le clavier** (§4.10) |
+| `test_parcours.js` (196) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition ; **le clavier** (§4.10) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
 | `smoke_atelier.js` (101) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
-- **Le contrat de lecture : `w.R.x(w.S)`** — une suite demande aux *règles*, pas à l'écran ; ce que la
-  fenêtre expose en propre, ce sont les **gestes**, parce qu'eux redessinent.
+- **Le contrat de lecture : `w.R.x(w.S)`** — une suite *lit* les règles ; elle *agit* par les **gestes**
+  de la fenêtre, parce qu'eux redessinent.
+- **ET ELLE NE MARCHE QUE LES PORTES DU JOUEUR.** Lire une règle est gratuit ; en **appeler** une que
+  l'écran n'appelle jamais fabrique un état injouable, et le prouver ne prouve rien. Le harnais a
+  journalisé des années par `R.clore`, « la même porte un cran plus tôt » — sauf que le composeur n'a
+  que *« → Envoyer »*, qui clôt **et** envoie : trois contrôles de la répétition sont restés verts
+  pendant que le présentoir était mort pour tout joueur. **R13** tient cette porte-là ; `H.composerLien`
+  envoie, et `H.assembler` s'arrête au composeur — *comprendre et se taire* est un état que le joueur
+  atteint, en ne cliquant pas (§4.7).
 - **Une suite ne redécide rien** : un prédicat recopié ne casse pas, ne lève pas, et reste vert en
   affirmant l'ancienne vérité — et **les suites ne se lisent pas elles-mêmes**.
 - **Les tests ne nomment aucun contenu** : tout se dérive de la *forme*, si bien que **changer
   d'affaire ne casse pas une seule suite**. Sont épinglées, en revanche, des chaînes de chrome
-  (`Envoyer`, `effacer`, `Opposer une phrase`, `déjà envoyée`, `● `, `✓ `, `zoneRetenus`, et pour le
+  (`Envoyer`, `effacer`, `Opposer une phrase`, `opposer`, `● `, `✓ `, `zoneRetenus`, et pour le
   clavier `retenu`, `déjà lue`, `Tutoriel`, `Contexte`) : on les
   renomme si on veut, jamais sans toucher au test qui les nomme.
 - *Les Manuels n'ont plus de suite : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par
   le jeu, alors que la frise les édite.*
 
 **Le gardien** (`outils/gardien.js`, dans `npm test` après les suites) rend opposables les conventions
-qu'aucune suite ne voit : **sept règles, sept pannes réellement vécues**, chacune citant son § — *la
+qu'aucune suite ne voit : **huit règles, huit pannes réellement vécues**, chacune citant son § — *la
 liste vit dans son en-tête*. Il ne connaît ni pièce, ni empan, ni valeur.
 
 - **Ce qu'une règle a le droit d'être** : le constat d'une panne payée, pas une préférence de style ; un
@@ -297,7 +304,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
-| l'avocat ouvre une session ; ouvrir et refermer une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion`, `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion`, `modalPieceHTML`, `rendreTexte`, `renderDossier` |
+| l'avocat ouvre une session ; ouvrir et refermer une pièce ; l'index du dossier ; **la légende des dimensions** (§4.3) | `envoyerRemise` → `poserQuestion`, `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion`, `modalPieceHTML`, `rendreTexte`, `legendePiece`, `renderDossier` |
 | **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, Contexte seul) | `surligner`, `oublier` | `renderRetenus` dans `renderContexte` ; `rappelRetrait` quand on reclique un passage retenu ; `voirDernierRetenu` à l'ouverture du panneau |
 | ce que le composeur offre ; ce qui se devine avant le clic ; la voix | `blocsOfferts`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
 | **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du Contexte | `rendreVoix`, `ouvrirContexte`, `majPanneaux` |
@@ -307,7 +314,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
 | **envoyer** — le seul geste | `envoyerCompo` → `clore` → `envoyer` → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPlaidoirie` |
 | ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie`, `moyensRetenus` — **panneau**, ouvert par sa porte (§4.9) |
-| clôturer, répétition, fin | `instructionComplete`, `cloturer`, `verserContre`, `avancerRepetition`, `finir` | `majCloture`, `finir` (modale) |
+| clôturer, répétition, fin ; **opposer** un moyen à une affirmation | `instructionComplete`, `cloturer`, `verserContre` (pose `contre`, même sur une phrase déjà versée), `avancerRepetition`, `finir` | `majCloture`, le présentoir dans `renderDiscussion` (les **moyens** seuls), `finir` (modale) |
 | le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoEtape`, `majTutoriel` — bandeau **collant en tête de page**, premier enfant de `<body>` |
 
 - **Les deux voies de clôture** sont le **même** `clore`, appelé par le **même** `envoyerCompo` ; ce qui

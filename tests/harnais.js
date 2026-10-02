@@ -97,19 +97,36 @@ function creerHarnais(dossier){
   const surligner = (w,k) => { const [pid,eid]=deK(k); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
-  function composerLien(w,L){
+  /* UNE SUITE NE MARCHE QUE LES PORTES DU JOUEUR (§16). PIÈGE PAYÉ, et il a
+     coûté cher : ce helper journalisait par `R.clore`, « la même porte un cran
+     plus tôt » — que l'écran n'offre PAS. Il fabriquait une phrase « close, pas
+     encore versée », état qu'aucun joueur ne peut atteindre, et trois contrôles
+     de la répétition ont prouvé des semaines durant un présentoir mort en jeu.
+     On passe par `envoyerCompo`, le SEUL geste du composeur (§4.5).
+     `garder:true` s'arrête un cran avant, sans rien forcer : la phrase se tient
+     au composeur et n'est pas transmise — c'est l'état de la Fin 2 (§4.7), et
+     c'en est un que le joueur atteint vraiment, en ne cliquant pas. */
+  /* ON N'INVOQUE PAS UN TEXTE QU'ON N'A PAS LU (§4.5) : le joueur ouvre l'article
+     avant de s'en servir, la suite aussi. C'est un GESTE D'ÉCRAN — `ouvrirPiece`
+     puis `closeModal` —, pas une porte dérobée (R13). */
+  function lireLeTexte(w,forme){
+    const b=(J(w).grammaire.blocs||[]).find(x=>x.forme===forme && x.piece);
+    if(!b || w.S.examinees.includes(b.piece)) return;
+    if(!w.R.piecesLivrees(w.S).includes(b.piece)) return;
+    w.ouvrirPiece(b.piece); w.closeModal();
+  }
+  function composerLien(w,L,{garder=false}={}){
     const f=(J(w).grammaire.formes||{})[L.forme]||{};
     w.viderCompo();
-    /* POSER NE CLÔT PLUS (§4.5) : une suite qui veut la phrase AU JOURNAL sans
-       l'envoyer passe par `clore`, la même porte un cran plus tôt (§12). */
-    const journaliser = () => {
-      if(!w.S.compo.length) return;
-      w.R.clore(w.S);
-      // PIÈGE : `clore` ne redessine pas, donc ne SAUVE pas — la sauvegarde est
-      // un effet du rendu. Sans ça, on éprouve un état injouable.
-      w.rendreTout();
-    };
-    const trouve = () => { journaliser();
+    lireLeTexte(w,L.forme);
+    /* PIÈGE : `trouve` sert AUSSI de test de réussite, aux deux branches d'arité 1.
+       Sous `garder`, rien n'entre au journal — rendre -1 ferait croire à un échec
+       et déclencherait le repli `note`, qui VIDE le composeur. La réussite s'y lit
+       donc à `peutEnvoyer` : la phrase se tient. Le nombre rendu n'est alors pas
+       un index, et aucun appelant ne le lit — `assembler` rend un booléen. */
+    const trouve = () => {
+      if(garder) return w.R.peutEnvoyer(w.S) ? 0 : -1;
+      if(w.S.compo.length) w.envoyerCompo();
       return w.S.brouillon.findIndex(n=>w.M.memeRed(n.reduite,{forme:L.forme,termes:L.termes})); };
 
     if((f.arite||2)===1){
@@ -163,6 +180,10 @@ function creerHarnais(dossier){
     }
     return true;
   }
+  /* ASSEMBLER — composer et s'arrêter là. Rien n'est transmis, la phrase se
+     tient au composeur et `peutEnvoyer` le dit. Une suite qui veut « compris,
+     pas dit » passe par ici, jamais par `clore`. */
+  const assembler = (w,L) => { composerLien(w,L,{garder:true}); return w.R.peutEnvoyer(w.S); };
   function livrerTout(w){
     let garde=0;
     while(w.S.remisesEnvoyees < J(w).remises.length && garde++<20) w.R.envoyerRemise(w.S);
@@ -247,9 +268,7 @@ function creerHarnais(dossier){
       if(!a) break;
       const L=lienTag(w,a.attend);
       if(!L) break;
-      const i=composerLien(w,L);
-      if(i<0) break;
-      w.envoyer(i);
+      if(composerLien(w,L)<0) break;   // `composerLien` envoie : c'est le geste
     }
   }
 
@@ -291,7 +310,7 @@ function creerHarnais(dossier){
            discussion, contexte, composeur, plaidoirie, plaidoirieVisible,
            lienVice, lienConclusion, lienFaux, lienTag, sousTerme, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
-           cloreSurPlace, poserComparaison, livrerTout,
+           cloreSurPlace, poserComparaison, assembler, lireLeTexte, livrerTout,
            surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,

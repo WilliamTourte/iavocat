@@ -42,7 +42,13 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
    composeur (§4.9 règle 3) : elle ne dépend plus de ce qu'il reste à la
    conversation. Les deux changements se tiennent — l'un sans l'autre est un
    mauvais marché. */
-.panneau{flex:0 1 auto;max-height:40vh;min-height:0}
+/* PIÈGE PAYÉ : `flex:0 1 auto` + `min-height:0` laissait le panneau céder JUSQU'À
+   ZÉRO devant `#composeur`, qui est `flex:none`. À deux passages retenus, un
+   joueur ne voyait plus que le haut d'une fiche ; la réponse grandissant, la
+   zone disparaissait. Or le panneau EST le clavier (§4.6) : le vider pendant
+   qu'on écrit retire le clavier au milieu du geste. D'où un PLANCHER qui montre
+   deux fiches entières — c'est au composeur de défiler, il sait le faire. */
+.panneau{flex:0 1 auto;max-height:40vh;min-height:268px}
 /* UN PANNEAU QUI DÉBORDE LE DIT. PIÈGE MESURÉ, deux fois : la barre du système
    est SUPERPOSÉE — 0 px de large, effacée au repos —, et ni `scrollbar-width`
    ni `::-webkit-scrollbar` ne la font reprendre sa place dans ce Chromium. Un
@@ -59,14 +65,17 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 .panneau .body::-webkit-scrollbar-thumb{background:#44525f;border-radius:6px;
   border:2px solid var(--panel)}
 .panneau .body::-webkit-scrollbar-thumb:hover{background:#5a6b7a}
-/* L'index reste en tête : rouvert sur un défilement gardé, le panneau montrait
-   des fiches sans dire de quelles pièces elles venaient. Le `box-shadow` plein
-   bouche la gouttière sous lui — sans quoi le contenu défilerait dans le vide
-   entre l'index et la première fiche. */
-#zoneDossier{position:sticky;top:0;z-index:1;box-shadow:0 12px 0 0 var(--panel)}
+/* PIÈGE PAYÉ : `#zoneDossier` a été rendu COLLANT pour qu'il ne parte pas hors
+   champ — il a occupé le panneau en permanence, et à trois lignes il en mangeait
+   la moitié, par-dessus les fiches. Il défile avec elles. Ce qu'il devait
+   réparer l'est autrement : le défilement survit au redessin (`garderDefilement`)
+   et le panneau s'ouvre sur le dernier passage retenu (`voirDernierRetenu`). */
 /* PIÈGE : `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` — sans
    cette ligne, cacher la Plaidoirie ne ferait rien. */
 .col[hidden]{display:none}
+/* Panneau ouvert, le composeur cesse de prendre toute la place qu'il veut : il
+   défile pour son compte, le panneau non — c'est lui le clavier (§4.6). */
+.wrap.avecPanneau #composeur{max-height:28vh}
 #composeur{flex:none;max-height:46vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);
   border-radius:10px;padding:12px 16px}
 #composeur .zone{margin:0}
@@ -123,6 +132,10 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .zone{margin-bottom:12px}
 #zoneDossier,#zoneRetenus{border:1px solid var(--line);border-radius:8px;
   background:var(--panel2);padding:10px 12px;margin-bottom:12px}
+/* L'index PARTAGE le panneau avec les fiches, il n'en est pas le sujet : à huit
+   pièces il en mangeait la moitié. Il se resserre — les fiches sont ce qu'on
+   vient chercher quand on écrit. */
+#zoneDossier{padding:7px 10px;margin-bottom:9px}
 .zone .ztitle{font-size:14px;font-weight:600;color:var(--muted);
   margin-bottom:8px;padding:4px 0 6px;display:flex;align-items:center;gap:8px}
 .aide{display:block;color:var(--muted);font-size:13px;margin-top:8px;font-style:italic}
@@ -199,8 +212,16 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .bbloc{text-align:left;background:#20303f;color:var(--txt);border:1px solid var(--line);
   border-radius:6px;padding:6px 9px;cursor:pointer;font:inherit;font-size:13.5px}
 .bbloc:hover{border-color:var(--accent)}
-/* Le geste qui parle pèse plus que ceux qui défont (§4.9). */
-.compo .barre{display:flex;align-items:center;gap:6px;margin:8px 0}
+/* Le geste qui parle pèse plus que ceux qui défont (§4.9) — et §4.6 : « → Envoyer »
+   NE PASSE JAMAIS SOUS LE PLI. PIÈGE MESURÉ : les propositions d'article allongent
+   le composeur au-delà de son plafond, et la barre descendait avec elles — à trois
+   articles offerts, bandeau du tutoriel affiché et panneau ouvert, elle sortait du
+   cadre. Collée au bas de ce qui défile, elle reste là quelle que soit la longueur
+   de l'offre. Le fond est celui de `.compo`, et les marges négatives le portent
+   jusqu'aux bords. */
+.compo .barre{display:flex;align-items:center;gap:6px;margin:8px 0 0;
+  position:sticky;bottom:-9px;z-index:2;
+  margin-left:-11px;margin-right:-11px;padding:8px 11px 9px;background:#141a21}
 .compo .barre button{background:none;border:1px solid transparent;color:var(--muted);
   border-radius:6px;padding:4px 9px;cursor:pointer;font:inherit;font-size:13px}
 .compo .barre button:hover{border-color:var(--line);color:var(--txt)}
@@ -209,7 +230,6 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .compo .barre .envoi:hover{background:#8ec8e6;border-color:#8ec8e6;color:#0b1620}
 .refus{color:#e6b0b0;font-size:13px;margin-top:8px}
 .bbloc.fondement{background:#25313d;border-left:3px solid var(--transmis)}
-.porte{display:block;font-size:12px;color:var(--muted);font-family:var(--mono);margin-top:2px}
 /* --- plaidoirie --- */
 .liste{list-style:none;padding:0;margin:0}
 .liste li{font-size:13.5px;padding:8px 0;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}
@@ -278,10 +298,21 @@ code{font-family:var(--mono);color:var(--accent)}
 .modal.piece :focus-visible{box-shadow:0 0 0 2px var(--papier),0 0 0 4px #1d3b57}
 /* Un article n'est pas un témoignage : un double filet le distingue. */
 .modal.piece.regle{border-left:6px double #b3a37f}
+/* §4.3 — LA LÉGENDE : le code s'apprend sans survol. Chaque nom porte EXACTEMENT
+   la marque des passages qu'il range — même trait, même couleur, foncée par le
+   papier comme eux (`--dcp`), et la palette ne se double toujours pas. */
+.modal.piece .legende{margin:16px 0 0;padding-top:10px;border-top:1px solid var(--filet);
+  font-family:var(--sans);font-size:13px;color:var(--encre2);
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 15px}
+.modal.piece .legende .llab{flex:none}
+.modal.piece .legende .ldim{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
+  color:var(--encre);text-decoration-line:underline;text-decoration-style:var(--ds,solid);
+  text-decoration-color:var(--dcp);text-decoration-thickness:2px;
+  text-underline-offset:.26em;text-decoration-skip-ink:none}
 .modal.piece .rappel{margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--encre2);
   background:#ebe4d4;color:var(--encre);font-family:var(--sans);font-size:14px}
 /* --- l'index du dossier : les pièces d'abord, les règles ensuite --- */
-.dossier{display:flex;flex-direction:column;gap:6px;padding:2px 0 4px}
+.dossier{display:flex;flex-direction:column;gap:5px;padding:0}
 .dcol{min-width:0;display:flex;gap:8px;align-items:baseline}
 .dcol .dtitre{flex:none;font-size:12.5px;font-weight:600;color:var(--muted)}
 .dcol .dchips{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
@@ -289,7 +320,7 @@ code{font-family:var(--mono);color:var(--accent)}
 /* La puce porte le TITRE de la pièce, celui sous lequel la Discussion l'a
    transmise (§4.6) : de la prose, donc ni mono ni corps de matricule. */
 .dchip{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:13px;
-  border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:4px 8px;cursor:pointer;color:var(--txt)}
+  border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:3px 7px;cursor:pointer;color:var(--txt)}
 .dchip:hover{border-color:var(--accent)}
 .dchip.vu{color:var(--muted);background:#181e27}
 .dchip.regle{border-color:#4a4030;color:var(--warn)}

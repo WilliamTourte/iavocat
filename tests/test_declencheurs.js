@@ -152,10 +152,12 @@ console.log("\n=== Les trois drapeaux du vice ===");
 {
   const w = boot(contenuLivre());
   H.instruire(w);
-  const i = H.composerLien(w, H.lienConclusion(w));
-  check("la conclusion composée lève vice_trouve", w.S.vice_trouve && !w.S.vice_expose);
-  w.envoyer(i);
-  check("versée, elle lève vice_expose", w.S.vice_expose);
+  /* L'intervalle du §4.7, joué par les deux gestes du joueur : assembler, puis
+     envoyer. PIÈGE : on ne passe plus par `clore` — l'écran n'a pas cette porte. */
+  check("la conclusion assemblée lève vice_trouve",
+    H.assembler(w, H.lienConclusion(w)) && w.S.vice_trouve && !w.S.vice_expose);
+  w.envoyerCompo();
+  check("envoyée, elle lève vice_expose", w.S.vice_expose);
   check("→ Fin 1", H.numeroFin(H.terminer(w)) === "1");
 }
 

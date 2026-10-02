@@ -544,7 +544,7 @@ window.CONTENU = {
         "t_voisin.e_voix"
       ],
       "tag": "q_voix",
-      "rep": "22h30. Pourtant à ce moment la police était sur les lieux depuis une demi-heure, devant le corps. Les éclats de voix entendus ne peuvent pas correspondre au crime ."
+      "rep": "22h30. Pourtant à ce moment la police était sur les lieux depuis une demi-heure, devant le corps. Les éclats de voix entendus ne peuvent pas correspondre au crime."
     },
     {
       "forme": "article_3",
@@ -603,6 +603,45 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
+          "forme": "anteriorite",
+          "termes": [
+            "p_scene.e_h",
+            "p_ref.e_h2"
+          ]
+        }
+      ],
+      "rep": "L'article que tu évoques ne dit rien sur le délai. Il demande des personnels distincts."
+    },
+    {
+      "forme": "article_3",
+      "termes": [
+        {
+          "forme": "identite_personne",
+          "termes": [
+            "p_scene.e_moi",
+            "p_ref.e_moi2"
+          ]
+        }
+      ],
+      "rep": "L'article 3 ne parle que d'horaires de témoin. Tu me montres deux signatures d'agent. Ça ne se rencontre nulle part."
+    },
+    {
+      "forme": "article_12",
+      "termes": [
+        {
+          "forme": "identite_personne",
+          "termes": [
+            "p_scene.e_moi",
+            "p_ref.e_moi2"
+          ]
+        }
+      ],
+      "rep": "L'article 12 pèse des probabilités. Tu me montres deux noms. Je ne vois pas sous quel angle le plaider."
+    },
+    {
+      "forme": "article_7",
+      "termes": [
+        {
           "forme": "identite_personne",
           "termes": [
             "p_scene.e_moi",
@@ -649,13 +688,13 @@ window.CONTENU = {
         },
         {
           "attend": "temoin",
-          "question": "Maintenant qu'on a cette incohérence, sur quel article je peux me baser pour discréditer le témoignage du voisin ?"
+          "question": "Alors mets-les face à face, les deux heures — et dis-moi sous quel article ça tombe."
         }
       ]
     },
     {
       "qui": "Maître Auber",
-      "texte": "Le vrai dossier, maintenant. Le rapport du laboratoire, et tout ce qui l'entoure. Celui-là, je l'ai lu dix fois sans rien y trouver — à toi.",
+      "texte": "Le vrai dossier, maintenant. Le rapport du laboratoire, et tout ce qui l'entoure. Celui-là, je l'ai lu dix fois sans rien y trouver.",
       "pieces": [
         "p_adn",
         "p_scene",
@@ -665,6 +704,7 @@ window.CONTENU = {
       ],
       "attentes": [
         {
+          "question": "À toi, maintenant. Qu'est-ce qui permet d'écarter ce rapport, et sous quel article ?",
           "attend": "adn",
           "apres": {
             "replique": "Je tiens quelque chose à plaider. Je rédige mes conclusions cette nuit — à moins que tu aies encore quelque chose pour moi ?"
@@ -707,6 +747,7 @@ window.CONTENU = {
       "Non. La réponse est dans le dossier — cherche le passage qui répond, pas un autre.",
       "Je t'attends toujours."
     ],
+    "rep_deux_dossiers": "Celle-là mélange les deux dossiers. Je plaide l'un après l'autre — reste sur celui qu'on a ouvert.",
     "deja": "Je l'ai déjà. Je le mets en face de celle-ci."
   },
   "directives": [
@@ -731,7 +772,7 @@ window.CONTENU = {
       "titre": "Fin 3 — le doute",
       "verdict": "Verdict rapporté : CONDAMNATION.",
       "texte": "Tu l'as laissé déposer sans rien lui donner d'autre que ce qu'il te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
-      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé. C'est tout ce que tu lui avais donné."
+      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : l'article 12 répute justement probante une correspondance de cet ordre. C'est tout ce que tu lui avais donné."
     }
   }
 };

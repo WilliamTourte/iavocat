@@ -114,6 +114,13 @@ jamais la pertinence : chaque dimension a sa couleur *et* son soulignement — p
 tirets, ondulé —, si bien qu'aucune ne se lit à la couleur seule (§4.10). C'est le **rang** qui les
 attribue, jamais le contenu.
 
+**Et le code s'apprend SANS SURVOL.** Deux playtests de suite l'ont dit : rien, à l'écran, ne
+laissait deviner que couleur et trait *signifient* quelque chose — il fallait survoler un passage
+pour que le `title` le dise, et un `title` n'existe ni au clavier, ni au toucher, ni pour un lecteur
+d'écran (§4.10 règle 1). La pièce porte donc une **légende** : elle nomme les dimensions **présentes
+dans cette pièce-là**, chacune avec sa couleur et son trait. Elle nomme des **dimensions**, jamais
+des passages — la nuance est tout : nommer un passage rallumerait la lampe torche.
+
 **Retenir a lieu dans la pièce, retirer dans le Contexte.** Recliquer un passage déjà retenu ne
 l'oublie pas — arbitré le 16 septembre, reconduit le 30 après un playtest qui attendait un
 interrupteur — mais **l'écran le dit** : une ligne sous la pièce renvoie au Contexte. Un passage retenu
@@ -187,6 +194,16 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 - **La colonne tient dans la fenêtre** : la page ne défile pas, chaque bande défile pour son compte, et
   la conversation est **la seule bande élastique** — c'est elle qui cède quand un panneau s'ouvre ou
   que la phrase s'allonge. *« → Envoyer »* ne passe donc jamais sous le pli, même sur un portable bas.
+- **Mais « élastique » n'est pas « compressible à zéro », et L'ORDRE DANS LEQUEL LES BANDES CÈDENT
+  est une règle.** Le panneau a cédé devant le composeur jusqu'à **disparaître** — à deux passages
+  retenus, un joueur ne voyait plus le haut d'une seule fiche ; à la fin, plus rien. Or le panneau
+  **est le clavier** (§4.6) : le vider pendant qu'on écrit retire le clavier au milieu du geste,
+  exactement ce que la fermeture automatique s'interdit déjà. Donc : **le panneau a un plancher**
+  qui montre au moins deux fiches entières, **le composeur un plafond** — il défile pour son propre
+  compte —, et la conversation reste la seule à céder librement, puisque la question est redescendue
+  au composeur (§4.9 règle 3). **Et l'index du dossier ne colle pas** : il a été rendu collant pour
+  qu'il ne parte pas hors champ, et il a occupé le panneau en permanence — à trois lignes, la moitié.
+  Il défile avec les fiches.
 - **Deux matières** : les pièces ont celle du **papier** — fond clair, caractères à empattements —, la
   machine celle de l'**écran**. Ce qu'on lit vient du monde, ce qu'on écrit sort de l'IA ; la chasse
   fixe de ses messages dans la Discussion est le même contraste, pris dans l'autre sens.
@@ -210,6 +227,15 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 - **L'avocat ne voit que la Plaidoirie**, d'où la gratuité du Contexte. Il **ne retient que les
   moyens** et l'envoi est **irréversible** ; une citation versée étant au dossier, une réponse citée
   y entre.
+- **LA RÉPÉTITION EST LE DERNIER GESTE RÉEL, et on n'y envoie pas : on OPPOSE.** L'avocat lit les
+  affirmations de l'accusation et demande *« arrête-moi si quelque chose de ce que tu as écrit s'y
+  oppose »* — le joueur dit alors **quel argument répond à quelle affirmation**. C'est le seul
+  endroit où ce qu'il a produit se trie. Le présentoir ne montre donc que les **moyens**, comme la
+  Plaidoirie, et non tout ce qui est passé par le composeur. **Ce que ça répare** : depuis que clore
+  et envoyer n'en font qu'un (§4.5), **aucune phrase ne peut être non versée** — le présentoir
+  n'offrait que des lignes *« déjà envoyée »*, un rituel sans choix, et la réplique de l'avocat
+  (*« Je l'ai déjà. Je le mets en face de celle-ci. »*) annonçait un geste qu'elle ne faisait pas.
+  Elle le fait.
 
 La boucle : **l'avocat ouvre** et livre un lot → lire → surligner → composer (rien ne se passe) → la
 phrase attend → **l'envoyer**, le seul geste qui parle → l'avocat répond → l'attente servie appelle la
@@ -240,6 +266,12 @@ calibration (§3) — et il a donc le droit de dire que deux horaires ne tiennen
 vérifie. Le bandeau, lui, n'est personne : il ne peut nommer que le **geste** — *une réponse peut
 tenir sur deux passages* — et jamais la **trouvaille** — *les deux passages qui se contredisent*.
 Un joueur a trouvé l'incohérence seul, puis lu dans le bandeau ce qu'il venait de comprendre.
+
+**Et les deux voix demandent la MÊME CHOSE.** Un bandeau qui fait comparer deux passages pendant
+que Maître Auber réclame un article, ce sont deux consignes pour un seul geste : le joueur s'arrête
+pour choisir laquelle suivre — relevé aux deux playtests. La question de l'avocat porte donc tout
+ce que le geste demande, et le bandeau ne dit que *où* il a lieu. **Si l'un des deux doit en dire
+plus, c'est l'avocat** : lui est quelqu'un.
 
 | Le geste | | Ce qu'on apprend | Ce que le halo entoure |
 |---|---|---|---|
