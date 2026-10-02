@@ -247,7 +247,7 @@ function modal(html, classe){
   modalRoot.innerHTML =
     `<div class="overlay" onclick="if(event.target===this)closeModal()">
        <div class="modal ${classe||""}" role="dialog" aria-modal="true" aria-labelledby="modalTitre">${html}
-         <button class="close" onclick="closeModal()" aria-label="Fermer (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button>
+         <button class="close" onclick="closeModal()" aria-label="Fermer (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span></button>
        </div>
      </div>`;
   const w=document.querySelector(".wrap"); if(w) w.setAttribute("inert","");
@@ -479,7 +479,7 @@ function legendePiece(pid){
   const dims=(JEU.dimensions||[]).filter(d =>
     Object.values(p.empans||{}).some(e=>e.dim===d));
   if(!dims.length) return "";          // une règle ne porte aucun empan (§6)
-  return `<p class="legende"><span class="llab">Ce que disent les soulignements :</span>${
+  return `<p class="legende"><span class="llab">Légende :</span>${
     dims.map(d=>`<span class="ldim" style="--dc:${couleurDim(d)};--ds:${traitDim(d)}">${escapeAttr(d)}</span>`).join("")}</p>`;
 }
 /* §4.5 — `porte` ANNONCE, il ne filtre rien : le moteur ne le lit jamais. Il se
