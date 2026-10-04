@@ -415,19 +415,25 @@ console.log("\n=== Une consigne déjà lue reste réduite ===");
   const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
   const autre = H.empansDe(w, pid).find(k => k !== veut);
 
-  H.surligner(w, autre);
+  /* Le geste ENTIER du joueur — cliquer un passage le cite (§4.6) : c'est lui
+     qu'éprouve le tutoriel. */
+  H.citer(w, autre);
   check("un passage à côté : l'alerte se déploie", bulle().hasAttribute("data-alerte") && !reduite());
-  w.oublier(...H.deK(autre));
+  w.viderCompo(); w.oublier(...H.deK(autre));
   check("oublié, la consigne d'avant revient — déjà lue, réduite", !bulle().hasAttribute("data-alerte") && reduite());
-  H.surligner(w, autre);
+  H.citer(w, autre);
   check("mais l'alerte, déjà vue, se redéploie à la nouvelle erreur", bulle().hasAttribute("data-alerte") && !reduite());
 
-  H.surligner(w, veut);
   const avant = pas();
-  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut));
-  check("la phrase qui se tient : consigne neuve, développée", pas() !== avant && !reduite());
+  H.citer(w, veut);
+  check("le bon passage cité d'un clic : il remplace l'autre dans la réponse",
+    w.S.compo.length === 1 && w.S.compo[0].valeur === veut);
+  const envoi = pas();
+  check("la phrase qui se tient : consigne neuve, développée — « prendre » sauté", envoi !== avant && !reduite());
   w.viderCompo();
-  check("« tout effacer » ramène la consigne d'avant", pas() === avant);
+  check("« tout effacer » : il faut reprendre le passage dans le Contexte, consigne neuve", pas() !== envoi && !reduite());
+  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut));
+  check("repris, on revient à « Envoyer », déjà lue", pas() === envoi);
   check("déjà lue, elle reste réduite", reduite() && !bulle().hidden);
 }
 {
@@ -503,6 +509,47 @@ console.log("\n=== L'index se replie ===");
   w.basculerDossier();
   w.ouvrirPiece(pA); w.fermerPiece();
   check("replié par le joueur avant la pièce, il le reste après", replie());
+}
+
+/* §4.6 — CITER D'UN CLIC, DEPUIS LA PIÈCE ; METTRE EN RELATION PASSE PAR LE
+   CONTEXTE (second rapport de Jean : cinq clics pour une citation). */
+console.log("\n=== Citer d'un clic, depuis la pièce ===");
+{
+  const w = boot();
+  const valeurs = () => w.S.compo.map(p => p.valeur);
+  const a1 = w.R.attentesDe(w.R.remiseCourante(w.S))[0];
+  const veut = H.lienTag(w, a1.attend).termes[0];
+  const [pid] = H.deK(veut);
+  // Un passage de la MÊME dimension que celui qu'il faut : c'est le piège.
+  const piege = H.empansDe(w, pid).find(k => k !== veut && w.CHAMPS.find(c => c.id === k).dim === w.CHAMPS.find(c => c.id === veut).dim);
+  check("la première pièce tend un piège de même dimension", !!piege);
+
+  w.voirPiecesRecues(); w.ouvrirPiece(pid);
+  H.citer(w, piege);
+  check("phrase vide : le passage cliqué devient la réponse", JSON.stringify(valeurs()) === JSON.stringify([piege]));
+  check("et il est retenu au passage", w.S.retenus.includes(piege));
+  H.citer(w, veut);
+  check("un second clic se REPREND : il remplace le passage seul, il ne compose pas une relation",
+    JSON.stringify(valeurs()) === JSON.stringify([veut]) && w.S.retenus.includes(piege));
+  H.citer(w, veut);
+  check("recliquer la réponse ne change rien", JSON.stringify(valeurs()) === JSON.stringify([veut]));
+  w.envoyerCompo();
+  check("et elle part : ouvrir le Contexte, la pièce, citer, envoyer — quatre gestes",
+    w.S.satisfaits.includes(a1.attend));
+
+  /* Une relation se compose dans le Contexte : là, un clic dans la pièce ne fait que retenir. */
+  const w2 = boot();
+  H.livrerTout(w2);
+  const L = w2.JEU.liens.find(x => x.vice && x.conclusion);
+  const [t0, t1] = H.sousTerme(L).termes;
+  H.surligner(w2, t0); H.surligner(w2, t1);
+  w2.poserBloc(H.iTermeChamp(w2), w2.S.retenus.indexOf(t0));
+  w2.poserBloc(H.iTermeChamp(w2), w2.S.retenus.indexOf(t1));
+  const relation = JSON.stringify(w2.S.compo);
+  const autre = w2.CHAMPS.map(c => c.id).find(k => !w2.S.retenus.includes(k));
+  H.citer(w2, autre);
+  check("deux passages en relation : un clic dans la pièce ne fait que retenir",
+    JSON.stringify(w2.S.compo) === relation && w2.S.retenus.includes(autre));
 }
 
 /* LES PETITES INCOHÉRENCES DU SECOND RAPPORT DE JEAN — trois choses que l'écran
@@ -887,8 +934,8 @@ console.log("\n=== Le jeu se joue au clavier ===");
     cleActive() === "e:" + autre && actif() !== null && d.contains(actif()));
   check("un passage retenu le dit à qui ne voit pas le fond",
     /retenu/.test(passage(autre).textContent));
-  check("retenir se voit sous la pièce, au moment même (§4.3)",
-    /Retenu dans ton Contexte/.test((d.querySelector("#panPiece .rappel.retenu") || {}).textContent || ""));
+  check("retenir se voit sous la pièce, au moment même (§4.3) — ici, il cite aussi (§4.6)",
+    /[Rr]etenu dans ton Contexte/.test((d.querySelector("#panPiece .rappel.retenu") || {}).textContent || ""));
   check("et la porte Contexte s'allume", d.getElementById("btnContexte").classList.contains("recoit"));
   check("et la fiche neuve s'allume juste sous la pièce, là où on va la prendre",
     !!d.querySelector(`#zoneRetenus .mchip.neuf [data-f="c:${autre}"]`));

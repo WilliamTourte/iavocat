@@ -94,7 +94,20 @@ function creerHarnais(dossier){
      ID de bloc, pas un rang. */
   const iTermeChamp = w => w.R.indexTermeChamp(w.S);
   const deK = k => { const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; };
-  const surligner = (w,k) => { const [pid,eid]=deK(k); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
+  /* RETENIR, SEULEMENT. Depuis que cliquer un passage le CITE quand la phrase est
+     vide ou ne tient qu'un passage seul (§4.6), le clic du joueur peut changer la
+     phrase. Les suites qui veulent retenir sans citer défont ce geste par les
+     portes du joueur — « tout effacer », puis reprendre ce qui y était —, jamais
+     par une porte dérobée (§16). `citer` est le geste entier, pour qui l'éprouve. */
+  const surligner = (w,k) => {
+    const [pid,eid]=deK(k); if(w.S.retenus.includes(k)) return;
+    const avant=w.S.compo.map(p=>p.valeur);
+    w.surligner(pid,eid);
+    if(JSON.stringify(w.S.compo.map(p=>p.valeur))===JSON.stringify(avant)) return;
+    w.viderCompo();
+    for(const v of avant) w.poserBloc(w.R.indexTermeChamp(w.S), w.S.retenus.indexOf(v));
+  };
+  const citer = (w,k) => { const [pid,eid]=deK(k); w.surligner(pid,eid); };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
   /* UNE SUITE NE MARCHE QUE LES PORTES DU JOUEUR (§16). PIÈGE PAYÉ, et il a
@@ -311,7 +324,7 @@ function creerHarnais(dossier){
            lienVice, lienConclusion, lienFaux, lienTag, sousTerme, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
            cloreSurPlace, poserComparaison, assembler, lireLeTexte, livrerTout,
-           surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
+           surligner, citer, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
            instruire, terminer, numeroFin, surContenu };

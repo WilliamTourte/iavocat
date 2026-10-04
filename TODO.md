@@ -71,9 +71,11 @@ fil à 360 px minimum Contexte ouvert, composeur plafonné à 26 vh, survol fran
       l'avocat »* (§4.6) date de la mise en page empilée ; **au-dessus du seuil, le Contexte ne cache
       plus la conversation**. Proposition : au-dessus du seuil, ne plus refermer ; en dessous, ne
       refermer que si l'envoi a servi une attente.
-- [ ] **⚖ « Citer directement depuis la pièce »** fondrait *retenir* et *prendre* (deux verbes, deux
-      gestes, §4.6), et le Contexte est le clavier du composeur. Piste qui garde les deux : un passage
-      retenu **pendant** qu'une phrase en attend un y entre aussitôt.
+- [x] **Citer directement depuis la pièce** — arbitré par l'auteur (§4.6) : un clic sur un passage le
+      retient et, si la phrase est vide ou ne tient qu'un passage seul, en fait la réponse — il
+      **remplace** ce passage seul (le piège de la première question composerait sinon une relation).
+      Une citation : quatre gestes au lieu de cinq. Le second passage d'une relation se prend dans le
+      Contexte. `citerDepuisPiece`, et `H.citer` pour les suites.
 
 ### La déduction — ce que Jean confirme, et ce qu'il ajoute
 

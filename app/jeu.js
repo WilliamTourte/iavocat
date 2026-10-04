@@ -157,7 +157,7 @@ function tutoEtapeCitation(){
                       : "Retiens le passage qui répond.",
             ditLong: rate
               ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage qui y répond."
-              : "Clique sur le passage encadré qui répond pour le retenir dans ton Contexte : c'est de là que tu composeras ta réponse."}
+              : "Clique sur le passage encadré qui répond : il entre dans ta réponse, et se range dans ton Contexte."}
       /* Le Contexte ouvert, le halo quitte le bouton du message pour l'index :
          il ne pulse plus sur une porte qu'on vient de franchir (§4.8). */
       : panneau==="contexte"
@@ -191,7 +191,7 @@ function tutoEtapeComparaison(){
   if(R.indexTermeChamp(S)>=0){
     const dit = S.compo.length ? "Prends un second passage." : "Prends un premier passage.";
     const ditLong = S.compo.length
-      ? "Prends un second passage pour le comparer au premier : une réponse peut tenir sur deux."
+      ? "Prends dans ton Contexte un second passage pour le comparer au premier : une réponse peut tenir sur deux."
       : "Une réponse peut tenir sur deux passages. Prends-en un premier dans ton Contexte.";
     const n = S.compo.length ? 2 : 1;
     return panneau==="contexte"
@@ -475,7 +475,7 @@ function rendreTout(){
   recalerFil(enBas); majDebord();
   rendreFocus(m, force);
   placerTuto();                    // APRÈS le recalage du fil et le focus : ils déplacent l'ancre
-  rappelRetrait=null; vientDeRetenir=null;
+  rappelRetrait=null; vientDeRetenir=null; vientDeCiter=false;
   annoncerNouveautes(); publierAnnonces();
   sauverPartie();
 }
@@ -653,15 +653,19 @@ function basculerDossier(){
    retenu ne passe plus sous silence : l'écran dit où l'on retire. Et retenir se
    voit au moment même (§4.3) : `vientDeRetenir` allume la même ligne et le compte
    de la porte Contexte. Tous deux vivent le temps d'un rendu. */
-let rappelRetrait=null, vientDeRetenir=null;
+let rappelRetrait=null, vientDeRetenir=null, vientDeCiter=false;
 const RAPPEL_RETRAIT="Déjà dans ton Contexte — c'est là qu'on le retire.";
 const ECHO_RETENU="✓ Retenu dans ton Contexte.";
+const ECHO_CITE="✓ Dans ta réponse — et retenu dans ton Contexte.";
+/* §4.6 — CITER D'UN CLIC : c'est la règle qui décide si le passage entre dans la
+   phrase (`citerDepuisPiece`) ; l'écran ne fait que dire ce qui s'est passé. */
 function surligner(pid,eid){
-  const k=pid+"."+eid;
-  rappelRetrait = S.retenus.includes(k) ? k : null;
+  const k=pid+"."+eid, deja=S.retenus.includes(k);
+  vientDeCiter = R.citerDepuisPiece(S,pid,eid);
+  rappelRetrait = deja && !vientDeCiter ? k : null;
   vientDeRetenir = rappelRetrait ? null : k;
-  R.surligner(S,pid,eid);
-  annoncer(rappelRetrait ? RAPPEL_RETRAIT : "Retenu dans ton Contexte.");
+  annoncer(vientDeCiter ? "Dans ta réponse, et retenu dans ton Contexte."
+         : rappelRetrait ? RAPPEL_RETRAIT : "Retenu dans ton Contexte.");
   const neuf=!!vientDeRetenir;
   rendreTout();
   if(neuf && S.modalPiece) voirDernierRetenu();    // la fiche neuve, dans le champ
@@ -692,7 +696,7 @@ function piecePanelHTML(pid){
     <p class="piecetexte">${rendreTexte(pid)}</p>
     ${portePiece(pid)}
     ${rappelRetrait && rappelRetrait.startsWith(pid+".") ? `<p class="rappel">${RAPPEL_RETRAIT}</p>` : ""}
-    ${vientDeRetenir && vientDeRetenir.startsWith(pid+".") ? `<p class="rappel retenu">${ECHO_RETENU}</p>` : ""}`;
+    ${vientDeRetenir && vientDeRetenir.startsWith(pid+".") ? `<p class="rappel retenu">${vientDeCiter ? ECHO_CITE : ECHO_RETENU}</p>` : ""}`;
 }
 /* PIÈGE : `#zoneRetenus` est l'ancre des temps 3 et 5 du tutoriel (R6), à ne
    jamais viser par `:last-child`. Et depuis qu'elle vit dans un PANNEAU, elle

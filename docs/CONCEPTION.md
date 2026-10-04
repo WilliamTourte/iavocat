@@ -150,7 +150,9 @@ dimension, à sa couleur.
 
 **Retenir a lieu dans la pièce, retirer dans le Contexte.** Recliquer un passage déjà retenu ne
 l'oublie pas — arbitré le 16 septembre, reconduit le 30 après un playtest qui attendait un
-interrupteur — mais **l'écran le dit** : une ligne sous la pièce renvoie au Contexte. Un passage retenu
+interrupteur — mais **l'écran le dit** : une ligne sous la pièce renvoie au Contexte. Un clic qui
+**cite** (§4.6) le dit aussi, sur la même ligne : *« ✓ Dans ta réponse — et retenu dans ton
+Contexte »*. Un passage retenu
 se marque **par son fond, jamais par sa graisse** : le texte autour ne bouge pas.
 
 **Et retenir se voit au moment même** — retour de playtest (Colas) : rien ne disait qu'un clic avait
@@ -223,6 +225,16 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 - **Deux verbes, un par geste, partout** : on **retient** un passage — de la pièce vers le Contexte —
   et on le **prend** — du Contexte vers la phrase. *Sélectionner* ne paraît plus à l'écran : il
   servait aux deux, et un joueur a lu trois verbes là où il n'y a que deux gestes.
+- **CITER SE FAIT D'UN CLIC, DEPUIS LA PIÈCE ; METTRE EN RELATION PASSE PAR LE CONTEXTE** — retour de
+  playtest (Jean) : cinq clics pour une citation, et le détour par les retenus n'y enseignait rien.
+  Cliquer un passage le **retient toujours** ; et si la phrase est vide, ou ne tient qu'**un passage
+  seul**, il en **devient la réponse** — il remplace ce passage seul. Au-delà (deux passages, un
+  article), le clic ne fait que retenir. **Pourquoi remplacer, et non ajouter** : le piège de la
+  première question (21h52, l'appel, contre 22h04, l'arrivée) aurait composé *« l'heure de l'appel
+  précède l'heure d'arrivée »* sous les doigts de qui se reprend — une citation se corrige, elle ne
+  s'allonge pas. Le **second** passage d'une relation se **prend** donc dans le Contexte : c'est là
+  qu'on combine ce qu'on a lu, et le Contexte cesse d'être un détour obligé pour devenir l'endroit
+  de la mise en relation — et le carnet de ce qu'on a retenu.
 - **Les surfaces de côté — Contexte et Plaidoirie — partagent une même place LATÉRALE, un seul
   occupant à la fois**, et **ne recouvrent rien** : la conversation **cède pour lui faire place**. La
   pièce ouverte n'est plus un troisième occupant : **elle s'ouvre DANS le Contexte** (ci-dessous). **En dessous d'un seuil de largeur** (l'essentiel des téléphones), la place latérale
@@ -390,8 +402,8 @@ plus, c'est l'avocat** : lui est quelqu'un.
 |---|---|---|---|
 | **citer** | 1/5 | ce qu'on reçoit se retrouve dans le Contexte | le bouton de pièces, dans la Discussion |
 | | 2/5 | une pièce s'ouvre depuis l'index | l'index, une fois le Contexte ouvert |
-| | 3/5 | un passage se retient | **le texte de la pièce**, en entier — ouverte dans le Contexte, plus rien à refermer (§4.6) |
-| | 4/5 | ce qu'on retient est le clavier | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
+| | 3/5 | un passage cliqué devient la réponse — et se retient (§4.6) | **le texte de la pièce**, en entier — ouverte dans le Contexte, plus rien à refermer |
+| | 4/5 | ce qu'on retient se reprend dans le Contexte — seulement si la réponse s'est vidée : le clic qui cite saute ce rang | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
 | | 5/5 | rien ne part tant qu'on n'envoie pas | *« → Envoyer »*, dès que la phrase se tient |
 | **mettre en relation** | 1/5 | une réponse peut tenir sur **deux** passages | **toute la zone des retenus**, au premier passage |
 | | 2/5 | le second passage se compare au premier | la même zone, au second |

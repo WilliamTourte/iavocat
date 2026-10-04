@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 4 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 476 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 485 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -241,7 +241,11 @@ le survol d'un passage devient franc (§4.3, §4.6). **Puis les petites incohér
 compte avec les mots de l'index (*« 2 pièces et 1 règle »*), le tuto a un rang par consigne (*citer*
 et *mettre en relation* en cinq), Échap ne s'annonce que sur la croix qu'il déclenche et chaque croix
 dit ce qu'elle fait (*replier*, *fermer*, §4.10), et la voix du composeur ne dit plus qu'il y a une
-irrégularité (§4.8).
+irrégularité (§4.8). **Enfin, citer se fait d'un clic, depuis la pièce** (§4.6) : cliquer un passage
+le retient et, si la phrase est vide ou ne tient qu'un passage seul, en fait la réponse — il remplace
+ce passage seul, sans quoi le piège de la première question composerait une relation sous les doigts
+de qui se reprend. Une citation passe de cinq gestes à quatre ; le second passage d'une relation se
+prend dans le Contexte, qui devient l'endroit où l'on combine.
 
 ## 2. Points de vigilance
 
@@ -268,6 +272,10 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Le flag `cite` est porté par la liaison, jamais par le terme** — `t0` est partagé par la citation et
   la comparaison.
 - **L'index `iBloc` de `poserBloc` est positionnel dans la liste filtrée**, donc lié à la session.
+- **`H.surligner` RETIENT SEULEMENT, `H.citer` est le geste entier** (§4.6) : depuis que le clic d'un
+  passage le cite, `H.surligner` défait la prise par les portes du joueur — *tout effacer*, puis
+  reprendre ce qui y était. Une suite qui éprouve le clic du joueur, tutoriel compris, passe par
+  `H.citer` ; une qui compose dans le Contexte, par `H.surligner`.
 - **`muter(f)` porte `pushUndo` AVANT et `autosave(); render()` APRÈS** : une mutation qui renonce garde
   sa garde *avant* l'appel.
 - **L'ordre des `<script src>` de l'atelier compte** (`noyau.js` en premier), et les `window.X = X`
@@ -702,4 +710,5 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
 - **4 octobre, septième passe : le second rapport de Jean** — bulle au moindre recouvrement
   (`TUTO_A_LIRE`), page à 1200 px et fil à 360 px minimum Contexte ouvert, composeur plafonné, survol
   franc ; `comptePieces`, un rang par consigne, Échap sur la seule croix active (`#fermerContexte`),
-  voix sans « irrégularité ». 476 contrôles, 8 règles du gardien, ESLint.
+  voix sans « irrégularité » ; puis **citer d'un clic** (`citerDepuisPiece`, `H.citer`). 485 contrôles,
+  8 règles du gardien, ESLint.

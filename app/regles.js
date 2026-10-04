@@ -103,6 +103,26 @@ function creerRegles(JEU, M) {
     const k = pid + "." + eid;
     if (!S.retenus.includes(k)) S.retenus.push(k);
   }
+  /* CITER D'UN CLIC, DEPUIS LA PIÈCE (§4.6, retour de Jean). Le passage cliqué
+     se retient TOUJOURS ; et si la phrase est vide, ou ne tient qu'un passage
+     seul, il en devient la réponse — il REMPLACE ce passage seul. PIÈGE : ajouter
+     au lieu de remplacer ferait, du piège de la première question, une relation
+     composée sous les doigts de qui se reprend. Le second passage d'une relation
+     se prend dans le Contexte. Rend vrai si le passage est entré dans la phrase. */
+  function citerDepuisPiece(S, pid, eid) {
+    const k = pid + "." + eid;
+    surligner(S, pid, eid);
+    if (S.prete != null) return false;
+    const seul = S.compo.length === 1 && (blocParId(S.compo[0].bloc) || {}).type === "terme";
+    if (S.compo.length && !seul) return false;
+    if (seul && S.compo[0].valeur === k) return false;      // déjà la réponse
+    const avant = S.compo, refusAvant = S.refus;
+    S.compo = [];
+    const iT = indexTermeChamp(S);
+    if (iT >= 0) poserBloc(S, iT, S.retenus.indexOf(k));
+    if (!S.compo.length) { S.compo = avant; S.refus = refusAvant; return false; }   // rien ne bouge
+    return true;
+  }
   function oublier(S, pid, eid) {
     const k = pid + "." + eid, i = S.retenus.indexOf(k);
     if (i >= 0) S.retenus.splice(i, 1);
@@ -407,7 +427,7 @@ function creerRegles(JEU, M) {
 
   return { etatInitial, signatureContenu, pousser, envoyerRemise, ouvrirPiece, fermerPiece,
            piecesLivrees, estRegle, reglesLivrees, porteDe,
-           surligner, oublier, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
+           surligner, citerDepuisPiece, oublier, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
            comparaisonPossible, dimAttendue,
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,

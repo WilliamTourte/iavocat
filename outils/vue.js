@@ -161,12 +161,10 @@ async function main() {
      rendu, et seule une capture prise juste après la montre. */
   const veut1280 = await p2.evaluate(
     "__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend).termes[0]");
+  /* Le clic CITE (§4.6) : le passage entre dans la réponse, et se range dans le
+     Contexte — plus de temps « prendre ». */
   await p2.click(`#panPiece [data-f="e:${veut1280}"]`);
-  console.log("  " + await capturer2("piece-retenu"));
-  /* Et on PREND le passage sans rien refermer : la pièce vit dans le Contexte,
-     le passage retenu paraît juste dessous (§4.6). */
-  await p2.click(`#contexte [data-f="c:${veut1280}"]`);
-  console.log("  " + await capturer2("contexte"));
+  console.log("  " + await capturer2("piece-cite"));
   const pli = await p2.evaluate(`(() => {
     const e = document.querySelector(".envoi");
     return { envoi: e ? Math.round(e.getBoundingClientRect().bottom) : null, fenetre: innerHeight,
@@ -184,8 +182,9 @@ async function main() {
   console.log("  " + await capturer2("tout-efface"));
   const apres = await hautFil();
   console.log(`      la bulle redéployée ${avant === apres ? "ne décale rien" : `DÉCALE la conversation de ${apres - avant}px`}`);
-  /* Le rendu suivant sans consigne neuve la réduit au « ? » collé à la zone. */
-  await p2.evaluate("rendreTout()");
+  /* Repris dans le Contexte — le chemin qui reste pour qui a tout effacé —, on
+     revient à « Envoyer », consigne déjà lue : elle reste réduite au « ? ». */
+  await p2.click(`#contexte [data-f="c:${veut1280}"]`);
   console.log("  " + await capturer2("tuto-reduit"));
 
   /* ---- EN DESSOUS DU SEUIL : 390×800 (§4.6) ---- aucune des deux largeurs
@@ -213,9 +212,7 @@ async function main() {
   const veut390 = await p3.evaluate(
     "__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend).termes[0]");
   await p3.click(`#panPiece [data-f="e:${veut390}"]`);
-  console.log("  " + await capturer3("piece-retenu"));
-  await p3.click(`#contexte [data-f="c:${veut390}"]`);
-  console.log("  " + await capturer3("contexte"));
+  console.log("  " + await capturer3("piece-cite"));
 
   await navigateur.close();
 
