@@ -462,11 +462,11 @@ console.log("\n=== Le panneau de la pièce ===");
   } else check("(la règle testée porte des empans)", true);
 }
 
-/* §4.6 — PIÈCE OUVERTE, L'INDEX SE REPLIE (retour de playtest, Jean) : déplié,
-   il mangeait la moitié du panneau et la pièce n'y montrait plus que deux
-   lignes. Ce qui se lit ici est l'ÉTAT du DOM ; la hauteur gagnée, aucune
-   suite ne la voit — `npm run vue` seul. */
-console.log("\n=== Pièce ouverte, l'index se replie ===");
+/* §4.6 — L'INDEX SE REPLIE, ET LAISSE LA PLACE AU RESTE (retours de Jean et de
+   l'auteur) : déplié, il mangeait la moitié du panneau et la pièce n'y montrait
+   plus que deux lignes. Ce qui se lit ici est l'ÉTAT du DOM ; la hauteur
+   gagnée, aucune suite ne la voit — `npm run vue` seul. */
+console.log("\n=== L'index se replie ===");
 {
   const w = boot();
   H.livrerTout(w);
@@ -474,28 +474,35 @@ console.log("\n=== Pièce ouverte, l'index se replie ===");
   const bascule = () => d.querySelector('#zoneDossier [data-f="dossier"]');
   const liste = () => d.getElementById("dossierListe");
   const visible = el => !!el && !el.hidden && !el.closest("[hidden]");
+  const deplie = () => visible(liste()) && bascule().getAttribute("aria-expanded") === "true";
+  const replie = () => !visible(liste()) && bascule().getAttribute("aria-expanded") === "false";
   const [pA, pB] = w.R.piecesLivrees(w.S);
   w.basculerPanneau("contexte");
-  check("sans pièce ouverte, l'index est déplié, sans bascule", visible(liste()) && !bascule());
-
-  w.ouvrirPiece(pA);
-  check("une pièce ouverte, il se replie en une ligne", !!bascule() && !visible(liste())
-    && bascule().getAttribute("aria-expanded") === "false");
+  check("sans pièce ouverte, l'index est déplié — et une bascule le replie à tout moment", !!bascule() && deplie());
   check("la ligne dit le dossier et son compte",
     /dossier/i.test(bascule().textContent) && /\d+ pièces?/.test(bascule().textContent) && /\d+ règles?/.test(bascule().textContent));
-  check("replié, il reste l'ancre du tutoriel (R6)", !!d.getElementById("zoneDossier"));
-  check("et ses puces restent là, sous `hidden` : rien n'est retiré",
-    !!d.querySelector(`#dossierListe [data-f="d:${pB}"]`));
-
   w.basculerDossier();
-  check("un clic le déplie", visible(liste()) && bascule().getAttribute("aria-expanded") === "true");
+  check("replié sans pièce : il laisse la place aux retenus", replie());
   check("le focus reste sur la bascule", d.activeElement === bascule());
-  d.querySelector(`#contexte [data-f="d:${pB}"]`).click();
-  check("choisir une autre pièce la remplace — et replie l'index", w.S.modalPiece === pB && !visible(liste()));
+  check("replié, il reste l'ancre du tutoriel (R6), ses puces sous `hidden` : rien n'est retiré",
+    !!d.getElementById("zoneDossier") && !!d.querySelector(`#dossierListe [data-f="d:${pA}"]`));
+  w.basculerDossier();
 
+  w.ouvrirPiece(pA);
+  check("une pièce ouverte le replie d'elle-même", replie());
+  w.basculerDossier();
+  check("un clic le déplie", deplie());
+  d.querySelector(`#contexte [data-f="d:${pB}"]`).click();
+  check("choisir une autre pièce la remplace — et replie l'index", w.S.modalPiece === pB && replie());
   w.fermerPiece();
-  check("la pièce repliée, l'index redevient ce qu'on choisit : déplié, sans bascule",
-    visible(liste()) && !bascule());
+  check("la pièce repliée, il revient au choix d'avant : déplié", deplie());
+
+  w.basculerDossier(); w.fermerPanneau();
+  w.voirPiecesRecues();
+  check("le bouton de pièces du message le déplie : on vient voir ce qu'on a reçu", deplie());
+  w.basculerDossier();
+  w.ouvrirPiece(pA); w.fermerPiece();
+  check("replié par le joueur avant la pièce, il le reste après", replie());
 }
 
 console.log("\n=== Les répliques : seulement au versement ===");

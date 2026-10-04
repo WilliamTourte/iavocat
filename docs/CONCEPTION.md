@@ -237,16 +237,21 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   - **Deux bandes qui défilent chacune pour son compte**, la pièce au-dessus, les retenus en dessous :
     une pièce longue ne pousse jamais les retenus hors du panneau, et dix-sept fiches ne poussent
     jamais la pièce. La pièce prend la hauteur ; les retenus ce qu'il leur faut, jusqu'à un plafond
-    — à dix-sept fiches, ce sont eux qui défilent.
-  - **Pièce ouverte, l'index se REPLIE en une ligne** — *le dossier, son compte*, qu'un clic déplie
-    — retour de playtest (Jean). Déplié, à huit pièces et une puce par ligne, il prenait la moitié du
-    panneau : la pièce n'y montrait plus que deux lignes, et sur un téléphone plus rien. On le
-    replie à chaque pièce ouverte ; on le déplie pour en choisir une autre, qui le replie à son tour.
-    Pièce repliée, il se déplie seul : il redevient ce qu'on choisit. **Replier n'est pas juger**
-    (§4.6) : ce sont des pièces, pas des passages, et rien n'en est retiré. Il ne colle pas (le
-    PIÈGE ci-dessus), et reste l'ancre du tutoriel, replié ou non. **Au-dessus du seuil, la colonne latérale s'élargit** tant qu'une pièce
-    est ouverte : la conversation cède de la largeur, jamais la question. **En dessous**, si le
-    panneau est trop bas pour les deux bandes, il redéfile d'un bloc plutôt que de rogner.
+    — à dix-sept fiches, ce sont eux qui défilent. **Au-dessus du seuil, le Contexte prend les DEUX
+    TIERS de la largeur**, pièce ouverte ou non — demande de l'auteur : index, pièce et retenus se
+    lisaient à l'étroit dans une colonne d'un tiers. La conversation garde le tiers restant, et la
+    question avec elle ; la Plaidoirie, qui ne porte qu'une liste, garde sa colonne étroite. **En
+    dessous**, si le panneau est trop bas pour les deux bandes, il redéfile d'un bloc plutôt que de
+    rogner.
+  - **L'index se REPLIE en une ligne** — *le dossier, son compte* — et il laisse ainsi la place au
+    reste. Retour de playtest (Jean), puis de l'auteur : déplié, à huit pièces et une puce par
+    ligne, il prenait la moitié du panneau ; la pièce n'y montrait plus que deux lignes, et sur un
+    téléphone plus rien. **Une bascule le replie ou le déplie à tout moment.** Une pièce ouverte le
+    replie d'elle-même ; on le déplie pour en choisir une autre, qui le replie à son tour ; la pièce
+    repliée, il revient à ce que le joueur avait choisi. **Le bouton de pièces du message le
+    déplie** : on vient voir ce qu'on a reçu. **Replier n'est pas juger** (§4.6) : ce sont des
+    pièces, pas des passages, et rien n'en est retiré. Il ne colle pas (le PIÈGE ci-dessus), et
+    reste l'ancre du tutoriel, replié ou non.
   - **Une seule pièce à la fois** : un autre chip de l'index la remplace ; la croix de la pièce la
     replie et rend toute la hauteur aux retenus ; refermer le Contexte la replie avec lui. Une pièce
     n'est **jamais** ouverte hors du Contexte — l'ouvrir ouvre le Contexte, en consultation (il ne se
@@ -273,8 +278,9 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   qu'il ne parte pas hors champ, et il a occupé le panneau en permanence — à trois lignes, la moitié.
   Il défile avec les fiches. **Au-dessus du seuil, la place latérale reçoit la hauteur pleine de la
   conversation** : plancher et plafond cessent de s'y disputer quoi que ce soit.
-- **Deux matières** : les pièces ont celle du **papier** — fond clair, caractères à empattements —, la
-  machine celle de l'**écran**. Ce qu'on lit vient du monde, ce qu'on écrit sort de l'IA ; la chasse
+- **Deux matières** : les pièces ont celle du **papier** — fond clair, caractères à empattements, en
+  corps de lecture et non d'affiche (demande de l'auteur : à 17 px, une pièce ne tenait pas dans son
+  cadre) —, la machine celle de l'**écran**. Ce qu'on lit vient du monde, ce qu'on écrit sort de l'IA ; la chasse
   fixe de ses messages dans la Discussion est le même contraste, pris dans l'autre sens.
 - **Un panneau ne s'ouvre jamais tout seul**, et deux fermetures coexistent, selon la porte par
   laquelle il est venu. **Ouvert pour ÉCRIRE** (par la voix), il suit la phrase : il se referme dès

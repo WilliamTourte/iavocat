@@ -593,25 +593,29 @@ function renderDossier(){
     <div class="dchips">${pids.length?pids.map(chip).join(""):`<span class="dvide">—</span>`}</div></div>`;
   const pieces=livres.filter(pid=>!R.estRegle(JEU.pieces[pid]));
   const regles=livres.filter(pid=> R.estRegle(JEU.pieces[pid]));
-  const liste=`<div class="dossier" id="dossierListe" ${S.modalPiece && !dossierDeplie?"hidden":""}>${
-    colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div>`;
-  if(!S.modalPiece) return `<div class="zone" id="zoneDossier">${liste}</div>`;
-  /* §4.6 — PIÈCE OUVERTE, L'INDEX SE REPLIE en une ligne (retour de playtest,
-     Jean) : déplié, il mangeait la moitié du panneau et la pièce n'y montrait
-     plus que deux lignes. Les puces restent sous `hidden` — le motif
-     « disclosure » —, et `#zoneDossier` reste l'ancre du tutoriel (R6). */
+  /* §4.6 — L'INDEX SE REPLIE en une ligne, et laisse la place au reste (retours
+     de Jean et de l'auteur) : déplié, il mangeait la moitié du panneau, et la
+     pièce n'y montrait plus que deux lignes. Les puces restent sous `hidden` —
+     le motif « disclosure » —, et `#zoneDossier` reste l'ancre du tutoriel (R6). */
+  const plie=indexPlie();
   const compte=(n,mot)=>n+" "+mot+(n>1?"s":"");
   const resume=compte(pieces.length,"pièce")+", "+compte(regles.length,"règle");
-  return `<div class="zone ${dossierDeplie?"":"plie"}" id="zoneDossier">
-    <button type="button" class="dplier" data-f="dossier" aria-expanded="${dossierDeplie}" aria-controls="dossierListe"
+  return `<div class="zone ${plie?"plie":""}" id="zoneDossier">
+    <button type="button" class="dplier" data-f="dossier" aria-expanded="${!plie}" aria-controls="dossierListe"
       onclick="basculerDossier()"><span class="dtitre">Le dossier</span><span class="dcompte">${resume}</span><span class="dsens">${
-        dossierDeplie?"▴ replier":"▾ déplier"}</span></button>${liste}</div>`;
+        plie?"▾ déplier":"▴ replier"}</span></button>
+    <div class="dossier" id="dossierListe" ${plie?"hidden":""}>${
+      colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div></div>`;
 }
-/* Un état d'ÉCRAN, comme `panneau` : jamais sauvé. `ouvrirPiece` le remet à faux
-   — chaque pièce ouverte replie l'index, qu'on a déplié pour la choisir. */
-let dossierDeplie=false;
+/* Deux états d'ÉCRAN, comme `panneau` : jamais sauvés. `dossierPlie` est le
+   choix du joueur sans pièce ouverte ; `dossierDeplie`, celui qu'il fait le
+   temps d'une pièce — `ouvrirPiece` le remet à faux : chaque pièce ouverte
+   replie l'index qu'on a déplié pour la choisir, et la pièce repliée, il
+   revient au choix d'avant. */
+let dossierPlie=false, dossierDeplie=false;
+const indexPlie=()=>S.modalPiece ? !dossierDeplie : dossierPlie;
 function basculerDossier(){
-  dossierDeplie=!dossierDeplie;
+  if(S.modalPiece) dossierDeplie=!dossierDeplie; else dossierPlie=!dossierPlie;
   focusVoulu={ cle:"dossier", zone:"#zoneDossier" };
   rendreTout();
 }
@@ -958,7 +962,7 @@ function majLateral(){
   // La conversation, seule bande élastique, cède d'elle-même la place (§4.6) ;
   // la classe ne décide que jusqu'où elle peut céder, et c'est du CSS (§9).
   { const w=document.querySelector(".wrap"); if(w){ w.classList.toggle("avecLateral", !!panneau);
-                                                   w.classList.toggle("avecPiece", !!S.modalPiece); } }
+                                                   w.classList.toggle("avecContexte", panneau==="contexte"); } }
 }
 /* LE PANNEAU S'OUVRE SUR CE QU'ON VIENT DE RETENIR. À dix-sept fiches, la
    dernière est sous le pli et rien ne le disait : un joueur a cherché son
@@ -996,6 +1000,7 @@ function ouvrirContexte(){ panneau="contexte"; panneauSuit=true; rendreTout(); v
    referme pas tout seul à la pose d'un passage. */
 function voirPiecesRecues(){
   panneau="contexte"; panneauSuit=false;
+  dossierPlie=false; dossierDeplie=true;   // on vient voir ce qu'on a reçu : l'index se déplie (§4.6)
   focusVoulu={ cle:"#titreContexte", zone:"#panContexte" };
   rendreTout();
 }

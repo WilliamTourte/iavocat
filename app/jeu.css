@@ -158,10 +158,11 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
   .wrap.avecLateral .panneau{grid-area:lateral;min-width:0;min-height:0;max-height:none}
   .wrap.avecLateral #composeur{grid-area:composeur}
   .wrap.avecLateral .cloture{grid-area:cloture}
-  /* Une pièce ouverte dans le Contexte : la colonne s'élargit — le papier, l'index
-     et les retenus s'y partagent la hauteur, la conversation cède de la largeur
-     sans perdre la question (§4.6). Seul le gabarit change, jamais un span. */
-  .wrap.avecLateral.avecPiece{grid-template-columns: minmax(0,1fr) minmax(360px,1.15fr)}
+  /* LE CONTEXTE PREND LES DEUX TIERS (§4.6, demande de l'auteur) : index, pièce
+     et retenus se lisaient à l'étroit dans un tiers. La conversation garde le
+     tiers restant, et la question avec elle ; la Plaidoirie, une liste, garde
+     sa colonne étroite. Seul le gabarit change, jamais un span. */
+  .wrap.avecLateral.avecContexte{grid-template-columns: minmax(0,1fr) minmax(0,2fr)}
 }
 /* --- ce qui se lit au clavier (§4.10) --- un double anneau en `box-shadow`,
    qui ne se bat pas avec l'`outline` du halo du tutoriel. */
@@ -373,10 +374,12 @@ code{font-family:var(--mono);color:var(--accent)}
 .bande.piece{color-scheme:light;background:var(--papier);color:var(--encre);border-color:var(--filet);
   font-family:var(--serif)}
 .bande.piece .ptete{background:var(--papier);color:var(--encre);border-color:var(--filet)}
-.bande.piece #pieceTitre{margin:0;font-size:19px;font-weight:600;line-height:1.3}
-.bande.piece small.note{display:block;color:var(--encre2);font-style:italic;font-size:14.5px;
+.bande.piece #pieceTitre{margin:0;font-size:17px;font-weight:600;line-height:1.3}
+.bande.piece small.note{display:block;color:var(--encre2);font-style:italic;font-size:13.5px;
   padding-bottom:10px;border-bottom:1px solid var(--filet);margin-bottom:6px}
-.bande.piece .piecetexte{font-size:17px;line-height:1.8;margin:14px 0 6px}
+/* Un corps de LECTURE, pas d'affiche (§4.6) : à 17 px, une pièce ne tenait pas
+   dans son cadre. L'interligne garde la place du ✓ posé au-dessus d'un passage. */
+.bande.piece .piecetexte{font-size:15px;line-height:1.75;margin:12px 0 6px}
 .bande.piece .empan{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
   text-decoration-color:var(--dcp);background:color-mix(in srgb, var(--dcp) 9%, transparent)}
 .bande.piece .empan:hover{background:color-mix(in srgb, var(--dcp) 18%, transparent)}

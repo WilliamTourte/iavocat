@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 4 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 467 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 469 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -219,6 +219,10 @@ pièce suivante replie (§4.6) — et les retenus plafonnent à 30 % au lieu de 
 passe à 226 px : le rapport du labo se lit en entier, le PV en sept lignes. Les retenus ne se
 replient pas : ils sont le clavier du composeur et l'ancre de *citer · 3/4*. **Sur un téléphone, le
 gain ne suffit pas** — la pièce revient à l'écran, sur deux lignes : à juger sur un vrai appareil.
+Dans la foulée, trois demandes de l'auteur : **l'index se replie à tout moment**, pas seulement pièce
+ouverte — il laisse la place au reste, et le bouton de pièces du message le déplie ; **le Contexte
+prend les deux tiers de la largeur** au-dessus du seuil (la Plaidoirie garde sa colonne étroite) ;
+**les pièces passent en corps de lecture**, 15 px au lieu de 17 (§4.6).
 
 ## 2. Points de vigilance
 
@@ -276,10 +280,12 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   `renderDiscussion` ferait paraître la réplique un geste trop tard ; le retirer laisserait une pièce
   ouverte invisible, `S.modalPiece` compris. Une partie reprise sur une pièce ouverte rouvre le
   Contexte au démarrage, sans quoi le premier rendu la replierait, réplique comprise.
-- **Pièce ouverte, l'index se replie, mais `#zoneDossier` reste là** (§4.6) : c'est une ancre du
-  tutoriel (R6), et le halo doit pouvoir l'entourer repliée. Les puces restent dans le DOM, sous
-  `hidden` — le motif *disclosure* standard, et `data-f="d:pid"` survit pour le retour du focus.
-  `dossierDeplie` est un état d'ÉCRAN, comme `panneau` : jamais sauvé, remis à faux par `ouvrirPiece`.
+- **L'index se replie, mais `#zoneDossier` reste là** (§4.6) : c'est une ancre du tutoriel (R6), et
+  le halo doit pouvoir l'entourer replié. Les puces restent dans le DOM, sous `hidden` — le motif
+  *disclosure* standard, et `data-f="d:pid"` survit pour le retour du focus. **Deux** états d'ÉCRAN,
+  comme `panneau`, jamais sauvés : `dossierPlie` (le choix du joueur sans pièce) et `dossierDeplie`
+  (celui du temps d'une pièce, remis à faux par `ouvrirPiece`) — un seul ferait oublier, à la pièce
+  repliée, ce que le joueur avait choisi avant. `voirPiecesRecues` déplie les deux.
 - **Pièce ouverte, `#contexte` porte deux bandes défilantes de plus** (`.defile[id]`) :
   `garderDefilement` les retrouve par leur id. Une bande sans id repartirait en haut à chaque geste.
 - **Un passage est un `span[role=button][tabindex=0]`, jamais un `<button>`** : un bouton est une
@@ -660,5 +666,6 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   question en un seul message, les pièces après (`question` sur l'entrée du fil). 458 contrôles,
   8 règles du gardien, ESLint.
 - **4 octobre, sixième passe : la place de lecture** — pièce ouverte, l'index se replie en une ligne
-  (`dossierDeplie`, `basculerDossier`, puces sous `hidden`) ; retenus plafonnés à 30 %. 467 contrôles,
-  8 règles du gardien, ESLint.
+  (`dossierDeplie`, `basculerDossier`, puces sous `hidden`) ; retenus plafonnés à 30 %. Puis l'index
+  repliable à tout moment (`dossierPlie`), le Contexte aux deux tiers (`.wrap.avecContexte`, qui
+  remplace `.wrap.avecPiece`), les pièces en 15 px. 469 contrôles, 8 règles du gardien, ESLint.
