@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 4 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 469 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 476 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -232,6 +232,17 @@ fois retenu — au toucher, c'est le clic qui la pose. Puis **la légende est re
 bordure à peine visible, neutre et arrondie** suggère qu'un passage se clique, sans dire sa
 dimension (§4.3).
 
+**Le 4 octobre, septième passe : le second rapport de Jean** (l'intro et le tuto, 1280×800), lu de près
+au `TODO.md`. **Nos régressions d'abord** : la bulle se pose désormais sur le côté qui recouvre le moins
+ce qu'on lit — la question, la phrase, la voix, l'aide du Contexte — et plus sur le premier où elle
+tient (§4.8) ; la page s'élargit à 1200 px Contexte ouvert et le fil garde un plancher de 360 px (il
+tombait à cinq mots par ligne) ; le composeur plafonne plus bas Contexte ouvert (la pièce se coupait) ;
+le survol d'un passage devient franc (§4.3, §4.6). **Puis les petites incohérences** : le message
+compte avec les mots de l'index (*« 2 pièces et 1 règle »*), le tuto a un rang par consigne (*citer*
+et *mettre en relation* en cinq), Échap ne s'annonce que sur la croix qu'il déclenche et chaque croix
+dit ce qu'elle fait (*replier*, *fermer*, §4.10), et la voix du composeur ne dit plus qu'il y a une
+irrégularité (§4.8).
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -264,7 +275,9 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **`#tuto` est une bulle en `position:fixed`, et c'est `placerTuto` qui l'empêche de recouvrir ses
   ancres** (§4.8) — plus le flux. Elle se pose à côté du **rectangle VISIBLE** de la cible (le
   rectangle coupé par chaque ancêtre qui défile : une zone à moitié défilée n'est pas là où son
-  `getBoundingClientRect` le dit), sur le premier côté où elle tient. Elle se replace à chaque
+  `getBoundingClientRect` le dit), sur le côté qui recouvre le moins les textes de `TUTO_A_LIRE` —
+  des LITTÉRAUX, comme les ancres : un sélecteur qui ne trouve plus rien ne protège plus rien, en
+  silence. Elle se replace à chaque
   `majTutoriel`, et sur `resize` et `scroll` **en capture** — un `scroll` ne remonte pas, et ce sont les
   bandes qui défilent, jamais la page. **Aucune suite ne voit une géométrie** (jsdom rend des
   rectangles nuls) : `npm run vue` seul la montre. Elle reste **premier enfant de `<body>`, hors de
@@ -686,3 +699,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   posée mais transparente) ; la légende retirée (`legendePiece` supprimée, `portePiece` garde sa
   forme sous `.porte`), une bordure neutre sur chaque passage. 469 contrôles, 8 règles du gardien,
   ESLint.
+- **4 octobre, septième passe : le second rapport de Jean** — bulle au moindre recouvrement
+  (`TUTO_A_LIRE`), page à 1200 px et fil à 360 px minimum Contexte ouvert, composeur plafonné, survol
+  franc ; `comptePieces`, un rang par consigne, Échap sur la seule croix active (`#fermerContexte`),
+  voix sans « irrégularité ». 476 contrôles, 8 règles du gardien, ESLint.

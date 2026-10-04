@@ -505,6 +505,47 @@ console.log("\n=== L'index se replie ===");
   check("replié par le joueur avant la pièce, il le reste après", replie());
 }
 
+/* LES PETITES INCOHÉRENCES DU SECOND RAPPORT DE JEAN — trois choses que l'écran
+   disait de deux façons. Lu sur le DOM, jamais recopié du code. */
+console.log("\n=== Une chose, une façon de la dire ===");
+{
+  const w = boot();
+  const d = w.document;
+  const pas = () => d.getElementById("tutoPas").textContent;
+  const rang = () => Number((pas().match(/(\d+)\/\d+/) || [])[1]);
+  /* §4.8 — un rang par consigne : le compteur avance à chaque consigne neuve. */
+  const rangs = [rang()];
+  w.voirPiecesRecues(); rangs.push(rang());
+  const pid = H.pidPremiereRemise(w);
+  w.ouvrirPiece(pid); rangs.push(rang());
+  const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
+  H.surligner(w, veut); rangs.push(rang());
+  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut)); rangs.push(rang());
+  check("citer : le compteur avance à chaque consigne, sans jamais rester sur place",
+    rangs.every((n, i) => i === 0 || n > rangs[i - 1]));
+  check("et il finit sur son total", pas().endsWith(`${rangs[rangs.length - 1]}/${rangs[rangs.length - 1]}`));
+
+  /* §4.6 — le message et le dossier comptent avec les mêmes mots. */
+  const attach = d.querySelector("#discussion .attach");
+  const compte = d.querySelector('#zoneDossier [data-f="dossier"] .dcompte');
+  check("le bouton du message compte avec les mots de l'index",
+    !!attach && !!compte && compte.textContent.length > 0
+    && attach.textContent.replace(/\s+/g, " ").includes(compte.textContent + " disponible"));
+  const regles = w.JEU.remises[0].pieces.filter(p => w.R.estRegle(w.JEU.pieces[p])).length;
+  check("une règle reçue se dit règle, pas pièce", !regles || /règle/.test(attach.textContent));
+
+  /* §4.10 règle 6 — Échap se lit là où il agit maintenant. */
+  const croix = d.getElementById("fermerContexte");
+  const kbdVisible = b => { const k = b && b.querySelector("kbd"); return !!k && !k.hidden; };
+  check("pièce ouverte, Échap ne s'annonce que sur sa croix",
+    kbdVisible(d.querySelector('#panPiece [data-f="replier"]')) && !kbdVisible(croix)
+    && !croix.hasAttribute("aria-keyshortcuts"));
+  w.fermerPiece();
+  check("pièce repliée, il revient sur la croix du Contexte",
+    kbdVisible(croix) && croix.getAttribute("aria-keyshortcuts") === "Escape");
+  check("et chaque croix dit ce qu'elle fait", /fermer/.test(croix.textContent));
+}
+
 console.log("\n=== Les répliques : seulement au versement ===");
 {
   const w = boot();

@@ -25,37 +25,42 @@ manque vraiment, ou seulement dans le tutoriel.
 
 ### Nos régressions — à reprendre d'abord
 
-- [ ] **La bulle du tuto cache le texte utile** — l'aide du Contexte, la question rappelée dans
+*Faites le 4 octobre, septième passe (§1 PASSATION) : bulle au moindre recouvrement, page à 1200 px et
+fil à 360 px minimum Contexte ouvert, composeur plafonné à 26 vh, survol franc. Vues dans Chromium.*
+
+- [x] **La bulle du tuto cache le texte utile** — l'aide du Contexte, la question rappelée dans
       *« Ta réponse »*, la voix (*« Sur quel article t'appuies-tu… »*), la fin de la phrase composée.
       Vu aussi sur nos captures (*citer · 3/4*) : `placerTuto` prend le **premier côté où elle tient**
       (droite, dessous, dessus, gauche), et *dessous* tombe souvent sur le composeur. Passer à un choix
       qui **évite des zones protégées** — le rappel de la question, `.phrase`, la voix, l'aide du
       Contexte, le dernier message — en mesurant le recouvrement de chaque côté (§4.8).
-- [ ] **⚖ La Discussion tombe à 5-6 mots par ligne** Contexte ouvert : les deux tiers sont pris dans un
+- [x] **⚖ La Discussion tombe à 5-6 mots par ligne** Contexte ouvert : les deux tiers sont pris dans un
       `.wrap` plafonné à 1000 px, et il reste ~314 px au fil. Leviers : élargir `.wrap` quand le
       Contexte est ouvert (à 1280, ~394 px pour le fil), ou garder un plancher au fil
       (`minmax(380px,1fr)`). Le partage aux deux tiers est un choix de l'auteur (§4.6).
-- [ ] **La pièce se coupe quand la réponse s'allonge** (*« par mes soins »* disparaît) : au-dessus du
+- [x] **La pièce se coupe quand la réponse s'allonge** (*« par mes soins »* disparaît) : au-dessus du
       seuil, `#composeur` n'a que son plafond général (46 vh) et sa rangée mange celle du Contexte.
       Leviers : un plafond plus bas Contexte ouvert, ou le composeur **sous la conversation, dans la
       colonne de gauche** — le Contexte garderait toute la hauteur.
-- [ ] **Le survol ne distingue pas assez le passage visé.** La bordure au repos, à peine visible, est
+- [x] **Le survol ne distingue pas assez le passage visé.** La bordure au repos, à peine visible, est
       voulue (l'auteur : *« suggérer »*) ; mais le survol doit être **franc** — fond plus soutenu, trait
       plus épais, bordure à la couleur de la dimension (§4.3).
 
 ### Petites incohérences — sans arbitrage
 
-- [ ] **« 3 pièces disponibles » contre « 2 pièces, 1 règle »** : le bouton du message compte l'article
+*Faites dans la même passe, chacune tenue par un contrôle de `test_parcours`.*
+
+- [x] **« 3 pièces disponibles » contre « 2 pièces, 1 règle »** : le bouton du message compte l'article
       comme une pièce. Dire *« 2 pièces et 1 règle disponibles »*, avec les mots de l'index
       (`R.estRegle`).
-- [ ] **Le compteur du tuto reste deux temps sur le même rang** : *citer · 1/4* couvre le bouton de
+- [x] **Le compteur du tuto reste deux temps sur le même rang** : *citer · 1/4* couvre le bouton de
       pièces puis l'index, *mettre en relation · 2/3* le dossier puis les propositions. Compter chaque
       consigne (*citer* en 5 — ce sont les cinq clics que Jean compte) et refaire le tableau du §4.8.
-- [ ] **Deux « × Échap » empilés** (le Contexte, la pièce) sans qu'on sache lequel ferme quoi. Échap
+- [x] **Deux « × Échap » empilés** (le Contexte, la pièce) sans qu'on sache lequel ferme quoi. Échap
       replie d'abord la pièce : n'afficher `Échap` que sur la croix qu'il déclenche **maintenant**, et
       nommer à l'écran *« replier la pièce »* / *« fermer le Contexte »*. Rejoint *« la croix d'un
       panneau et celle d'une fiche »* (§3 PASSATION).
-- [ ] **La voix du composeur affirme la trouvaille** — relevé en vérifiant, pas par Jean : *« Sur quel
+- [x] **La voix du composeur affirme la trouvaille** — relevé en vérifiant, pas par Jean : *« Sur quel
       article t'appuies-tu pour montrer qu'il y a une irrégularité ? »* dit qu'il y en a une. Le chrome
       nomme le geste, jamais la trouvaille (§4.8) : *« Sur quel article t'appuies-tu ? »*.
 
@@ -114,7 +119,7 @@ manque vraiment, ou seulement dans le tutoriel.
 
 ### Ordre proposé
 
-1. Nos régressions et les petites incohérences : rien n'y est à arbitrer, sauf la largeur du fil.
+1. ~~Nos régressions et les petites incohérences~~ — faites.
 2. Le Contexte qui reste ouvert après un envoi, au-dessus du seuil.
 3. **Faire jouer la session 2 par un joueur neuf** — avant de toucher à la grammaire.
 4. Les ⚖ de la déduction et du coût, document d'abord.

@@ -138,8 +138,12 @@ function tutoAttenteComparaison(){
    6/6 à 4/6 au moment d'envoyer, les deux gestes partageant le bouton : elle
    mentait sur une progression qui n'a jamais été linéaire. Le geste se nomme,
    l'étape se compte dans son geste. */
-const GESTE_CITER = {geste:"citer", total:4};
-const GESTE_RELIER = {geste:"mettre en relation", total:3};
+/* UN RANG PAR CONSIGNE (§4.8, retour de Jean) : *citer · 1/4* couvrait le bouton
+   de pièces puis l'index, et le compteur restait immobile. Un temps déjà acquis
+   saute son rang ; la porte (« Ouvre ton Contexte ») prend celui du geste
+   qu'elle ouvre. */
+const GESTE_CITER = {geste:"citer", total:5};
+const GESTE_RELIER = {geste:"mettre en relation", total:5};
 /* PIÈGE : le chrome N'EST PERSONNE — il nomme le GESTE, jamais la TROUVAILLE
    (§4.8). Dire « les deux passages qui se contredisent », c'est répondre à la
    place du joueur ; l'avocat, lui, a le droit : il sait, il calibre (§3). */
@@ -148,7 +152,7 @@ function tutoEtapeCitation(){
   if(veut ? !S.retenus.includes(veut) : !S.retenus.length){
     const rate = !!veut && S.retenus.length>0;
     return S.modalPiece
-      ? {...GESTE_CITER, n:2, ou:"#panPiece .piecetexte", alerte:rate,
+      ? {...GESTE_CITER, n:3, ou:"#panPiece .piecetexte", alerte:rate,
             dit: rate ? "Ce n'est pas ce qu'il demande."
                       : "Retiens le passage qui répond.",
             ditLong: rate
@@ -157,7 +161,7 @@ function tutoEtapeCitation(){
       /* Le Contexte ouvert, le halo quitte le bouton du message pour l'index :
          il ne pulse plus sur une porte qu'on vient de franchir (§4.8). */
       : panneau==="contexte"
-        ? {...GESTE_CITER, n:1, ou:"#zoneDossier", alerte:rate,
+        ? {...GESTE_CITER, n:2, ou:"#zoneDossier", alerte:rate,
             dit: rate ? "Ce n'est pas ce qu'il demande."
                       : "Ouvre une pièce.",
             ditLong: rate
@@ -174,13 +178,13 @@ function tutoEtapeCitation(){
      passage retenu paraît juste en dessous, prêt à être pris. */
   if(!R.peutEnvoyer(S))
     return panneau==="contexte"
-        ? {...GESTE_CITER, n:3, ou:"#zoneRetenus",
+        ? {...GESTE_CITER, n:4, ou:"#zoneRetenus",
             dit:"Prends le passage retenu.",
             ditLong:"Prends le passage qui répond, juste sous la pièce : il entrera dans ta réponse."}
-        : {...GESTE_CITER, n:3, ou:"#btnContexte",
+        : {...GESTE_CITER, n:4, ou:"#btnContexte",
             dit:"Ouvre ton Contexte.",
             ditLong:"Ouvre ton Contexte : le passage que tu viens de retenir s'y trouve, prêt à être pris."};
-  return  {...GESTE_CITER, n:4, ou:"#composeur button.envoi",
+  return  {...GESTE_CITER, n:5, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
 }
 function tutoEtapeComparaison(){
@@ -189,9 +193,10 @@ function tutoEtapeComparaison(){
     const ditLong = S.compo.length
       ? "Prends un second passage pour le comparer au premier : une réponse peut tenir sur deux."
       : "Une réponse peut tenir sur deux passages. Prends-en un premier dans ton Contexte.";
+    const n = S.compo.length ? 2 : 1;
     return panneau==="contexte"
-      ? {...GESTE_RELIER, n:1, ou:"#zoneRetenus", dit, ditLong}
-      : {...GESTE_RELIER, n:1, ou:"#btnContexte", dit:"Ouvre ton Contexte.",
+      ? {...GESTE_RELIER, n, ou:"#zoneRetenus", dit, ditLong}
+      : {...GESTE_RELIER, n, ou:"#btnContexte", dit:"Ouvre ton Contexte.",
           ditLong:"Ouvre ton Contexte : "+ditLong[0].toLowerCase()+ditLong.slice(1)};
   }
   /* PIÈGE : une comparaison nue EST envoyable (§4.5), donc ce temps doit passer
@@ -200,18 +205,18 @@ function tutoEtapeComparaison(){
      LU, l'article peut n'être offert nulle part : on montre alors où le lire. */
   if(S.compo.length && !R.compoFinie(S)){
     if(R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
-      return {...GESTE_RELIER, n:2, ou:"#composeur .offre",
+      return {...GESTE_RELIER, n:4, ou:"#composeur .offre",
         dit:"Prends l'article qui la fonde.",
         ditLong:"Une relation seule ne suffit pas : prends l'article sur lequel elle s'appuie."};
     const ditLong="Une relation seule ne suffit pas : il lui faut un article qui la fonde.";
     return panneau==="contexte"
-      ? {...GESTE_RELIER, n:2, ou:"#zoneDossier", dit:"Il lui faut un article.",
+      ? {...GESTE_RELIER, n:3, ou:"#zoneDossier", dit:"Il lui faut un article.",
           ditLong:ditLong+" Va le lire dans ton dossier."}
-      : {...GESTE_RELIER, n:2, ou:"#btnContexte", dit:"Ouvre ton Contexte.",
+      : {...GESTE_RELIER, n:3, ou:"#btnContexte", dit:"Ouvre ton Contexte.",
           ditLong:ditLong+" Ton dossier est dans ton Contexte."};
   }
   if(R.peutEnvoyer(S))
-    return {...GESTE_RELIER, n:3, ou:"#composeur button.envoi",
+    return {...GESTE_RELIER, n:5, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
   return null;
 }
@@ -283,6 +288,11 @@ function majTutoriel(){
    suite ne voit cette géométrie (jsdom rend des rectangles nuls) : `npm run
    vue` seul la montre. */
 const TUTO_ECART=12, TUTO_MARGE=16;
+/* Ce que la bulle ne doit pas cacher : la question (dans le message de remise, et
+   rappelée au composeur), la phrase en cours et sa voix, un refus, l'aide du
+   Contexte, le dernier message. Des LITTÉRAUX, comme les ancres (R6). */
+const TUTO_A_LIRE=["#discussion .qremise", "#discussion .msg:last-child .bubble",
+  "#composeur .aide.question", "#composeur .phrase", "#composeur .refus", "#zoneRetenus > .aide"];
 function rectVisible(el){
   const r=el.getBoundingClientRect();
   let h=r.top, b=r.bottom, g=r.left, d=r.right;
@@ -307,23 +317,34 @@ function placerTuto(){
     return;
   }
   const r=rectVisible(tutoCible), cx=(r.left+r.right)/2, cy=(r.top+r.bottom)/2;
-  const cotes=[
-    ["droite",  L-r.right-E-M>=w],
-    ["dessous", H-r.bottom-E-M>=h],
-    ["dessus",  r.top-E-M>=h],
-    ["gauche",  r.left-E-M>=w]];
-  const cote=(cotes.find(c=>c[1]) || (r.top>H-r.bottom ? cotes[2] : cotes[1]))[0];
-  let x, y;
-  if(cote==="droite" || cote==="gauche"){
-    /* Sur le côté, elle DESCEND depuis la zone, la flèche en haut : la question
-       est au-dessus du bouton de pièces, une bulle qui montait la recouvrait. */
-    x = cote==="droite" ? r.right+E : r.left-E-w;
-    y = cy-26;
-  } else {
-    x = r.left;
-    y = cote==="dessus" ? r.top-E-h : r.bottom+E;
-  }
-  x=borne(x, M, Math.max(M, L-w-M)); y=borne(y, M, Math.max(M, H-h-M));
+  /* LE CÔTÉ QUI RECOUVRE LE MOINS CE QU'ON LIT (§4.8, retour de Jean) : posée sur
+     le premier côté où elle tenait, elle cachait justement la question rappelée,
+     la phrase, la voix, l'aide du Contexte. Chaque côté se mesure — recouvrir
+     l'ancre coûte tout, recouvrir un texte à lire coûte sa surface — et l'ordre
+     ne départage qu'à égalité. Un texte qui CONTIENT l'ancre, ou qu'elle
+     contient, n'est pas compté : c'est l'ancre qu'on protège alors. */
+  const aire=(a,b)=>Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))
+                   *Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top));
+  const aLire=[...document.querySelectorAll(TUTO_A_LIRE.join(","))]
+    .filter(el=>!el.contains(tutoCible) && !tutoCible.contains(el)).map(rectVisible);
+  const poser=cote=>{
+    let x, y;
+    if(cote==="droite" || cote==="gauche"){
+      // Sur le côté, elle DESCEND depuis la zone, la flèche en haut.
+      x = cote==="droite" ? r.right+E : r.left-E-w;
+      y = cy-26;
+    } else {
+      x = r.left;
+      y = cote==="dessus" ? r.top-E-h : r.bottom+E;
+    }
+    x=borne(x, M, Math.max(M, L-w-M)); y=borne(y, M, Math.max(M, H-h-M));
+    const b={left:x, top:y, right:x+w, bottom:y+h};
+    const cout=aire(b,r)*1000 + aLire.reduce((t,z)=>t+aire(b,z),0);
+    return {cote, x, y, cout};
+  };
+  const choix=["droite","dessous","dessus","gauche"].map(poser)
+    .reduce((m,c)=>c.cout<m.cout ? c : m);
+  const {cote, x, y}=choix;
   bulle.style.left=Math.round(x)+"px"; bulle.style.top=Math.round(y)+"px";
   bulle.setAttribute("data-cote", cote);
   bulle.style.setProperty("--fx", Math.round(borne(cx-x, 18, Math.max(18, w-18)))+"px");
@@ -438,7 +459,7 @@ function annoncerNouveautes(){
   if(vusFil<0){ vusFil=S.fil.length; dernierRefus=S.refus||null; tutoAnnonce=null; return; }
   for(const m of S.fil.slice(vusFil)) if(!m.ia){
     const n=(m.pieces||[]).length;
-    annoncer(`${m.qui} : ${texteBrut(m.texte)}${m.question ? " "+texteBrut(m.question) : ""}${n ? ` (${n} pièce${n>1?"s":""} jointe${n>1?"s":""})` : ""}`);
+    annoncer(`${m.qui} : ${texteBrut(m.texte)}${m.question ? " "+texteBrut(m.question) : ""}${n ? ` (${comptePieces(m.pieces)} jointe${n>1?"s":""})` : ""}`);
   }
   vusFil=S.fil.length;
   if(S.refus && S.refus!==dernierRefus) annoncer(S.refus);
@@ -473,10 +494,9 @@ function renderDiscussion(){
     // vers le Contexte, où chacune se nomme et se lit comme avant — et il vient
     // APRÈS la question que la remise porte : on lit, puis on va chercher.
     if(m.pieces.length){
-      const n=m.pieces.length, premier=m.pieces[0];
-      const mot=n>1?"pièces":"pièce", s=n>1?"s":"";
+      const premier=m.pieces[0], quoi=comptePieces(m.pieces), s=m.pieces.length>1?"s":"";
       h+=`<button type="button" class="attach" data-f="a:${premier}" onclick="voirPiecesRecues()"
-            aria-label="${n} ${mot} disponible${s} dans ton Contexte"><span aria-hidden="true">📎</span> ${n} ${mot} disponible${s} dans ton Contexte</button>`;
+            aria-label="${quoi} disponible${s} dans ton Contexte"><span aria-hidden="true">📎</span> ${quoi} disponible${s} dans ton Contexte</button>`;
     }
     h+=`</div></div></div>`;
   }
@@ -575,7 +595,7 @@ function pieceHTML(){
   /* Le titre et la croix ne défilent pas avec le texte ; la bande `#piece`, si.
      Le nom de la pièce est celui de l'index (§4.6 « une pièce porte un seul nom »). */
   return `<div class="bande piece ${R.estRegle(p)?"regle":""}" id="panPiece" role="region" aria-labelledby="pieceTitre">
-    <div class="ptete"><h3 id="pieceTitre" tabindex="-1">${escapeAttr(p.titre)}</h3><button class="fermer" data-f="replier" onclick="fermerPiece()" aria-label="Replier la pièce (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></div>
+    <div class="ptete"><h3 id="pieceTitre" tabindex="-1">${escapeAttr(p.titre)}</h3><button class="fermer" data-f="replier" onclick="fermerPiece()" aria-label="Replier la pièce (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><span class="quoi" aria-hidden="true">replier</span><kbd>Échap</kbd></button></div>
     <div class="defile" id="piece">${piecePanelHTML(pid)}</div></div>`;
 }
 function renderDossier(){
@@ -598,14 +618,21 @@ function renderDossier(){
      pièce n'y montrait plus que deux lignes. Les puces restent sous `hidden` —
      le motif « disclosure » —, et `#zoneDossier` reste l'ancre du tutoriel (R6). */
   const plie=indexPlie();
-  const compte=(n,mot)=>n+" "+mot+(n>1?"s":"");
-  const resume=compte(pieces.length,"pièce")+", "+compte(regles.length,"règle");
+  const resume=comptePieces(livres);
   return `<div class="zone ${plie?"plie":""}" id="zoneDossier">
     <button type="button" class="dplier" data-f="dossier" aria-expanded="${!plie}" aria-controls="dossierListe"
       onclick="basculerDossier()"><span class="dtitre">Le dossier</span><span class="dcompte">${resume}</span><span class="dsens">${
         plie?"▾ déplier":"▴ replier"}</span></button>
     <div class="dossier" id="dossierListe" ${plie?"hidden":""}>${
       colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div></div>`;
+}
+/* LE COMPTE SE DIT AVEC LES MOTS DE L'INDEX (§4.6) : « 3 pièces » au message,
+   « 2 pièces, 1 règle » au dossier, se contredisaient (Jean). Un seul compte,
+   pour le bouton du message, son annonce et la ligne du dossier. */
+function comptePieces(pids){
+  const nR=pids.filter(pid=>R.estRegle(JEU.pieces[pid])).length, nP=pids.length-nR;
+  const dire=(n,mot)=>n+" "+mot+(n>1?"s":"");
+  return [nP && dire(nP,"pièce"), nR && dire(nR,"règle")].filter(Boolean).join(" et ");
 }
 /* Deux états d'ÉCRAN, comme `panneau` : jamais sauvés. `dossierPlie` est le
    choix du joueur sans pièce ouverte ; `dossierDeplie`, celui qu'il fait le
@@ -724,7 +751,7 @@ function souffle(){
   if(offerts.some(b=>b.type==="terme"&&b.source!=="note"))
     return "Prends un second passage pour le mettre en relation.";
   return offerts.length
-    ? "Sur quel article t'appuies-tu pour montrer qu'il y a une irrégularité ?"
+    ? "Sur quel article t'appuies-tu ?"
     // §4.5 — un texte s'invoque une fois LU : la voix dit où aller le lire,
     // sans quoi le joueur bloque sans savoir pourquoi.
     : "Aucun texte que tu as lu ne fonde ça. Les articles sont dans ton dossier — ouvre-les.";
@@ -950,6 +977,14 @@ function finir(){
 let panneau = null, panneauSuit = false;
 function majLateral(){
   { const p=$("panContexte");   if(p) p.hidden = panneau!=="contexte"; }
+  /* §4.10 règle 6 — ÉCHAP SE LIT LÀ OÙ IL AGIT MAINTENANT : pièce ouverte, il la
+     replie, et la croix du Contexte cesse de l'annoncer — deux « × Échap »
+     empilés ne disaient pas lequel fermait quoi (Jean). */
+  { const b=$("fermerContexte"), k=b && b.querySelector("kbd"), piece=!!S.modalPiece;
+    if(b){ k.hidden=piece;
+           b.setAttribute("aria-label", piece ? "Fermer le Contexte" : "Fermer le Contexte (Échap)");
+           b.toggleAttribute("aria-keyshortcuts", !piece);
+           if(!piece) b.setAttribute("aria-keyshortcuts","Escape"); } }
   { const p=$("panPlaidoirie"); if(p) p.hidden = panneau!=="plaidoirie"; }
   // La conversation, seule bande élastique, cède d'elle-même la place (§4.6) ;
   // la classe ne décide que jusqu'où elle peut céder, et c'est du CSS (§9).

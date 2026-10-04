@@ -39,13 +39,13 @@
   <!-- Les croix ont un NOM, et Échap s'y lit (§4.10) : `title` n'était qu'une
        description, le lecteur d'écran annonçait « × ». -->
   <section class="col panneau" id="panContexte" hidden aria-labelledby="titreContexte">
-    <h2><span id="titreContexte" tabindex="-1">Contexte</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer le Contexte (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
+    <h2><span id="titreContexte" tabindex="-1">Contexte</span><button class="fermer" id="fermerContexte" onclick="fermerPanneau()" aria-label="Fermer le Contexte (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><span class="quoi" aria-hidden="true">fermer</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="contexte"></div>
   </section>
   <section class="col panneau" id="panPlaidoirie" hidden aria-labelledby="titrePlaidoirie">
     <!-- Pas de compte ici : la barre du composeur le porte, et il reste
          visible panneau ouvert ou fermé (§4.9 règle 3). -->
-    <h2><span id="titrePlaidoirie">Plaidoirie</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer la Plaidoirie (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
+    <h2><span id="titrePlaidoirie">Plaidoirie</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer la Plaidoirie (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><span class="quoi" aria-hidden="true">fermer</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="plaidoirie"></div>
   </section>
   <!-- LA PIÈCE OUVERTE n'a plus de section à elle : elle s'ouvre DANS le

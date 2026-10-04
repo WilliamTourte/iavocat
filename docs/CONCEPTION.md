@@ -126,7 +126,9 @@ attribue, jamais le contenu.
 
 **Le marquage ne se montre qu'au survol ou au clic** — demande de l'auteur. Soulignée d'office, une
 pièce se lisait comme un formulaire déjà rempli : ses passages s'offraient avant d'être cherchés.
-Désormais le texte se lit **nu** ; un passage se souligne et prend son fond **quand on passe dessus**,
+Désormais le texte se lit **nu** ; un passage se souligne et prend son fond **quand on passe dessus** —
+**franchement** : fond soutenu, trait épais, bordure à la couleur de sa dimension ; un survol timide ne
+distinguait pas le passage visé (Jean) —,
 et **quand on l'atteint au clavier** (§4.10 règle 1 — le focus vaut le survol) ; **retenu**, il garde
 sa marque pour de bon — fond, trait, ✓. Au toucher, qui n'a pas de survol, c'est **le clic** qui le
 montre : il le retient, donc le marque. Fouiller y gagne un sens (§8.6 : *le joueur a le droit d'être
@@ -231,7 +233,8 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   règle 3 ne mord alors plus que par surcroît). Trois portes y mènent, et ce sont trois registres : **la
   voix du composeur enseigne** — elle dit le geste et ouvre le Contexte —, **la barre nomme** les deux
   panneaux, donne leur compte et y donne accès à tout moment, et **la Discussion renvoie** — un message
-  qui remet des pièces ne porte plus qu'un bouton unique vers le Contexte, où chacune s'ouvre à son
+  qui remet des pièces ne porte plus qu'un bouton unique vers le Contexte — qui compte **avec les mots
+  de l'index**, *« 2 pièces et 1 règle »* : *« 3 pièces »* contredisait l'index (Jean) —, où chacune s'ouvre à son
   tour, comme un panneau ouvert par la barre : on la consulte, on ne la referme pas pour elle. Les
   portes **tranchent sur le fond** : ce sont des outils, pas des étiquettes.
 - **La remise et sa première question ne font qu'UN message, les pièces APRÈS la question** —
@@ -257,9 +260,12 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
     dix-sept fiches, ce sont les retenus qui défilent. **Au-dessus du seuil, le Contexte prend les DEUX
     TIERS de la largeur**, pièce ouverte ou non — demande de l'auteur : index, pièce et retenus se
     lisaient à l'étroit dans une colonne d'un tiers. La conversation garde le tiers restant, et la
-    question avec elle ; la Plaidoirie, qui ne porte qu'une liste, garde sa colonne étroite. **En
-    dessous**, si le panneau est trop bas pour les deux bandes, il redéfile d'un bloc plutôt que de
-    rogner.
+    question avec elle ; la Plaidoirie, qui ne porte qu'une liste, garde sa colonne étroite. **La page
+    s'élargit pour le Contexte** (1200 px au lieu de 1000) et **le fil garde un plancher** (360 px) :
+    aux deux tiers d'une page de 1000 px, il tombait à cinq ou six mots par ligne (Jean). **Contexte
+    ouvert, le composeur plafonne plus bas** et défile pour son compte : sa rangée mangeait celle du
+    Contexte, et la pièce se coupait à mesure que la phrase s'allongeait (Jean). **En dessous**, si
+    le panneau est trop bas pour les deux bandes, il redéfile d'un bloc plutôt que de rogner.
   - **L'index se REPLIE en une ligne** — *le dossier, son compte* — et il laisse ainsi la place au
     reste. Retour de playtest (Jean), puis de l'auteur : déplié, à huit pièces et une puce par
     ligne, il prenait la moitié du panneau ; la pièce n'y montrait plus que deux lignes, et sur un
@@ -363,6 +369,8 @@ calibration (§3) — et il a donc le droit de dire que deux horaires ne tiennen
 vérifie. Le bandeau, lui, n'est personne : il ne peut nommer que le **geste** — *une réponse peut
 tenir sur deux passages* — et jamais la **trouvaille** — *les deux passages qui se contredisent*.
 Un joueur a trouvé l'incohérence seul, puis lu dans le bandeau ce qu'il venait de comprendre.
+**La voix du composeur est du chrome, elle aussi** : *« Sur quel article t'appuies-tu ? »*, jamais
+*« … pour montrer qu'il y a une irrégularité »*, qui affirmait la trouvaille.
 **Et l'avocat ne la dit qu'APRÈS** : vérifier, c'est commenter ce que le joueur a composé, jamais le
 lui dicter. Sa réplique à la deuxième question énonçait la contradiction avant que la troisième ne
 demande de la composer — elle annonçait au lieu de vérifier, relevé par deux playtests (le second,
@@ -380,13 +388,21 @@ plus, c'est l'avocat** : lui est quelqu'un.
 
 | Le geste | | Ce qu'on apprend | Ce que le halo entoure |
 |---|---|---|---|
-| **citer** | 1/4 | ce qu'on reçoit se retrouve dans le Contexte | le bouton de pièces, dans la Discussion — puis l'index, une fois le Contexte ouvert |
-| | 2/4 | un passage se retient | **le texte de la pièce**, en entier — ouverte dans le Contexte, plus rien à refermer (§4.6) |
-| | 3/4 | ce qu'on retient est le clavier | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
-| | 4/4 | rien ne part tant qu'on n'envoie pas | *« → Envoyer »*, dès que la phrase se tient |
-| **mettre en relation** | 1/3 | une réponse peut tenir sur **deux** passages | **toute la zone des retenus**, au premier passage comme au second |
-| | 2/3 | une relation seule ne suffit pas : il lui faut un article qui la fonde | **la zone des propositions**, dans le composeur |
-| | 3/3 | le même envoi qu'au premier geste | *« → Envoyer »* |
+| **citer** | 1/5 | ce qu'on reçoit se retrouve dans le Contexte | le bouton de pièces, dans la Discussion |
+| | 2/5 | une pièce s'ouvre depuis l'index | l'index, une fois le Contexte ouvert |
+| | 3/5 | un passage se retient | **le texte de la pièce**, en entier — ouverte dans le Contexte, plus rien à refermer (§4.6) |
+| | 4/5 | ce qu'on retient est le clavier | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
+| | 5/5 | rien ne part tant qu'on n'envoie pas | *« → Envoyer »*, dès que la phrase se tient |
+| **mettre en relation** | 1/5 | une réponse peut tenir sur **deux** passages | **toute la zone des retenus**, au premier passage |
+| | 2/5 | le second passage se compare au premier | la même zone, au second |
+| | 3/5 | un article se lit avant de s'invoquer | l'index, tant que l'article n'est pas lu |
+| | 4/5 | une relation seule ne suffit pas : il lui faut un article qui la fonde | **la zone des propositions**, dans le composeur |
+| | 5/5 | le même envoi qu'au premier geste | *« → Envoyer »* |
+
+**Un rang par consigne** — retour de playtest (Jean) : *citer · 1/4* couvrait le bouton de pièces puis
+l'index, et le compteur restait immobile d'une consigne à l'autre. Désormais chaque consigne a le sien.
+Un temps déjà acquis — l'article déjà lu — **saute** son rang : mieux un saut qu'un compteur figé. La
+porte (*« Ouvre ton Contexte »*), quand le panneau est fermé, prend le rang du geste qu'elle ouvre.
 
 **Deux séries, chacune son total, et c'est le geste qui les nomme.** Une numérotation unique
 revenait de *6/6* à *4/6* au moment d'envoyer, parce que les deux gestes partagent le bouton :
@@ -405,9 +421,10 @@ flux, en tête de page, le bandeau poussait tout le jeu à chaque fois qu'il se 
 soixantaine de pixels après *« tout effacer »*), et sur un téléphone il mangeait le tiers de
 l'écran. C'est désormais une **boîte de dialogue non bloquante**, en surimpression : elle ne décale
 rien en paraissant ni en disparaissant, et le jeu reste cliquable autour. **Elle s'ancre au halo**,
-une flèche vers la zone, sur le premier côté où elle tient — **à droite, puis au-dessous, au-dessus, à
-gauche** : ce qui précède la zone est ce qu'on vient de lire, la question d'abord (§4.6), et la bulle
-va vers ce qui suit. Elle suit la zone quand l'écran défile ou change de taille. Ce que le flux garantissait
+une flèche vers la zone, **sur le côté où elle recouvre le moins ce qu'on lit** — la question
+rappelée, la phrase en cours, la voix du composeur, l'aide du Contexte, le dernier message : posée sur
+le premier côté où elle tenait, elle cachait justement ces textes-là (Jean). À recouvrement égal :
+**à droite, puis au-dessous, au-dessus, à gauche**. Elle suit la zone quand l'écran défile ou change de taille. Ce que le flux garantissait
 en réservant sa place, l'ancrage le garantit en la choisissant : **la bulle ne recouvre jamais sa
 propre ancre**. Réduite, elle n'est plus que le *« ? »* collé à la zone. Ses consignes
 s'**annoncent** aussi, à qui ne voit pas le halo (§4.10).
@@ -508,7 +525,9 @@ souris.* Ce ne sont pas des options — c'est l'écran, pour tout le monde.
    état s'écrit (✓, « retenu ») ou se colore franchement. Une pièce déjà lue porte un ✓, elle n'est pas
    grisée comme un bouton désactivé.
 6. **Aucune confirmation ne se retire d'elle-même** : elle attend qu'on réponde. Et **Échap se lit à
-   l'écran**, là où il agit — sur la croix de la pièce et sur celle des panneaux.
+   l'écran, là où il agit MAINTENANT** — pièce ouverte, sur la seule croix de la pièce ; sinon, sur
+   celle du panneau. Deux *« × Échap »* empilés ne disaient pas lequel fermait quoi (Jean) ; chaque
+   croix dit aussi ce qu'elle fait — *replier* la pièce, *fermer* le panneau.
 
 ## 5. Les directives (le manuel de soi)
 
