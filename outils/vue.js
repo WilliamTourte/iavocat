@@ -186,6 +186,14 @@ async function main() {
      revient à « Envoyer », consigne déjà lue : elle reste réduite au « ? ». */
   await p2.click(`#contexte [data-f="c:${veut1280}"]`);
   console.log("  " + await capturer2("tuto-reduit"));
+  /* L'ENVOI NE REFERME PLUS RIEN AU-DESSUS DU SEUIL (§4.6) : la réplique et la
+     question suivante se lisent à gauche, le Contexte reste, pièce comprise, et
+     l'index se déplie pour la question neuve. On le DIT, on ne l'asserte pas. */
+  await p2.click(`#composeur [data-f="envoi"]`);
+  console.log("  " + await capturer2("envoye"));
+  const reste = await p2.evaluate(`({ contexte: !document.getElementById("panContexte").hidden,
+    piece: !!S.modalPiece, index: !document.getElementById("dossierListe").hidden })`);
+  console.log(`      après l'envoi : Contexte ${reste.contexte ? "ouvert" : "FERMÉ"}, pièce ${reste.piece ? "ouverte" : "FERMÉE"}, index ${reste.index ? "déplié" : "REPLIÉ"}`);
 
   /* ---- EN DESSOUS DU SEUIL : 390×800 (§4.6) ---- aucune des deux largeurs
      ci-dessus ne descend sous 900px ; sans ce troisième contexte, le repli

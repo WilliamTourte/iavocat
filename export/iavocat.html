@@ -2624,7 +2624,7 @@ function fermerPiece(){
    la réplique `declenche` (`R.fermerPiece`) tombe ainsi dans le fil AVANT qu'il
    soit dessiné, au moment où l'on relève les yeux (§4.10 règle 3). */
 function suivrePhrase(){
-  if(panneau==="contexte" && panneauSuit && R.indexTermeChamp(S) < 0){ panneau=null; panneauSuit=false; }
+  if(panneau==="contexte" && panneauSuit && !auDessusDuSeuil() && R.indexTermeChamp(S) < 0){ panneau=null; panneauSuit=false; }
   if(S.modalPiece && panneau!=="contexte") R.fermerPiece(S);
 }
 function pieceHTML(){
@@ -2836,7 +2836,22 @@ function viderCompo(){ R.viderCompo(S); rendreTout(); }
 /* La phrase PARTIE, on revient lire l'avocat : le panneau se referme, quelle que
    soit la porte par laquelle il a été ouvert. Effacer sa phrase, non — on n'en a
    pas fini avec le Contexte pour autant. */
-function envoyerCompo(){ R.envoyerCompo(S); panneau=null; panneauSuit=false; rendreTout(); }
+/* §4.6 — À L'ENVOI, LE PANNEAU NE SE REFERME QUE SOUS LE SEUIL, ET SEULEMENT SI LA
+   RÉPONSE A SERVI (retour de Jean : tout se refermait, erreur comprise, et
+   retenter coûtait quatre gestes). Au-dessus, il est à côté de la conversation
+   et ne cache rien : il reste, pièce comprise. « Servi » se lit à ce que
+   l'avocat attend : la question a changé. Et chaque question neuve déplie
+   l'index — c'est le moment où l'on choisit où chercher. */
+const cleAttente = () => { const a=R.attenteCourante(S,R.remiseCourante(S));
+  return S.remisesEnvoyees+":"+(a ? a.attend : ""); };
+function envoyerCompo(){
+  const avant=cleAttente();
+  R.envoyerCompo(S);
+  const servi = cleAttente()!==avant;
+  if(servi){ dossierPlie=false; dossierDeplie=true; }
+  if(servi && !auDessusDuSeuil()){ panneau=null; panneauSuit=false; }
+  rendreTout();
+}
 function rappelQuestion(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
   if(!a || !a.question) return "";
@@ -3017,6 +3032,12 @@ function finir(){
    LA PIÈCE N'EST PAS UN OCCUPANT : elle s'ouvre DANS le Contexte (`renderContexte`),
    et `suivrePhrase` la replie dès que le Contexte quitte l'écran. */
 let panneau = null, panneauSuit = false;
+/* LE SEUIL DE LA PLACE LATÉRALE (§4.6) — LA MÊME `@media` que `jeu.css` : au-dessus,
+   le panneau est une colonne à côté de la conversation, et ne se referme plus de
+   lui-même. PIÈGE : changer l'un sans l'autre ferait suivre la phrase à une
+   colonne qui ne cache rien. jsdom n'a pas `matchMedia` : le harnais le
+   bouchonne à faux, et les suites jouent SOUS le seuil. */
+const auDessusDuSeuil = () => !!(window.matchMedia && matchMedia("(min-width:900px)").matches);
 function majLateral(){
   { const p=$("panContexte");   if(p) p.hidden = panneau!=="contexte"; }
   /* §4.10 règle 6 — ÉCHAP SE LIT LÀ OÙ IL AGIT MAINTENANT : pièce ouverte, il la

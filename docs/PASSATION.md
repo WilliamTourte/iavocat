@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 4 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 485 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 493 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -245,7 +245,11 @@ irrégularité (§4.8). **Enfin, citer se fait d'un clic, depuis la pièce** (§
 le retient et, si la phrase est vide ou ne tient qu'un passage seul, en fait la réponse — il remplace
 ce passage seul, sans quoi le piège de la première question composerait une relation sous les doigts
 de qui se reprend. Une citation passe de cinq gestes à quatre ; le second passage d'une relation se
-prend dans le Contexte, qui devient l'endroit où l'on combine.
+prend dans le Contexte, qui devient l'endroit où l'on combine. **Et l'envoi ne referme plus tout**
+(§4.6) : au-dessus du seuil, le Contexte et la pièce restent après n'importe quel envoi, et ne suivent
+plus la phrase ; en dessous, ils restent après une réponse à côté et se referment après celle qui
+sert. Chaque question neuve déplie l'index. Se reprendre coûte deux gestes, la question suivante
+deux ou trois — quatre à cinq auparavant.
 
 ## 2. Points de vigilance
 
@@ -329,6 +333,10 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Un contrôle clavier désigne son élément par sa clé, jamais par `activeElement`** : cliquer
   `actif()` faisait tomber la suite au premier focus perdu, et masquait les contrôles d'après. Les
   31 contrôles clavier ont chacun été **cassés une fois** pour les voir tomber.
+- **EN DESSOUS DU SEUIL seulement, le panneau se referme de lui-même** (§4.6) — au-dessus, ni la
+  phrase ni l'envoi ne le ferment, et `auDessusDuSeuil` lit la même `@media` que la feuille de style
+  (900 px) : les changer l'un sans l'autre ferait suivre la phrase à une colonne qui ne cache rien. Le
+  harnais bouchonne `matchMedia` à faux — les suites jouent **sous** le seuil, sauf qui le rebouchonne.
 - **Le panneau ouvert se referme sur ce que la phrase ACCEPTE, jamais sur ce que la voix RÉCLAME** :
   un passage posé, la voix se tait — la phrase se tient — mais la grammaire ne sait pas encore si c'est
   une citation ou le premier temps d'une comparaison (§4.5). Suivre la voix retirerait le clavier au
@@ -710,5 +718,6 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
 - **4 octobre, septième passe : le second rapport de Jean** — bulle au moindre recouvrement
   (`TUTO_A_LIRE`), page à 1200 px et fil à 360 px minimum Contexte ouvert, composeur plafonné, survol
   franc ; `comptePieces`, un rang par consigne, Échap sur la seule croix active (`#fermerContexte`),
-  voix sans « irrégularité » ; puis **citer d'un clic** (`citerDepuisPiece`, `H.citer`). 485 contrôles,
+  voix sans « irrégularité » ; puis **citer d'un clic** (`citerDepuisPiece`, `H.citer`) ; puis **l'envoi
+  qui ne referme plus tout** (`auDessusDuSeuil`, `cleAttente` dans `envoyerCompo`). 493 contrôles,
   8 règles du gardien, ESLint.

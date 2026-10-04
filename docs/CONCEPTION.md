@@ -284,7 +284,9 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
     téléphone plus rien. **Une bascule le replie ou le déplie à tout moment.** Une pièce ouverte le
     replie d'elle-même ; on le déplie pour en choisir une autre, qui le replie à son tour ; la pièce
     repliée, il revient à ce que le joueur avait choisi. **Le bouton de pièces du message le
-    déplie** : on vient voir ce qu'on a reçu. **Replier n'est pas juger** (§4.6) : ce sont des
+    déplie** : on vient voir ce qu'on a reçu. **Chaque question neuve le déplie aussi** — c'est le
+    moment où l'on choisit dans quelle pièce chercher, et la pièce restée ouverte ne doit pas
+    cacher les autres. **Replier n'est pas juger** (§4.6) : ce sont des
     pièces, pas des passages, et rien n'en est retiré. Il ne colle pas (le PIÈGE ci-dessus), et
     reste l'ancre du tutoriel, replié ou non.
   - **Une seule pièce à la fois** : un autre chip de l'index la remplace ; la croix de la pièce la
@@ -317,10 +319,18 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   corps de lecture et non d'affiche (demande de l'auteur : à 17 px, une pièce ne tenait pas dans son
   cadre) —, la machine celle de l'**écran**. Ce qu'on lit vient du monde, ce qu'on écrit sort de l'IA ; la chasse
   fixe de ses messages dans la Discussion est le même contraste, pris dans l'autre sens.
-- **Un panneau ne s'ouvre jamais tout seul**, et deux fermetures coexistent, selon la porte par
-  laquelle il est venu. **Ouvert pour ÉCRIRE** (par la voix), il suit la phrase : il se referme dès
-  qu'elle ne peut plus recevoir de passage, et à son départ. **Ouvert pour CONSULTER** (par la barre),
-  il reste jusqu'à ce qu'on le ferme — regarder n'est pas écrire. La nuance de la première n'est pas un
+- **Un panneau ne s'ouvre jamais tout seul — et au-dessus du seuil, il ne se referme plus tout seul
+  non plus.** Retour de playtest (Jean) : tout se refermait à chaque envoi, erreur comprise, et
+  retenter coûtait de rouvrir le Contexte, puis la pièce. *« La phrase partie, on revient lire
+  l'avocat »* datait de la mise en page empilée, où le panneau prenait sa hauteur à la conversation ;
+  posé **à côté** d'elle, il ne cache rien. **Au-dessus du seuil**, le Contexte et la pièce ouverte
+  restent donc après un envoi, quel qu'il soit, et ne suivent plus la phrase : seul le joueur les
+  ferme. Retenter coûte deux gestes (le passage, *« → Envoyer »*) au lieu de quatre. **En dessous**,
+  deux fermetures coexistent encore, selon la porte par laquelle il est venu. **Ouvert pour ÉCRIRE**
+  (par la voix), il suit la phrase : il se referme dès qu'elle ne peut plus recevoir de passage.
+  **Ouvert pour CONSULTER** (par la barre), il reste jusqu'à ce qu'on le ferme — regarder n'est pas
+  écrire. Et **à l'envoi**, il ne se referme que si la réponse a **servi** : la réplique et la question
+  qui suit réclament la hauteur ; une réponse à côté le laisse ouvert, pour se reprendre. La nuance de la première n'est pas un
   détail : un passage posé, la voix se tait parce que la phrase se tient, mais **la grammaire ne sait
   pas encore** si le joueur cite ou entame une comparaison (§4.5). Refermer là retirerait le clavier au
   milieu du geste le plus difficile du jeu.

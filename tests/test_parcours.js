@@ -552,6 +552,59 @@ console.log("\n=== Citer d'un clic, depuis la pièce ===");
     JSON.stringify(w2.S.compo) === relation && w2.S.retenus.includes(autre));
 }
 
+/* §4.6 — APRÈS UN ENVOI, LE PANNEAU RESTE (second rapport de Jean : tout se
+   refermait, erreur comprise). Au-dessus du seuil, toujours ; en dessous,
+   tant que la réponse n'a pas servi. Le seuil se lit par `matchMedia`, que le
+   harnais bouchonne à faux : on le rebouchonne pour jouer AU-DESSUS. */
+console.log("\n=== Après un envoi, le Contexte reste ===");
+{
+  const auDessus = w => { w.matchMedia = q => ({ matches:/min-width/.test(q), media:q,
+    addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} }); };
+  const ouvert = w => !w.document.getElementById("panContexte").hidden;
+  const prep = w => {
+    const a1 = w.R.attentesDe(w.R.remiseCourante(w.S))[0];
+    const veut = H.lienTag(w, a1.attend).termes[0], [pid] = H.deK(veut);
+    const dim = k => w.CHAMPS.find(c => c.id === k).dim;
+    const piege = H.empansDe(w, pid).find(k => k !== veut && dim(k) === dim(veut));
+    w.voirPiecesRecues(); w.ouvrirPiece(pid);
+    return { veut, piege, pid };
+  };
+
+  const w = boot();                                    // SOUS le seuil
+  const { veut, piege } = prep(w);
+  H.citer(w, piege); w.envoyerCompo();
+  check("sous le seuil, une réponse à côté laisse le Contexte ouvert, pièce comprise",
+    ouvert(w) && !!w.S.modalPiece);
+  H.citer(w, veut); w.envoyerCompo();
+  check("et se reprendre coûte deux gestes : le passage, puis Envoyer", w.S.satisfaits.length === 1);
+  check("la réponse qui sert le referme : la réplique et la question veulent la hauteur", !ouvert(w));
+
+  const w2 = boot(); auDessus(w2);                     // AU-DESSUS du seuil
+  const p2 = prep(w2);
+  H.citer(w2, p2.piege); w2.envoyerCompo();
+  check("au-dessus du seuil, une réponse à côté laisse tout ouvert", ouvert(w2) && w2.S.modalPiece === p2.pid);
+  H.citer(w2, p2.veut); w2.envoyerCompo();
+  check("une réponse qui sert aussi : le Contexte est à côté du fil, il ne cache rien",
+    ouvert(w2) && w2.S.modalPiece === p2.pid);
+  const liste = w2.document.getElementById("dossierListe");
+  check("et la question neuve déplie l'index, pièce ouverte : on choisit où chercher",
+    !!liste && !liste.hidden);
+
+  /* Ouvert POUR ÉCRIRE, par la voix : sous le seuil, il suit la phrase ; au-dessus, non. */
+  const suit = dessus => {
+    const w3 = boot(); if (dessus) auDessus(w3);
+    H.livrerTout(w3);
+    const [tA, tB] = H.sousTerme(w3.JEU.liens.find(x => x.vice && x.conclusion)).termes;
+    H.surligner(w3, tA); H.surligner(w3, tB);
+    w3.ouvrirContexte();
+    w3.poserBloc(H.iTermeChamp(w3), w3.S.retenus.indexOf(tA));
+    w3.poserBloc(H.iTermeChamp(w3), w3.S.retenus.indexOf(tB));
+    return ouvert(w3);
+  };
+  check("ouvert par la voix, sous le seuil, il se referme quand la phrase ne reçoit plus de passage", !suit(false));
+  check("au-dessus, il ne suit plus la phrase : deux passages posés, il reste", suit(true));
+}
+
 /* LES PETITES INCOHÉRENCES DU SECOND RAPPORT DE JEAN — trois choses que l'écran
    disait de deux façons. Lu sur le DOM, jamais recopié du code. */
 console.log("\n=== Une chose, une façon de la dire ===");

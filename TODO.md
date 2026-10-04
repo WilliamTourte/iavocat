@@ -66,11 +66,10 @@ fil à 360 px minimum Contexte ouvert, composeur plafonné à 26 vh, survol fran
 
 ### Trop de clics
 
-- [ ] **⚖ Garder le Contexte (et la dernière pièce) ouverts après un envoi.** Tout se referme à chaque
-      envoi, erreur comprise, et on refait le trajet. La règle *« la phrase partie, on revient lire
-      l'avocat »* (§4.6) date de la mise en page empilée ; **au-dessus du seuil, le Contexte ne cache
-      plus la conversation**. Proposition : au-dessus du seuil, ne plus refermer ; en dessous, ne
-      refermer que si l'envoi a servi une attente.
+- [x] **Garder le Contexte (et la dernière pièce) ouverts après un envoi** — arbitré par l'auteur
+      (§4.6) : au-dessus du seuil, ni l'envoi ni la phrase ne les referment ; en dessous, ils restent
+      après une réponse à côté et se referment après celle qui sert. Chaque question neuve déplie
+      l'index. Se reprendre : deux gestes au lieu de quatre ; question suivante : deux ou trois.
 - [x] **Citer directement depuis la pièce** — arbitré par l'auteur (§4.6) : un clic sur un passage le
       retient et, si la phrase est vide ou ne tient qu'un passage seul, en fait la réponse — il
       **remplace** ce passage seul (le piège de la première question composerait sinon une relation).
@@ -122,7 +121,7 @@ fil à 360 px minimum Contexte ouvert, composeur plafonné à 26 vh, survol fran
 ### Ordre proposé
 
 1. ~~Nos régressions et les petites incohérences~~ — faites.
-2. Le Contexte qui reste ouvert après un envoi, au-dessus du seuil.
+2. ~~Le Contexte qui reste ouvert après un envoi~~ — fait, avec la citation d'un clic.
 3. **Faire jouer la session 2 par un joueur neuf** — avant de toucher à la grammaire.
 4. Les ⚖ de la déduction et du coût, document d'abord.
 
