@@ -174,6 +174,19 @@ async function main() {
   })()`);
   console.log(`      → Envoyer ${pli.envoi !== null && pli.envoi <= pli.fenetre ? "au-dessus du" : "SOUS LE"} pli`
             + ` (bas ${pli.envoi}px, fenêtre ${pli.fenetre}px, page ${pli.page}px)`);
+  /* LA BULLE DU TUTORIEL EST EN SURIMPRESSION (§4.8) : « tout effacer » la
+     redéploie, et rien ne doit bouger autour — c'était une soixantaine de
+     pixels quand elle vivait dans le flux (retour de playtest, Jean). On le
+     DIT en mesurant la conversation avant et après, on ne l'asserte pas. */
+  const hautFil = () => p2.evaluate(`Math.round(document.getElementById("discussion").getBoundingClientRect().top)`);
+  const avant = await hautFil();
+  await p2.click(`#composeur [data-f="effacer"]`);
+  console.log("  " + await capturer2("tout-efface"));
+  const apres = await hautFil();
+  console.log(`      la bulle redéployée ${avant === apres ? "ne décale rien" : `DÉCALE la conversation de ${apres - avant}px`}`);
+  /* Le rendu suivant sans consigne neuve la réduit au « ? » collé à la zone. */
+  await p2.evaluate("rendreTout()");
+  console.log("  " + await capturer2("tuto-reduit"));
 
   /* ---- EN DESSOUS DU SEUIL : 390×800 (§4.6) ---- aucune des deux largeurs
      ci-dessus ne descend sous 900px ; sans ce troisième contexte, le repli

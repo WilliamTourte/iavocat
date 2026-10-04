@@ -369,6 +369,39 @@ console.log("\n=== Les deux gestes, montrés ===");
     bandeau().hidden && !halo());
   check("et il ne reviendra pas", !!w.localStorage.getItem("iavocat_tuto"));
 }
+/* §3 — LA REMISE DU TUTORIEL SE SERT DANS L'ORDRE (retour de playtest, Jean).
+   La réponse à la deuxième question, envoyée à la première, la servait par
+   anticipation : sa réplique tombait, la phrase entrait en Plaidoirie, la
+   deuxième question n'était jamais posée — et le tutoriel, tenant la citation
+   pour acquise, se taisait au milieu du geste. */
+console.log("\n=== La remise du tutoriel se sert dans l'ordre ===");
+{
+  const w = H.boot({url:"http://localhost/"});
+  const bandeau = () => w.document.getElementById("tuto");
+  const dernier = () => w.S.fil[w.S.fil.length - 1].texte;
+  const courante = () => w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
+  const [a1, a2] = w.R.attentesDe(w.R.remiseCourante(w.S));
+  const L1 = H.lienTag(w, a1.attend), L2 = H.lienTag(w, a2.attend);
+  check("la remise 1 attend au moins deux citations", !!L1 && !!L2 && typeof L2.termes[0] === "string");
+
+  const i = H.composerLien(w, L2);
+  check("la réponse à la question suivante, envoyée trop tôt, part bien", i >= 0);
+  check("mais elle ne sert pas une question qui n'est pas posée", !w.S.satisfaits.includes(a2.attend));
+  check("l'avocat répond à côté — pas avec la réplique de la question à venir",
+    dernier() !== L2.rep && w.JEU.avocat.rep_hors_sujet.includes(dernier()));
+  check("rien n'entre en Plaidoirie", w.moyensRetenus().length === 0);
+  check("la question courante reste la première", courante().attend === a1.attend);
+  check("et le tutoriel ne tient pas la citation pour acquise : il reste là", !bandeau().hidden);
+
+  H.composerLien(w, L1);
+  check("la bonne réponse sert la première question", w.S.satisfaits.includes(a1.attend));
+  check("et la deuxième est posée, cette fois", courante().attend === a2.attend && dernier() === a2.question);
+  const j = H.composerLien(w, L2);
+  check("la phrase envoyée trop tôt repart quand sa question vient",
+    j === i && w.S.satisfaits.includes(a2.attend));
+  check("et elle n'entre qu'une fois en Plaidoirie",
+    w.moyensRetenus().filter(x => x.b === i).length === 1);
+}
 {
   const avec = H.boot({url:"http://localhost/"});
   const sans = H.boot({graine:{iavocat_tuto:"1"}});

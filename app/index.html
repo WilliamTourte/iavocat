@@ -8,14 +8,12 @@
 </head>
 <body>
 
-<!-- LE TUTORIEL (§4.8) — PIÈGE : PREMIER enfant de <body>, avant `.wrap`.
-     Collant dans le flux, il RÉSERVE sa place et pousse le jeu vers le bas :
-     c'est ce qui l'empêche de recouvrir ses propres ancres. Son z-index le
-     garde lisible par-dessus l'`.overlay` de l'écran de fin, et c'est sa
-     position AVANT `#modalRoot` qui fait mordre le sélecteur décalant la
-     modale. Le renvoyer en fin de page ne casse aucune suite : il recouvre
-     à nouveau, en silence. -->
-<div id="tuto" hidden>
+<!-- LE TUTORIEL (§4.8) — une BULLE, boîte de dialogue NON bloquante : en
+     surimpression, elle ne décale rien, et `placerTuto` l'ancre à côté du halo
+     — c'est ce placement, plus le flux, qui l'empêche de recouvrir ses propres
+     ancres. Premier enfant de <body>, hors de `.wrap` : premier arrêt de
+     tabulation, et vivante si `finir` rend `.wrap` inerte. -->
+<div id="tuto" role="dialog" aria-label="Tutoriel" hidden>
   <div id="tutoCorps">
     <span class="pas" id="tutoPas"></span>
     <span class="dit" id="tutoDit"></span>

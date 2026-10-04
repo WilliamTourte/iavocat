@@ -263,6 +263,72 @@ function majTutoriel(){
   if(icone) icone.hidden=!tutoReduit;
   banniere.hidden=false;
 }
+/* §4.8 — LA BULLE S'ANCRE AU HALO, en surimpression : elle ne décale rien, et
+   c'est son PLACEMENT, plus le flux, qui la garde hors de sa propre ancre. Le
+   premier côté où elle tient — à droite, au-dessus, au-dessous, à gauche ;
+   aucun ne suffit, le plus haut des deux espaces verticaux, bornée à la
+   fenêtre. PIÈGE : on mesure le rectangle VISIBLE de la cible, coupé par chaque
+   ancêtre qui défile — une zone à moitié défilée n'est pas là où son
+   `getBoundingClientRect` la met, et la bulle s'ancrerait dans le vide. Aucune
+   suite ne voit cette géométrie (jsdom rend des rectangles nuls) : `npm run
+   vue` seul la montre. */
+const TUTO_ECART=12, TUTO_MARGE=16;
+function rectVisible(el){
+  const r=el.getBoundingClientRect();
+  let h=r.top, b=r.bottom, g=r.left, d=r.right;
+  for(let p=el.parentElement; p && p!==document.body; p=p.parentElement){
+    const o=getComputedStyle(p);
+    if(!/(auto|scroll|hidden|clip)/.test(o.overflowX+" "+o.overflowY)) continue;
+    const q=p.getBoundingClientRect();
+    h=Math.max(h,q.top); b=Math.min(b,q.bottom); g=Math.max(g,q.left); d=Math.min(d,q.right);
+  }
+  h=Math.max(h,0); b=Math.min(b,innerHeight); g=Math.max(g,0); d=Math.min(d,innerWidth);
+  return b>h && d>g ? {top:h,bottom:b,left:g,right:d} : r;
+}
+function placerTuto(){
+  const bulle=$("tuto");
+  if(!bulle || bulle.hidden) return;
+  const L=innerWidth, H=innerHeight, w=bulle.offsetWidth, h=bulle.offsetHeight;
+  const E=TUTO_ECART, M=TUTO_MARGE;
+  const borne=(v,min,max)=>Math.max(min,Math.min(v,max));
+  if(!tutoCible || !document.contains(tutoCible)){   // rien à montrer : en tête, au milieu
+    bulle.removeAttribute("data-cote");
+    bulle.style.left=Math.round((L-w)/2)+"px"; bulle.style.top=M+"px";
+    return;
+  }
+  const r=rectVisible(tutoCible), cx=(r.left+r.right)/2, cy=(r.top+r.bottom)/2;
+  const cotes=[
+    ["droite",  L-r.right-E-M>=w],
+    ["dessus",  r.top-E-M>=h],
+    ["dessous", H-r.bottom-E-M>=h],
+    ["gauche",  r.left-E-M>=w]];
+  const cote=(cotes.find(c=>c[1]) || (r.top>H-r.bottom ? cotes[1] : cotes[2]))[0];
+  let x, y;
+  if(cote==="droite" || cote==="gauche"){
+    /* Sur le côté, elle MONTE depuis la zone, la flèche en bas : dans la
+       conversation, ce qui suit l'ancre est la question, et c'est elle qu'on
+       garde sous les yeux — une bulle qui descendait la recouvrait. */
+    x = cote==="droite" ? r.right+E : r.left-E-w;
+    y = cy+26-h;
+  } else {
+    x = r.left;
+    y = cote==="dessus" ? r.top-E-h : r.bottom+E;
+  }
+  x=borne(x, M, Math.max(M, L-w-M)); y=borne(y, M, Math.max(M, H-h-M));
+  bulle.style.left=Math.round(x)+"px"; bulle.style.top=Math.round(y)+"px";
+  bulle.setAttribute("data-cote", cote);
+  bulle.style.setProperty("--fx", Math.round(borne(cx-x, 18, Math.max(18, w-18)))+"px");
+  bulle.style.setProperty("--fy", Math.round(borne(cy-y, 18, Math.max(18, h-18)))+"px");
+}
+/* Les bandes défilent, pas la page : un `scroll` ne remonte pas, d'où la
+   CAPTURE. Une image par rafale suffit. */
+let tutoImage=0;
+function replacerTuto(){
+  if(tutoImage) return;
+  tutoImage=requestAnimationFrame(()=>{ tutoImage=0; placerTuto(); });
+}
+addEventListener("resize", replacerTuto);
+document.addEventListener("scroll", replacerTuto, true);
 /* Le geste rouvre la forme développée — même idiome que `ouvrirPiece`/
    `oublier` : poser `focusVoulu` AVANT `rendreTout`, jamais un `.focus()`
    manuel après coup. */
@@ -378,6 +444,7 @@ function rendreTout(){
   renderDiscussion(); renderComposeur(); renderContexte(); renderPlaidoirie(); majCloture(); majLateral(); majTutoriel();
   recalerFil(enBas); majDebord();
   rendreFocus(m, force);
+  placerTuto();                    // APRÈS le recalage du fil et le focus : ils déplacent l'ancre
   rappelRetrait=null; vientDeRetenir=null;
   annoncerNouveautes(); publierAnnonces();
   sauverPartie();

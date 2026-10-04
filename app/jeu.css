@@ -426,35 +426,42 @@ code{font-family:var(--mono);color:var(--accent)}
 [data-tuto="alerte"]{outline-color:var(--warn);animation-name:poulsAlerte}
 @keyframes poulsAlerte{0%,100%{outline-color:var(--warn)}50%{outline-color:transparent}}
 @media (prefers-reduced-motion:reduce){ [data-tuto]{animation:none} }
-/* EN TÊTE ET DANS LE FLUX (§4.8) : il réserve sa place et pousse le jeu vers le
-   bas — il ne peut donc jamais recouvrir ses propres ancres. Ce qu'un
-   `position:fixed` faisait, et c'est pour ça qu'il n'en est plus un. */
-#tuto{flex:none;position:sticky;top:0;z-index:60;width:fit-content;margin:12px auto 0;
-  display:flex;align-items:center;max-width:min(640px,calc(100vw - 32px));
+/* UNE BULLE ANCRÉE AU HALO (§4.8) — en surimpression, elle ne décale rien :
+   `placerTuto` pose `left`/`top`, le côté (`data-cote`) et la place de la
+   flèche (`--fx`, `--fy`) à chaque rendu, au défilement et au redimensionnement.
+   C'est ce placement, plus le flux, qui la garde hors de sa propre ancre. */
+#tuto{position:fixed;left:16px;top:16px;z-index:60;width:max-content;
+  max-width:min(380px,calc(100vw - 32px));
   background:#20303f;border:2px solid var(--accent);border-radius:10px;
-  padding:16px 22px;font-size:15px;box-shadow:0 10px 34px rgba(0,0,0,.6)}
+  padding:12px 16px 14px;font-size:15px;line-height:1.45;box-shadow:0 10px 34px rgba(0,0,0,.6)}
 #tuto[hidden]{display:none}
+/* La flèche : un losange du fond de la bulle, posé sur sa bordure, qui n'en
+   garde que les deux côtés tournés vers la zone. */
+#tuto[data-cote]::before{content:"";position:absolute;width:14px;height:14px;
+  background:#20303f;border:2px solid var(--accent);transform:rotate(45deg)}
+#tuto[data-cote="dessous"]::before{top:-8px;left:calc(var(--fx,24px) - 7px);border-right:0;border-bottom:0}
+#tuto[data-cote="dessus"]::before{bottom:-8px;left:calc(var(--fx,24px) - 7px);border-left:0;border-top:0}
+#tuto[data-cote="droite"]::before{left:-8px;top:calc(var(--fy,24px) - 7px);border-top:0;border-right:0}
+#tuto[data-cote="gauche"]::before{right:-8px;top:calc(var(--fy,24px) - 7px);border-bottom:0;border-left:0}
+#tuto[data-alerte]::before{border-color:var(--warn)}
+#tuto[data-reduit]::before{display:none}
 /* Chaque consigne neuve s'affiche développée (#tutoCorps), puis se réduit en
    icône dès le rendu suivant (§4.8) — jamais les deux formes à la fois. PIÈGE :
-   `#tutoCorps`/`.tutoIcone` posent `display:flex`/`inline-flex`, qui BATTENT
-   `[hidden]{display:none}` — même piège déjà payé pour `.col` (ligne ~77). */
-#tutoCorps{display:flex;align-items:baseline;gap:16px}
+   `#tutoCorps`/`.tutoIcone` posent `display:grid`/`inline-flex`, qui BATTENT
+   `[hidden]{display:none}` — même piège déjà payé pour `.col` (ligne ~77).
+   Le rang et « je sais faire » en tête, la consigne dessous : dans une bulle
+   étroite, trois colonnes écrasaient la phrase. */
+#tutoCorps{display:grid;grid-template-columns:1fr auto;gap:6px 16px;align-items:baseline}
 #tutoCorps[hidden]{display:none}
-#tuto[data-reduit]{padding:7px;border-radius:999px}
-/* Le bandeau parlant, la pièce ouverte se range DESSOUS au lieu de se centrer :
-   `--haut` est le seul nombre, et la hauteur maximale s'en déduit — la modale
-   tient donc entre le bandeau et le bas, à n'importe quelle taille d'écran.
-   Le sélecteur ne mord que parce que `#tuto` est en tête de <body>, donc frère
-   AVANT `#modalRoot`. */
-#tuto:not([hidden]) ~ #modalRoot .overlay{--haut:112px;align-items:flex-start;padding-top:var(--haut)}
-#tuto:not([hidden]) ~ #modalRoot .modal{max-height:calc(100vh - var(--haut) - 24px)}
+#tuto .dit{grid-column:1 / -1;grid-row:2}
+#tuto .passer{grid-column:2;grid-row:1}
+#tuto[data-reduit]{padding:4px;border-radius:999px}
 #tuto[data-alerte]{border-color:var(--warn)}
 #tuto[data-alerte] .dit{color:var(--warn)}
 #tuto[data-alerte] .tutoIcone{color:var(--warn);border-color:var(--warn)}
 /* Le geste se nomme à côté de son rang (§4.8) : « mettre en relation · 1/3 » ne
    se coupe pas en deux, sans quoi le compteur passerait pour une phrase. */
 #tuto .pas{color:var(--muted);font-family:var(--mono);font-size:12.5px;white-space:nowrap}
-#tuto .dit{flex:1}
 #tuto .passer{background:none;border:none;color:var(--muted);font:inherit;font-size:13px;
   cursor:pointer;text-decoration:underline;padding:0;white-space:nowrap}
 #tuto .passer:hover{color:var(--txt)}

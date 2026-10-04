@@ -127,19 +127,42 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
   });
 }
 {
+  /* §3 — LA REMISE DU TUTORIEL SE SERT DANS L'ORDRE (retour de playtest, Jean).
+     Y servir la dernière attente d'abord était accepté par anticipation ; la
+     phrase envoyée trop tôt reste désormais À ENVOYER, et repart quand sa
+     question vient. */
   const c = contenuLivre();
   const w = boot(c);
   const as = w.R.attentesDe(c.remises[0]);
   if (as.length > 1) {
     const derniere = as[as.length - 1];
-    w.envoyer(H.composerLien(w, H.lienTag(w, derniere.attend)));
-    check("servir la dernière attente d'abord est accepté",
-      w.S.satisfaits.includes(derniere.attend));
-    check("mais ne ferme pas la session pour autant", w.S.remisesEnvoyees === 1);
-    check("et la première question reste posée",
+    const i = H.composerLien(w, H.lienTag(w, derniere.attend));
+    check("remise du tutoriel : la dernière attente servie d'abord ne sert rien",
+      i >= 0 && !w.S.satisfaits.includes(derniere.attend));
+    check("et ne ferme pas la session", w.S.remisesEnvoyees === 1);
+    check("la première question reste posée",
       !as[0].question || discussion(w).includes(as[0].question));
     as.slice(0, -1).forEach(a => w.envoyer(H.composerLien(w, H.lienTag(w, a.attend))));
-    check("le reste servi, la session passe enfin", w.S.remisesEnvoyees === 2);
+    check("le reste servi dans l'ordre, la session attend encore la dernière", w.S.remisesEnvoyees === 1);
+    w.envoyer(H.composerLien(w, H.lienTag(w, derniere.attend)));
+    check("la phrase envoyée trop tôt repart, et la session passe enfin", w.S.remisesEnvoyees === 2);
+  }
+}
+{
+  /* …ET LES SUIVANTES GARDENT L'ANTICIPATION (§3) : la latitude s'élargira
+     avec elles. Contenu MUTÉ — la remise 2 du jour n'a qu'une attente : on lui
+     en ajoute une, servie par un lien à tag qu'aucune attente n'emploie. */
+  const c = contenuLivre();
+  const pris = new Set(c.remises.flatMap(r => H.attentesContenu(r).map(a => a.attend)));
+  const libre = c.liens.find(L => L.tag && !pris.has(L.tag) && typeof L.termes[0] === "string");
+  if (libre && c.remises.length > 1) {
+    H.attentesContenu(c.remises[1]).push({ attend: libre.tag });
+    const w = boot(c);
+    for (const a of w.R.attentesDe(c.remises[0])) w.envoyer(H.composerLien(w, H.lienTag(w, a.attend)));
+    check("remise 2 ouverte", w.S.remisesEnvoyees === 2);
+    H.composerLien(w, libre);
+    check("hors de la remise du tutoriel, une attente À VENIR se sert par anticipation",
+      w.S.satisfaits.includes(libre.tag) && w.S.remisesEnvoyees === 2);
   }
 }
 {

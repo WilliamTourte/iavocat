@@ -252,14 +252,29 @@ function creerRegles(JEU, M) {
   function envoyer(S, i, contre) {
     const n = S.brouillon[i];
     if (!n || n.versee) return;
-    n.versee = true;
     if (S.prete === i) S.prete = null;
-    S.plaidoirie.push({ b: i, contre: (contre == null ? null : contre) });
-    pousser(S, "IAvocat", "⟨ envoyé : " + n.texte + " ⟩", null, true);
     const L = n.lien;
+    pousser(S, "IAvocat", "⟨ envoyé : " + n.texte + " ⟩", null, true);
+    if (horsOrdre(S, L)) return reponseAvocat(S, n, true);   // dit, pas versé : il repartira
+    n.versee = true;
+    S.plaidoirie.push({ b: i, contre: (contre == null ? null : contre) });
     if (L && L.vice && L.conclusion) { S.vice_trouve = true; S.vice_expose = true; }  // transmis = compris
     reponseAvocat(S, n);
     avancerSurAttente(S, L);
+  }
+  /* LA REMISE DU TUTORIEL SE SERT DANS L'ORDRE (§3). Une phrase qui sert une
+     attente À VENIR de la remise 1 est hors sujet : l'avocat répond comme à
+     toute réponse à côté, rien n'entre en Plaidoirie, et la phrase reste À
+     ENVOYER — `versee` faux, elle repartira quand sa question viendra, puisque
+     `clorePhrase` la retrouve. PIÈGE : la marquer versée la rendrait muette pour
+     toujours, et la question qui l'attend ne pourrait plus être servie. Les
+     remises suivantes gardent l'anticipation : la latitude s'élargira avec
+     elles. */
+  function horsOrdre(S, L) {
+    if (!L || !L.tag || S.remisesEnvoyees !== 1) return false;
+    const r = remiseCourante(S), a = attenteCourante(S, r);
+    return !!a && a.attend !== L.tag
+        && attentesDe(r).some(x => x.attend === L.tag && !S.satisfaits.includes(x.attend));
   }
 
   /* UNE PHRASE QUI MÉLANGE DEUX DOSSIERS (§4.6). Le Contexte est cumulatif et
@@ -284,9 +299,12 @@ function creerRegles(JEU, M) {
   }
   const melangeDeuxDossiers = r => remisesCitees(r, new Set()).size > 1;
 
-  function reponseAvocat(S, n) {
+  function reponseAvocat(S, n, aVenir) {
     const L = n.lien, A = JEU.avocat || {};
     const esc1 = (liste, cpt) => liste[Math.min(S[cpt]++, liste.length - 1)];
+    // Une réponse à une question pas encore posée est à côté (§3) : sa
+    // réplique propre attendra la question — elle dirait ce qu'on n'a pas demandé.
+    if (aVenir) return pousser(S, "Maître Auber", esc1(A.rep_hors_sujet || ["…"], "hors_sujet"));
     if (!L && A.rep_deux_dossiers && melangeDeuxDossiers(n.reduite))
       return pousser(S, "Maître Auber", A.rep_deux_dossiers);
     if (L && L.vice && L.conclusion) pousser(S, "Maître Auber", A.rep_vice);
@@ -387,7 +405,7 @@ function creerRegles(JEU, M) {
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, envoyerCompo, compoFinie,
-           estMoyen, envoyer, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
+           estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
            instructionComplete, repetitionEnCours, cloturer, verserContre,
            avancerRepetition, finir };

@@ -1,12 +1,12 @@
 # IAvocat — Passation de contexte
 
 *À lire en tête d'une nouvelle conversation : où on en est, ce qui mord, ce qui reste ouvert, quoi faire
-ensuite. **Court, et il doit le rester.** État au 1er octobre 2026.*
+ensuite. **Court, et il doit le rester.** État au 4 octobre 2026.*
 
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 434 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 448 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -190,6 +190,22 @@ sur un bouton déjà franchi (§3) tombe avec. **Au passage, l'opposition** : le
 question (*« … tu as encore quelque chose à y opposer ? »*) à laquelle *« Je n'ai rien à opposer »*
 répond enfin. Joué dans un vrai Chromium par de vrais clics, 1280×800 et 390×800.
 
+**Le 4 octobre, cinquième passe : le retour de Jean**, rendu en préconisations par ordre de priorité
+(le détail, et ce qui reste, au `TODO.md`). Deux défauts **reproduits sous jsdom avaient une seule
+racine** : la remise 1 acceptait une réponse *par anticipation* — 22h30 envoyé à la première question
+servait la deuxième, l'avocat en donnait la réplique (la contradiction comprise), la phrase entrait en
+Plaidoirie, la deuxième question n'était jamais posée, et le tutoriel, tenant le premier `satisfaits`
+pour la citation acquise, se taisait au milieu de *citer*. Arbitré par l'auteur : **la remise du
+tutoriel se sert dans l'ordre** (§3) — une réponse à une question à venir y est hors sujet, n'entre pas
+en Plaidoirie et **reste à envoyer** (`horsOrdre`) ; les remises suivantes gardent l'anticipation,
+*« on élargira »*. **Le tutoriel sort du flux** : une **bulle ancrée au halo**, boîte de dialogue non
+bloquante en surimpression, posée sur le premier côté où elle tient (`placerTuto`, §4.8) — elle ne
+décale plus rien en se redéployant, ce que `npm run vue` mesure désormais. **Par le contenu seul** :
+l'avocat ne dit plus la contradiction avant qu'on la compose (le constat passe dans la réplique qui
+accueille la comparaison), ses refus renvoient à la lecture de l'article au lieu de le résumer, et la
+réaction spontanée au rapport du labo pousse vers le chiffre sans faire la comparaison à la place du
+joueur (§4.8). Le refus *« appel + arrivée »* qu'il signale, lui, **ne se reproduit pas**.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -219,13 +235,15 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   sa garde *avant* l'appel.
 - **L'ordre des `<script src>` de l'atelier compte** (`noyau.js` en premier), et les `window.X = X`
   explicites (`undo`, `adopter`, `demanderExemple`, `simReset`) sont ce par quoi `smoke_atelier.js` lit.
-- **`#tuto` est le PREMIER enfant de `<body>`, avant `.wrap`** : collant dans le flux, il réserve sa
-  place — c'est ce qui l'empêche de recouvrir ses propres ancres. **Hors de `.wrap`**, il resterait
-  vivant si quelque chose rendait `.wrap` inerte — ce qui n'arrive plus pour une pièce ouverte (§4.6,
-  §4.10 règle 3 CONCEPTION), seulement pour l'écran de fin (`finir`). Son `z-index:60` le garde lisible
-  par-dessus l'`.overlay` (50) de cet écran terminal, et c'est sa position *avant* `#modalRoot` qui fait
-  mordre le sélecteur décalant la modale. Le remettre en fin de `<body>` ne casse **aucune** suite : il
-  recouvre à nouveau, en silence.
+- **`#tuto` est une bulle en `position:fixed`, et c'est `placerTuto` qui l'empêche de recouvrir ses
+  ancres** (§4.8) — plus le flux. Elle se pose à côté du **rectangle VISIBLE** de la cible (le
+  rectangle coupé par chaque ancêtre qui défile : une zone à moitié défilée n'est pas là où son
+  `getBoundingClientRect` le dit), sur le premier côté où elle tient. Elle se replace à chaque
+  `majTutoriel`, et sur `resize` et `scroll` **en capture** — un `scroll` ne remonte pas, et ce sont les
+  bandes qui défilent, jamais la page. **Aucune suite ne voit une géométrie** (jsdom rend des
+  rectangles nuls) : `npm run vue` seul la montre. Elle reste **premier enfant de `<body>`, hors de
+  `.wrap`** : premier arrêt de tabulation, et vivante si `finir` rend `.wrap` inerte ; son `z-index:60`
+  la garde au-dessus de l'`.overlay` (50).
 - **La PLACE DES PANNEAUX DANS LE DOCUMENT est toute la mécanique** : entre la section Discussion et
   `#composeur`, dans le flux, en dessous du seuil de `.wrap.avecLateral` — la pièce ouverte, elle, vit
   DANS le Contexte (§4.6, §4.10 règle 3 CONCEPTION) et ne passe plus par `#modalRoot`. Les déplacer
@@ -308,7 +326,10 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Le doublon banal porte tout le camouflage** (§4.4) : ne jamais désactiver son contrôle.
 - **Le tutoriel enseigne deux gestes, la citation puis la comparaison, et ne ferme pour de bon
   qu'à la fin de la session 1** (`S.remisesEnvoyees>1`) — pas au premier `S.satisfaits`, qui ne
-  marque que la fin du premier geste. Entre les deux, il se tait sans se fermer.
+  marque que la fin du premier geste. Entre les deux, il se tait sans se fermer. **Et ce premier
+  `S.satisfaits` ne veut dire « citation acquise » que parce que la remise 1 se sert DANS L'ORDRE**
+  (`horsOrdre`, §3 CONCEPTION) : une réponse qui servait par anticipation la deuxième question
+  passait pour la première, et le tutoriel se taisait au milieu de *citer*.
 - **Cacher la clôture, c'est cacher le BOUTON et son aide, jamais `.cloture`** : la barre porte aussi
   *« ⟲ recommencer »*, qui ne s'absente jamais (§4.9). Et `disabled` **double** `hidden` — trois
   contrôles lisent `btnCloture.disabled` pour dire que le refus est vrai, et il doit l'être aussi pour
@@ -408,12 +429,18 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   texte qu'on n'a pas lu »*. Non tranché.
 - *Fermé le 2 octobre : la **légende** de chaque pièce nomme les dimensions qu'elle porte (§4.3).
   Deux playtests l'avaient demandée, et le `title` qui la remplaçait n'existait ni au clavier ni au
-  toucher. Reste à voir si elle suffit, ou si le joueur passe à côté.*
+  toucher. Reste à voir si elle suffit, ou si le joueur passe à côté.* **Rouvert par Jean : il passe
+  à côté.** Posée au bas du texte, elle sort du champ dans une fenêtre de pièce de deux lignes, et il
+  demande la légende des cinq traits **avant** de retenir — indispensable au toucher, sans survol.
 - **Le Contexte à dix-sept fiches** : l'index du dossier grossit avec le dossier, et les passages de
   la session 1 restent en tête. Trier, replier ou filtrer serait *juger* ce que le §4.6 promet de ne
   jamais juger — d'où, pour l'instant, un plancher au panneau, un index resserré, le dernier retenu
   amené dans le champ et le fondu qui dit qu'il en reste. **Sorti du panneau, l'index donnerait de
   l'air** : écarté le 2 octobre pour ne pas ouvrir une troisième porte, à rouvrir si ça remord.
+  **Ça remord (Jean)** : en session 2, la pièce ouverte ne montre que deux lignes — et déjà en
+  session 1 à 1280×800, sur les captures —, et les fiches de l'affaire close restent en tête. Il
+  propose de replier index et retenus pièce ouverte, et de ranger les affaires closes : replier par
+  remise ne juge aucun passage, c'est un fait de remise.
 - **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
   accès. Le §4.9 interdit de redire, pas d'offrir deux chemins. **Réponse partielle du 1ᵉʳ octobre :
   elles coûtent avant de servir** — au premier écran, un joueur a noté *« Contexte / Plaidoirie :
@@ -456,6 +483,19 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   défaut. **C'est le faux vice** (§6, §8.5) — l'avocat ne sait pas, il y pousse lui-même, et les
   `variante_faux` des fins le paient. À ne pas « corriger » ; peut-être à rendre plus lisible à la fin.
 - Côté outil : la frise n'édite pas `rep_hors_sujet` (§15).
+- **Le retour de Jean, ce qui reste** (détail au `TODO.md`) — trois préconisations vont contre un
+  arbitrage écrit, à trancher document d'abord : **offrir deux ou trois relations au choix, dont des
+  fausses**, renverserait *désigner, pas déclarer* (§4.5) ; **réserver au tutoriel les garde-fous** —
+  fiches d'une autre dimension assombries, refus de catégorie avant l'envoi — lèverait *le seul refus
+  qui existe* (§4.5) ; **donner un coût à l'erreur** (jauge de patience, envois comptés) rendrait
+  l'enjeu calculable s'il se voit (§8.4). Sans arbitrage contraire : **marquer les fiches déjà prises**
+  et dire pourquoi une troisième est refusée (aujourd'hui un `title` sur un bouton `disabled`, que ni
+  le toucher ni le clavier n'atteignent, §4.10). Et une demande de l'auteur à écrire au §4.3 :
+  **passages ni soulignés ni surlignés par défaut, seulement au survol** — reste à dire ce que voient
+  le toucher et le clavier, et si un passage retenu garde sa marque.
+- **La bulle ancrée n'a été jouée que dans Chromium**, 1280×800 et 390×800 : sur un vrai téléphone,
+  et à côté d'une zone longue comme le texte de la pièce, couvre-t-elle ce qu'on vient chercher ? Elle
+  se réduit au geste suivant ; reste à savoir si ça suffit.
 
 ## 4. Prochaine étape
 
@@ -592,3 +632,8 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   du seuil (`.wrap.avecPiece`) ; la fiche neuve s'allume sous la pièce (`.mchip.neuf`) et la ligne de
   confirmation repasse dans le flux. Opposition : *« Continuer »* après un *opposer*, réplique `fin` en
   question. 434 contrôles, 8 règles du gardien, ESLint.
+- **4 octobre, cinquième passe : le retour de Jean** — la remise du tutoriel servie dans l'ordre
+  (`horsOrdre`, §3) ; le tutoriel en bulle ancrée au halo, en surimpression (`placerTuto`, §4.8) ;
+  l'avocat qui commente après la composition, des refus qui renvoient à la lecture, une réaction
+  spontanée qui pousse sans calculer (contenu seul). `npm run vue` mesure que la bulle ne décale
+  rien. 448 contrôles, 8 règles du gardien, ESLint.

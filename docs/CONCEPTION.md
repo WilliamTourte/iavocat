@@ -38,6 +38,16 @@ Le dossier arrive **par bribes** (une session = un lot) : d'un bloc, il noierait
 porteuses du vice. Une session porte une **liste** d'attentes et se ferme quand une phrase servant
 l'attente courante est **envoyée**, rien d'autre.
 
+**La remise du tutoriel se sert DANS L'ORDRE** — retour de playtest (Jean) : la première remise
+acceptait une réponse *par anticipation*, et 22h30 envoyé à la première question servait la deuxième.
+L'avocat en donnait la réplique (la contradiction comprise), la phrase entrait en Plaidoirie, la
+deuxième question n'était jamais posée — et le tutoriel, qui lit l'attente **courante**, disait au
+même moment *« ce n'est pas ce qu'il demande »*, puis se taisait, la citation passant pour acquise.
+Dans la remise 1, une phrase qui sert une attente **à venir** est donc **hors sujet** : l'avocat
+répond comme à toute réponse à côté, rien n'entre en Plaidoirie, et la phrase reste **à envoyer**
+— elle repartira quand sa question viendra. Les remises suivantes gardent l'anticipation : la
+latitude s'élargira avec elles.
+
 **Ce que l'avocat attend n'est jamais l'anomalie** : toute attente est servable par un argument
 ordinaire, sinon le vice serait quasi obligatoire et tout s'effondrerait vers la Fin 1. **Le vice n'est
 jamais un verrou** — c'est parce qu'il est hors du chemin obligatoire que les trois fins existent.
@@ -317,6 +327,14 @@ calibration (§3) — et il a donc le droit de dire que deux horaires ne tiennen
 vérifie. Le bandeau, lui, n'est personne : il ne peut nommer que le **geste** — *une réponse peut
 tenir sur deux passages* — et jamais la **trouvaille** — *les deux passages qui se contredisent*.
 Un joueur a trouvé l'incohérence seul, puis lu dans le bandeau ce qu'il venait de comprendre.
+**Et l'avocat ne la dit qu'APRÈS** : vérifier, c'est commenter ce que le joueur a composé, jamais le
+lui dicter. Sa réplique à la deuxième question énonçait la contradiction avant que la troisième ne
+demande de la composer — elle annonçait au lieu de vérifier, relevé par deux playtests (le second,
+Jean). Le constat passe dans la réplique qui **accueille** la comparaison ; avant, l'avocat prend
+acte de l'heure, rien de plus. Même exigence pour ses refus : il **renvoie à la lecture** de
+l'article (*« Relis ce qu'il exige »*), il ne le résume pas — un refus qui résume donne la solution
+à la deuxième erreur. Et ses réactions spontanées à une pièce (`declenche`) peuvent pousser vers une
+piste — le faux vice en vit (§6) —, jamais faire le calcul à la place du joueur.
 
 **Et les deux voix demandent la MÊME CHOSE.** Un bandeau qui fait comparer deux passages pendant
 que Maître Auber réclame un article, ce sont deux consignes pour un seul geste : le joueur s'arrête
@@ -346,10 +364,16 @@ refusé, il ne dit jamais lequel c'était, et la dérivation par laquelle il sai
 **s'éteint avec lui**. **Il ne décide rien** — aucun état neuf, aucune règle, et il peut se taire — y
 compris entre le geste 4 et le geste 5, le temps d'une citation déjà connue.
 
-**Le bandeau se tient en tête de page, dans le flux** : il réserve sa place et pousse le jeu vers le
-bas au lieu de le recouvrir — aucune des quatre ancres ne peut se retrouver dessous. Il reste épinglé
-au défilement, et lisible par-dessus la pièce ouverte. Ses consignes s'**annoncent** aussi, à qui ne
-voit pas le halo (§4.10).
+**La consigne est une BULLE posée à côté de ce qu'elle montre** — retour de playtest (Jean). Dans le
+flux, en tête de page, le bandeau poussait tout le jeu à chaque fois qu'il se redéployait (une
+soixantaine de pixels après *« tout effacer »*), et sur un téléphone il mangeait le tiers de
+l'écran. C'est désormais une **boîte de dialogue non bloquante**, en surimpression : elle ne décale
+rien en paraissant ni en disparaissant, et le jeu reste cliquable autour. **Elle s'ancre au halo**,
+une flèche vers la zone, sur le premier côté où elle tient — **à droite, puis au-dessus, au-dessous, à
+gauche** — et elle suit la zone quand l'écran défile ou change de taille. Ce que le flux garantissait
+en réservant sa place, l'ancrage le garantit en la choisissant : **la bulle ne recouvre jamais sa
+propre ancre**. Réduite, elle n'est plus que le *« ? »* collé à la zone. Ses consignes
+s'**annoncent** aussi, à qui ne voit pas le halo (§4.10).
 
 **Chaque consigne neuve s'affiche d'abord développée, puis se réduit en icône** — retour de playtest
 (Colas) : deux joueurs avaient déjà donné un avis contradictoire sur la présence permanente du bandeau
@@ -377,7 +401,8 @@ Cinq règles d'écran — le coupable d'une page illisible est le **chrome**, ja
    question ne se rappelle que lorsqu'elle a cessé d'être le dernier mot de l'avocat. **Mais
    *lisible* est la condition, pas *présent*.** Un panneau ouvert la perd : la conversation est la
    seule bande élastique (§4.6), c'est elle qui cède, et en 1280×800 — panneau ouvert, bandeau du
-   tutoriel affiché — il lui reste une centaine de pixels, moins que la question. Un joueur a
+   tutoriel affiché, du temps où il prenait sa place dans le flux (§4.8) — il lui reste une centaine
+   de pixels, moins que la question. Un joueur a
    composé sa réponse sans la voir. **Panneau ouvert, la question redescend donc au composeur** ;
    refermé, elle se tait. Ce n'est pas un repentir sur l'ouverture dans le flux — ne rien recouvrir
    reste ce qui garde le fil sous les yeux — c'est la règle appliquée à ce qu'elle dit vraiment.
