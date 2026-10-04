@@ -1,7 +1,20 @@
 # IAvocat — Passation de contexte
 
 *À lire en tête d'une nouvelle conversation : où on en est, ce qui mord, ce qui reste ouvert, quoi faire
-ensuite. **Court, et il doit le rester.** État au 1er octobre 2026.*
+ensuite. **Court, et il doit le rester.** État au 4 octobre 2026 (fin de session).*
+
+> **Reprendre en trente secondes.** Branche `ccr-13bd4207-livv8l`, arbre propre, tout poussé (dernière
+> passe de code : *« Présentoir de l'opposition : il porte sa cible »*). `npm test` vert : **447 contrôles,
+> 8 règles du gardien, ESLint** ; l'export est à jour. Le **retour de Colas** est traité — le suivi
+> vit dans `TODO.md`, qui ne garde plus que ce qui reste. **Rien n'attend de code** : ce qui reste
+> attend **l'auteur** (relire du contenu) ou **un joueur** (rejouer). Avant toute nouvelle passe :
+> §2 ici (les pièges), puis le § du document visé — *on réécrit le document, on le fait relire, puis
+> on applique*.
+>
+> **Attend l'auteur** — relire le contenu posé le 4 octobre sans arbitrage explicite (§3, opposition) :
+> les `repondent` des trois affirmations (témoignage ← `temoin`, `q_voix` ; ADN ← `adn`, vice **et**
+> leurre ; absence d'alibi ← rien) et les six répliques `oppose_porte` / `oppose_porte_pas`.
+> **Attend un joueur** — §4, en tête : rendre la partie à Colas.
 
 ## 1. Où en est le jeu
 
@@ -189,6 +202,18 @@ sur un bouton déjà franchi (§3) tombe avec. **Au passage, l'opposition** : le
 *« Continuer »* dès qu'une phrase a été opposée, et la réplique `fin` de la répétition devient une
 question (*« … tu as encore quelque chose à y opposer ? »*) à laquelle *« Je n'ai rien à opposer »*
 répond enfin. Joué dans un vrai Chromium par de vrais clics, 1280×800 et 390×800.
+
+**Le 4 octobre, cinquième et sixième passes : l'opposition trie, et le présentoir porte sa cible**
+(§4.6 CONCEPTION, §11). Les six points de l'opposition rejouée (§3) sont fermés. **L'avocat juge** :
+chaque affirmation déclare ses `repondent` (des `tag` de liens), et opposer une phrase lui fait dire
+*ça porte* ou *ça ne porte pas* — trois variantes chacune, qui tournent — sans jamais refuser : la
+cible se pose dans les deux cas. Sans `repondent`, la réplique unique `deja` d'avant. **Une phrase
+opposée ailleurs dit qu'on la déplace** ; **la voix du composeur se tait** pendant la lecture tant que
+la phrase est vide — le composeur reste ouvert, la conclusion tue pouvant encore partir (§4.7). **Le
+présentoir** : titre *« Contre l'ADN — 2 sur 3 »*, texte de l'affirmation rappelé dans le cadre dès
+qu'une réplique l'a fait défiler (la règle de `rappelQuestion`), une ligne = un bouton au texte
+courant, l'état au filet (*« ✓ opposée ici »*). L'atelier suit (frise : `repondent` et les deux
+listes ; diagnostic : un tag que nul lien ne porte). Captures relues à 1280 et 390 px.
 
 ## 2. Points de vigilance
 
@@ -469,6 +494,12 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 précédente l'a prouvé : une partie rapportée geste par geste a valu plus que trois passes de
 relecture. **Il faut la rendre à un joueur neuf**, qui n'a pas lu ce qui précède :
 
+0. **Rendre la partie à Colas**, qui s'est proposé : c'est lui qui a nourri les six passes du
+   4 octobre. À regarder en priorité (détail dans `TODO.md`) — lit-il la question **avant** d'ouvrir
+   les pièces ? la première consigne est-elle encore abrupte ? la colonne latérale (≥ 900 px) se
+   tabule-t-elle bien ? la pièce dans le Contexte tient-elle sur un **vrai téléphone** (à 390 px le
+   panneau défile d'un bloc et l'index sort de l'écran) ? et **la répétition trie-t-elle enfin** —
+   les verdicts d'Auber se lisent-ils comme un jugement, ou comme une note ?
 1. **La calibration se sent-elle ?** La session 1 passe-t-elle pour un examen, et la remise 2 pour le
    moment où l'avocat cesse de savoir ? *Le 2 octobre a répondu à moitié — « l'affaire 1 assumée
    comme examen » — mais le même joueur trouvait encore que l'avocat raisonne à sa place. Le bandeau
