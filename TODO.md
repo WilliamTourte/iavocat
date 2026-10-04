@@ -72,17 +72,15 @@ pour le bandeau du tutoriel. Ce qui est fait est détaillé au §1 de `docs/PASS
       phrase, et **dire** pourquoi une troisième est refusée. Aujourd'hui le bouton est seulement
       `disabled`, et l'explication vit dans un `title` (*« ta phrase n'attend pas un passage »*) que ni
       le toucher ni le clavier n'atteignent (§4.10).
-- [x] **Soulignement au survol ou au clic** (demande de l'auteur, §4.3) : le texte d'une pièce se lit
-      nu ; un passage se souligne quand on passe dessus ou qu'on l'atteint au clavier (`:focus-visible`),
-      et garde sa marque une fois retenu — au toucher, c'est le clic qui la pose. Les consignes ne disent
-      plus *« passage souligné »*.
-- [ ] **À jouer** : sans survol, un joueur au toucher trouve-t-il qu'il y a des passages à chercher ? La
-      légende le dit, mais Jean ne la voyait pas (point suivant) — c'est elle qui porte désormais tout.
-- [ ] **Montrer la catégorie avant de retenir** : une légende des cinq styles de soulignement,
-      **indispensable sur mobile** (pas de survol) — *plus pressant encore depuis que le marquage ne se
-      montre qu'au survol*. La légende de chaque pièce existe (§4.3), mais **au
-      bas** du texte, hors champ dans une fenêtre de deux lignes. Répond au §3 PASSATION (*« reste à voir
-      si elle suffit, ou si le joueur passe à côté »*) : il passe à côté.
+- [x] **Soulignement au survol ou au clic** (demande de l'auteur, §4.3) : le trait et la couleur d'un
+      passage ne se montrent que quand on passe dessus ou qu'on l'atteint au clavier (`:focus-visible`),
+      et restent une fois retenu — au toucher, c'est le clic qui les pose. **Une bordure légère, neutre
+      et arrondie** dit, elle, qu'un passage se clique : la même pour tous. Les consignes disent
+      *« passage encadré »*.
+- [x] **Montrer la catégorie avant de retenir** — *arbitré par l'auteur : la légende est retirée*
+      (§4.3). Le code s'apprend en cherchant : au survol du passage, et dans les groupes du Contexte.
+- [ ] **À jouer** : sans légende ni survol, un joueur au toucher comprend-il ce que couleur et trait
+      veulent dire ? Il ne les voit qu'une fois le passage retenu, rangé sous le nom de sa dimension.
 
 ### 4. Le tutoriel
 

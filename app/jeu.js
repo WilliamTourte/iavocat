@@ -153,7 +153,7 @@ function tutoEtapeCitation(){
                       : "Retiens le passage qui répond.",
             ditLong: rate
               ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage qui y répond."
-              : "Cherche dans le texte le passage qui répond : il se souligne quand tu passes dessus. Clique-le pour le retenir dans ton Contexte, c'est de là que tu composeras ta réponse."}
+              : "Clique sur le passage encadré qui répond pour le retenir dans ton Contexte : c'est de là que tu composeras ta réponse."}
       /* Le Contexte ouvert, le halo quitte le bouton du message pour l'index :
          il ne pulse plus sur une porte qu'on vient de franchir (§4.8). */
       : panneau==="contexte"
@@ -648,30 +648,22 @@ function oublier(pid,eid){
   focusVoulu={ cle:"#zoneRetenus", zone:"#zoneRetenus" };
   rendreTout();
 }
-/* §4.3 — LA LÉGENDE. */
-function legendePiece(pid){
-  const p=JEU.pieces[pid];
-  const dims=(JEU.dimensions||[]).filter(d =>
-    Object.values(p.empans||{}).some(e=>e.dim===d));
-  if(!dims.length) return "";          // une règle ne porte aucun empan (§6)
-  return `<p class="legende"><span class="llab">Légende :</span>${
-    dims.map(d=>`<span class="ldim" style="--dc:${couleurDim(d)};--ds:${traitDim(d)}">${escapeAttr(d)}</span>`).join("")}</p>`;
-}
+/* §4.3 — PLUS DE LÉGENDE : l'auteur l'a retirée, le code s'apprend en cherchant
+   — au survol du passage, et dans les groupes du Contexte. */
 /* §4.5 — `porte` ANNONCE, il ne filtre rien : le moteur ne le lit jamais. Il se
-   lit DANS l'article, jamais sous le bouton qui l'invoque. Même forme que la
-   légende (§4.3), et les noms y portent leur couleur et leur trait : c'est le
-   pont vers les groupes du Contexte. */
+   lit DANS l'article, jamais sous le bouton qui l'invoque. Les noms y portent
+   leur couleur et leur trait : c'est le pont vers les groupes du Contexte. */
 function portePiece(pid){
   const d=R.porteDe(pid);
   if(!d.length) return "";
-  return `<p class="legende"><span class="llab">Ce texte porte sur :</span>${
+  return `<p class="porte"><span class="llab">Ce texte porte sur :</span>${
     d.map(x=>`<span class="ldim" style="--dc:${couleurDim(x)};--ds:${traitDim(x)}">${escapeAttr(x)}</span>`).join("")}</p>`;
 }
 function piecePanelHTML(pid){
   const p=JEU.pieces[pid];
   return `<small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
     <p class="piecetexte">${rendreTexte(pid)}</p>
-    ${legendePiece(pid)}${portePiece(pid)}
+    ${portePiece(pid)}
     ${rappelRetrait && rappelRetrait.startsWith(pid+".") ? `<p class="rappel">${RAPPEL_RETRAIT}</p>` : ""}
     ${vientDeRetenir && vientDeRetenir.startsWith(pid+".") ? `<p class="rappel retenu">${ECHO_RETENU}</p>` : ""}`;
 }
@@ -685,7 +677,7 @@ function renderRetenus(){
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
   let h=`<div class="zone" id="zoneRetenus" tabindex="-1">`;
   if(!S.retenus.length){
-    h+=`<div class="aide">Ouvre une pièce, puis clique un passage pour le retenir — il se souligne quand tu passes dessus. Il viendra ici.</div>`;
+    h+=`<div class="aide">Ouvre une pièce, puis clique un passage encadré pour le retenir : il viendra ici.</div>`;
   } else {
     for(const d of JEU.dimensions||[]){
       const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);

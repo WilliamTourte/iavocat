@@ -389,7 +389,12 @@ code{font-family:var(--mono);color:var(--accent)}
 /* Un corps de LECTURE, pas d'affiche (§4.6) : à 17 px, une pièce ne tenait pas
    dans son cadre. L'interligne garde la place du ✓ posé au-dessus d'un passage. */
 .bande.piece .piecetexte{font-size:15px;line-height:1.75;margin:12px 0 6px}
-.bande.piece .empan{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black)}
+/* UNE BORDURE LÉGÈRE, NEUTRE ET ARRONDIE dit qu'un passage se clique (§4.3) :
+   la même pour tous, elle ne dit ni la dimension ni la pertinence. Posée
+   d'office, elle ne bouge jamais — le survol ne change que sa teinte. */
+.bande.piece .empan{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
+  border:1px solid color-mix(in srgb, var(--encre) 26%, transparent);border-radius:4px;padding:0 2px}
+.bande.piece .empan:hover{border-color:color-mix(in srgb, var(--encre) 45%, transparent)}
 .bande.piece .empan:hover,.bande.piece .empan:focus-visible{text-decoration-color:var(--dcp);
   background:color-mix(in srgb, var(--dcp) 16%, transparent)}
 .bande.piece .empan.pris{text-decoration-color:var(--dcp);background:color-mix(in srgb, var(--dcp) 26%, transparent)}
@@ -405,14 +410,15 @@ code{font-family:var(--mono);color:var(--accent)}
 .bande.piece :focus-visible{box-shadow:0 0 0 2px var(--papier),0 0 0 4px #1d3b57}
 /* Un article n'est pas un témoignage : un double filet le distingue. */
 .bande.piece.regle{border-left:6px double #b3a37f}
-/* §4.3 — LA LÉGENDE : le code s'apprend sans survol. Chaque nom porte EXACTEMENT
-   la marque des passages qu'il range — même trait, même couleur, foncée par le
-   papier comme eux (`--dcp`), et la palette ne se double toujours pas. */
-.bande.piece .legende{margin:16px 0 0;padding-top:10px;border-top:1px solid var(--filet);
+/* §4.5 — CE QU'UN ARTICLE ANNONCE (`porte`) : chaque nom porte EXACTEMENT la
+   marque des passages qu'il range — même trait, même couleur, foncée par le
+   papier comme eux (`--dcp`). La légende des pièces, qui avait la même forme,
+   est retirée (§4.3). */
+.bande.piece .porte{margin:16px 0 0;padding-top:10px;border-top:1px solid var(--filet);
   font-family:var(--sans);font-size:13px;color:var(--encre2);
   display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 15px}
-.bande.piece .legende .llab{flex:none}
-.bande.piece .legende .ldim{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
+.bande.piece .porte .llab{flex:none}
+.bande.piece .porte .ldim{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
   color:var(--encre);text-decoration-line:underline;text-decoration-style:var(--ds,solid);
   text-decoration-color:var(--dcp);text-decoration-thickness:2px;
   text-underline-offset:.26em;text-decoration-skip-ink:none}

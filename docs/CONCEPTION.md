@@ -131,15 +131,19 @@ et **quand on l'atteint au clavier** (§4.10 règle 1 — le focus vaut le survo
 sa marque pour de bon — fond, trait, ✓. Au toucher, qui n'a pas de survol, c'est **le clic** qui le
 montre : il le retient, donc le marque. Fouiller y gagne un sens (§8.6 : *le joueur a le droit d'être
 perdu*). **Uniforme toujours** : tous les passages se cachent pareil et se montrent pareil — ni lampe
-torche ni passe-droit, `bruit` compris. La **légende**, elle, reste : elle dit quelles dimensions la
-pièce porte, et donc qu'il y a quelque chose à chercher.
+torche ni passe-droit, `bruit` compris.
 
-**Et le code s'apprend SANS SURVOL.** Deux playtests de suite l'ont dit : rien, à l'écran, ne
-laissait deviner que couleur et trait *signifient* quelque chose — il fallait survoler un passage
-pour que le `title` le dise, et un `title` n'existe ni au clavier, ni au toucher, ni pour un lecteur
-d'écran (§4.10 règle 1). La pièce porte donc une **légende** : elle nomme les dimensions **présentes
-dans cette pièce-là**, chacune avec sa couleur et son trait. Elle nomme des **dimensions**, jamais
-des passages — la nuance est tout : nommer un passage rallumerait la lampe torche.
+**Une bordure légère, neutre et arrondie, dit qu'un passage se clique** — demande de l'auteur : nu,
+le texte ne disait plus où cliquer. Elle est **la même pour tous** et **ne dit ni la dimension ni la
+pertinence** : seulement *ici, quelque chose se retient*. Le trait et la couleur restent au survol.
+
+**Le code s'apprend en cherchant : plus de légende.** Posée le 2 octobre — deux playtests demandaient
+que couleur et trait *signifient* quelque chose sans survol, et le `title` qui le disait n'existait ni
+au clavier ni au toucher —, elle nommait sous chaque pièce les dimensions qu'elle portait. **L'auteur
+l'a retirée** : depuis que le marquage ne se montre qu'au survol ou au clic, elle ne disait rien qu'on
+ne voie en passant sur un passage, et Jean, au bas d'une pièce, ne la voyait pas. Le code se lit sur
+le passage même, au survol, et dans le Contexte, où chaque retenu se range sous le nom de sa
+dimension, à sa couleur.
 
 **Retenir a lieu dans la pièce, retirer dans le Contexte.** Recliquer un passage déjà retenu ne
 l'oublie pas — arbitré le 16 septembre, reconduit le 30 après un playtest qui attendait un

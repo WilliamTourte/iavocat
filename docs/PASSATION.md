@@ -228,7 +228,8 @@ que les retenus, plafonnés, défilaient dessous. Et sur téléphone, arbitré :
 la conversation et le composeur** — la pièce y reste à deux lignes, à juger sur un vrai appareil.
 Enfin, **le marquage ne se montre qu'au survol ou au clic** (§4.3) : le texte d'une pièce se lit nu,
 un passage se souligne quand on passe dessus ou qu'on l'atteint au clavier, et garde sa marque une
-fois retenu — au toucher, c'est le clic qui la pose. La légende reste, et porte désormais tout.
+fois retenu — au toucher, c'est le clic qui la pose. Puis **la légende est retirée**, et **une
+bordure légère, neutre et arrondie** dit qu'un passage se clique, sans dire sa dimension (§4.3).
 
 ## 2. Points de vigilance
 
@@ -462,6 +463,9 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   toucher. Reste à voir si elle suffit, ou si le joueur passe à côté.* **Rouvert par Jean : il passe
   à côté.** Posée au bas du texte, elle sort du champ dans une fenêtre de pièce de deux lignes, et il
   demande la légende des cinq traits **avant** de retenir — indispensable au toucher, sans survol.
+  **Retirée par l'auteur** (§4.3) : depuis que le marquage ne se montre qu'au survol ou au clic, elle
+  ne disait rien qu'on ne voie en passant sur un passage. Le code s'apprend en cherchant ; une
+  bordure neutre dit seulement qu'un passage se clique.
 - **Le Contexte à dix-sept fiches** : l'index du dossier grossit avec le dossier, et les passages de
   la session 1 restent en tête. Trier, replier ou filtrer serait *juger* ce que le §4.6 promet de ne
   jamais juger — d'où, pour l'instant, un plancher au panneau, un index resserré, le dernier retenu
@@ -524,8 +528,9 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   l'enjeu calculable s'il se voit (§8.4). Sans arbitrage contraire : **marquer les fiches déjà prises**
   et dire pourquoi une troisième est refusée (aujourd'hui un `title` sur un bouton `disabled`, que ni
   le toucher ni le clavier n'atteignent, §4.10). *Le soulignement au survol ou au clic, demandé par
-  l'auteur, est fait (§4.3)* — reste à voir, au toucher, si un joueur devine encore qu'il y a des
-  passages à chercher : la légende porte désormais tout, et Jean ne la voyait pas.
+  l'auteur, est fait (§4.3), la légende retirée et les passages encadrés d'une bordure neutre* —
+  reste à voir, au toucher, si un joueur comprend ce que couleur et trait veulent dire : il ne les
+  voit qu'une fois le passage retenu.
 - **La bulle ancrée n'a été jouée que dans Chromium**, 1280×800 et 390×800 : sur un vrai téléphone,
   et à côté d'une zone longue comme le texte de la pièce, couvre-t-elle ce qu'on vient chercher ? Elle
   se réduit au geste suivant ; reste à savoir si ça suffit.
@@ -677,4 +682,6 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   repliable à tout moment (`dossierPlie`), le Contexte aux deux tiers (`.wrap.avecContexte`, qui
   remplace `.wrap.avecPiece`), les pièces en 15 px ; la pièce à la hauteur de son texte (plafond
   70 %), les retenus prennent le reste ; le marquage au survol ou au clic (`.empan`, décoration
-  posée mais transparente). 469 contrôles, 8 règles du gardien, ESLint.
+  posée mais transparente) ; la légende retirée (`legendePiece` supprimée, `portePiece` garde sa
+  forme sous `.porte`), une bordure neutre sur chaque passage. 469 contrôles, 8 règles du gardien,
+  ESLint.
