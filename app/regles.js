@@ -7,7 +7,7 @@ function creerRegles(JEU, M) {
 
   /* ---- L'ÉTAT (§4.6) ------------------------------------------------ */
   function etatInitial() { return {
-    fil: [],                      // le canal : {qui, texte, pieces[], ia}
+    fil: [],                      // le canal : {qui, texte, pieces[], ia, question?}
     examinees: [],                // pièces ouvertes au moins une fois
     remisesEnvoyees: 0,
     retenus: [],                  // PRIVÉ — ["pid.eid"] dans l'ordre de surlignage
@@ -48,9 +48,16 @@ function creerRegles(JEU, M) {
   }
   const attenteCourante = (S, r) => attentesDe(r).find(a => !S.satisfaits.includes(a.attend));
   const remiseCourante = S => JEU.remises[S.remisesEnvoyees - 1];
-  function poserQuestion(S, r) {
+  /* LA REMISE PORTE SA PREMIÈRE QUESTION (§4.6) : un seul message, et ses
+     pièces APRÈS la question — on lit ce qu'il demande avant d'aller chercher.
+     La question reste un champ de l'ATTENTE, que `rappelQuestion` retrouve ;
+     le message ne fait que la porter. Les suivantes, posées après une réponse,
+     sont des messages à part. */
+  function poserQuestion(S, r, avecRemise) {
     const a = attenteCourante(S, r);
-    if (a && a.question) pousser(S, r.qui || "Maître Auber", a.question);
+    if (!a || !a.question) return;
+    if (avecRemise) S.fil[S.fil.length - 1].question = a.question;
+    else pousser(S, r.qui || "Maître Auber", a.question);
   }
 
   function envoyerRemise(S) {
@@ -58,7 +65,7 @@ function creerRegles(JEU, M) {
     const r = JEU.remises[S.remisesEnvoyees];
     S.remisesEnvoyees++;
     pousser(S, r.qui, r.texte, r.pieces);
-    poserQuestion(S, r);
+    poserQuestion(S, r, true);
   }
 
   function ouvrirPiece(S, pid) {

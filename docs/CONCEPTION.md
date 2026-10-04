@@ -219,6 +219,13 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   qui remet des pièces ne porte plus qu'un bouton unique vers le Contexte, où chacune s'ouvre à son
   tour, comme un panneau ouvert par la barre : on la consulte, on ne la referme pas pour elle. Les
   portes **tranchent sur le fond** : ce sont des outils, pas des étiquettes.
+- **La remise et sa première question ne font qu'UN message, les pièces APRÈS la question** —
+  demande de l'auteur, et la friction de Colas, qui ouvrait les pièces sans avoir lu la question
+  posée dessous. Dans le fil, deux bulles : le texte et le bouton de pièces, puis la question — on
+  recevait avant de savoir ce qu'on cherchait. Désormais le message de remise porte sa question, et
+  le bouton ferme la bulle : on lit ce qu'il demande, puis on va chercher. La question reste un champ
+  de l'**attente**, jamais du texte de la remise : c'est ce qui permet de la rappeler (§4.9 règle 3).
+  Les questions suivantes, posées après une réponse, restent des messages à part.
 - **LA PIÈCE S'OUVRE DANS LE CONTEXTE, entre l'index et les passages retenus** — retour de playtest
   (Colas), et idée de l'auteur. Tant que la pièce occupait seule la place latérale, citer coûtait
   cinq temps : ouvrir la pièce, retenir, **refermer la pièce**, rouvrir le Contexte, prendre. Le
@@ -369,8 +376,9 @@ flux, en tête de page, le bandeau poussait tout le jeu à chaque fois qu'il se 
 soixantaine de pixels après *« tout effacer »*), et sur un téléphone il mangeait le tiers de
 l'écran. C'est désormais une **boîte de dialogue non bloquante**, en surimpression : elle ne décale
 rien en paraissant ni en disparaissant, et le jeu reste cliquable autour. **Elle s'ancre au halo**,
-une flèche vers la zone, sur le premier côté où elle tient — **à droite, puis au-dessus, au-dessous, à
-gauche** — et elle suit la zone quand l'écran défile ou change de taille. Ce que le flux garantissait
+une flèche vers la zone, sur le premier côté où elle tient — **à droite, puis au-dessous, au-dessus, à
+gauche** : ce qui précède la zone est ce qu'on vient de lire, la question d'abord (§4.6), et la bulle
+va vers ce qui suit. Elle suit la zone quand l'écran défile ou change de taille. Ce que le flux garantissait
 en réservant sa place, l'ancrage le garantit en la choisissant : **la bulle ne recouvre jamais sa
 propre ancre**. Réduite, elle n'est plus que le *« ? »* collé à la zone. Ses consignes
 s'**annoncent** aussi, à qui ne voit pas le halo (§4.10).
@@ -380,8 +388,10 @@ s'**annoncent** aussi, à qui ne voit pas le halo (§4.10).
 (l'un l'a pris pour un bandeau de cookies, l'autre le voit trop tôt). La réponse n'est pas une position
 fixe mais une **durée** : développée tant qu'elle est neuve, elle se réduit d'elle-même dès que le
 rendu suivant confirme que le joueur ne vient pas de la satisfaire — sans minuteur, puisque ce jeu ne
-rend jamais hors d'un geste du joueur. Un clic sur l'icône la rouvre ; se tromper la rouvre aussi,
-puisque le texte d'alerte est une consigne neuve comme une autre. *« je sais faire »* ne vit que dans
+rend jamais hors d'un geste du joueur. **Neuve veut dire jamais montrée** : revenir à une étape déjà
+lue — de *4/4* à *3/4* après *« tout effacer »* — la laisse réduite, à l'endroit de la zone ; elle n'a
+rien de neuf à dire. Un clic sur l'icône la rouvre ; se tromper la rouvre aussi : l'alerte est la
+seule consigne qui se redéploie déjà vue. *« je sais faire »* ne vit que dans
 la forme développée — clore le tutoriel pour de bon reste un choix qu'on pose en le lisant, pas depuis
 une icône.
 

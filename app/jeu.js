@@ -233,6 +233,12 @@ let tutoCible=null, tutoDernierDit=null, tutoAnnonce=null;
    autre. `tutoReouvre` est une lecture UNIQUE posée par l'icône, consommée au
    prochain `majTutoriel` — même idiome que `focusVoulu`. */
 let tutoReduit=false, tutoReouvre=false;
+/* NEUVE VEUT DIRE JAMAIS MONTRÉE (§4.8) : revenir de 4/4 à 3/4 après « tout
+   effacer » redéployait une consigne déjà lue. Seule l'alerte se redéploie
+   déjà vue — se tromper rouvre. La clé est le geste, le rang et le texte : à
+   un même rang, « Ouvre ton Contexte » et « Ouvre une pièce » sont deux
+   consignes. */
+const tutoVues=new Set();
 function majTutoriel(){
   const banniere=$("tuto"), corps=$("tutoCorps"), icone=$("tutoIcone");
   if(!banniere) return;
@@ -241,7 +247,9 @@ function majTutoriel(){
      fermeture définitive, qu'une leçon ait ou non été vue jusqu'au bout. */
   if(!tutoFait && S.remisesEnvoyees>1) tutoClore();
   const e = tutoFait ? null : tutoEtape();
-  const neuf = !!e && e.dit!==tutoDernierDit;
+  const cle = e && e.geste+" "+e.n+" "+e.dit;
+  const neuf = !!e && e.dit!==tutoDernierDit && (!!e.alerte || !tutoVues.has(cle));
+  if(e) tutoVues.add(cle);
   const montrer = neuf || (!!e && tutoReouvre);
   tutoReduit = e ? !montrer : false;
   /* Le halo ne se voit pas à l'oreille : une consigne NEUVE s'annonce (§4.10),
@@ -265,9 +273,11 @@ function majTutoriel(){
 }
 /* §4.8 — LA BULLE S'ANCRE AU HALO, en surimpression : elle ne décale rien, et
    c'est son PLACEMENT, plus le flux, qui la garde hors de sa propre ancre. Le
-   premier côté où elle tient — à droite, au-dessus, au-dessous, à gauche ;
+   premier côté où elle tient — à droite, au-dessous, au-dessus, à gauche ;
    aucun ne suffit, le plus haut des deux espaces verticaux, bornée à la
-   fenêtre. PIÈGE : on mesure le rectangle VISIBLE de la cible, coupé par chaque
+   fenêtre. Ce qui PRÉCÈDE l'ancre est ce qu'on vient de lire — la question,
+   que la remise porte juste avant ses pièces (§4.6) : la bulle va vers ce qui
+   suit. PIÈGE : on mesure le rectangle VISIBLE de la cible, coupé par chaque
    ancêtre qui défile — une zone à moitié défilée n'est pas là où son
    `getBoundingClientRect` la met, et la bulle s'ancrerait dans le vide. Aucune
    suite ne voit cette géométrie (jsdom rend des rectangles nuls) : `npm run
@@ -299,17 +309,16 @@ function placerTuto(){
   const r=rectVisible(tutoCible), cx=(r.left+r.right)/2, cy=(r.top+r.bottom)/2;
   const cotes=[
     ["droite",  L-r.right-E-M>=w],
-    ["dessus",  r.top-E-M>=h],
     ["dessous", H-r.bottom-E-M>=h],
+    ["dessus",  r.top-E-M>=h],
     ["gauche",  r.left-E-M>=w]];
-  const cote=(cotes.find(c=>c[1]) || (r.top>H-r.bottom ? cotes[1] : cotes[2]))[0];
+  const cote=(cotes.find(c=>c[1]) || (r.top>H-r.bottom ? cotes[2] : cotes[1]))[0];
   let x, y;
   if(cote==="droite" || cote==="gauche"){
-    /* Sur le côté, elle MONTE depuis la zone, la flèche en bas : dans la
-       conversation, ce qui suit l'ancre est la question, et c'est elle qu'on
-       garde sous les yeux — une bulle qui descendait la recouvrait. */
+    /* Sur le côté, elle DESCEND depuis la zone, la flèche en haut : la question
+       est au-dessus du bouton de pièces, une bulle qui montait la recouvrait. */
     x = cote==="droite" ? r.right+E : r.left-E-w;
-    y = cy+26-h;
+    y = cy-26;
   } else {
     x = r.left;
     y = cote==="dessus" ? r.top-E-h : r.bottom+E;
@@ -429,7 +438,7 @@ function annoncerNouveautes(){
   if(vusFil<0){ vusFil=S.fil.length; dernierRefus=S.refus||null; tutoAnnonce=null; return; }
   for(const m of S.fil.slice(vusFil)) if(!m.ia){
     const n=(m.pieces||[]).length;
-    annoncer(`${m.qui} : ${texteBrut(m.texte)}${n ? ` (${n} pièce${n>1?"s":""} jointe${n>1?"s":""})` : ""}`);
+    annoncer(`${m.qui} : ${texteBrut(m.texte)}${m.question ? " "+texteBrut(m.question) : ""}${n ? ` (${n} pièce${n>1?"s":""} jointe${n>1?"s":""})` : ""}`);
   }
   vusFil=S.fil.length;
   if(S.refus && S.refus!==dernierRefus) annoncer(S.refus);
@@ -458,9 +467,11 @@ function renderDiscussion(){
     // composée de l'IA, elle, s'échappe.
     const meme = m.qui===dernier; dernier=m.qui;
     h+=`<div class="msg ${m.ia?'ia':''} ${meme?'suite':''}">${
-      meme?"":`<div class="who">${escapeAttr(m.qui)}</div>`}<div class="bubble">${m.ia?escapeAttr(m.texte):m.texte}<div>`;
+      meme?"":`<div class="who">${escapeAttr(m.qui)}</div>`}<div class="bubble">${m.ia?escapeAttr(m.texte):m.texte}${
+      m.question?`<div class="qremise">${m.question}</div>`:""}<div>`;
     // Le message ne nomme plus les pièces une à une (§4.6) : un seul bouton,
-    // vers le Contexte, où chacune se nomme et se lit comme avant.
+    // vers le Contexte, où chacune se nomme et se lit comme avant — et il vient
+    // APRÈS la question que la remise porte : on lit, puis on va chercher.
     if(m.pieces.length){
       const n=m.pieces.length, premier=m.pieces[0];
       const mot=n>1?"pièces":"pièce", s=n>1?"s":"";
@@ -754,7 +765,9 @@ function rappelQuestion(){
      les deux fermés, elle se tait. Au-dessus du seuil, la conversation cède en
      LARGEUR seulement et garde la question — la règle mord alors par surcroît,
      pas par nécessité. */
-  if(!panneau && !S.modalPiece && dernier && dernier.texte===a.question) return "";
+  /* Le dernier mot est la question qu'un message de remise PORTE, ou le texte
+     d'un message qui n'est qu'elle (§4.6). */
+  if(!panneau && !S.modalPiece && dernier && (dernier.question||dernier.texte)===a.question) return "";
   return `<div class="aide question">« ${escapeAttr(a.question)} »</div>`;
 }
 /* La barre des deux surfaces (§4.6) : elle NOMME ce qu'on a, et y donne accès à

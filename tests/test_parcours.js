@@ -402,6 +402,34 @@ console.log("\n=== La remise du tutoriel se sert dans l'ordre ===");
   check("et elle n'entre qu'une fois en Plaidoirie",
     w.moyensRetenus().filter(x => x.b === i).length === 1);
 }
+/* §4.8 — NEUVE VEUT DIRE JAMAIS MONTRÉE (retour de playtest, Jean) : revenir
+   de 4/4 à 3/4 après « tout effacer » redéployait une consigne déjà lue. */
+console.log("\n=== Une consigne déjà lue reste réduite ===");
+{
+  const w = H.boot({url:"http://localhost/"});
+  const bulle = () => w.document.getElementById("tuto");
+  const reduite = () => bulle().hasAttribute("data-reduit");
+  const pas = () => w.document.getElementById("tutoPas").textContent;
+  const pid = H.pidPremiereRemise(w);
+  w.ouvrirPiece(pid);
+  const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
+  const autre = H.empansDe(w, pid).find(k => k !== veut);
+
+  H.surligner(w, autre);
+  check("un passage à côté : l'alerte se déploie", bulle().hasAttribute("data-alerte") && !reduite());
+  w.oublier(...H.deK(autre));
+  check("oublié, la consigne d'avant revient — déjà lue, réduite", !bulle().hasAttribute("data-alerte") && reduite());
+  H.surligner(w, autre);
+  check("mais l'alerte, déjà vue, se redéploie à la nouvelle erreur", bulle().hasAttribute("data-alerte") && !reduite());
+
+  H.surligner(w, veut);
+  const avant = pas();
+  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut));
+  check("la phrase qui se tient : consigne neuve, développée", pas() !== avant && !reduite());
+  w.viderCompo();
+  check("« tout effacer » ramène la consigne d'avant", pas() === avant);
+  check("déjà lue, elle reste réduite", reduite() && !bulle().hidden);
+}
 {
   const avec = H.boot({url:"http://localhost/"});
   const sans = H.boot({graine:{iavocat_tuto:"1"}});
@@ -454,6 +482,22 @@ console.log("\n=== Les répliques : seulement au versement ===");
   check("envoyer deux fois est sans effet", w.S.plaidoirie.length === avant);
 }
 
+/* §4.6 — LA REMISE PORTE SA PREMIÈRE QUESTION, ET LES PIÈCES VIENNENT APRÈS
+   (demande de l'auteur) : Colas ouvrait les pièces sans avoir lu la question,
+   posée dans une seconde bulle sous le bouton. */
+console.log("\n=== La remise et sa question : un seul message, les pièces après ===");
+{
+  const w = boot();
+  const q = (w.R.attentesDe(w.R.remiseCourante(w.S))[0] || {}).question;
+  check("la première attente pose une question", !!q);
+  const bulles = [...w.document.querySelectorAll("#discussion .bubble")];
+  check("la remise et sa question ne font qu'un message", bulles.length === 1 && bulles[0].textContent.includes(q));
+  const t = bulles[0].textContent, att = bulles[0].querySelector(".attach");
+  check("et le bouton de pièces vient APRÈS la question",
+    !!att && t.indexOf(q) >= 0 && t.indexOf(q) < t.indexOf(att.textContent.trim()));
+  check("le composeur ne la redit pas : elle est le dernier mot", !composeur(w).includes(q));
+}
+
 console.log("\n=== L'économie de l'écran : ce qui est déjà sous les yeux ===");
 {
   const w = boot();
@@ -464,13 +508,15 @@ console.log("\n=== L'économie de l'écran : ce qui est déjà sous les yeux ===
   while (courante() && !courante().question)
     w.envoyer(H.composerLien(w, H.lienTag(w, courante().attend)));
   const q = courante();
+  // Le dernier mot : la question qu'un message de remise porte, ou un message qui n'est qu'elle (§4.6).
+  const finDe = m => m.question || m.texte;
   check("la question vient d'être posée : elle est le dernier mot",
-    !!q && !!q.question && w.S.fil[w.S.fil.length - 1].texte === q.question);
+    !!q && !!q.question && finDe(w.S.fil[w.S.fil.length - 1]) === q.question);
   check("le composeur ne la répète donc pas", !composeur(w).includes(q.question));
   // La réplique de `declenche` part à la FERMETURE de la pièce (§4.10 règle 3).
   w.ouvrirPiece(H.pidAvecDeclenche(w)); w.fermerPiece();
   check("l'avocat ayant repris la parole, la question n'est plus le dernier mot",
-    w.S.fil[w.S.fil.length - 1].texte !== q.question);
+    finDe(w.S.fil[w.S.fil.length - 1]) !== q.question);
   check("le composeur la rappelle alors", composeur(w).includes(q.question));
 }
 

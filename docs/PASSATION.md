@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 4 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 448 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 458 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -205,6 +205,11 @@ l'avocat ne dit plus la contradiction avant qu'on la compose (le constat passe d
 accueille la comparaison), ses refus renvoient à la lecture de l'article au lieu de le résumer, et la
 réaction spontanée au rapport du labo pousse vers le chiffre sans faire la comparaison à la place du
 joueur (§4.8). Le refus *« appel + arrivée »* qu'il signale, lui, **ne se reproduit pas**.
+Deux reprises de l'auteur dans la foulée : **une consigne déjà lue reste réduite** — revenir de *4/4* à
+*3/4* après *« tout effacer »* ne la redéploie plus, seule l'alerte se redéploie déjà vue (§4.8) ; et
+**la remise porte sa première question**, en un seul message, le bouton de pièces après elle (§4.6) —
+ce qui répond à Colas, qui ouvrait les pièces sans avoir lu la question posée dessous. La bulle va
+désormais **sous** sa zone plutôt qu'au-dessus : la question est au-dessus du bouton de pièces.
 
 ## 2. Points de vigilance
 
@@ -636,4 +641,6 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   (`horsOrdre`, §3) ; le tutoriel en bulle ancrée au halo, en surimpression (`placerTuto`, §4.8) ;
   l'avocat qui commente après la composition, des refus qui renvoient à la lecture, une réaction
   spontanée qui pousse sans calculer (contenu seul). `npm run vue` mesure que la bulle ne décale
-  rien. 448 contrôles, 8 règles du gardien, ESLint.
+  rien. Puis : une consigne déjà lue reste réduite (`tutoVues`), et la remise porte sa première
+  question en un seul message, les pièces après (`question` sur l'entrée du fil). 458 contrôles,
+  8 règles du gardien, ESLint.

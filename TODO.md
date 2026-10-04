@@ -81,8 +81,11 @@ pour le bandeau du tutoriel. Ce qui est fait est détaillé au §1 de `docs/PASS
       remise 1 servie dans l'ordre, le premier `satisfaits` est de nouveau la citation acquise.
 - [x] **Sortir la bulle du flux** — arbitré par l'auteur : une **bulle ancrée au halo**, boîte de dialogue
       non bloquante en surimpression (`placerTuto`, §4.8). `npm run vue` mesure que son redéploiement
-      après *« tout effacer »* ne décale plus rien. Reste ouvert : faut-il encore la redéployer quand on
-      revient de *4/4* à *3/4* (`neuf`, dans `majTutoriel`) ?
+      après *« tout effacer »* ne décale plus rien.
+- [x] **Une consigne déjà lue reste réduite** (demande de l'auteur) : revenir de *4/4* à *3/4* ne la
+      redéploie plus ; seule l'alerte se redéploie déjà vue (`tutoVues`, §4.8).
+- [x] **La remise et sa première question en un seul message, les pièces après** (demande de l'auteur,
+      §4.6) : on lit la question avant d'aller chercher. Vaut pour chaque remise.
 
 ### À garder — validé par ce playtest
 
@@ -119,7 +122,8 @@ disparaître la bulle sans casser le jeu.
 ## À vérifier en jeu (non joué)
 
 - [ ] La question se lit-elle **avant** les pièces ? Colas ouvrait les pièces sans avoir lu la question
-      placée dessous. Le bouton agrégé et `rappelQuestion` y répondent peut-être — à confirmer.
+      placée dessous. *Depuis, la remise porte sa question en un seul message, le bouton de pièces
+      après elle (§4.6)* — à confirmer en jeu.
 - [ ] La première consigne (« Ouvre ton Contexte », désormais une bulle à côté du bouton de pièces)
       est-elle encore trop abrupte sans contexte ?
 - [ ] La colonne latérale (≥ 900 px) : ordre de tabulation en L, poids visuel du deux-colonnes.
