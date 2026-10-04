@@ -16,12 +16,12 @@ au §1 et au §3 de `docs/PASSATION.md` ; ici, seulement ce qui ne l'est pas.*
       pour le retenir : il viendra ici. »
 - [x] **La pièce s'ouvre DANS le Contexte** — index → pièce → retenus, deux bandes qui défilent, plus de
       temps « Referme la pièce », `declenche` au départ de la pièce, colonne élargie au-dessus de 900 px.
-- [ ] **L'opposition** — rejouée et analysée (§3 PASSATION, six points) :
+- [x] **L'opposition** — rejouée et analysée (§3 PASSATION, six points) :
   - [x] « Continuer » au lieu de « Ne rien opposer — continuer » une fois quelque chose opposé ;
   - [x] déplacer une phrase d'une affirmation à l'autre se fait en silence → « déplacer ici » ;
   - [x] la réplique est toujours la même → l'avocat juge (`repondent`), « ça porte » / « ça ne porte
         pas », variantes qui tournent — **les `repondent` et les répliques sont à relire par l'auteur** ;
-  - [ ] le présentoir se lit mal (petit gris, affirmation hors du cadre) ;
+  - [x] le présentoir se lit mal → le cadre nomme sa cible, une ligne = un geste, l'état au filet ;
   - [x] la voix du composeur parle encore pendant la répétition → muette tant que la phrase est vide.
 - [x] **« Je n'ai rien à opposer »** : la réplique `fin` est devenue une question à laquelle le bouton
       répond, sans renommer le bouton.
@@ -50,6 +50,5 @@ au §1 et au §3 de `docs/PASSATION.md` ; ici, seulement ce qui ne l'est pas.*
 
 ## Ménage
 
-- [ ] Commiter les modifications en cours (`npm test` vert : 442 contrôles, 8 règles, ESLint).
 - [ ] Fermer sans enregistrer l'onglet VSCodium de `export/iavocat.html` : son tampon date du 1er
       octobre et écraserait l'export du 4.

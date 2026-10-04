@@ -314,15 +314,20 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 /* répétition de plaidoirie */
 .repet{border:1px dashed #5a3a3a;border-radius:8px;padding:11px;background:#1a1416;margin-bottom:14px}
 .repet .rtitle{font-size:13.5px;font-weight:600;color:var(--muted);margin-bottom:8px}
-/* En étroit, la phrase garde sa largeur : ce qui la suit (« opposé à : … »,
-   « déplacer ici ») passe dessous, calé à droite, plutôt que de la réduire à
-   une colonne d'un mot (capture 390 px, 4 octobre). */
-.repet .rnote{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px;color:var(--muted);padding:5px 0}
+.repet .raff{font-size:14px;color:var(--txt);border-left:2px solid #5a3a3a;padding:2px 0 2px 9px;margin:0 0 9px}
+/* Une ligne est un geste (§4.6) : la phrase au texte courant, le verbe en
+   étiquette. En étroit, l'étiquette passe sous la phrase, calée à droite,
+   plutôt que de la réduire à une colonne d'un mot (capture 390 px). */
+.repet .rnote{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;width:100%;text-align:left;
+  font:inherit;font-size:14px;color:var(--txt);background:#20262e;border:1px solid var(--line);
+  border-left:3px solid transparent;border-radius:6px;padding:7px 10px;margin:0 0 6px}
+.repet button.rnote{cursor:pointer}
+.repet button.rnote:hover{border-color:var(--accent)}
 .repet .rnote .txt{flex:1 1 14em}
-.repet .rnote .txt + *{margin-left:auto}
-.repet .rnote .sent{white-space:nowrap}
-.repet .rnote.vide{font-style:italic}
-.repet .up{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:12.5px;white-space:nowrap}
+.repet .rnote .verbe{margin-left:auto;font-size:12.5px;color:#bfe0f2;white-space:nowrap}
+.repet .rnote.ici{background:#16222c;border-left-color:var(--transmis)}
+.repet .rnote.ici .verbe{color:var(--muted)}
+.repet .rnote.vide{font-style:italic;color:var(--muted);background:none;border:none}
 .repet .btn{margin-top:8px;width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px;cursor:pointer;font:inherit;font-size:13.5px}
 .repet .btn:hover{border-color:var(--accent)}
 /* --- clôture / fin --- sur une ligne : la colonne tient dans la fenêtre. */

@@ -301,7 +301,7 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   écrire et envoyer — c'est le dernier moment où la conclusion tue peut partir (§4.7) —, mais c'est
   Auber qui parle : une voix par état (§4.9 règle 1), et le chrome ne souffle pas le geste moral
   (§4.8).
-- **LE PRÉSENTOIR PORTE SA CIBLE** (*proposé le 4 octobre, à relire — non appliqué*). Rejoué, il se
+- **LE PRÉSENTOIR PORTE SA CIBLE** (*repris le 4 octobre*). Rejoué, il se
   lisait mal : quatre lignes en petit gris, quatre boutons *opposer* identiques, et l'affirmation visée
   au-dessus, dans le fil — qu'une réplique d'Auber suffit à faire défiler. Trois gestes :
   1. **Le cadre nomme ce qu'on vise** : son titre devient *« Contre l'ADN — 2 sur 3 »* (le `court` et
@@ -313,7 +313,8 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
      qu'une étiquette à droite. Quatre boutons identiques deviennent quatre phrases qu'on choisit.
   3. **L'état se lit au trait, pas au gris** (§4.3, §4.10) : la phrase opposée *à celle-ci* porte un
      filet à gauche et *« ✓ opposée ici »*, et ne se clique plus ; opposée *ailleurs*, elle reste
-     pleine et dit *« opposée à : le témoignage — déplacer ici »* ; libre, elle dit *opposer*.
+     pleine et dit *« opposée à : le témoignage — déplacer ici »* ; libre, elle dit *opposer*. Elle reste
+     à sa place dans la liste : rien ne bouge sous le doigt.
   Rien du moteur ne bouge : ni `verserContre`, ni le jugement, ni les clés de focus (`r:i`, `rsuite`).
 
 La boucle : **l'avocat ouvre** et livre un lot → lire → surligner → composer (rien ne se passe) → la

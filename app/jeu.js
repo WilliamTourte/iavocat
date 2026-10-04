@@ -406,14 +406,23 @@ function renderDiscussion(){
 
     const dispo=S.brouillon.map((n,i)=>({n,i})).filter(x=>R.estMoyen(x.n.lien));
     const cibleDe=i=>{ const e=S.plaidoirie.find(x=>x.b===i); return e && e.contre!=null ? e.contre : null; };
-    h+=`<div class="repet"><div class="rtitle">Opposer une phrase à cette affirmation ?</div>${
+    const affs=JEU.repetition.affirmations, vise=affs[S.repetitionIdx];
+    /* LE PRÉSENTOIR PORTE SA CIBLE (§4.6). Le titre la nomme ; le texte redescend
+       dès qu'une réplique l'a fait défiler — la règle de `rappelQuestion` : LISIBLE
+       est la condition, pas présent (§4.9 règle 3). Juste lue, elle ne se redit pas. */
+    const dernier=S.fil[S.fil.length-1];
+    const rappel = dernier && dernier.texte===vise.texte ? ""
+      : `<div class="raff">${escapeAttr(vise.texte)}</div>`;
+    h+=`<div class="repet"><div class="rtitle">Contre ${escapeAttr(vise.court||"cette affirmation")} — ${S.repetitionIdx+1} sur ${affs.length}</div>${rappel}${
       dispo.length ? dispo.map(x=>{
-        const c=cibleDe(x.i), aff=c!=null && JEU.repetition.affirmations[c];
-        return `<div class="rnote"><span class="txt">${escapeAttr(x.n.texte)}</span>
-         ${c===S.repetitionIdx
-            ? `<span class="sent">opposé à celle-ci</span>`
-            // Opposée ailleurs, le même geste la DÉPLACE : le bouton le dit (§4.6).
-            : `${aff?`<span class="sent">opposé à : ${escapeAttr(aff.court)}</span>`:""}<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">${aff?"déplacer ici":"opposer"}</button>`}</div>`;
+        const c=cibleDe(x.i), aff=c!=null && affs[c];
+        /* UNE LIGNE EST UN GESTE : la phrase entière est le bouton, le verbe une
+           étiquette. L'état se lit AU TRAIT (§4.3, §4.10) : opposée ICI, un filet
+           et « ✓ », plus rien à cliquer ; ailleurs, le même geste la DÉPLACE. */
+        if(c===S.repetitionIdx)
+          return `<div class="rnote ici"><span class="txt">${escapeAttr(x.n.texte)}</span><span class="verbe">✓ opposée ici</span></div>`;
+        const verbe = aff ? `opposée à : ${escapeAttr(aff.court)} — déplacer ici` : "opposer";
+        return `<button type="button" class="rnote" data-f="r:${x.i}" onclick="verserContre(${x.i})"><span class="txt">${escapeAttr(x.n.texte)}</span><span class="verbe">${verbe}</span></button>`;
       }).join("")
       : `<div class="rnote vide">tu n'as écrit aucune phrase à y opposer</div>`
     /* Le bouton d'avance dit ce qu'on FAIT : « ne rien opposer » juste après avoir

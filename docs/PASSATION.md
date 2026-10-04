@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 1er octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 442 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 447 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -367,8 +367,10 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
      ou *ça ne porte pas*, trois variantes chacune qui tournent, et oppose dans les deux cas (§4.6).
      **À relire par l'auteur** : le témoignage ← `temoin`, `q_voix` ; l'ADN ← `adn` (le vice **et**
      le leurre, voulu) ; l'absence d'alibi ← **rien** — c'est un choix de contenu, pas de moteur.
-  4. **Le présentoir se lit mal** : quatre lignes en petit gris, quatre boutons *opposer* identiques,
-     et l'affirmation visée est au-dessus, dans le fil, plus dans le cadre.
+  4. *Corrigé le 4 octobre :* le présentoir se lisait mal (petit gris, quatre boutons identiques,
+     affirmation hors du cadre). Le cadre nomme sa cible (*« Contre l'ADN — 2 sur 3 »*) et en redit
+     le texte dès qu'il a défilé ; chaque ligne est un bouton au texte courant, l'état se lit au filet
+     (§4.6).
   5. *Corrigé le 4 octobre, par le contenu seul :* la fin ne répondait à aucune question — *« C'est tout ce qu'ils ont. Je dépose au matin. »* est
      une affirmation, puis paraît *« Je n'ai rien à opposer »* — c'est la friction de Colas. Le PIÈGE
      du §2 le dit : la question qui appelle le bouton vit dans le CONTENU. **Repli sans code, et sans
@@ -601,3 +603,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   `deja` en repli) ; *« déplacer ici »* ; voix muette pendant la lecture ; en étroit, *« opposé à »* et
   le bouton passent sous la phrase (`.rnote` en `flex-wrap`), qui se réduisait à un mot par ligne à
   390 px. Frise et diagnostic de l'atelier suivent. 442 contrôles, 8 règles du gardien, ESLint.
+- **4 octobre, sixième passe : le présentoir porte sa cible** — titre *« Contre X — n sur N »*, texte
+  de l'affirmation rappelé (`.raff`) dès qu'il n'est plus le dernier message, une ligne = un bouton
+  (`button.rnote`, verbe en `.verbe`), opposée ici = `.rnote.ici`, filet et plus de clic.
+  447 contrôles, 8 règles du gardien, ESLint.

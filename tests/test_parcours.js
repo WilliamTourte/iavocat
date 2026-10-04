@@ -512,7 +512,8 @@ console.log("\n=== La répétition de plaidoirie ===");
   w.cloturer();
   check("la répétition commence sur l'affirmation 1",
     discussion(w).includes(w.JEU.repetition.affirmations[0].texte.slice(0, 20)));
-  check("le présentoir propose ce qui a été écrit", discussion(w).includes("Opposer une phrase"));
+  check("le présentoir propose ce qui a été écrit", !!w.document.querySelector(".repet button.rnote"));
+  check("l'affirmation juste lue ne se répète pas dans le cadre", !w.document.querySelector(".repet .raff"));
   check("confirmer pendant la répétition est refusé", w.document.getElementById("btnCloture").disabled);
   const avancer = () => w.document.querySelector('[data-f="rsuite"]').textContent;
   check("rien d'opposé encore : le bouton d'avance dit qu'on n'oppose rien", /Ne rien opposer/.test(avancer()));
@@ -522,6 +523,16 @@ console.log("\n=== La répétition de plaidoirie ===");
   check("une phrase opposée, il dit seulement « Continuer » — plus le contraire du geste",
     avancer() === "Continuer");
   check("l'affichage nomme l'affirmation opposée", plaidoirie(w).includes(w.JEU.repetition.affirmations[0].court));
+  /* LE PRÉSENTOIR PORTE SA CIBLE (§4.6) : le titre la nomme, et son texte
+     redescend dans le cadre dès qu'une réplique l'a fait défiler. */
+  const cadre = () => w.document.querySelector(".repet");
+  check("le cadre nomme l'affirmation visée et son rang",
+    cadre().querySelector(".rtitle").textContent.includes(w.JEU.repetition.affirmations[0].court)
+    && cadre().querySelector(".rtitle").textContent.includes("1 sur " + w.JEU.repetition.affirmations.length));
+  check("une réplique l'a fait défiler : son texte redescend dans le cadre",
+    (cadre().querySelector(".raff") || {}).textContent === w.JEU.repetition.affirmations[0].texte);
+  check("la phrase opposée ici est marquée et ne se clique plus",
+    !!cadre().querySelector(".rnote.ici") && !cadre().querySelector(`[data-f="r:${i}"]`));
   check("pendant la lecture, la voix du composeur se tait",
     !w.document.querySelector("#composeur .phrase").textContent.trim());
   /* OPPOSER EST LE DERNIER GESTE RÉEL (§4.6). Toute phrase du journal est DÉJÀ
@@ -572,12 +583,13 @@ console.log("\n=== La répétition de plaidoirie ===");
     check("un moyen qui ne répond pas : « ça ne porte pas »", A.oppose_porte_pas.includes(dernier()));
     check("et il est opposé quand même — l'avocat juge, il ne refuse rien",
       w.S.plaidoirie.some(x => x.b === non.i && x.contre === k));
-    const bouton = j => w.document.querySelector(`[data-f="r:${j}"]`);
+    const verbe = j => (w.document.querySelector(`[data-f="r:${j}"] .verbe`) || {}).textContent || "";
     if (k + 1 < affs.length) {
       w.avancerRepetition();
-      check("opposée ailleurs, son bouton dit qu'il la déplace", bouton(oui.i).textContent === "déplacer ici");
+      check("opposée ailleurs, sa ligne dit qu'elle la déplace", /déplacer ici$/.test(verbe(oui.i)));
+      check("et d'où elle part", verbe(oui.i).includes(affs[k].court));
       const libre = moyens.find(x => !w.S.plaidoirie.some(e => e.b === x.i && e.contre != null));
-      if (libre) check("jamais opposée, il dit « opposer »", bouton(libre.i).textContent === "opposer");
+      if (libre) check("jamais opposée, elle dit « opposer »", verbe(libre.i) === "opposer");
     }
   }
   /* Sans `repondent`, aucun jugement : la réplique unique d'avant. */
