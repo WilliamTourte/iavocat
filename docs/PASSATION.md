@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 4 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 458 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 467 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -211,6 +211,15 @@ Deux reprises de l'auteur dans la foulée : **une consigne déjà lue reste réd
 ce qui répond à Colas, qui ouvrait les pièces sans avoir lu la question posée dessous. La bulle va
 désormais **sous** sa zone plutôt qu'au-dessus : la question est au-dessus du bouton de pièces.
 
+**Le 4 octobre, sixième passe : libérer la place de lecture** (retour de Jean). Mesuré d'abord dans
+Chromium, en session 2 à 1280×800 : l'index du dossier, une puce par ligne, prenait 282 px et la
+pièce n'en gardait que 121 — deux lignes ; à 390×800, la pièce n'apparaissait plus du tout. **Pièce
+ouverte, l'index se replie en une ligne** — *le dossier, son compte*, qu'un clic déplie et que la
+pièce suivante replie (§4.6) — et les retenus plafonnent à 30 % au lieu de 38 %. À 1280×800, le texte
+passe à 226 px : le rapport du labo se lit en entier, le PV en sept lignes. Les retenus ne se
+replient pas : ils sont le clavier du composeur et l'ancre de *citer · 3/4*. **Sur un téléphone, le
+gain ne suffit pas** — la pièce revient à l'écran, sur deux lignes : à juger sur un vrai appareil.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -267,6 +276,10 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   `renderDiscussion` ferait paraître la réplique un geste trop tard ; le retirer laisserait une pièce
   ouverte invisible, `S.modalPiece` compris. Une partie reprise sur une pièce ouverte rouvre le
   Contexte au démarrage, sans quoi le premier rendu la replierait, réplique comprise.
+- **Pièce ouverte, l'index se replie, mais `#zoneDossier` reste là** (§4.6) : c'est une ancre du
+  tutoriel (R6), et le halo doit pouvoir l'entourer repliée. Les puces restent dans le DOM, sous
+  `hidden` — le motif *disclosure* standard, et `data-f="d:pid"` survit pour le retour du focus.
+  `dossierDeplie` est un état d'ÉCRAN, comme `panneau` : jamais sauvé, remis à faux par `ouvrirPiece`.
 - **Pièce ouverte, `#contexte` porte deux bandes défilantes de plus** (`.defile[id]`) :
   `garderDefilement` les retrouve par leur id. Une bande sans id repartirait en haut à chaque geste.
 - **Un passage est un `span[role=button][tabindex=0]`, jamais un `<button>`** : un bouton est une
@@ -445,7 +458,9 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   **Ça remord (Jean)** : en session 2, la pièce ouverte ne montre que deux lignes — et déjà en
   session 1 à 1280×800, sur les captures —, et les fiches de l'affaire close restent en tête. Il
   propose de replier index et retenus pièce ouverte, et de ranger les affaires closes : replier par
-  remise ne juge aucun passage, c'est un fait de remise.
+  remise ne juge aucun passage, c'est un fait de remise. *Le 4 octobre, sixième passe : l'index se
+  replie pièce ouverte (§4.6) — à 1280×800 la pièce se lit en entier ; à 390×800 elle reste à deux
+  lignes, le panneau entier ne faisant que 353 px. Restent les affaires closes.*
 - **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
   accès. Le §4.9 interdit de redire, pas d'offrir deux chemins. **Réponse partielle du 1ᵉʳ octobre :
   elles coûtent avant de servir** — au premier écran, un joueur a noté *« Contexte / Plaidoirie :
@@ -643,4 +658,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   spontanée qui pousse sans calculer (contenu seul). `npm run vue` mesure que la bulle ne décale
   rien. Puis : une consigne déjà lue reste réduite (`tutoVues`), et la remise porte sa première
   question en un seul message, les pièces après (`question` sur l'entrée du fil). 458 contrôles,
+  8 règles du gardien, ESLint.
+- **4 octobre, sixième passe : la place de lecture** — pièce ouverte, l'index se replie en une ligne
+  (`dossierDeplie`, `basculerDossier`, puces sous `hidden`) ; retenus plafonnés à 30 %. 467 contrôles,
   8 règles du gardien, ESLint.

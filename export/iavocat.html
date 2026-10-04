@@ -92,12 +92,23 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
    bloc plutôt que de rogner : c'est le rôle de l'`overflow-y` restant. */
 #contexte.avecPiece{display:flex;flex-direction:column;gap:10px}
 #contexte.avecPiece > #zoneDossier{flex:none;margin:0}
+/* Replié, l'index n'est plus qu'une ligne : le dossier et son compte (§4.6). */
+.dplier{display:flex;align-items:baseline;gap:10px;width:100%;padding:2px 0;background:none;border:0;
+  color:var(--txt);font:inherit;font-size:13px;text-align:left;cursor:pointer}
+.dplier .dtitre{font-size:12.5px;font-weight:600;color:var(--muted)}
+.dplier .dcompte{flex:1}
+.dplier .dsens{color:var(--muted);white-space:nowrap}
+.dplier:hover .dsens{color:var(--txt)}
+#zoneDossier:not(.plie) .dplier{margin-bottom:6px}
+.dossier[hidden]{display:none}
 #contexte .bande{position:relative;display:flex;flex-direction:column;min-height:0}
 #contexte .bande > .defile{flex:1 1 auto;min-height:0;overflow-y:auto}
 /* La pièce prend la hauteur, les retenus ce qu'il leur faut — jusqu'à un plafond :
-   à dix-sept fiches, ce sont EUX qui défilent, jamais la pièce qui disparaît. */
+   à dix-sept fiches, ce sont EUX qui défilent, jamais la pièce qui disparaît.
+   30 % et non plus 38 % (retour de playtest, Jean) : la lecture d'abord, et
+   une fiche et demie reste en vue, le fondu disant qu'il en reste. */
 #contexte .bande.piece{flex:1 1 auto;min-height:170px;border:1px solid var(--filet);border-radius:8px;overflow:hidden}
-#contexte .bande.retenus{flex:0 1 auto;max-height:38%;min-height:84px}
+#contexte .bande.retenus{flex:0 1 auto;max-height:30%;min-height:84px}
 #contexte .bande.retenus #zoneRetenus{margin:0}
 .bande.piece .ptete{flex:none;display:flex;align-items:center;gap:8px;padding:7px 10px 7px 14px;
   border-bottom:1px solid var(--filet)}
@@ -2524,7 +2535,7 @@ function ouvrirPiece(pid){
   ouvreur = memoFocus();
   if(S.modalPiece && S.modalPiece!==pid) R.fermerPiece(S);
   R.ouvrirPiece(S,pid);
-  panneau="contexte"; panneauSuit=false;
+  panneau="contexte"; panneauSuit=false; dossierDeplie=false;
   focusVoulu = { cle:"#pieceTitre", zone:"#panPiece" };
   rendreTout();
 }
@@ -2567,8 +2578,27 @@ function renderDossier(){
     <div class="dchips">${pids.length?pids.map(chip).join(""):`<span class="dvide">—</span>`}</div></div>`;
   const pieces=livres.filter(pid=>!R.estRegle(JEU.pieces[pid]));
   const regles=livres.filter(pid=> R.estRegle(JEU.pieces[pid]));
-  return `<div class="zone" id="zoneDossier">
-    <div class="dossier">${colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div></div>`;
+  const liste=`<div class="dossier" id="dossierListe" ${S.modalPiece && !dossierDeplie?"hidden":""}>${
+    colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div>`;
+  if(!S.modalPiece) return `<div class="zone" id="zoneDossier">${liste}</div>`;
+  /* §4.6 — PIÈCE OUVERTE, L'INDEX SE REPLIE en une ligne (retour de playtest,
+     Jean) : déplié, il mangeait la moitié du panneau et la pièce n'y montrait
+     plus que deux lignes. Les puces restent sous `hidden` — le motif
+     « disclosure » —, et `#zoneDossier` reste l'ancre du tutoriel (R6). */
+  const compte=(n,mot)=>n+" "+mot+(n>1?"s":"");
+  const resume=compte(pieces.length,"pièce")+", "+compte(regles.length,"règle");
+  return `<div class="zone ${dossierDeplie?"":"plie"}" id="zoneDossier">
+    <button type="button" class="dplier" data-f="dossier" aria-expanded="${dossierDeplie}" aria-controls="dossierListe"
+      onclick="basculerDossier()"><span class="dtitre">Le dossier</span><span class="dcompte">${resume}</span><span class="dsens">${
+        dossierDeplie?"▴ replier":"▾ déplier"}</span></button>${liste}</div>`;
+}
+/* Un état d'ÉCRAN, comme `panneau` : jamais sauvé. `ouvrirPiece` le remet à faux
+   — chaque pièce ouverte replie l'index, qu'on a déplié pour la choisir. */
+let dossierDeplie=false;
+function basculerDossier(){
+  dossierDeplie=!dossierDeplie;
+  focusVoulu={ cle:"dossier", zone:"#zoneDossier" };
+  rendreTout();
 }
 
 /* 5) LE CONTEXTE — privé, gratuit, illimité, et CLAVIER du composeur (§4.6).

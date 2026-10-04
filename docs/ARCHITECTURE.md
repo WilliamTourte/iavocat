@@ -223,7 +223,7 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
 |---|---|
 | `test_o5.js` (42) | l'index du dossier ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (41) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (235) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition ; **le clavier** (§4.10) |
+| `test_parcours.js` (244) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition ; **le clavier** (§4.10) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
 | `smoke_atelier.js` (102) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
@@ -304,7 +304,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
-| l'avocat ouvre une session — **un seul message, sa première question puis ses pièces** (§4.6) ; ouvrir et refermer une pièce ; l'index du dossier ; **la légende des dimensions** (§4.3) | `envoyerRemise` → `poserQuestion` (qui pose la question SUR le message de remise : champ `question` du fil), `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion`, `renderContexte` → `pieceHTML` → `piecePanelHTML`, `rendreTexte`, `legendePiece`, `renderDossier` |
+| l'avocat ouvre une session — **un seul message, sa première question puis ses pièces** (§4.6) ; ouvrir et refermer une pièce ; l'index du dossier ; **la légende des dimensions** (§4.3) | `envoyerRemise` → `poserQuestion` (qui pose la question SUR le message de remise : champ `question` du fil), `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion`, `renderContexte` → `pieceHTML` → `piecePanelHTML`, `rendreTexte`, `legendePiece`, `renderDossier` — **replié en une ligne pièce ouverte** (`dossierDeplie`, `basculerDossier`) |
 | **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, Contexte seul) | `surligner`, `oublier` | `renderRetenus` dans `renderContexte` ; `rappelRetrait` quand on reclique un passage retenu ; `voirDernierRetenu` à l'ouverture du panneau |
 | ce que le composeur offre ; ce qui se devine avant le clic ; la voix | `blocsOfferts`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
 | **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du Contexte | `rendreVoix`, `ouvrirContexte`, `suivrePhrase` (en tête de `rendreTout`), `majLateral` |

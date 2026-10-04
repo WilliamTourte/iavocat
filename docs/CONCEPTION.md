@@ -236,9 +236,15 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   pièce** (on lit, on retient), **les retenus** (on prend). Trois règles le tiennent :
   - **Deux bandes qui défilent chacune pour son compte**, la pièce au-dessus, les retenus en dessous :
     une pièce longue ne pousse jamais les retenus hors du panneau, et dix-sept fiches ne poussent
-    jamais la pièce. L'index reste au-dessus, resserré, et ne colle pas (le PIÈGE ci-dessus). La
-    pièce prend la hauteur ; les retenus ce qu'il leur faut, jusqu'à un plafond — à dix-sept fiches,
-    ce sont eux qui défilent. **Au-dessus du seuil, la colonne latérale s'élargit** tant qu'une pièce
+    jamais la pièce. La pièce prend la hauteur ; les retenus ce qu'il leur faut, jusqu'à un plafond
+    — à dix-sept fiches, ce sont eux qui défilent.
+  - **Pièce ouverte, l'index se REPLIE en une ligne** — *le dossier, son compte*, qu'un clic déplie
+    — retour de playtest (Jean). Déplié, à huit pièces et une puce par ligne, il prenait la moitié du
+    panneau : la pièce n'y montrait plus que deux lignes, et sur un téléphone plus rien. On le
+    replie à chaque pièce ouverte ; on le déplie pour en choisir une autre, qui le replie à son tour.
+    Pièce repliée, il se déplie seul : il redevient ce qu'on choisit. **Replier n'est pas juger**
+    (§4.6) : ce sont des pièces, pas des passages, et rien n'en est retiré. Il ne colle pas (le
+    PIÈGE ci-dessus), et reste l'ancre du tutoriel, replié ou non. **Au-dessus du seuil, la colonne latérale s'élargit** tant qu'une pièce
     est ouverte : la conversation cède de la largeur, jamais la question. **En dessous**, si le
     panneau est trop bas pour les deux bandes, il redéfile d'un bloc plutôt que de rogner.
   - **Une seule pièce à la fois** : un autre chip de l'index la remplace ; la croix de la pièce la
