@@ -222,7 +222,10 @@ gain ne suffit pas** — la pièce revient à l'écran, sur deux lignes : à jug
 Dans la foulée, trois demandes de l'auteur : **l'index se replie à tout moment**, pas seulement pièce
 ouverte — il laisse la place au reste, et le bouton de pièces du message le déplie ; **le Contexte
 prend les deux tiers de la largeur** au-dessus du seuil (la Plaidoirie garde sa colonne étroite) ;
-**les pièces passent en corps de lecture**, 15 px au lieu de 17 (§4.6).
+**les pièces passent en corps de lecture**, 15 px au lieu de 17 (§4.6). Puis **la pièce prend la
+hauteur de son texte, les retenus tout le reste** : une pièce courte laissait du papier vide pendant
+que les retenus, plafonnés, défilaient dessous. Et sur téléphone, arbitré : **le Contexte reste entre
+la conversation et le composeur** — la pièce y reste à deux lignes, à juger sur un vrai appareil.
 
 ## 2. Points de vigilance
 
@@ -466,7 +469,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   propose de replier index et retenus pièce ouverte, et de ranger les affaires closes : replier par
   remise ne juge aucun passage, c'est un fait de remise. *Le 4 octobre, sixième passe : l'index se
   replie pièce ouverte (§4.6) — à 1280×800 la pièce se lit en entier ; à 390×800 elle reste à deux
-  lignes, le panneau entier ne faisant que 353 px. Restent les affaires closes.*
+  lignes, le panneau entier ne faisant que 353 px — et l'auteur l'y garde, entre la conversation et
+  le composeur. Restent les affaires closes.*
 - **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
   accès. Le §4.9 interdit de redire, pas d'offrir deux chemins. **Réponse partielle du 1ᵉʳ octobre :
   elles coûtent avant de servir** — au premier écran, un joueur a noté *« Contexte / Plaidoirie :
@@ -668,4 +672,5 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
 - **4 octobre, sixième passe : la place de lecture** — pièce ouverte, l'index se replie en une ligne
   (`dossierDeplie`, `basculerDossier`, puces sous `hidden`) ; retenus plafonnés à 30 %. Puis l'index
   repliable à tout moment (`dossierPlie`), le Contexte aux deux tiers (`.wrap.avecContexte`, qui
-  remplace `.wrap.avecPiece`), les pièces en 15 px. 469 contrôles, 8 règles du gardien, ESLint.
+  remplace `.wrap.avecPiece`), les pièces en 15 px ; la pièce à la hauteur de son texte (plafond
+  70 %), les retenus prennent le reste. 469 contrôles, 8 règles du gardien, ESLint.

@@ -54,16 +54,16 @@ pour le bandeau du tutoriel. Ce qui est fait est détaillé au §1 de `docs/PASS
 ### 3. L'ergonomie du Contexte
 
 - [x] **Libérer la place de lecture** — **l'index se replie en une ligne** (*« Le dossier — 5 pièces,
-      3 règles ▾ déplier »*) : à tout moment par sa bascule, d'office pièce ouverte ; les retenus
-      plafonnent à 30 % du panneau au lieu de 38 % ; **le Contexte prend les deux tiers de la largeur**
+      3 règles ▾ déplier »*) : à tout moment par sa bascule, d'office pièce ouverte ; **la pièce prend
+      la hauteur de son texte (plafond 70 %), les retenus tout le reste** ; **le Contexte prend les deux tiers de la largeur**
       au-dessus du seuil ; **les pièces passent en 15 px** au lieu de 17 (§4.6). Mesuré dans Chromium à 1280×800 : en session 2, l'index passe de 282 à 40 px et le texte
       de la pièce de 121 à 226 px — le rapport du labo se lit en entier ; en session 1, le PV montre
       7 lignes au lieu de 2. Les retenus ne sont pas repliés : c'est le clavier du composeur, et
       l'ancre de *citer · 3/4*.
 - [ ] **Sur un téléphone, la pièce reste à l'étroit** : à 390×800 le panneau entier ne fait que 353 px,
-      et la pièce, revenue à l'écran, n'y montre que deux lignes. Leviers restants, à juger sur un vrai
-      téléphone : replier aussi les retenus sous le seuil (mais *citer · 3/4* les vise), ou ouvrir la
-      pièce sur toute la hauteur du panneau.
+      et la pièce n'y montre que deux lignes. *Arbitré par l'auteur : le Contexte y reste entre la
+      conversation et le composeur* — ni retenus repliés, ni pièce en pleine hauteur. À juger sur un
+      vrai téléphone.
 - [ ] **⚖ Ranger les affaires closes.** Les fiches de la session 1 restent en tête de liste : les archiver
       ou les replier. Le §4.6 promet que le Contexte ne **juge** rien — mais replier par session ne juge
       aucun passage, c'est un fait de remise. Rejoint *« aucune barrière entre les affaires »* (§3

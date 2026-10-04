@@ -103,12 +103,14 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 .dossier[hidden]{display:none}
 #contexte .bande{position:relative;display:flex;flex-direction:column;min-height:0}
 #contexte .bande > .defile{flex:1 1 auto;min-height:0;overflow-y:auto}
-/* La pièce prend la hauteur, les retenus ce qu'il leur faut — jusqu'à un plafond :
-   à dix-sept fiches, ce sont EUX qui défilent, jamais la pièce qui disparaît.
-   30 % et non plus 38 % (retour de playtest, Jean) : la lecture d'abord, et
-   une fiche et demie reste en vue, le fondu disant qu'il en reste. */
-#contexte .bande.piece{flex:1 1 auto;min-height:170px;border:1px solid var(--filet);border-radius:8px;overflow:hidden}
-#contexte .bande.retenus{flex:0 1 auto;max-height:30%;min-height:84px}
+/* LA PIÈCE PREND LA HAUTEUR DE SON TEXTE, LES RETENUS TOUT LE RESTE (§4.6) : une
+   pièce courte laissait du papier vide pendant que les retenus, plafonnés,
+   défilaient dessous. La pièce part de sa taille (`flex-basis:auto`) jusqu'à un
+   plafond de 70 % — au-delà, elle défile ; les retenus partent de zéro et
+   prennent ce qui reste, plancher compris : à dix-sept fiches, ce sont EUX qui
+   défilent, jamais la pièce qui disparaît. */
+#contexte .bande.piece{flex:0 1 auto;max-height:70%;min-height:170px;border:1px solid var(--filet);border-radius:8px;overflow:hidden}
+#contexte .bande.retenus{flex:1 1 0;min-height:84px}
 #contexte .bande.retenus #zoneRetenus{margin:0}
 .bande.piece .ptete{flex:none;display:flex;align-items:center;gap:8px;padding:7px 10px 7px 14px;
   border-bottom:1px solid var(--filet)}

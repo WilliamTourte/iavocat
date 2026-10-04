@@ -236,8 +236,10 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   pièce** (on lit, on retient), **les retenus** (on prend). Trois règles le tiennent :
   - **Deux bandes qui défilent chacune pour son compte**, la pièce au-dessus, les retenus en dessous :
     une pièce longue ne pousse jamais les retenus hors du panneau, et dix-sept fiches ne poussent
-    jamais la pièce. La pièce prend la hauteur ; les retenus ce qu'il leur faut, jusqu'à un plafond
-    — à dix-sept fiches, ce sont eux qui défilent. **Au-dessus du seuil, le Contexte prend les DEUX
+    jamais la pièce. **La pièce prend la hauteur de son texte, jusqu'à un plafond ; les retenus,
+    tout le reste** — demande de l'auteur : une pièce courte laissait du papier vide pendant que les
+    retenus, plafonnés, défilaient dessous. Une pièce longue s'arrête au plafond et défile ; à
+    dix-sept fiches, ce sont les retenus qui défilent. **Au-dessus du seuil, le Contexte prend les DEUX
     TIERS de la largeur**, pièce ouverte ou non — demande de l'auteur : index, pièce et retenus se
     lisaient à l'étroit dans une colonne d'un tiers. La conversation garde le tiers restant, et la
     question avec elle ; la Plaidoirie, qui ne porte qu'une liste, garde sa colonne étroite. **En
