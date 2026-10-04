@@ -72,13 +72,15 @@ pour le bandeau du tutoriel. Ce qui est fait est détaillé au §1 de `docs/PASS
       phrase, et **dire** pourquoi une troisième est refusée. Aujourd'hui le bouton est seulement
       `disabled`, et l'explication vit dans un `title` (*« ta phrase n'attend pas un passage »*) que ni
       le toucher ni le clavier n'atteignent (§4.10).
-- [ ] **Les passages ni soulignés ni surlignés par défaut — seulement au survol** (demande de l'auteur).
-      Fouiller y gagne un sens (§8.6 : *le joueur a le droit d'être perdu*). À écrire au §4.3 d'abord, et
-      trois questions à trancher : **le toucher** n'a pas de survol (le point suivant le juge
-      *indispensable sur mobile*) ; **le clavier** a besoin d'un équivalent (`:focus-visible`, §4.10) ;
-      et un passage **retenu** garde-t-il sa marque (✓, fond) hors survol ?
+- [x] **Soulignement au survol ou au clic** (demande de l'auteur, §4.3) : le texte d'une pièce se lit
+      nu ; un passage se souligne quand on passe dessus ou qu'on l'atteint au clavier (`:focus-visible`),
+      et garde sa marque une fois retenu — au toucher, c'est le clic qui la pose. Les consignes ne disent
+      plus *« passage souligné »*.
+- [ ] **À jouer** : sans survol, un joueur au toucher trouve-t-il qu'il y a des passages à chercher ? La
+      légende le dit, mais Jean ne la voyait pas (point suivant) — c'est elle qui porte désormais tout.
 - [ ] **Montrer la catégorie avant de retenir** : une légende des cinq styles de soulignement,
-      **indispensable sur mobile** (pas de survol). La légende de chaque pièce existe (§4.3), mais **au
+      **indispensable sur mobile** (pas de survol) — *plus pressant encore depuis que le marquage ne se
+      montre qu'au survol*. La légende de chaque pièce existe (§4.3), mais **au
       bas** du texte, hors champ dans une fenêtre de deux lignes. Répond au §3 PASSATION (*« reste à voir
       si elle suffit, ou si le joueur passe à côté »*) : il passe à côté.
 

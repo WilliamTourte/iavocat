@@ -244,14 +244,21 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
    ligne, et l'épaisser ne décale rien. Retenu, le fond se remplit — jamais de
    graisse, qui décalait le texte autour. */
 .piecetexte{line-height:1.9}
+/* §4.3 — LE MARQUAGE NE SE MONTRE QU'AU SURVOL OU AU CLIC (demande de l'auteur) :
+   le texte se lit nu ; un passage se souligne et prend son fond quand on passe
+   dessus ou qu'on l'atteint au clavier (`:focus-visible`, §4.10 règle 1), et
+   garde sa marque une fois retenu — au toucher, c'est le clic qui la pose. La
+   décoration reste POSÉE, seulement transparente : rien ne bouge au survol.
+   Uniforme toujours : tous les passages se cachent et se montrent pareil. */
 .empan{text-decoration-line:underline;text-decoration-style:var(--ds,solid);
-  text-decoration-color:var(--dc,var(--muted));text-decoration-thickness:2px;
+  text-decoration-color:transparent;text-decoration-thickness:2px;
   text-underline-offset:.26em;text-decoration-skip-ink:none;
   border-radius:2px;padding:1px 1px;cursor:pointer;
-  -webkit-box-decoration-break:clone;box-decoration-break:clone;
-  background:color-mix(in srgb, var(--dc,#888) 10%, transparent)}
-.empan:hover{background:color-mix(in srgb, var(--dc,#888) 24%, transparent)}
-.empan.pris{background:color-mix(in srgb, var(--dc,#888) 32%, transparent);text-decoration-thickness:3px}
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;background:transparent}
+.empan:hover,.empan:focus-visible{text-decoration-color:var(--dc,var(--muted));
+  background:color-mix(in srgb, var(--dc,#888) 18%, transparent)}
+.empan.pris{text-decoration-color:var(--dc,var(--muted));
+  background:color-mix(in srgb, var(--dc,#888) 32%, transparent);text-decoration-thickness:3px}
 /* --- contexte : une seule liste, qui sert AUSSI de clavier au composeur --- */
 .dimgrp{margin-bottom:9px}
 .dimgrp .dnom{font-size:12px;color:var(--dc,var(--muted));text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
@@ -382,10 +389,10 @@ code{font-family:var(--mono);color:var(--accent)}
 /* Un corps de LECTURE, pas d'affiche (§4.6) : à 17 px, une pièce ne tenait pas
    dans son cadre. L'interligne garde la place du ✓ posé au-dessus d'un passage. */
 .bande.piece .piecetexte{font-size:15px;line-height:1.75;margin:12px 0 6px}
-.bande.piece .empan{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
-  text-decoration-color:var(--dcp);background:color-mix(in srgb, var(--dcp) 9%, transparent)}
-.bande.piece .empan:hover{background:color-mix(in srgb, var(--dcp) 18%, transparent)}
-.bande.piece .empan.pris{background:color-mix(in srgb, var(--dcp) 26%, transparent)}
+.bande.piece .empan{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black)}
+.bande.piece .empan:hover,.bande.piece .empan:focus-visible{text-decoration-color:var(--dcp);
+  background:color-mix(in srgb, var(--dcp) 16%, transparent)}
+.bande.piece .empan.pris{text-decoration-color:var(--dcp);background:color-mix(in srgb, var(--dcp) 26%, transparent)}
 /* §4.3 / §4.10 règle 5 — l'état s'ÉCRIT : un ✓ en exposant, HORS DU FLUX, pour que
    le texte autour ne bouge pas. Le texte alternatif vide le tait au lecteur
    d'écran, qui a déjà « retenu » dans le `.sr` du passage. */

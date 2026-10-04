@@ -226,6 +226,9 @@ prend les deux tiers de la largeur** au-dessus du seuil (la Plaidoirie garde sa 
 hauteur de son texte, les retenus tout le reste** : une pièce courte laissait du papier vide pendant
 que les retenus, plafonnés, défilaient dessous. Et sur téléphone, arbitré : **le Contexte reste entre
 la conversation et le composeur** — la pièce y reste à deux lignes, à juger sur un vrai appareil.
+Enfin, **le marquage ne se montre qu'au survol ou au clic** (§4.3) : le texte d'une pièce se lit nu,
+un passage se souligne quand on passe dessus ou qu'on l'atteint au clavier, et garde sa marque une
+fois retenu — au toucher, c'est le clic qui la pose. La légende reste, et porte désormais tout.
 
 ## 2. Points de vigilance
 
@@ -520,9 +523,9 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   qui existe* (§4.5) ; **donner un coût à l'erreur** (jauge de patience, envois comptés) rendrait
   l'enjeu calculable s'il se voit (§8.4). Sans arbitrage contraire : **marquer les fiches déjà prises**
   et dire pourquoi une troisième est refusée (aujourd'hui un `title` sur un bouton `disabled`, que ni
-  le toucher ni le clavier n'atteignent, §4.10). Et une demande de l'auteur à écrire au §4.3 :
-  **passages ni soulignés ni surlignés par défaut, seulement au survol** — reste à dire ce que voient
-  le toucher et le clavier, et si un passage retenu garde sa marque.
+  le toucher ni le clavier n'atteignent, §4.10). *Le soulignement au survol ou au clic, demandé par
+  l'auteur, est fait (§4.3)* — reste à voir, au toucher, si un joueur devine encore qu'il y a des
+  passages à chercher : la légende porte désormais tout, et Jean ne la voyait pas.
 - **La bulle ancrée n'a été jouée que dans Chromium**, 1280×800 et 390×800 : sur un vrai téléphone,
   et à côté d'une zone longue comme le texte de la pièce, couvre-t-elle ce qu'on vient chercher ? Elle
   se réduit au geste suivant ; reste à savoir si ça suffit.
@@ -673,4 +676,5 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   (`dossierDeplie`, `basculerDossier`, puces sous `hidden`) ; retenus plafonnés à 30 %. Puis l'index
   repliable à tout moment (`dossierPlie`), le Contexte aux deux tiers (`.wrap.avecContexte`, qui
   remplace `.wrap.avecPiece`), les pièces en 15 px ; la pièce à la hauteur de son texte (plafond
-  70 %), les retenus prennent le reste. 469 contrôles, 8 règles du gardien, ESLint.
+  70 %), les retenus prennent le reste ; le marquage au survol ou au clic (`.empan`, décoration
+  posée mais transparente). 469 contrôles, 8 règles du gardien, ESLint.

@@ -124,6 +124,16 @@ jamais la pertinence : chaque dimension a sa couleur *et* son soulignement — p
 tirets, ondulé —, si bien qu'aucune ne se lit à la couleur seule (§4.10). C'est le **rang** qui les
 attribue, jamais le contenu.
 
+**Le marquage ne se montre qu'au survol ou au clic** — demande de l'auteur. Soulignée d'office, une
+pièce se lisait comme un formulaire déjà rempli : ses passages s'offraient avant d'être cherchés.
+Désormais le texte se lit **nu** ; un passage se souligne et prend son fond **quand on passe dessus**,
+et **quand on l'atteint au clavier** (§4.10 règle 1 — le focus vaut le survol) ; **retenu**, il garde
+sa marque pour de bon — fond, trait, ✓. Au toucher, qui n'a pas de survol, c'est **le clic** qui le
+montre : il le retient, donc le marque. Fouiller y gagne un sens (§8.6 : *le joueur a le droit d'être
+perdu*). **Uniforme toujours** : tous les passages se cachent pareil et se montrent pareil — ni lampe
+torche ni passe-droit, `bruit` compris. La **légende**, elle, reste : elle dit quelles dimensions la
+pièce porte, et donc qu'il y a quelque chose à chercher.
+
 **Et le code s'apprend SANS SURVOL.** Deux playtests de suite l'ont dit : rien, à l'écran, ne
 laissait deviner que couleur et trait *signifient* quelque chose — il fallait survoler un passage
 pour que le `title` le dise, et un `title` n'existe ni au clavier, ni au toucher, ni pour un lecteur
@@ -148,7 +158,7 @@ La ligne reste **dans le flux** : collée au bas de la pièce, elle couvrait, da
 Contexte, le texte même qu'on venait de cliquer.
 La confirmation vit **là où le geste a lieu**, pas dans un coin de l'écran : c'est la pièce qu'on
 regarde quand on clique. Le Contexte vide, de son côté, dit **comment** on le remplit — ouvrir une
-pièce, cliquer un passage souligné —, plus seulement *qu'*il se remplit.
+pièce, y cliquer un passage —, plus seulement *qu'*il se remplit.
 
 ### 4.4 Le doublon banal
 

@@ -152,8 +152,8 @@ function tutoEtapeCitation(){
             dit: rate ? "Ce n'est pas ce qu'il demande."
                       : "Retiens le passage qui répond.",
             ditLong: rate
-              ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage souligné qui y répond."
-              : "Clique sur un passage souligné pour le retenir dans ton Contexte : c'est de là que tu composeras ta réponse."}
+              ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage qui y répond."
+              : "Cherche dans le texte le passage qui répond : il se souligne quand tu passes dessus. Clique-le pour le retenir dans ton Contexte, c'est de là que tu composeras ta réponse."}
       /* Le Contexte ouvert, le halo quitte le bouton du message pour l'index :
          il ne pulse plus sur une porte qu'on vient de franchir (§4.8). */
       : panneau==="contexte"
@@ -685,7 +685,7 @@ function renderRetenus(){
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
   let h=`<div class="zone" id="zoneRetenus" tabindex="-1">`;
   if(!S.retenus.length){
-    h+=`<div class="aide">Ouvre une pièce, puis clique un passage souligné pour le retenir : il viendra ici.</div>`;
+    h+=`<div class="aide">Ouvre une pièce, puis clique un passage pour le retenir — il se souligne quand tu passes dessus. Il viendra ici.</div>`;
   } else {
     for(const d of JEU.dimensions||[]){
       const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
