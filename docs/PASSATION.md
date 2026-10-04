@@ -229,7 +229,8 @@ la conversation et le composeur** — la pièce y reste à deux lignes, à juger
 Enfin, **le marquage ne se montre qu'au survol ou au clic** (§4.3) : le texte d'une pièce se lit nu,
 un passage se souligne quand on passe dessus ou qu'on l'atteint au clavier, et garde sa marque une
 fois retenu — au toucher, c'est le clic qui la pose. Puis **la légende est retirée**, et **une
-bordure légère, neutre et arrondie** dit qu'un passage se clique, sans dire sa dimension (§4.3).
+bordure à peine visible, neutre et arrondie** suggère qu'un passage se clique, sans dire sa
+dimension (§4.3).
 
 ## 2. Points de vigilance
 

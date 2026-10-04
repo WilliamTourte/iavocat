@@ -133,8 +133,9 @@ montre : il le retient, donc le marque. Fouiller y gagne un sens (§8.6 : *le jo
 perdu*). **Uniforme toujours** : tous les passages se cachent pareil et se montrent pareil — ni lampe
 torche ni passe-droit, `bruit` compris.
 
-**Une bordure légère, neutre et arrondie, dit qu'un passage se clique** — demande de l'auteur : nu,
-le texte ne disait plus où cliquer. Elle est **la même pour tous** et **ne dit ni la dimension ni la
+**Une bordure à peine visible, neutre et arrondie, SUGGÈRE qu'un passage se clique** — demande de
+l'auteur : nu, le texte ne disait plus où cliquer ; franche, elle le disait trop. Elle se devine plus
+qu'elle ne se voit. Elle est **la même pour tous** et **ne dit ni la dimension ni la
 pertinence** : seulement *ici, quelque chose se retient*. Le trait et la couleur restent au survol.
 
 **Le code s'apprend en cherchant : plus de légende.** Posée le 2 octobre — deux playtests demandaient

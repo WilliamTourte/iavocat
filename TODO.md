@@ -74,8 +74,8 @@ pour le bandeau du tutoriel. Ce qui est fait est détaillé au §1 de `docs/PASS
       le toucher ni le clavier n'atteignent (§4.10).
 - [x] **Soulignement au survol ou au clic** (demande de l'auteur, §4.3) : le trait et la couleur d'un
       passage ne se montrent que quand on passe dessus ou qu'on l'atteint au clavier (`:focus-visible`),
-      et restent une fois retenu — au toucher, c'est le clic qui les pose. **Une bordure légère, neutre
-      et arrondie** dit, elle, qu'un passage se clique : la même pour tous. Les consignes disent
+      et restent une fois retenu — au toucher, c'est le clic qui les pose. **Une bordure à peine
+      visible, neutre et arrondie** suggère, elle, qu'un passage se clique : la même pour tous. Les consignes disent
       *« passage encadré »*.
 - [x] **Montrer la catégorie avant de retenir** — *arbitré par l'auteur : la légende est retirée*
       (§4.3). Le code s'apprend en cherchant : au survol du passage, et dans les groupes du Contexte.

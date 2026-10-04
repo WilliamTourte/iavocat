@@ -389,12 +389,13 @@ code{font-family:var(--mono);color:var(--accent)}
 /* Un corps de LECTURE, pas d'affiche (§4.6) : à 17 px, une pièce ne tenait pas
    dans son cadre. L'interligne garde la place du ✓ posé au-dessus d'un passage. */
 .bande.piece .piecetexte{font-size:15px;line-height:1.75;margin:12px 0 6px}
-/* UNE BORDURE LÉGÈRE, NEUTRE ET ARRONDIE dit qu'un passage se clique (§4.3) :
-   la même pour tous, elle ne dit ni la dimension ni la pertinence. Posée
-   d'office, elle ne bouge jamais — le survol ne change que sa teinte. */
+/* UNE BORDURE À PEINE VISIBLE, NEUTRE ET ARRONDIE suggère qu'un passage se clique
+   (§4.3) : la même pour tous, elle ne dit ni la dimension ni la pertinence, et
+   se devine plus qu'elle ne se voit. Posée d'office, elle ne bouge jamais — le
+   survol ne change que sa teinte. */
 .bande.piece .empan{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
-  border:1px solid color-mix(in srgb, var(--encre) 26%, transparent);border-radius:4px;padding:0 2px}
-.bande.piece .empan:hover{border-color:color-mix(in srgb, var(--encre) 45%, transparent)}
+  border:1px solid color-mix(in srgb, var(--encre) 10%, transparent);border-radius:4px;padding:0 2px}
+.bande.piece .empan:hover{border-color:color-mix(in srgb, var(--encre) 30%, transparent)}
 .bande.piece .empan:hover,.bande.piece .empan:focus-visible{text-decoration-color:var(--dcp);
   background:color-mix(in srgb, var(--dcp) 16%, transparent)}
 .bande.piece .empan.pris{text-decoration-color:var(--dcp);background:color-mix(in srgb, var(--dcp) 26%, transparent)}
