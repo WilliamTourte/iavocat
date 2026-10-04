@@ -85,7 +85,7 @@ console.log("\n=== Les drapeaux et les déclencheurs ===");
      atteigne — le journal, lui, ne se remplit qu'à l'envoi (§16). */
   H.assembler(w1, H.lienConclusion(w1));
   const pidD = H.pidAvecDeclenche(w1);
-  w1.ouvrirPiece(pidD); w1.closeModal();   // la réplique part à la fermeture (§4.10)
+  w1.ouvrirPiece(pidD); w1.fermerPiece();   // la réplique part à la fermeture (§4.10)
   check("vice_trouve est levé", w1.S.vice_trouve);
   check("le declenche a déjà joué", w1.S.declenches.includes(pidD));
 

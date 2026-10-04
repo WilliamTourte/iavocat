@@ -16,12 +16,15 @@ console.log("\n=== L'index du dossier ===");
   check("une pièce non consultée porte le marqueur ●", contexte(w).includes("● "));
   w.ouvrirPiece(pid);
   check("consultée, elle porte ✓", contexte(w).includes("✓ "));
-  // Une pièce ne porte qu'un nom (§4.6) : on compare les deux surfaces entre
-  // elles, sans qu'aucun titre soit écrit ici.
+  // Une pièce ne porte qu'un nom (§4.6), et l'index du Contexte est désormais
+  // SEUL à le porter — la Discussion ne transmet plus qu'un compte.
   const puces = [...w.document.querySelectorAll("#contexte .dchip")];
-  check("l'index nomme les pièces comme la Discussion les a transmises",
+  check("l'index nomme chaque pièce de son titre propre",
     puces.length > 0 && puces.every(c =>
-      discussion(w).includes(c.textContent.replace(/^[●✓]\s*/, "").trim())));
+      Object.values(w.JEU.pieces).some(p => c.textContent.replace(/^[●✓]\s*/, "").trim() === p.titre)));
+  const attaches = [...w.document.querySelectorAll("#discussion .attach")];
+  check("le message ne nomme plus les pièces, un compte renvoie au Contexte",
+    attaches.length > 0 && attaches.every(b => /disponible/.test(b.textContent)));
 }
 
 console.log("\n=== Tout empan est marqué et cliquable ===");
@@ -29,7 +32,7 @@ console.log("\n=== Tout empan est marqué et cliquable ===");
   const w = boot();
   const pid = H.pidPremiereRemise(w);
   w.ouvrirPiece(pid);
-  const html = w.document.querySelector(".modal").innerHTML;
+  const html = w.document.querySelector("#panPiece").innerHTML;
   const attendus = Object.keys(w.JEU.pieces[pid].empans||{}).length;
   const rendus = (html.match(/class="empan/g)||[]).length;
   check(`les ${attendus} empans de la pièce sont tous rendus cliquables`, rendus === attendus);

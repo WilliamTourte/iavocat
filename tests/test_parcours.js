@@ -306,7 +306,10 @@ console.log("\n=== Les deux gestes, montrés ===");
   H.surligner(w, veut);
   check("le bon passage retenu, l'alerte tombe",
     !w.document.getElementById("tuto").hasAttribute("data-alerte"));
-  w.closeModal();
+  check("pièce ouverte DANS le Contexte, il montre les retenus juste dessous — plus rien à refermer (§4.6)",
+    !!halo() && halo().id === "zoneRetenus" && !!w.S.modalPiece);
+  w.fermerPanneau();
+  check("le Contexte refermé replie la pièce avec lui", !w.S.modalPiece);
   check("le contexte étant un panneau FERMÉ, il montre la porte, pas la zone cachée",
     !!halo() && halo().id === "btnContexte");
   w.basculerPanneau("contexte");
@@ -330,7 +333,7 @@ console.log("\n=== Les deux gestes, montrés ===");
   const [pid2] = H.deK(veut2);
   w.ouvrirPiece(pid2);
   H.surligner(w, veut2);
-  w.closeModal();
+  w.fermerPiece();
   check("une deuxième citation, geste déjà connu, ne rallume pas le halo",
     bandeau().hidden && !halo());
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut2));
@@ -375,22 +378,22 @@ console.log("\n=== Les deux gestes, montrés ===");
     JSON.stringify(avec.S) === JSON.stringify(sans.S));
 }
 
-console.log("\n=== La modale de pièce ===");
+console.log("\n=== Le panneau de la pièce ===");
 {
   const w = boot();
   const pid = H.pidPremiereRemise(w);
   w.ouvrirPiece(pid);
-  const m = () => w.document.querySelector(".modal").innerHTML;
+  const m = () => w.document.querySelector("#panPiece").innerHTML;
   check("le titre et le signataire s'affichent",
     m().includes(w.JEU.pieces[pid].titre) && m().includes(w.JEU.pieces[pid].qui));
   const eid = Object.keys(w.JEU.pieces[pid].empans)[0];
   w.surligner(pid, eid);
-  check("l'empan surligné se marque « pris » dans la modale", m().includes("empan pris"));
+  check("l'empan surligné se marque « pris » dans le panneau", m().includes("empan pris"));
   const empan = w.JEU.pieces[pid].empans[eid];
   check("et apparaît dans le contexte",
     contexte(w).includes("zoneRetenus") && contexte(w).includes(empan.nom || empan.texte));
-  w.closeModal();
-  check("fermer la modale n'efface pas le contexte", w.S.retenus.length === 1);
+  w.fermerPiece();
+  check("fermer la pièce n'efface pas le contexte", w.S.retenus.length === 1);
   const pidR = H.pidRegle(w);
   if (!Object.keys(w.JEU.pieces[pidR].empans || {}).length) {
     w.ouvrirPiece(pidR);
@@ -432,7 +435,7 @@ console.log("\n=== L'économie de l'écran : ce qui est déjà sous les yeux ===
     !!q && !!q.question && w.S.fil[w.S.fil.length - 1].texte === q.question);
   check("le composeur ne la répète donc pas", !composeur(w).includes(q.question));
   // La réplique de `declenche` part à la FERMETURE de la pièce (§4.10 règle 3).
-  w.ouvrirPiece(H.pidAvecDeclenche(w)); w.closeModal();
+  w.ouvrirPiece(H.pidAvecDeclenche(w)); w.fermerPiece();
   check("l'avocat ayant repris la parole, la question n'est plus le dernier mot",
     w.S.fil[w.S.fil.length - 1].texte !== q.question);
   check("le composeur la rappelle alors", composeur(w).includes(q.question));
@@ -511,9 +514,13 @@ console.log("\n=== La répétition de plaidoirie ===");
     discussion(w).includes(w.JEU.repetition.affirmations[0].texte.slice(0, 20)));
   check("le présentoir propose ce qui a été écrit", discussion(w).includes("Opposer une phrase"));
   check("confirmer pendant la répétition est refusé", w.document.getElementById("btnCloture").disabled);
+  const avancer = () => w.document.querySelector('[data-f="rsuite"]').textContent;
+  check("rien d'opposé encore : le bouton d'avance dit qu'on n'oppose rien", /Ne rien opposer/.test(avancer()));
   const i = w.S.brouillon.findIndex(n => w.R.estMoyen(n.lien));
   w.verserContre(i);
   check("verser contre une affirmation marque la cible", w.S.plaidoirie.some(x => x.contre === 0));
+  check("une phrase opposée, il dit seulement « Continuer » — plus le contraire du geste",
+    avancer() === "Continuer");
   check("l'affichage nomme l'affirmation opposée", plaidoirie(w).includes(w.JEU.repetition.affirmations[0].court));
   /* OPPOSER EST LE DERNIER GESTE RÉEL (§4.6). Toute phrase du journal est DÉJÀ
      versée — le journal ne se remplit qu'à l'envoi — donc c'est sur une phrase
@@ -586,7 +593,7 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
 
   const veut = H.lienTag(w, attente().attend).termes[0];
   const [pid] = H.deK(veut);
-  w.ouvrirPiece(pid); H.surligner(w, veut); w.closeModal();
+  w.ouvrirPiece(pid); H.surligner(w, veut); w.fermerPiece();
   check("ouvrir une pièce depuis le panneau ne le referme pas", ouvert("Contexte"));
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, veut));
   check("un passage posé, la voix se tait — plus de bouton", !bouton());
@@ -595,15 +602,18 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   check("c'est le DÉPART de la phrase qui referme", !ouvert("Contexte"));
 
   /* §4.9 règle 3 — ce qui reste LISIBLE ne se répète pas, et LISIBLE est la
-     condition, pas PRÉSENT. Le panneau ne couvre rien, mais la conversation est
-     la seule bande élastique : c'est elle qui cède, et en 1280×800, panneau
-     ouvert et bandeau du tutoriel affiché, il lui reste moins que la question —
-     un joueur a composé sa réponse sans la voir. Panneau ouvert, elle redescend
-     au composeur ; refermé, elle se tait. */
+     condition, pas PRÉSENT. EN DESSOUS DU SEUIL de `.wrap.avecLateral` (§4.6),
+     le panneau ne couvre rien, mais la conversation est la seule bande
+     élastique EN HAUTEUR : c'est elle qui cède, et panneau ouvert, bandeau du
+     tutoriel affiché, il peut lui rester moins que la question — un joueur a
+     composé sa réponse sans la voir. Panneau ouvert, elle redescend au
+     composeur ; refermé, elle se tait. `avecLateral` est ici lu comme classe —
+     jsdom ne pose aucune `@media`, donc rien ici n'affirme un partage réel de
+     largeur ou de hauteur, seulement l'état que `majLateral` calcule. */
   check("l'avocat vient de poser une question", !!question());
   check("elle est son dernier mot, donc le composeur ne la redit pas",
     !composeur(w).includes(question()));
-  const partage = () => w.document.querySelector(".wrap").classList.contains("avecPanneau");
+  const partage = () => w.document.querySelector(".wrap").classList.contains("avecLateral");
   check("aucun panneau ouvert, la conversation a toute la hauteur", !partage());
   w.basculerPanneau("contexte");
   check("le panneau ouvert, les deux se partagent la hauteur", partage());
@@ -627,7 +637,7 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   /* LA COMPARAISON — le panneau doit tenir entre les DEUX passages. */
   const veut2 = H.lienTag(w, attente().attend).termes[0];
   const [pid2] = H.deK(veut2);
-  w.ouvrirPiece(pid2); H.surligner(w, veut2); w.closeModal();
+  w.ouvrirPiece(pid2); H.surligner(w, veut2); w.fermerPiece();
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, veut2));
   w.envoyerCompo();
   const sous = H.sousTerme(H.lienTag(w, attente().attend));
@@ -676,20 +686,36 @@ console.log("\n=== Le jeu se joue au clavier ===");
 
   const pid = H.pidPremiereRemise(w);
   const jointe = d.querySelector(`#discussion [data-f="a:${pid}"]`);
-  check("la pièce jointe est un vrai bouton", !!jointe && jointe.tagName === "BUTTON");
+  check("le bouton de pièces reçues est un vrai bouton", !!jointe && jointe.tagName === "BUTTON");
   jointe.focus(); jointe.click();
-  const boite = d.querySelector("#modalRoot .modal");
-  check("la pièce ouverte est une boîte de dialogue",
-    !!boite && boite.getAttribute("role") === "dialog" && boite.getAttribute("aria-modal") === "true"
-    && !!d.getElementById(boite.getAttribute("aria-labelledby")));
-  check("le jeu derrière devient inerte, le bandeau du tutoriel non",
-    inerte() && !d.getElementById("tuto").closest("[inert]"));
+  const panContexte = d.getElementById("panContexte");
+  check("il ouvre le Contexte", !!panContexte && !panContexte.hidden);
+  check("le focus entre dans le Contexte", panContexte.contains(actif()));
+  check("le Contexte ouvert, le halo quitte le bouton franchi pour l'index (§4.8)",
+    !!d.querySelector("[data-tuto]") && d.querySelector("[data-tuto]").id === "zoneDossier");
+  check("consigne neuve, elle s'affiche développée",
+    !d.getElementById("tuto").hasAttribute("data-reduit"));
+  check("Contexte ouvert, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
+
+  const chip = d.querySelector(`#contexte [data-f="d:${pid}"]`);
+  check("la pièce s'ouvre depuis un vrai bouton du dossier", !!chip && chip.tagName === "BUTTON");
+  chip.focus(); chip.click();
+  const boite = d.getElementById("panPiece");
+  check("la pièce s'ouvre DANS le Contexte, nommée pour qui ne la voit pas (§4.6)",
+    !!boite && panContexte.contains(boite) && !panContexte.hidden
+    && d.getElementById(boite.getAttribute("aria-labelledby")) === boite.querySelector("#pieceTitre"));
+  check("entre l'index et les retenus, dans l'ordre de lecture",
+    !!(d.getElementById("zoneDossier").compareDocumentPosition(boite) & 4)
+    && !!(boite.compareDocumentPosition(d.getElementById("zoneRetenus")) & 4));
+  check("le jeu derrière reste vivant — composeur et conversation compris",
+    !inerte() && !d.getElementById("composeur").closest("[inert]") && !d.getElementById("discussion").closest("[inert]"));
   check("le focus entre dans la pièce", boite.contains(actif()));
-  check("la consigne neuve du tutoriel s'annonce", /Tutoriel/.test(annonce()));
+  check("la consigne neuve du tutoriel s'annonce, développée à nouveau",
+    /Tutoriel/.test(annonce()) && !d.getElementById("tuto").hasAttribute("data-reduit"));
   check("pièce ouverte, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
 
   const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
-  const passage = k => d.querySelector(`#modalRoot [data-f="e:${k}"]`);
+  const passage = k => d.querySelector(`#panPiece [data-f="e:${k}"]`);
   const autre = H.empansDe(w, pid).find(k => k !== veut);
   passage(autre).focus();
   touche(passage(autre), "Enter");
@@ -698,6 +724,16 @@ console.log("\n=== Le jeu se joue au clavier ===");
     cleActive() === "e:" + autre && actif() !== null && d.contains(actif()));
   check("un passage retenu le dit à qui ne voit pas le fond",
     /retenu/.test(passage(autre).textContent));
+  check("retenir se voit sous la pièce, au moment même (§4.3)",
+    /Retenu dans ton Contexte/.test((d.querySelector("#panPiece .rappel.retenu") || {}).textContent || ""));
+  check("et la porte Contexte s'allume", d.getElementById("btnContexte").classList.contains("recoit"));
+  check("et la fiche neuve s'allume juste sous la pièce, là où on va la prendre",
+    !!d.querySelector(`#zoneRetenus .mchip.neuf [data-f="c:${autre}"]`));
+  w.rendreTout();                       // un redessin qui n'est PAS un geste
+  check("la confirmation ne vit qu'un rendu",
+    !d.querySelector("#panPiece .rappel.retenu") && !d.getElementById("btnContexte").classList.contains("recoit")
+    && !d.querySelector(".mchip.neuf"));
+  passage(autre).focus();
   check("mais ce n'est pas un interrupteur : aucun aria-pressed",
     ![...d.querySelectorAll(".empan")].some(e => e.hasAttribute("aria-pressed")));
   check("chaque passage dit sa dimension, sans la couleur",
@@ -705,21 +741,23 @@ console.log("\n=== Le jeu se joue au clavier ===");
 
   touche(passage(autre), " ");
   check("Espace sur un passage retenu ne l'oublie pas", w.S.retenus.includes(autre));
-  check("mais l'écran dit où l'on retire", !!d.querySelector("#modalRoot .rappel")
-    && /Contexte/.test(d.querySelector("#modalRoot .rappel").textContent));
+  check("mais l'écran dit où l'on retire", !!d.querySelector("#panPiece .rappel")
+    && /Contexte/.test(d.querySelector("#panPiece .rappel").textContent));
   check("et le dit à l'oreille", /Contexte/.test(annonce()));
   w.rendreTout();                       // un redessin qui n'est PAS un reclic
-  check("le rappel ne vit qu'un rendu", !d.querySelector("#modalRoot .rappel"));
+  check("le rappel ne vit qu'un rendu", !d.querySelector("#panPiece .rappel"));
   touche(passage(veut), "Enter");
 
   touche(d.body, "Escape");
-  check("Échap referme la pièce, et le jeu redevient vivant", !w.S.modalPiece && !inerte());
-  check("le focus revient à la pièce jointe qui l'avait ouverte", cleActive() === "a:" + pid);
+  check("Échap replie la pièce — le jeu n'avait jamais cessé d'être vivant", !w.S.modalPiece && !inerte());
+  check("et le Contexte reste ouvert : c'est le second Échap qui le fermerait (§4.10 règle 3)",
+    !panContexte.hidden);
+  check("le focus revient au chip du dossier qui l'avait ouverte", cleActive() === "d:" + pid);
   check("lue, elle le dit par son nom — pas par un gris",
-    /déjà lue/.test(d.querySelector(`#discussion [data-f="a:${pid}"]`).getAttribute("aria-label") || ""));
+    /déjà lue/.test(d.querySelector(`#contexte [data-f="d:${pid}"]`).getAttribute("aria-label") || ""));
 
-  w.basculerPanneau("contexte");
-  check("Contexte ouvert, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
+  // Le Contexte est déjà ouvert depuis `voirPiecesRecues` et ne s'est jamais
+  // refermé (§4.6) : pas de bascule ici, elle le fermerait.
   const puce = d.querySelector(`#contexte [data-f="c:${veut}"]`);
   puce.focus();
   w.rendreTout();
@@ -729,7 +767,7 @@ console.log("\n=== Le jeu se joue au clavier ===");
   // lisent le focus — sans quoi une panne en amont en masquerait une en aval.
   d.querySelector(`#contexte [data-f="c:${veut}"]`).click();
   check("phrase en cours, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
-  const croix = [...d.querySelectorAll(".fermer, #modalRoot .close, .mchip .del")];
+  const croix = [...d.querySelectorAll(".fermer, .mchip .del")];
   check("chaque croix a un nom, et ce nom n'est pas « × »",
     croix.length > 0 && croix.every(c => (c.getAttribute("aria-label") || "").length > 1));
 
@@ -752,12 +790,12 @@ console.log("\n=== Le jeu se joue au clavier ===");
   const vus = new Map();
   for (const pid of Object.keys(w.JEU.pieces)) {
     w.ouvrirPiece(pid);
-    for (const e of d.querySelectorAll("#modalRoot .empan")) {
+    for (const e of d.querySelectorAll("#panPiece .empan")) {
       const dim = w.CHAMPS.find(c => "e:" + c.id === e.getAttribute("data-f")).dim;
       const trait = (/--ds:\s*([\w-]+)/.exec(e.getAttribute("style") || "") || [])[1];
       vus.set(dim, new Set([...(vus.get(dim) || []), trait]));
     }
-    w.closeModal();
+    w.fermerPiece();
   }
   const traits = [...vus.values()].map(s => [...s]);
   check("chaque dimension porte un seul trait, et il est posé",

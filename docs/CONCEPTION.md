@@ -126,6 +126,20 @@ l'oublie pas — arbitré le 16 septembre, reconduit le 30 après un playtest qu
 interrupteur — mais **l'écran le dit** : une ligne sous la pièce renvoie au Contexte. Un passage retenu
 se marque **par son fond, jamais par sa graisse** : le texte autour ne bouge pas.
 
+**Et retenir se voit au moment même** — retour de playtest (Colas) : rien ne disait qu'un clic avait
+*ajouté* quelque chose au Contexte, ni où. Le fond seul ne suffisait pas : à côté du fond léger que
+porte tout passage, il se lisait comme un survol. Trois marques, aucune qui fasse bouger le texte ni
+qui dure plus d'un geste : le passage retenu porte un **✓ en exposant**, posé hors du flux (§4.10
+règle 5 : un état s'écrit) ; **la même ligne que le rappel**, sous la pièce, dit *« ✓ Retenu dans ton
+Contexte »* le temps d'un rendu — comme lui, sans minuteur, puisque ce jeu ne rend jamais hors d'un
+geste du joueur ; et **la fiche neuve s'allume une fois** dans les retenus, juste sous la pièce
+(§4.6) — là où le passage est allé, et où on va le prendre —, comme le compte de la porte Contexte.
+La ligne reste **dans le flux** : collée au bas de la pièce, elle couvrait, dans la bande étroite du
+Contexte, le texte même qu'on venait de cliquer.
+La confirmation vit **là où le geste a lieu**, pas dans un coin de l'écran : c'est la pièce qu'on
+regarde quand on clique. Le Contexte vide, de son côté, dit **comment** on le remplit — ouvrir une
+pièce, cliquer un passage souligné —, plus seulement *qu'*il se remplit.
+
 ### 4.4 Le doublon banal
 
 **Si toutes les valeurs d'une dimension sont uniques, le premier doublon est la réponse ; s'il y en a
@@ -182,28 +196,60 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 - **Deux verbes, un par geste, partout** : on **retient** un passage — de la pièce vers le Contexte —
   et on le **prend** — du Contexte vers la phrase. *Sélectionner* ne paraît plus à l'écran : il
   servait aux deux, et un joueur a lu trois verbes là où il n'y a que deux gestes.
-- **Les deux surfaces de côté sont des PANNEAUX qui s'ouvrent ENTRE la conversation et le composeur**,
-  et **ne recouvrent rien** : la conversation **rétrécit pour leur faire place**. L'écran montre alors
-  ses trois temps d'un coup, de haut en bas — *ce qu'on me demande*, *ce dont je dispose*, *ce que
-  j'écris*. Elle rétrécit, mais elle ne disparaît pas : **ne rien recouvrir n'est pas rester
-  lisible** — un panneau ouvert, la question peut sortir du cadre, et c'est le composeur qui la
-  reprend (§4.9 règle 3). Une surface à la
-  fois. Deux portes y mènent, et ce sont deux registres : **la voix du composeur enseigne** — elle dit
-  le geste et ouvre le Contexte — **la barre nomme** les deux surfaces, donne leur compte et y donne
-  accès à tout moment. Les portes **tranchent sur le fond** : ce sont des outils, pas des étiquettes.
-- **La colonne tient dans la fenêtre** : la page ne défile pas, chaque bande défile pour son compte, et
-  la conversation est **la seule bande élastique** — c'est elle qui cède quand un panneau s'ouvre ou
-  que la phrase s'allonge. *« → Envoyer »* ne passe donc jamais sous le pli, même sur un portable bas.
+- **Les surfaces de côté — Contexte et Plaidoirie — partagent une même place LATÉRALE, un seul
+  occupant à la fois**, et **ne recouvrent rien** : la conversation **cède pour lui faire place**. La
+  pièce ouverte n'est plus un troisième occupant : **elle s'ouvre DANS le Contexte** (ci-dessous). **En dessous d'un seuil de largeur** (l'essentiel des téléphones), la place latérale
+  s'ouvre ENTRE la conversation et le composeur, empilée — l'écran montre alors ses trois temps d'un
+  coup, de haut en bas : *ce qu'on me demande*, *ce dont je dispose*, *ce que j'écris*. **Au-dessus du
+  seuil**, elle devient une colonne À CÔTÉ de la conversation plutôt qu'en dessous : la conversation
+  cède de la largeur, pas de la hauteur, et la question reste sous les yeux même pièce ouverte (§4.9
+  règle 3 ne mord alors plus que par surcroît). Trois portes y mènent, et ce sont trois registres : **la
+  voix du composeur enseigne** — elle dit le geste et ouvre le Contexte —, **la barre nomme** les deux
+  panneaux, donne leur compte et y donne accès à tout moment, et **la Discussion renvoie** — un message
+  qui remet des pièces ne porte plus qu'un bouton unique vers le Contexte, où chacune s'ouvre à son
+  tour, comme un panneau ouvert par la barre : on la consulte, on ne la referme pas pour elle. Les
+  portes **tranchent sur le fond** : ce sont des outils, pas des étiquettes.
+- **LA PIÈCE S'OUVRE DANS LE CONTEXTE, entre l'index et les passages retenus** — retour de playtest
+  (Colas), et idée de l'auteur. Tant que la pièce occupait seule la place latérale, citer coûtait
+  cinq temps : ouvrir la pièce, retenir, **refermer la pièce**, rouvrir le Contexte, prendre. Le
+  troisième n'enseignait rien — il ne servait qu'à faire revenir le Contexte que la pièce avait
+  chassé. Désormais **lire, retenir et prendre ont lieu sous les yeux l'un de l'autre** : on retient
+  dans la pièce, le passage paraît aussitôt plus bas dans le même panneau, on le prend sans rien
+  fermer. Le Contexte ouvert avec une pièce se lit de haut en bas : **l'index** (on choisit), **la
+  pièce** (on lit, on retient), **les retenus** (on prend). Trois règles le tiennent :
+  - **Deux bandes qui défilent chacune pour son compte**, la pièce au-dessus, les retenus en dessous :
+    une pièce longue ne pousse jamais les retenus hors du panneau, et dix-sept fiches ne poussent
+    jamais la pièce. L'index reste au-dessus, resserré, et ne colle pas (le PIÈGE ci-dessus). La
+    pièce prend la hauteur ; les retenus ce qu'il leur faut, jusqu'à un plafond — à dix-sept fiches,
+    ce sont eux qui défilent. **Au-dessus du seuil, la colonne latérale s'élargit** tant qu'une pièce
+    est ouverte : la conversation cède de la largeur, jamais la question. **En dessous**, si le
+    panneau est trop bas pour les deux bandes, il redéfile d'un bloc plutôt que de rogner.
+  - **Une seule pièce à la fois** : un autre chip de l'index la remplace ; la croix de la pièce la
+    replie et rend toute la hauteur aux retenus ; refermer le Contexte la replie avec lui. Une pièce
+    n'est **jamais** ouverte hors du Contexte — l'ouvrir ouvre le Contexte, en consultation (il ne se
+    referme pas tout seul, comme ouvert par la barre).
+  - **La réplique `declenche` part quand la pièce quitte l'écran** — repliée, remplacée, ou le
+    Contexte refermé —, plus seulement à la croix : c'est toujours le moment où l'on relève les yeux
+    (§4.10 règle 3).
+  La matière ne change pas : la pièce garde son **papier** au milieu de l'écran du Contexte (deux
+  matières, ci-dessous) — c'est même ce qui la détache de l'index et des retenus qui l'encadrent.
+- **La colonne tient dans la fenêtre** : la page ne défile pas, chaque bande défile pour son compte.
+  **En dessous du seuil**, la conversation est **la seule bande élastique EN HAUTEUR** — c'est elle qui
+  cède quand la place latérale s'ouvre ou que la phrase s'allonge, et *« → Envoyer »* ne passe donc
+  jamais sous le pli, même sur un portable bas. **Au-dessus**, c'est sa LARGEUR qui cède ; sa hauteur ne
+  se discute plus avec le composeur, qui occupe son propre bandeau en pleine largeur.
 - **Mais « élastique » n'est pas « compressible à zéro », et L'ORDRE DANS LEQUEL LES BANDES CÈDENT
-  est une règle.** Le panneau a cédé devant le composeur jusqu'à **disparaître** — à deux passages
-  retenus, un joueur ne voyait plus le haut d'une seule fiche ; à la fin, plus rien. Or le panneau
-  **est le clavier** (§4.6) : le vider pendant qu'on écrit retire le clavier au milieu du geste,
-  exactement ce que la fermeture automatique s'interdit déjà. Donc : **le panneau a un plancher**
+  est une règle — et elle ne vaut qu'EN DESSOUS DU SEUIL**, là où la place latérale et le composeur se
+  disputent encore la même verticale. Le panneau a cédé devant le composeur jusqu'à **disparaître** —
+  à deux passages retenus, un joueur ne voyait plus le haut d'une seule fiche ; à la fin, plus rien. Or
+  le panneau **est le clavier** (§4.6) : le vider pendant qu'on écrit retire le clavier au milieu du
+  geste, exactement ce que la fermeture automatique s'interdit déjà. Donc : **le panneau a un plancher**
   qui montre au moins deux fiches entières, **le composeur un plafond** — il défile pour son propre
   compte —, et la conversation reste la seule à céder librement, puisque la question est redescendue
   au composeur (§4.9 règle 3). **Et l'index du dossier ne colle pas** : il a été rendu collant pour
   qu'il ne parte pas hors champ, et il a occupé le panneau en permanence — à trois lignes, la moitié.
-  Il défile avec les fiches.
+  Il défile avec les fiches. **Au-dessus du seuil, la place latérale reçoit la hauteur pleine de la
+  conversation** : plancher et plafond cessent de s'y disputer quoi que ce soit.
 - **Deux matières** : les pièces ont celle du **papier** — fond clair, caractères à empattements —, la
   machine celle de l'**écran**. Ce qu'on lit vient du monde, ce qu'on écrit sort de l'IA ; la chasse
   fixe de ses messages dans la Discussion est le même contraste, pris dans l'autre sens.
@@ -214,14 +260,19 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   détail : un passage posé, la voix se tait parce que la phrase se tient, mais **la grammaire ne sait
   pas encore** si le joueur cite ou entame une comparaison (§4.5). Refermer là retirerait le clavier au
   milieu du geste le plus difficile du jeu.
-- **Une pièce porte un seul nom** : l'index du Contexte l'appelle exactement comme la Discussion l'a
-  transmise. Le nom court ne survit que dans la **provenance** d'un passage retenu et dans la phrase
-  composée — là, il *référence*, il ne *nomme* pas.
+- **Une pièce porte un seul nom, et l'index du Contexte est désormais seul à le porter** : la Discussion
+  n'annonce plus qu'un nombre de pièces reçues et renvoie vers lui. Le nom court ne survit que dans la
+  **provenance** d'un passage retenu et dans la phrase composée — là, il *référence*, il ne *nomme* pas.
 - **On écrit sa réponse sous la question** : le clavier est dans le Contexte, la phrase s'écrit sous la
-  conversation. L'arbitrage du **va-et-vient entre deux colonnes** est **clos, faute d'objet** : il n'y
-  a plus deux colonnes, et la conversation ne quitte jamais l'écran. Une autre question s'ouvre à sa
-  place, et elle n'a jamais été éprouvée — *trois bandes empilées, est-ce une pensée ou un tableau de
-  bord ?* (§3)
+  conversation. **L'arbitrage du va-et-vient entre deux colonnes, clos le 30 septembre faute d'objet,
+  rouvre** : l'objet, cette fois, est nommé — un joueur devait fermer la pièce pour relire ce qu'on lui
+  demandait, et la conversation ne quittait l'écran qu'en apparence puisqu'il fallait fermer ce qui la
+  recouvrait. Ce n'est **pas** un retour à la grille à trois colonnes d'avant le 30 septembre : celle-ci
+  avait coûté deux PIÈGES de span CSS recalculé à la main à chaque état (§17 ARCHITECTURE) ; la colonne
+  latérale rouverte ici vit dans un gabarit nommé, à un seul seuil, qui ne recalcule jamais un span sur
+  un élément. Reste non éprouvé, et c'est la question qui remplace l'ancienne : *la colonne latérale
+  répare-t-elle la lecture sans en coûter une autre — ordre de tabulation en L, poids visuel du
+  deux-colonnes ?* (§3 PASSATION)
 - **Comprendre et dire restent deux gestes, non négociable** — l'intervalle sépare l'**assemblage** de
   l'**envoi** : c'est lui qui compte, pas le nombre de clics.
 - **L'avocat ne voit que la Plaidoirie**, d'où la gratuité du Contexte. Il **ne retient que les
@@ -275,9 +326,9 @@ plus, c'est l'avocat** : lui est quelqu'un.
 
 | Le geste | | Ce qu'on apprend | Ce que le halo entoure |
 |---|---|---|---|
-| **citer** | 1/4 | une pièce s'ouvre | la pièce jointe, dans la Discussion |
-| | 2/4 | un passage se retient | **le texte de la pièce**, en entier (puis : refermer) |
-| | 3/4 | ce qu'on retient est le clavier | **toute la zone des retenus**, jamais une puce |
+| **citer** | 1/4 | ce qu'on reçoit se retrouve dans le Contexte | le bouton de pièces, dans la Discussion — puis l'index, une fois le Contexte ouvert |
+| | 2/4 | un passage se retient | **le texte de la pièce**, en entier — ouverte dans le Contexte, plus rien à refermer (§4.6) |
+| | 3/4 | ce qu'on retient est le clavier | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
 | | 4/4 | rien ne part tant qu'on n'envoie pas | *« → Envoyer »*, dès que la phrase se tient |
 | **mettre en relation** | 1/3 | une réponse peut tenir sur **deux** passages | **toute la zone des retenus**, au premier passage comme au second |
 | | 2/3 | une relation seule ne suffit pas : il lui faut un article qui la fonde | **la zone des propositions**, dans le composeur |
@@ -299,6 +350,16 @@ compris entre le geste 4 et le geste 5, le temps d'une citation déjà connue.
 bas au lieu de le recouvrir — aucune des quatre ancres ne peut se retrouver dessous. Il reste épinglé
 au défilement, et lisible par-dessus la pièce ouverte. Ses consignes s'**annoncent** aussi, à qui ne
 voit pas le halo (§4.10).
+
+**Chaque consigne neuve s'affiche d'abord développée, puis se réduit en icône** — retour de playtest
+(Colas) : deux joueurs avaient déjà donné un avis contradictoire sur la présence permanente du bandeau
+(l'un l'a pris pour un bandeau de cookies, l'autre le voit trop tôt). La réponse n'est pas une position
+fixe mais une **durée** : développée tant qu'elle est neuve, elle se réduit d'elle-même dès que le
+rendu suivant confirme que le joueur ne vient pas de la satisfaire — sans minuteur, puisque ce jeu ne
+rend jamais hors d'un geste du joueur. Un clic sur l'icône la rouvre ; se tromper la rouvre aussi,
+puisque le texte d'alerte est une consigne neuve comme une autre. *« je sais faire »* ne vit que dans
+la forme développée — clore le tutoriel pour de bon reste un choix qu'on pose en le lisant, pas depuis
+une icône.
 
 ### 4.9 L'économie de l'écran
 
@@ -368,10 +429,14 @@ souris.* Ce ne sont pas des options — c'est l'écran, pour tout le monde.
 2. **Le focus survit au redessin** : l'écran se redessine à chaque geste, le joueur au clavier reste
    pourtant où il était — sur le même passage, la même puce —, et si la chose a disparu, dans la même
    zone.
-3. **La pièce ouverte est une boîte de dialogue** : le jeu derrière devient inerte, le focus entre dans
-   la pièce et revient, à la fermeture, à ce qui l'a ouverte. Le bandeau du tutoriel reste vivant
-   par-dessus (§4.8) — c'est pourquoi elle n'est pas un `<dialog>` natif, qui l'aurait rendu inerte
-   avec le reste.
+3. **La pièce ouverte vit DANS le Contexte** (§4.6) : le jeu autour reste vivant — composeur,
+   conversation et passages retenus restent atteignables pendant qu'elle est ouverte, ce qui permet de
+   relire la question sans la fermer. Le focus entre dans la pièce à l'ouverture et revient, quand on
+   la replie, au chip de l'index qui l'a ouverte — par CLÉ, comme pour tout panneau. Échap replie
+   d'abord la pièce, puis, au second appui, referme le Contexte. L'ordre de tabulation suit l'ordre de
+   lecture : index, pièce, retenus. Elle n'a jamais
+   été, et n'est toujours pas, un `<dialog>` natif : la question ne s'est jamais posée, puisqu'elle n'a
+   plus rien d'une boîte modale.
 4. **Ce qui arrive s'annonce** : une réplique de l'avocat, une consigne du tutoriel, un refus — par une
    voix d'annonce unique, jamais par le fil entier, qui se réécrit à chaque geste et se relirait
    d'un bout à l'autre.

@@ -729,7 +729,7 @@ window.CONTENU = {
         "texte": "Affirmation 3 — « Kessler conteste, mais n'offre aucun alibi vérifiable. »"
       }
     ],
-    "fin": "C'est tout ce qu'ils ont. Je dépose au matin."
+    "fin": "C'est tout ce qu'ils ont. Je dépose au matin — tu as encore quelque chose à y opposer ?"
   },
   "avocat": {
     "rep_vice": "Attends. Si ta lecture de l'article 7 est la bonne, l'échantillon est irrecevable et ça change le procès. Je vérifie cette nuit et je l'inscris aux conclusions.",

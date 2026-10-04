@@ -130,7 +130,11 @@ async function main() {
 
   /* ---- Le portable du playtest : 1280×800 (§4.6) ---- une partie neuve, dans
      un contexte neuf — tutoriel compris, puisque c'est lui qui prend la place.
-     La colonne doit tenir dans la fenêtre : on le DIT, on ne l'asserte pas. */
+     AU-DESSUS du seuil de `.wrap.avecLateral` (900px) : les panneaux — et la
+     pièce, DANS le Contexte — s'y ouvrent dans la colonne LATÉRALE, à côté de la conversation —
+     c'est la capture "piece" qui le montre, question et composeur lisibles en
+     même temps. La colonne doit tenir dans la fenêtre : on le DIT, on ne
+     l'asserte pas. */
   console.log("\n──────── 1280×800 ────────\n");
   const etroit = await navigateur.newContext({ viewport: { width: 1280, height: 800 } });
   const p2 = await etroit.newPage();
@@ -144,14 +148,24 @@ async function main() {
     return path.relative(RACINE, f);
   };
   console.log("  " + await capturer2("depart"));
-  await p2.evaluate(`ouvrirPiece(__H.pidPremiereRemise(window))`);
+  /* De VRAIS clics, pas des appels directs : c'est ce qui éprouve le bouton
+     agrégé du message et sa porte vers le Contexte (§4.6), et la bavarde du
+     tutoriel qui se réduit en icône entre les deux (§4.8) — rien de tout ça
+     n'est visible d'une suite. */
+  await p2.click("#discussion .attach");
+  console.log("  " + await capturer2("contexte-recu"));
+  const pid1280 = await p2.evaluate("__H.pidPremiereRemise(window)");
+  await p2.click(`[data-f="d:${pid1280}"]`);
   console.log("  " + await capturer2("piece"));
-  await p2.evaluate(`(() => {
-    const H = window.__H;
-    const veut = H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend).termes[0];
-    H.surligner(window, veut); closeModal(); basculerPanneau("contexte");
-    poserBloc(H.iTermeChamp(window), S.retenus.indexOf(veut));
-  })()`);
+  /* Un VRAI clic sur le passage attendu : la confirmation (§4.3) ne vit qu'un
+     rendu, et seule une capture prise juste après la montre. */
+  const veut1280 = await p2.evaluate(
+    "__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend).termes[0]");
+  await p2.click(`#panPiece [data-f="e:${veut1280}"]`);
+  console.log("  " + await capturer2("piece-retenu"));
+  /* Et on PREND le passage sans rien refermer : la pièce vit dans le Contexte,
+     le passage retenu paraît juste dessous (§4.6). */
+  await p2.click(`#contexte [data-f="c:${veut1280}"]`);
   console.log("  " + await capturer2("contexte"));
   const pli = await p2.evaluate(`(() => {
     const e = document.querySelector(".envoi");
@@ -160,6 +174,35 @@ async function main() {
   })()`);
   console.log(`      → Envoyer ${pli.envoi !== null && pli.envoi <= pli.fenetre ? "au-dessus du" : "SOUS LE"} pli`
             + ` (bas ${pli.envoi}px, fenêtre ${pli.fenetre}px, page ${pli.page}px)`);
+
+  /* ---- EN DESSOUS DU SEUIL : 390×800 (§4.6) ---- aucune des deux largeurs
+     ci-dessus ne descend sous 900px ; sans ce troisième contexte, le repli
+     empilé d'origine (les panneaux ENTRE la conversation et le composeur)
+     ne serait plus jamais rejoué par `npm run vue`. */
+  console.log("\n──────── 390×800 (sous le seuil) ────────\n");
+  const mobile = await navigateur.newContext({ viewport: { width: 390, height: 800 } });
+  const p3 = await mobile.newPage();
+  p3.on("pageerror", e => pannes.push("erreur JS (390×800) : " + e.message));
+  await p3.goto(JEU);
+  await p3.waitForFunction("window.JEU && window.R && window.S");
+  await p3.evaluate(amorceHarnais());
+  const capturer3 = async nom => {
+    const f = path.join(CAPTURES, String(n++).padStart(2, "0") + "-390-" + nom + ".png");
+    await p3.screenshot({ path: f });
+    return path.relative(RACINE, f);
+  };
+  console.log("  " + await capturer3("depart"));
+  await p3.click("#discussion .attach");
+  console.log("  " + await capturer3("contexte-recu"));
+  const pid390 = await p3.evaluate("__H.pidPremiereRemise(window)");
+  await p3.click(`[data-f="d:${pid390}"]`);
+  console.log("  " + await capturer3("piece"));
+  const veut390 = await p3.evaluate(
+    "__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend).termes[0]");
+  await p3.click(`#panPiece [data-f="e:${veut390}"]`);
+  console.log("  " + await capturer3("piece-retenu"));
+  await p3.click(`#contexte [data-f="c:${veut390}"]`);
+  console.log("  " + await capturer3("contexte"));
 
   await navigateur.close();
 

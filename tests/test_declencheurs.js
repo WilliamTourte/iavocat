@@ -29,8 +29,8 @@ const panne = w => (w.document.querySelector(".panne")||{}).textContent || "";
         panne(boot({contenu:null})).includes("content.js"));
 }
 
-/* La réplique part à la FERMETURE, jamais à l'ouverture : poussée derrière une
-   pièce qui vient de rendre le jeu inerte, elle ne se lisait qu'en fond flouté
+/* La réplique part à la FERMETURE, jamais à l'ouverture : poussée à l'ouverture,
+   elle paraîtrait avant que le joueur ait eu le temps de lire la pièce
    (§4.10 règle 3). C'est `fermerPiece` qui la porte. */
 console.log("\n=== piece.declenche ===");
 {
@@ -42,11 +42,36 @@ console.log("\n=== piece.declenche ===");
   w.ouvrirPiece(pid);
   check("la pièce ouverte, l'avocat n'a encore rien dit — il parlerait derrière elle",
     w.S.fil.length === avant && !w.S.declenches.includes(pid));
-  w.closeModal();
+  w.fermerPiece();
   check("la refermer pousse sa réplique", w.S.fil.length > avant && w.S.declenches.includes(pid));
   const apres = w.S.fil.length;
-  w.ouvrirPiece(pid); w.closeModal();
+  w.ouvrirPiece(pid); w.fermerPiece();
   check("une_fois : la seconde fermeture est muette", w.S.fil.length === apres);
+}
+
+/* La pièce vit DANS le Contexte (§4.6) : elle quitte aussi l'écran quand le
+   Contexte se referme, ou qu'une autre pièce prend sa place — la réplique part
+   alors de même, au moment où l'on relève les yeux. */
+console.log("\n=== piece.declenche — la pièce quitte l'écran par une autre porte ===");
+{
+  const c = contenuLivre();
+  const pid = H.pidAvecDeclenche(boot(c));
+  const w = boot(c);
+  H.instruire(w);
+  const avant = w.S.fil.length;
+  w.ouvrirPiece(pid);
+  w.fermerPanneau();
+  check("refermer le Contexte replie la pièce et pousse sa réplique",
+    !w.S.modalPiece && w.S.fil.length > avant && w.S.declenches.includes(pid));
+
+  const w2 = boot(c);
+  H.instruire(w2);
+  const autre = Object.keys(w2.JEU.pieces).find(p => p !== pid && w2.R.piecesLivrees(w2.S).includes(p));
+  const avant2 = w2.S.fil.length;
+  w2.ouvrirPiece(pid);
+  w2.ouvrirPiece(autre);
+  check("une autre pièce qui prend sa place la fait partir, réplique comprise",
+    w2.S.modalPiece === autre && w2.S.fil.length > avant2 && w2.S.declenches.includes(pid));
 }
 {
   const c = contenuLivre();
@@ -56,8 +81,8 @@ console.log("\n=== piece.declenche ===");
   delete c.pieces[pid].declenche.une_fois;
   const w = boot(c);
   H.instruire(w);
-  w.ouvrirPiece(pid); w.closeModal(); const n1 = w.S.fil.length;
-  w.ouvrirPiece(pid); w.closeModal();
+  w.ouvrirPiece(pid); w.fermerPiece(); const n1 = w.S.fil.length;
+  w.ouvrirPiece(pid); w.fermerPiece();
   check("sans une_fois, la réplique repart", w.S.fil.length > n1);
   check("le « qui » du contenu est respecté", discussion(w).includes("Le stagiaire"));
 }

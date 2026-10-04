@@ -11,14 +11,17 @@
 <!-- LE TUTORIEL (§4.8) — PIÈGE : PREMIER enfant de <body>, avant `.wrap`.
      Collant dans le flux, il RÉSERVE sa place et pousse le jeu vers le bas :
      c'est ce qui l'empêche de recouvrir ses propres ancres. Son z-index le
-     garde lisible par-dessus l'`.overlay` de la pièce ouverte, et c'est sa
+     garde lisible par-dessus l'`.overlay` de l'écran de fin, et c'est sa
      position AVANT `#modalRoot` qui fait mordre le sélecteur décalant la
      modale. Le renvoyer en fin de page ne casse aucune suite : il recouvre
      à nouveau, en silence. -->
 <div id="tuto" hidden>
-  <span class="pas" id="tutoPas"></span>
-  <span class="dit" id="tutoDit"></span>
-  <button class="passer" onclick="tutoPasser()">je sais faire</button>
+  <div id="tutoCorps">
+    <span class="pas" id="tutoPas"></span>
+    <span class="dit" id="tutoDit"></span>
+    <button class="passer" id="tutoPasser" onclick="tutoPasser()">je sais faire</button>
+  </div>
+  <button class="tutoIcone" id="tutoIcone" hidden onclick="tutoAgrandir()" aria-label="Revoir la consigne du tutoriel">?</button>
 </div>
 
 <div class="wrap">
@@ -27,15 +30,18 @@
     <h2 id="titreDiscussion">Discussion</h2>
     <div class="body" id="discussion"></div>
   </section>
-  <!-- LES DEUX SURFACES DE CÔTÉ (§4.6) — PIÈGE : leur PLACE DANS LE DOCUMENT est
-       toute la mécanique. Entre la conversation et le composeur, elles s'ouvrent
-       SANS rien recouvrir : on garde la question sous les yeux et on voit la
-       phrase se construire. Les déplacer ailleurs dans `.wrap`, ou les sortir du
-       flux, défait exactement ça — et aucune suite ne voit une géométrie. -->
+  <!-- LA PLACE LATÉRALE (§4.6) — PIÈGE : sa PLACE DANS LE DOCUMENT est toute la
+       mécanique. Deux occupants, un seul à la fois : Contexte et Plaidoirie — la
+       pièce ouverte vit DANS le Contexte (§4.6). En dessous du seuil de
+       `.wrap.avecLateral`, elle s'ouvre ENTRE la conversation et le composeur,
+       empilée, SANS rien recouvrir. Au-dessus, elle devient une colonne À CÔTÉ
+       de la conversation — la question reste sous les yeux même pièce ouverte.
+       Les déplacer ailleurs dans `.wrap`, ou les sortir du flux, défait tout
+       ça — et aucune suite ne voit une géométrie. -->
   <!-- Les croix ont un NOM, et Échap s'y lit (§4.10) : `title` n'était qu'une
        description, le lecteur d'écran annonçait « × ». -->
   <section class="col panneau" id="panContexte" hidden aria-labelledby="titreContexte">
-    <h2><span id="titreContexte">Contexte</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer le Contexte (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
+    <h2><span id="titreContexte" tabindex="-1">Contexte</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer le Contexte (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="contexte"></div>
   </section>
   <section class="col panneau" id="panPlaidoirie" hidden aria-labelledby="titrePlaidoirie">
@@ -44,6 +50,9 @@
     <h2><span id="titrePlaidoirie">Plaidoirie</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer la Plaidoirie (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="plaidoirie"></div>
   </section>
+  <!-- LA PIÈCE OUVERTE n'a plus de section à elle : elle s'ouvre DANS le
+       Contexte, entre l'index et les passages retenus (§4.6) — `#panPiece` naît
+       donc du rendu de `#contexte`, plus d'ici. -->
   <!-- On répond SOUS la question (§4.6). PIÈGE : `#composeur` est le FRÈRE de
        `#discussion`, jamais son enfant — le fil se recale en bas à chaque
        message, la phrase qu'on écrit ne doit pas partir avec lui. Il est aussi

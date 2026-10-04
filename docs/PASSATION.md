@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 1er octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 412 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 434 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -133,6 +133,63 @@ du tutoriel cesse de reculer** : deux séries nommées (*citer · 2/4*, *mettre 
 lieu d'une numérotation qui revenait de 6/6 à 4/6. Et la **réplique `declenche` part à la fermeture
 de la pièce**, non à son ouverture, où elle tombait derrière une boîte de dialogue en fond flouté.
 
+**Un retour de playtest externe (Colas) a rouvert une question close le 30 septembre** : ouvrir une
+pièce pour trouver qu'elle ne répondait pas à la question obligeait à la fermer pour relire cette
+question, revenue invisible derrière elle. L'auteur a choisi de rouvrir le **va-et-vient entre deux
+colonnes**, en connaissance des deux PIÈGES que l'ancienne grille à trois colonnes avait coûtés
+(`git show 63a7e06`) : ce n'étaient que des `grid-column` recalculés à la main sur `.cloture` et
+`#composeur` à chaque état, pas des pièges de fond. **La pièce ouverte quitte `#modalRoot`** — elle
+n'est plus un `<dialog>` avec `.wrap[inert]` — **et rejoint la place LATÉRALE**, au même titre que le
+Contexte et la Plaidoirie (§4.6, §4.10 règle 3 CONCEPTION) : un seul occupant à la fois, et désormais
+trois portes au lieu de deux. Au-dessus d'un seuil de 900px, cette place devient une colonne à côté de
+la conversation — `.wrap.avecLateral`, un gabarit CSS **nommé** (`grid-template-areas`) où `grid-area`
+se pose une fois pour toutes, jamais un span recalculé — et la question reste sous les yeux pièce
+ouverte. En dessous, rien ne change : le repli empilé du 30 septembre gouverne tel quel, au mot près.
+`rappelQuestion` est étendue à la pièce pour que ce repli ne retrouve pas la friction d'origine sur
+petit écran. **Au passage**, un bug réel signalé dans le même retour — la page sautait en haut à
+chaque opposition de plaidoirie — tenait à un `el.focus()` sans `preventScroll` dans le repli de
+`rendreFocus`, exécuté à CHAQUE opposition puisque le bouton `opposer` efface toujours sa propre clé.
+Écrit au document d'abord (§4.6, §4.10 règle 3 CONCEPTION ; §2, §3 ici), appliqué ensuite, joué dans un
+vrai Chromium à 1280×800 et sous le seuil à 390×800.
+
+**Le 4 octobre, seconde passe sur le même retour : le tutoriel et les pièces jointes.** Deux points
+restés ouverts (§3) ont été tranchés avec l'auteur. **Le tutoriel** : chaque consigne neuve s'affiche
+désormais développée, puis se réduit en icône « ? » dès le rendu suivant — ce jeu ne rendant jamais
+hors d'un geste du joueur, « le rendu suivant » EST « le joueur a fait quelque chose », sans minuteur.
+Se tromper rouvre la bavarde d'elle-même, le texte d'alerte étant une consigne neuve comme une autre.
+Un second champ optionnel, `ditLong`, porte la version développée à côté du `dit` court existant —
+l'annonce vocale (§4.10 règle 4) lit le long quand il existe. **Les pièces jointes** : le message de
+l'avocat ne nomme plus chaque pièce une à une — un seul bouton agrégé (« N pièce(s) disponible(s) dans
+ton Contexte ») ouvre le Contexte, où chaque pièce se nomme et s'ouvre comme avant (§4.6). Une pièce
+porte un seul nom, et l'index du Contexte en est désormais seul dépositaire. Conséquence en cascade :
+la consigne 1/4 du geste « citer » enseigne maintenant « ouvre ton Contexte » plutôt que « ouvre la
+pièce », et la suite clavier correspondante se rejoue en deux temps (le bouton du message, puis le chip
+du dossier). Document d'abord (§4.6, §4.8 CONCEPTION), code ensuite, joué dans un vrai Chromium par de
+vrais clics — pas des appels directs — pour éprouver le bouton agrégé et la réduction du tutoriel,
+qu'aucune suite ne voit.
+
+**Le 4 octobre, troisième passe : retenir se voit.** Colas ne voyait pas qu'un clic avait *ajouté*
+un passage au Contexte : le fond d'un passage retenu se lisait comme un survol, et seul le lecteur
+d'écran entendait *« Retenu dans ton Contexte »*. Trois marques désormais, chacune hors du flux ou le
+temps d'un rendu (§4.3 CONCEPTION) : un ✓ en exposant sur le passage, la ligne du rappel — collée au
+bas de la pièce — qui dit *« ✓ Retenu dans ton Contexte »*, et la porte Contexte qui s'allume une fois.
+La notification « en haut à droite » envisagée par l'auteur est devenue cette ligne **sous la pièce**,
+là où le regard est au moment du clic. Le Contexte vide dit aussi **comment** on le remplit. `npm run
+vue` capture l'instant juste après un vrai clic sur le passage, en 1280×800 et en 390×800.
+
+**Le 4 octobre, quatrième passe : la pièce s'ouvre DANS le Contexte** (§4.6, §4.8, §4.10 règle 3
+CONCEPTION), choix de l'auteur pour supprimer le temps *« Referme la pièce »* : citer passe de cinq
+gestes à quatre. Le Contexte se lit de haut en bas — index, pièce, retenus —, la pièce et les retenus
+défilant chacun pour son compte ; au-dessus du seuil, la colonne s'élargit tant qu'une pièce est
+ouverte. `#panPiece` n'est plus une section : il naît du rendu de `#contexte`. **Une pièce n'est
+jamais ouverte hors du Contexte** — `suivrePhrase`, en tête de `rendreTout`, la replie dès qu'il quitte
+l'écran, et sa réplique `declenche` part alors (refermer, remplacer, Plaidoirie, envoi). Le halo de
+*citer · 1/4* passe à l'index une fois le Contexte ouvert : la « limite assumée » du halo qui pulsait
+sur un bouton déjà franchi (§3) tombe avec. **Au passage, l'opposition** : le bouton d'avance dit
+*« Continuer »* dès qu'une phrase a été opposée, et la réplique `fin` de la répétition devient une
+question (*« … tu as encore quelque chose à y opposer ? »*) à laquelle *« Je n'ai rien à opposer »*
+répond enfin. Joué dans un vrai Chromium par de vrais clics, 1280×800 et 390×800.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -142,7 +199,7 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 
 - **[R1]** `<script src="x.js"></script>` sur **une ligne, sans attribut** : une variante n'est pas inlinée *du tout*.
 - **[R2]** Les `const` de haut niveau ne sont pas des propriétés de `window` — **mais ils occupent le nom**.
-- **[R6]** Quatre ids sont des ancres du tutoriel : `#discussion`, `#modalRoot`, `#zoneRetenus`, `#composeur`.
+- **[R6]** Quatre ids sont des ancres du tutoriel : `#discussion`, `#panPiece`, `#zoneRetenus`, `#composeur`.
 - **[R9]** Le tag vit sur l'**attente**, jamais sur la remise — quatre fonctions exceptées.
 - **[R11]** Tout renvoi `§x` désigne une section réelle, dans le bon document.
 - **[R12]** L'export commité est bien celui que produit `npm run export`.
@@ -163,19 +220,32 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **L'ordre des `<script src>` de l'atelier compte** (`noyau.js` en premier), et les `window.X = X`
   explicites (`undo`, `adopter`, `demanderExemple`, `simReset`) sont ce par quoi `smoke_atelier.js` lit.
 - **`#tuto` est le PREMIER enfant de `<body>`, avant `.wrap`** : collant dans le flux, il réserve sa
-  place — c'est ce qui l'empêche de recouvrir ses propres ancres. **Hors de `.wrap`**, il reste aussi
-  vivant quand la pièce ouverte la rend `inert` — d'où, aussi, pas de `<dialog>.showModal()`. Son `z-index:60` le garde lisible
-  par-dessus l'`.overlay` (50) de la pièce ouverte, et c'est sa position *avant* `#modalRoot` qui fait
+  place — c'est ce qui l'empêche de recouvrir ses propres ancres. **Hors de `.wrap`**, il resterait
+  vivant si quelque chose rendait `.wrap` inerte — ce qui n'arrive plus pour une pièce ouverte (§4.6,
+  §4.10 règle 3 CONCEPTION), seulement pour l'écran de fin (`finir`). Son `z-index:60` le garde lisible
+  par-dessus l'`.overlay` (50) de cet écran terminal, et c'est sa position *avant* `#modalRoot` qui fait
   mordre le sélecteur décalant la modale. Le remettre en fin de `<body>` ne casse **aucune** suite : il
   recouvre à nouveau, en silence.
 - **La PLACE DES PANNEAUX DANS LE DOCUMENT est toute la mécanique** : entre la section Discussion et
-  `#composeur`, dans le flux. Les déplacer ailleurs dans `.wrap`, ou les repasser en `position:absolute`
-  (ce qu'ils ont été une heure), leur refait recouvrir la conversation — et **rien ne le dirait**,
-  aucune suite ne voyant une géométrie.
-- **La colonne tient dans la fenêtre, et la conversation est la SEULE bande élastique** (§4.6) :
-  `body` en colonne de `100dvh`, la conversation en `flex:1` **avec `min-height:0`** — sans lui, elle
-  refuse de rétrécir et pousse « → Envoyer » sous le pli. Aucune suite ne voit une géométrie :
-  `npm run vue` le **dit** en 1280×800 (« au-dessus du pli »), il ne l'asserte pas.
+  `#composeur`, dans le flux, en dessous du seuil de `.wrap.avecLateral` — la pièce ouverte, elle, vit
+  DANS le Contexte (§4.6, §4.10 règle 3 CONCEPTION) et ne passe plus par `#modalRoot`. Les déplacer
+  ailleurs dans `.wrap`, ou les repasser en `position:absolute` (ce qu'ils ont été une heure), leur
+  refait recouvrir la conversation — et **rien ne le dirait**, aucune suite ne voyant une géométrie.
+- **La colonne tient dans la fenêtre, et la conversation est la SEULE bande élastique EN HAUTEUR en
+  dessous du seuil de `.wrap.avecLateral`** (§4.6) : `body` en colonne de `100dvh`, la conversation en
+  `flex:1` **avec `min-height:0`** — sans lui, elle refuse de rétrécir et pousse « → Envoyer » sous le
+  pli. Aucune suite ne voit une géométrie : `npm run vue` le **dit**, il ne l'asserte pas. *1280×800,
+  son gabarit habituel, est AU-DESSUS du seuil de 900px : la capture y exerce désormais la colonne
+  latérale en grille, pas l'empilement — `npm run vue` doit aussi capturer un gabarit sous 900px pour
+  éprouver l'élasticité verticale d'origine.*
+- **Une pièce n'est JAMAIS ouverte hors du Contexte** : `suivrePhrase`, en TÊTE de `rendreTout`, la
+  replie dès que `panneau` n'est plus `"contexte"` — toutes les portes qui le referment passent donc
+  par là, et la réplique `declenche` tombe dans le fil AVANT qu'il soit dessiné. Le déplacer après
+  `renderDiscussion` ferait paraître la réplique un geste trop tard ; le retirer laisserait une pièce
+  ouverte invisible, `S.modalPiece` compris. Une partie reprise sur une pièce ouverte rouvre le
+  Contexte au démarrage, sans quoi le premier rendu la replierait, réplique comprise.
+- **Pièce ouverte, `#contexte` porte deux bandes défilantes de plus** (`.defile[id]`) :
+  `garderDefilement` les retrouve par leur id. Une bande sans id repartirait en haut à chaque geste.
 - **Un passage est un `span[role=button][tabindex=0]`, jamais un `<button>`** : un bouton est une
   boîte insécable même en `display:inline` (mesuré, Chromium 141) — un passage long sauterait à la
   ligne d'un bloc. Entrée et Espace passent par `clavier`, délégué sur `document`.
@@ -208,9 +278,13 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **`#composeur` est le frère de `#discussion`, jamais son enfant** — `renderDiscussion` finit par
   `scrollTop = scrollHeight`. Enfant direct de `.wrap`, en bandeau plein largeur après les trois
   `.col` — jamais dans une section colonne.
-- **`.col{display:flex}` bat `[hidden]{display:none}`** : cacher la Plaidoirie demande
-  `.col[hidden]{display:none}`, et `.cloture` **et `#composeur`** sont câblés sur trois colonnes
-  (`.wrap.sansPlan`).
+- **`.col{display:flex}` bat `[hidden]{display:none}`** : cacher un panneau (Contexte, Plaidoirie, et
+  désormais la pièce) demande `.col[hidden]{display:none}` — sans lui, `display:flex` l'emporterait.
+  *Point corrigé : `.cloture` et `#composeur` ne sont plus « câblés sur trois colonnes » depuis que la
+  grille `.wrap.sansPlan` a disparu avec elle (commit `63a7e06`) — ils sont de simples enfants du flex
+  `.wrap`, pleine largeur par défaut. La classe `.wrap.avecLateral` (§4.6 CONCEPTION) qui rouvre une
+  colonne latérale n'y touche pas davantage : elle pose `grid-area` une fois pour toutes, jamais un
+  span recalculé.*
 - **`S.retenus` est sérialisé dans `localStorage`** et s'appelait `S.memoire` : la signature de contenu
   **ne protège pas** d'un renommage d'état — `restaurerPartie` porte la reprise, et tout futur
   renommage aura le même devoir.
@@ -267,11 +341,63 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 - **La compréhension est-elle encore *exprimée* ?** Et **une question posée guide-t-elle trop ?** Repli
   sans code : retirer les `question` une à une, couper le tutoriel avant le 3ᵉ temps. *Le rapport du
   1ᵉʳ octobre tranche à moitié : les questions guident, et c'est désormais la fiction qui l'assume.*
-- **Trois bandes empilées : une pensée, ou un tableau de bord ?** La question qui remplace celle du
-  va-et-vient entre deux colonnes, close faute d'objet : il n'y en a plus qu'une (§4.6). Tout est
-  désormais visible en même temps — ce qu'on me demande, ce dont je dispose, ce que j'écris — et c'est
-  précisément le risque : le §3 redoute depuis le début que la phrase composée se lise comme un
-  **formulaire**. *Une partie jouée n'en a rien dit — ni plainte, ni éloge : à reposer.*
+- *Fermée par un retour de playtest (Colas) : « trois bandes empilées, une pensée ou un tableau de
+  bord ? ». Un joueur devait fermer la pièce ouverte pour relire la question qu'elle recouvrait — objet
+  nommé, l'arbitrage du va-et-vient entre deux colonnes rouvre (§4.6 CONCEPTION) : au-dessus d'un seuil
+  de largeur, la pièce et les panneaux rejoignent une colonne latérale à CÔTÉ de la conversation, plus
+  question de la recouvrir pour la lire.*
+- **La colonne latérale répare-t-elle la lecture sans en coûter une autre ?** La question qui la
+  remplace : ordre de tabulation en L (discussion → latérale → composeur) au clavier, poids visuel du
+  deux-colonnes retrouvé, risque de formulaire que le §3 redoute depuis toujours sous une autre forme.
+  **Non joué.**
+- **« Je n'ai rien à opposer » n'est pas une formulation à corriger — Colas y a lu une friction de
+  bouton de conclusion, pas l'acte moral qu'il porte (§4.9 règle 5 CONCEPTION).** Le signal reste réel :
+  la question n'est pas de changer le texte, mais de savoir si le joueur dispose d'assez de signaux
+  *autour* du bouton (qu'il clôt la partie, que le moment compte) pour que le poids moral ait une chance
+  d'être senti plutôt que de n'être qu'une confusion de parcours. **Non tranché, et pas à trancher par
+  un renommage réflexe.**
+- **L'opposition, rejouée le 4 octobre dans un vrai Chromium (1280×800) — ce qui embrouille, constaté
+  et non corrigé** :
+  1. *Corrigé le 4 octobre :* après un *opposer*, le bouton d'avance disait encore *« Ne rien opposer —
+     continuer »*. Il dit *« Continuer »* dès qu'une phrase est opposée à l'affirmation en cours.
+  2. **Une phrase opposée ailleurs garde un bouton *opposer* identique** — le cliquer la DÉPLACE d'une
+     affirmation à l'autre (*« opposé à : le témoignage »* disparaît), sans que rien ne le dise.
+  3. **La réplique est la même à chaque fois** (*« Je l'ai déjà. Je le mets en face de celle-ci. »*),
+     que la phrase réponde à l'affirmation ou non (le PV opposé à l'ADN reçoit la même) : rien ne se
+     trie à l'écran, alors que c'est la raison d'être de la répétition (§4.6).
+  4. **Le présentoir se lit mal** : quatre lignes en petit gris, quatre boutons *opposer* identiques,
+     et l'affirmation visée est au-dessus, dans le fil, plus dans le cadre.
+  5. *Corrigé le 4 octobre, par le contenu seul :* la fin ne répondait à aucune question — *« C'est tout ce qu'ils ont. Je dépose au matin. »* est
+     une affirmation, puis paraît *« Je n'ai rien à opposer »* — c'est la friction de Colas. Le PIÈGE
+     du §2 le dit : la question qui appelle le bouton vit dans le CONTENU. **Repli sans code, et sans
+     renommer** : la réplique `fin` est devenue une question (*« … Je dépose au matin — tu as encore
+     quelque chose à y opposer ? »*), à laquelle le bouton répond.
+  6. **La voix du composeur continue d'enseigner** (*« Prends un ou plusieurs passages… »*) pendant la
+     répétition, où l'on n'écrit plus.
+- *Fermé le 4 octobre, suite 2 : « décomposer le tutoriel ».* Chaque consigne neuve s'affiche d'abord
+  développée, puis se réduit en icône « ? » dès que le rendu suivant confirme qu'elle reste active — un
+  clic sur l'icône la rouvre, se tromper la rouvre aussi (§4.8 CONCEPTION.md). Les deux frictions
+  opposées du 16 septembre (pris pour un bandeau de cookies / vu trop tôt) sont traitées par le même
+  mécanisme : la forme développée reste ponctuelle, jamais permanente — ni totalement absente.
+- *Fermé le 4 octobre, suite 2 : « masquer les pièces jointes du fil ».* Le message ne porte plus qu'un
+  bouton agrégé (« N pièce(s) disponible(s) dans ton Contexte », classe `.attach` conservée) qui ouvre
+  le Contexte sans le basculer ; chaque pièce s'y ouvre et se nomme comme avant (§4.6). Le sentiment de
+  réception reste porté par le message — le trombone y reste accroché —, seul le détail nominatif se
+  déplace vers l'index déjà existant. *Levée le 4 octobre, suite 4 :* le halo du tutoriel pouvait pulser sur le bouton
+  du message un instant après qu'il a été cliqué, le temps que le joueur choisisse une pièce dans le
+  Contexte — le Contexte ouvert, il passe désormais à l'index (§4.8).
+- *Fermé le 4 octobre, suites 3 et 4 : « un visuel qui dit qu'un passage a été ajouté au Contexte ».*
+  ✓ sur le passage, ligne sous la pièce, fiche neuve allumée juste dessous, porte allumée (§4.3).
+- **La pièce dans le Contexte tient-elle sur un téléphone ?** En 390×800, index, pièce et retenus se
+  partagent un panneau bas : il redéfile d'un bloc, l'index part hors champ. Lisible, mais serré —
+  **à jouer sur un vrai téléphone.** Et au-dessus du seuil : la conversation rétrécie par la colonne
+  élargie reste-t-elle confortable ?
+- **RAG sur les messages de l'avocat** (pouvoir citer un passage qui ne vient pas d'une pièce jointe),
+  **regroupement des passages retenus en clusters**, **chain-of-thought pour les choix moraux** (une
+  phase où l'IA se parle à elle-même, suggérée après une déconnexion de Maître Auber) : trois idées
+  venues d'un retour de playtest, **aucune encore nulle part dans la documentation**. Consignées ici pour
+  ne pas les perdre — à ne pas coder avant que la boucle de base (le sujet de cette passe) soit validée
+  par un joueur neuf, conformément au §4.
 - **`porte sur : quand`, sous chaque article, fait-il le tri à la place du joueur ?** Un joueur
   l'écrit noir sur blanc : *deux fiches QUI → seul l'art. 7 colle*. Le moteur ne lit jamais `porte`
   (§4.5), mais l'étiquette filtre **dans la tête** — et le choix entre l'article 7 et l'article 12
@@ -433,3 +559,36 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   toujours (§4.6). Une **légende** apprend le code des soulignements sans survol (§4.3). Et un piège
   neuf entre au §2 : *une suite peut prouver un chemin que le joueur ne peut pas marcher* — c'est
   ce qui avait laissé le présentoir mourir, vert en test et mort en jeu.
+- **4 octobre, retour de playtest externe (Colas) et colonne latérale** — le va-et-vient entre deux
+  colonnes, clos le 30 septembre faute d'objet, **rouvre avec un objet nommé** : fermer la pièce pour
+  relire la question qu'elle recouvrait. La pièce quitte `#modalRoot`/`inert` et rejoint la place
+  LATÉRALE aux côtés du Contexte et de la Plaidoirie (§4.6, §4.10 règle 3) ; au-dessus de 900px cette
+  place devient une colonne à côté de la conversation, par un gabarit `grid-template-areas` **nommé**
+  qui évite les deux PIÈGES de span recalculé de l'ancienne grille à trois colonnes (`63a7e06`). En
+  dessous du seuil, le repli empilé du 30 septembre est inchangé. Au passage : le scroll qui sautait en
+  haut à chaque opposition (`rendreFocus`, `preventScroll` manquant sur un repli de focus exécuté à
+  chaque fois) est corrigé. Cinq fichiers de test et `outils/vue.js` suivent le renommage
+  `majPanneaux`→`majLateral`, `closeModal`→`fermerPiece` pour la pièce ; `npm run vue` gagne un
+  troisième contexte, 390×800, sous le seuil — sans lui, le repli empilé ne serait plus rejoué par rien.
+- **4 octobre, seconde passe : le tutoriel bavarde/icône et les pièces agrégées** — deux points du
+  même retour, restés ouverts après la colonne latérale. Le bandeau `#tuto` affiche désormais chaque
+  consigne neuve développée (`ditLong`, nouveau champ optionnel à côté du `dit` court), puis se réduit
+  en icône « ? » dès le rendu suivant — sans minuteur, ce jeu ne rendant jamais hors d'un geste du
+  joueur. Le message de l'avocat ne nomme plus les pièces une à une : un bouton agrégé
+  (`voirPiecesRecues`) ouvre le Contexte sans le basculer, où l'index (`renderDossier`) reste seul
+  dépositaire du nom de chaque pièce (§4.6). La consigne 1/4 du geste « citer » change de cible en
+  cascade (« ouvre ton Contexte » plutôt que « ouvre la pièce ») et la suite clavier correspondante se
+  rejoue en deux temps. `npm run vue` clique désormais pour de vrai sur le bouton du message et sur un
+  chip du dossier, au lieu d'appeler `ouvrirPiece` directement — seul moyen d'éprouver la réduction du
+  tutoriel, qu'aucune suite n'a jamais vue. 421 contrôles sur cinq suites, 8 règles du gardien, ESLint.
+- **4 octobre, troisième passe : retenir se voit** — ✓ en exposant sur le passage retenu, ligne
+  *« ✓ Retenu dans ton Contexte »* collée au bas de la pièce et porte Contexte allumée, le tout le temps
+  d'un rendu (`vientDeRetenir`, frère de `rappelRetrait`) ; le Contexte vide dit comment on le remplit
+  (§4.3). Trois contrôles dans `test_parcours`, deux captures `piece-retenu` dans `npm run vue`.
+  424 contrôles, 8 règles du gardien, ESLint.
+- **4 octobre, quatrième passe : la pièce dans le Contexte** — index, pièce, retenus dans le même
+  panneau ; plus de temps *« Referme la pièce »* (citer en quatre gestes) ; `suivrePhrase` replie la
+  pièce dès que le Contexte quitte l'écran et porte sa réplique `declenche` ; colonne élargie au-dessus
+  du seuil (`.wrap.avecPiece`) ; la fiche neuve s'allume sous la pièce (`.mchip.neuf`) et la ligne de
+  confirmation repasse dans le flux. Opposition : *« Continuer »* après un *opposer*, réplique `fin` en
+  question. 434 contrôles, 8 règles du gardien, ESLint.

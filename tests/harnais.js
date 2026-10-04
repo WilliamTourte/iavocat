@@ -108,12 +108,12 @@ function creerHarnais(dossier){
      c'en est un que le joueur atteint vraiment, en ne cliquant pas. */
   /* ON N'INVOQUE PAS UN TEXTE QU'ON N'A PAS LU (§4.5) : le joueur ouvre l'article
      avant de s'en servir, la suite aussi. C'est un GESTE D'ÉCRAN — `ouvrirPiece`
-     puis `closeModal` —, pas une porte dérobée (R13). */
+     puis `fermerPiece` —, pas une porte dérobée (R13). */
   function lireLeTexte(w,forme){
     const b=(J(w).grammaire.blocs||[]).find(x=>x.forme===forme && x.piece);
     if(!b || w.S.examinees.includes(b.piece)) return;
     if(!w.R.piecesLivrees(w.S).includes(b.piece)) return;
-    w.ouvrirPiece(b.piece); w.closeModal();
+    w.ouvrirPiece(b.piece); w.fermerPiece();
   }
   function composerLien(w,L,{garder=false}={}){
     const f=(J(w).grammaire.formes||{})[L.forme]||{};
