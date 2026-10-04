@@ -522,6 +522,8 @@ console.log("\n=== La répétition de plaidoirie ===");
   check("une phrase opposée, il dit seulement « Continuer » — plus le contraire du geste",
     avancer() === "Continuer");
   check("l'affichage nomme l'affirmation opposée", plaidoirie(w).includes(w.JEU.repetition.affirmations[0].court));
+  check("pendant la lecture, la voix du composeur se tait",
+    !w.document.querySelector("#composeur .phrase").textContent.trim());
   /* OPPOSER EST LE DERNIER GESTE RÉEL (§4.6). Toute phrase du journal est DÉJÀ
      versée — le journal ne se remplit qu'à l'envoi — donc c'est sur une phrase
      déjà partie qu'il faut éprouver l'opposition. Le contrôle manquait, et son
@@ -534,11 +536,59 @@ console.log("\n=== La répétition de plaidoirie ===");
     w.verserContre(i);
     check("l'opposer à une AUTRE déplace sa cible, phrase déjà versée comprise",
       w.S.plaidoirie.some(x => x.b === i && x.contre === w.S.repetitionIdx));
-    check("et l'avocat le dit", discussion(w).includes(w.JEU.avocat.deja.slice(0, 15)));
+    /* LE TRI SE LIT À L'ÉCRAN (§4.6) : l'avocat juge, d'après les `repondent`
+       de l'affirmation — dérivés du contenu, jamais nommés ici. */
+    const aff = w.JEU.repetition.affirmations[w.S.repetitionIdx];
+    const porte = (aff.repondent || []).includes(w.S.brouillon[i].lien.tag);
+    const attendues = !aff.repondent ? [w.JEU.avocat.deja]
+      : porte ? w.JEU.avocat.oppose_porte : w.JEU.avocat.oppose_porte_pas;
+    check("et l'avocat dit si ça porte", attendues.includes(w.S.fil[w.S.fil.length - 1].texte));
   } else check("(une seule affirmation dans ce contenu)", true);
   while (w.S.repetitionIdx < w.JEU.repetition.affirmations.length) w.avancerRepetition();
   check("au bout, la répétition se clôt sur son texte de fin", discussion(w).includes(w.JEU.repetition.fin.slice(0, 15)));
   check("la clôture est de nouveau ouverte", !w.document.getElementById("btnCloture").disabled);
+}
+{
+  /* LE JUGEMENT, des deux côtés (§4.6), et le DÉPLACEMENT qui se dit. Tout est
+     dérivé : une affirmation qui a des `repondent`, un moyen qui en porte le
+     tag, un autre qui n'en porte pas. */
+  const w = boot();
+  H.instruire(w);
+  w.cloturer();
+  const A = w.JEU.avocat, affs = w.JEU.repetition.affirmations;
+  const moyens = w.S.brouillon.map((n, i) => ({ n, i })).filter(x => w.R.estMoyen(x.n.lien));
+  const k = affs.findIndex(a => Array.isArray(a.repondent)
+    && moyens.some(x => a.repondent.includes(x.n.lien.tag))
+    && moyens.some(x => !a.repondent.includes(x.n.lien.tag)));
+  check("le contenu a une affirmation où un moyen porte et un autre non", k >= 0);
+  if (k >= 0) {
+    while (w.S.repetitionIdx < k) w.avancerRepetition();
+    const oui = moyens.find(x => affs[k].repondent.includes(x.n.lien.tag));
+    const non = moyens.find(x => !affs[k].repondent.includes(x.n.lien.tag));
+    const dernier = () => w.S.fil[w.S.fil.length - 1].texte;
+    w.verserContre(oui.i);
+    check("un moyen qui répond : « ça porte »", A.oppose_porte.includes(dernier()));
+    w.verserContre(non.i);
+    check("un moyen qui ne répond pas : « ça ne porte pas »", A.oppose_porte_pas.includes(dernier()));
+    check("et il est opposé quand même — l'avocat juge, il ne refuse rien",
+      w.S.plaidoirie.some(x => x.b === non.i && x.contre === k));
+    const bouton = j => w.document.querySelector(`[data-f="r:${j}"]`);
+    if (k + 1 < affs.length) {
+      w.avancerRepetition();
+      check("opposée ailleurs, son bouton dit qu'il la déplace", bouton(oui.i).textContent === "déplacer ici");
+      const libre = moyens.find(x => !w.S.plaidoirie.some(e => e.b === x.i && e.contre != null));
+      if (libre) check("jamais opposée, il dit « opposer »", bouton(libre.i).textContent === "opposer");
+    }
+  }
+  /* Sans `repondent`, aucun jugement : la réplique unique d'avant. */
+  const w2 = boot();
+  H.instruire(w2);
+  w2.JEU.repetition.affirmations.forEach(a => delete a.repondent);
+  w2.cloturer();
+  const m = w2.S.brouillon.findIndex(n => w2.R.estMoyen(n.lien));
+  w2.verserContre(m);
+  check("une affirmation sans « repondent » garde « deja »",
+    w2.S.fil[w2.S.fil.length - 1].texte === w2.JEU.avocat.deja);
 }
 {
   const w = boot();

@@ -314,10 +314,15 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 /* répétition de plaidoirie */
 .repet{border:1px dashed #5a3a3a;border-radius:8px;padding:11px;background:#1a1416;margin-bottom:14px}
 .repet .rtitle{font-size:13.5px;font-weight:600;color:var(--muted);margin-bottom:8px}
-.repet .rnote{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding:5px 0}
-.repet .rnote .txt{flex:1}
+/* En étroit, la phrase garde sa largeur : ce qui la suit (« opposé à : … »,
+   « déplacer ici ») passe dessous, calé à droite, plutôt que de la réduire à
+   une colonne d'un mot (capture 390 px, 4 octobre). */
+.repet .rnote{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px;color:var(--muted);padding:5px 0}
+.repet .rnote .txt{flex:1 1 14em}
+.repet .rnote .txt + *{margin-left:auto}
+.repet .rnote .sent{white-space:nowrap}
 .repet .rnote.vide{font-style:italic}
-.repet .up{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:12.5px}
+.repet .up{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:12.5px;white-space:nowrap}
 .repet .btn{margin-top:8px;width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px;cursor:pointer;font:inherit;font-size:13.5px}
 .repet .btn:hover{border-color:var(--accent)}
 /* --- clôture / fin --- sur une ligne : la colonne tient dans la fenêtre. */

@@ -343,7 +343,22 @@ function creerRegles(JEU, M) {
      plaidoirie qui existe déjà. Déjà opposée à CELLE-CI, on se tait : ce qui est
      lisible à l'écran ne se redit pas (§4.9 règle 3). La voie « phrase gardée,
      pas encore versée » reste — on ne retire pas du moteur une capacité que le
-     contenu du jour n'emploie pas (§11). */
+     contenu du jour n'emploie pas (§11).
+     LE TRI SE LIT À L'ÉCRAN (§4.6) : l'affirmation déclare ses `repondent`, et
+     l'avocat dit si ça porte — sans rien refuser, la cible se pose dans les deux
+     cas. Le jugement passe par le TAG seul : le vice et le leurre, qui partagent
+     `adn`, portent tous deux, Auber ne sachant pas lequel ment. Sans
+     `repondent`, aucun jugement : `deja`, comme avant. */
+  function repliqueOpposition(S, n, aff) {
+    const A = JEU.avocat || {};
+    if (!Array.isArray(aff.repondent)) return A.deja;
+    const porte = !!(n.lien && n.lien.tag) && aff.repondent.includes(n.lien.tag);
+    const liste = (porte ? A.oppose_porte : A.oppose_porte_pas) || [];
+    if (!liste.length) return A.deja;
+    // Elles TOURNENT : rang dérivé de l'état, pas de compteur de plus à sauver.
+    const k = S.plaidoirie.filter(x => x.contre != null).length + S.repetitionIdx;
+    return liste[k % liste.length];
+  }
   function verserContre(S, i) {
     const n = S.brouillon[i], aff = JEU.repetition.affirmations[S.repetitionIdx];
     if (!n || !aff) return;
@@ -351,7 +366,7 @@ function creerRegles(JEU, M) {
       const e = S.plaidoirie.find(x => x.b === i);
       if (!e || e.contre === S.repetitionIdx) return;
       e.contre = S.repetitionIdx;
-      pousser(S, "Maître Auber", JEU.avocat.deja);
+      pousser(S, "Maître Auber", repliqueOpposition(S, n, aff));
       return;
     }
     envoyer(S, i, S.repetitionIdx);

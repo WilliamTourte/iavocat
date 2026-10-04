@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 1er octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 434 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 442 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -360,11 +360,13 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   et non corrigé** :
   1. *Corrigé le 4 octobre :* après un *opposer*, le bouton d'avance disait encore *« Ne rien opposer —
      continuer »*. Il dit *« Continuer »* dès qu'une phrase est opposée à l'affirmation en cours.
-  2. **Une phrase opposée ailleurs garde un bouton *opposer* identique** — le cliquer la DÉPLACE d'une
-     affirmation à l'autre (*« opposé à : le témoignage »* disparaît), sans que rien ne le dise.
-  3. **La réplique est la même à chaque fois** (*« Je l'ai déjà. Je le mets en face de celle-ci. »*),
-     que la phrase réponde à l'affirmation ou non (le PV opposé à l'ADN reçoit la même) : rien ne se
-     trie à l'écran, alors que c'est la raison d'être de la répétition (§4.6).
+  2. *Corrigé le 4 octobre :* une phrase opposée ailleurs gardait un bouton *opposer* identique, qui la
+     DÉPLAÇAIT en silence. Le bouton dit maintenant *« déplacer ici »*, à côté de *« opposé à : … »*.
+  3. *Corrigé le 4 octobre :* la réplique était la même à chaque fois, que la phrase réponde ou non.
+     Chaque affirmation déclare ses **`repondent`** (des tags de liens, §11) ; l'avocat dit *ça porte*
+     ou *ça ne porte pas*, trois variantes chacune qui tournent, et oppose dans les deux cas (§4.6).
+     **À relire par l'auteur** : le témoignage ← `temoin`, `q_voix` ; l'ADN ← `adn` (le vice **et**
+     le leurre, voulu) ; l'absence d'alibi ← **rien** — c'est un choix de contenu, pas de moteur.
   4. **Le présentoir se lit mal** : quatre lignes en petit gris, quatre boutons *opposer* identiques,
      et l'affirmation visée est au-dessus, dans le fil, plus dans le cadre.
   5. *Corrigé le 4 octobre, par le contenu seul :* la fin ne répondait à aucune question — *« C'est tout ce qu'ils ont. Je dépose au matin. »* est
@@ -372,8 +374,10 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
      du §2 le dit : la question qui appelle le bouton vit dans le CONTENU. **Repli sans code, et sans
      renommer** : la réplique `fin` est devenue une question (*« … Je dépose au matin — tu as encore
      quelque chose à y opposer ? »*), à laquelle le bouton répond.
-  6. **La voix du composeur continue d'enseigner** (*« Prends un ou plusieurs passages… »*) pendant la
-     répétition, où l'on n'écrit plus.
+  6. *Corrigé le 4 octobre :* la voix du composeur enseignait encore (*« Prends un ou plusieurs
+     passages… »*) pendant la lecture. Elle se tait tant que la phrase est vide ; le composeur reste
+     ouvert, car la conclusion tue peut encore partir (§4.7), et la voix revient à qui y pose un
+     passage.
 - *Fermé le 4 octobre, suite 2 : « décomposer le tutoriel ».* Chaque consigne neuve s'affiche d'abord
   développée, puis se réduit en icône « ? » dès que le rendu suivant confirme qu'elle reste active — un
   clic sur l'icône la rouvre, se tromper la rouvre aussi (§4.8 CONCEPTION.md). Les deux frictions
@@ -592,3 +596,8 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   du seuil (`.wrap.avecPiece`) ; la fiche neuve s'allume sous la pièce (`.mchip.neuf`) et la ligne de
   confirmation repasse dans le flux. Opposition : *« Continuer »* après un *opposer*, réplique `fin` en
   question. 434 contrôles, 8 règles du gardien, ESLint.
+- **4 octobre, cinquième passe : l'opposition qui trie** — `repondent` sur l'affirmation,
+  `oppose_porte` / `oppose_porte_pas` chez l'avocat (`repliqueOpposition`, rang dérivé de l'état,
+  `deja` en repli) ; *« déplacer ici »* ; voix muette pendant la lecture ; en étroit, *« opposé à »* et
+  le bouton passent sous la phrase (`.rnote` en `flex-wrap`), qui se réduisait à un mot par ligne à
+  390 px. Frise et diagnostic de l'atelier suivent. 442 contrôles, 8 règles du gardien, ESLint.

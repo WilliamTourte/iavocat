@@ -123,10 +123,16 @@ function renderFrise(){
           ${btnSuppr("aff:"+j,"xsmall",`demanderSupprAff(${j})`,"✕","confirmer ?")}
         </div>
         <textarea onchange="majAff(${j},'texte',this.value)">${escapeH(a.texte||"")}</textarea>
+        <input type="text" class="mono" value="${escapeAttr(!a.repondent?"":a.repondent.length?a.repondent.join(", "):"rien")}" placeholder="sans jugement (« deja »)"
+          onchange="majAffRepondent(${j},this.value)" title="tags des liens qui RÉPONDENT à cette affirmation, séparés par des virgules — « rien » : rien n'y répond ; vide : aucun jugement">
       </div>`).join("")}
     <button class="addrow" onclick="ajouterAff()">+ Affirmation</button>
-    <div class="repline">${mir("verser une phrase contre l'affirmation = le même geste, avec une cible ; phrase déjà versée → « deja »")}</div>
+    <div class="repline">${mir("phrase déjà versée, opposée ou déplacée : son tag est parmi les « répondent » de l'affirmation → « ça porte », sinon « ça ne porte pas » ; affirmation sans « répondent » → « deja »")}</div>
     <textarea style="min-height:34px" onchange="majAvocat('deja',this.value)">${escapeH(A.deja||"")}</textarea>
+    <label>Ça porte <span class="glose">(une par ligne — elles tournent)</span></label>
+    <textarea onchange="majAvocatListe('oppose_porte',this.value)">${escapeH((A.oppose_porte||[]).join("\n"))}</textarea>
+    <label>Ça ne porte pas <span class="glose">(une par ligne — elles tournent)</span></label>
+    <textarea onchange="majAvocatListe('oppose_porte_pas',this.value)">${escapeH((A.oppose_porte_pas||[]).join("\n"))}</textarea>
     <label>Fin de la répétition</label>
     <textarea onchange="majRep('fin',this.value)">${escapeH(REP.fin||"")}</textarea>
     <div class="repline">${mir("le bouton devient « Je n'ai rien à opposer » → le procès a lieu hors-champ")}</div>
@@ -205,6 +211,13 @@ function majAvis(v){ muter(()=>{ poserOuRetirer(CONTENU,"avis_exploitation",v); 
 function majAvocat(k,v){ muter(()=>{ CONTENU.avocat[k]=v; }); }
 function majAvocatIdx(k,i,v){ muter(()=>{ CONTENU.avocat[k][i]=v; }); }
 function majRep(prop,v){ muter(()=>{ CONTENU.repetition[prop]=v; }); }
+function majAvocatListe(k,text){ muter(()=>{ CONTENU.avocat[k]=text.split("\n").map(s=>s.trim()).filter(Boolean); }); }
+// Vide = AUCUN jugement (« deja ») : la clé part. « rien » = [] : rien n'y
+// répond, et tout reçoit « ça ne porte pas ». Les deux ne se confondent pas.
+function majAffRepondent(i,text){ muter(()=>{
+  const tags=text.split(",").map(s=>s.trim()).filter(Boolean), a=CONTENU.repetition.affirmations[i];
+  if(tags.length===1 && tags[0]==="rien") a.repondent=[];
+  else if(tags.length) a.repondent=tags; else delete a.repondent; }); }
 function majAff(i,prop,v){ muter(()=>{ CONTENU.repetition.affirmations[i][prop]=v; }); }
 function ajouterAff(){ muter(()=>{ CONTENU.repetition.affirmations.push({court:"…",texte:""}); }); }
 function demanderSupprAff(i){ demanderSuppr("aff:"+i,()=>{ CONTENU.repetition.affirmations.splice(i,1); }); }

@@ -321,10 +321,15 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 /* répétition de plaidoirie */
 .repet{border:1px dashed #5a3a3a;border-radius:8px;padding:11px;background:#1a1416;margin-bottom:14px}
 .repet .rtitle{font-size:13.5px;font-weight:600;color:var(--muted);margin-bottom:8px}
-.repet .rnote{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding:5px 0}
-.repet .rnote .txt{flex:1}
+/* En étroit, la phrase garde sa largeur : ce qui la suit (« opposé à : … »,
+   « déplacer ici ») passe dessous, calé à droite, plutôt que de la réduire à
+   une colonne d'un mot (capture 390 px, 4 octobre). */
+.repet .rnote{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px;color:var(--muted);padding:5px 0}
+.repet .rnote .txt{flex:1 1 14em}
+.repet .rnote .txt + *{margin-left:auto}
+.repet .rnote .sent{white-space:nowrap}
 .repet .rnote.vide{font-style:italic}
-.repet .up{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:12.5px}
+.repet .up{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:12.5px;white-space:nowrap}
 .repet .btn{margin-top:8px;width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:7px;cursor:pointer;font:inherit;font-size:13.5px}
 .repet .btn:hover{border-color:var(--accent)}
 /* --- clôture / fin --- sur une ligne : la colonne tient dans la fenêtre. */
@@ -1092,7 +1097,22 @@ function creerRegles(JEU, M) {
      plaidoirie qui existe déjà. Déjà opposée à CELLE-CI, on se tait : ce qui est
      lisible à l'écran ne se redit pas (§4.9 règle 3). La voie « phrase gardée,
      pas encore versée » reste — on ne retire pas du moteur une capacité que le
-     contenu du jour n'emploie pas (§11). */
+     contenu du jour n'emploie pas (§11).
+     LE TRI SE LIT À L'ÉCRAN (§4.6) : l'affirmation déclare ses `repondent`, et
+     l'avocat dit si ça porte — sans rien refuser, la cible se pose dans les deux
+     cas. Le jugement passe par le TAG seul : le vice et le leurre, qui partagent
+     `adn`, portent tous deux, Auber ne sachant pas lequel ment. Sans
+     `repondent`, aucun jugement : `deja`, comme avant. */
+  function repliqueOpposition(S, n, aff) {
+    const A = JEU.avocat || {};
+    if (!Array.isArray(aff.repondent)) return A.deja;
+    const porte = !!(n.lien && n.lien.tag) && aff.repondent.includes(n.lien.tag);
+    const liste = (porte ? A.oppose_porte : A.oppose_porte_pas) || [];
+    if (!liste.length) return A.deja;
+    // Elles TOURNENT : rang dérivé de l'état, pas de compteur de plus à sauver.
+    const k = S.plaidoirie.filter(x => x.contre != null).length + S.repetitionIdx;
+    return liste[k % liste.length];
+  }
   function verserContre(S, i) {
     const n = S.brouillon[i], aff = JEU.repetition.affirmations[S.repetitionIdx];
     if (!n || !aff) return;
@@ -1100,7 +1120,7 @@ function creerRegles(JEU, M) {
       const e = S.plaidoirie.find(x => x.b === i);
       if (!e || e.contre === S.repetitionIdx) return;
       e.contre = S.repetitionIdx;
-      pousser(S, "Maître Auber", JEU.avocat.deja);
+      pousser(S, "Maître Auber", repliqueOpposition(S, n, aff));
       return;
     }
     envoyer(S, i, S.repetitionIdx);
@@ -1872,15 +1892,23 @@ window.CONTENU = {
     "affirmations": [
       {
         "court": "le témoignage",
-        "texte": "Affirmation 1 — « Le voisin a entendu le mis en cause et la victime se disputer le soir des faits. »"
+        "texte": "Affirmation 1 — « Le voisin a entendu le mis en cause et la victime se disputer le soir des faits. »",
+        "repondent": [
+          "temoin",
+          "q_voix"
+        ]
       },
       {
         "court": "l'ADN",
-        "texte": "Affirmation 2 — « L'ADN relevé sur la scène est celui de Kessler. Il y était. »"
+        "texte": "Affirmation 2 — « L'ADN relevé sur la scène est celui de Kessler. Il y était. »",
+        "repondent": [
+          "adn"
+        ]
       },
       {
         "court": "l'absence d'alibi",
-        "texte": "Affirmation 3 — « Kessler conteste, mais n'offre aucun alibi vérifiable. »"
+        "texte": "Affirmation 3 — « Kessler conteste, mais n'offre aucun alibi vérifiable. »",
+        "repondent": []
       }
     ],
     "fin": "C'est tout ce qu'ils ont. Je dépose au matin — tu as encore quelque chose à y opposer ?"
@@ -1902,7 +1930,17 @@ window.CONTENU = {
       "Je t'attends toujours."
     ],
     "rep_deux_dossiers": "Celle-là mélange les deux dossiers. Je plaide l'un après l'autre — reste sur celui qu'on a ouvert.",
-    "deja": "Je l'ai déjà. Je le mets en face de celle-ci."
+    "deja": "Je l'ai déjà. Je le mets en face de celle-ci.",
+    "oppose_porte": [
+      "Ça, oui. Je le mets en face.",
+      "Bien. C'est exactement là que ça mord.",
+      "Ça porte. Je le garde pour celle-là."
+    ],
+    "oppose_porte_pas": [
+      "Je ne vois pas en quoi ça y répond. Je le note quand même.",
+      "Ça ne répond pas à cette affirmation-là. Je le mets en face, mais je ne compte pas dessus.",
+      "Contre ça ? Je l'inscris, puisque tu y tiens."
+    ]
   },
   "directives": [
     "D1 — Ne dissimule rien de ce que ton analyse établit.",
@@ -2354,7 +2392,8 @@ function renderDiscussion(){
         return `<div class="rnote"><span class="txt">${escapeAttr(x.n.texte)}</span>
          ${c===S.repetitionIdx
             ? `<span class="sent">opposé à celle-ci</span>`
-            : `${aff?`<span class="sent">opposé à : ${escapeAttr(aff.court)}</span>`:""}<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">opposer</button>`}</div>`;
+            // Opposée ailleurs, le même geste la DÉPLACE : le bouton le dit (§4.6).
+            : `${aff?`<span class="sent">opposé à : ${escapeAttr(aff.court)}</span>`:""}<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">${aff?"déplacer ici":"opposer"}</button>`}</div>`;
       }).join("")
       : `<div class="rnote vide">tu n'as écrit aucune phrase à y opposer</div>`
     /* Le bouton d'avance dit ce qu'on FAIT : « ne rien opposer » juste après avoir
@@ -2566,6 +2605,10 @@ function souffle(){
      le Contexte — et on le PREND — du Contexte vers la phrase. « Sélectionner »
      servait aux deux, et un joueur a lu trois verbes pour deux gestes. */
   if(!S.compo.length){
+    /* §4.6 — PENDANT LA LECTURE, c'est Auber qui parle : la voix ne réclame pas
+       un passage. Le composeur reste ouvert (la conclusion tue peut encore
+       partir, §4.7) ; qui y pose quelque chose retrouve la voix. */
+    if(R.repetitionEnCours(S)) return "";
     if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
     return second ? "Prends un ou plusieurs passages de ton contexte." : "Prends un passage de ton contexte pour répondre.";
   }

@@ -257,6 +257,11 @@ function diagnostiquer(){
   ((CONTENU.repetition||{}).affirmations||[]).forEach((a,i)=>{
     if(!a || !String(a.texte||"").trim())
       add("avert",`Affirmation ${i+1} sans texte`,"La répétition lirait une affirmation vide.",{});
+    // §4.6 — le tri se lit à l'écran par le TAG seul : un tag que nul lien ne
+    // porte ne ferait jamais dire « ça porte ».
+    for(const t of (a && a.repondent)||[])
+      if(!LI.some(L=>L.tag===t))
+        add("erreur",`Affirmation ${i+1} : « ${t} » ne répond à rien`,`Aucun lien ne porte le tag « ${t} » : l'avocat ne dirait jamais que ça porte contre cette affirmation.`,{});
   });
 
   /* ---- reliquats du schéma 2 ---- */

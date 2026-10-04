@@ -287,6 +287,20 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   n'offrait que des lignes *« déjà envoyée »*, un rituel sans choix, et la réplique de l'avocat
   (*« Je l'ai déjà. Je le mets en face de celle-ci. »*) annonçait un geste qu'elle ne faisait pas.
   Elle le fait.
+- **LE TRI SE LIT À L'ÉCRAN** (repris le 4 octobre, après une opposition rejouée). Une réplique unique,
+  la même que la phrase réponde à l'affirmation ou non, laissait le seul tri du jeu sans retour. Chaque
+  affirmation déclare donc, dans le contenu, **les moyens qui lui répondent** (`repondent`, des `tag`
+  de liens, §11), et l'avocat le dit : **ça porte** ou **ça ne porte pas**, chacune en quelques
+  variantes qui tournent. **Rien n'est refusé** : la phrase est opposée dans les deux cas, l'avocat
+  juge, il n'interdit pas (§4.5). C'est la **fiction** qui juge, jamais le chrome (§4.8) — et elle ne
+  juge que ce qu'Auber peut savoir : le leurre de l'article 12 *porte* contre l'ADN à ses yeux, comme
+  il l'a cru en le recevant. Une affirmation sans `repondent` garde la réplique unique `deja` : le
+  moteur ne perd rien qu'un contenu plus ancien emploie (§11). Deux corollaires d'écran :
+  **une phrase opposée ailleurs se DÉPLACE, et le bouton le dit** — *« déplacer ici »*, la mention
+  *« opposé à : … »* restant à côté ; et **le composeur se tait pendant la lecture**, tant qu'on n'y a rien posé. On peut encore y
+  écrire et envoyer — c'est le dernier moment où la conclusion tue peut partir (§4.7) —, mais c'est
+  Auber qui parle : une voix par état (§4.9 règle 1), et le chrome ne souffle pas le geste moral
+  (§4.8).
 
 La boucle : **l'avocat ouvre** et livre un lot → lire → surligner → composer (rien ne se passe) → la
 phrase attend → **l'envoyer**, le seul geste qui parle → l'avocat répond → l'attente servie appelle la

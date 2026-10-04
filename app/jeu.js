@@ -412,7 +412,8 @@ function renderDiscussion(){
         return `<div class="rnote"><span class="txt">${escapeAttr(x.n.texte)}</span>
          ${c===S.repetitionIdx
             ? `<span class="sent">opposé à celle-ci</span>`
-            : `${aff?`<span class="sent">opposé à : ${escapeAttr(aff.court)}</span>`:""}<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">opposer</button>`}</div>`;
+            // Opposée ailleurs, le même geste la DÉPLACE : le bouton le dit (§4.6).
+            : `${aff?`<span class="sent">opposé à : ${escapeAttr(aff.court)}</span>`:""}<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">${aff?"déplacer ici":"opposer"}</button>`}</div>`;
       }).join("")
       : `<div class="rnote vide">tu n'as écrit aucune phrase à y opposer</div>`
     /* Le bouton d'avance dit ce qu'on FAIT : « ne rien opposer » juste après avoir
@@ -624,6 +625,10 @@ function souffle(){
      le Contexte — et on le PREND — du Contexte vers la phrase. « Sélectionner »
      servait aux deux, et un joueur a lu trois verbes pour deux gestes. */
   if(!S.compo.length){
+    /* §4.6 — PENDANT LA LECTURE, c'est Auber qui parle : la voix ne réclame pas
+       un passage. Le composeur reste ouvert (la conclusion tue peut encore
+       partir, §4.7) ; qui y pose quelque chose retrouve la voix. */
+    if(R.repetitionEnCours(S)) return "";
     if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
     return second ? "Prends un ou plusieurs passages de ton contexte." : "Prends un passage de ton contexte pour répondre.";
   }
