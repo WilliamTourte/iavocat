@@ -143,7 +143,7 @@ window.CONTENU = {
       },
       "declenche": {
         "une_fois": true,
-        "replique": "Une sur 1,2 milliard, contre un seuil d'une sur un million. C'est une probabilité, pas une certitude. Donne-moi de quoi mordre dessus — et dis-moi sous quel texte."
+        "replique": "Un profil unique, et ils en font une certitude. Ça n'a jamais été qu'une probabilité. Trouve-moi de quoi mordre dessus — et sous quel texte."
       }
     },
     "p_scene": {
@@ -536,7 +536,7 @@ window.CONTENU = {
         "p_pv.e_equip"
       ],
       "tag": "q_equipages",
-      "rep": "Deux. Ça n'a l'air de rien, mais retiens quand même que ce genre de chiffre se retrouve ailleurs, et qu'il ne veut pas dire grand-chose."
+      "rep": "Deux équipages, oui. Pour un appel de nuit, rien d'étonnant — ça ne nous dit rien de plus."
     },
     {
       "forme": "citation",
@@ -544,7 +544,7 @@ window.CONTENU = {
         "t_voisin.e_voix"
       ],
       "tag": "q_voix",
-      "rep": "22h30. Pourtant à ce moment la police était sur les lieux depuis une demi-heure, devant le corps. Les éclats de voix entendus ne peuvent pas correspondre au crime."
+      "rep": "Vers 22h30, oui. C'est l'heure qu'il donne. Retiens-la aussi."
     },
     {
       "forme": "article_3",
@@ -558,7 +558,7 @@ window.CONTENU = {
         }
       ],
       "tag": "temoin",
-      "rep": "Voilà. C'est exactement ça, et c'est plaidable : son horaire tombe, sa déposition ne porte plus rien à elle seule. Je le garde pour l'ouverture — et toi, tu sais lire un dossier."
+      "rep": "Voilà. À 22h30, la patrouille était sur les lieux depuis près d'une demi-heure, devant le corps : les éclats de voix qu'il a entendus ne peuvent pas être ceux du crime. Son horaire tombe, sa déposition ne porte plus rien à elle seule — c'est plaidable, je le garde pour l'ouverture. Et toi, tu sais lire un dossier."
     },
     {
       "forme": "article_3",
@@ -571,7 +571,7 @@ window.CONTENU = {
           ]
         }
       ],
-      "rep": "Le même brigadier au bas des deux pièces, oui. C'est une petite brigade, il signe tout ce qui sort — et l'article 3 parle d'horaires, pas de signatures. Passe."
+      "rep": "Le même brigadier au bas des deux pièces, oui. C'est une petite brigade, il signe tout ce qui sort. Relis l'article 3 : ce n'est pas ce qu'il regarde. Passe."
     },
     {
       "forme": "article_7",
@@ -584,7 +584,7 @@ window.CONTENU = {
           ]
         }
       ],
-      "rep": "Le greffier réceptionne tout ce qui entre ; l'article 7 ne lui demande rien. Ça ne nous mène nulle part. Passe."
+      "rep": "Le greffier réceptionne tout ce qui entre. Ça ne nous mène nulle part. Passe."
     },
     {
       "forme": "article_7",
@@ -597,7 +597,7 @@ window.CONTENU = {
           ]
         }
       ],
-      "rep": "Conforme, en effet. C'est l'autre moitié de l'article 7 qui m'intéresserait."
+      "rep": "Conforme, en effet. Rien à plaider là-dessus."
     },
     {
       "forme": "article_7",
@@ -610,7 +610,7 @@ window.CONTENU = {
           ]
         }
       ],
-      "rep": "L'article que tu évoques ne dit rien sur le délai. Il demande des personnels distincts."
+      "rep": "Le délai, sous l'article 7 ? Relis ce qu'il exige."
     },
     {
       "forme": "article_3",
@@ -623,7 +623,7 @@ window.CONTENU = {
           ]
         }
       ],
-      "rep": "L'article 3 ne parle que d'horaires de témoin. Tu me montres deux signatures d'agent. Ça ne se rencontre nulle part."
+      "rep": "L'article 3, sur ce dossier-ci ? Relis-le : ça ne se rencontre nulle part."
     },
     {
       "forme": "article_12",
@@ -636,7 +636,7 @@ window.CONTENU = {
           ]
         }
       ],
-      "rep": "L'article 12 pèse des probabilités. Tu me montres deux noms. Je ne vois pas sous quel angle le plaider."
+      "rep": "L'article 12, sur deux noms ? Relis ce qu'il dit — je ne vois pas sous quel angle le plaider."
     },
     {
       "forme": "article_7",

@@ -38,6 +38,16 @@ Le dossier arrive **par bribes** (une session = un lot) : d'un bloc, il noierait
 porteuses du vice. Une session porte une **liste** d'attentes et se ferme quand une phrase servant
 l'attente courante est **envoyée**, rien d'autre.
 
+**La remise du tutoriel se sert DANS L'ORDRE** — retour de playtest (Jean) : la première remise
+acceptait une réponse *par anticipation*, et 22h30 envoyé à la première question servait la deuxième.
+L'avocat en donnait la réplique (la contradiction comprise), la phrase entrait en Plaidoirie, la
+deuxième question n'était jamais posée — et le tutoriel, qui lit l'attente **courante**, disait au
+même moment *« ce n'est pas ce qu'il demande »*, puis se taisait, la citation passant pour acquise.
+Dans la remise 1, une phrase qui sert une attente **à venir** est donc **hors sujet** : l'avocat
+répond comme à toute réponse à côté, rien n'entre en Plaidoirie, et la phrase reste **à envoyer**
+— elle repartira quand sa question viendra. Les remises suivantes gardent l'anticipation : la
+latitude s'élargira avec elles.
+
 **Ce que l'avocat attend n'est jamais l'anomalie** : toute attente est servable par un argument
 ordinaire, sinon le vice serait quasi obligatoire et tout s'effondrerait vers la Fin 1. **Le vice n'est
 jamais un verrou** — c'est parce qu'il est hors du chemin obligatoire que les trois fins existent.
@@ -114,12 +124,27 @@ jamais la pertinence : chaque dimension a sa couleur *et* son soulignement — p
 tirets, ondulé —, si bien qu'aucune ne se lit à la couleur seule (§4.10). C'est le **rang** qui les
 attribue, jamais le contenu.
 
-**Et le code s'apprend SANS SURVOL.** Deux playtests de suite l'ont dit : rien, à l'écran, ne
-laissait deviner que couleur et trait *signifient* quelque chose — il fallait survoler un passage
-pour que le `title` le dise, et un `title` n'existe ni au clavier, ni au toucher, ni pour un lecteur
-d'écran (§4.10 règle 1). La pièce porte donc une **légende** : elle nomme les dimensions **présentes
-dans cette pièce-là**, chacune avec sa couleur et son trait. Elle nomme des **dimensions**, jamais
-des passages — la nuance est tout : nommer un passage rallumerait la lampe torche.
+**Le marquage ne se montre qu'au survol ou au clic** — demande de l'auteur. Soulignée d'office, une
+pièce se lisait comme un formulaire déjà rempli : ses passages s'offraient avant d'être cherchés.
+Désormais le texte se lit **nu** ; un passage se souligne et prend son fond **quand on passe dessus**,
+et **quand on l'atteint au clavier** (§4.10 règle 1 — le focus vaut le survol) ; **retenu**, il garde
+sa marque pour de bon — fond, trait, ✓. Au toucher, qui n'a pas de survol, c'est **le clic** qui le
+montre : il le retient, donc le marque. Fouiller y gagne un sens (§8.6 : *le joueur a le droit d'être
+perdu*). **Uniforme toujours** : tous les passages se cachent pareil et se montrent pareil — ni lampe
+torche ni passe-droit, `bruit` compris.
+
+**Une bordure à peine visible, neutre et arrondie, SUGGÈRE qu'un passage se clique** — demande de
+l'auteur : nu, le texte ne disait plus où cliquer ; franche, elle le disait trop. Elle se devine plus
+qu'elle ne se voit. Elle est **la même pour tous** et **ne dit ni la dimension ni la
+pertinence** : seulement *ici, quelque chose se retient*. Le trait et la couleur restent au survol.
+
+**Le code s'apprend en cherchant : plus de légende.** Posée le 2 octobre — deux playtests demandaient
+que couleur et trait *signifient* quelque chose sans survol, et le `title` qui le disait n'existait ni
+au clavier ni au toucher —, elle nommait sous chaque pièce les dimensions qu'elle portait. **L'auteur
+l'a retirée** : depuis que le marquage ne se montre qu'au survol ou au clic, elle ne disait rien qu'on
+ne voie en passant sur un passage, et Jean, au bas d'une pièce, ne la voyait pas. Le code se lit sur
+le passage même, au survol, et dans le Contexte, où chaque retenu se range sous le nom de sa
+dimension, à sa couleur.
 
 **Retenir a lieu dans la pièce, retirer dans le Contexte.** Recliquer un passage déjà retenu ne
 l'oublie pas — arbitré le 16 septembre, reconduit le 30 après un playtest qui attendait un
@@ -138,7 +163,7 @@ La ligne reste **dans le flux** : collée au bas de la pièce, elle couvrait, da
 Contexte, le texte même qu'on venait de cliquer.
 La confirmation vit **là où le geste a lieu**, pas dans un coin de l'écran : c'est la pièce qu'on
 regarde quand on clique. Le Contexte vide, de son côté, dit **comment** on le remplit — ouvrir une
-pièce, cliquer un passage souligné —, plus seulement *qu'*il se remplit.
+pièce, y cliquer un passage —, plus seulement *qu'*il se remplit.
 
 ### 4.4 Le doublon banal
 
@@ -209,6 +234,13 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   qui remet des pièces ne porte plus qu'un bouton unique vers le Contexte, où chacune s'ouvre à son
   tour, comme un panneau ouvert par la barre : on la consulte, on ne la referme pas pour elle. Les
   portes **tranchent sur le fond** : ce sont des outils, pas des étiquettes.
+- **La remise et sa première question ne font qu'UN message, les pièces APRÈS la question** —
+  demande de l'auteur, et la friction de Colas, qui ouvrait les pièces sans avoir lu la question
+  posée dessous. Dans le fil, deux bulles : le texte et le bouton de pièces, puis la question — on
+  recevait avant de savoir ce qu'on cherchait. Désormais le message de remise porte sa question, et
+  le bouton ferme la bulle : on lit ce qu'il demande, puis on va chercher. La question reste un champ
+  de l'**attente**, jamais du texte de la remise : c'est ce qui permet de la rappeler (§4.9 règle 3).
+  Les questions suivantes, posées après une réponse, restent des messages à part.
 - **LA PIÈCE S'OUVRE DANS LE CONTEXTE, entre l'index et les passages retenus** — retour de playtest
   (Colas), et idée de l'auteur. Tant que la pièce occupait seule la place latérale, citer coûtait
   cinq temps : ouvrir la pièce, retenir, **refermer la pièce**, rouvrir le Contexte, prendre. Le
@@ -219,11 +251,24 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   pièce** (on lit, on retient), **les retenus** (on prend). Trois règles le tiennent :
   - **Deux bandes qui défilent chacune pour son compte**, la pièce au-dessus, les retenus en dessous :
     une pièce longue ne pousse jamais les retenus hors du panneau, et dix-sept fiches ne poussent
-    jamais la pièce. L'index reste au-dessus, resserré, et ne colle pas (le PIÈGE ci-dessus). La
-    pièce prend la hauteur ; les retenus ce qu'il leur faut, jusqu'à un plafond — à dix-sept fiches,
-    ce sont eux qui défilent. **Au-dessus du seuil, la colonne latérale s'élargit** tant qu'une pièce
-    est ouverte : la conversation cède de la largeur, jamais la question. **En dessous**, si le
-    panneau est trop bas pour les deux bandes, il redéfile d'un bloc plutôt que de rogner.
+    jamais la pièce. **La pièce prend la hauteur de son texte, jusqu'à un plafond ; les retenus,
+    tout le reste** — demande de l'auteur : une pièce courte laissait du papier vide pendant que les
+    retenus, plafonnés, défilaient dessous. Une pièce longue s'arrête au plafond et défile ; à
+    dix-sept fiches, ce sont les retenus qui défilent. **Au-dessus du seuil, le Contexte prend les DEUX
+    TIERS de la largeur**, pièce ouverte ou non — demande de l'auteur : index, pièce et retenus se
+    lisaient à l'étroit dans une colonne d'un tiers. La conversation garde le tiers restant, et la
+    question avec elle ; la Plaidoirie, qui ne porte qu'une liste, garde sa colonne étroite. **En
+    dessous**, si le panneau est trop bas pour les deux bandes, il redéfile d'un bloc plutôt que de
+    rogner.
+  - **L'index se REPLIE en une ligne** — *le dossier, son compte* — et il laisse ainsi la place au
+    reste. Retour de playtest (Jean), puis de l'auteur : déplié, à huit pièces et une puce par
+    ligne, il prenait la moitié du panneau ; la pièce n'y montrait plus que deux lignes, et sur un
+    téléphone plus rien. **Une bascule le replie ou le déplie à tout moment.** Une pièce ouverte le
+    replie d'elle-même ; on le déplie pour en choisir une autre, qui le replie à son tour ; la pièce
+    repliée, il revient à ce que le joueur avait choisi. **Le bouton de pièces du message le
+    déplie** : on vient voir ce qu'on a reçu. **Replier n'est pas juger** (§4.6) : ce sont des
+    pièces, pas des passages, et rien n'en est retiré. Il ne colle pas (le PIÈGE ci-dessus), et
+    reste l'ancre du tutoriel, replié ou non.
   - **Une seule pièce à la fois** : un autre chip de l'index la remplace ; la croix de la pièce la
     replie et rend toute la hauteur aux retenus ; refermer le Contexte la replie avec lui. Une pièce
     n'est **jamais** ouverte hors du Contexte — l'ouvrir ouvre le Contexte, en consultation (il ne se
@@ -250,8 +295,9 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   qu'il ne parte pas hors champ, et il a occupé le panneau en permanence — à trois lignes, la moitié.
   Il défile avec les fiches. **Au-dessus du seuil, la place latérale reçoit la hauteur pleine de la
   conversation** : plancher et plafond cessent de s'y disputer quoi que ce soit.
-- **Deux matières** : les pièces ont celle du **papier** — fond clair, caractères à empattements —, la
-  machine celle de l'**écran**. Ce qu'on lit vient du monde, ce qu'on écrit sort de l'IA ; la chasse
+- **Deux matières** : les pièces ont celle du **papier** — fond clair, caractères à empattements, en
+  corps de lecture et non d'affiche (demande de l'auteur : à 17 px, une pièce ne tenait pas dans son
+  cadre) —, la machine celle de l'**écran**. Ce qu'on lit vient du monde, ce qu'on écrit sort de l'IA ; la chasse
   fixe de ses messages dans la Discussion est le même contraste, pris dans l'autre sens.
 - **Un panneau ne s'ouvre jamais tout seul**, et deux fermetures coexistent, selon la porte par
   laquelle il est venu. **Ouvert pour ÉCRIRE** (par la voix), il suit la phrase : il se referme dès
@@ -317,6 +363,14 @@ calibration (§3) — et il a donc le droit de dire que deux horaires ne tiennen
 vérifie. Le bandeau, lui, n'est personne : il ne peut nommer que le **geste** — *une réponse peut
 tenir sur deux passages* — et jamais la **trouvaille** — *les deux passages qui se contredisent*.
 Un joueur a trouvé l'incohérence seul, puis lu dans le bandeau ce qu'il venait de comprendre.
+**Et l'avocat ne la dit qu'APRÈS** : vérifier, c'est commenter ce que le joueur a composé, jamais le
+lui dicter. Sa réplique à la deuxième question énonçait la contradiction avant que la troisième ne
+demande de la composer — elle annonçait au lieu de vérifier, relevé par deux playtests (le second,
+Jean). Le constat passe dans la réplique qui **accueille** la comparaison ; avant, l'avocat prend
+acte de l'heure, rien de plus. Même exigence pour ses refus : il **renvoie à la lecture** de
+l'article (*« Relis ce qu'il exige »*), il ne le résume pas — un refus qui résume donne la solution
+à la deuxième erreur. Et ses réactions spontanées à une pièce (`declenche`) peuvent pousser vers une
+piste — le faux vice en vit (§6) —, jamais faire le calcul à la place du joueur.
 
 **Et les deux voix demandent la MÊME CHOSE.** Un bandeau qui fait comparer deux passages pendant
 que Maître Auber réclame un article, ce sont deux consignes pour un seul geste : le joueur s'arrête
@@ -346,18 +400,27 @@ refusé, il ne dit jamais lequel c'était, et la dérivation par laquelle il sai
 **s'éteint avec lui**. **Il ne décide rien** — aucun état neuf, aucune règle, et il peut se taire — y
 compris entre le geste 4 et le geste 5, le temps d'une citation déjà connue.
 
-**Le bandeau se tient en tête de page, dans le flux** : il réserve sa place et pousse le jeu vers le
-bas au lieu de le recouvrir — aucune des quatre ancres ne peut se retrouver dessous. Il reste épinglé
-au défilement, et lisible par-dessus la pièce ouverte. Ses consignes s'**annoncent** aussi, à qui ne
-voit pas le halo (§4.10).
+**La consigne est une BULLE posée à côté de ce qu'elle montre** — retour de playtest (Jean). Dans le
+flux, en tête de page, le bandeau poussait tout le jeu à chaque fois qu'il se redéployait (une
+soixantaine de pixels après *« tout effacer »*), et sur un téléphone il mangeait le tiers de
+l'écran. C'est désormais une **boîte de dialogue non bloquante**, en surimpression : elle ne décale
+rien en paraissant ni en disparaissant, et le jeu reste cliquable autour. **Elle s'ancre au halo**,
+une flèche vers la zone, sur le premier côté où elle tient — **à droite, puis au-dessous, au-dessus, à
+gauche** : ce qui précède la zone est ce qu'on vient de lire, la question d'abord (§4.6), et la bulle
+va vers ce qui suit. Elle suit la zone quand l'écran défile ou change de taille. Ce que le flux garantissait
+en réservant sa place, l'ancrage le garantit en la choisissant : **la bulle ne recouvre jamais sa
+propre ancre**. Réduite, elle n'est plus que le *« ? »* collé à la zone. Ses consignes
+s'**annoncent** aussi, à qui ne voit pas le halo (§4.10).
 
 **Chaque consigne neuve s'affiche d'abord développée, puis se réduit en icône** — retour de playtest
 (Colas) : deux joueurs avaient déjà donné un avis contradictoire sur la présence permanente du bandeau
 (l'un l'a pris pour un bandeau de cookies, l'autre le voit trop tôt). La réponse n'est pas une position
 fixe mais une **durée** : développée tant qu'elle est neuve, elle se réduit d'elle-même dès que le
 rendu suivant confirme que le joueur ne vient pas de la satisfaire — sans minuteur, puisque ce jeu ne
-rend jamais hors d'un geste du joueur. Un clic sur l'icône la rouvre ; se tromper la rouvre aussi,
-puisque le texte d'alerte est une consigne neuve comme une autre. *« je sais faire »* ne vit que dans
+rend jamais hors d'un geste du joueur. **Neuve veut dire jamais montrée** : revenir à une étape déjà
+lue — de *4/4* à *3/4* après *« tout effacer »* — la laisse réduite, à l'endroit de la zone ; elle n'a
+rien de neuf à dire. Un clic sur l'icône la rouvre ; se tromper la rouvre aussi : l'alerte est la
+seule consigne qui se redéploie déjà vue. *« je sais faire »* ne vit que dans
 la forme développée — clore le tutoriel pour de bon reste un choix qu'on pose en le lisant, pas depuis
 une icône.
 
@@ -377,7 +440,8 @@ Cinq règles d'écran — le coupable d'une page illisible est le **chrome**, ja
    question ne se rappelle que lorsqu'elle a cessé d'être le dernier mot de l'avocat. **Mais
    *lisible* est la condition, pas *présent*.** Un panneau ouvert la perd : la conversation est la
    seule bande élastique (§4.6), c'est elle qui cède, et en 1280×800 — panneau ouvert, bandeau du
-   tutoriel affiché — il lui reste une centaine de pixels, moins que la question. Un joueur a
+   tutoriel affiché, du temps où il prenait sa place dans le flux (§4.8) — il lui reste une centaine
+   de pixels, moins que la question. Un joueur a
    composé sa réponse sans la voir. **Panneau ouvert, la question redescend donc au composeur** ;
    refermé, elle se tait. Ce n'est pas un repentir sur l'ouverture dans le flux — ne rien recouvrir
    reste ce qui garde le fil sous les yeux — c'est la règle appliquée à ce qu'elle dit vraiment.

@@ -152,8 +152,8 @@ function tutoEtapeCitation(){
             dit: rate ? "Ce n'est pas ce qu'il demande."
                       : "Retiens le passage qui répond.",
             ditLong: rate
-              ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage souligné qui y répond."
-              : "Clique sur un passage souligné pour le retenir dans ton Contexte : c'est de là que tu composeras ta réponse."}
+              ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage qui y répond."
+              : "Clique sur le passage encadré qui répond pour le retenir dans ton Contexte : c'est de là que tu composeras ta réponse."}
       /* Le Contexte ouvert, le halo quitte le bouton du message pour l'index :
          il ne pulse plus sur une porte qu'on vient de franchir (§4.8). */
       : panneau==="contexte"
@@ -233,6 +233,12 @@ let tutoCible=null, tutoDernierDit=null, tutoAnnonce=null;
    autre. `tutoReouvre` est une lecture UNIQUE posée par l'icône, consommée au
    prochain `majTutoriel` — même idiome que `focusVoulu`. */
 let tutoReduit=false, tutoReouvre=false;
+/* NEUVE VEUT DIRE JAMAIS MONTRÉE (§4.8) : revenir de 4/4 à 3/4 après « tout
+   effacer » redéployait une consigne déjà lue. Seule l'alerte se redéploie
+   déjà vue — se tromper rouvre. La clé est le geste, le rang et le texte : à
+   un même rang, « Ouvre ton Contexte » et « Ouvre une pièce » sont deux
+   consignes. */
+const tutoVues=new Set();
 function majTutoriel(){
   const banniere=$("tuto"), corps=$("tutoCorps"), icone=$("tutoIcone");
   if(!banniere) return;
@@ -241,7 +247,9 @@ function majTutoriel(){
      fermeture définitive, qu'une leçon ait ou non été vue jusqu'au bout. */
   if(!tutoFait && S.remisesEnvoyees>1) tutoClore();
   const e = tutoFait ? null : tutoEtape();
-  const neuf = !!e && e.dit!==tutoDernierDit;
+  const cle = e && e.geste+" "+e.n+" "+e.dit;
+  const neuf = !!e && e.dit!==tutoDernierDit && (!!e.alerte || !tutoVues.has(cle));
+  if(e) tutoVues.add(cle);
   const montrer = neuf || (!!e && tutoReouvre);
   tutoReduit = e ? !montrer : false;
   /* Le halo ne se voit pas à l'oreille : une consigne NEUVE s'annonce (§4.10),
@@ -263,6 +271,73 @@ function majTutoriel(){
   if(icone) icone.hidden=!tutoReduit;
   banniere.hidden=false;
 }
+/* §4.8 — LA BULLE S'ANCRE AU HALO, en surimpression : elle ne décale rien, et
+   c'est son PLACEMENT, plus le flux, qui la garde hors de sa propre ancre. Le
+   premier côté où elle tient — à droite, au-dessous, au-dessus, à gauche ;
+   aucun ne suffit, le plus haut des deux espaces verticaux, bornée à la
+   fenêtre. Ce qui PRÉCÈDE l'ancre est ce qu'on vient de lire — la question,
+   que la remise porte juste avant ses pièces (§4.6) : la bulle va vers ce qui
+   suit. PIÈGE : on mesure le rectangle VISIBLE de la cible, coupé par chaque
+   ancêtre qui défile — une zone à moitié défilée n'est pas là où son
+   `getBoundingClientRect` la met, et la bulle s'ancrerait dans le vide. Aucune
+   suite ne voit cette géométrie (jsdom rend des rectangles nuls) : `npm run
+   vue` seul la montre. */
+const TUTO_ECART=12, TUTO_MARGE=16;
+function rectVisible(el){
+  const r=el.getBoundingClientRect();
+  let h=r.top, b=r.bottom, g=r.left, d=r.right;
+  for(let p=el.parentElement; p && p!==document.body; p=p.parentElement){
+    const o=getComputedStyle(p);
+    if(!/(auto|scroll|hidden|clip)/.test(o.overflowX+" "+o.overflowY)) continue;
+    const q=p.getBoundingClientRect();
+    h=Math.max(h,q.top); b=Math.min(b,q.bottom); g=Math.max(g,q.left); d=Math.min(d,q.right);
+  }
+  h=Math.max(h,0); b=Math.min(b,innerHeight); g=Math.max(g,0); d=Math.min(d,innerWidth);
+  return b>h && d>g ? {top:h,bottom:b,left:g,right:d} : r;
+}
+function placerTuto(){
+  const bulle=$("tuto");
+  if(!bulle || bulle.hidden) return;
+  const L=innerWidth, H=innerHeight, w=bulle.offsetWidth, h=bulle.offsetHeight;
+  const E=TUTO_ECART, M=TUTO_MARGE;
+  const borne=(v,min,max)=>Math.max(min,Math.min(v,max));
+  if(!tutoCible || !document.contains(tutoCible)){   // rien à montrer : en tête, au milieu
+    bulle.removeAttribute("data-cote");
+    bulle.style.left=Math.round((L-w)/2)+"px"; bulle.style.top=M+"px";
+    return;
+  }
+  const r=rectVisible(tutoCible), cx=(r.left+r.right)/2, cy=(r.top+r.bottom)/2;
+  const cotes=[
+    ["droite",  L-r.right-E-M>=w],
+    ["dessous", H-r.bottom-E-M>=h],
+    ["dessus",  r.top-E-M>=h],
+    ["gauche",  r.left-E-M>=w]];
+  const cote=(cotes.find(c=>c[1]) || (r.top>H-r.bottom ? cotes[2] : cotes[1]))[0];
+  let x, y;
+  if(cote==="droite" || cote==="gauche"){
+    /* Sur le côté, elle DESCEND depuis la zone, la flèche en haut : la question
+       est au-dessus du bouton de pièces, une bulle qui montait la recouvrait. */
+    x = cote==="droite" ? r.right+E : r.left-E-w;
+    y = cy-26;
+  } else {
+    x = r.left;
+    y = cote==="dessus" ? r.top-E-h : r.bottom+E;
+  }
+  x=borne(x, M, Math.max(M, L-w-M)); y=borne(y, M, Math.max(M, H-h-M));
+  bulle.style.left=Math.round(x)+"px"; bulle.style.top=Math.round(y)+"px";
+  bulle.setAttribute("data-cote", cote);
+  bulle.style.setProperty("--fx", Math.round(borne(cx-x, 18, Math.max(18, w-18)))+"px");
+  bulle.style.setProperty("--fy", Math.round(borne(cy-y, 18, Math.max(18, h-18)))+"px");
+}
+/* Les bandes défilent, pas la page : un `scroll` ne remonte pas, d'où la
+   CAPTURE. Une image par rafale suffit. */
+let tutoImage=0;
+function replacerTuto(){
+  if(tutoImage) return;
+  tutoImage=requestAnimationFrame(()=>{ tutoImage=0; placerTuto(); });
+}
+addEventListener("resize", replacerTuto);
+document.addEventListener("scroll", replacerTuto, true);
 /* Le geste rouvre la forme développée — même idiome que `ouvrirPiece`/
    `oublier` : poser `focusVoulu` AVANT `rendreTout`, jamais un `.focus()`
    manuel après coup. */
@@ -363,7 +438,7 @@ function annoncerNouveautes(){
   if(vusFil<0){ vusFil=S.fil.length; dernierRefus=S.refus||null; tutoAnnonce=null; return; }
   for(const m of S.fil.slice(vusFil)) if(!m.ia){
     const n=(m.pieces||[]).length;
-    annoncer(`${m.qui} : ${texteBrut(m.texte)}${n ? ` (${n} pièce${n>1?"s":""} jointe${n>1?"s":""})` : ""}`);
+    annoncer(`${m.qui} : ${texteBrut(m.texte)}${m.question ? " "+texteBrut(m.question) : ""}${n ? ` (${n} pièce${n>1?"s":""} jointe${n>1?"s":""})` : ""}`);
   }
   vusFil=S.fil.length;
   if(S.refus && S.refus!==dernierRefus) annoncer(S.refus);
@@ -378,6 +453,7 @@ function rendreTout(){
   renderDiscussion(); renderComposeur(); renderContexte(); renderPlaidoirie(); majCloture(); majLateral(); majTutoriel();
   recalerFil(enBas); majDebord();
   rendreFocus(m, force);
+  placerTuto();                    // APRÈS le recalage du fil et le focus : ils déplacent l'ancre
   rappelRetrait=null; vientDeRetenir=null;
   annoncerNouveautes(); publierAnnonces();
   sauverPartie();
@@ -391,9 +467,11 @@ function renderDiscussion(){
     // composée de l'IA, elle, s'échappe.
     const meme = m.qui===dernier; dernier=m.qui;
     h+=`<div class="msg ${m.ia?'ia':''} ${meme?'suite':''}">${
-      meme?"":`<div class="who">${escapeAttr(m.qui)}</div>`}<div class="bubble">${m.ia?escapeAttr(m.texte):m.texte}<div>`;
+      meme?"":`<div class="who">${escapeAttr(m.qui)}</div>`}<div class="bubble">${m.ia?escapeAttr(m.texte):m.texte}${
+      m.question?`<div class="qremise">${m.question}</div>`:""}<div>`;
     // Le message ne nomme plus les pièces une à une (§4.6) : un seul bouton,
-    // vers le Contexte, où chacune se nomme et se lit comme avant.
+    // vers le Contexte, où chacune se nomme et se lit comme avant — et il vient
+    // APRÈS la question que la remise porte : on lit, puis on va chercher.
     if(m.pieces.length){
       const n=m.pieces.length, premier=m.pieces[0];
       const mot=n>1?"pièces":"pièce", s=n>1?"s":"";
@@ -472,7 +550,7 @@ function ouvrirPiece(pid){
   ouvreur = memoFocus();
   if(S.modalPiece && S.modalPiece!==pid) R.fermerPiece(S);
   R.ouvrirPiece(S,pid);
-  panneau="contexte"; panneauSuit=false;
+  panneau="contexte"; panneauSuit=false; dossierDeplie=false;
   focusVoulu = { cle:"#pieceTitre", zone:"#panPiece" };
   rendreTout();
 }
@@ -515,8 +593,31 @@ function renderDossier(){
     <div class="dchips">${pids.length?pids.map(chip).join(""):`<span class="dvide">—</span>`}</div></div>`;
   const pieces=livres.filter(pid=>!R.estRegle(JEU.pieces[pid]));
   const regles=livres.filter(pid=> R.estRegle(JEU.pieces[pid]));
-  return `<div class="zone" id="zoneDossier">
-    <div class="dossier">${colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div></div>`;
+  /* §4.6 — L'INDEX SE REPLIE en une ligne, et laisse la place au reste (retours
+     de Jean et de l'auteur) : déplié, il mangeait la moitié du panneau, et la
+     pièce n'y montrait plus que deux lignes. Les puces restent sous `hidden` —
+     le motif « disclosure » —, et `#zoneDossier` reste l'ancre du tutoriel (R6). */
+  const plie=indexPlie();
+  const compte=(n,mot)=>n+" "+mot+(n>1?"s":"");
+  const resume=compte(pieces.length,"pièce")+", "+compte(regles.length,"règle");
+  return `<div class="zone ${plie?"plie":""}" id="zoneDossier">
+    <button type="button" class="dplier" data-f="dossier" aria-expanded="${!plie}" aria-controls="dossierListe"
+      onclick="basculerDossier()"><span class="dtitre">Le dossier</span><span class="dcompte">${resume}</span><span class="dsens">${
+        plie?"▾ déplier":"▴ replier"}</span></button>
+    <div class="dossier" id="dossierListe" ${plie?"hidden":""}>${
+      colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div></div>`;
+}
+/* Deux états d'ÉCRAN, comme `panneau` : jamais sauvés. `dossierPlie` est le
+   choix du joueur sans pièce ouverte ; `dossierDeplie`, celui qu'il fait le
+   temps d'une pièce — `ouvrirPiece` le remet à faux : chaque pièce ouverte
+   replie l'index qu'on a déplié pour la choisir, et la pièce repliée, il
+   revient au choix d'avant. */
+let dossierPlie=false, dossierDeplie=false;
+const indexPlie=()=>S.modalPiece ? !dossierDeplie : dossierPlie;
+function basculerDossier(){
+  if(S.modalPiece) dossierDeplie=!dossierDeplie; else dossierPlie=!dossierPlie;
+  focusVoulu={ cle:"dossier", zone:"#zoneDossier" };
+  rendreTout();
 }
 
 /* 5) LE CONTEXTE — privé, gratuit, illimité, et CLAVIER du composeur (§4.6).
@@ -547,30 +648,22 @@ function oublier(pid,eid){
   focusVoulu={ cle:"#zoneRetenus", zone:"#zoneRetenus" };
   rendreTout();
 }
-/* §4.3 — LA LÉGENDE. */
-function legendePiece(pid){
-  const p=JEU.pieces[pid];
-  const dims=(JEU.dimensions||[]).filter(d =>
-    Object.values(p.empans||{}).some(e=>e.dim===d));
-  if(!dims.length) return "";          // une règle ne porte aucun empan (§6)
-  return `<p class="legende"><span class="llab">Légende :</span>${
-    dims.map(d=>`<span class="ldim" style="--dc:${couleurDim(d)};--ds:${traitDim(d)}">${escapeAttr(d)}</span>`).join("")}</p>`;
-}
+/* §4.3 — PLUS DE LÉGENDE : l'auteur l'a retirée, le code s'apprend en cherchant
+   — au survol du passage, et dans les groupes du Contexte. */
 /* §4.5 — `porte` ANNONCE, il ne filtre rien : le moteur ne le lit jamais. Il se
-   lit DANS l'article, jamais sous le bouton qui l'invoque. Même forme que la
-   légende (§4.3), et les noms y portent leur couleur et leur trait : c'est le
-   pont vers les groupes du Contexte. */
+   lit DANS l'article, jamais sous le bouton qui l'invoque. Les noms y portent
+   leur couleur et leur trait : c'est le pont vers les groupes du Contexte. */
 function portePiece(pid){
   const d=R.porteDe(pid);
   if(!d.length) return "";
-  return `<p class="legende"><span class="llab">Ce texte porte sur :</span>${
+  return `<p class="porte"><span class="llab">Ce texte porte sur :</span>${
     d.map(x=>`<span class="ldim" style="--dc:${couleurDim(x)};--ds:${traitDim(x)}">${escapeAttr(x)}</span>`).join("")}</p>`;
 }
 function piecePanelHTML(pid){
   const p=JEU.pieces[pid];
   return `<small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
     <p class="piecetexte">${rendreTexte(pid)}</p>
-    ${legendePiece(pid)}${portePiece(pid)}
+    ${portePiece(pid)}
     ${rappelRetrait && rappelRetrait.startsWith(pid+".") ? `<p class="rappel">${RAPPEL_RETRAIT}</p>` : ""}
     ${vientDeRetenir && vientDeRetenir.startsWith(pid+".") ? `<p class="rappel retenu">${ECHO_RETENU}</p>` : ""}`;
 }
@@ -584,7 +677,7 @@ function renderRetenus(){
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
   let h=`<div class="zone" id="zoneRetenus" tabindex="-1">`;
   if(!S.retenus.length){
-    h+=`<div class="aide">Ouvre une pièce, puis clique un passage souligné pour le retenir : il viendra ici.</div>`;
+    h+=`<div class="aide">Ouvre une pièce, puis clique un passage encadré pour le retenir : il viendra ici.</div>`;
   } else {
     for(const d of JEU.dimensions||[]){
       const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
@@ -687,7 +780,9 @@ function rappelQuestion(){
      les deux fermés, elle se tait. Au-dessus du seuil, la conversation cède en
      LARGEUR seulement et garde la question — la règle mord alors par surcroît,
      pas par nécessité. */
-  if(!panneau && !S.modalPiece && dernier && dernier.texte===a.question) return "";
+  /* Le dernier mot est la question qu'un message de remise PORTE, ou le texte
+     d'un message qui n'est qu'elle (§4.6). */
+  if(!panneau && !S.modalPiece && dernier && (dernier.question||dernier.texte)===a.question) return "";
   return `<div class="aide question">« ${escapeAttr(a.question)} »</div>`;
 }
 /* La barre des deux surfaces (§4.6) : elle NOMME ce qu'on a, et y donne accès à
@@ -859,7 +954,7 @@ function majLateral(){
   // La conversation, seule bande élastique, cède d'elle-même la place (§4.6) ;
   // la classe ne décide que jusqu'où elle peut céder, et c'est du CSS (§9).
   { const w=document.querySelector(".wrap"); if(w){ w.classList.toggle("avecLateral", !!panneau);
-                                                   w.classList.toggle("avecPiece", !!S.modalPiece); } }
+                                                   w.classList.toggle("avecContexte", panneau==="contexte"); } }
 }
 /* LE PANNEAU S'OUVRE SUR CE QU'ON VIENT DE RETENIR. À dix-sept fiches, la
    dernière est sous le pli et rien ne le disait : un joueur a cherché son
@@ -897,6 +992,7 @@ function ouvrirContexte(){ panneau="contexte"; panneauSuit=true; rendreTout(); v
    referme pas tout seul à la pose d'un passage. */
 function voirPiecesRecues(){
   panneau="contexte"; panneauSuit=false;
+  dossierPlie=false; dossierDeplie=true;   // on vient voir ce qu'on a reçu : l'index se déplie (§4.6)
   focusVoulu={ cle:"#titreContexte", zone:"#panContexte" };
   rendreTout();
 }

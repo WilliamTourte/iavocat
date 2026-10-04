@@ -139,6 +139,7 @@ function renderSim(){
     if(m.sys) h+=`<div class="sys">· ${escapeH(m.texte)}</div>`;
     else if(m.ia) h+=`<div class="sbub ia"><div class="swho">IA (toi) — transmis à Maître Auber</div>${escapeH(m.texte)}</div>`;
     else h+=`<div class="sbub"><div class="swho">${escapeH(m.qui||"Maître Auber")}</div>${escapeH(m.texte)}
+      ${m.question?`<div>${escapeH(m.question)}</div>`:""}
       ${(m.pieces||[]).map(p=>`<span class="satt">📎 ${escapeH(courtDe(p))}</span>`).join("")}</div>`;
   }
   const faux=simFauxPlaide();

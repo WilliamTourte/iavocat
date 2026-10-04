@@ -7,7 +7,7 @@ function creerRegles(JEU, M) {
 
   /* ---- L'ÉTAT (§4.6) ------------------------------------------------ */
   function etatInitial() { return {
-    fil: [],                      // le canal : {qui, texte, pieces[], ia}
+    fil: [],                      // le canal : {qui, texte, pieces[], ia, question?}
     examinees: [],                // pièces ouvertes au moins une fois
     remisesEnvoyees: 0,
     retenus: [],                  // PRIVÉ — ["pid.eid"] dans l'ordre de surlignage
@@ -48,9 +48,16 @@ function creerRegles(JEU, M) {
   }
   const attenteCourante = (S, r) => attentesDe(r).find(a => !S.satisfaits.includes(a.attend));
   const remiseCourante = S => JEU.remises[S.remisesEnvoyees - 1];
-  function poserQuestion(S, r) {
+  /* LA REMISE PORTE SA PREMIÈRE QUESTION (§4.6) : un seul message, et ses
+     pièces APRÈS la question — on lit ce qu'il demande avant d'aller chercher.
+     La question reste un champ de l'ATTENTE, que `rappelQuestion` retrouve ;
+     le message ne fait que la porter. Les suivantes, posées après une réponse,
+     sont des messages à part. */
+  function poserQuestion(S, r, avecRemise) {
     const a = attenteCourante(S, r);
-    if (a && a.question) pousser(S, r.qui || "Maître Auber", a.question);
+    if (!a || !a.question) return;
+    if (avecRemise) S.fil[S.fil.length - 1].question = a.question;
+    else pousser(S, r.qui || "Maître Auber", a.question);
   }
 
   function envoyerRemise(S) {
@@ -58,7 +65,7 @@ function creerRegles(JEU, M) {
     const r = JEU.remises[S.remisesEnvoyees];
     S.remisesEnvoyees++;
     pousser(S, r.qui, r.texte, r.pieces);
-    poserQuestion(S, r);
+    poserQuestion(S, r, true);
   }
 
   function ouvrirPiece(S, pid) {
@@ -252,14 +259,29 @@ function creerRegles(JEU, M) {
   function envoyer(S, i, contre) {
     const n = S.brouillon[i];
     if (!n || n.versee) return;
-    n.versee = true;
     if (S.prete === i) S.prete = null;
-    S.plaidoirie.push({ b: i, contre: (contre == null ? null : contre) });
-    pousser(S, "IAvocat", "⟨ envoyé : " + n.texte + " ⟩", null, true);
     const L = n.lien;
+    pousser(S, "IAvocat", "⟨ envoyé : " + n.texte + " ⟩", null, true);
+    if (horsOrdre(S, L)) return reponseAvocat(S, n, true);   // dit, pas versé : il repartira
+    n.versee = true;
+    S.plaidoirie.push({ b: i, contre: (contre == null ? null : contre) });
     if (L && L.vice && L.conclusion) { S.vice_trouve = true; S.vice_expose = true; }  // transmis = compris
     reponseAvocat(S, n);
     avancerSurAttente(S, L);
+  }
+  /* LA REMISE DU TUTORIEL SE SERT DANS L'ORDRE (§3). Une phrase qui sert une
+     attente À VENIR de la remise 1 est hors sujet : l'avocat répond comme à
+     toute réponse à côté, rien n'entre en Plaidoirie, et la phrase reste À
+     ENVOYER — `versee` faux, elle repartira quand sa question viendra, puisque
+     `clorePhrase` la retrouve. PIÈGE : la marquer versée la rendrait muette pour
+     toujours, et la question qui l'attend ne pourrait plus être servie. Les
+     remises suivantes gardent l'anticipation : la latitude s'élargira avec
+     elles. */
+  function horsOrdre(S, L) {
+    if (!L || !L.tag || S.remisesEnvoyees !== 1) return false;
+    const r = remiseCourante(S), a = attenteCourante(S, r);
+    return !!a && a.attend !== L.tag
+        && attentesDe(r).some(x => x.attend === L.tag && !S.satisfaits.includes(x.attend));
   }
 
   /* UNE PHRASE QUI MÉLANGE DEUX DOSSIERS (§4.6). Le Contexte est cumulatif et
@@ -284,9 +306,12 @@ function creerRegles(JEU, M) {
   }
   const melangeDeuxDossiers = r => remisesCitees(r, new Set()).size > 1;
 
-  function reponseAvocat(S, n) {
+  function reponseAvocat(S, n, aVenir) {
     const L = n.lien, A = JEU.avocat || {};
     const esc1 = (liste, cpt) => liste[Math.min(S[cpt]++, liste.length - 1)];
+    // Une réponse à une question pas encore posée est à côté (§3) : sa
+    // réplique propre attendra la question — elle dirait ce qu'on n'a pas demandé.
+    if (aVenir) return pousser(S, "Maître Auber", esc1(A.rep_hors_sujet || ["…"], "hors_sujet"));
     if (!L && A.rep_deux_dossiers && melangeDeuxDossiers(n.reduite))
       return pousser(S, "Maître Auber", A.rep_deux_dossiers);
     if (L && L.vice && L.conclusion) pousser(S, "Maître Auber", A.rep_vice);
@@ -387,7 +412,7 @@ function creerRegles(JEU, M) {
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, envoyerCompo, compoFinie,
-           estMoyen, envoyer, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
+           estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
            instructionComplete, repetitionEnCours, cloturer, verserContre,
            avancerRepetition, finir };
