@@ -1,12 +1,12 @@
 # IAvocat — Passation de contexte
 
 *À lire en tête d'une nouvelle conversation : où on en est, ce qui mord, ce qui reste ouvert, quoi faire
-ensuite. **Court, et il doit le rester.** État au 4 octobre 2026.*
+ensuite. **Court, et il doit le rester.** État au 5 octobre 2026.*
 
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 469 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 493 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -232,6 +232,17 @@ fois retenu — au toucher, c'est le clic qui la pose. Puis **la légende est re
 bordure à peine visible, neutre et arrondie** suggère qu'un passage se clique, sans dire sa
 dimension (§4.3).
 
+**Le 5 octobre, les passes du `TODO.md`** — le second retour de Jean et ce qui restait de Colas,
+rangés par passes. **Le contenu** : chaque pièce porte sa date, et chaque valeur `quand` la sienne
+en ISO (§11) — *14h02* le 13 cesse de « précéder » *22h04* le 12, sans une ligne de moteur. **Le
+Contexte dit son état** (§4.6) : le bouton de pièces compte comme l'index (*« 3 nouvelles pièces et
+2 nouvelles règles »* au lieu de *« 5 pièces »*) ; **‹ et ›** dans la tête de la pièce changent de
+pièce en un clic, l'index restant replié ; un passage pris porte *« dans ta phrase »*, et la phrase
+pleine, une ligne dit pourquoi les fiches ne prennent plus — la raison quitte le `title` d'un bouton
+`disabled` (§4.10 règle 5) ; enfin, **⚖ tranché dans le sens du TODO**, les passages d'une remise
+close se rangent sous ceux de la remise en cours, repliés : *replier par remise ne juge aucun
+passage*. Chaque contrôle neuf a été **vu tomber**, une mutation par contrôle.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -294,6 +305,13 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   comme `panneau`, jamais sauvés : `dossierPlie` (le choix du joueur sans pièce) et `dossierDeplie`
   (celui du temps d'une pièce, remis à faux par `ouvrirPiece`) — un seul ferait oublier, à la pièce
   repliée, ce que le joueur avait choisi avant. `voirPiecesRecues` déplie les deux.
+- **Une fiche refusée est `aria-disabled`, jamais `disabled`** (§4.6, §4.10 règle 5) : un bouton
+  `disabled` sort de la tabulation et n'a plus de clic — la raison n'avait plus de porte. Son
+  `onclick` devient `passageRefuse`, qui redit la raison ; `FOCALISABLES` la compte donc parmi les
+  boutons vivants, et c'est voulu. Un contrôle lit `.disabled` pour le dire faux.
+- **Les remises closes se replient par un état d'ÉCRAN** (`remisesDepliees`), comme `dossierPlie` :
+  jamais sauvé. `surligner` déplie celle d'une pièce close — sans lui, la fiche neuve naîtrait
+  sous `hidden` et *retenir se voit* (§4.3) mentirait.
 - **Pièce ouverte, `#contexte` porte deux bandes défilantes de plus** (`.defile[id]`) :
   `garderDefilement` les retrouve par leur id. Une bande sans id repartirait en haut à chaque geste.
 - **Un passage est un `span[role=button][tabindex=0]`, jamais un `<button>`** : un bouton est une
@@ -478,7 +496,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   remise ne juge aucun passage, c'est un fait de remise. *Le 4 octobre, sixième passe : l'index se
   replie pièce ouverte (§4.6) — à 1280×800 la pièce se lit en entier ; à 390×800 elle reste à deux
   lignes, le panneau entier ne faisant que 353 px — et l'auteur l'y garde, entre la conversation et
-  le composeur. Restent les affaires closes.*
+  le composeur. Le 5 octobre : les passages d'une remise close se rangent sous ceux de la remise en
+  cours, repliés (§4.6) — à voir sur une partie si le pli se trouve.*
 - **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
   accès. Le §4.9 interdit de redire, pas d'offrir deux chemins. **Réponse partielle du 1ᵉʳ octobre :
   elles coûtent avant de servir** — au premier écran, un joueur a noté *« Contexte / Plaidoirie :
@@ -526,9 +545,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   fausses**, renverserait *désigner, pas déclarer* (§4.5) ; **réserver au tutoriel les garde-fous** —
   fiches d'une autre dimension assombries, refus de catégorie avant l'envoi — lèverait *le seul refus
   qui existe* (§4.5) ; **donner un coût à l'erreur** (jauge de patience, envois comptés) rendrait
-  l'enjeu calculable s'il se voit (§8.4). Sans arbitrage contraire : **marquer les fiches déjà prises**
-  et dire pourquoi une troisième est refusée (aujourd'hui un `title` sur un bouton `disabled`, que ni
-  le toucher ni le clavier n'atteignent, §4.10). *Le soulignement au survol ou au clic, demandé par
+  l'enjeu calculable s'il se voit (§8.4). *Fait le 5 octobre : les fiches déjà prises sont marquées,
+  et la phrase pleine le dit en une ligne (§4.6).* *Le soulignement au survol ou au clic, demandé par
   l'auteur, est fait (§4.3), la légende retirée et les passages encadrés d'une bordure neutre* —
   reste à voir, au toucher, si un joueur comprend ce que couleur et trait veulent dire : il ne les
   voit qu'une fois le passage retenu.
@@ -686,3 +704,8 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   posée mais transparente) ; la légende retirée (`legendePiece` supprimée, `portePiece` garde sa
   forme sous `.porte`), une bordure neutre sur chaque passage. 469 contrôles, 8 règles du gardien,
   ESLint.
+- **5 octobre, les passes du `TODO.md`** — passe contenu : les pièces datées, les valeurs `quand` en
+  ISO (§11). Passe Contexte : le bouton de pièces compte comme l'index (`comptePieces`), ‹ › dans la
+  tête de la pièce (`voisine`), *dans ta phrase* et la raison d'un refus (`passageRefuse`,
+  `aria-disabled`), les remises closes repliées (`remisesDepliees`). 493 contrôles, 8 règles du
+  gardien, ESLint.

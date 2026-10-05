@@ -281,7 +281,22 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
    contenu — la citation pousserait la puce hors du cadre. */
 .mchip .corps{flex:1;min-width:0;text-align:left;background:none;border:none;color:var(--txt);
   padding:6px 9px;cursor:pointer;font:inherit;font-size:13.5px;line-height:1.4}
-.mchip .corps:disabled{cursor:default;color:var(--muted)}
+.mchip .corps:disabled,.mchip .corps[aria-disabled="true"]{cursor:default;color:var(--muted)}
+/* §4.6 — le Contexte dit l'état de la phrase : ce qu'on y a pris s'ÉCRIT (§4.10
+   règle 5), et la raison d'un refus se lit en clair, au-dessus des fiches. */
+.mchip.pris{border-color:var(--accent)}
+.mchip .dansPhrase{margin-left:8px;padding:0 6px;border:1px solid var(--accent);border-radius:4px;
+  font-size:12px;font-style:normal;color:var(--accent);white-space:nowrap}
+/* Elle COLLE en tête de ce qui défile : touchée au bas de dix fiches, la fiche
+   refusée amène la bande à elle, et la raison partait hors champ. Une ligne, et
+   seulement phrase pleine — pas l'index collant qui mangeait le panneau (§4.6). */
+.raison{position:sticky;top:0;z-index:1;margin:0 0 8px;padding:6px 10px;border-left:3px solid var(--muted);
+  background:var(--panel2);color:var(--txt);font-size:13px}
+.raison.rappelle{border-left-color:var(--warn)}
+/* Les passages d'une remise close, repliés sous ceux de la remise en cours. */
+.remiseClose{margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+.remiseClose [hidden]{display:none}
+.remiseClose .dplier + div{margin-top:6px}
 .mchip .nom{display:block}
 .mchip .prov{display:flex;align-items:baseline;gap:6px;margin-top:2px}
 .mchip .cit{flex:1;min-width:0;font-size:12.5px;color:var(--muted);font-style:italic;
@@ -512,6 +527,17 @@ code{font-family:var(--mono);color:var(--accent)}
   color:var(--accent);font:inherit;font-size:16px;font-weight:700;cursor:pointer;padding:0}
 .tutoIcone:hover{background:var(--accent);color:#0e1116}
 .tutoIcone[hidden]{display:none}
+/* §4.6 — changer de pièce en un clic : ‹ et › dans la tête de la pièce, juste
+   avant la croix. Même cadre qu'elle, pour se lire comme un geste du papier. */
+.ptete .voisine{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:30px;min-height:32px;
+  padding:0 6px;background:none;border:1px solid var(--filet);border-radius:7px;color:var(--encre);
+  font:inherit;font-family:var(--sans);font-size:20px;line-height:1;cursor:pointer}
+.ptete .voisine:hover{border-color:var(--encre2)}
+.ptete .voisine + .fermer{margin-left:0}
+.ptete h3 + .voisine{margin-left:auto}
+/* Au doigt, il n'y a pas d'Échap à lire (§4.10 règle 6 vaut pour le clavier) :
+   la place rendue garde au titre de la pièce une ligne de plus sur un téléphone. */
+@media (pointer:coarse){ .ptete .fermer kbd{display:none} }
 
 </style>
 </head>
@@ -2440,10 +2466,10 @@ function texteBrut(html){
    refus neuf, puis la consigne neuve du tutoriel. */
 function annoncerNouveautes(){
   if(vusFil<0){ vusFil=S.fil.length; dernierRefus=S.refus||null; tutoAnnonce=null; return; }
-  for(const m of S.fil.slice(vusFil)) if(!m.ia){
+  S.fil.forEach((m,i)=>{ if(i<vusFil || m.ia) return;
     const n=(m.pieces||[]).length;
-    annoncer(`${m.qui} : ${texteBrut(m.texte)}${m.question ? " "+texteBrut(m.question) : ""}${n ? ` (${n} pièce${n>1?"s":""} jointe${n>1?"s":""})` : ""}`);
-  }
+    annoncer(`${m.qui} : ${texteBrut(m.texte)}${m.question ? " "+texteBrut(m.question) : ""}${n ? ` (${comptePieces(m.pieces, recuAvant(i))} dans ton Contexte)` : ""}`);
+  });
   vusFil=S.fil.length;
   if(S.refus && S.refus!==dernierRefus) annoncer(S.refus);
   dernierRefus=S.refus||null;
@@ -2458,15 +2484,26 @@ function rendreTout(){
   recalerFil(enBas); majDebord();
   rendreFocus(m, force);
   placerTuto();                    // APRÈS le recalage du fil et le focus : ils déplacent l'ancre
-  rappelRetrait=null; vientDeRetenir=null;
+  rappelRetrait=null; vientDeRetenir=null; rappelPleine=false;
   annoncerNouveautes(); publierAnnonces();
   sauverPartie();
 }
 
 /* ---- Le canal : un fil de messages ---- */
+/* LE BOUTON COMPTE COMME L'INDEX (§4.6) : les pièces et les règles à part, avec
+   les mots de `renderDossier` — « 5 pièces » au message et « 5 pièces, 3 règles »
+   à l'index, c'était le même chiffre pour deux sens. Dès le deuxième envoi, il
+   dit « nouvelles » : le message compte ce qu'il apporte, l'index ce qu'on a. */
+const compte=(n,mot)=>n+" "+mot+(n>1?"s":"");
+function comptePieces(pids, nouvelles){
+  const nP=pids.filter(pid=>!R.estRegle(JEU.pieces[pid])).length, nR=pids.length-nP;
+  const dit=(n,mot)=>compte(n,(nouvelles?(n>1?"nouvelles ":"nouvelle "):"")+mot);
+  return [nP && dit(nP,"pièce"), nR && dit(nR,"règle")].filter(Boolean).join(" et ");
+}
+const recuAvant=i=>S.fil.slice(0,i).some(m=>(m.pieces||[]).length);
 function renderDiscussion(){
   let h="", dernier=null;
-  for(const m of S.fil){
+  for(const [i,m] of S.fil.entries()){
     // PIÈGE : l'avocat vient du contenu, déjà écrit pour l'écran ; la phrase
     // composée de l'IA, elle, s'échappe.
     const meme = m.qui===dernier; dernier=m.qui;
@@ -2477,10 +2514,9 @@ function renderDiscussion(){
     // vers le Contexte, où chacune se nomme et se lit comme avant — et il vient
     // APRÈS la question que la remise porte : on lit, puis on va chercher.
     if(m.pieces.length){
-      const n=m.pieces.length, premier=m.pieces[0];
-      const mot=n>1?"pièces":"pièce", s=n>1?"s":"";
-      h+=`<button type="button" class="attach" data-f="a:${premier}" onclick="voirPiecesRecues()"
-            aria-label="${n} ${mot} disponible${s} dans ton Contexte"><span aria-hidden="true">📎</span> ${n} ${mot} disponible${s} dans ton Contexte</button>`;
+      const dit=comptePieces(m.pieces, recuAvant(i))+" dans ton Contexte";
+      h+=`<button type="button" class="attach" data-f="a:${m.pieces[0]}" onclick="voirPiecesRecues()"
+            aria-label="${dit}"><span aria-hidden="true">📎</span> ${dit}</button>`;
     }
     h+=`</div></div></div>`;
   }
@@ -2573,13 +2609,38 @@ function suivrePhrase(){
   if(panneau==="contexte" && panneauSuit && R.indexTermeChamp(S) < 0){ panneau=null; panneauSuit=false; }
   if(S.modalPiece && panneau!=="contexte") R.fermerPiece(S);
 }
+/* CHANGER DE PIÈCE COÛTE UN CLIC (§4.6, retour de Jean) : l'index replié, il en
+   fallait deux — déplier, choisir. ‹ et › mènent à la précédente et à la
+   suivante DANS L'ORDRE DE L'INDEX, les pièces puis les règles, en boucle ; et
+   l'index reste comme il était — la place de lecture ne se reperd pas. */
+function ordreIndex(){
+  const livres=R.piecesLivrees(S), regle=pid=>R.estRegle(JEU.pieces[pid]);
+  return [...livres.filter(pid=>!regle(pid)), ...livres.filter(regle)];
+}
+function pieceVoisine(pas){
+  const l=ordreIndex(), i=l.indexOf(S.modalPiece);
+  return l.length>1 && i>=0 ? l[(i+pas+l.length)%l.length] : null;
+}
+/* La pièce quittée part comme sous un autre chip, réplique `declenche` comprise.
+   Le focus reste sur la flèche, pour enchaîner ; `ouvreur` ne bouge pas : la
+   croix le rendra au chip qui a ouvert la première. */
+function voisine(pas){
+  const pid=pieceVoisine(pas); if(!pid) return;
+  R.fermerPiece(S); R.ouvrirPiece(S,pid);
+  focusVoulu={ cle: pas<0?"prec":"suiv", zone:"#panPiece" };
+  rendreTout();
+}
 function pieceHTML(){
   const pid=S.modalPiece, p=pid && JEU.pieces[pid];
   if(!p) return "";
   /* Le titre et la croix ne défilent pas avec le texte ; la bande `#piece`, si.
-     Le nom de la pièce est celui de l'index (§4.6 « une pièce porte un seul nom »). */
+     Le nom de la pièce est celui de l'index (§4.6 « une pièce porte un seul nom ») —
+     les flèches le disent aussi, à qui ne les voit pas. */
+  const fleche=(pas,cle,signe,sens)=>{ const v=pieceVoisine(pas); return v
+    ? `<button class="voisine" data-f="${cle}" onclick="voisine(${pas})" aria-label="${sens} : ${escapeAttr(JEU.pieces[v].titre)}"><span aria-hidden="true">${signe}</span></button>` : ""; };
   return `<div class="bande piece ${R.estRegle(p)?"regle":""}" id="panPiece" role="region" aria-labelledby="pieceTitre">
-    <div class="ptete"><h3 id="pieceTitre" tabindex="-1">${escapeAttr(p.titre)}</h3><button class="fermer" data-f="replier" onclick="fermerPiece()" aria-label="Replier la pièce (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></div>
+    <div class="ptete"><h3 id="pieceTitre" tabindex="-1">${escapeAttr(p.titre)}</h3>${
+      fleche(-1,"prec","‹","Pièce précédente")}${fleche(1,"suiv","›","Pièce suivante")}<button class="fermer" data-f="replier" onclick="fermerPiece()" aria-label="Replier la pièce (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></div>
     <div class="defile" id="piece">${piecePanelHTML(pid)}</div></div>`;
 }
 function renderDossier(){
@@ -2602,7 +2663,6 @@ function renderDossier(){
      pièce n'y montrait plus que deux lignes. Les puces restent sous `hidden` —
      le motif « disclosure » —, et `#zoneDossier` reste l'ancre du tutoriel (R6). */
   const plie=indexPlie();
-  const compte=(n,mot)=>n+" "+mot+(n>1?"s":"");
   const resume=compte(pieces.length,"pièce")+", "+compte(regles.length,"règle");
   return `<div class="zone ${plie?"plie":""}" id="zoneDossier">
     <button type="button" class="dplier" data-f="dossier" aria-expanded="${!plie}" aria-controls="dossierListe"
@@ -2637,6 +2697,9 @@ function surligner(pid,eid){
   const k=pid+"."+eid;
   rappelRetrait = S.retenus.includes(k) ? k : null;
   vientDeRetenir = rappelRetrait ? null : k;
+  // Retenu depuis une pièce d'une remise close : sa remise se déplie, sans quoi
+  // la fiche neuve naîtrait cachée — retenir se voit (§4.3, §4.6).
+  if(vientDeRetenir && remiseClose(remiseDePiece(pid))) remisesDepliees.add(remiseDePiece(pid));
   R.surligner(S,pid,eid);
   annoncer(rappelRetrait ? RAPPEL_RETRAIT : "Retenu dans ton Contexte.");
   const neuf=!!vientDeRetenir;
@@ -2676,32 +2739,82 @@ function piecePanelHTML(pid){
    peut être cachée : le tutoriel vise alors `#btnContexte`, la porte. Les deux
    sélecteurs restent des LITTÉRAUX — R6 ne scanne pas un sélecteur calculé, et
    ne dirait rien le jour où l'un des deux cesserait d'exister. */
+/* §4.6 — LE CONTEXTE DIT L'ÉTAT DE LA PHRASE (retour de Jean). Un passage déjà
+   pris porte « dans ta phrase » ; et quand la phrase n'en prend plus, une ligne le
+   dit. PIÈGE PAYÉ : la raison vivait dans le `title` d'un bouton `disabled` — ni
+   le toucher ni le clavier ne l'atteignaient, et le bouton ne se laissait même
+   plus atteindre (§4.10 règle 5). Les fiches restent donc atteignables
+   (`aria-disabled`), et les toucher redit la raison. */
+const RAISON_PLEINE="Ta phrase ne prend plus de passage : « ← retirer » pour revenir en arrière.";
+let rappelPleine=false;
+function passageRefuse(cle){
+  rappelPleine=true; annoncer(RAISON_PLEINE);
+  focusVoulu={ cle, zone:"#zoneRetenus" };
+  rendreTout();
+}
+/* §4.6 — LES PASSAGES D'UNE REMISE CLOSE SE RANGENT, repliés sous ceux de la
+   remise en cours. Ce n'est pas juger : c'est un fait de remise, et rien n'est
+   retiré. Une remise est close quand la suivante est arrivée. `remisesDepliees`
+   est un état d'ÉCRAN, comme `dossierPlie` : jamais sauvé. */
+const remiseDePiece = pid => (JEU.remises||[]).findIndex(r=>(r.pieces||[]).includes(pid));
+const remiseClose = r => r>=0 && r < S.remisesEnvoyees-1;
+const remisesDepliees=new Set();
+function basculerRemise(r){
+  if(remisesDepliees.has(r)) remisesDepliees.delete(r); else remisesDepliees.add(r);
+  focusVoulu={ cle:"s:"+r, zone:"#zoneRetenus" };
+  rendreTout();
+}
+const ordinal = n => n===1 ? "1ʳᵉ" : n+"ᵉ";
 function renderRetenus(){
   const iT=R.indexTermeChamp(S);
   const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
-  let h=`<div class="zone" id="zoneRetenus" tabindex="-1">`;
-  if(!S.retenus.length){
-    h+=`<div class="aide">Ouvre une pièce, puis clique un passage encadré pour le retenir : il viendra ici.</div>`;
-  } else {
-    for(const d of JEU.dimensions||[]){
-      const ks=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k] && EMPAN[x.k].dim===d);
-      if(!ks.length) continue;
-      const hors=dimReq && d!==dimReq;
-      h+=`<div class="dimgrp ${hors?"horsdim":""}" style="--dc:${couleurDim(d)}"><div class="dnom">${escapeAttr(d)}</div>`;
-      for(const {k,j} of ks){
-        const e=EMPAN[k];
-        h+=`<div class="mchip${k===vientDeRetenir?" neuf":""}" style="--dc:${couleurDim(d)}">
-              <button class="corps" data-f="c:${k}" ${iT<0?"disabled":""} onclick="poserBloc(${iT},${j})"
-                      title="« ${escapeAttr(e.texte)} » — ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}${
-                        iT<0?"\n(ta phrase n'attend pas un passage)":hors?"\n(comparerait sans rien construire : dimension différente)":""}">
-                <span class="nom">${escapeAttr(e.nom||e.texte)}</span>
+  const pleine = iT<0 && S.compo.length>0;
+  const dansPhrase=new Set(S.compo.map(p=>p.valeur).filter(v=>typeof v==="string"));
+  const fiche=(k,j,d,hors)=>{
+    const e=EMPAN[k], pris=dansPhrase.has(k);
+    return `<div class="mchip${k===vientDeRetenir?" neuf":""}${pris?" pris":""}" style="--dc:${couleurDim(d)}">
+              <button class="corps" data-f="c:${k}" ${iT<0
+                ? `aria-disabled="true" ${pleine?'aria-describedby="raisonPleine"':""} onclick="passageRefuse('c:${k}')"`
+                : `onclick="poserBloc(${iT},${j})"`}${
+                hors?` title="(comparerait sans rien construire : dimension différente)"`:""}>
+                <span class="nom">${escapeAttr(e.nom||e.texte)}${pris?`<span class="dansPhrase">dans ta phrase</span>`:""}</span>
                 <span class="prov"><span class="cit">« ${escapeAttr(e.texte)} »</span><span class="sig">— ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}</span></span>
               </button>
               <button class="del" data-f="x:${k}" onclick="oublier('${e.pid}','${e.eid}')" title="Oublier"
                       aria-label="Retirer « ${escapeAttr(e.nom||e.texte)} » du Contexte">×</button>
             </div>`;
-      }
-      h+=`</div>`;
+  };
+  const parDimension=items=>{
+    let h="";
+    for(const d of JEU.dimensions||[]){
+      const ks=items.filter(x=>EMPAN[x.k].dim===d);
+      if(!ks.length) continue;
+      const hors=dimReq && d!==dimReq;
+      h+=`<div class="dimgrp ${hors?"horsdim":""}" style="--dc:${couleurDim(d)}"><div class="dnom">${escapeAttr(d)}</div>${
+        ks.map(({k,j})=>fiche(k,j,d,hors)).join("")}</div>`;
+    }
+    return h;
+  };
+  let h=`<div class="zone" id="zoneRetenus" tabindex="-1">`;
+  if(!S.retenus.length){
+    h+=`<div class="aide">Ouvre une pièce, puis clique un passage encadré pour le retenir : il viendra ici.</div>`;
+  } else {
+    if(pleine) h+=`<p class="raison${rappelPleine?" rappelle":""}" id="raisonPleine">${RAISON_PLEINE}</p>`;
+    const items=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k]);
+    const closes=new Map();
+    const courants=items.filter(x=>{
+      const r=remiseDePiece(EMPAN[x.k].pid);
+      if(!remiseClose(r)) return true;
+      if(!closes.has(r)) closes.set(r,[]);
+      closes.get(r).push(x); return false;
+    });
+    h+=parDimension(courants);
+    for(const r of [...closes.keys()].sort((a,b)=>a-b)){
+      const ouvert=remisesDepliees.has(r), n=closes.get(r).length;
+      h+=`<div class="remiseClose"><button type="button" class="dplier" data-f="s:${r}" aria-expanded="${ouvert}"
+            aria-controls="remise${r}" onclick="basculerRemise(${r})"><span class="dtitre">${ordinal(r+1)} remise, close</span><span class="dcompte">${
+            compte(n,"passage")}</span><span class="dsens">${ouvert?"▴ replier":"▾ déplier"}</span></button>
+          <div id="remise${r}" ${ouvert?"":"hidden"}>${parDimension(closes.get(r))}</div></div>`;
     }
   }
   h+=`</div>`;
@@ -2865,6 +2978,7 @@ function garderDefilement(id, dessiner){
    pièce (on lit, on retient), les retenus (on prend) — et cesse de défiler d'un
    bloc : la pièce et les retenus défilent chacun pour son compte, pour qu'une
    longue pièce ne pousse jamais les retenus hors du panneau (§4.6). */
+let pieceDessinee=null;
 function renderContexte(){
   const piece=!!S.modalPiece;
   const el=$("contexte"); if(el) el.classList.toggle("avecPiece", piece);
@@ -2872,6 +2986,8 @@ function renderContexte(){
   garderDefilement("contexte", () => piece
     ? renderDossier() + pieceHTML() + `<div class="bande retenus"><div class="defile" id="defileRetenus">${renderRetenus()}</div></div>`
     : renderDossier() + renderRetenus());
+  // Une AUTRE pièce s'ouvre en haut de son texte, pas au défilement de la précédente.
+  if(S.modalPiece!==pieceDessinee){ const b=$("piece"); if(b) b.scrollTop=0; pieceDessinee=S.modalPiece; }
 }
 function renderComposeur(){
   $("composeur").innerHTML = renderCompo();

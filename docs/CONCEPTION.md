@@ -241,6 +241,11 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   le bouton ferme la bulle : on lit ce qu'il demande, puis on va chercher. La question reste un champ
   de l'**attente**, jamais du texte de la remise : c'est ce qui permet de la rappeler (§4.9 règle 3).
   Les questions suivantes, posées après une réponse, restent des messages à part.
+  **Le bouton compte comme l'index** — retour de playtest (Jean) : le message annonçait *« 5 pièces
+  disponibles »*, pièces et règles confondues, quand l'index disait *« 5 pièces, 3 règles »* pour le
+  dossier entier. Même chiffre, deux sens. Le bouton dit donc **les pièces et les règles à part**,
+  avec les mots de l'index, et dès le deuxième envoi il dit **nouvelles** : le message compte ce
+  qu'il apporte, l'index ce qu'on a.
 - **LA PIÈCE S'OUVRE DANS LE CONTEXTE, entre l'index et les passages retenus** — retour de playtest
   (Colas), et idée de l'auteur. Tant que la pièce occupait seule la place latérale, citer coûtait
   cinq temps : ouvrir la pièce, retenir, **refermer la pièce**, rouvrir le Contexte, prendre. Le
@@ -269,6 +274,13 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
     déplie** : on vient voir ce qu'on a reçu. **Replier n'est pas juger** (§4.6) : ce sont des
     pièces, pas des passages, et rien n'en est retiré. Il ne colle pas (le PIÈGE ci-dessus), et
     reste l'ancre du tutoriel, replié ou non.
+  - **Changer de pièce coûte un clic** — retour de playtest (Jean) : l'index replié, passer d'une
+    pièce à l'autre en coûtait deux (déplier, choisir), dans un chapitre qui consiste à croiser huit
+    documents. La tête de la pièce porte donc **‹ et ›**, la précédente et la suivante **dans l'ordre
+    de l'index** (les pièces, puis les règles, en boucle) ; chacune se nomme à qui ne voit pas la
+    flèche. L'index reste replié : la place de lecture gagnée ne se reperd pas, et il reste là pour
+    sauter loin. Une rangée d'onglets a été écartée : huit titres entiers ne tiennent pas sur une
+    ligne, et des titres abrégés referaient deux noms pour une pièce (ci-dessous).
   - **Une seule pièce à la fois** : un autre chip de l'index la remplace ; la croix de la pièce la
     replie et rend toute la hauteur aux retenus ; refermer le Contexte la replie avec lui. Une pièce
     n'est **jamais** ouverte hors du Contexte — l'ouvrir ouvre le Contexte, en consultation (il ne se
@@ -278,6 +290,21 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
     (§4.10 règle 3).
   La matière ne change pas : la pièce garde son **papier** au milieu de l'écran du Contexte (deux
   matières, ci-dessous) — c'est même ce qui la détache de l'index et des retenus qui l'encadrent.
+- **Le Contexte dit l'état de la phrase** — retour de playtest (Jean). Un passage **déjà pris**
+  porte *« dans ta phrase »* : on voit ce qu'on a posé là où on l'a pris. Et quand la phrase ne
+  prend plus de passage, **le Contexte le dit, en une ligne** — *« Ta phrase ne prend plus de
+  passage »*, avec le geste qui la rouvre — au lieu d'un bouton seulement grisé dont la raison
+  vivait dans un `title`, que ni le toucher ni le clavier n'atteignent (§4.10). Les fiches restent
+  atteignables, et les toucher redit la raison. Ce n'est pas une seconde voix : la voix dit le geste
+  suivant, la ligne dit pourquoi celui-ci ne mène nulle part.
+- **Les passages d'une remise close se rangent** — retour de playtest (Jean) : en session 2, les
+  fiches de la session 1 restaient en tête de liste. **Replier par remise ne juge aucun passage** :
+  c'est un fait de remise, comme replier l'index n'en est pas un sur les pièces. Une fois une remise
+  close — la suivante arrivée —, les passages de ses pièces passent **sous** ceux de la remise en
+  cours, repliés en une ligne (*la remise, son compte*) qu'un clic déplie. Rien n'est retiré, rien
+  n'est barré : ils restent composables, et *aucune barrière entre les affaires* tient toujours (§3
+  de `docs/PASSATION.md`). Retenir un passage d'une pièce close déplie sa remise : ce qu'on vient de
+  retenir se voit (§4.3). L'écran dit **remise**, jamais *envoi* : envoyer est le geste du joueur.
 - **La colonne tient dans la fenêtre** : la page ne défile pas, chaque bande défile pour son compte.
   **En dessous du seuil**, la conversation est **la seule bande élastique EN HAUTEUR** — c'est elle qui
   cède quand la place latérale s'ouvre ou que la phrase s'allonge, et *« → Envoyer »* ne passe donc
@@ -506,7 +533,9 @@ souris.* Ce ne sont pas des options — c'est l'écran, pour tout le monde.
    d'un bout à l'autre.
 5. **Rien ne se dit par la couleur seule** (§4.3), ni par une transparence qui éteint le contraste : un
    état s'écrit (✓, « retenu ») ou se colore franchement. Une pièce déjà lue porte un ✓, elle n'est pas
-   grisée comme un bouton désactivé.
+   grisée comme un bouton désactivé. **Et un refus se dit à l'écran, jamais dans un `title`** : un
+   `title` n'existe ni au clavier ni au toucher, et un bouton `disabled` ne se laisse même plus
+   atteindre pour demander pourquoi (§4.6, *le Contexte dit l'état de la phrase*).
 6. **Aucune confirmation ne se retire d'elle-même** : elle attend qu'on réponde. Et **Échap se lit à
    l'écran**, là où il agit — sur la croix de la pièce et sur celle des panneaux.
 

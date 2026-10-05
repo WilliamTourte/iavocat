@@ -32,23 +32,30 @@ sans une ligne de code. La source de chaque item, en fin de ligne : *Colas*, *Je
 
 *Un même écran, une même suite à mettre à jour. Du plus simple au plus long.*
 
-- [ ] **Aligner le décompte.** Le message annonce *« 5 pièces disponibles dans ton Contexte »*
+- [x] **Aligner le décompte.** Le message annonce *« 5 pièces disponibles dans ton Contexte »*
       (`m.pieces`, pièces et règles confondues : 3 + 2 nouvelles), l'index *« 5 pièces, 3 règles »*
       (le dossier entier, pièces seules) : même chiffre, deux sens. Le plus simple : le message dit
-      *« 3 pièces et 2 règles »* — et *nouvelles* si c'est ce qu'il compte. *Jean 2*
-- [ ] **Changer de pièce en un clic.** Ouvrir une pièce replie l'index (`ouvrirPiece` remet
+      *« 3 pièces et 2 règles »* — et *nouvelles* si c'est ce qu'il compte. *Jean 2* — *Fait : les mots
+      de l'index, et « nouvelles » dès la deuxième remise (§4.6).*
+- [x] **Changer de pièce en un clic.** Ouvrir une pièce replie l'index (`ouvrirPiece` remet
       `dossierDeplie` à faux, §4.6) : deux clics par pièce, dans un chapitre qui consiste à croiser
       huit documents. Pistes : des onglets toujours visibles, un bouton « pièce suivante ». À garder :
       la place de lecture gagnée le 4 (index replié : 282 → 40 px) — une rangée d'onglets sur une
-      ligne pourrait tenir les deux. *Jean 2*
-- [ ] **Rendre l'état de la réponse visible** : marquer dans le Contexte les fiches **déjà prises** dans
+      ligne pourrait tenir les deux. *Jean 2* — *Fait : ‹ et › dans la tête de la pièce, dans l'ordre
+      de l'index, en boucle ; l'index reste replié. Les onglets écartés : huit titres entiers ne tiennent
+      pas sur une ligne, et des titres abrégés referaient deux noms par pièce (§4.6).*
+- [x] **Rendre l'état de la réponse visible** : marquer dans le Contexte les fiches **déjà prises** dans
       la phrase, et **dire** pourquoi une troisième est refusée. Aujourd'hui le bouton est seulement
       `disabled`, et l'explication vit dans un `title` (*« ta phrase n'attend pas un passage »*) que ni
-      le toucher ni le clavier n'atteignent (§4.10). *Jean 1*
-- [ ] **⚖ Ranger les affaires closes.** Les fiches de la session 1 restent en tête de liste : les
+      le toucher ni le clavier n'atteignent (§4.10). *Jean 1* — *Fait : « dans ta phrase » sur la fiche
+      prise ; phrase pleine, une ligne collante dit pourquoi, et les fiches restent atteignables
+      (`aria-disabled`) — les toucher redit la raison (§4.6, §4.10 règle 5).*
+- [x] **⚖ Ranger les affaires closes.** Les fiches de la session 1 restent en tête de liste : les
       archiver ou les replier par session. Le §4.6 promet que le Contexte ne **juge** rien — mais
       replier par session ne juge aucun passage, c'est un fait de remise : une phrase au §4.6 d'abord.
-      Rejoint *« aucune barrière entre les affaires »* (§3 PASSATION). *Jean 1*
+      Rejoint *« aucune barrière entre les affaires »* (§3 PASSATION). *Jean 1* — *Fait, à relire par
+      l'auteur : la phrase est au §4.6 ; les passages d'une remise close passent sous ceux de la remise
+      en cours, repliés en une ligne, toujours composables.*
 
 ## 3. Passe « opposition et répétition » — un seul écran
 

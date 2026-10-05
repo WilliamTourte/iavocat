@@ -274,7 +274,22 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
    contenu — la citation pousserait la puce hors du cadre. */
 .mchip .corps{flex:1;min-width:0;text-align:left;background:none;border:none;color:var(--txt);
   padding:6px 9px;cursor:pointer;font:inherit;font-size:13.5px;line-height:1.4}
-.mchip .corps:disabled{cursor:default;color:var(--muted)}
+.mchip .corps:disabled,.mchip .corps[aria-disabled="true"]{cursor:default;color:var(--muted)}
+/* §4.6 — le Contexte dit l'état de la phrase : ce qu'on y a pris s'ÉCRIT (§4.10
+   règle 5), et la raison d'un refus se lit en clair, au-dessus des fiches. */
+.mchip.pris{border-color:var(--accent)}
+.mchip .dansPhrase{margin-left:8px;padding:0 6px;border:1px solid var(--accent);border-radius:4px;
+  font-size:12px;font-style:normal;color:var(--accent);white-space:nowrap}
+/* Elle COLLE en tête de ce qui défile : touchée au bas de dix fiches, la fiche
+   refusée amène la bande à elle, et la raison partait hors champ. Une ligne, et
+   seulement phrase pleine — pas l'index collant qui mangeait le panneau (§4.6). */
+.raison{position:sticky;top:0;z-index:1;margin:0 0 8px;padding:6px 10px;border-left:3px solid var(--muted);
+  background:var(--panel2);color:var(--txt);font-size:13px}
+.raison.rappelle{border-left-color:var(--warn)}
+/* Les passages d'une remise close, repliés sous ceux de la remise en cours. */
+.remiseClose{margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+.remiseClose [hidden]{display:none}
+.remiseClose .dplier + div{margin-top:6px}
 .mchip .nom{display:block}
 .mchip .prov{display:flex;align-items:baseline;gap:6px;margin-top:2px}
 .mchip .cit{flex:1;min-width:0;font-size:12.5px;color:var(--muted);font-style:italic;
@@ -505,3 +520,14 @@ code{font-family:var(--mono);color:var(--accent)}
   color:var(--accent);font:inherit;font-size:16px;font-weight:700;cursor:pointer;padding:0}
 .tutoIcone:hover{background:var(--accent);color:#0e1116}
 .tutoIcone[hidden]{display:none}
+/* §4.6 — changer de pièce en un clic : ‹ et › dans la tête de la pièce, juste
+   avant la croix. Même cadre qu'elle, pour se lire comme un geste du papier. */
+.ptete .voisine{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:30px;min-height:32px;
+  padding:0 6px;background:none;border:1px solid var(--filet);border-radius:7px;color:var(--encre);
+  font:inherit;font-family:var(--sans);font-size:20px;line-height:1;cursor:pointer}
+.ptete .voisine:hover{border-color:var(--encre2)}
+.ptete .voisine + .fermer{margin-left:0}
+.ptete h3 + .voisine{margin-left:auto}
+/* Au doigt, il n'y a pas d'Échap à lire (§4.10 règle 6 vaut pour le clavier) :
+   la place rendue garde au titre de la pièce une ligne de plus sur un téléphone. */
+@media (pointer:coarse){ .ptete .fermer kbd{display:none} }

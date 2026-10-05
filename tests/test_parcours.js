@@ -939,4 +939,99 @@ console.log("\n=== Le jeu se joue au clavier ===");
     !/effacer/.test(b.textContent) && a.hidden && !!w.localStorage.getItem("iavocat_partie"));
 }
 
+console.log("\n=== Le Contexte dit son état (§4.6) ===");
+{
+  // CHANGER DE PIÈCE COÛTE UN CLIC : ‹ et ›, dans l'ordre de l'index, en boucle.
+  const w = boot(), d = w.document;
+  const cle = () => d.activeElement && d.activeElement.getAttribute("data-f");
+  const plie = () => d.getElementById("zoneDossier").classList.contains("plie");
+  const pid = H.pidPremiereRemise(w);
+  H.livrerTout(w);   // tout le dossier : l'ordre de l'index n'y est plus celui des remises
+  w.voirPiecesRecues();
+  const ordre = [...d.querySelectorAll("#contexte .dchip")].map(c => c.getAttribute("data-f").slice(2));
+  const chip = d.querySelector(`#contexte [data-f="d:${pid}"]`);
+  chip.focus(); chip.click();
+  const fl = c => d.querySelector(`#panPiece [data-f="${c}"]`);
+  const i0 = ordre.indexOf(pid), apres = ordre[(i0 + 1) % ordre.length];
+  check("la tête de la pièce porte ‹ et ›, nommées par la pièce où elles mènent",
+    ordre.length > 1 && !!fl("prec") && !!fl("suiv")
+    && fl("suiv").getAttribute("aria-label").includes(w.JEU.pieces[apres].titre));
+  const vues = [w.S.modalPiece];
+  for (let i = 1; i < ordre.length; i++) { fl("suiv").click(); vues.push(w.S.modalPiece); }
+  check("› parcourt tout l'index dans son ordre, un clic par pièce",
+    ordre.join() !== w.R.piecesLivrees(w.S).join()
+    && vues.join() === [...ordre.slice(i0), ...ordre.slice(0, i0)].join());
+  check("l'index reste replié, et le focus reste sur la flèche pour enchaîner",
+    plie() && cle() === "suiv");
+  fl("suiv").click();
+  check("et boucle", w.S.modalPiece === pid);
+  fl("prec").click();
+  check("‹ revient en arrière, en boucle aussi", w.S.modalPiece === ordre[(i0 - 1 + ordre.length) % ordre.length]);
+  w.fermerPiece();
+  check("la croix rend le focus au chip qui avait ouvert la première", cle() === "d:" + pid);
+}
+{
+  // CE QU'ON A PRIS SE VOIT, ET UN REFUS DIT POURQUOI — à l'écran, pas dans un `title`.
+  const w = boot(), d = w.document;
+  const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
+  const livrees = new Set(w.R.piecesLivrees(w.S));
+  const dim = w.CHAMPS.find(c => c.id === veut).dim;
+  const autre = w.CHAMPS.find(c => c.id !== veut && c.dim === dim && livrees.has(c.pid)).id;
+  for (const k of [veut, autre]) { w.ouvrirPiece(k.split(".")[0]); H.surligner(w, k); }
+  const fiche = k => d.querySelector(`#zoneRetenus [data-f="c:${k}"]`);
+  fiche(veut).click();
+  check("un passage pris porte « dans ta phrase », et lui seul",
+    /dans ta phrase/.test(fiche(veut).textContent) && !/dans ta phrase/.test(fiche(autre).textContent));
+  check("la phrase prend encore un passage : pas de ligne de refus", !d.getElementById("raisonPleine"));
+  fiche(autre).click();
+  const raison = d.getElementById("raisonPleine");
+  check("la phrase pleine, le Contexte le dit en une ligne", !!raison && /ne prend plus de passage/.test(raison.textContent));
+  check("les fiches restent atteignables : refusées, pas désactivées",
+    !fiche(veut).disabled && fiche(veut).getAttribute("aria-disabled") === "true"
+    && fiche(veut).getAttribute("aria-describedby") === "raisonPleine");
+  check("aucune raison ne se cache plus dans un `title`",
+    ![...d.querySelectorAll("#zoneRetenus .corps[title]")].some(b => /n'attend pas/.test(b.title)));
+  const avant = w.S.compo.length;
+  fiche(veut).focus(); fiche(veut).click();
+  check("toucher une fiche refusée ne pose rien, et redit la raison",
+    w.S.compo.length === avant && /ne prend plus de passage/.test(d.getElementById("annonce").textContent)
+    && d.getElementById("raisonPleine").classList.contains("rappelle"));
+  check("le focus reste sur la fiche touchée", d.activeElement === fiche(veut));
+  w.retirerBloc();
+  check("la phrase rouverte, la ligne s'en va", !d.getElementById("raisonPleine"));
+}
+{
+  // LES PASSAGES D'UNE REMISE CLOSE SE RANGENT — repliés, jamais retirés.
+  const w = boot(), d = w.document;
+  let garde = 0;
+  while (w.S.remisesEnvoyees === 1 && garde++ < 10) {
+    const a = w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
+    if (!a || H.composerLien(w, H.lienTag(w, a.attend)) < 0) break;
+  }
+  check("la remise 1 servie, la suivante est arrivée", w.S.remisesEnvoyees === 2);
+  w.basculerPanneau("contexte");
+  const anciens = w.S.retenus.slice();
+  const ligne = () => d.querySelector('#zoneRetenus [data-f="s:0"]');
+  const cache = k => !!d.querySelector(`#zoneRetenus [data-f="c:${k}"]`).closest("[hidden]");
+  check("les passages de la remise close se rangent sous une ligne repliée",
+    anciens.length > 0 && !!ligne() && ligne().getAttribute("aria-expanded") === "false" && anciens.every(cache));
+  check("la ligne dit la remise et son compte", /remise/.test(ligne().textContent)
+    && ligne().textContent.includes(anciens.length + " passage"));
+  const pid2 = w.JEU.remises[1].pieces.find(p => H.empansDe(w, p).length);
+  const k2 = H.empansDe(w, pid2)[0];
+  w.ouvrirPiece(pid2); H.surligner(w, k2);
+  check("ceux de la remise en cours restent dépliés, au-dessus",
+    !cache(k2) && !!(d.querySelector(`[data-f="c:${k2}"]`).compareDocumentPosition(ligne()) & 4));
+  ligne().focus(); ligne().click();
+  check("un clic la déplie : rien n'a été retiré", anciens.every(k => !cache(k)) && ligne().getAttribute("aria-expanded") === "true");
+  check("le focus reste sur la ligne", d.activeElement === ligne());
+  check("et ses passages restent composables : aucune barrière entre les affaires",
+    w.R.indexTermeChamp(w.S) >= 0 && !d.querySelector(`[data-f="c:${anciens[0]}"]`).hasAttribute("aria-disabled"));
+  ligne().click();
+  const pid1 = w.JEU.remises[0].pieces.find(p => H.empansDe(w, p).some(k => !w.S.retenus.includes(k)));
+  const k1 = H.empansDe(w, pid1).find(k => !w.S.retenus.includes(k));
+  w.ouvrirPiece(pid1); H.surligner(w, k1);
+  check("retenir depuis une pièce close déplie sa remise : la fiche neuve se voit", !cache(k1));
+}
+
 bilan();
