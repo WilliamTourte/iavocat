@@ -505,10 +505,10 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   contraste** — les états par opacité sont passés en couleurs, pas encore mesurés un à un. *Le
   rognage de la conversation en 1280×800, lui, est réglé : la question redescend au composeur et le
   plancher du fil montre trois lignes (§4.9 règle 3).*
-- **Les heures se comparent sans leur date** : *« l'heure de fin du relevé sur la scène précède
-  l'heure d'arrivée de la patrouille »* — 14h02 avant 22h04, mais pas le même jour. Une phrase
-  fausse se lit comme un bug (§8.8). Repli connu : dater les `valeur` en ISO, que `comparer` trierait
-  lexicographiquement **sans toucher au moteur**.
+- *Fermé le 5 octobre : « les heures se comparent sans leur date ».* Chaque pièce porte sa date
+  (Jean : *« 14h02, c'est le lendemain du crime ? »*) et chaque valeur `quand` la sienne, en ISO
+  (§11) : le relevé du 13 à 14h02 vient désormais **après** l'arrivée du 12 à 22h04, sans une
+  ligne de moteur.
 - **Aucune barrière entre les affaires** : fiches et articles de la session 1 restent composables
   dans la session 2. C'est voulu — le Contexte est gratuit et cumulatif (§4.6) — mais ça produit des
   phrases qui n'ont pas de sens, et le joueur l'a essayé exprès.

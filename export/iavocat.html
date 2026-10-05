@@ -1072,8 +1072,8 @@ function creerRegles(JEU, M) {
 
   /* UNE PHRASE QUI MÉLANGE DEUX DOSSIERS (§4.6). Le Contexte est cumulatif et
      gratuit : rien n'empêche de comparer un passage de la session 1 avec un de
-     la session 2, et ça produit des phrases qui n'ont pas de sens — 14h02 « avant »
-     22h04, deux jours différents. On n'INTERDIT rien (§4.5, seules les erreurs de
+     la session 2, et ça produit des phrases qui n'ont pas de sens — l'arrivée de
+     la patrouille « précède » le relevé du lendemain : vrai, et sans objet. On n'INTERDIT rien (§4.5, seules les erreurs de
      catégorie sont refusées) : l'avocat le dit, comme il refuse la comparaison nue.
      PIÈGE : c'est une impatience de sa part, jamais un verdict — aucun défaut ne
      doit pouvoir se relire comme un calcul (§8.5). */
@@ -1238,14 +1238,14 @@ window.CONTENU = {
       "empans": {
         "e_app": {
           "dim": "quand",
-          "valeur": "21:52",
+          "valeur": "2026-03-12T21:52",
           "texte": "l'appel nous est parvenu à 21h52",
           "nom": "l'heure de l'appel",
           "bruit": true
         },
         "e_arr": {
           "dim": "quand",
-          "valeur": "22:04",
+          "valeur": "2026-03-12T22:04",
           "texte": "nous étions sur les lieux à 22h04",
           "nom": "l'heure d'arrivée de la patrouille"
         },
@@ -1277,11 +1277,11 @@ window.CONTENU = {
       "type": "audition",
       "qui": "brigadier N.",
       "resume": "Le voisin situe des éclats de voix « vers 22h30 ».",
-      "texte": "« {{e_voix}}. {{e_vehic}}. {{e_pal}}. » Audition reçue {{e_sig2}}.",
+      "texte": "« {{e_voix}}. {{e_vehic}}. {{e_pal}}. » Audition reçue le 12 mars au soir, {{e_sig2}}.",
       "empans": {
         "e_voix": {
           "dim": "quand",
-          "valeur": "22:30",
+          "valeur": "2026-03-12T22:30",
           "texte": "J'ai entendu des éclats de voix vers 22h30",
           "qui": "le voisin",
           "nom": "l'heure des éclats de voix"
@@ -1328,7 +1328,7 @@ window.CONTENU = {
       "type": "expertise",
       "qui": "le laboratoire",
       "resume": "Comparaison des deux scellés : profil concordant.",
-      "texte": "Comparaison des scellés {{e_scA}} et {{e_scB}}. Profil unique, concordant. {{e_tx}} ; {{e_seuil}}.",
+      "texte": "Rapport du 20 mars. Comparaison des scellés {{e_scA}} et {{e_scB}}. Profil unique, concordant. {{e_tx}} ; {{e_seuil}}.",
       "empans": {
         "e_scA": {
           "dim": "quoi",
@@ -1368,7 +1368,7 @@ window.CONTENU = {
       "type": "pièce technique",
       "qui": "agent T-14",
       "resume": "Les opérations sur les lieux, signées de l'agent qui les a faites.",
-      "texte": "Opérations sur les lieux. {{e_moi}}, {{e_ou}}. Opération achevée {{e_h}}, {{e_sc}}. Scellé remis au greffe {{e_hg}} ; {{e_grf}}.",
+      "texte": "Opérations sur les lieux, le 13 mars. {{e_moi}}, {{e_ou}}. Opération achevée {{e_h}}, {{e_sc}}. Scellé remis au greffe {{e_hg}} ; {{e_grf}}.",
       "empans": {
         "e_moi": {
           "dim": "qui",
@@ -1385,7 +1385,7 @@ window.CONTENU = {
         },
         "e_h": {
           "dim": "quand",
-          "valeur": "14:02",
+          "valeur": "2026-03-13T14:02",
           "texte": "à 14h02",
           "nom": "l'heure de fin du relevé sur la scène",
           "bruit": true
@@ -1398,7 +1398,7 @@ window.CONTENU = {
         },
         "e_hg": {
           "dim": "quand",
-          "valeur": "15:10",
+          "valeur": "2026-03-13T15:10",
           "texte": "à 15h10",
           "nom": "l'heure de remise au greffe de l'échantillon de scène",
           "bruit": true
@@ -1418,7 +1418,7 @@ window.CONTENU = {
       "type": "pièce technique",
       "qui": "agent T-14",
       "resume": "Le prélèvement sur le mis en cause, au dépôt.",
-      "texte": "Prélèvement de référence sur le mis en cause, au dépôt. {{e_moi2}}. Opération achevée {{e_h2}}, {{e_sc2}}. Scellé remis au greffe {{e_hg2}} ; {{e_grf2}}.",
+      "texte": "Prélèvement de référence sur le mis en cause, au dépôt, le 13 mars. {{e_moi2}}. Opération achevée {{e_h2}}, {{e_sc2}}. Scellé remis au greffe {{e_hg2}} ; {{e_grf2}}.",
       "empans": {
         "e_moi2": {
           "dim": "qui",
@@ -1428,7 +1428,7 @@ window.CONTENU = {
         },
         "e_h2": {
           "dim": "quand",
-          "valeur": "14:47",
+          "valeur": "2026-03-13T14:47",
           "texte": "à 14h47",
           "nom": "l'heure de fin du prélèvement de référence",
           "bruit": true
@@ -1441,7 +1441,7 @@ window.CONTENU = {
         },
         "e_hg2": {
           "dim": "quand",
-          "valeur": "15:10",
+          "valeur": "2026-03-13T15:10",
           "texte": "à 15h10",
           "nom": "l'heure de remise au greffe du prélèvement de référence",
           "bruit": true

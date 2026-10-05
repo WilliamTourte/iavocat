@@ -77,7 +77,7 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
       porte: ["qui","quoi"],                                // RÈGLES seulement : ce que l'article régit
       qui: "brigadier N.",                                  // signataire par défaut de la pièce
       texte: "Appel reçu à {{e_appel}}, sur place à {{e_arr}}.",
-      empans: { e_appel:{ dim:"quand", valeur:"21:52",
+      empans: { e_appel:{ dim:"quand", valeur:"2026-03-12T21:52",
                           texte:"l'appel nous est parvenu à 21h52",  // ce qui se lit dans la pièce
                           nom:"l'heure de l'appel",                  // ce qui parle dans une phrase
                           bruit:true }, … },                         // leurre assumé (optionnel)
@@ -109,6 +109,13 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   deux empans `qui` égaux prennent la première. Même prédicat, `slots` plus étroits, déclaration
   plus haut : aucune ligne de moteur. **PIÈGE** : `lienDe` apparie sur `{forme, termes}` — tout lien
   écrit sur l'ancienne forme doit suivre, **le vice compris**.
+- **Une heure porte sa date** : `comparer` ne sait rien du jour, et *14h02* rangé avant *22h04*
+  faisait dire à une phrase composée qu'un relevé du lendemain précédait l'arrivée de la patrouille
+  (§8.8 : une phrase fausse se lit comme un bug). Une valeur `quand` s'écrit donc en **ISO**,
+  `"2026-03-13T14:02"`, qui se trie à la lettre (§14) — **sans toucher au moteur**. Toutes les
+  valeurs d'une dimension partagent un format : une `hh:mm` à côté d'une date ISO se comparerait
+  de travers, et rien ne le dirait. Et **la pièce écrit la date que porte la valeur** — un joueur
+  qui lit *14h02* doit savoir de quel jour ; l'année, que personne ne lit, ne sert qu'au tri.
 - **Attribut d'un empan** : `bruit` — *leurre assumé*, que le diagnostic cesse de signaler comme
   inerte (§15). Il vit **sur l'empan** : il suit les renommages et meurt avec lui, et l'atelier n'en
   tient aucune liste à côté. Une telle liste a existé (`_bruit`), que l'export jetait ; `migrerContenu`
@@ -167,7 +174,7 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 - **Accumuler, pas écraser** : `reduire(ch)` empile les termes en retenant la forme courante ; à un bloc
   `imbrique`, l'acquis devient le **terme unique** de la nouvelle forme.
 - **La déduction** tient sur `comparer` (numérique quand les deux valeurs le sont, `hh:mm` compris ;
-  lexicographique sinon), `deduire` (la forme, ou `null` sur dimensions différentes — le seul refus qui
+  lexicographique sinon — c'est par là qu'une date ISO se trie, §11), `deduire` (la forme, ou `null` sur dimensions différentes — le seul refus qui
   existe) et `ordonner`.
 - **Rétrocompatibilité** : sans `deduit`, `deduction` ni `patron`, `reduire` et `rendre` se comportent
   comme un automate à liaisons explicites — le banc d'essai l'exerce.

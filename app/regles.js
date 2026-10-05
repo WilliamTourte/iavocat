@@ -286,8 +286,8 @@ function creerRegles(JEU, M) {
 
   /* UNE PHRASE QUI MÉLANGE DEUX DOSSIERS (§4.6). Le Contexte est cumulatif et
      gratuit : rien n'empêche de comparer un passage de la session 1 avec un de
-     la session 2, et ça produit des phrases qui n'ont pas de sens — 14h02 « avant »
-     22h04, deux jours différents. On n'INTERDIT rien (§4.5, seules les erreurs de
+     la session 2, et ça produit des phrases qui n'ont pas de sens — l'arrivée de
+     la patrouille « précède » le relevé du lendemain : vrai, et sans objet. On n'INTERDIT rien (§4.5, seules les erreurs de
      catégorie sont refusées) : l'avocat le dit, comme il refuse la comparaison nue.
      PIÈGE : c'est une impatience de sa part, jamais un verdict — aucun défaut ne
      doit pouvoir se relire comme un calcul (§8.5). */
