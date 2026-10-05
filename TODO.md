@@ -11,11 +11,6 @@ sans une ligne de code. La source de chaque item, en fin de ligne : *Colas*, *Je
 *Jean 2* (session du 5), *auteur*. Jean dit « affaire 1 / affaire 2 » pour les sessions 1 et 2,
 « fiches » ou « notes » pour les passages retenus, « bulle » pour le bandeau du tutoriel.*
 
-## 0. Ménage — une minute, côté auteur
-
-- [ ] Fermer sans enregistrer l'onglet VSCodium de `export/iavocat.html` : son tampon date du 1er
-      octobre et écraserait l'export du 4.
-
 ## 1. Passe contenu — `app/content.js`, sans code
 
 *Une vérification commune : `npm run vue`, puis la relecture à l'œil des phrases composées.*
@@ -112,25 +107,29 @@ opposé, et la réplique `fin` devenue une question).*
 
 ## 5. Chantier ⚖ — combien le jeu aide-t-il hors du tutoriel ?
 
+*Tranché par l'auteur le 5 octobre (§4.11) — a : une bordure de la couleur (et du trait) de la
+dimension au lieu de l'étiquette ; b : la juxtaposition hors session 1 ; c : patience infinie, pas de
+*game over* ; d : pas maintenant.*
+
 *Une seule question de fond derrière quatre préconisations : quels garde-fous ne servent qu'à
 apprendre ? Une seule réécriture, donc — §4.5, §4.8, §8 — avant tout code. Du plus léger au plus
 lourd.*
 
-- [ ] **a. ⚖ « Ce texte porte sur : quand »** sur l'article (`porte`, `jeu.js`) : pratique, mais avec
+- [x] **a. ⚖ « Ce texte porte sur : quand »** sur l'article (`porte`, `jeu.js`) : pratique, mais avec
       trois règles, choisir l'article risque de se réduire à apparier des catégories. Avec
       l'assombrissement des fiches d'une autre dimension (`.horsdim`, `renderRetenus`) : de l'écran
       seul, à réserver au tutoriel ? Contre le §4.5, où l'écran s'assombrit *par dimension* pour laisser
       deviner. *Jean 2, Jean 1*
-- [ ] **b. ⚖ Lever le refus avant l'envoi** hors tutoriel (*« ces deux-là ne se comparent pas »*,
+- [x] **b. ⚖ Lever le refus avant l'envoi** hors tutoriel (*« ces deux-là ne se comparent pas »*,
       `poserBloc` des règles). Contre le §4.5 : *« seules les erreurs de catégorie sont refusées »*.
       Suppose qu'une comparaison sans forme puisse partir et que l'avocat y réponde
       (`rep_sans_rapport`) : moteur et règles, pas seulement l'écran. *Jean 1*
-- [ ] **c. ⚖ Un prix à payer.** Sans pénalité, on essaie toutes les combinaisons. Pistes de Jean : une
+- [x] **c. ⚖ Un prix à payer.** Sans pénalité, on essaie toutes les combinaisons. Pistes de Jean : une
       jauge de patience de Maître Auber, ou un nombre d'envois limité hors tutoriel. Mais une jauge
       visible rendrait l'enjeu **calculable** (§8.4, le trombone), et le §8.6 donne au joueur *le droit
       d'être perdu*. L'escalade des `rep_hors_sujet` / `rep_sans_rapport` est déjà une patience, en
       contenu et sans conséquence : c'est peut-être d'elle qu'il faut partir. *Jean 1*
-- [ ] **d. ⚖ Proposer deux ou trois relations au choix, dont des fausses**, au lieu de *« précède »* ou
+- [ ] **d. ⚖ (remis à après une partie, §4.11)** Proposer deux ou trois relations au choix, dont des fausses**, au lieu de *« précède »* ou
       *« sont une seule et même personne »* rédigés seuls. Renverse le principe fondateur du §4.5,
       *désigner, pas déclarer* : la relation se **déduit** des valeurs (`deduire`, moteur), *« ce qui
       les lie est un fait, pas une thèse »*. Le plus gros chantier de la liste (grammaire, patrons,

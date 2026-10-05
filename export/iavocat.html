@@ -439,18 +439,25 @@ code{font-family:var(--mono);color:var(--accent)}
 .bande.piece :focus-visible{box-shadow:0 0 0 2px var(--papier),0 0 0 4px #1d3b57}
 /* Un article n'est pas un témoignage : un double filet le distingue. */
 .bande.piece.regle{border-left:6px double #b3a37f}
-/* §4.5 — CE QU'UN ARTICLE ANNONCE (`porte`) : chaque nom porte EXACTEMENT la
-   marque des passages qu'il range — même trait, même couleur, foncée par le
-   papier comme eux (`--dcp`). La légende des pièces, qui avait la même forme,
-   est retirée (§4.3). */
-.bande.piece .porte{margin:16px 0 0;padding-top:10px;border-top:1px solid var(--filet);
-  font-family:var(--sans);font-size:13px;color:var(--encre2);
-  display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 15px}
-.bande.piece .porte .llab{flex:none}
-.bande.piece .porte .ldim{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
-  color:var(--encre);text-decoration-line:underline;text-decoration-style:var(--ds,solid);
-  text-decoration-color:var(--dcp);text-decoration-thickness:2px;
-  text-underline-offset:.26em;text-decoration-skip-ink:none}
+/* §4.11 — CE QU'UN ARTICLE RÉGIT (`porte`) SE MARQUE, sans un mot : son texte est
+   encadré de la couleur ET du trait de chaque dimension — le code des passages,
+   foncé par le papier comme eux (`--dcp`). Deux dimensions, deux cadres. */
+.bande.piece .cadre{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
+  border:3px var(--ds,solid) var(--dcp);border-radius:7px;padding:2px 10px;margin:10px 0 4px}
+.bande.piece .cadre .cadre{margin:0;padding:3px 8px}
+.bande.piece .cadre .piecetexte{margin:6px 0}
+/* PIÈGE : une bordure CSS ne sait pas onduler. L'ondulé se dessine par un MASQUE
+   (une vague par bord) sur un calque de la couleur : la variable passe, ce
+   qu'une image de bordure en SVG ne saurait pas faire. */
+.bande.piece .cadre.ondule{position:relative;border-color:transparent}
+.bande.piece .cadre.ondule::before{content:"";position:absolute;inset:-3px;border-radius:7px;pointer-events:none;
+  background:var(--dcp);
+  --vh:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='6'><path d='M0 3 Q3 0.5 6 3 T12 3' fill='none' stroke='black' stroke-width='1.8'/></svg>");
+  --vv:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='12'><path d='M3 0 Q0.5 3 3 6 T3 12' fill='none' stroke='black' stroke-width='1.8'/></svg>");
+  -webkit-mask:var(--vh) top/12px 6px repeat-x,var(--vh) bottom/12px 6px repeat-x,
+    var(--vv) left/6px 12px repeat-y,var(--vv) right/6px 12px repeat-y;
+  mask:var(--vh) top/12px 6px repeat-x,var(--vh) bottom/12px 6px repeat-x,
+    var(--vv) left/6px 12px repeat-y,var(--vv) right/6px 12px repeat-y}
 .bande.piece .rappel{margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--encre2);
   background:#ebe4d4;color:var(--encre);font-family:var(--sans);font-size:14px}
 /* PIÈGE PAYÉ (le 4 octobre, le temps d'une passe) : la ligne a été COLLÉE au bas
@@ -640,14 +647,20 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     const sa = String(a), sb = String(b);
     return sa < sb ? -1 : sa > sb ? 1 : 0;
   }
-  // La forme qui lie deux empans, ou null (dimensions différentes → null, le
-  // seul refus qui existe). L'ORDRE de déclaration tranche les ambiguïtés (§11).
+  // La forme qui lie deux empans. L'ORDRE de déclaration tranche les ambiguïtés
+  // (§11). Dimensions différentes : la JUXTAPOSITION si le contenu en déclare
+  // une, sinon null (§4.11) — ce sont les règles qui la refusent en session 1.
+  // PIÈGE : elle n'entre jamais dans la boucle — déclarée plus haut, elle
+  // passerait pour une « différence » entre deux passages de même dimension.
+  const estJuxta = f => f.deduction === "juxtaposition" && (f.arite || 2) === 2;
   function deduire(idA, idB) {
     const a = C[idA], b = C[idB];
-    if (!a || !b || idA === idB || a.dim !== b.dim) return null;
+    if (!a || !b || idA === idB) return null;
+    if (a.dim !== b.dim)
+      return (Object.entries(G.formes).find(([, f]) => estJuxta(f)) || [null])[0];
     const egal = comparer(a.valeur, b.valeur) === 0;
     for (const [nom, f] of Object.entries(G.formes)) {
-      if (!f.deduction || (f.arite || 2) !== 2) continue;
+      if (!f.deduction || (f.arite || 2) !== 2 || estJuxta(f)) continue;
       const s = f.slots && f.slots[0];
       if (s !== "*" && !(s || []).includes(a.dim)) continue;
       if (f.deduction === "egalite" ? egal : !egal) return nom;
@@ -993,6 +1006,15 @@ function creerRegles(JEU, M) {
 
   // PIÈGE : iBloc indexe blocsOfferts() — POSITIONNEL dans la liste filtrée,
   // donc dépendant de la session ; iSrc indexe le contexte ou le brouillon.
+  /* §4.11 — LA SESSION 1 APPREND, LES SUIVANTES LAISSENT SE TROMPER. La
+     frontière est la REMISE, jamais le tutoriel, qui ne décide rien (§4.8) —
+     celle que `horsOrdre` trace déjà (§3). */
+  const enCalibration = S => S.remisesEnvoyees === 1;
+  const formeDe = r => (JEU.grammaire.formes || {})[r && r.forme] || {};
+  /* Une juxtaposition — deux passages de dimensions différentes, sans relation —,
+     nue ou sous un article. */
+  const juxtapose = r => !!r && typeof r === "object" && (formeDe(r).deduction === "juxtaposition"
+    || (r.termes || []).some(t => juxtapose(t)));
   function poserBloc(S, iBloc, iSrc) {
     S.prete = null;              // reprendre abandonne la phrase qui attendait
     const b = blocsOfferts(S)[iBloc]; if (!b) return;
@@ -1009,7 +1031,7 @@ function creerRegles(JEU, M) {
     S.compo.push({ bloc: b.id, valeur });
     S.refus = null;
     const r = M.reduire(chaineCompo(S));
-    const err = b.deduit && !r.forme ? "ces deux-là ne se comparent pas"
+    const err = b.deduit && (!r.forme || (juxtapose(r) && enCalibration(S))) ? "ces deux-là ne se comparent pas"
               : (JEU.grammaire.finaux || []).includes(b.vers) ? M.valider(r) : null;
     if (err) {
       S.compo.pop();
@@ -1096,7 +1118,7 @@ function creerRegles(JEU, M) {
      remises suivantes gardent l'anticipation : la latitude s'élargira avec
      elles. */
   function horsOrdre(S, L) {
-    if (!L || !L.tag || S.remisesEnvoyees !== 1) return false;
+    if (!L || !L.tag || !enCalibration(S)) return false;
     const r = remiseCourante(S), a = attenteCourante(S, r);
     return !!a && a.attend !== L.tag
         && attentesDe(r).some(x => x.attend === L.tag && !S.satisfaits.includes(x.attend));
@@ -1135,6 +1157,9 @@ function creerRegles(JEU, M) {
     if (L && L.vice && L.conclusion) pousser(S, "Maître Auber", A.rep_vice);
     else if (L && L.faux)            pousser(S, "Maître Auber", A.rep_faux);
     else if (L && L.rep)             pousser(S, "Maître Auber", L.rep);
+    // §4.11 — hors session 1, la juxtaposition part : c'est l'avocat qui la
+    // refuse, nue comme sous un article — un refus d'avocat, plus de grammaire.
+    else if (juxtapose(n.reduite))   pousser(S, "Maître Auber", esc1(A.rep_sans_rapport || ["…"], "incompris"));
     else {
       const f = (JEU.grammaire.formes || {})[n.reduite.forme] || {};
       const emboite = typeof ((n.reduite.termes || [])[0]) === "object";
@@ -1239,7 +1264,7 @@ function creerRegles(JEU, M) {
            clotureImplicite, chaineEnvoyable, peutEnvoyer, envoyerCompo, compoFinie,
            estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
-           instructionComplete, repetitionEnCours, cloturer, verserContre, repondA,
+           instructionComplete, repetitionEnCours, cloturer, verserContre, repondA, enCalibration, juxtapose,
            avancerRepetition, finir };
 }
 
@@ -1733,6 +1758,16 @@ window.CONTENU = {
         ],
         "relation": "meme_dim",
         "patron": "{a} et {b} ne désignent pas la même chose"
+      },
+      "juxtaposition": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "juxtaposition",
+        "slots": [
+          "*",
+          "*"
+        ],
+        "patron": "{a} et {b}"
       },
       "article_3": {
         "arite": 1,
@@ -2747,20 +2782,25 @@ function oublier(pid,eid){
 }
 /* §4.3 — PLUS DE LÉGENDE : l'auteur l'a retirée, le code s'apprend en cherchant
    — au survol du passage, et dans les groupes du Contexte. */
-/* §4.5 — `porte` ANNONCE, il ne filtre rien : le moteur ne le lit jamais. Il se
-   lit DANS l'article, jamais sous le bouton qui l'invoque. Les noms y portent
-   leur couleur et leur trait : c'est le pont vers les groupes du Contexte. */
-function portePiece(pid){
-  const d=R.porteDe(pid);
-  if(!d.length) return "";
-  return `<p class="porte"><span class="llab">Ce texte porte sur :</span>${
-    d.map(x=>`<span class="ldim" style="--dc:${couleurDim(x)};--ds:${traitDim(x)}">${escapeAttr(x)}</span>`).join("")}</p>`;
+/* §4.11 — `porte` SE MARQUE, IL NE S'ÉTIQUETTE PLUS : « Ce texte porte sur :
+   quand » faisait le tri dans la tête du joueur. Le texte de l'article est
+   encadré de la couleur ET du trait de chaque dimension qu'il régit — le code
+   des passages (§4.3), rien par la couleur seule (§4.10 règle 5). Deux
+   dimensions, deux cadres l'un dans l'autre. À qui ne voit pas, leurs noms. Le
+   moteur ne lit toujours pas `porte` (§4.5). PIÈGE : une bordure CSS ne sait
+   pas onduler — l'ondulé passe par une image de bordure (`.cadre.ondule`). */
+function cadresPorte(pid, interieur){
+  const d=R.porteDe(pid).filter(x=>couleurDim(x));
+  if(!d.length) return interieur;
+  return d.reduceRight((dedans,x)=>{
+    const t=traitDim(x);
+    return `<div class="cadre ${t==="wavy"?"ondule":""}" style="--dc:${couleurDim(x)};--ds:${t==="wavy"?"solid":t}">${dedans}</div>`;
+  }, interieur + `<span class="sr">Porte sur : ${d.map(escapeAttr).join(", ")}.</span>`);
 }
 function piecePanelHTML(pid){
   const p=JEU.pieces[pid];
   return `<small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
-    <p class="piecetexte">${rendreTexte(pid)}</p>
-    ${portePiece(pid)}
+    ${cadresPorte(pid, `<p class="piecetexte">${rendreTexte(pid)}</p>`)}
     ${rappelRetrait && rappelRetrait.startsWith(pid+".") ? `<p class="rappel">${RAPPEL_RETRAIT}</p>` : ""}
     ${vientDeRetenir && vientDeRetenir.startsWith(pid+".") ? `<p class="rappel retenu">${ECHO_RETENU}</p>` : ""}`;
 }
@@ -2797,7 +2837,10 @@ function basculerRemise(r){
 const ordinal = n => n===1 ? "1ʳᵉ" : n+"ᵉ";
 function renderRetenus(){
   const iT=R.indexTermeChamp(S);
-  const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
+  /* §4.11 — l'assombrissement annonçait le refus d'écran : il vit avec lui, en
+     session 1 seulement. Ensuite, le premier passage posé garde sa couleur au
+     composeur, et c'est le seul rappel. */
+  const dimReq=R.enCalibration(S) ? R.dimAttendue(S) : null;   // `null` : rien à assombrir
   const pleine = iT<0 && S.compo.length>0;
   const dansPhrase=new Set(S.compo.map(p=>p.valeur).filter(v=>typeof v==="string"));
   const fiche=(k,j,d,hors)=>{

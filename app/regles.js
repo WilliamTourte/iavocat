@@ -175,6 +175,15 @@ function creerRegles(JEU, M) {
 
   // PIÈGE : iBloc indexe blocsOfferts() — POSITIONNEL dans la liste filtrée,
   // donc dépendant de la session ; iSrc indexe le contexte ou le brouillon.
+  /* §4.11 — LA SESSION 1 APPREND, LES SUIVANTES LAISSENT SE TROMPER. La
+     frontière est la REMISE, jamais le tutoriel, qui ne décide rien (§4.8) —
+     celle que `horsOrdre` trace déjà (§3). */
+  const enCalibration = S => S.remisesEnvoyees === 1;
+  const formeDe = r => (JEU.grammaire.formes || {})[r && r.forme] || {};
+  /* Une juxtaposition — deux passages de dimensions différentes, sans relation —,
+     nue ou sous un article. */
+  const juxtapose = r => !!r && typeof r === "object" && (formeDe(r).deduction === "juxtaposition"
+    || (r.termes || []).some(t => juxtapose(t)));
   function poserBloc(S, iBloc, iSrc) {
     S.prete = null;              // reprendre abandonne la phrase qui attendait
     const b = blocsOfferts(S)[iBloc]; if (!b) return;
@@ -191,7 +200,7 @@ function creerRegles(JEU, M) {
     S.compo.push({ bloc: b.id, valeur });
     S.refus = null;
     const r = M.reduire(chaineCompo(S));
-    const err = b.deduit && !r.forme ? "ces deux-là ne se comparent pas"
+    const err = b.deduit && (!r.forme || (juxtapose(r) && enCalibration(S))) ? "ces deux-là ne se comparent pas"
               : (JEU.grammaire.finaux || []).includes(b.vers) ? M.valider(r) : null;
     if (err) {
       S.compo.pop();
@@ -278,7 +287,7 @@ function creerRegles(JEU, M) {
      remises suivantes gardent l'anticipation : la latitude s'élargira avec
      elles. */
   function horsOrdre(S, L) {
-    if (!L || !L.tag || S.remisesEnvoyees !== 1) return false;
+    if (!L || !L.tag || !enCalibration(S)) return false;
     const r = remiseCourante(S), a = attenteCourante(S, r);
     return !!a && a.attend !== L.tag
         && attentesDe(r).some(x => x.attend === L.tag && !S.satisfaits.includes(x.attend));
@@ -317,6 +326,9 @@ function creerRegles(JEU, M) {
     if (L && L.vice && L.conclusion) pousser(S, "Maître Auber", A.rep_vice);
     else if (L && L.faux)            pousser(S, "Maître Auber", A.rep_faux);
     else if (L && L.rep)             pousser(S, "Maître Auber", L.rep);
+    // §4.11 — hors session 1, la juxtaposition part : c'est l'avocat qui la
+    // refuse, nue comme sous un article — un refus d'avocat, plus de grammaire.
+    else if (juxtapose(n.reduite))   pousser(S, "Maître Auber", esc1(A.rep_sans_rapport || ["…"], "incompris"));
     else {
       const f = (JEU.grammaire.formes || {})[n.reduite.forme] || {};
       const emboite = typeof ((n.reduite.termes || [])[0]) === "object";
@@ -421,7 +433,7 @@ function creerRegles(JEU, M) {
            clotureImplicite, chaineEnvoyable, peutEnvoyer, envoyerCompo, compoFinie,
            estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
-           instructionComplete, repetitionEnCours, cloturer, verserContre, repondA,
+           instructionComplete, repetitionEnCours, cloturer, verserContre, repondA, enCalibration, juxtapose,
            avancerRepetition, finir };
 }
 

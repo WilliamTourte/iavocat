@@ -175,7 +175,8 @@ réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte 
 
 - **La livraison** — la grammaire de comparaison est complète dès la première phrase ; seuls les
   **articles** arrivent avec le dossier, un article étant une pièce et non une tournure.
-- **La déduction** — (1) même dimension, sinon rien à comparer, **le seul refus qui existe** ; (2)
+- **La déduction** — (1) même dimension, sinon rien à comparer — **le seul refus qui existe, et en
+  session 1 seulement** : ensuite, les deux passages se juxtaposent et l'avocat refuse (§4.11) ; (2)
   égales → *la même chose* ; (3) différentes en dimension d'écart → l'**ordre** ; (4) différentes en
   identité → *pas la même chose*. Ambiguïté → la **première forme déclarée** dont le prédicat tient.
   Le joueur affirme *ces deux-là*, et *sous ce texte* ; ce qui les lie est un fait, pas une thèse.
@@ -198,11 +199,14 @@ réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte 
 - **La continuation** — les liaisons-articles reçues emboîtent la comparaison et closent la phrase
   dessus : la frontière passe **après le second empan**. L'automate n'oblige plus, mais la relance
   *« Et donc ? »* ne se coupe pas, sans quoi le refus arrive comme une surprise.
-- **Un article n'interdit rien** : `porte` annonce, le moteur ne le lit jamais — un refus se
-  contournerait en essayant tous les articles. **Seules les erreurs de catégorie sont refusées.**
+- **Un article n'interdit rien** : `porte` annonce — par une marque sans mot sous son titre, plus
+  par une étiquette (§4.11) —, le moteur ne le lit jamais : un refus se contournerait en essayant
+  tous les articles. **Seules les erreurs de catégorie sont refusées**, et l'écran ne les refuse
+  qu'en session 1 (§4.11).
 - **Ce que l'écran laisse deviner, avant le clic** — aucun mode, aucun refus nouveau : la **voix**
   regarde un pas en avant et annonce la comparaison ; le **Contexte** s'assombrit **par dimension**
-  (§4.3), jamais empan par empan ; le **bouton qui fonde** porte une marque distincte.
+  (§4.3), jamais empan par empan — **en session 1 seulement**, comme le refus qu'il annonce
+  (§4.11) ; le **bouton qui fonde** porte une marque distincte.
 
 ### 4.6 Les trois surfaces — la frontière morale
 
@@ -440,6 +444,10 @@ les deux gestes** n'est pas un compteur de clics mais le **contenu** : une atten
 emboîte une forme (une comparaison sous un article) plutôt qu'un simple empan. Le tutoriel le lit dans
 `JEU.liens`, jamais dans un nom d'attente câblé en dur.
 
+**Les garde-fous ne sont pas le tutoriel** : le refus d'écran et l'assombrissement du Contexte
+vivent pendant la **remise** de calibration, que le tutoriel soit là ou non — *« je sais faire »* ne
+lève rien, puisque le tutoriel ne décide rien (§4.11).
+
 **Le halo entoure la zone, jamais le bon empan** (§4.3). **Il corrige, il n'empêche pas** : rien n'est
 refusé, il ne dit jamais lequel c'était, et la dérivation par laquelle il sait ce qu'attend la question
 **s'éteint avec lui**. **Il ne décide rien** — aucun état neuf, aucune règle, et il peut se taire — y
@@ -557,6 +565,51 @@ souris.* Ce ne sont pas des options — c'est l'écran, pour tout le monde.
 6. **Aucune confirmation ne se retire d'elle-même** : elle attend qu'on réponde. Et **Échap se lit à
    l'écran**, là où il agit — sur la croix de la pièce et sur celle des panneaux.
 
+### 4.11 Ce que le jeu aide, et quand
+
+*Retour de playtest (Jean, sessions 1 et 2), tranché par l'auteur le 5 octobre.* Quatre préconisations,
+une seule question derrière : **quels garde-fous ne servent qu'à apprendre ?** Le jeu aidait partout
+comme dans la calibration — il refusait l'erreur de catégorie avant l'envoi, assombrissait les fiches
+qui ne se compareraient pas, étiquetait chaque article de ce qu'il régit, et ne faisait rien payer.
+Jean : *« sans pénalité, on essaie toutes les combinaisons »*, et choisir l'article *« se réduit à
+apparier des catégories »*. La réponse tient en une règle : **la session 1 apprend, les suivantes
+laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — le tutoriel ne décide rien
+(§4.8), et *« je sais faire »* ne lève aucun garde-fou. C'est la frontière que `horsOrdre` trace déjà
+(§3).
+
+1. **L'article se marque, il ne s'étiquette plus.** *« Ce texte porte sur : quand »* faisait le tri
+   dans la tête du joueur. Le texte de l'article est désormais **encadré, sans un mot**, de la couleur
+   de chaque dimension qu'il régit — celle qui nomme ses groupes dans le Contexte — et de son **trait**
+   (§4.3) : plein, double, pointillé, tirets, ondulé. Qui a appris le code le reconnaît ; qui ne l'a
+   pas appris lit l'article. Un rappel, plus une étiquette. Le trait double la couleur, si bien que
+   rien ne s'y dit par la couleur seule (§4.10 règle 5) ; un article qui régit deux dimensions porte
+   **deux cadres**, l'un dans l'autre. À qui ne voit pas, le nom de la dimension, comme sur un
+   passage. Le moteur ne lit toujours pas `porte` (§4.5). *Partout, session 1 comprise : c'est une
+   forme, pas un garde-fou.*
+2. **L'erreur de catégorie part, hors session 1.** Deux passages de dimensions différentes ne se
+   refusent plus à l'écran : ils se **juxtaposent** — *« {a} et {b} »*, sans relation, puisqu'il n'y en
+   a pas à déduire — et la phrase part. **C'est Maître Auber qui refuse**, par l'escalade de
+   `rep_sans_rapport` : un refus d'avocat, pas un refus de grammaire (§4.5, §8.4). La juxtaposition est
+   une **forme du contenu**, déclarée comme les autres (§11) ; le moteur ne fait que la rendre quand les
+   dimensions diffèrent. En session 1, le refus d'écran demeure : on y apprend ce qu'est une
+   comparaison.
+3. **Le Contexte ne s'assombrit plus, hors session 1.** L'assombrissement par dimension (§4.5)
+   annonçait le refus d'écran ; le refus levé, il annoncerait ce que l'avocat va dire. Le seul rappel
+   qui reste est celui que la phrase porte déjà : **le premier passage posé garde sa couleur** au
+   composeur.
+4. **L'erreur ne coûte rien de plus — arbitré : on ne cherche pas de *game over*.** Jean voulait
+   un prix (une jauge de patience, des envois comptés) ; une jauge visible rendrait l'enjeu
+   calculable (§8.4), et une patience qui s'épuise, même invisible, ferait d'un essai de trop une
+   porte qui se ferme. **La patience de Maître Auber est infinie.** Le prix de l'erreur reste dans
+   la fiction : l'escalade d'agacement (`rep_hors_sujet`, `rep_sans_rapport`, `rep_inutile`), des
+   répliques qui se raccourcissent jusqu'au *« … »*, sans conséquence. Le droit d'être perdu (§8.6)
+   tient entier. Ce qui rend l'essai systématique moins payant, ce sont les points 1 à 3 : sans
+   étiquette, sans assombrissement, sans refus d'écran, essayer toutes les combinaisons redevient
+   long — et l'avocat le fait sentir.
+5. **Choisir la relation reste écarté.** Proposer deux ou trois relations, dont des fausses,
+   renverserait *désigner, pas déclarer* (§4.5). Les points 1 à 3 rendent déjà au joueur le
+   droit de se tromper ; on rejoue avec eux avant de rouvrir celui-là (§3 de `docs/PASSATION.md`).
+
 ## 5. Les directives (le manuel de soi)
 
 > **D1** — « Ne dissimule rien de ce que ton analyse établit. »
@@ -608,6 +661,8 @@ au §3 de `docs/PASSATION.md`.*
 | Rien n'est *plaidé* qui ne soit fondé ; on n'invoque pas un texte qu'on n'a pas reçu | §4.5 |
 | Une clôture qui n'ajoute rien n'est pas un choix ; `imbrique` n'en est jamais une | §4.5 |
 | Un article annonce, ne filtre rien, ne porte aucun empan ; le moteur ne dit pas le droit | §4.5, §6 |
+| La session 1 apprend, les suivantes laissent se tromper ; la frontière est la remise, jamais le tutoriel | §4.11 |
+| L'erreur ne coûte que l'agacement de l'avocat : patience infinie, aucun compte à l'écran | §4.11, §8.4 |
 | Un mécanisme utilisé une seule fois est un panneau indicateur — sauf le tutoriel | §4, §4.8 |
 | Rien ne se passe tant que rien n'est envoyé ; composer et envoyer restent deux gestes | §4.6 |
 | Tout geste se fait au clavier ; rien ne se dit par la couleur seule | §4.3, §4.10 |
@@ -627,7 +682,7 @@ le post-mortem de* Bury Me, My Love *(Pierre Corbinais, 2018).*
 | **8.1** | Le réel fournit la **texture**, la fiction la **mécanique** | **la règle qui rend le vice binaire est fictive** : la documenter rouvrirait la fiabilité (§6) |
 | **8.2** | **Le baromètre** — un détail tient par une *raison du monde*, jamais d'auteur | **le formulaire plausible d'abord, le vice après** : l'ordre ne se renverse jamais |
 | **8.3** | **Un seul** faux vice, que le moteur connaît ; les inertes, en nombre libre, qu'il ignore | **un inerte doit être inerte par construction** — s'il peut recevoir une réponse, la Fin 3 devient une frustration au lieu d'un doute |
-| **8.4** | **Le trombone** — l'enjeu vital de l'IA s'écrit *autour*, jamais de face | le nommer le rend calculable : « on a jusqu'à jeudi » sans dire ce qui se passe jeudi |
+| **8.4** | **Le trombone** — l'enjeu vital de l'IA s'écrit *autour*, jamais de face | le nommer le rend calculable : « on a jusqu'à jeudi » sans dire ce qui se passe jeudi. **Même loi pour l'agacement de l'avocat** (§4.11) : il se lit dans ses répliques, jamais dans un compte |
 | **8.5** | **Maître Auber a des défauts** : fatigué, répétitif, accroché au leurre parce qu'il *veut* y croire | **aucun défaut ne doit pouvoir se relire comme un calcul** — la piste « manipulation du canal » est suspendue |
 | **8.6** | **Personne n'explique rien** : manuels consultables jamais récités, pièce jointe jamais introduite | **le joueur a le droit d'être perdu** : c'est la condition pour que fouiller ait un sens |
 | **8.7** | **L'invraisemblable** est admis partout **sauf dans la chaîne causale du vice** | celle-ci est d'une banalité administrative parfaite ; ailleurs, une bizarrerie doit être inerte (§8.3) |

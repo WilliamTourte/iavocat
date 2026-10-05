@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 5 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 501 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 516 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -248,6 +248,15 @@ son affirmation ; la voix du composeur se tait pendant la répétition. La frise
 deux champs neufs et le diagnostic signale un tag qui ne répond à rien. Chaque contrôle neuf a été
 **vu tomber**, une mutation par contrôle.
 
+**Le même jour, la passe 5 — combien le jeu aide-t-il** — tranchée par l'auteur, écrite au **§4.11**
+d'abord : *la session 1 apprend, les suivantes laissent se tromper*, la frontière étant la remise
+(`enCalibration`), jamais le tutoriel. **L'article ne s'étiquette plus** : son texte est encadré de
+la couleur et du trait de chaque dimension qu'il régit, deux cadres pour deux dimensions, l'ondulé
+dessiné par un masque. **Hors session 1, l'erreur de catégorie part** — juxtaposée, *« {a} et {b} »*,
+une forme du contenu — et c'est Maître Auber qui la refuse ; le Contexte ne s'assombrit plus. **La
+patience reste infinie** : on ne cherche pas de *game over*. **Choisir la relation** est remis à
+après une partie.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -310,6 +319,10 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   comme `panneau`, jamais sauvés : `dossierPlie` (le choix du joueur sans pièce) et `dossierDeplie`
   (celui du temps d'une pièce, remis à faux par `ouvrirPiece`) — un seul ferait oublier, à la pièce
   repliée, ce que le joueur avait choisi avant. `voirPiecesRecues` déplie les deux.
+- **La juxtaposition n'entre jamais dans la boucle de `deduire`** (§11) : déclarée en tête des
+  formes, elle passerait pour une *différence* entre deux passages de même dimension. Le contenu
+  livré la déclare en dernier et ne le verrait pas — un contrôle la remonte exprès. Et le diagnostic
+  ne la compte pas comme une forme qui compare (*« sans forme déductible »*).
 - **Une fiche refusée est `aria-disabled`, jamais `disabled`** (§4.6, §4.10 règle 5) : un bouton
   `disabled` sort de la tabulation et n'a plus de clic — la raison n'avait plus de porte. Son
   `onclick` devient `passageRefuse`, qui redit la raison ; `FOCALISABLES` la compte donc parmi les
@@ -478,7 +491,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   l'écrit noir sur blanc : *deux fiches QUI → seul l'art. 7 colle*. Le moteur ne lit jamais `porte`
   (§4.5), mais l'étiquette filtre **dans la tête** — et le choix entre l'article 7 et l'article 12
   fait toute la session 2 (§6). Le retirer est une ligne ; **à juger sur une partie, le recadrage en
-  place.**
+  place.** *Tranché le 5 octobre (§4.11) : l'étiquette devient une marque sans mot — la couleur et le
+  trait de la dimension sous le titre de l'article.*
 - **L'article s'offre sans avoir été lu** : `blocsDepuis` filtre sur `piecesLivrees` — *reçu*, pas
   *lu*. Passer à `S.examinees` est un mot, et l'invariant du §4.5 deviendrait *« on n'invoque pas un
   texte qu'on n'a pas lu »*. Non tranché.
@@ -545,7 +559,11 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   défaut. **C'est le faux vice** (§6, §8.5) — l'avocat ne sait pas, il y pousse lui-même, et les
   `variante_faux` des fins le paient. À ne pas « corriger » ; peut-être à rendre plus lisible à la fin.
 - Côté outil : la frise n'édite pas `rep_hors_sujet` (§15).
-- **Le retour de Jean, ce qui reste** (détail au `TODO.md`) — trois préconisations vont contre un
+- **Le retour de Jean, ce qui reste** — *tranché par l'auteur le 5 octobre, écrit au §4.11, puis
+  codé* : la session 1 apprend, les suivantes laissent se tromper (refus d'écran
+  et assombrissement levés hors session 1, la juxtaposition part et l'avocat la refuse), et la
+  patience de l'avocat reste infinie — on ne cherche pas de *game over*. **Choisir la relation reste écarté** : on rejoue avec le
+  §4.11 avant de le rouvrir. *Ce qui suit est l'état d'avant :* trois préconisations vont contre un
   arbitrage écrit, à trancher document d'abord : **offrir deux ou trois relations au choix, dont des
   fausses**, renverserait *désigner, pas déclarer* (§4.5) ; **réserver au tutoriel les garde-fous** —
   fiches d'une autre dimension assombries, refus de catégorie avant l'envoi — lèverait *le seul refus
@@ -716,3 +734,8 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   trie (`repondA`, `repond`, `oppose`, `rep_a_cote`), *« déplacer ici »*, l'affirmation dans le cadre,
   la voix muette en répétition ; la frise et le diagnostic suivent. 501 contrôles, 8 règles du
   gardien, ESLint.
+- **5 octobre, passe 5 : ce que le jeu aide, et quand** (§4.11) — la session 1 apprend, les suivantes
+  laissent se tromper (`enCalibration`) ; l'article encadré de ses dimensions (`cadresPorte`,
+  `portePiece` supprimée) ; la forme `juxtaposition` (`deduire`, `juxtapose`), refusée à l'écran en
+  session 1, par l'avocat ensuite ; l'assombrissement réservé à la session 1 ; patience infinie ;
+  la relation choisie, écartée pour l'heure. 516 contrôles, 8 règles du gardien, ESLint.

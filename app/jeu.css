@@ -432,18 +432,25 @@ code{font-family:var(--mono);color:var(--accent)}
 .bande.piece :focus-visible{box-shadow:0 0 0 2px var(--papier),0 0 0 4px #1d3b57}
 /* Un article n'est pas un témoignage : un double filet le distingue. */
 .bande.piece.regle{border-left:6px double #b3a37f}
-/* §4.5 — CE QU'UN ARTICLE ANNONCE (`porte`) : chaque nom porte EXACTEMENT la
-   marque des passages qu'il range — même trait, même couleur, foncée par le
-   papier comme eux (`--dcp`). La légende des pièces, qui avait la même forme,
-   est retirée (§4.3). */
-.bande.piece .porte{margin:16px 0 0;padding-top:10px;border-top:1px solid var(--filet);
-  font-family:var(--sans);font-size:13px;color:var(--encre2);
-  display:flex;flex-wrap:wrap;align-items:baseline;gap:5px 15px}
-.bande.piece .porte .llab{flex:none}
-.bande.piece .porte .ldim{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
-  color:var(--encre);text-decoration-line:underline;text-decoration-style:var(--ds,solid);
-  text-decoration-color:var(--dcp);text-decoration-thickness:2px;
-  text-underline-offset:.26em;text-decoration-skip-ink:none}
+/* §4.11 — CE QU'UN ARTICLE RÉGIT (`porte`) SE MARQUE, sans un mot : son texte est
+   encadré de la couleur ET du trait de chaque dimension — le code des passages,
+   foncé par le papier comme eux (`--dcp`). Deux dimensions, deux cadres. */
+.bande.piece .cadre{--dcp:color-mix(in oklab, var(--dc,#888) 70%, black);
+  border:3px var(--ds,solid) var(--dcp);border-radius:7px;padding:2px 10px;margin:10px 0 4px}
+.bande.piece .cadre .cadre{margin:0;padding:3px 8px}
+.bande.piece .cadre .piecetexte{margin:6px 0}
+/* PIÈGE : une bordure CSS ne sait pas onduler. L'ondulé se dessine par un MASQUE
+   (une vague par bord) sur un calque de la couleur : la variable passe, ce
+   qu'une image de bordure en SVG ne saurait pas faire. */
+.bande.piece .cadre.ondule{position:relative;border-color:transparent}
+.bande.piece .cadre.ondule::before{content:"";position:absolute;inset:-3px;border-radius:7px;pointer-events:none;
+  background:var(--dcp);
+  --vh:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='6'><path d='M0 3 Q3 0.5 6 3 T12 3' fill='none' stroke='black' stroke-width='1.8'/></svg>");
+  --vv:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='12'><path d='M3 0 Q0.5 3 3 6 T3 12' fill='none' stroke='black' stroke-width='1.8'/></svg>");
+  -webkit-mask:var(--vh) top/12px 6px repeat-x,var(--vh) bottom/12px 6px repeat-x,
+    var(--vv) left/6px 12px repeat-y,var(--vv) right/6px 12px repeat-y;
+  mask:var(--vh) top/12px 6px repeat-x,var(--vh) bottom/12px 6px repeat-x,
+    var(--vv) left/6px 12px repeat-y,var(--vv) right/6px 12px repeat-y}
 .bande.piece .rappel{margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--encre2);
   background:#ebe4d4;color:var(--encre);font-family:var(--sans);font-size:14px}
 /* PIÈGE PAYÉ (le 4 octobre, le temps d'une passe) : la ligne a été COLLÉE au bas

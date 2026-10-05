@@ -33,8 +33,10 @@ function diagnostiquer(){
         add("avert",`Forme « ${nom} » ordonnée sans « sens »`,"Sans « sens », les deux termes sont rangés par ordre croissant de valeur. Écris-le (asc/desc) plutôt que de le subir : c'est ce qui décide de la lecture de la phrase.",{});
     if((G.blocs||[]).some(b=>b.deduit))
       for(const d of dims){
+        // La juxtaposition (§4.11) prend toutes les dimensions et n'en compare aucune :
+        // elle ne compte pas — sinon elle ferait taire cet avertissement partout.
         const prise=Object.values(G.formes||{}).some(f=>{
-          const sl=f.deduction && f.slots && f.slots[0];
+          const sl=f.deduction && f.deduction!=="juxtaposition" && f.slots && f.slots[0];
           return sl && (sl==="*" || sl.includes(d));
         });
         if(!prise) add("avert",`Dimension « ${d} » sans forme déductible`,

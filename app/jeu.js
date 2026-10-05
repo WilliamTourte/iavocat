@@ -694,20 +694,25 @@ function oublier(pid,eid){
 }
 /* §4.3 — PLUS DE LÉGENDE : l'auteur l'a retirée, le code s'apprend en cherchant
    — au survol du passage, et dans les groupes du Contexte. */
-/* §4.5 — `porte` ANNONCE, il ne filtre rien : le moteur ne le lit jamais. Il se
-   lit DANS l'article, jamais sous le bouton qui l'invoque. Les noms y portent
-   leur couleur et leur trait : c'est le pont vers les groupes du Contexte. */
-function portePiece(pid){
-  const d=R.porteDe(pid);
-  if(!d.length) return "";
-  return `<p class="porte"><span class="llab">Ce texte porte sur :</span>${
-    d.map(x=>`<span class="ldim" style="--dc:${couleurDim(x)};--ds:${traitDim(x)}">${escapeAttr(x)}</span>`).join("")}</p>`;
+/* §4.11 — `porte` SE MARQUE, IL NE S'ÉTIQUETTE PLUS : « Ce texte porte sur :
+   quand » faisait le tri dans la tête du joueur. Le texte de l'article est
+   encadré de la couleur ET du trait de chaque dimension qu'il régit — le code
+   des passages (§4.3), rien par la couleur seule (§4.10 règle 5). Deux
+   dimensions, deux cadres l'un dans l'autre. À qui ne voit pas, leurs noms. Le
+   moteur ne lit toujours pas `porte` (§4.5). PIÈGE : une bordure CSS ne sait
+   pas onduler — l'ondulé passe par une image de bordure (`.cadre.ondule`). */
+function cadresPorte(pid, interieur){
+  const d=R.porteDe(pid).filter(x=>couleurDim(x));
+  if(!d.length) return interieur;
+  return d.reduceRight((dedans,x)=>{
+    const t=traitDim(x);
+    return `<div class="cadre ${t==="wavy"?"ondule":""}" style="--dc:${couleurDim(x)};--ds:${t==="wavy"?"solid":t}">${dedans}</div>`;
+  }, interieur + `<span class="sr">Porte sur : ${d.map(escapeAttr).join(", ")}.</span>`);
 }
 function piecePanelHTML(pid){
   const p=JEU.pieces[pid];
   return `<small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
-    <p class="piecetexte">${rendreTexte(pid)}</p>
-    ${portePiece(pid)}
+    ${cadresPorte(pid, `<p class="piecetexte">${rendreTexte(pid)}</p>`)}
     ${rappelRetrait && rappelRetrait.startsWith(pid+".") ? `<p class="rappel">${RAPPEL_RETRAIT}</p>` : ""}
     ${vientDeRetenir && vientDeRetenir.startsWith(pid+".") ? `<p class="rappel retenu">${ECHO_RETENU}</p>` : ""}`;
 }
@@ -744,7 +749,10 @@ function basculerRemise(r){
 const ordinal = n => n===1 ? "1ʳᵉ" : n+"ᵉ";
 function renderRetenus(){
   const iT=R.indexTermeChamp(S);
-  const dimReq=R.dimAttendue(S);          // `null` tant qu'aucun second terme n'est attendu
+  /* §4.11 — l'assombrissement annonçait le refus d'écran : il vit avec lui, en
+     session 1 seulement. Ensuite, le premier passage posé garde sa couleur au
+     composeur, et c'est le seul rappel. */
+  const dimReq=R.enCalibration(S) ? R.dimAttendue(S) : null;   // `null` : rien à assombrir
   const pleine = iT<0 && S.compo.length>0;
   const dansPhrase=new Set(S.compo.map(p=>p.valeur).filter(v=>typeof v==="string"));
   const fiche=(k,j,d,hors)=>{

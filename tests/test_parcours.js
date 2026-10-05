@@ -26,26 +26,116 @@ console.log("\n=== Le composeur, bloc par bloc ===");
   check("tout effacer vide la phrase", w.S.compo.length === 0 && !w.S.refus);
 }
 
-console.log("\n=== Refus de catégorie : le seul refus qui existe ===");
-{
-  const w = boot();
-  H.livrerTout(w);   // la comparaison n'est composable qu'une fois son texte reçu (§4.5)
-  for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
-  const a = w.CHAMPS[0];
-  const b = w.CHAMPS.find(c => c.dim !== a.dim);
+console.log("\n=== Refus de catégorie : en session 1 seulement (§4.11) ===");
+/* Deux passages de dimensions différentes, choisis parmi ce qui est livré. */
+function deuxDimensions(w) {
+  const livrees = new Set(w.R.piecesLivrees(w.S));
+  for (const pid of livrees) w.ouvrirPiece(pid);
+  const dispo = w.CHAMPS.filter(c => livrees.has(c.pid));
+  const a = dispo[0], b = dispo.find(c => c.dim !== a.dim);
   H.surligner(w, a.id); H.surligner(w, b.id);
-  check("aucune relation ne se déduit entre deux dimensions", w.M.deduire(a.id, b.id) === null);
-  const iT = () => H.iTermeChamp(w);
-  w.poserBloc(iT(), w.S.retenus.indexOf(a.id));
-  w.poserBloc(iT(), w.S.retenus.indexOf(b.id));
-  const iArt = w.R.blocsOfferts(w.S).findIndex(x => x.imbrique);
-  if (iArt >= 0) w.poserBloc(iArt); else H.cloreSurPlace(w);
-  check("deux dimensions différentes : la phrase est refusée", !!w.S.refus);
+  return [a, b];
+}
+const poserLesDeux = (w, a, b) => {
+  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(a.id));
+  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(b.id));
+};
+{
+  const w = boot();                   // la remise 1 : la calibration
+  const [a, b] = deuxDimensions(w);
+  const f = w.M.deduire(a.id, b.id);
+  check("le moteur ne déduit aucune relation entre deux dimensions — au mieux, il les juxtapose",
+    f === null || w.JEU.grammaire.formes[f].deduction === "juxtaposition");
+  check("on est bien en calibration", w.R.enCalibration(w.S));
+  poserLesDeux(w, a, b);
+  check("en session 1, deux dimensions différentes : la phrase est refusée", !!w.S.refus);
   check("le message ne dit rien de plus que la catégorie",
     /ne se comparent pas|dimensions différentes|slot/.test(w.S.refus));
   check("rien n'est tombé au journal", w.S.brouillon.length === 0);
   check("et rien n'attend d'être envoyé", w.S.prete === null);
   check("rien n'est parti au plan", w.S.plaidoirie.length === 0);
+}
+{
+  const w = boot();
+  H.livrerTout(w);                    // après la calibration
+  const [a, b] = deuxDimensions(w);
+  check("hors session 1, on n'est plus en calibration", !w.R.enCalibration(w.S));
+  poserLesDeux(w, a, b);
+  check("hors session 1, la juxtaposition se pose sans refus d'écran", !w.S.refus && w.S.compo.length === 2);
+  check("et se lit sans relation : « {a} et {b} »",
+    w.R.juxtapose(w.M.reduire(w.R.chaineCompo(w.S))));
+  const avant = w.S.incompris;
+  w.envoyerCompo();
+  check("elle part — et c'est l'avocat qui la refuse, par son escalade",
+    w.S.brouillon.length === 1 && w.S.incompris === avant + 1
+    && w.S.fil[w.S.fil.length - 1].texte === w.JEU.avocat.rep_sans_rapport[avant]);
+  check("elle ne sert rien, et n'entre pas en Plaidoirie",
+    !w.R.estMoyen(w.S.brouillon[0].lien) && w.S.satisfaits.length === 0);
+  // Sous un article aussi : l'avocat la refuse, sans la prendre pour un moyen.
+  const [c, d] = deuxDimensions(w);
+  w.viderCompo(); poserLesDeux(w, c, d);
+  const iArt = w.R.blocsOfferts(w.S).findIndex(x => x.imbrique);
+  if (iArt >= 0) {
+    w.poserBloc(iArt);
+    const n0 = w.S.incompris; w.envoyerCompo();
+    check("sous un article, la juxtaposition reçoit le même refus d'avocat", w.S.incompris === n0 + 1);
+  } else check("(aucun article livré)", true);
+}
+{
+  /* PIÈGE (§11) : la juxtaposition n'entre jamais dans la boucle de `deduire`.
+     Déclarée EN TÊTE des formes, elle passerait pour une « différence » entre
+     deux passages de même dimension — le contenu livré, qui la déclare en
+     dernier, ne le verrait pas. */
+  const c = H.contenuLivre(), F = c.grammaire.formes;
+  const nom = Object.keys(F).find(k => F[k].deduction === "juxtaposition");
+  c.grammaire.formes = { [nom]: F[nom], ...Object.fromEntries(Object.entries(F).filter(([k]) => k !== nom)) };
+  const w = H.boot({ contenu: c });
+  const paires = [];
+  for (const a of w.CHAMPS) for (const b of w.CHAMPS)
+    if (a.id < b.id && a.dim === b.dim) paires.push([a.id, b.id]);
+  check("déclarée en tête, la juxtaposition ne lie jamais deux passages de même dimension",
+    paires.length > 0 && paires.every(([x, y]) => w.M.deduire(x, y) !== nom));
+}
+{
+  // L'ASSOMBRISSEMENT ANNONÇAIT LE REFUS D'ÉCRAN : il vit avec lui (§4.11).
+  const dims = w => [...w.document.querySelectorAll("#zoneRetenus .dimgrp")];
+  const w = boot();
+  const [a] = deuxDimensions(w);
+  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(a.id));
+  check("en session 1, pendant une comparaison, les autres dimensions s'assombrissent",
+    dims(w).some(g => g.classList.contains("horsdim")));
+  const w2 = boot();
+  H.livrerTout(w2);
+  const [a2] = deuxDimensions(w2);
+  w2.poserBloc(H.iTermeChamp(w2), w2.S.retenus.indexOf(a2.id));
+  check("hors session 1, plus rien ne s'assombrit",
+    dims(w2).length > 1 && !dims(w2).some(g => g.classList.contains("horsdim")));
+  check("et le premier passage posé garde sa couleur au composeur",
+    /--dc:\s*#/.test(w2.document.querySelector("#composeur .bl.terme.pose").getAttribute("style") || ""));
+}
+{
+  // `porte` SE MARQUE, IL NE S'ÉTIQUETTE PLUS (§4.11) : un cadre par dimension,
+  // sa couleur et son trait — et son nom à qui ne voit pas.
+  const w = boot();
+  H.livrerTout(w);
+  const regles = Object.keys(w.JEU.pieces).filter(p => w.R.estRegle(w.JEU.pieces[p]) && w.R.porteDe(p).length);
+  let ok = regles.length > 0, sansMot = true, sr = true;
+  for (const pid of regles) {
+    w.ouvrirPiece(pid);
+    const panneau = w.document.getElementById("panPiece");
+    const cadres = [...panneau.querySelectorAll(".cadre")];
+    const porte = w.R.porteDe(pid);
+    ok = ok && cadres.length === porte.length && cadres.every((c, k) => {
+      const st = c.getAttribute("style") || "";
+      return st.includes(w.MoteurGrammaire.couleurDim(w.JEU.dimensions, porte[k]))
+        && (/--ds:\s*\w+/.test(st));
+    });
+    sansMot = sansMot && !/porte sur :/i.test(panneau.textContent.replace(/Porte sur : [^.]*\./, ""));
+    sr = sr && porte.every(d => (panneau.querySelector(".cadre .sr") || {}).textContent.includes(d));
+  }
+  check("chaque article est encadré de la couleur de chaque dimension qu'il régit, et de son trait", ok);
+  check("sans un mot à l'écran : plus d'étiquette « porte sur »", sansMot);
+  check("à qui ne voit pas, le nom des dimensions", sr);
 }
 
 console.log("\n=== La déduction : la relation est un fait, pas un choix ===");

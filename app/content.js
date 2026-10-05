@@ -479,6 +479,16 @@ window.CONTENU = {
         "relation": "meme_dim",
         "patron": "{a} et {b} ne désignent pas la même chose"
       },
+      "juxtaposition": {
+        "arite": 2,
+        "ordonne": false,
+        "deduction": "juxtaposition",
+        "slots": [
+          "*",
+          "*"
+        ],
+        "patron": "{a} et {b}"
+      },
       "article_3": {
         "arite": 1,
         "ordonne": false,

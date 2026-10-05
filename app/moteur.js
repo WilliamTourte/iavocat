@@ -21,14 +21,20 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     const sa = String(a), sb = String(b);
     return sa < sb ? -1 : sa > sb ? 1 : 0;
   }
-  // La forme qui lie deux empans, ou null (dimensions différentes → null, le
-  // seul refus qui existe). L'ORDRE de déclaration tranche les ambiguïtés (§11).
+  // La forme qui lie deux empans. L'ORDRE de déclaration tranche les ambiguïtés
+  // (§11). Dimensions différentes : la JUXTAPOSITION si le contenu en déclare
+  // une, sinon null (§4.11) — ce sont les règles qui la refusent en session 1.
+  // PIÈGE : elle n'entre jamais dans la boucle — déclarée plus haut, elle
+  // passerait pour une « différence » entre deux passages de même dimension.
+  const estJuxta = f => f.deduction === "juxtaposition" && (f.arite || 2) === 2;
   function deduire(idA, idB) {
     const a = C[idA], b = C[idB];
-    if (!a || !b || idA === idB || a.dim !== b.dim) return null;
+    if (!a || !b || idA === idB) return null;
+    if (a.dim !== b.dim)
+      return (Object.entries(G.formes).find(([, f]) => estJuxta(f)) || [null])[0];
     const egal = comparer(a.valeur, b.valeur) === 0;
     for (const [nom, f] of Object.entries(G.formes)) {
-      if (!f.deduction || (f.arite || 2) !== 2) continue;
+      if (!f.deduction || (f.arite || 2) !== 2 || estJuxta(f)) continue;
       const s = f.slots && f.slots[0];
       if (s !== "*" && !(s || []).includes(a.dim)) continue;
       if (f.deduction === "egalite" ? egal : !egal) return nom;

@@ -102,7 +102,7 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   (le bloc **clôt une paire** : forme déduite, termes rangés dans l'ordre canonique) · `piece` (offert
   une fois la pièce livrée — **sur les liaisons *et* sur les termes**, §4.5) · `libelle` (le texte du
   bouton) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa pièce).
-- **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`) · `sens` (`"asc"` par
+- **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`, `"juxtaposition"`) · `sens` (`"asc"` par
   défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8).
   **L'ordre de déclaration est signifiant** : `deduire` rend la première forme qui convient. C'est
   par là qu'une dimension obtient sa **langue** : `identite_personne` (slots `qui`, *« une seule et
@@ -125,6 +125,12 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   moteur** ; une telle pièce ne porte aucun empan (diagnostic, pas moteur).
 - **Les attentes** sont servies dans l'ordre, et le **désordre est accepté** ; l'ancienne forme
   (`attend`/`apres` sur la remise) se lit comme une liste à un élément.
+- **La juxtaposition** (§4.11) : une forme `deduction:"juxtaposition"`, slots `"*"`, patron
+  *« {a} et {b} »* — sans accord à faire, donc sans accident de langue (§8.8). `deduire` la rend
+  **quand les dimensions diffèrent** et qu'elle est déclarée ; sans elle, `null` comme avant.
+  **Les règles** la refusent en session 1 (`poserBloc`, `enCalibration`), et l'avocat y répond par
+  `rep_sans_rapport`, nue comme sous un article. Elle n'entre jamais dans la boucle de `deduire` :
+  déclarée plus haut, elle passerait pour une *différence* entre deux passages de même dimension.
 - **Une affirmation trie** (§4.6) : `repond` liste les tags des liens qui la réfutent — opposer une
   phrase dont le lien porte l'un d'eux la met en face, avec la réplique `oppose` (à défaut, `deja`) ;
   une autre reçoit `rep_a_cote` et reste où elle était. **Sans `repond`, l'affirmation prend tout**
@@ -179,8 +185,8 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 - **Accumuler, pas écraser** : `reduire(ch)` empile les termes en retenant la forme courante ; à un bloc
   `imbrique`, l'acquis devient le **terme unique** de la nouvelle forme.
 - **La déduction** tient sur `comparer` (numérique quand les deux valeurs le sont, `hh:mm` compris ;
-  lexicographique sinon — c'est par là qu'une date ISO se trie, §11), `deduire` (la forme, ou `null` sur dimensions différentes — le seul refus qui
-  existe) et `ordonner`.
+  lexicographique sinon — c'est par là qu'une date ISO se trie, §11), `deduire` (la forme, ou — sur
+  dimensions différentes — la juxtaposition si le contenu en déclare une, sinon `null`, §4.11) et `ordonner`.
 - **Rétrocompatibilité** : sans `deduit`, `deduction` ni `patron`, `reduire` et `rendre` se comportent
   comme un automate à liaisons explicites — le banc d'essai l'exerce.
 - **`valider(r)` descend dans les termes emboîtés**, sans quoi l'article obligatoire ouvrirait un trou,
@@ -228,16 +234,16 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **501 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **516 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
 | `test_o5.js` (44) | l'index du dossier, **et le bouton de pièces qui compte comme lui** ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (41) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (276) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le Contexte qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, les remises closes (§4.6) |
+| `test_parcours.js` (290) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le Contexte qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, les remises closes (§4.6) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
-| `smoke_atelier.js` (102) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
+| `smoke_atelier.js` (103) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
 - **Le contrat de lecture : `w.R.x(w.S)`** — une suite *lit* les règles ; elle *agit* par les **gestes**
   de la fenêtre, parce qu'eux redessinent.
@@ -317,9 +323,9 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
-| l'avocat ouvre une session — **un seul message, sa première question puis ses pièces** (§4.6) ; ouvrir et refermer une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion` (qui pose la question SUR le message de remise : champ `question` du fil), `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion` (le bouton de pièces : `comptePieces`, `recuAvant`), `renderContexte` → `pieceHTML` (‹ › : `ordreIndex`, `pieceVoisine`, `voisine`) → `piecePanelHTML`, `rendreTexte`, `portePiece`, `renderDossier` — **repliable en une ligne à tout moment, replié d'office pièce ouverte** (`dossierPlie`, `dossierDeplie`, `basculerDossier`) |
+| l'avocat ouvre une session — **un seul message, sa première question puis ses pièces** (§4.6) ; ouvrir et refermer une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion` (qui pose la question SUR le message de remise : champ `question` du fil), `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion` (le bouton de pièces : `comptePieces`, `recuAvant`), `renderContexte` → `pieceHTML` (‹ › : `ordreIndex`, `pieceVoisine`, `voisine`) → `piecePanelHTML`, `rendreTexte`, `cadresPorte` (`porte` en cadres, §4.11), `renderDossier` — **repliable en une ligne à tout moment, replié d'office pièce ouverte** (`dossierPlie`, `dossierDeplie`, `basculerDossier`) |
 | **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, Contexte seul) | `surligner`, `oublier` | `renderRetenus` dans `renderContexte` — *dans ta phrase*, la raison d'un refus (`passageRefuse`, `RAISON_PLEINE`), les remises closes repliées (`remiseClose`, `remisesDepliees`, `basculerRemise`) ; `rappelRetrait` quand on reclique un passage retenu ; `voirDernierRetenu` à l'ouverture du panneau |
-| ce que le composeur offre ; ce qui se devine avant le clic ; la voix | `blocsOfferts`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
+| ce que le composeur offre ; ce qui se devine avant le clic — **en session 1 seulement** (§4.11) ; la voix | `blocsOfferts`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante`, `enCalibration`, `juxtapose` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
 | **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du Contexte | `rendreVoix`, `ouvrirContexte`, `suivrePhrase` (en tête de `rendreTout`), `majLateral` |
 | ouvrir et fermer une surface de côté | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `clavier` (Échap) |
 | **le clavier et la voix d'annonce** (§4.10) — le focus qui survit, la pièce DANS le Contexte (§4.6), ce qui s'annonce | `fermerPiece`, seule règle que l'écran appelle en refermant — par la croix, ou par `suivrePhrase` quand le Contexte quitte l'écran | `clavier`, `memoFocus` → `rendreFocus` (par la clé `data-f`), `ouvrirPiece`/`fermerPiece`/`suivrePhrase` (écran) — `modal`/`closeModal`/`inert` sur `.wrap` ne servent plus que `finir`, `annoncer` → `#annonce` |

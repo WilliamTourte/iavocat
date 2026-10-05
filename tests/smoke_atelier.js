@@ -212,6 +212,15 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
   for (const r of w.CONTENU.remises) r.pieces = (r.pieces||[]).filter(p => p !== pid);
   check("une pièce jamais livrée est signalée", msgs(w).includes("Pièce jamais livrée"));
 }
+{
+  /* La juxtaposition (§4.11) prend toutes les dimensions et n'en compare aucune :
+     une dimension neuve, sans forme qui la compare, doit rester signalée. */
+  const w = neuf();
+  w.CONTENU.dimensions.push("dimension_sans_forme");
+  check("la juxtaposition ne fait pas taire « sans forme déductible »",
+    Object.values(w.CONTENU.grammaire.formes).some(f => f.deduction === "juxtaposition")
+    && msgs(w).includes("« dimension_sans_forme » sans forme déductible"));
+}
 
 console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
 {
