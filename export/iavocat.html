@@ -124,12 +124,12 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
   .panneau.avecPiece{max-height:62vh;min-height:320px}
 }
 /* Panneau ouvert, le composeur cesse de prendre toute la place qu'il veut : il
-   défile pour son compte, le panneau non — c'est lui le clavier (§4.6). EN
-   DESSOUS DU SEUIL seulement : au-dessus, `#composeur` a sa propre rangée du
-   gabarit (`.wrap.avecLateral`, plus bas) et ne la dispute à personne. */
-@media (max-width:899.98px){
-  .wrap.avecLateral #composeur{max-height:28vh}
-}
+   défile pour son compte, le panneau non — c'est lui le clavier (§4.6). À TOUTES
+   LES LARGEURS. PIÈGE PAYÉ : on l'avait cru inutile au-dessus du seuil, où
+   `#composeur` a sa propre rangée du gabarit — mais cette rangée est `auto`, et
+   ce qu'elle prend, la place latérale le perd. À 1280×800, la comparaison en
+   cours écrasait le Contexte, pièce coupée (retour de playtest, Jean). */
+.wrap.avecLateral #composeur{max-height:28vh}
 #composeur{flex:none;max-height:46vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);
   border-radius:10px;padding:12px 16px}
 #composeur .zone{margin:0}
@@ -190,6 +190,9 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .col > h2 .fermer,.ptete .fermer{margin-left:auto}
 .col > h2 .fermer:hover,.ptete .fermer:hover,.modal .close:hover{border-color:var(--accent)}
 .fermer .x,.close .x{font-size:20px;line-height:1}
+/* Pièce ouverte, Échap la replie : la croix du Contexte perd sa touche — deux
+   « × Échap » empilés promettaient deux effets à une seule (§4.10 règle 6). */
+#panContexte.avecPiece > h2 .fermer kbd{display:none}
 .ztitle .surfaces{margin-left:auto;display:flex;gap:6px}
 .versSurface{background:#20303f;border:1px solid var(--accent);border-radius:7px;
   color:var(--txt);font-size:13px;font-weight:600;text-transform:none;letter-spacing:0;
@@ -303,7 +306,7 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mchip .sig{flex:none;font-size:12px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
 .mchip .del{background:none;border:none;border-left:1px solid var(--line);color:var(--muted);
-  font-size:16px;min-width:34px;padding:0 9px;cursor:pointer;align-self:stretch}
+  font:inherit;font-size:12.5px;min-width:34px;padding:0 10px;cursor:pointer;align-self:stretch}
 .mchip .del:hover{color:#e6b0b0}
 /* La puce rogne ce qui déborde (`overflow:hidden`) : l'anneau passe DEDANS. */
 .mchip .corps:focus-visible,.mchip .del:focus-visible{box-shadow:inset 0 0 0 2px #e6edf3}
@@ -2371,7 +2374,7 @@ function majTutoriel(){
    suite ne voit cette géométrie (jsdom rend des rectangles nuls) : `npm run
    vue` seul la montre. */
 const TUTO_ECART=12, TUTO_MARGE=16;
-function rectVisible(el){
+function rectVisible(el, ouNul){
   const r=el.getBoundingClientRect();
   let h=r.top, b=r.bottom, g=r.left, d=r.right;
   for(let p=el.parentElement; p && p!==document.body; p=p.parentElement){
@@ -2381,8 +2384,17 @@ function rectVisible(el){
     h=Math.max(h,q.top); b=Math.min(b,q.bottom); g=Math.max(g,q.left); d=Math.min(d,q.right);
   }
   h=Math.max(h,0); b=Math.min(b,innerHeight); g=Math.max(g,0); d=Math.min(d,innerWidth);
-  return b>h && d>g ? {top:h,bottom:b,left:g,right:d} : r;
+  return b>h && d>g ? {top:h,bottom:b,left:g,right:d} : (ouNul ? null : r);
 }
+/* §4.8 — ELLE ÉVITE AUSSI CE QUI PARLE OU AGIT autour de l'ancre : la
+   confirmation, la raison d'une phrase pleine, les aides, la phrase en cours,
+   les boutons et les croix. PIÈGE PAYÉ (retour de playtest, Jean) : posée au premier côté qui
+   TENAIT, elle cachait « ✓ Retenu » ou « ← retirer / tout effacer ». Chaque côté
+   essaie donc trois alignements ; la première position qui ne couvre rien
+   gagne, sinon celle qui couvre le moins — l'ancre comptant pour beaucoup plus. */
+// Les BOUTONS de la barre du composeur, pas la barre : son milieu est vide, et
+// c'est la meilleure place pour une bulle qui montre « → Envoyer ».
+const TUTO_EVITE = ".rappel, .raison, .aide, .phrase, .compo .barre button, .ptete button, .col > h2 .fermer, .ztitle .surfaces";
 function placerTuto(){
   const bulle=$("tuto");
   if(!bulle || bulle.hidden) return;
@@ -2395,23 +2407,29 @@ function placerTuto(){
     return;
   }
   const r=rectVisible(tutoCible), cx=(r.left+r.right)/2, cy=(r.top+r.bottom)/2;
-  const cotes=[
-    ["droite",  L-r.right-E-M>=w],
-    ["dessous", H-r.bottom-E-M>=h],
-    ["dessus",  r.top-E-M>=h],
-    ["gauche",  r.left-E-M>=w]];
-  const cote=(cotes.find(c=>c[1]) || (r.top>H-r.bottom ? cotes[2] : cotes[1]))[0];
-  let x, y;
-  if(cote==="droite" || cote==="gauche"){
-    /* Sur le côté, elle DESCEND depuis la zone, la flèche en haut : la question
-       est au-dessus du bouton de pièces, une bulle qui montait la recouvrait. */
-    x = cote==="droite" ? r.right+E : r.left-E-w;
-    y = cy-26;
-  } else {
-    x = r.left;
-    y = cote==="dessus" ? r.top-E-h : r.bottom+E;
+  const evites=[...document.querySelectorAll(TUTO_EVITE)]
+    .filter(el=>el.offsetParent && !tutoCible.contains(el) && !bulle.contains(el))
+    .map(el=>rectVisible(el,true)).filter(Boolean);   // défilé hors champ : rien à cacher
+  const recouvre=(x,y,q)=>Math.max(0,Math.min(x+w,q.right)-Math.max(x,q.left))
+                        * Math.max(0,Math.min(y+h,q.bottom)-Math.max(y,q.top));
+  const cout=(x,y)=>10*recouvre(x,y,r) + evites.reduce((t,q)=>t+recouvre(x,y,q),0);
+  /* Sur le côté, elle DESCEND d'abord depuis la zone, la flèche en haut : la
+     question est au-dessus du bouton de pièces, une bulle qui montait la
+     recouvrait. Les autres alignements ne viennent qu'ensuite. */
+  const essais=[
+    ["droite",  L-r.right-E-M>=w, [[r.right+E, cy-26], [r.right+E, r.top], [r.right+E, r.bottom-h]]],
+    ["dessous", H-r.bottom-E-M>=h, [[r.left, r.bottom+E], [cx-w/2, r.bottom+E], [r.right-w, r.bottom+E]]],
+    ["dessus",  r.top-E-M>=h,      [[r.left, r.top-E-h], [cx-w/2, r.top-E-h], [r.right-w, r.top-E-h]]],
+    ["gauche",  r.left-E-M>=w,     [[r.left-E-w, cy-26], [r.left-E-w, r.top], [r.left-E-w, r.bottom-h]]]];
+  let tient=essais.filter(c=>c[1]);
+  if(!tient.length) tient=[r.top>H-r.bottom ? essais[2] : essais[1]];
+  let mieux=null;
+  essai: for(const [cote,,positions] of tient) for(const [px,py] of positions){
+    const x=borne(px, M, Math.max(M, L-w-M)), y=borne(py, M, Math.max(M, H-h-M)), c=cout(x,y);
+    if(!mieux || c<mieux.c) mieux={cote,x,y,c};
+    if(c===0) break essai;
   }
-  x=borne(x, M, Math.max(M, L-w-M)); y=borne(y, M, Math.max(M, H-h-M));
+  const {cote,x,y}=mieux;
   bulle.style.left=Math.round(x)+"px"; bulle.style.top=Math.round(y)+"px";
   bulle.setAttribute("data-cote", cote);
   bulle.style.setProperty("--fx", Math.round(borne(cx-x, 18, Math.max(18, w-18)))+"px");
@@ -2756,7 +2774,7 @@ function basculerDossier(){
    voit au moment même (§4.3) : `vientDeRetenir` allume la même ligne et le compte
    de la porte Contexte. Tous deux vivent le temps d'un rendu. */
 let rappelRetrait=null, vientDeRetenir=null;
-const RAPPEL_RETRAIT="Déjà dans ton Contexte — c'est là qu'on le retire.";
+const RAPPEL_RETRAIT="Déjà dans ton Contexte — c'est là qu'on l'oublie.";
 const ECHO_RETENU="✓ Retenu dans ton Contexte.";
 function surligner(pid,eid){
   const k=pid+"."+eid;
@@ -2853,8 +2871,8 @@ function renderRetenus(){
                 <span class="nom">${escapeAttr(e.nom||e.texte)}${pris?`<span class="dansPhrase">dans ta phrase</span>`:""}</span>
                 <span class="prov"><span class="cit">« ${escapeAttr(e.texte)} »</span><span class="sig">— ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}</span></span>
               </button>
-              <button class="del" data-f="x:${k}" onclick="oublier('${e.pid}','${e.eid}')" title="Oublier"
-                      aria-label="Retirer « ${escapeAttr(e.nom||e.texte)} » du Contexte">×</button>
+              <button class="del" data-f="x:${k}" onclick="oublier('${e.pid}','${e.eid}')"
+                      aria-label="Oublier « ${escapeAttr(e.nom||e.texte)} »">oublier</button>
             </div>`;
   };
   const parDimension=items=>{
@@ -2957,10 +2975,17 @@ function texteCompoPartiel(){
 function poserBloc(iBloc,iSrc){ R.poserBloc(S,iBloc,iSrc); rendreTout(); }
 function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
 function viderCompo(){ R.viderCompo(S); rendreTout(); }
-/* La phrase PARTIE, on revient lire l'avocat : le panneau se referme, quelle que
-   soit la porte par laquelle il a été ouvert. Effacer sa phrase, non — on n'en a
-   pas fini avec le Contexte pour autant. */
-function envoyerCompo(){ R.envoyerCompo(S); panneau=null; panneauSuit=false; rendreTout(); }
+/* La phrase PARTIE (§4.6) : le Contexte reste tant que la REMISE ne change pas —
+   la question suivante, ou la même après un refus, voudra le clavier. Il reste
+   en consultation, quelle que soit la porte qui l'avait ouvert. Une remise
+   neuve le referme : un dossier arrive, on revient lire l'avocat. La Plaidoirie
+   se referme toujours — on n'y écrit pas. */
+function envoyerCompo(){
+  const remise=S.remisesEnvoyees;
+  R.envoyerCompo(S);
+  if(panneau!=="contexte" || S.remisesEnvoyees!==remise) panneau=null;
+  panneauSuit=false; rendreTout();
+}
 function rappelQuestion(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
   if(!a || !a.question) return "";
@@ -3059,6 +3084,10 @@ function renderContexte(){
   const piece=!!S.modalPiece;
   const el=$("contexte"); if(el) el.classList.toggle("avecPiece", piece);
   { const p=$("panContexte"); if(p) p.classList.toggle("avecPiece", piece); }
+  // Échap ne se lit que là où il agit (§4.10 règle 6) : pièce ouverte, sur elle seule.
+  { const f=document.querySelector("#panContexte > h2 .fermer");
+    if(f){ f.setAttribute("aria-label", piece ? "Fermer le Contexte" : "Fermer le Contexte (Échap)");
+           if(piece) f.removeAttribute("aria-keyshortcuts"); else f.setAttribute("aria-keyshortcuts","Escape"); } }
   garderDefilement("contexte", () => piece
     ? renderDossier() + pieceHTML() + `<div class="bande retenus"><div class="defile" id="defileRetenus">${renderRetenus()}</div></div>`
     : renderDossier() + renderRetenus());
