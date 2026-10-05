@@ -88,8 +88,9 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   liens: [ { forme, termes:["p_f.e_a", …], tag?, vice?, conclusion?, faux?, rep? } ],
   remises: [ { qui, texte, pieces:[…],
                attentes:[ { question?, attend:"tag", apres?:{ qui, replique } } ] } ],
-  repetition: { intro, affirmations:[{court,texte}], fin },
-  avocat: { rep_vice, rep_faux, rep_inutile:[…], rep_sans_rapport:[…], rep_hors_sujet:[…], deja },
+  repetition: { intro, affirmations:[{court, texte, repond?:["tag"], oppose?}], fin },
+  avocat: { rep_vice, rep_faux, rep_inutile:[…], rep_sans_rapport:[…], rep_hors_sujet:[…],
+            rep_deux_dossiers, deja, rep_a_cote },
   directives: […], avis_exploitation,                       // écrits, non lus par le jeu — voir §5
   fins: {1:{…},2:{…},3:{…}}
 }
@@ -124,6 +125,10 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   moteur** ; une telle pièce ne porte aucun empan (diagnostic, pas moteur).
 - **Les attentes** sont servies dans l'ordre, et le **désordre est accepté** ; l'ancienne forme
   (`attend`/`apres` sur la remise) se lit comme une liste à un élément.
+- **Une affirmation trie** (§4.6) : `repond` liste les tags des liens qui la réfutent — opposer une
+  phrase dont le lien porte l'un d'eux la met en face, avec la réplique `oppose` (à défaut, `deja`) ;
+  une autre reçoit `rep_a_cote` et reste où elle était. **Sans `repond`, l'affirmation prend tout**
+  — l'ancienne conduite, qu'on ne retire pas (ci-dessous) ; `repond:[]` n'en prend aucune.
 - **Un terme** est `"pid.eid"` ou un `{forme, termes}` imbriqué. Le moteur ne lit aucun nom de
   dimension : ajouter `comment` est un geste d'atelier.
 - **Migration 2 → 3** (`migrerContenu()`, silencieuse) : `champs` → `empans`, marqueurs posés, liens par
@@ -223,14 +228,14 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **493 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **501 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
 | `test_o5.js` (44) | l'index du dossier, **et le bouton de pièces qui compte comme lui** ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (41) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (268) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition ; **le clavier** (§4.10) ; **le Contexte qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, les remises closes (§4.6) |
+| `test_parcours.js` (276) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le Contexte qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, les remises closes (§4.6) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
 | `smoke_atelier.js` (102) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
@@ -322,7 +327,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
 | **envoyer** — le seul geste ; la remise du tutoriel servie **dans l'ordre** (§3) | `envoyerCompo` → `clore` → `envoyer` (`horsOrdre` d'abord) → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPlaidoirie` |
 | ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie`, `moyensRetenus` — **panneau**, ouvert par sa porte (§4.9) |
-| clôturer, répétition, fin ; **opposer** un moyen à une affirmation | `instructionComplete`, `cloturer`, `verserContre` (pose `contre`, même sur une phrase déjà versée), `avancerRepetition`, `finir` | `majCloture`, le présentoir dans `renderDiscussion` (les **moyens** seuls), `finir` (modale) |
+| clôturer, répétition, fin ; **opposer** un moyen à une affirmation | `instructionComplete`, `cloturer`, `verserContre` (pose `contre`, même sur une phrase déjà versée — **si l'affirmation la prend**, `repondA`), `avancerRepetition`, `finir` | `majCloture`, le présentoir dans `renderDiscussion` (les **moyens** seuls, l'affirmation redite en tête, *« déplacer ici »*), `finir` (modale) |
 | le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoEtape`, `majTutoriel` → `placerTuto` — **bulle ancrée au halo**, en surimpression, premier enfant de `<body>` |
 
 - **Les deux voies de clôture** sont le **même** `clore`, appelé par le **même** `envoyerCompo` ; ce qui

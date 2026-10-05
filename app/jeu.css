@@ -352,7 +352,13 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 /* répétition de plaidoirie */
 .repet{border:1px dashed #5a3a3a;border-radius:8px;padding:11px;background:#1a1416;margin-bottom:14px}
 .repet .rtitle{font-size:13.5px;font-weight:600;color:var(--muted);margin-bottom:8px}
-.repet .rnote{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding:5px 0}
+/* L'affirmation redite EN TÊTE du cadre (§4.6) ; les phrases en corps de texte,
+   plus en petit gris : c'est ce qu'on trie (retour de Colas). */
+.repet .raff{margin:0 0 10px;padding:6px 10px;border-left:3px solid #8a5a5a;background:#221a1c;
+  color:var(--txt);font-size:14px;line-height:1.5}
+.repet .rnote{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--txt);padding:7px 0;
+  border-top:1px solid #3a2a2c}
+.repet .rnote .sent{font-size:12.5px;color:var(--muted);white-space:nowrap}
 .repet .rnote .txt{flex:1}
 .repet .rnote.vide{font-style:italic}
 .repet .up{background:#12324a;color:#bfe0f2;border:1px solid var(--transmis);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:12.5px}

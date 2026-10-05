@@ -360,6 +360,24 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   n'offrait que des lignes *« déjà envoyée »*, un rituel sans choix, et la réplique de l'avocat
   (*« Je l'ai déjà. Je le mets en face de celle-ci. »*) annonçait un geste qu'elle ne faisait pas.
   Elle le fait.
+- **Et l'avocat trie avec lui** — retour de playtest (Colas), rejoué le 4 octobre : la réplique était
+  la même à chaque opposition, que la phrase réponde à l'affirmation ou non — le PV opposé à l'ADN
+  recevait *« je le mets en face »* —, si bien que rien ne se triait à l'écran, alors que c'est la
+  raison d'être de la répétition. Une affirmation dit donc **ce qui lui répond** (`repond`, les tags
+  des liens qui la réfutent), et sa réplique est **la sienne** (`oppose`) : l'avocat met la phrase en
+  face. Ce qui n'y répond pas, il le dit (`rep_a_cote`) et **ne le place pas** — la fiction peut
+  désigner (§4.8), et l'avocat sait lire une plaidoirie. Rien de ceci ne touche aux fins : on ne
+  trie pas pour gagner, on trie parce que c'est le métier (§8.5). Sans `repond`, une affirmation
+  prend tout, comme avant.
+- **Déplacer se dit** : une phrase déjà opposée ailleurs n'offre plus un *« opposer »* identique, qui
+  la déplaçait en silence — son bouton dit *« déplacer ici »*, à côté de *« opposé à : … »*.
+- **Le présentoir porte son affirmation** : la réplique de l'avocat s'intercale dans le fil entre
+  l'affirmation et le cadre, qui la perdait de vue au premier geste — *lisible* est la condition,
+  pas *présent* (§4.9 règle 3). Le cadre la redit donc en tête, et ses phrases se lisent en corps
+  de texte, plus en petit gris.
+- **Pendant la répétition, la voix du composeur se tait** : on n'y écrit plus, on oppose ce qu'on a
+  écrit. Elle ne reparle que si le joueur recommence une phrase — écrire reste permis (§4.9 règle 5,
+  *« Tu peux encore écrire »*).
 
 La boucle : **l'avocat ouvre** et livre un lot → lire → surligner → composer (rien ne se passe) → la
 phrase attend → **l'envoyer**, le seul geste qui parle → l'avocat répond → l'attente servie appelle la

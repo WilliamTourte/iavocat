@@ -368,15 +368,22 @@ function creerRegles(JEU, M) {
      plaidoirie qui existe déjà. Déjà opposée à CELLE-CI, on se tait : ce qui est
      lisible à l'écran ne se redit pas (§4.9 règle 3). La voie « phrase gardée,
      pas encore versée » reste — on ne retire pas du moteur une capacité que le
-     contenu du jour n'emploie pas (§11). */
+     contenu du jour n'emploie pas (§11).
+     ET L'AVOCAT TRIE AVEC LE JOUEUR (§4.6, retour de Colas) : une réplique
+     unique répondait « je le mets en face » au PV opposé à l'ADN. L'affirmation
+     dit ce qui lui répond (`repond`) et porte sa réplique (`oppose`) ; le reste
+     reçoit `rep_a_cote` et ne bouge pas. Sans `repond`, elle prend tout. */
+  const repondA = (aff, n) =>
+    !Array.isArray(aff.repond) || (!!n.lien && aff.repond.includes(n.lien.tag));
   function verserContre(S, i) {
     const n = S.brouillon[i], aff = JEU.repetition.affirmations[S.repetitionIdx];
     if (!n || !aff) return;
     if (n.versee) {
       const e = S.plaidoirie.find(x => x.b === i);
       if (!e || e.contre === S.repetitionIdx) return;
+      if (!repondA(aff, n)) return pousser(S, "Maître Auber", JEU.avocat.rep_a_cote || "…");
       e.contre = S.repetitionIdx;
-      pousser(S, "Maître Auber", JEU.avocat.deja);
+      pousser(S, "Maître Auber", aff.oppose || JEU.avocat.deja);
       return;
     }
     envoyer(S, i, S.repetitionIdx);
@@ -414,7 +421,7 @@ function creerRegles(JEU, M) {
            clotureImplicite, chaineEnvoyable, peutEnvoyer, envoyerCompo, compoFinie,
            estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
-           instructionComplete, repetitionEnCours, cloturer, verserContre,
+           instructionComplete, repetitionEnCours, cloturer, verserContre, repondA,
            avancerRepetition, finir };
 }
 

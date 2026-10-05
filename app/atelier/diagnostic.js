@@ -257,7 +257,13 @@ function diagnostiquer(){
   ((CONTENU.repetition||{}).affirmations||[]).forEach((a,i)=>{
     if(!a || !String(a.texte||"").trim())
       add("avert",`Affirmation ${i+1} sans texte`,"La répétition lirait une affirmation vide.",{});
+    for(const t of (a && Array.isArray(a.repond) ? a.repond : []))
+      if(!LI.some(L=>L.tag===t))
+        add("avert",`Affirmation ${i+1} : « ${t} » ne répond à rien`,
+          "Aucun lien ne porte ce tag : l'avocat dirait de toute phrase qu'elle est à côté (§4.6).",{});
   });
+  if(((CONTENU.repetition||{}).affirmations||[]).some(a=>a && Array.isArray(a.repond)) && !String((CONTENU.avocat||{}).rep_a_cote||"").trim())
+    add("avert","« rep_a_cote » absent","Une affirmation trie ce qui lui répond : sans cette réplique, l'avocat refuserait par « … ».",{});
 
   /* ---- reliquats du schéma 2 ---- */
   for(const [cle,quoi] of [["dims","la table globale des dimensions"],["cases","les cases du carnet"],

@@ -494,13 +494,20 @@ function renderDiscussion(){
 
     const dispo=S.brouillon.map((n,i)=>({n,i})).filter(x=>R.estMoyen(x.n.lien));
     const cibleDe=i=>{ const e=S.plaidoirie.find(x=>x.b===i); return e && e.contre!=null ? e.contre : null; };
-    h+=`<div class="repet"><div class="rtitle">Opposer une phrase à cette affirmation ?</div>${
+    /* §4.6 — LE CADRE PORTE SON AFFIRMATION : la réplique de l'avocat s'intercale
+       dans le fil au premier geste, et l'affirmation sortait du cadre (Colas).
+       Et DÉPLACER SE DIT : une phrase opposée ailleurs offrait le même
+       « opposer », qui la déplaçait en silence. */
+    const enCours=JEU.repetition.affirmations[S.repetitionIdx];
+    h+=`<div class="repet"><div class="rtitle">Opposer une phrase à cette affirmation ?</div>
+      <blockquote class="raff">${enCours.texte}</blockquote>${
       dispo.length ? dispo.map(x=>{
         const c=cibleDe(x.i), aff=c!=null && JEU.repetition.affirmations[c];
         return `<div class="rnote"><span class="txt">${escapeAttr(x.n.texte)}</span>
          ${c===S.repetitionIdx
             ? `<span class="sent">opposé à celle-ci</span>`
-            : `${aff?`<span class="sent">opposé à : ${escapeAttr(aff.court)}</span>`:""}<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">opposer</button>`}</div>`;
+            : `${aff?`<span class="sent">opposé à : ${escapeAttr(aff.court)}</span>`:""}<button class="up" data-f="r:${x.i}" onclick="verserContre(${x.i})">${
+                aff?"déplacer ici":"opposer"}</button>`}</div>`;
       }).join("")
       : `<div class="rnote vide">tu n'as écrit aucune phrase à y opposer</div>`
     /* Le bouton d'avance dit ce qu'on FAIT : « ne rien opposer » juste après avoir
@@ -804,6 +811,9 @@ function souffle(){
      le Contexte — et on le PREND — du Contexte vers la phrase. « Sélectionner »
      servait aux deux, et un joueur a lu trois verbes pour deux gestes. */
   if(!S.compo.length){
+    // §4.6 — pendant la répétition on n'écrit plus, on oppose : la voix se tait,
+    // et ne reparle que si le joueur recommence une phrase.
+    if(R.repetitionEnCours(S)) return "";
     if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
     return second ? "Prends un ou plusieurs passages de ton contexte." : "Prends un passage de ton contexte pour répondre.";
   }

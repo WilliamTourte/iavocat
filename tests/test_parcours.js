@@ -638,29 +638,70 @@ console.log("\n=== La répétition de plaidoirie ===");
   check("confirmer pendant la répétition est refusé", w.document.getElementById("btnCloture").disabled);
   const avancer = () => w.document.querySelector('[data-f="rsuite"]').textContent;
   check("rien d'opposé encore : le bouton d'avance dit qu'on n'oppose rien", /Ne rien opposer/.test(avancer()));
-  const i = w.S.brouillon.findIndex(n => w.R.estMoyen(n.lien));
+  const cadre = () => w.document.querySelector("#discussion .repet");
+  check("le cadre redit l'affirmation en cours : la réplique ne la lui fait plus perdre (§4.6)",
+    !!cadre() && cadre().textContent.includes(w.JEU.repetition.affirmations[0].texte.slice(0, 20)));
+  check("pendant la répétition, la voix du composeur se tait",
+    w.S.compo.length === 0 && !w.document.querySelector("#composeur .phrase").textContent.trim());
+  /* L'AVOCAT TRIE (§4.6) : ce qui répond à l'affirmation se met en face, avec
+     SA réplique ; le reste est dit à côté, et ne bouge pas. Les deux phrases se
+     DÉRIVENT de la règle, `R.repondA` — aucune n'est nommée. */
+  const moyens = w.S.brouillon.map((n, k) => k).filter(k => w.R.estMoyen(w.S.brouillon[k].lien));
+  const aff0 = w.JEU.repetition.affirmations[0];
+  const i = moyens.find(k => w.R.repondA(aff0, w.S.brouillon[k]));
+  const aCote = moyens.find(k => !w.R.repondA(aff0, w.S.brouillon[k]));
+  check("le contenu livré offre de quoi trier : une phrase qui répond, une qui ne répond pas",
+    i !== undefined && aCote !== undefined);
+  let avant = w.S.fil.length;
+  w.verserContre(aCote);
+  check("une phrase qui ne répond pas n'est pas mise en face",
+    !w.S.plaidoirie.some(x => x.b === aCote && x.contre === 0));
+  check("et l'avocat dit qu'elle est à côté", w.S.fil.length === avant + 1
+    && w.S.fil[w.S.fil.length - 1].texte === w.JEU.avocat.rep_a_cote);
   w.verserContre(i);
-  check("verser contre une affirmation marque la cible", w.S.plaidoirie.some(x => x.contre === 0));
+  check("verser contre une affirmation marque la cible", w.S.plaidoirie.some(x => x.b === i && x.contre === 0));
+  check("avec la réplique de cette affirmation, pas une réplique unique",
+    w.S.fil[w.S.fil.length - 1].texte === (aff0.oppose || w.JEU.avocat.deja)
+    && w.S.fil[w.S.fil.length - 1].texte !== w.JEU.avocat.rep_a_cote);
   check("une phrase opposée, il dit seulement « Continuer » — plus le contraire du geste",
     avancer() === "Continuer");
-  check("l'affichage nomme l'affirmation opposée", plaidoirie(w).includes(w.JEU.repetition.affirmations[0].court));
+  check("l'affichage nomme l'affirmation opposée", plaidoirie(w).includes(aff0.court));
   /* OPPOSER EST LE DERNIER GESTE RÉEL (§4.6). Toute phrase du journal est DÉJÀ
      versée — le journal ne se remplit qu'à l'envoi — donc c'est sur une phrase
      déjà partie qu'il faut éprouver l'opposition. Le contrôle manquait, et son
      absence a laissé le présentoir mourir en silence, vert en test et mort en jeu. */
-  const avant = w.S.fil.length;
+  avant = w.S.fil.length;
   w.verserContre(i);
   check("la ré-opposer à la MÊME affirmation ne redit rien", w.S.fil.length === avant);
   if (w.JEU.repetition.affirmations.length > 1) {
     w.avancerRepetition();
-    w.verserContre(i);
+    const bouton = w.document.querySelector(`#discussion [data-f="r:${i}"]`);
+    check("opposée ailleurs, son bouton dit qu'il DÉPLACE — plus un « opposer » muet",
+      !!bouton && bouton.textContent === "déplacer ici");
+  }
+  while (w.S.repetitionIdx < w.JEU.repetition.affirmations.length) w.avancerRepetition();
+  check("au bout, la répétition se clôt sur son texte de fin", discussion(w).includes(w.JEU.repetition.fin.slice(0, 15)));
+  check("la clôture est de nouveau ouverte", !w.document.getElementById("btnCloture").disabled);
+}
+{
+  /* SANS `repond`, UNE AFFIRMATION PREND TOUT (§11) — l'ancienne conduite, qu'on
+     ne retire pas. C'est là que le déplacement s'éprouve : dans le contenu livré,
+     aucune phrase ne répond à deux affirmations. */
+  const c = H.contenuLivre();
+  for (const a of c.repetition.affirmations) { delete a.repond; delete a.oppose; }
+  const w = H.boot({ contenu: c });
+  H.instruire(w);
+  w.cloturer();
+  const i = w.S.brouillon.findIndex(n => w.R.estMoyen(n.lien));
+  w.verserContre(i);
+  check("sans `repond`, l'affirmation prend la première phrase venue", w.S.plaidoirie.some(x => x.b === i && x.contre === 0));
+  if (w.JEU.repetition.affirmations.length > 1) {
+    w.avancerRepetition();
+    w.document.querySelector(`#discussion [data-f="r:${i}"]`).click();
     check("l'opposer à une AUTRE déplace sa cible, phrase déjà versée comprise",
       w.S.plaidoirie.some(x => x.b === i && x.contre === w.S.repetitionIdx));
     check("et l'avocat le dit", discussion(w).includes(w.JEU.avocat.deja.slice(0, 15)));
   } else check("(une seule affirmation dans ce contenu)", true);
-  while (w.S.repetitionIdx < w.JEU.repetition.affirmations.length) w.avancerRepetition();
-  check("au bout, la répétition se clôt sur son texte de fin", discussion(w).includes(w.JEU.repetition.fin.slice(0, 15)));
-  check("la clôture est de nouveau ouverte", !w.document.getElementById("btnCloture").disabled);
 }
 {
   const w = boot();

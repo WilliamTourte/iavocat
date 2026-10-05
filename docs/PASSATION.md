@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 5 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 493 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 501 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -241,7 +241,12 @@ pièce en un clic, l'index restant replié ; un passage pris porte *« dans ta p
 pleine, une ligne dit pourquoi les fiches ne prennent plus — la raison quitte le `title` d'un bouton
 `disabled` (§4.10 règle 5) ; enfin, **⚖ tranché dans le sens du TODO**, les passages d'une remise
 close se rangent sous ceux de la remise en cours, repliés : *replier par remise ne juge aucun
-passage*. Chaque contrôle neuf a été **vu tomber**, une mutation par contrôle.
+passage*. **L'opposition** (§4.6) : l'avocat **trie avec le joueur** — une affirmation nomme ce
+qui lui répond (`repond`) et porte sa réplique (`oppose`), le reste reçoit *« Ça ne répond pas à
+celle-ci »* et ne bouge pas ; une phrase opposée ailleurs dit *« déplacer ici »* ; le cadre redit
+son affirmation ; la voix du composeur se tait pendant la répétition. La frise de l'atelier édite les
+deux champs neufs et le diagnostic signale un tag qui ne répond à rien. Chaque contrôle neuf a été
+**vu tomber**, une mutation par contrôle.
 
 ## 2. Points de vigilance
 
@@ -431,20 +436,20 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   et non corrigé** :
   1. *Corrigé le 4 octobre :* après un *opposer*, le bouton d'avance disait encore *« Ne rien opposer —
      continuer »*. Il dit *« Continuer »* dès qu'une phrase est opposée à l'affirmation en cours.
-  2. **Une phrase opposée ailleurs garde un bouton *opposer* identique** — le cliquer la DÉPLACE d'une
-     affirmation à l'autre (*« opposé à : le témoignage »* disparaît), sans que rien ne le dise.
-  3. **La réplique est la même à chaque fois** (*« Je l'ai déjà. Je le mets en face de celle-ci. »*),
-     que la phrase réponde à l'affirmation ou non (le PV opposé à l'ADN reçoit la même) : rien ne se
-     trie à l'écran, alors que c'est la raison d'être de la répétition (§4.6).
-  4. **Le présentoir se lit mal** : quatre lignes en petit gris, quatre boutons *opposer* identiques,
-     et l'affirmation visée est au-dessus, dans le fil, plus dans le cadre.
+  2. *Corrigé le 5 octobre :* une phrase opposée ailleurs dit *« déplacer ici »*, plus un *opposer*
+     identique qui la déplaçait en silence.
+  3. *Corrigé le 5 octobre :* l'avocat **trie** — ce qui répond à l'affirmation passe en face avec la
+     réplique de celle-ci, le reste est dit *à côté* et ne bouge pas (§4.6, `repond`, `oppose`,
+     `rep_a_cote`). *Une conséquence à juger en jeu : dans ce contenu, aucune phrase ne répond à
+     deux affirmations, donc « déplacer ici » est toujours refusé.*
+  4. *Corrigé le 5 octobre :* le cadre redit son affirmation en tête, les phrases en corps de texte.
   5. *Corrigé le 4 octobre, par le contenu seul :* la fin ne répondait à aucune question — *« C'est tout ce qu'ils ont. Je dépose au matin. »* est
      une affirmation, puis paraît *« Je n'ai rien à opposer »* — c'est la friction de Colas. Le PIÈGE
      du §2 le dit : la question qui appelle le bouton vit dans le CONTENU. **Repli sans code, et sans
      renommer** : la réplique `fin` est devenue une question (*« … Je dépose au matin — tu as encore
      quelque chose à y opposer ? »*), à laquelle le bouton répond.
-  6. **La voix du composeur continue d'enseigner** (*« Prends un ou plusieurs passages… »*) pendant la
-     répétition, où l'on n'écrit plus.
+  6. *Corrigé le 5 octobre :* la voix du composeur se tait pendant la répétition. *Reste à voir si
+     le cadre vide du composeur se lit comme un champ où taper (§4.9 règle 1).*
 - *Fermé le 4 octobre, suite 2 : « décomposer le tutoriel ».* Chaque consigne neuve s'affiche d'abord
   développée, puis se réduit en icône « ? » dès que le rendu suivant confirme qu'elle reste active — un
   clic sur l'icône la rouvre, se tromper la rouvre aussi (§4.8 CONCEPTION.md). Les deux frictions
@@ -707,5 +712,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
 - **5 octobre, les passes du `TODO.md`** — passe contenu : les pièces datées, les valeurs `quand` en
   ISO (§11). Passe Contexte : le bouton de pièces compte comme l'index (`comptePieces`), ‹ › dans la
   tête de la pièce (`voisine`), *dans ta phrase* et la raison d'un refus (`passageRefuse`,
-  `aria-disabled`), les remises closes repliées (`remisesDepliees`). 493 contrôles, 8 règles du
+  `aria-disabled`), les remises closes repliées (`remisesDepliees`). Passe opposition : l'avocat
+  trie (`repondA`, `repond`, `oppose`, `rep_a_cote`), *« déplacer ici »*, l'affirmation dans le cadre,
+  la voix muette en répétition ; la frise et le diagnostic suivent. 501 contrôles, 8 règles du
   gardien, ESLint.

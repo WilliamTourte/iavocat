@@ -123,10 +123,17 @@ function renderFrise(){
           ${btnSuppr("aff:"+j,"xsmall",`demanderSupprAff(${j})`,"✕","confirmer ?")}
         </div>
         <textarea onchange="majAff(${j},'texte',this.value)">${escapeH(a.texte||"")}</textarea>
+        <label>Ce qui lui répond <span class="glose">— les tags des liens qui la réfutent, séparés par des virgules ; vide : aucun ; « * » : tout (l'ancienne conduite)</span></label>
+        <input type="text" class="mono" value="${escapeAttr(Array.isArray(a.repond)?a.repond.join(", "):"*")}" onchange="majAffRepond(${j},this.value)">
+        <label>Réplique quand une phrase y répond <span class="glose">— facultatif : « deja » à défaut</span></label>
+        <textarea style="min-height:34px" onchange="majAff(${j},'oppose',this.value)">${escapeH(a.oppose||"")}</textarea>
       </div>`).join("")}
     <button class="addrow" onclick="ajouterAff()">+ Affirmation</button>
-    <div class="repline">${mir("verser une phrase contre l'affirmation = le même geste, avec une cible ; phrase déjà versée → « deja »")}</div>
+    <div class="repline">${mir("opposer une phrase déjà versée : si l'affirmation la prend (« ce qui lui répond »), elle passe en face avec sa réplique — à défaut « deja » ; sinon « rep_a_cote », et elle ne bouge pas")}</div>
+    <label>deja <span class="glose">— la réplique par défaut, quand l'affirmation n'a pas la sienne</span></label>
     <textarea style="min-height:34px" onchange="majAvocat('deja',this.value)">${escapeH(A.deja||"")}</textarea>
+    <label>rep_a_cote <span class="glose">— une phrase qui ne répond pas à l'affirmation</span></label>
+    <textarea style="min-height:34px" onchange="majAvocat('rep_a_cote',this.value)">${escapeH(A.rep_a_cote||"")}</textarea>
     <label>Fin de la répétition</label>
     <textarea onchange="majRep('fin',this.value)">${escapeH(REP.fin||"")}</textarea>
     <div class="repline">${mir("le bouton devient « Je n'ai rien à opposer » → le procès a lieu hors-champ")}</div>
@@ -206,6 +213,9 @@ function majAvocat(k,v){ muter(()=>{ CONTENU.avocat[k]=v; }); }
 function majAvocatIdx(k,i,v){ muter(()=>{ CONTENU.avocat[k][i]=v; }); }
 function majRep(prop,v){ muter(()=>{ CONTENU.repetition[prop]=v; }); }
 function majAff(i,prop,v){ muter(()=>{ CONTENU.repetition.affirmations[i][prop]=v; }); }
+// « * » rend l'ancienne conduite — pas de `repond`, l'affirmation prend tout (§11).
+function majAffRepond(i,v){ muter(()=>{ const a=CONTENU.repetition.affirmations[i];
+  if(v.trim()==="*") delete a.repond; else a.repond=v.split(",").map(t=>t.trim()).filter(Boolean); }); }
 function ajouterAff(){ muter(()=>{ CONTENU.repetition.affirmations.push({court:"…",texte:""}); }); }
 function demanderSupprAff(i){ demanderSuppr("aff:"+i,()=>{ CONTENU.repetition.affirmations.splice(i,1); }); }
 function majFin(k,prop,v){ muter(()=>{ CONTENU.fins[k][prop]=v; }); }

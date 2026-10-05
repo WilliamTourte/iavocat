@@ -62,11 +62,15 @@ sans une ligne de code. La source de chaque item, en fin de ligne : *Colas*, *Je
 *Rejouée et analysée au §3 PASSATION (six points, deux faits : « Continuer » une fois quelque chose
 opposé, et la réplique `fin` devenue une question).*
 
-- [ ] Déplacer une phrase d'une affirmation à l'autre se fait en silence → le dire (« déplacer ici »).
-      *Colas*
-- [ ] Le présentoir se lit mal (petit gris, affirmation hors du cadre). *Colas*
-- [ ] La voix du composeur parle encore pendant la répétition. *Colas*
-- [ ] La réplique toujours la même — si la passe 1 ne l'a pas déjà faite. *Colas*
+- [x] Déplacer une phrase d'une affirmation à l'autre se fait en silence → le dire (« déplacer ici »).
+      *Colas* — *Fait.*
+- [x] Le présentoir se lit mal (petit gris, affirmation hors du cadre). *Colas* — *Fait : le cadre
+      redit l'affirmation, les phrases en corps de texte.*
+- [x] La voix du composeur parle encore pendant la répétition. *Colas* — *Fait : elle se tait.*
+- [x] La réplique toujours la même — si la passe 1 ne l'a pas déjà faite. *Colas* — *Fait, et elle
+      trie : chaque affirmation nomme ce qui lui répond (`repond`) et porte sa réplique (`oppose`) ;
+      le reste reçoit `rep_a_cote` et ne bouge pas (§4.6, §11). À relire par l'auteur : les trois
+      répliques écrites dans `content.js`.*
 
 ## 4. Séance de jeu — sans code, mais il faut des joueurs et un téléphone
 

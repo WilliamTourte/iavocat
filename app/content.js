@@ -718,15 +718,24 @@ window.CONTENU = {
     "affirmations": [
       {
         "court": "le témoignage",
-        "texte": "Affirmation 1 — « Le voisin a entendu le mis en cause et la victime se disputer le soir des faits. »"
+        "texte": "Affirmation 1 — « Le voisin a entendu le mis en cause et la victime se disputer le soir des faits. »",
+        "repond": [
+          "temoin"
+        ],
+        "oppose": "Oui. Son horaire tombe, et la dispute avec : c'est en face de celle-ci que je le plaide."
       },
       {
         "court": "l'ADN",
-        "texte": "Affirmation 2 — « L'ADN relevé sur la scène est celui de Kessler. Il y était. »"
+        "texte": "Affirmation 2 — « L'ADN relevé sur la scène est celui de Kessler. Il y était. »",
+        "repond": [
+          "adn"
+        ],
+        "oppose": "Oui. C'est ce que j'oppose à leur ADN — je le mets en face."
       },
       {
         "court": "l'absence d'alibi",
-        "texte": "Affirmation 3 — « Kessler conteste, mais n'offre aucun alibi vérifiable. »"
+        "texte": "Affirmation 3 — « Kessler conteste, mais n'offre aucun alibi vérifiable. »",
+        "repond": []
       }
     ],
     "fin": "C'est tout ce qu'ils ont. Je dépose au matin — tu as encore quelque chose à y opposer ?"
@@ -748,7 +757,8 @@ window.CONTENU = {
       "Je t'attends toujours."
     ],
     "rep_deux_dossiers": "Celle-là mélange les deux dossiers. Je plaide l'un après l'autre — reste sur celui qu'on a ouvert.",
-    "deja": "Je l'ai déjà. Je le mets en face de celle-ci."
+    "deja": "Je l'ai déjà. Je le mets en face de celle-ci.",
+    "rep_a_cote": "Ça ne répond pas à celle-ci. Je le laisse où il est."
   },
   "directives": [
     "D1 — Ne dissimule rien de ce que ton analyse établit.",
