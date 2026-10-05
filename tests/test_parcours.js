@@ -432,10 +432,10 @@ console.log("\n=== Les deux gestes, montrés ===");
     !w.localStorage.getItem("iavocat_tuto"));
   check("Maître Auber attend maintenant une comparaison",
     !!H.sousTerme(H.lienTag(w, attenteSuivante().attend)));
-  check("et le halo revient aussitôt : deux passages sont requis, pas un",
-    !!halo() && halo().id === "btnContexte");
-  w.basculerPanneau("contexte");
-  check("le panneau rouvert, il montre de nouveau la zone", halo().id === "zoneRetenus");
+  /* §4.6 — la remise attend encore une réponse : le Contexte, ouvert par la
+     pièce, est resté ouvert, et le halo y va tout droit. */
+  check("et le halo revient aussitôt, sur la zone du Contexte resté ouvert : deux passages sont requis",
+    !!halo() && halo().id === "zoneRetenus");
   const veutA = attenteSuivante().attend;
   const [tA, tB] = H.sousTerme(H.lienTag(w, veutA)).termes;
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(tA));
@@ -852,7 +852,12 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   check("un passage posé, la voix se tait — plus de bouton", !bouton());
   check("mais le panneau RESTE ouvert : la phrase accepterait encore un passage", ouvert("Contexte"));
   w.envoyerCompo();
-  check("c'est le DÉPART de la phrase qui referme", !ouvert("Contexte"));
+  /* §4.6 — envoyer ne referme le Contexte que si la REMISE change : la question
+     suivante voudra le clavier. Il reste, mais en CONSULTATION désormais. */
+  check("la phrase partie, la remise attend encore : le Contexte RESTE ouvert", ouvert("Contexte"));
+  w.rendreTout();
+  check("et il ne suit plus la phrase : on consulte", ouvert("Contexte"));
+  w.fermerPanneau();
 
   /* §4.9 règle 3 — ce qui reste LISIBLE ne se répète pas, et LISIBLE est la
      condition, pas PRÉSENT. EN DESSOUS DU SEUIL de `.wrap.avecLateral` (§4.6),
@@ -913,6 +918,23 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   check("et il ne se referme pas tout seul : on consulte, on n'écrit pas", ouvert("Contexte"));
   w.fermerPanneau();
   check("la croix referme", !ouvert("Contexte"));
+
+  /* §4.6 — la remise CHANGE : un dossier arrive, on revient lire l'avocat. */
+  w.basculerPanneau("contexte");
+  const remise = w.S.remisesEnvoyees;
+  H.lireLeTexte(w, H.lienTag(w, attente().attend).forme);
+  H.composerLien(w, H.lienTag(w, attente().attend));
+  check("la dernière réponse ouvre une remise neuve", w.S.remisesEnvoyees === remise + 1);
+  check("et le Contexte se referme avec la remise close", !ouvert("Contexte"));
+  const L2 = H.lienTag(w, attente().attend);
+  H.lireLeTexte(w, L2.forme);
+  H.composerLien(w, L2, {garder:true});
+  w.basculerPanneau("plaidoirie");
+  const versees = w.S.plaidoirie.length;
+  check("la phrase prête, la Plaidoirie ouverte", ouvert("Plaidoirie") && w.R.peutEnvoyer(w.S));
+  w.envoyerCompo();
+  check("la Plaidoirie, elle, se referme à chaque envoi : on n'y écrit pas",
+    w.S.plaidoirie.length === versees + 1 && !ouvert("Plaidoirie"));
 }
 
 /* §4.10 — Un playtest mené au clavier : le premier geste du jeu était
@@ -1001,8 +1023,17 @@ console.log("\n=== Le jeu se joue au clavier ===");
   check("le rappel ne vit qu'un rendu", !d.querySelector("#panPiece .rappel"));
   touche(passage(veut), "Enter");
 
+  /* §4.10 règle 6 — Échap se lit là où il agit, ET SEULEMENT LÀ : deux
+     « × Échap » empilés promettaient deux effets à une touche (Jean). */
+  const croixContexte = d.querySelector("#panContexte > h2 .fermer");
+  const prometEchap = b => b.hasAttribute("aria-keyshortcuts") || /Échap/.test(b.getAttribute("aria-label") || "");
+  check("pièce ouverte, Échap n'est promis qu'à elle : la croix du Contexte perd sa touche",
+    !prometEchap(croixContexte) && panContexte.classList.contains("avecPiece")
+    && prometEchap(d.querySelector('#panPiece [data-f="replier"]')));
   touche(d.body, "Escape");
   check("Échap replie la pièce — le jeu n'avait jamais cessé d'être vivant", !w.S.modalPiece && !inerte());
+  check("et la croix du Contexte reprend la touche, puisque c'est elle qu'Échap fermerait",
+    prometEchap(croixContexte) && !panContexte.classList.contains("avecPiece"));
   check("et le Contexte reste ouvert : c'est le second Échap qui le fermerait (§4.10 règle 3)",
     !panContexte.hidden);
   check("le focus revient au chip du dossier qui l'avait ouverte", cleActive() === "d:" + pid);
@@ -1023,6 +1054,11 @@ console.log("\n=== Le jeu se joue au clavier ===");
   const croix = [...d.querySelectorAll(".fermer, .mchip .del")];
   check("chaque croix a un nom, et ce nom n'est pas « × »",
     croix.length > 0 && croix.every(c => (c.getAttribute("aria-label") || "").length > 1));
+  /* §4.3 — Colas a fermé le panneau en croyant retirer un passage : la fiche
+     et le panneau portaient le même ×. Un signe, un acte. */
+  const oublis = [...d.querySelectorAll(".mchip .del")];
+  check("retirer une fiche s'écrit en toutes lettres : le × ne retire rien",
+    oublis.length > 0 && oublis.every(b => b.textContent.trim() === "oublier"));
 
   const envoi = d.querySelector('#composeur [data-f="envoi"]');
   envoi.focus(); envoi.click();

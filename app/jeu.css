@@ -117,12 +117,12 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
   .panneau.avecPiece{max-height:62vh;min-height:320px}
 }
 /* Panneau ouvert, le composeur cesse de prendre toute la place qu'il veut : il
-   défile pour son compte, le panneau non — c'est lui le clavier (§4.6). EN
-   DESSOUS DU SEUIL seulement : au-dessus, `#composeur` a sa propre rangée du
-   gabarit (`.wrap.avecLateral`, plus bas) et ne la dispute à personne. */
-@media (max-width:899.98px){
-  .wrap.avecLateral #composeur{max-height:28vh}
-}
+   défile pour son compte, le panneau non — c'est lui le clavier (§4.6). À TOUTES
+   LES LARGEURS. PIÈGE PAYÉ : on l'avait cru inutile au-dessus du seuil, où
+   `#composeur` a sa propre rangée du gabarit — mais cette rangée est `auto`, et
+   ce qu'elle prend, la place latérale le perd. À 1280×800, la comparaison en
+   cours écrasait le Contexte, pièce coupée (retour de playtest, Jean). */
+.wrap.avecLateral #composeur{max-height:28vh}
 #composeur{flex:none;max-height:46vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);
   border-radius:10px;padding:12px 16px}
 #composeur .zone{margin:0}
@@ -183,6 +183,9 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .col > h2 .fermer,.ptete .fermer{margin-left:auto}
 .col > h2 .fermer:hover,.ptete .fermer:hover,.modal .close:hover{border-color:var(--accent)}
 .fermer .x,.close .x{font-size:20px;line-height:1}
+/* Pièce ouverte, Échap la replie : la croix du Contexte perd sa touche — deux
+   « × Échap » empilés promettaient deux effets à une seule (§4.10 règle 6). */
+#panContexte.avecPiece > h2 .fermer kbd{display:none}
 .ztitle .surfaces{margin-left:auto;display:flex;gap:6px}
 .versSurface{background:#20303f;border:1px solid var(--accent);border-radius:7px;
   color:var(--txt);font-size:13px;font-weight:600;text-transform:none;letter-spacing:0;
@@ -296,7 +299,7 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mchip .sig{flex:none;font-size:12px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
 .mchip .del{background:none;border:none;border-left:1px solid var(--line);color:var(--muted);
-  font-size:16px;min-width:34px;padding:0 9px;cursor:pointer;align-self:stretch}
+  font:inherit;font-size:12.5px;min-width:34px;padding:0 10px;cursor:pointer;align-self:stretch}
 .mchip .del:hover{color:#e6b0b0}
 /* La puce rogne ce qui déborde (`overflow:hidden`) : l'anneau passe DEDANS. */
 .mchip .corps:focus-visible,.mchip .del:focus-visible{box-shadow:inset 0 0 0 2px #e6edf3}

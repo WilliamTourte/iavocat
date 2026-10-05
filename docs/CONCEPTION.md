@@ -149,7 +149,10 @@ dimension, à sa couleur.
 **Retenir a lieu dans la pièce, retirer dans le Contexte.** Recliquer un passage déjà retenu ne
 l'oublie pas — arbitré le 16 septembre, reconduit le 30 après un playtest qui attendait un
 interrupteur — mais **l'écran le dit** : une ligne sous la pièce renvoie au Contexte. Un passage retenu
-se marque **par son fond, jamais par sa graisse** : le texte autour ne bouge pas.
+se marque **par son fond, jamais par sa graisse** : le texte autour ne bouge pas. **Retirer s'écrit
+*oublier*, en toutes lettres, jamais d'une croix** — retour de playtest (Colas) : la fiche et le panneau
+portaient le même ×, et un joueur a fermé le Contexte en croyant retirer un passage. Le × ferme ou
+replie ; il ne retire rien. Un signe, un acte.
 
 **Et retenir se voit au moment même** — retour de playtest (Colas) : rien ne disait qu'un clic avait
 *ajouté* quelque chose au Contexte, ni où. Le fond seul ne suffisait pas : à côté du fond léger que
@@ -315,8 +318,10 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   jamais sous le pli, même sur un portable bas. **Au-dessus**, c'est sa LARGEUR qui cède ; sa hauteur ne
   se discute plus avec le composeur, qui occupe son propre bandeau en pleine largeur.
 - **Mais « élastique » n'est pas « compressible à zéro », et L'ORDRE DANS LEQUEL LES BANDES CÈDENT
-  est une règle — et elle ne vaut qu'EN DESSOUS DU SEUIL**, là où la place latérale et le composeur se
-  disputent encore la même verticale. Le panneau a cédé devant le composeur jusqu'à **disparaître** —
+  est une règle — À TOUTES LES LARGEURS** : au-dessus du seuil aussi, le composeur occupe une rangée
+  sous la place latérale, et lui dispute la même verticale. Retour de playtest (Jean, 5 octobre) : à
+  1280×800, la réponse grandissait pendant la comparaison et écrasait le Contexte, pièce coupée — la
+  règle, écrite pour le seul empilement, ne mordait pas là. Le panneau a cédé devant le composeur jusqu'à **disparaître** —
   à deux passages retenus, un joueur ne voyait plus le haut d'une seule fiche ; à la fin, plus rien. Or
   le panneau **est le clavier** (§4.6) : le vider pendant qu'on écrit retire le clavier au milieu du
   geste, exactement ce que la fermeture automatique s'interdit déjà. Donc : **le panneau a un plancher**
@@ -324,8 +329,9 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   compte —, et la conversation reste la seule à céder librement, puisque la question est redescendue
   au composeur (§4.9 règle 3). **Et l'index du dossier ne colle pas** : il a été rendu collant pour
   qu'il ne parte pas hors champ, et il a occupé le panneau en permanence — à trois lignes, la moitié.
-  Il défile avec les fiches. **Au-dessus du seuil, la place latérale reçoit la hauteur pleine de la
-  conversation** : plancher et plafond cessent de s'y disputer quoi que ce soit.
+  Il défile avec les fiches. **Au-dessus du seuil, la place latérale reçoit la hauteur de la
+  conversation**, et le plancher n'y sert plus — mais le plafond du composeur, si : c'est lui qui
+  décide de cette hauteur. Un panneau ouvert, le composeur s'arrête donc au même plafond partout.
 - **Deux matières** : les pièces ont celle du **papier** — fond clair, caractères à empattements, en
   corps de lecture et non d'affiche (demande de l'auteur : à 17 px, une pièce ne tenait pas dans son
   cadre) —, la machine celle de l'**écran**. Ce qu'on lit vient du monde, ce qu'on écrit sort de l'IA ; la chasse
@@ -337,6 +343,12 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   détail : un passage posé, la voix se tait parce que la phrase se tient, mais **la grammaire ne sait
   pas encore** si le joueur cite ou entame une comparaison (§4.5). Refermer là retirerait le clavier au
   milieu du geste le plus difficile du jeu.
+  **Envoyer ne referme le Contexte que si la remise change** — retour de playtest (Jean, trois
+  sessions de suite : *« tout se referme après chaque envoi »*). Tant que la remise attend encore une
+  réponse — la question suivante, ou la même après un refus —, on aura besoin du clavier : le Contexte
+  reste, en consultation, quelle que soit la porte qui l'avait ouvert. Quand l'envoi ouvre une
+  nouvelle remise, il se referme : un nouveau dossier arrive, on revient lire l'avocat, et son bouton
+  de pièces rouvrira le Contexte. La Plaidoirie, elle, se referme à chaque envoi : on n'y écrit pas.
 - **Une pièce porte un seul nom, et l'index du Contexte est désormais seul à le porter** : la Discussion
   n'annonce plus qu'un nombre de pièces reçues et renvoie vers lui. Le nom court ne survit que dans la
   **provenance** d'un passage retenu et dans la phrase composée — là, il *référence*, il ne *nomme* pas.
@@ -462,7 +474,12 @@ une flèche vers la zone, sur le premier côté où elle tient — **à droite, 
 gauche** : ce qui précède la zone est ce qu'on vient de lire, la question d'abord (§4.6), et la bulle
 va vers ce qui suit. Elle suit la zone quand l'écran défile ou change de taille. Ce que le flux garantissait
 en réservant sa place, l'ancrage le garantit en la choisissant : **la bulle ne recouvre jamais sa
-propre ancre**. Réduite, elle n'est plus que le *« ? »* collé à la zone. Ses consignes
+propre ancre**. **Ni, autant qu'elle le peut, ce qui parle ou agit autour** — retour de playtest
+(Jean, 5 octobre) : posée au premier côté libre, elle cachait la confirmation *« ✓ Retenu »*, la raison
+d'une phrase pleine, l'aide du Contexte, *« ← retirer / tout effacer »*. Sur chaque côté, elle essaie
+donc plusieurs alignements, et prend la première position qui ne couvre ni une commande ni une ligne
+qui parle ; si aucune n'y parvient, celle qui en couvre le moins. L'ordre des côtés reste une
+préférence, plus une fatalité. Réduite, elle n'est plus que le *« ? »* collé à la zone. Ses consignes
 s'**annoncent** aussi, à qui ne voit pas le halo (§4.10).
 
 **Chaque consigne neuve s'affiche d'abord développée, puis se réduit en icône** — retour de playtest
@@ -563,7 +580,9 @@ souris.* Ce ne sont pas des options — c'est l'écran, pour tout le monde.
    `title` n'existe ni au clavier ni au toucher, et un bouton `disabled` ne se laisse même plus
    atteindre pour demander pourquoi (§4.6, *le Contexte dit l'état de la phrase*).
 6. **Aucune confirmation ne se retire d'elle-même** : elle attend qu'on réponde. Et **Échap se lit à
-   l'écran**, là où il agit — sur la croix de la pièce et sur celle des panneaux.
+   l'écran**, là où il agit — sur la croix de la pièce et sur celle des panneaux — **et seulement là** :
+   pièce ouverte, Échap la replie, et la croix du Contexte perd sa touche. Retour de playtest (Jean) :
+   deux *« × Échap »* empilés promettaient deux effets à une seule touche.
 
 ### 4.11 Ce que le jeu aide, et quand
 

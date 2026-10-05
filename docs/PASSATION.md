@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 5 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 516 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 523 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -257,6 +257,19 @@ une forme du contenu — et c'est Maître Auber qui la refuse ; le Contexte ne s
 patience reste infinie** : on ne cherche pas de *game over*. **Choisir la relation** est remis à
 après une partie.
 
+**Le même jour, la session 3 de Jean** (il a rejoué la remise 1, tuto compris, jusqu'au seuil de la
+2ᵉ), croisée avec ce qui restait de Colas : **trois trous réglés**, document d'abord (§4.3, §4.6,
+§4.8, §4.10 règle 6). **Composer ne coupe plus la lecture** : le plafond du composeur, qu'on croyait
+inutile au-dessus du seuil, y vaut aussi — sa rangée du gabarit est `auto`, et ce qu'elle prend, la
+colonne latérale le perd (à 1280×800, deux passages posés, Contexte 427 → 497 px). Et **envoyer ne
+referme le Contexte que si la remise change** : la question suivante, ou la même après un refus,
+retrouve le clavier ouvert. **La croix ne ment plus** : pièce ouverte, la croix du Contexte perd sa
+touche Échap, qui n'agit que sur la pièce ; retirer une fiche s'écrit *oublier*, plus d'un ×. **La
+bulle évite ce qui parle ou agit** (`TUTO_EVITE`) : trois alignements par côté, la première position
+qui ne couvre rien, sinon celle qui couvre le moins ; `npm run vue` dit ce qu'elle recouvre encore à
+chaque capture 1280, et la hauteur du Contexte pendant la comparaison. Reste à jouer : à 390×800,
+la bulle de *citer · 4/4* couvre encore la question rappelée, faute de place ailleurs.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -289,7 +302,8 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **`#tuto` est une bulle en `position:fixed`, et c'est `placerTuto` qui l'empêche de recouvrir ses
   ancres** (§4.8) — plus le flux. Elle se pose à côté du **rectangle VISIBLE** de la cible (le
   rectangle coupé par chaque ancêtre qui défile : une zone à moitié défilée n'est pas là où son
-  `getBoundingClientRect` le dit), sur le premier côté où elle tient. Elle se replace à chaque
+  `getBoundingClientRect` le dit), sur la première position qui ne couvre rien de `TUTO_EVITE` — à
+  étendre si une ligne qui parle ou une commande naît près d'une ancre. Elle se replace à chaque
   `majTutoriel`, et sur `resize` et `scroll` **en capture** — un `scroll` ne remonte pas, et ce sont les
   bandes qui défilent, jamais la page. **Aucune suite ne voit une géométrie** (jsdom rend des
   rectangles nuls) : `npm run vue` seul la montre. Elle reste **premier enfant de `<body>`, hors de
@@ -550,8 +564,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 - **Aucune barrière entre les affaires** : fiches et articles de la session 1 restent composables
   dans la session 2. C'est voulu — le Contexte est gratuit et cumulatif (§4.6) — mais ça produit des
   phrases qui n'ont pas de sens, et le joueur l'a essayé exprès.
-- **La croix d'un panneau et celle d'une fiche portent le même signe** : un joueur a fermé le
-  panneau en croyant retirer un passage.
+- *Fermé le 5 octobre :* la croix d'un panneau et celle d'une fiche portaient le même signe — la
+  fiche dit désormais *oublier* (§4.3), et la croix du Contexte perd Échap pièce ouverte (§4.10).
 - **La question épinglée n'existe pas en session 2** : sa demande vit dans le *texte de la remise*,
   qu'aucune règle ne sait rappeler (§4.9 règle 3). Le repli est connu — descendre la demande sur une
   `question` d'attente, comme en session 1 — et il coûte zéro ligne de code.
@@ -739,3 +753,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   `portePiece` supprimée) ; la forme `juxtaposition` (`deduire`, `juxtapose`), refusée à l'écran en
   session 1, par l'avocat ensuite ; l'assombrissement réservé à la session 1 ; patience infinie ;
   la relation choisie, écartée pour l'heure. 516 contrôles, 8 règles du gardien, ESLint.
+- **5 octobre, la session 3 de Jean et le reste de Colas** — le plafond du composeur à toutes les
+  largeurs ; `envoyerCompo` ne referme le Contexte qu'à une remise neuve ; *oublier* au lieu du × de
+  fiche, Échap retiré de la croix du Contexte pièce ouverte ; `placerTuto` évite `TUTO_EVITE` ;
+  `npm run vue` mesure la bulle et la comparaison. 523 contrôles, 8 règles du gardien, ESLint.

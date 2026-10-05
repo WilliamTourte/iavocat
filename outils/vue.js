@@ -142,10 +142,24 @@ async function main() {
   await p2.goto(JEU);
   await p2.waitForFunction("window.JEU && window.R && window.S");
   await p2.evaluate(amorceHarnais());
+  /* LA BULLE ÉVITE CE QUI PARLE OU AGIT (§4.8) : à chaque capture, on DIT ce
+     qu'elle recouvre encore. `TUTO_EVITE` est un `const` du jeu : pas une
+     propriété de `window`, mais lisible par son nom (R2). */
+  const recouvre = () => p2.evaluate(`(() => {
+    const b = document.getElementById("tuto");
+    if (!b || b.hidden) return [];
+    const q = b.getBoundingClientRect();
+    return [...document.querySelectorAll(TUTO_EVITE)].filter(el => {
+      if (!el.offsetParent || b.contains(el)) return false;
+      const r = el.getBoundingClientRect();
+      return r.left < q.right && q.left < r.right && r.top < q.bottom && q.top < r.bottom;
+    }).map(el => el.className || el.tagName);
+  })()`);
   const capturer2 = async nom => {
     const f = path.join(CAPTURES, String(n++).padStart(2, "0") + "-1280-" + nom + ".png");
     await p2.screenshot({ path: f });
-    return path.relative(RACINE, f);
+    const sous = await recouvre();
+    return path.relative(RACINE, f) + (sous.length ? `   (la bulle recouvre : ${sous.join(", ")})` : "");
   };
   console.log("  " + await capturer2("depart"));
   /* De VRAIS clics, pas des appels directs : c'est ce qui éprouve le bouton
@@ -187,6 +201,34 @@ async function main() {
   /* Le rendu suivant sans consigne neuve la réduit au « ? » collé à la zone. */
   await p2.evaluate("rendreTout()");
   console.log("  " + await capturer2("tuto-reduit"));
+
+  /* LA COMPARAISON EN COURS, Contexte ouvert (§4.6) : la réponse au plus long —
+     deux passages et l'article — ne doit pas écraser le Contexte. Retour de
+     playtest (Jean) : à 1280×800, la pièce y était coupée. On DIT les hauteurs,
+     on ne les asserte pas. Et le Contexte resté ouvert entre deux envois (§4.6),
+     on le dit aussi. */
+  const resteOuvert = await p2.evaluate(`(() => {
+    const H = __H, L = () => H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend);
+    // PIÈGE : la porte de la barre est une BASCULE — sur un Contexte déjà
+    // ouvert, elle le refermerait. Et la voix ouvre POUR ÉCRIRE : la phrase
+    // pleine, il se refermerait de lui-même. On consulte donc, par la barre.
+    const consulter = () => { if (panneau !== "contexte") basculerPanneau("contexte"); };
+    consulter();
+    H.composerLien(window, L());
+    const ouvert = !document.getElementById("panContexte").hidden;
+    H.composerLien(window, L());
+    H.lireLeTexte(window, L().forme);
+    H.composerLien(window, L(), { garder: true });
+    consulter();
+    return ouvert;
+  })()`);
+  console.log(`      après un envoi, le Contexte ${resteOuvert ? "reste ouvert" : "S'EST REFERMÉ"}`);
+  console.log("  " + await capturer2("comparaison"));
+  const hauteurs = await p2.evaluate(`(() => {
+    const h = id => Math.round(document.getElementById(id).getBoundingClientRect().height);
+    return { contexte: h("panContexte"), composeur: h("composeur") };
+  })()`);
+  console.log(`      Contexte ${hauteurs.contexte}px, réponse ${hauteurs.composeur}px (fenêtre 800px)`);
 
   /* ---- EN DESSOUS DU SEUIL : 390×800 (§4.6) ---- aucune des deux largeurs
      ci-dessus ne descend sous 900px ; sans ce troisième contexte, le repli

@@ -97,8 +97,11 @@ opposé, et la réplique `fin` devenue une question).*
 - [ ] La première consigne (« Ouvre ton Contexte », une bulle à côté du bouton de pièces) est-elle
       encore trop abrupte sans contexte ?
 - [ ] La colonne latérale (≥ 900 px) : ordre de tabulation en L, poids visuel du deux-colonnes.
-- [ ] Ce que personne n'a encore touché : la croix × (panneau et fiche portent le même signe, §3
-      PASSATION), « ⟲ recommencer ».
+- [ ] Ce que personne n'a encore touché : « ⟲ recommencer ». *La croix × est réglée (Jean 3 l'a
+      confirmée) : la fiche dit « oublier », la croix du Contexte perd Échap pièce ouverte — à
+      confirmer avec lui.*
+- [ ] Le Contexte qui reste ouvert d'un envoi à l'autre (même remise) : soulage-t-il, ou
+      encombre-t-il la lecture de la réplique ? *Jean 3*
 
 **Jean, session 3** — la suite du vrai dossier
 
