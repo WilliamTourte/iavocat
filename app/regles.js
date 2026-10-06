@@ -102,8 +102,10 @@ function creerRegles(JEU, M) {
 
   /* ---- LE CONTEXTE — privé, gratuit, illimité ---- */
   // PIÈGE : `surligner` (la pièce) N'AJOUTE QUE — re-cliquer un passage déjà
-  // retenu ne fait rien ; seul `oublier` (le CONTEXTE) retire. Une pièce ne
-  // peut plus désélectionner, pour éviter une mauvaise manipulation.
+  // retenu ne l'oublie pas ; seul `oublier` (le CONTEXTE) retire. Une pièce ne
+  // peut plus désélectionner, pour éviter une mauvaise manipulation. Le clic de
+  // l'écran passe par `retenirEtPrendre` (passe H) : recliqué, un passage retenu
+  // peut entrer dans la phrase — jamais en sortir.
   function surligner(S, pid, eid) {
     const k = pid + "." + eid;
     if (!S.retenus.includes(k)) S.retenus.push(k);

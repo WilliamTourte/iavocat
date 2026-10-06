@@ -360,9 +360,9 @@ gestes, et envisageait de se passer des passages du CONTEXTE. Compté sur l'affa
 le même gain sur le chemin direct, et le double dès qu'on rassemble : essayer des paires de `qui` se
 fait depuis les fiches, sans rouvrir de pièce. **Retenu à la place** : dans la pièce, cliquer un
 passage le retient et le **prend** si la phrase attend un passage ; cliquer le texte d'un article
-fonde la phrase qui attend un article. Citer passe de cinq gestes à quatre, comparer sous l'article 3
-de dix à sept, le vice trouvé en lisant de treize à dix ; depuis des fiches déjà rassemblées, rien ne
-change. **Le clic fait ce que ferait la fiche juste après, rien de plus** (`retenirEtPrendre`) —
+fonde la phrase qui attend un article. L'envoi compris — le 4 octobre, *« citer en quatre gestes »*
+ne le comptait pas —, citer passe de cinq gestes à quatre, comparer sous l'article 3 de dix à sept,
+le vice trouvé en lisant de treize à dix ; depuis des fiches déjà rassemblées, rien ne change. **Le clic fait ce que ferait la fiche juste après, rien de plus** (`retenirEtPrendre`) —
 refus de catégorie en session 1, juxtaposition ensuite, relation à choisir, drapeaux — et le passage
 ne change jamais d'aspect. Recliquer un passage retenu le prend, s'il n'est pas déjà dans la phrase.
 La ligne sous la pièce et l'annonce disent lequel des deux a eu lieu ; la voix nomme les deux

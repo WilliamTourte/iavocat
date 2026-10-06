@@ -340,7 +340,8 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   un passage ; cliquer le texte d'un article le retient, et fonde la phrase qui attend un article.
   Sinon, il est seulement retenu, comme avant. **La fiche reste le clavier** de ce qu'on a
   rassemblé : on y prend ce qu'on a retenu plus tôt, sans rouvrir de pièce. Le compte, sur l'affaire
-  du jour : citer passe de cinq gestes à quatre, comparer sous l'article 3 de dix à sept, le vice
+  du jour et **l'envoi compris** : citer passe de cinq gestes à quatre — le bouton de pièces, la
+  pièce, le passage, l'envoi ; la fiche tombe —, comparer sous l'article 3 de dix à sept, le vice
   trouvé en lisant de treize à dix — chaque fois les *prendre* qui suivaient un *retenir*, un par
   passage et un pour l'article. Le vice composé depuis des passages déjà rassemblés reste à cinq.
   **Se passer du CONTEXTE** — envisagé d'abord — aurait fait le même gain sur le chemin direct, et
@@ -500,7 +501,10 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   fermait la porte, puis demandait de la rouvrir. Quand le geste suivant est d'aller lire, *dans* le
   CONTEXTE, il reste ; et depuis que l'article s'y prend (passe F), il reste aussi jusqu'à ce qu'on
   l'ait pris — **y compris pendant le choix de la relation** (passe G), qui a lieu au composeur :
-  le refermer là pour le faire rouvrir à l'article, ce serait la friction de Jean une fois de plus. **Ouvert pour CONSULTER** (par la barre),
+  le refermer là pour le faire rouvrir à l'article, ce serait la friction de Jean une fois de plus.
+  *Depuis la passe H, cette fermeture se fait rare* : on compose d'ordinaire dans la pièce, et ouvrir
+  une pièce fait passer le CONTEXTE en consultation (ci-dessus) — elle ne joue plus que pour une
+  phrase prise aux fiches. **Ouvert pour CONSULTER** (par la barre),
   il reste jusqu'à ce qu'on le ferme — regarder n'est pas écrire. La nuance de la première n'est pas un
   détail : un passage posé, la voix se tait parce que la phrase se tient, mais **la grammaire ne sait
   pas encore** si le joueur cite ou entame une comparaison (§4.5). Refermer là retirerait le clavier au

@@ -7,8 +7,9 @@
  * Ce n'est PAS une suite : aucune assertion, hors `npm test`, et il ne sort en 1
  * que sur une erreur JS. Il n'implémente rien — il injecte `tests/harnais.js`.
  *
- * ÉCART À CONNAÎTRE : le chemin docile surligne sans ouvrir les pièces, dont les
- * puces restent « ● ». Artefact du pilote, pas du jeu.
+ * ÉCART À CONNAÎTRE : le chemin docile clique les passages sans ouvrir leurs
+ * pièces, dont les puces restent « ● » — hors les articles, que `H.prendreLeTexte`
+ * ouvre pour cliquer leur texte. Artefact du pilote, pas du jeu.
  */
 const fs   = require("fs");
 const path = require("path");
