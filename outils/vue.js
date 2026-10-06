@@ -217,12 +217,28 @@ async function main() {
     H.composerLien(window, L());
     const ouvert = !document.getElementById("panCONTEXTE").hidden;
     H.composerLien(window, L());
-    H.lireLeTexte(window, L().forme);
-    H.composerLien(window, L(), { garder: true });
     consulter();
+    /* Les deux passages posés À LA MAIN, l'article NON LU : c'est le temps où
+       le tutoriel désigne sa puce, puis son bloc (§4.8). */
+    const [tA, tB] = H.sousTerme(L()).termes;
+    poserBloc(R.indexTermeChamp(S), S.retenus.indexOf(tA));
+    poserBloc(R.indexTermeChamp(S), S.retenus.indexOf(tB));
     return ouvert;
   })()`);
   console.log(`      après un envoi, le CONTEXTE ${resteOuvert ? "reste ouvert" : "S'EST REFERMÉ"}`);
+  /* De VRAIS clics : la puce de l'article, puis son bloc — ceux que le halo montre. */
+  const halo = () => p2.evaluate(`(document.querySelector("[data-tuto]") || {}).getAttribute?.("data-f") || "(zone)"`);
+  console.log("  " + await capturer2("article-a-lire") + `   (halo : ${await halo()})`);
+  /* Une pièce encore ouverte replie l'index : le halo montre d'abord « déplier ». */
+  if (await halo() === "dossier") {
+    await p2.click(`#zoneDossier [data-f="dossier"]`);
+    console.log("  " + await capturer2("article-deplie") + `   (halo : ${await halo()})`);
+  }
+  const fArticle = await halo();
+  if (fArticle.startsWith("d:")) await p2.click(`#zoneDossier [data-f="${fArticle}"]`);
+  console.log("  " + await capturer2("article-a-prendre") + `   (halo : ${await halo()})`);
+  const fBloc = await halo();
+  if (fBloc.startsWith("b:")) await p2.click(`#composeur [data-f="${fBloc}"]`);
   console.log("  " + await capturer2("comparaison"));
   const hauteurs = await p2.evaluate(`(() => {
     const h = id => Math.round(document.getElementById(id).getBoundingClientRect().height);

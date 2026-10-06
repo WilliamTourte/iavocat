@@ -1,12 +1,12 @@
 # IAvocat — Passation de contexte
 
 *À lire en tête d'une nouvelle conversation : où on en est, ce qui mord, ce qui reste ouvert, quoi faire
-ensuite. **Court, et il doit le rester.** État au 5 octobre 2026.*
+ensuite. **Court, et il doit le rester.** État au 6 octobre 2026.*
 
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 523 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 532 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -17,7 +17,7 @@ Le 16 septembre est une session d'**écriture**, pas de mécanique : la liaison-
 *« en contradiction avec »* et non *« au regard de »* (§4.5 — tous deux refaits depuis, voir plus
 bas), la première question descend dans le **texte de la remise** (elle en est **ressortie** le
 1ᵉʳ octobre), le tutoriel est repris, un empan ne se désélectionne plus depuis sa pièce, et
-la **colonne Plaidoirie est escamotée** — provisoirement, mécanique intacte derrière (§4.9). Deux de
+la **colonne PLAIDOIRIE est escamotée** — provisoirement, mécanique intacte derrière (§4.9). Deux de
 ces gestes ont fait tomber **cinq contrôles** qui nommaient du contenu au lieu de le dériver : ils sont
 réécrits, et la doc est remise d'aplomb sur ce que le code fait.
 
@@ -25,19 +25,19 @@ réécrits, et la doc est remise d'aplomb sur ce que le code fait.
 tutoriel plus lisible, fait de `#composeur` un bandeau plein largeur et appliqué le repli du §4.6 — un
 clic dans le composeur fait descendre le CONTEXTE. La seconde reprend ce que cette partie montrait
 encore : **le CONTEXTE tombe à un tiers de la largeur** (la DISCUSSION prend les deux autres, et le
-tiers ne bougera pas au retour de la Plaidoirie), **l'index nomme les pièces comme la DISCUSSION les a
+tiers ne bougera pas au retour de la PLAIDOIRIE), **l'index nomme les pièces comme la DISCUSSION les a
 transmises** — plus d'abréviation à faire de tête au moment de retrouver une pièce —, et **le bandeau
 du tutoriel monte en tête de page, dans le flux** : il pousse le jeu au lieu de le recouvrir (§4.6,
 §4.8).
 
 **Les deux surfaces de côté sont devenues des PANNEAUX** (§4.6, §4.9). L'écran n'a plus qu'une colonne,
 empilée en **trois bandes** : la conversation, le panneau ouvert, le composeur. Le CONTEXTE et la
-Plaidoirie s'ouvrent **entre** les deux autres et **ne recouvrent rien** — la conversation rétrécit
+PLAIDOIRIE s'ouvrent **entre** les deux autres et **ne recouvrent rien** — la conversation rétrécit
 pour leur faire place, si bien que la question reste sous les yeux pendant qu'on choisit un passage et
 qu'on voit la phrase se construire. Deux portes y mènent : **la voix du composeur**, qui devient un bouton quand le geste qu'elle nomme a lieu
 ailleurs, et **une barre** dans le titre de « RÉPONSE », qui nomme les deux surfaces et donne leur
 compte. Un panneau ouvert *pour écrire* suit la phrase et se referme avec elle ; ouvert *pour
-consulter*, il reste. **La Plaidoirie sort de son escamotage** par la même occasion, et la colonne qui
+consulter*, il reste. **La PLAIDOIRIE sort de son escamotage** par la même occasion, et la colonne qui
 s'élargissait — essayée la veille — est annulée : avec elle tombent la grille de `.wrap` et **deux
 PIÈGES** qu'elle avait coûtés.
 
@@ -59,7 +59,7 @@ que** — est reconduit : recliquer un passage retenu ne l'oublie toujours pas, 
 
 Trois arbitrages de l'auteur, le même jour, qui **ferment** des questions plutôt qu'elles n'en ouvrent :
 la liaison-article **n'a pas à être neutre**, la phrase *« Tant que tu ne l'envoies pas… »* **n'a pas à
-revenir**, et l'escamotage de la Plaidoirie est **provisoire** (§3). Quatrième : `_bruit` cesse d'être
+revenir**, et l'escamotage de la PLAIDOIRIE est **provisoire** (§3). Quatrième : `_bruit` cesse d'être
 une liste recopiée dans l'atelier — le drapeau passe **sur l'empan** (§11), donc il s'exporte, suit les
 renommages et meurt avec lui.
 
@@ -140,7 +140,7 @@ colonnes**, en connaissance des deux PIÈGES que l'ancienne grille à trois colo
 (`git show 63a7e06`) : ce n'étaient que des `grid-column` recalculés à la main sur `.cloture` et
 `#composeur` à chaque état, pas des pièges de fond. **La pièce ouverte quitte `#modalRoot`** — elle
 n'est plus un `<dialog>` avec `.wrap[inert]` — **et rejoint la place LATÉRALE**, au même titre que le
-CONTEXTE et la Plaidoirie (§4.6, §4.10 règle 3 CONCEPTION) : un seul occupant à la fois, et désormais
+CONTEXTE et la PLAIDOIRIE (§4.6, §4.10 règle 3 CONCEPTION) : un seul occupant à la fois, et désormais
 trois portes au lieu de deux. Au-dessus d'un seuil de 900px, cette place devient une colonne à côté de
 la conversation — `.wrap.avecLateral`, un gabarit CSS **nommé** (`grid-template-areas`) où `grid-area`
 se pose une fois pour toutes, jamais un span recalculé — et la question reste sous les yeux pièce
@@ -183,7 +183,7 @@ gestes à quatre. Le CONTEXTE se lit de haut en bas — index, pièce, retenus �
 défilant chacun pour son compte ; au-dessus du seuil, la colonne s'élargit tant qu'une pièce est
 ouverte. `#panPiece` n'est plus une section : il naît du rendu de `#contexte`. **Une pièce n'est
 jamais ouverte hors du CONTEXTE** — `suivrePhrase`, en tête de `rendreTout`, la replie dès qu'il quitte
-l'écran, et sa réplique `declenche` part alors (refermer, remplacer, Plaidoirie, envoi). Le halo de
+l'écran, et sa réplique `declenche` part alors (refermer, remplacer, PLAIDOIRIE, envoi). Le halo de
 *citer · 1/4* passe à l'index une fois le CONTEXTE ouvert : la « limite assumée » du halo qui pulsait
 sur un bouton déjà franchi (§3) tombe avec. **Au passage, l'opposition** : le bouton d'avance dit
 *« Continuer »* dès qu'une phrase a été opposée, et la réplique `fin` de la répétition devient une
@@ -194,10 +194,10 @@ répond enfin. Joué dans un vrai Chromium par de vrais clics, 1280×800 et 390�
 (le détail, et ce qui reste, au `TODO.md`). Deux défauts **reproduits sous jsdom avaient une seule
 racine** : la remise 1 acceptait une réponse *par anticipation* — 22h30 envoyé à la première question
 servait la deuxième, l'avocat en donnait la réplique (la contradiction comprise), la phrase entrait en
-Plaidoirie, la deuxième question n'était jamais posée, et le tutoriel, tenant le premier `satisfaits`
+PLAIDOIRIE, la deuxième question n'était jamais posée, et le tutoriel, tenant le premier `satisfaits`
 pour la citation acquise, se taisait au milieu de *citer*. Arbitré par l'auteur : **la remise du
 tutoriel se sert dans l'ordre** (§3) — une réponse à une question à venir y est hors sujet, n'entre pas
-en Plaidoirie et **reste à envoyer** (`horsOrdre`) ; les remises suivantes gardent l'anticipation,
+en PLAIDOIRIE et **reste à envoyer** (`horsOrdre`) ; les remises suivantes gardent l'anticipation,
 *« on élargira »*. **Le tutoriel sort du flux** : une **bulle ancrée au halo**, boîte de dialogue non
 bloquante en surimpression, posée sur le premier côté où elle tient (`placerTuto`, §4.8) — elle ne
 décale plus rien en se redéployant, ce que `npm run vue` mesure désormais. **Par le contenu seul** :
@@ -221,7 +221,7 @@ replient pas : ils sont le clavier du composeur et l'ancre de *citer · 3/4*. **
 gain ne suffit pas** — la pièce revient à l'écran, sur deux lignes : à juger sur un vrai appareil.
 Dans la foulée, trois demandes de l'auteur : **l'index se replie à tout moment**, pas seulement pièce
 ouverte — il laisse la place au reste, et le bouton de pièces du message le déplie ; **le CONTEXTE
-prend les deux tiers de la largeur** au-dessus du seuil (la Plaidoirie garde sa colonne étroite) ;
+prend les deux tiers de la largeur** au-dessus du seuil (la PLAIDOIRIE garde sa colonne étroite) ;
 **les pièces passent en corps de lecture**, 15 px au lieu de 17 (§4.6). Puis **la pièce prend la
 hauteur de son texte, les retenus tout le reste** : une pièce courte laissait du papier vide pendant
 que les retenus, plafonnés, défilaient dessous. Et sur téléphone, arbitré : **le CONTEXTE reste entre
@@ -269,6 +269,21 @@ bulle évite ce qui parle ou agit** (`TUTO_EVITE`) : trois alignements par côt�
 qui ne couvre rien, sinon celle qui couvre le moins ; `npm run vue` dit ce qu'elle recouvre encore à
 chaque capture 1280, et la hauteur du CONTEXTE pendant la comparaison. Reste à jouer : à 390×800,
 la bulle de *citer · 4/4* couvre encore la question rappelée, faute de place ailleurs.
+
+**Le 6 octobre, la bulle du tutoriel, à la demande de l'auteur** (§4.8, document d'abord). **Elle ne
+compte plus** — plus de *citer · 2/4* : un rang n'apprenait rien. *« je sais faire »* devient **la
+croix des autres fenêtres**, sans Échap. Et **l'article se désigne, la relation jamais** — seule
+exception à *le halo entoure la zone* : la comparaison posée sans l'article lu, le halo va à **sa
+puce** dans l'index (à *« déplier »* d'abord si l'index est replié — le cas courant, la pièce de la
+citation d'avant restant ouverte, constaté à la capture et non prévu), puis, l'article lu, à **son
+bloc** dans les propositions. Ce bloc naissait sous le pli du composeur plafonné, derrière la barre
+collante — le halo de toute la zone `.offre` l'était déjà, et rien ne le disait : une consigne neuve
+qui vise un élément précis le ramène désormais dans le champ (`voirCibleTuto`), la barre réservée
+par `scroll-padding-bottom`. `npm run vue` capture les trois temps de l'article. Dans la foulée,
+**le tutoriel se tait là où l'écran parle seul** : plus de *« Ouvre ton CONTEXTE »* au premier écran
+(le message finit sur le bouton de pièces), plus de *« Clique sur → Envoyer »* (seul bouton plein) —
+il commence au CONTEXTE ouvert, et une phrase complète le fait taire. **L'index ne compte plus** : son
+en-tête dit **DOSSIER**, rien d'autre (§4.6).
 
 ## 2. Points de vigilance
 
@@ -364,10 +379,12 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   milieu du geste le plus difficile ; d'où `indexTermeChamp`. **Et cette fermeture ne vaut QUE pour un
   panneau ouvert par la voix** (`panneauSuit`) : ouvert depuis la barre, on consulte, et il reste.
   Trois contrôles tiennent ce point.
-- **Les ids de la barre sont écrits EN TOUTES LETTRES** (`btnCONTEXTE`, `btnPlaidoirie`), donc la barre
+- **Les ids de la barre sont écrits EN TOUTES LETTRES** (`btnCONTEXTE`, `btnPLAIDOIRIE`), donc la barre
   ne se replie pas en une boucle : le tutoriel les vise quand le panneau est fermé, et **R6 ne sait pas
-  lire un id fabriqué par interpolation** — il l'a refusé, à raison. Même exigence pour les deux
-  sélecteurs `ou:` du tutoriel, qui doivent rester des littéraux.
+  lire un id fabriqué par interpolation** — il l'a refusé, à raison. Même exigence pour les
+  sélecteurs `ou:` du tutoriel, qui doivent rester des littéraux : **viser un élément précis passe
+  par la clé `f`** (une valeur `data-f`, cherchée DANS la zone `ou`, repli sur la zone si elle est
+  cachée), jamais par un `ou:` interpolé que R6 ne lirait pas.
 - **`export/iavocat.html` est COMMITÉ, donc c'est une copie de `app/`** — et aucune suite ne le lit.
   **[R12]** le tient, en appelant l'exporteur (passé en mode double) plutôt qu'en refaisant son
   inlinage : un prédicat recopié resterait vert en affirmant l'ancienne vérité, et une règle a déjà été
@@ -378,7 +395,7 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **`#composeur` est le frère de `#discussion`, jamais son enfant** — `renderDISCUSSION` finit par
   `scrollTop = scrollHeight`. Enfant direct de `.wrap`, en bandeau plein largeur après les trois
   `.col` — jamais dans une section colonne.
-- **`.col{display:flex}` bat `[hidden]{display:none}`** : cacher un panneau (CONTEXTE, Plaidoirie, et
+- **`.col{display:flex}` bat `[hidden]{display:none}`** : cacher un panneau (CONTEXTE, PLAIDOIRIE, et
   désormais la pièce) demande `.col[hidden]{display:none}` — sans lui, `display:flex` l'emporterait.
   *Point corrigé : `.cloture` et `#composeur` ne sont plus « câblés sur trois colonnes » depuis que la
   grille `.wrap.sansPlan` a disparu avec elle (commit `63a7e06`) — ils sont de simples enfants du flex
@@ -533,9 +550,9 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   cours, repliés (§4.6) — à voir sur une partie si le pli se trouve.*
 - **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
   accès. Le §4.9 interdit de redire, pas d'offrir deux chemins. **Réponse partielle du 1ᵉʳ octobre :
-  elles coûtent avant de servir** — au premier écran, un joueur a noté *« CONTEXTE / Plaidoirie :
+  elles coûtent avant de servir** — au premier écran, un joueur a noté *« CONTEXTE / PLAIDOIRIE :
   rôle inconnu à ce stade »*. Elles ont servi ensuite ; reste à savoir si le début le justifie.
-- **La Plaidoirie est revenue** (§4.9) — en panneau, porte visible d'emblée, comme le §3 l'avait
+- **La PLAIDOIRIE est revenue** (§4.9) — en panneau, porte visible d'emblée, comme le §3 l'avait
   annoncé (*où*, pas *si*). Ce qui reste à voir : **son apparition enseigne-t-elle que l'envoi
   transmet ?** Son compte dans la barre suffit-il à distinguer *envoyé* de *retenu comme moyen* ?
 - **Plus rien n'annonce qu'une fin existe.** Le bouton grisé le disait dès le premier écran — à tort,
@@ -644,7 +661,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
 - **16 septembre** — une session d'écriture (§1), puis une passe de **cohérence** : cinq contrôles qui
   nommaient du contenu au lieu de le dériver sont réécrits ; quatre affirmations que le code avait
   démenties sont recalées — le libellé de la liaison-article, la phrase de l'envoi, la colonne
-  Plaidoirie, les ancres du tutoriel (§4.5, §4.9, §17) ; les comptes (cinq suites, 331 contrôles) sont
+  PLAIDOIRIE, les ancres du tutoriel (§4.5, §4.9, §17) ; les comptes (cinq suites, 331 contrôles) sont
   repris partout, CI et hook compris. Côté commentaires, la numérotation héritée du temps où l'atelier
   était **un seul fichier** disparaît : chaque module n'a plus qu'un en-tête. Enfin **`bruit` passe sur
   l'empan** : la liste `_bruit` de `noyau.js` disparaît avec les cinq endroits qui l'entretenaient, et
@@ -659,7 +676,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   n'est pas encore distingué de *présent*. Il **revient le 1ᵉʳ octobre** (§4.9 règle 3), quand une
   capture du dépôt montre la question coupée alors même qu'aucun panneau ne la recouvre : rétrécie
   pour leur faire place, la conversation peut perdre la question sans qu'elle soit cachée par rien.
-  La bascule : l'élargissement de la colonne, essayé la passe d'avant, est annulé, et la Plaidoirie
+  La bascule : l'élargissement de la colonne, essayé la passe d'avant, est annulé, et la PLAIDOIRIE
   sort de son escamotage du 16 septembre (§4.6, §4.9). L'écran tombe à une colonne, `.wrap` cesse
   d'être une grille, et deux PIÈGES disparaissent avec elle. Le tutoriel apprend à viser une porte
   quand sa cible est cachée.
@@ -696,7 +713,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
 - **4 octobre, retour de playtest externe (Colas) et colonne latérale** — le va-et-vient entre deux
   colonnes, clos le 30 septembre faute d'objet, **rouvre avec un objet nommé** : fermer la pièce pour
   relire la question qu'elle recouvrait. La pièce quitte `#modalRoot`/`inert` et rejoint la place
-  LATÉRALE aux côtés du CONTEXTE et de la Plaidoirie (§4.6, §4.10 règle 3) ; au-dessus de 900px cette
+  LATÉRALE aux côtés du CONTEXTE et de la PLAIDOIRIE (§4.6, §4.10 règle 3) ; au-dessus de 900px cette
   place devient une colonne à côté de la conversation, par un gabarit `grid-template-areas` **nommé**
   qui évite les deux PIÈGES de span recalculé de l'ancienne grille à trois colonnes (`63a7e06`). En
   dessous du seuil, le repli empilé du 30 septembre est inchangé. Au passage : le scroll qui sautait en
@@ -757,3 +774,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   largeurs ; `envoyerCompo` ne referme le CONTEXTE qu'à une remise neuve ; *oublier* au lieu du × de
   fiche, Échap retiré de la croix du CONTEXTE pièce ouverte ; `placerTuto` évite `TUTO_EVITE` ;
   `npm run vue` mesure la bulle et la comparaison. 523 contrôles, 8 règles du gardien, ESLint.
+- **6 octobre, la bulle du tutoriel** (§4.8) — plus de rang, la croix au lieu de *« je sais
+  faire »* ; l'article désigné (`tutoArticle`, la clé `f`) : *« déplier »*, sa puce, puis son bloc,
+  ramené dans le champ (`voirCibleTuto`). Puis le silence au premier écran et à la phrase complète,
+  et l'en-tête DOSSIER sans compte. 532 contrôles, 8 règles du gardien, ESLint.

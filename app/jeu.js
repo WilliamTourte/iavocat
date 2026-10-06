@@ -134,12 +134,19 @@ function tutoAttenteComparaison(){
   const t=tutoLienAttente(), p=t&&(t.termes||[])[0];
   return !!p && typeof p==="object";
 }
-/* DEUX SÉRIES, CHACUNE SON TOTAL (§4.8). Une numérotation unique revenait de
-   6/6 à 4/6 au moment d'envoyer, les deux gestes partageant le bouton : elle
-   mentait sur une progression qui n'a jamais été linéaire. Le geste se nomme,
-   l'étape se compte dans son geste. */
-const GESTE_CITER = {geste:"citer", total:4};
-const GESTE_RELIER = {geste:"mettre en relation", total:3};
+/* L'ARTICLE SE DÉSIGNE, LA RELATION JAMAIS (§4.8) : le bloc de liaison qui
+   emboîte la forme du lien attendu, et sa pièce. Dérivé du lien, jamais d'un
+   nom d'article câblé. */
+function tutoArticle(){
+  const t=tutoLienAttente();
+  return (t && (JEU.grammaire.blocs||[]).find(b=>
+    b.type==="liaison" && b.imbrique && b.piece && b.forme===t.forme)) || null;
+}
+/* LA BULLE NE COMPTE PAS (§4.8) : le rang `n` ne sert plus qu'à la clé de
+   `tutoVues`. Elle a porté « citer · 2/4 », puis deux séries chacune son total ;
+   un rang n'apprenait rien au joueur. */
+const GESTE_CITER = {geste:"citer"};
+const GESTE_RELIER = {geste:"mettre en relation"};
 /* PIÈGE : le chrome N'EST PERSONNE — il nomme le GESTE, jamais la TROUVAILLE
    (§4.8). Dire « les deux passages qui se contredisent », c'est répondre à la
    place du joueur ; l'avocat, lui, a le droit : il sait, il calibre (§3). */
@@ -153,35 +160,36 @@ function tutoEtapeCitation(){
                       : "Retiens le passage qui répond.",
             ditLong: rate
               ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage qui y répond."
-              : "Clique sur le passage encadré qui répond pour le retenir dans ton CONTEXTE : c'est de là que tu composeras ta réponse."}
-      /* Le CONTEXTE ouvert, le halo quitte le bouton du message pour l'index :
-         il ne pulse plus sur une porte qu'on vient de franchir (§4.8). */
+              : "Clique sur le passage répondant à la question pour l'ajouter à ton CONTEXTE."}
+      /* AU PREMIER ÉCRAN, IL SE TAIT (§4.8) : le message finit sur le bouton de
+         pièces, qui dit déjà où elles sont. Il commence au CONTEXTE ouvert —
+         sauf pour corriger : l'alerte, elle, parle panneau fermé. */
       : panneau==="contexte"
         ? {...GESTE_CITER, n:1, ou:"#zoneDossier", alerte:rate,
             dit: rate ? "Ce n'est pas ce qu'il demande."
                       : "Ouvre une pièce.",
             ditLong: rate
               ? "Ce n'est pas ce qu'il demande. Relis sa question, puis ouvre la pièce qui y répond."
-              : "Clique sur le nom d'une pièce : elle s'ouvre ici même, dans ton CONTEXTE."}
-        : {...GESTE_CITER, n:1, ou:"#discussion .attach", alerte:rate,
-            dit: rate ? "Ce n'est pas ce qu'il demande."
-                      : "Ouvre ton CONTEXTE.",
-            ditLong: rate
-              ? "Ce n'est pas ce qu'il demande. Relis sa question, puis choisis la bonne pièce dans ton CONTEXTE."
-              : "Ouvre ton CONTEXTE pour voir les documents à ta disposition."};
+              : "Clique sur la pièce demandée : PV d'intervention."}
+        : rate
+          ? {...GESTE_CITER, n:1, ou:"#discussion .attach", alerte:true,
+              dit:"Ce n'est pas ce qu'il demande.",
+              ditLong:"Ce n'est pas ce qu'il demande. Relis sa question, puis choisis la bonne pièce dans ton CONTEXTE."}
+          : null;
   }
   /* Plus de temps « Referme la pièce » (§4.6) : elle vit DANS le CONTEXTE, et le
      passage retenu paraît juste en dessous, prêt à être pris. */
   if(!R.peutEnvoyer(S))
     return panneau==="contexte"
         ? {...GESTE_CITER, n:3, ou:"#zoneRetenus",
-            dit:"Prends le passage retenu.",
-            ditLong:"Prends le passage qui répond, juste sous la pièce : il entrera dans ta réponse."}
+            dit:"Sélectionne le passage retenu.",
+            ditLong:"Sélectionne le passage qui répond à sa question pour l'ajouter à ta RÉPONSE."}
         : {...GESTE_CITER, n:3, ou:"#btnCONTEXTE",
             dit:"Ouvre ton CONTEXTE.",
-            ditLong:"Ouvre ton CONTEXTE : le passage que tu viens de retenir s'y trouve, prêt à être pris."};
-  return  {...GESTE_CITER, n:4, ou:"#composeur button.envoi",
-            dit:"Clique sur → Envoyer"};
+            ditLong:"Ouvre ton CONTEXTE : le passage que tu viens de retenir s'y trouve."};
+  /* LA PHRASE QUI SE TIENT LE FAIT TAIRE (§4.8) : « → Envoyer », seul bouton
+     plein de l'écran, se montre seul. */
+  return null;
 }
 function tutoEtapeComparaison(){
   if(R.indexTermeChamp(S)>=0){
@@ -195,25 +203,33 @@ function tutoEtapeComparaison(){
           ditLong:"Ouvre ton CONTEXTE : "+ditLong[0].toLowerCase()+ditLong.slice(1)};
   }
   /* PIÈGE : une comparaison nue EST envoyable (§4.5), donc ce temps doit passer
-     AVANT celui de l'envoi — sans quoi le bandeau dirait « Envoyer » là où la
-     leçon est « il te faut un article ». Et depuis qu'un texte s'invoque une fois
-     LU, l'article peut n'être offert nulle part : on montre alors où le lire. */
+     AVANT le silence de la phrase qui se tient — sans quoi la bulle se tairait
+     là où la leçon est « il te faut un article ». Et depuis qu'un texte s'invoque une fois
+     LU, l'article peut n'être offert nulle part : on montre alors où le lire —
+     SA puce dans l'index, puis SON bloc dans les propositions (`f`, §4.8). Sans
+     article dérivable, la zone seule, comme avant. */
   if(S.compo.length && !R.compoFinie(S)){
-    if(R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique))
-      return {...GESTE_RELIER, n:2, ou:"#composeur .offre",
+    const art=tutoArticle();
+    const aLire = art ? !S.examinees.includes(art.piece)
+                      : !R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique);
+    if(!aLire)
+      return {...GESTE_RELIER, n:3, ou:"#composeur .offre", f: art && "b:"+art.id,
         dit:"Prends l'article qui la fonde.",
         ditLong:"Une relation seule ne suffit pas : prends l'article sur lequel elle s'appuie."};
     const ditLong="Une relation seule ne suffit pas : il lui faut un article qui la fonde.";
-    return panneau==="contexte"
-      ? {...GESTE_RELIER, n:2, ou:"#zoneDossier", dit:"Il lui faut un article.",
-          ditLong:ditLong+" Va le lire dans ton dossier."}
-      : {...GESTE_RELIER, n:2, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
+    /* Une pièce encore ouverte replie l'index, et la puce y est cachée : le cas
+       COURANT, la citation d'avant ayant laissé sa pièce ouverte. On montre
+       alors « déplier », la porte de la puce — jamais on ne déplie à sa place. */
+    if(panneau!=="contexte")
+      return {...GESTE_RELIER, n:2, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
           ditLong:ditLong+" Ton dossier est dans ton CONTEXTE."};
+    return art && indexPlie()
+      ? {...GESTE_RELIER, n:2, ou:"#zoneDossier", f:"dossier", dit:"Déplie ton dossier.",
+          ditLong:ditLong+" Déplie ton dossier : l'article y est, et on n'invoque que ce qu'on a lu."}
+      : {...GESTE_RELIER, n:2, ou:"#zoneDossier", f: art && "d:"+art.piece, dit:"Lis l'article.",
+          ditLong:ditLong+" Ouvre-le dans ton dossier : on n'invoque que ce qu'on a lu."};
   }
-  if(R.peutEnvoyer(S))
-    return {...GESTE_RELIER, n:3, ou:"#composeur button.envoi",
-            dit:"Clique sur → Envoyer"};
-  return null;
+  return null;   // la phrase qui se tient : « → Envoyer » se montre seul (§4.8)
 }
 /* Entre les deux gestes, et une fois les deux acquis, il se tait — sans se
    fermer pour autant : `majTutoriel` seul décide de la fermeture définitive. */
@@ -233,8 +249,14 @@ let tutoCible=null, tutoDernierDit=null, tutoAnnonce=null;
    autre. `tutoReouvre` est une lecture UNIQUE posée par l'icône, consommée au
    prochain `majTutoriel` — même idiome que `focusVoulu`. */
 let tutoReduit=false, tutoReouvre=false;
-/* NEUVE VEUT DIRE JAMAIS MONTRÉE (§4.8) : revenir de 4/4 à 3/4 après « tout
-   effacer » redéployait une consigne déjà lue. Seule l'alerte se redéploie
+/* Une consigne NEUVE qui désigne un élément précis (`f`, §4.8) va le chercher
+   dans le champ : le bloc de l'article naît au bas d'un composeur plafonné, sous
+   le pli, et un halo qu'on ne voit pas ne montre rien. Lecture unique, consommée
+   par `voirCibleTuto` — une seule fois, pour ne jamais disputer le défilement au
+   joueur qui l'aurait déplacé depuis. */
+let tutoVoir=false;
+/* NEUVE VEUT DIRE JAMAIS MONTRÉE (§4.8) : revenir de l'envoi à la prise d'un
+   passage après « tout effacer » redéployait une consigne déjà lue. Seule l'alerte se redéploie
    déjà vue — se tromper rouvre. La clé est le geste, le rang et le texte : à
    un même rang, « Ouvre ton CONTEXTE » et « Ouvre une pièce » sont deux
    consignes. */
@@ -255,18 +277,25 @@ function majTutoriel(){
   /* Le halo ne se voit pas à l'oreille : une consigne NEUVE s'annonce (§4.10),
      une consigne répétée par un redessin, non — qu'on la rouvre à la main ne
      vaut pas une seconde annonce. */
-  if(neuf) tutoAnnonce="Tutoriel, "+e.geste+", "+e.n+" sur "+e.total+" : "+(e.ditLong||e.dit);
+  if(neuf) tutoAnnonce="Tutoriel : "+(e.ditLong||e.dit);
   tutoDernierDit = e ? e.dit : null;
   tutoReouvre = false;
   if(!e){ banniere.hidden=true; return; }
-  tutoCible=document.querySelector(e.ou);
+  /* `ou` est la ZONE, toujours un littéral (R6) ; `f`, la clé `data-f` d'un
+     élément précis dedans (§4.8 — l'article). Caché — l'index replié —, ou
+     absent, le halo retombe sur la zone. Retrouvé par itération, comme
+     `rendreFocus` : une clé n'a pas à s'échapper en sélecteur. */
+  const zone=document.querySelector(e.ou);
+  const precis = e.f && zone && [...zone.querySelectorAll("[data-f]")]
+    .find(x=>x.getAttribute("data-f")===e.f && !x.closest("[hidden]"));
+  tutoCible=precis||zone;
+  tutoVoir = neuf && !!precis;
   if(tutoCible) tutoCible.setAttribute("data-tuto", e.alerte?"alerte":"");
   banniere.toggleAttribute("data-alerte", !!e.alerte);
   banniere.toggleAttribute("data-reduit", tutoReduit);
-  $("tutoPas").textContent=e.geste+" · "+e.n+"/"+e.total;
   $("tutoDit").textContent=e.ditLong||e.dit;
   if(icone) icone.setAttribute("aria-label",
-    "Revoir la consigne du tutoriel — "+e.geste+" "+e.n+"/"+e.total+" : "+e.dit);
+    "Revoir la consigne du tutoriel : "+e.dit);
   if(corps) corps.hidden=tutoReduit;
   if(icone) icone.hidden=!tutoReduit;
   banniere.hidden=false;
@@ -343,6 +372,15 @@ function placerTuto(){
   bulle.setAttribute("data-cote", cote);
   bulle.style.setProperty("--fx", Math.round(borne(cx-x, 18, Math.max(18, w-18)))+"px");
   bulle.style.setProperty("--fy", Math.round(borne(cy-y, 18, Math.max(18, h-18)))+"px");
+}
+/* Même idiome que `voirDernierRetenu` : pur écran, et jsdom n'implémente pas
+   `scrollIntoView`, d'où la garde. La barre collante du composeur est réservée
+   par son `scroll-padding-bottom`. */
+function voirCibleTuto(){
+  if(!tutoVoir) return;
+  tutoVoir=false;
+  if(tutoCible && document.contains(tutoCible) && tutoCible.scrollIntoView)
+    tutoCible.scrollIntoView({block:"nearest"});
 }
 /* Les bandes défilent, pas la page : un `scroll` ne remonte pas, d'où la
    CAPTURE. Une image par rafale suffit. */
@@ -465,20 +503,22 @@ function rendreTout(){
   const force=!!focusVoulu, m=focusVoulu || memoFocus(); focusVoulu=null;
   const enBas=filEnBas();
   suivrePhrase();
-  renderDISCUSSION(); renderComposeur(); renderCONTEXTE(); renderPlaidoirie(); majCloture(); majLateral(); majTutoriel();
+  renderDISCUSSION(); renderComposeur(); renderCONTEXTE(); renderPLAIDOIRIE(); majCloture(); majLateral(); majTutoriel();
   recalerFil(enBas); majDebord();
   rendreFocus(m, force);
-  placerTuto();                    // APRÈS le recalage du fil et le focus : ils déplacent l'ancre
+  voirCibleTuto();                 // APRÈS le focus, qui ne défile pas (`preventScroll`)
+  placerTuto();                    // APRÈS le recalage du fil, le focus et `voirCibleTuto` : ils déplacent l'ancre
   rappelRetrait=null; vientDeRetenir=null; rappelPleine=false;
   annoncerNouveautes(); publierAnnonces();
   sauverPartie();
 }
 
 /* ---- Le canal : un fil de messages ---- */
-/* LE BOUTON COMPTE COMME L'INDEX (§4.6) : les pièces et les règles à part, avec
-   les mots de `renderDossier` — « 5 pièces » au message et « 5 pièces, 3 règles »
-   à l'index, c'était le même chiffre pour deux sens. Dès le deuxième envoi, il
-   dit « nouvelles » : le message compte ce qu'il apporte, l'index ce qu'on a. */
+/* LE BOUTON SÉPARE COMME L'INDEX (§4.6) : les pièces et les règles à part, comme
+   les deux colonnes de `renderDossier` — « 5 pièces » au message et « 5 pièces,
+   3 règles » à l'index, c'était le même chiffre pour deux sens. Dès le deuxième
+   envoi, il dit « nouvelles » : le message compte ce qu'il apporte. L'index, lui,
+   ne compte plus — son en-tête ne dit que DOSSIER. */
 const compte=(n,mot)=>n+" "+mot+(n>1?"s":"");
 function comptePieces(pids, nouvelles){
   const nP=pids.filter(pid=>!R.estRegle(JEU.pieces[pid])).length, nR=pids.length-nP;
@@ -593,7 +633,7 @@ function fermerPiece(){
   rendreTout();
 }
 /* PIÈGE : UNE PIÈCE N'EST JAMAIS OUVERTE HORS DU CONTEXTE (§4.6). Toutes les
-   portes qui le referment — sa croix, la barre, l'envoi, la Plaidoirie, la
+   portes qui le referment — sa croix, la barre, l'envoi, la PLAIDOIRIE, la
    fermeture qui suit la phrase — passent par ici, en TÊTE de `rendreTout` :
    la réplique `declenche` (`R.fermerPiece`) tombe ainsi dans le fil AVANT qu'il
    soit dessiné, au moment où l'on relève les yeux (§4.10 règle 3). */
@@ -655,10 +695,9 @@ function renderDossier(){
      pièce n'y montrait plus que deux lignes. Les puces restent sous `hidden` —
      le motif « disclosure » —, et `#zoneDossier` reste l'ancre du tutoriel (R6). */
   const plie=indexPlie();
-  const resume=compte(pieces.length,"pièce")+", "+compte(regles.length,"règle");
   return `<div class="zone ${plie?"plie":""}" id="zoneDossier">
     <button type="button" class="dplier" data-f="dossier" aria-expanded="${!plie}" aria-controls="dossierListe"
-      onclick="basculerDossier()"><span class="dtitre">Le dossier</span><span class="dcompte">${resume}</span><span class="dsens">${
+      onclick="basculerDossier()"><span class="dtitre">DOSSIER</span><span class="dsens">${
         plie?"▾ déplier":"▴ replier"}</span></button>
     <div class="dossier" id="dossierListe" ${plie?"hidden":""}>${
       colonne("Les pièces",pieces)}${colonne("Les règles",regles)}</div></div>`;
@@ -887,7 +926,7 @@ function viderCompo(){ R.viderCompo(S); rendreTout(); }
 /* La phrase PARTIE (§4.6) : le CONTEXTE reste tant que la REMISE ne change pas —
    la question suivante, ou la même après un refus, voudra le clavier. Il reste
    en consultation, quelle que soit la porte qui l'avait ouvert. Une remise
-   neuve le referme : un dossier arrive, on revient lire l'avocat. La Plaidoirie
+   neuve le referme : un dossier arrive, on revient lire l'avocat. La PLAIDOIRIE
    se referme toujours — on n'y écrit pas. */
 function envoyerCompo(){
   const remise=S.remisesEnvoyees;
@@ -925,8 +964,8 @@ function barreSurfaces(){
   return `<span class="surfaces">
     <button id="btnCONTEXTE" class="${etat("contexte")}${vientDeRetenir?" recoit":""}"
       onclick="basculerPanneau('contexte')">CONTEXTE${compte(S.retenus.length)}</button>
-    <button id="btnPlaidoirie" class="${etat("plaidoirie")}"
-      onclick="basculerPanneau('plaidoirie')">Plaidoirie${compte(moyensRetenus().length)}</button>
+    <button id="btnPLAIDOIRIE" class="${etat("plaidoirie")}"
+      onclick="basculerPanneau('plaidoirie')">PLAIDOIRIE${compte(moyensRetenus().length)}</button>
   </span>`;
 }
 function renderCompo(){
@@ -968,7 +1007,7 @@ function renderCompo(){
   return h;
 }
 
-/* 7) LES SURFACES — l'avocat ne voit QUE la Plaidoirie, et n'y inscrit que les
+/* 7) LES SURFACES — l'avocat ne voit QUE la PLAIDOIRIE, et n'y inscrit que les
       MOYENS (§4.6). */
 /* PIÈGE : réécrire `innerHTML` remet le défilement à ZÉRO. Un panneau redessiné
    à chaque geste repartait donc en haut entre le premier passage et le second —
@@ -1009,7 +1048,7 @@ function renderComposeur(){
 function moyensRetenus(){
   return S.plaidoirie.filter(x=>S.brouillon[x.b] && R.estMoyen(S.brouillon[x.b].lien));
 }
-function renderPlaidoirie(){ garderDefilement("plaidoirie", plaidoirieHTML); }
+function renderPLAIDOIRIE(){ garderDefilement("plaidoirie", plaidoirieHTML); }
 function plaidoirieHTML(){
   const gardes=moyensRetenus();
   let h=`<div class="zone">`;
@@ -1066,7 +1105,7 @@ function finir(){
   const t=$("modalTitre"); if(t) t.focus();
 }
 
-/* §4.6 — LA PLACE LATÉRALE a deux occupants possibles — CONTEXTE et Plaidoirie
+/* §4.6 — LA PLACE LATÉRALE a deux occupants possibles — CONTEXTE et PLAIDOIRIE
    — UN SEUL À LA FOIS, et ne recouvre RIEN : la question reste
    sous les yeux, et on voit la phrase se construire en cliquant les passages.
    DEUX variables d'ÉCRAN, hors de `S`, qui est sérialisé — on ne recharge pas
@@ -1084,7 +1123,7 @@ function finir(){
 let panneau = null, panneauSuit = false;
 function majLateral(){
   { const p=$("panCONTEXTE");   if(p) p.hidden = panneau!=="contexte"; }
-  { const p=$("panPlaidoirie"); if(p) p.hidden = panneau!=="plaidoirie"; }
+  { const p=$("panPLAIDOIRIE"); if(p) p.hidden = panneau!=="plaidoirie"; }
   // La conversation, seule bande élastique, cède d'elle-même la place (§4.6) ;
   // la classe ne décide que jusqu'où elle peut céder, et c'est du CSS (§9).
   { const w=document.querySelector(".wrap"); if(w){ w.classList.toggle("avecLateral", !!panneau);
@@ -1110,7 +1149,7 @@ function voirDernierRetenu(){
    mise en page — et `npm run vue` est le seul juge (§16). */
 function majDebord(){
   const reste = b => !!b && (b.scrollHeight - b.scrollTop - b.clientHeight) > 4;
-  for(const id of ["panCONTEXTE","panPlaidoirie"]){
+  for(const id of ["panCONTEXTE","panPLAIDOIRIE"]){
     const sec=$(id); if(!sec) continue;
     sec.classList.toggle("deborde", reste(sec.querySelector(".body")));
   }

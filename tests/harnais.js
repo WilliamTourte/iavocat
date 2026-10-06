@@ -56,8 +56,8 @@ function creerHarnais(dossier){
   const contexte = w => w.document.getElementById("contexte").innerHTML;
   const composeur = w => w.document.getElementById("composeur").innerHTML;
   const plaidoirie = w => w.document.getElementById("plaidoirie").innerHTML;
-  // Dit maintenant : le PANNEAU Plaidoirie est ouvert (§4.6).
-  const plaidoirieVisible = w => !w.document.getElementById("panPlaidoirie").hidden;
+  // Dit maintenant : le PANNEAU PLAIDOIRIE est ouvert (§4.6).
+  const plaidoirieVisible = w => !w.document.getElementById("panPLAIDOIRIE").hidden;
 
   /* ---- Sélecteurs par PROPRIÉTÉ ---- aucune suite ne nomme une pièce, un
      empan ni une valeur : tout se dérive de la forme (§16). */

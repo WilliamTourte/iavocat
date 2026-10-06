@@ -280,7 +280,7 @@ function creerRegles(JEU, M) {
   }
   /* LA REMISE DU TUTORIEL SE SERT DANS L'ORDRE (§3). Une phrase qui sert une
      attente À VENIR de la remise 1 est hors sujet : l'avocat répond comme à
-     toute réponse à côté, rien n'entre en Plaidoirie, et la phrase reste À
+     toute réponse à côté, rien n'entre en PLAIDOIRIE, et la phrase reste À
      ENVOYER — `versee` faux, elle repartira quand sa question viendra, puisque
      `clorePhrase` la retrouve. PIÈGE : la marquer versée la rendrait muette pour
      toujours, et la question qui l'attend ne pourrait plus être servie. Les

@@ -40,11 +40,11 @@ l'attente courante est **envoyée**, rien d'autre.
 
 **La remise du tutoriel se sert DANS L'ORDRE** — retour de playtest (Jean) : la première remise
 acceptait une réponse *par anticipation*, et 22h30 envoyé à la première question servait la deuxième.
-L'avocat en donnait la réplique (la contradiction comprise), la phrase entrait en Plaidoirie, la
+L'avocat en donnait la réplique (la contradiction comprise), la phrase entrait en PLAIDOIRIE, la
 deuxième question n'était jamais posée — et le tutoriel, qui lit l'attente **courante**, disait au
 même moment *« ce n'est pas ce qu'il demande »*, puis se taisait, la citation passant pour acquise.
 Dans la remise 1, une phrase qui sert une attente **à venir** est donc **hors sujet** : l'avocat
-répond comme à toute réponse à côté, rien n'entre en Plaidoirie, et la phrase reste **à envoyer**
+répond comme à toute réponse à côté, rien n'entre en PLAIDOIRIE, et la phrase reste **à envoyer**
 — elle repartira quand sa question viendra. Les remises suivantes gardent l'anticipation : la
 latitude s'élargira avec elles.
 
@@ -213,14 +213,14 @@ réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte 
 
 ### 4.6 Les trois surfaces — la frontière morale
 
-**Un seul nom par surface, partout** : **DISCUSSION**, **CONTEXTE**, **Plaidoirie**. Une seule frontière
+**Un seul nom par surface, partout** : **DISCUSSION**, **CONTEXTE**, **PLAIDOIRIE**. Une seule frontière
 de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui protège la fiction (§8.6).
 
 | Surface | Statut | Rôle |
 |---|---|---|
 | La **DISCUSSION** + les pièces — *la bande du haut* | lecture | l'entrée |
 | Le **CONTEXTE** — *panneau, au milieu* | **privé** | le dossier et les empans retenus (`S.retenus`) — jamais jugés |
-| La **Plaidoirie** — *panneau, au milieu* | **transmis** | ce que l'avocat retient (`S.plaidoirie`) |
+| La **PLAIDOIRIE** — *panneau, au milieu* | **transmis** | ce que l'avocat retient (`S.plaidoirie`) |
 | **Le composeur** — *bandeau du bas* | **privé** | la phrase qu'on écrit — jamais jugée |
 
 - **Un empan retenu n'existe qu'une fois à l'écran** : les puces du contexte **sont** les boutons de
@@ -228,7 +228,7 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 - **Deux verbes, un par geste, partout** : on **retient** un passage — de la pièce vers le CONTEXTE —
   et on le **prend** — du CONTEXTE vers la phrase. *Sélectionner* ne paraît plus à l'écran : il
   servait aux deux, et un joueur a lu trois verbes là où il n'y a que deux gestes.
-- **Les surfaces de côté — CONTEXTE et Plaidoirie — partagent une même place LATÉRALE, un seul
+- **Les surfaces de côté — CONTEXTE et PLAIDOIRIE — partagent une même place LATÉRALE, un seul
   occupant à la fois**, et **ne recouvrent rien** : la conversation **cède pour lui faire place**. La
   pièce ouverte n'est plus un troisième occupant : **elle s'ouvre DANS le CONTEXTE** (ci-dessous). **En dessous d'un seuil de largeur** (l'essentiel des téléphones), la place latérale
   s'ouvre ENTRE la conversation et le composeur, empilée — l'écran montre alors ses trois temps d'un
@@ -248,11 +248,12 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   le bouton ferme la bulle : on lit ce qu'il demande, puis on va chercher. La question reste un champ
   de l'**attente**, jamais du texte de la remise : c'est ce qui permet de la rappeler (§4.9 règle 3).
   Les questions suivantes, posées après une réponse, restent des messages à part.
-  **Le bouton compte comme l'index** — retour de playtest (Jean) : le message annonçait *« 5 pièces
+  **Le bouton sépare comme l'index** — retour de playtest (Jean) : le message annonçait *« 5 pièces
   disponibles »*, pièces et règles confondues, quand l'index disait *« 5 pièces, 3 règles »* pour le
   dossier entier. Même chiffre, deux sens. Le bouton dit donc **les pièces et les règles à part**,
-  avec les mots de l'index, et dès le deuxième envoi il dit **nouvelles** : le message compte ce
-  qu'il apporte, l'index ce qu'on a.
+  avec les mots des deux colonnes de l'index, et dès le deuxième envoi il dit **nouvelles** : le
+  message compte ce qu'il apporte. **L'index, lui, ne compte plus** — demande de l'auteur : son
+  en-tête ne dit que **DOSSIER**, replié comme déplié ; ses deux colonnes se comptent à l'œil.
 - **LA PIÈCE S'OUVRE DANS LE CONTEXTE, entre l'index et les passages retenus** — retour de playtest
   (Colas), et idée de l'auteur. Tant que la pièce occupait seule la place latérale, citer coûtait
   cinq temps : ouvrir la pièce, retenir, **refermer la pièce**, rouvrir le CONTEXTE, prendre. Le
@@ -269,7 +270,7 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
     dix-sept fiches, ce sont les retenus qui défilent. **Au-dessus du seuil, le CONTEXTE prend les DEUX
     TIERS de la largeur**, pièce ouverte ou non — demande de l'auteur : index, pièce et retenus se
     lisaient à l'étroit dans une colonne d'un tiers. La conversation garde le tiers restant, et la
-    question avec elle ; la Plaidoirie, qui ne porte qu'une liste, garde sa colonne étroite. **En
+    question avec elle ; la PLAIDOIRIE, qui ne porte qu'une liste, garde sa colonne étroite. **En
     dessous**, si le panneau est trop bas pour les deux bandes, il redéfile d'un bloc plutôt que de
     rogner.
   - **L'index se REPLIE en une ligne** — *le dossier, son compte* — et il laisse ainsi la place au
@@ -348,7 +349,7 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   réponse — la question suivante, ou la même après un refus —, on aura besoin du clavier : le CONTEXTE
   reste, en consultation, quelle que soit la porte qui l'avait ouvert. Quand l'envoi ouvre une
   nouvelle remise, il se referme : un nouveau dossier arrive, on revient lire l'avocat, et son bouton
-  de pièces rouvrira le CONTEXTE. La Plaidoirie, elle, se referme à chaque envoi : on n'y écrit pas.
+  de pièces rouvrira le CONTEXTE. La PLAIDOIRIE, elle, se referme à chaque envoi : on n'y écrit pas.
 - **Une pièce porte un seul nom, et l'index du CONTEXTE est désormais seul à le porter** : la DISCUSSION
   n'annonce plus qu'un nombre de pièces reçues et renvoie vers lui. Le nom court ne survit que dans la
   **provenance** d'un passage retenu et dans la phrase composée — là, il *référence*, il ne *nomme* pas.
@@ -364,14 +365,14 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   deux-colonnes ?* (§3 PASSATION)
 - **Comprendre et dire restent deux gestes, non négociable** — l'intervalle sépare l'**assemblage** de
   l'**envoi** : c'est lui qui compte, pas le nombre de clics.
-- **L'avocat ne voit que la Plaidoirie**, d'où la gratuité du CONTEXTE. Il **ne retient que les
+- **L'avocat ne voit que la PLAIDOIRIE**, d'où la gratuité du CONTEXTE. Il **ne retient que les
   moyens** et l'envoi est **irréversible** ; une citation versée étant au dossier, une réponse citée
   y entre.
 - **LA RÉPÉTITION EST LE DERNIER GESTE RÉEL, et on n'y envoie pas : on OPPOSE.** L'avocat lit les
   affirmations de l'accusation et demande *« arrête-moi si quelque chose de ce que tu as écrit s'y
   oppose »* — le joueur dit alors **quel argument répond à quelle affirmation**. C'est le seul
   endroit où ce qu'il a produit se trie. Le présentoir ne montre donc que les **moyens**, comme la
-  Plaidoirie, et non tout ce qui est passé par le composeur. **Ce que ça répare** : depuis que clore
+  PLAIDOIRIE, et non tout ce qui est passé par le composeur. **Ce que ça répare** : depuis que clore
   et envoyer n'en font qu'un (§4.5), **aucune phrase ne peut être non versée** — le présentoir
   n'offrait que des lignes *« déjà envoyée »*, un rituel sans choix, et la réplique de l'avocat
   (*« Je l'ai déjà. Je le mets en face de celle-ci. »*) annonçait un geste qu'elle ne faisait pas.
@@ -441,29 +442,47 @@ plus, c'est l'avocat** : lui est quelqu'un.
 
 | Le geste | | Ce qu'on apprend | Ce que le halo entoure |
 |---|---|---|---|
-| **citer** | 1/4 | ce qu'on reçoit se retrouve dans le CONTEXTE | le bouton de pièces, dans la DISCUSSION — puis l'index, une fois le CONTEXTE ouvert |
-| | 2/4 | un passage se retient | **le texte de la pièce**, en entier — ouverte dans le CONTEXTE, plus rien à refermer (§4.6) |
-| | 3/4 | ce qu'on retient est le clavier | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
-| | 4/4 | rien ne part tant qu'on n'envoie pas | *« → Envoyer »*, dès que la phrase se tient |
-| **mettre en relation** | 1/3 | une réponse peut tenir sur **deux** passages | **toute la zone des retenus**, au premier passage comme au second |
-| | 2/3 | une relation seule ne suffit pas : il lui faut un article qui la fonde | **la zone des propositions**, dans le composeur |
-| | 3/3 | le même envoi qu'au premier geste | *« → Envoyer »* |
+| **citer** | 1 | ce qu'on reçoit se retrouve dans le CONTEXTE | l'index, une fois le CONTEXTE ouvert — **avant, rien** : le bouton de pièces du message s'ouvre seul |
+| | 2 | un passage se retient | **le texte de la pièce**, en entier — ouverte dans le CONTEXTE, plus rien à refermer (§4.6) |
+| | 3 | ce qu'on retient est le clavier | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
+| | — | *rien ne part tant qu'on n'envoie pas* | **rien** : *« → Envoyer »*, seul bouton plein, se montre seul |
+| **mettre en relation** | 1 | une réponse peut tenir sur **deux** passages | **toute la zone des retenus**, au premier passage comme au second |
+| | 2 | une relation seule ne suffit pas, et on n'invoque que ce qu'on a lu (§4.5) — *s'il n'est pas lu* | **la puce de l'article**, dans l'index — la porte CONTEXTE s'il est fermé ; *« déplier »* si l'index est replié, ce qu'une pièce encore ouverte fait d'ordinaire : le tutoriel ne déplie rien à la place du joueur |
+| | 3 | il lui faut un article qui la fonde | **le bloc de l'article**, dans les propositions du composeur |
+| | — | *le même envoi qu'au premier geste* | **rien**, pour la même raison |
 
-**Deux séries, chacune son total, et c'est le geste qui les nomme.** Une numérotation unique
-revenait de *6/6* à *4/6* au moment d'envoyer, parce que les deux gestes partagent le bouton :
-le compteur mentait sur une progression qui n'a jamais été linéaire. **Ce qui distingue
-les deux gestes** n'est pas un compteur de clics mais le **contenu** : une attente dont le lien attendu
-emboîte une forme (une comparaison sous un article) plutôt qu'un simple empan. Le tutoriel le lit dans
-`JEU.liens`, jamais dans un nom d'attente câblé en dur.
+**La bulle ne compte pas** — retour de l'auteur. Elle a porté un rang (*citer · 2/4*), puis deux
+séries chacune son total, une numérotation unique revenant de *6/6* à *4/6* au moment d'envoyer ;
+mais un rang n'apprend rien au joueur, et l'ordre ci-dessus n'est que celui du document. Elle ne dit
+plus que la consigne. **Ce qui distingue les deux gestes** n'est pas un compteur de clics mais le
+**contenu** : une attente dont le lien attendu emboîte une forme (une comparaison sous un article)
+plutôt qu'un simple empan. Le tutoriel le lit dans `JEU.liens`, jamais dans un nom d'attente câblé en dur.
+
+**L'article se désigne, la relation jamais** — demandé par l'auteur, et c'est la seule exception à
+*le halo entoure la zone*. La trouvaille de la comparaison est la **relation entre deux passages** :
+le halo ne la montre pas, il entoure toute la zone des retenus. L'article, lui, Maître Auber le
+demande déjà (*« quel article est-ce qu'on peut citer »*), et la remise de calibration n'en livre
+qu'un : désigner sa puce, puis son bloc, ne choisit rien à la place du joueur — il épargne seulement
+de chercher où se lit un texte et où il s'invoque. La désignation se **dérive** du lien attendu (sa
+`forme`, le bloc de liaison qui l'emboîte, la pièce de ce bloc), jamais d'un nom câblé. *Limite
+assumée* : une affaire qui livrerait plusieurs articles à la session 1 verrait le chrome trancher
+entre eux — la question serait alors à rouvrir.
 
 **Les garde-fous ne sont pas le tutoriel** : le refus d'écran et l'assombrissement du CONTEXTE
-vivent pendant la **remise** de calibration, que le tutoriel soit là ou non — *« je sais faire »* ne
+vivent pendant la **remise** de calibration, que le tutoriel soit là ou non — sa croix ne
 lève rien, puisque le tutoriel ne décide rien (§4.11).
 
 **Le halo entoure la zone, jamais le bon empan** (§4.3). **Il corrige, il n'empêche pas** : rien n'est
 refusé, il ne dit jamais lequel c'était, et la dérivation par laquelle il sait ce qu'attend la question
 **s'éteint avec lui**. **Il ne décide rien** — aucun état neuf, aucune règle, et il peut se taire — y
 compris entre le geste 4 et le geste 5, le temps d'une citation déjà connue.
+
+**Il se tait là où l'écran parle seul** — demande de l'auteur. Ni *« Ouvre ton CONTEXTE »* au premier
+écran : le message de l'avocat finit sur le bouton de pièces, qui dit déjà où elles sont ; ni
+*« Clique sur → Envoyer »* : la phrase qui se tient allume le seul bouton plein de l'écran (§4.9). Le
+tutoriel commence donc au CONTEXTE ouvert, et une phrase complète le fait taire jusqu'à l'envoi.
+*« Ouvre ton CONTEXTE »* survit là où la porte n'est plus évidente — un passage retenu puis le panneau
+refermé, ou la comparaison commencée panneau fermé.
 
 **La consigne est une BULLE posée à côté de ce qu'elle montre** — retour de playtest (Jean). Dans le
 flux, en tête de page, le bandeau poussait tout le jeu à chaque fois qu'il se redéployait (une
@@ -488,11 +507,12 @@ s'**annoncent** aussi, à qui ne voit pas le halo (§4.10).
 fixe mais une **durée** : développée tant qu'elle est neuve, elle se réduit d'elle-même dès que le
 rendu suivant confirme que le joueur ne vient pas de la satisfaire — sans minuteur, puisque ce jeu ne
 rend jamais hors d'un geste du joueur. **Neuve veut dire jamais montrée** : revenir à une étape déjà
-lue — de *4/4* à *3/4* après *« tout effacer »* — la laisse réduite, à l'endroit de la zone ; elle n'a
+lue — de l'envoi à la prise d'un passage, après *« tout effacer »* — la laisse réduite, à l'endroit de la zone ; elle n'a
 rien de neuf à dire. Un clic sur l'icône la rouvre ; se tromper la rouvre aussi : l'alerte est la
-seule consigne qui se redéploie déjà vue. *« je sais faire »* ne vit que dans
-la forme développée — clore le tutoriel pour de bon reste un choix qu'on pose en le lisant, pas depuis
-une icône.
+seule consigne qui se redéploie déjà vue. **La croix** — la même que celle des autres fenêtres,
+retour de l'auteur, là où se lisait *« je sais faire »* — ne vit que dans la forme développée : clore
+le tutoriel pour de bon reste un choix qu'on pose en le lisant, pas depuis une icône. Elle ne porte
+pas *Échap*, qui appartient aux panneaux (§4.10).
 
 ### 4.9 L'économie de l'écran
 
@@ -521,7 +541,7 @@ Cinq règles d'écran — le coupable d'une page illisible est le **chrome**, ja
    préfère une règle qu'on peut éprouver, qui en dit une fois de trop, à une mesure que personne
    ne surveille.
 4. **Ce qui n'existe pas encore ne s'affiche pas** — mais ce qui *peut* exister garde sa porte. **La
-   Plaidoirie est revenue** de son escamotage du 16 septembre, et le §3 avait annoncé que la question à
+   PLAIDOIRIE est revenue** de son escamotage du 16 septembre, et le §3 avait annoncé que la question à
    son retour serait *où*, pas *si* : la réponse est **en panneau, à la demande**. Sa porte est là dès
    le premier écran, avec son compte ; le panneau dit son propre vide, dans la fiction — *« Maître
    Auber n'a encore rien retenu de toi. »* — jusqu'à la première réponse envoyée.
@@ -593,7 +613,7 @@ qui ne se compareraient pas, étiquetait chaque article de ce qu'il régit, et n
 Jean : *« sans pénalité, on essaie toutes les combinaisons »*, et choisir l'article *« se réduit à
 apparier des catégories »*. La réponse tient en une règle : **la session 1 apprend, les suivantes
 laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — le tutoriel ne décide rien
-(§4.8), et *« je sais faire »* ne lève aucun garde-fou. C'est la frontière que `horsOrdre` trace déjà
+(§4.8), et la croix du tutoriel ne lève aucun garde-fou. C'est la frontière que `horsOrdre` trace déjà
 (§3).
 
 1. **L'article se marque, il ne s'étiquette plus.** *« Ce texte porte sur : quand »* faisait le tri

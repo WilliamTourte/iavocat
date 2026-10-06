@@ -150,7 +150,7 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 | Nature | Source |
 |---|---|
 | **Le contenu** (pièces, empans, dimensions, grammaire, liens, sessions, répliques, fins) | `app/content.js` |
-| **Les règles** (sessions, drapeaux, Plaidoirie, répétition, fins) | `app/regles.js` |
+| **Les règles** (sessions, drapeaux, PLAIDOIRIE, répétition, fins) | `app/regles.js` |
 | **La grammaire** et les **projections** (§14) | `app/moteur.js` |
 | **Le sens** (invariants, arbitrages) | `docs/CONCEPTION.md` — le diagnostic n'en encode qu'un extrait |
 
@@ -331,10 +331,10 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | **le clavier et la voix d'annonce** (§4.10) — le focus qui survit, la pièce DANS le CONTEXTE (§4.6), ce qui s'annonce | `fermerPiece`, seule règle que l'écran appelle en refermant — par la croix, ou par `suivrePhrase` quand le CONTEXTE quitte l'écran | `clavier`, `memoFocus` → `rendreFocus` (par la clé `data-f`), `ouvrirPiece`/`fermerPiece`/`suivrePhrase` (écran) — `modal`/`closeModal`/`inert` sur `.wrap` ne servent plus que `finir`, `annoncer` → `#annonce` |
 | **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
-| **envoyer** — le seul geste ; la remise du tutoriel servie **dans l'ordre** (§3) | `envoyerCompo` → `clore` → `envoyer` (`horsOrdre` d'abord) → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPlaidoirie` |
-| ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie`, `moyensRetenus` — **panneau**, ouvert par sa porte (§4.9) |
+| **envoyer** — le seul geste ; la remise du tutoriel servie **dans l'ordre** (§3) | `envoyerCompo` → `clore` → `envoyer` (`horsOrdre` d'abord) → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPLAIDOIRIE` |
+| ce qui entre à la PLAIDOIRIE | `estMoyen` | `renderPLAIDOIRIE`, `moyensRetenus` — **panneau**, ouvert par sa porte (§4.9) |
 | clôturer, répétition, fin ; **opposer** un moyen à une affirmation | `instructionComplete`, `cloturer`, `verserContre` (pose `contre`, même sur une phrase déjà versée — **si l'affirmation la prend**, `repondA`), `avancerRepetition`, `finir` | `majCloture`, le présentoir dans `renderDISCUSSION` (les **moyens** seuls, l'affirmation redite en tête, *« déplacer ici »*), `finir` (modale) |
-| le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoEtape`, `majTutoriel` → `placerTuto` — **bulle ancrée au halo**, en surimpression, premier enfant de `<body>` |
+| le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoArticle`, `tutoEtape`, `majTutoriel` → `voirCibleTuto`, `placerTuto` — **bulle ancrée au halo**, en surimpression, premier enfant de `<body>` ; une étape vise une zone (`ou`, littéral) et, au besoin, un élément précis dedans (`f`, une clé `data-f`) |
 
 - **Les deux voies de clôture** sont le **même** `clore`, appelé par le **même** `envoyerCompo` ; ce qui
   les sépare vit dans le contenu — une liaison `cite:true` contre une forme d'arité 2 déduite.
@@ -345,7 +345,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
   `attentesEditables` et `migrerContenu`.
 
 **Les mots.** Le joueur ne lit jamais `empan`, `bloc`, `lien`, `forme`, `terme` : dans une chaîne
-d'écran, c'est une fuite. À l'écran : **DISCUSSION**, **CONTEXTE**, **Plaidoirie** (§4.6) ; **passage**
+d'écran, c'est une fuite. À l'écran : **DISCUSSION**, **CONTEXTE**, **PLAIDOIRIE** (§4.6) ; **passage**
 (un empan, vu du côté joueur) ; **RÉPONSE** (la zone du composeur) ; **→ Envoyer** (clôt et transmet,
 irréversible) ; **Je n'ai rien d'autre**, puis **Je n'ai rien à opposer** (l'IA répond ; c'est l'avocat
 qui dépose et ferme l'affaire — §4.9).

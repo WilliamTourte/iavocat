@@ -69,7 +69,7 @@ const poserLesDeux = (w, a, b) => {
   check("elle part — et c'est l'avocat qui la refuse, par son escalade",
     w.S.brouillon.length === 1 && w.S.incompris === avant + 1
     && w.S.fil[w.S.fil.length - 1].texte === w.JEU.avocat.rep_sans_rapport[avant]);
-  check("elle ne sert rien, et n'entre pas en Plaidoirie",
+  check("elle ne sert rien, et n'entre pas en PLAIDOIRIE",
     !w.R.estMoyen(w.S.brouillon[0].lien) && w.S.satisfaits.length === 0);
   // Sous un article aussi : l'avocat la refuse, sans la prendre pour un moyen.
   const [c, d] = deuxDimensions(w);
@@ -371,8 +371,12 @@ console.log("\n=== Les deux gestes, montrés ===");
   const bandeau = () => w.document.getElementById("tuto");
   const dansDISCUSSION = el => !!el && w.document.getElementById("discussion").contains(el);
 
-  check("au premier écran, le tutoriel parle", !bandeau().hidden);
-  check("et il montre la pièce à ouvrir, dans la DISCUSSION", dansDISCUSSION(halo()));
+  /* §4.8 — il se tait là où l'écran parle seul : le message finit sur le bouton
+     de pièces. Il commence au CONTEXTE ouvert. */
+  check("au premier écran, le tutoriel se tait", bandeau().hidden && !halo());
+  w.document.querySelector("#discussion .attach").click();
+  check("le CONTEXTE ouvert, il parle, et montre l'index",
+    !bandeau().hidden && !!halo() && halo().id === "zoneDossier" && !dansDISCUSSION(halo()));
 
   const pid = H.pidPremiereRemise(w);
   w.ouvrirPiece(pid);
@@ -407,9 +411,8 @@ console.log("\n=== Les deux gestes, montrés ===");
   check("et une fois ouvert, il montre le contexte", !!zone && zone.contains(w.document.querySelector(".mchip")));
 
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut));
-  const envoi = halo();
-  check("la phrase qui se tient, il montre le seul geste qui parle",
-    !!envoi && envoi.classList.contains("envoi"));
+  check("la phrase qui se tient, il se tait : « → Envoyer » se montre seul (§4.8)",
+    bandeau().hidden && !halo() && !!w.document.querySelector("#composeur .envoi"));
 
   w.envoyerCompo();
   check("la réponse envoyée, il se tait", bandeau().hidden && !halo());
@@ -445,15 +448,41 @@ console.log("\n=== Les deux gestes, montrés ===");
   /* §4.5 — un texte s'invoque une fois LU. Tant que l'article n'est pas ouvert,
      le bandeau montre OÙ LE LIRE : il ne pointe pas une proposition qui n'existe
      pas, et il ne dit pas « Envoyer » alors que la leçon est l'article. */
-  check("les deux posés, le halo montre le dossier — l'article n'est pas lu",
-    !!halo() && halo().id === "zoneDossier");
+  /* §4.8 — L'ARTICLE SE DÉSIGNE, LA RELATION JAMAIS : sa puce dans l'index,
+     puis son bloc dans les propositions. Dérivé du lien, comme le tutoriel. */
+  const art = w.JEU.grammaire.blocs.find(b => b.type === "liaison" && b.imbrique
+    && b.forme === H.lienTag(w, veutA).forme);
+  check("les deux posés, l'article n'est pas lu : le halo montre SA puce, dans l'index",
+    !!art && !!halo() && halo().getAttribute("data-f") === "d:" + art.piece
+    && w.document.getElementById("zoneDossier").contains(halo()));
+  check("et la bulle invite à le lire, développée",
+    !bandeau().hasAttribute("data-reduit") && /dossier/.test(w.document.getElementById("tutoDit").textContent));
+  w.basculerDossier();
+  check("l'index replié, la puce cachée : le halo montre « déplier », sa porte",
+    !!halo() && halo().getAttribute("data-f") === "dossier"
+    && /Déplie/.test(w.document.getElementById("tutoDit").textContent));
+  check("et le tutoriel ne déplie rien à la place du joueur",
+    w.document.getElementById("dossierListe").hidden);
+  w.basculerDossier();
+  check("déplié, le halo revient à la puce de l'article",
+    !!halo() && halo().getAttribute("data-f") === "d:" + art.piece);
+  /* Le cas COURANT : la citation d'avant a laissé sa pièce ouverte, et une
+     pièce ouverte replie l'index. */
+  w.ouvrirPiece(H.deK(tA)[0]);
+  check("une pièce ouverte replie l'index : le halo montre « déplier »",
+    !!halo() && halo().getAttribute("data-f") === "dossier");
+  w.basculerDossier();
+  check("déplié pièce ouverte, la puce de l'article pulse",
+    !!halo() && halo().getAttribute("data-f") === "d:" + art.piece);
+  w.fermerPiece();
   H.lireLeTexte(w, H.lienTag(w, veutA).forme);
-  check("l'article lu, le halo montre enfin les propositions",
-    !!halo() && halo().classList.contains("offre"));
+  check("l'article lu, le halo montre SON bloc dans les propositions — pas toute la zone",
+    !!halo() && halo().classList.contains("bbloc") && halo().getAttribute("data-f") === "b:" + art.id
+    && !!halo().closest("#composeur .offre"));
   const bArticle = w.R.blocsOfferts(w.S).findIndex(b => b.type === "liaison" && b.imbrique);
   w.poserBloc(bArticle);
-  check("l'article choisi, le halo revient sur le seul geste qui parle",
-    !!halo() && halo().classList.contains("envoi"));
+  check("l'article choisi, la phrase se tient : il se tait, là aussi",
+    bandeau().hidden && !halo());
   w.envoyerCompo();
   check("les deux gestes montrés, le tutoriel se tait pour de bon",
     bandeau().hidden && !halo());
@@ -461,7 +490,7 @@ console.log("\n=== Les deux gestes, montrés ===");
 }
 /* §3 — LA REMISE DU TUTORIEL SE SERT DANS L'ORDRE (retour de playtest, Jean).
    La réponse à la deuxième question, envoyée à la première, la servait par
-   anticipation : sa réplique tombait, la phrase entrait en Plaidoirie, la
+   anticipation : sa réplique tombait, la phrase entrait en PLAIDOIRIE, la
    deuxième question n'était jamais posée — et le tutoriel, tenant la citation
    pour acquise, se taisait au milieu du geste. */
 console.log("\n=== La remise du tutoriel se sert dans l'ordre ===");
@@ -479,7 +508,7 @@ console.log("\n=== La remise du tutoriel se sert dans l'ordre ===");
   check("mais elle ne sert pas une question qui n'est pas posée", !w.S.satisfaits.includes(a2.attend));
   check("l'avocat répond à côté — pas avec la réplique de la question à venir",
     dernier() !== L2.rep && w.JEU.avocat.rep_hors_sujet.includes(dernier()));
-  check("rien n'entre en Plaidoirie", w.moyensRetenus().length === 0);
+  check("rien n'entre en PLAIDOIRIE", w.moyensRetenus().length === 0);
   check("la question courante reste la première", courante().attend === a1.attend);
   check("et le tutoriel ne tient pas la citation pour acquise : il reste là", !bandeau().hidden);
 
@@ -489,17 +518,18 @@ console.log("\n=== La remise du tutoriel se sert dans l'ordre ===");
   const j = H.composerLien(w, L2);
   check("la phrase envoyée trop tôt repart quand sa question vient",
     j === i && w.S.satisfaits.includes(a2.attend));
-  check("et elle n'entre qu'une fois en Plaidoirie",
+  check("et elle n'entre qu'une fois en PLAIDOIRIE",
     w.moyensRetenus().filter(x => x.b === i).length === 1);
 }
-/* §4.8 — NEUVE VEUT DIRE JAMAIS MONTRÉE (retour de playtest, Jean) : revenir
-   de 4/4 à 3/4 après « tout effacer » redéployait une consigne déjà lue. */
+/* §4.8 — NEUVE VEUT DIRE JAMAIS MONTRÉE (retour de playtest, Jean) : revenir de
+   l'envoi à la prise d'un passage après « tout effacer » redéployait une
+   consigne déjà lue. */
 console.log("\n=== Une consigne déjà lue reste réduite ===");
 {
   const w = H.boot({url:"http://localhost/"});
   const bulle = () => w.document.getElementById("tuto");
   const reduite = () => bulle().hasAttribute("data-reduit");
-  const pas = () => w.document.getElementById("tutoPas").textContent;
+  const pas = () => w.document.getElementById("tutoDit").textContent;
   const pid = H.pidPremiereRemise(w);
   w.ouvrirPiece(pid);
   const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
@@ -515,10 +545,24 @@ console.log("\n=== Une consigne déjà lue reste réduite ===");
   H.surligner(w, veut);
   const avant = pas();
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut));
-  check("la phrase qui se tient : consigne neuve, développée", pas() !== avant && !reduite());
+  check("la phrase qui se tient : la bulle se tait", bulle().hidden);
   w.viderCompo();
   check("« tout effacer » ramène la consigne d'avant", pas() === avant);
   check("déjà lue, elle reste réduite", reduite() && !bulle().hidden);
+}
+/* §4.8 — LA BULLE NE COMPTE PAS, ET SE FERME PAR UNE CROIX (retour de l'auteur). */
+{
+  const w = H.boot({url:"http://localhost/"});
+  const bulle = w.document.getElementById("tuto");
+  check("la bulle ne porte aucun rang", !w.document.getElementById("tutoPas")
+    && !/\d+\s*\/\s*\d+/.test(bulle.textContent));
+  const croix = w.document.getElementById("tutoPasser");
+  check("elle se ferme par la croix des autres fenêtres, nommée",
+    !!croix && croix.tagName === "BUTTON" && croix.classList.contains("fermer")
+    && croix.textContent.trim() === "×" && (croix.getAttribute("aria-label") || "").length > 1);
+  croix.click();
+  check("la croix clôt le tutoriel pour de bon",
+    bulle.hidden && !w.document.querySelector("[data-tuto]") && !!w.localStorage.getItem("iavocat_tuto"));
 }
 {
   const avec = H.boot({url:"http://localhost/"});
@@ -569,8 +613,8 @@ console.log("\n=== L'index se replie ===");
   const [pA, pB] = w.R.piecesLivrees(w.S);
   w.basculerPanneau("contexte");
   check("sans pièce ouverte, l'index est déplié — et une bascule le replie à tout moment", !!bascule() && deplie());
-  check("la ligne dit le dossier et son compte",
-    /dossier/i.test(bascule().textContent) && /\d+ pièces?/.test(bascule().textContent) && /\d+ règles?/.test(bascule().textContent));
+  check("la ligne dit DOSSIER, et ne compte rien (§4.6)",
+    /DOSSIER/.test(bascule().textContent) && !/\d/.test(bascule().textContent));
   w.basculerDossier();
   check("replié sans pièce : il laisse la place aux retenus", replie());
   check("le focus reste sur la bascule", d.activeElement === bascule());
@@ -666,7 +710,7 @@ console.log("\n=== Le plan ne retient que les moyens ===");
   check("mais elle n'entre pas au plan", !plaidoirie(w).includes(w.S.brouillon[i].texte));
   check("et rien n'ouvre le plan de soi-même", !plaidoirieVisible(w));
   check("mais sa porte est là dès le premier écran",
-    !!w.document.getElementById("btnPlaidoirie"));
+    !!w.document.getElementById("btnPLAIDOIRIE"));
   const moyen = H.lienTag(w, w.R.attentesDe(w.JEU.remises[0])[0].attend);
   const j = H.composerLien(w, moyen);
   w.envoyer(j);
@@ -803,7 +847,7 @@ console.log("\n=== La répétition de plaidoirie ===");
      n'offrait auparavant que des lignes « déjà envoyée », un rituel sans choix. */
   const offerts = w2n => (w2n.document.getElementById("discussion").innerHTML.match(/verserContre\(/g) || []).length;
   check("tout étant parti, le présentoir offre quand même d'opposer", offerts(w) > 0);
-  check("et il ne montre que les moyens, comme la Plaidoirie",
+  check("et il ne montre que les moyens, comme la PLAIDOIRIE",
     offerts(w) === w.S.brouillon.filter(n => w.R.estMoyen(n.lien)).length);
   /* LA CHARNIÈRE DE LA FIN 2, dans l'état où le joueur la tient vraiment : la
      conclusion ASSEMBLÉE au composeur, comprise et tue, pendant que l'avocat
@@ -835,9 +879,9 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   const attente = () => w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
   const question = () => attente().question;
 
-  check("au premier écran, aucun panneau n'est ouvert", !ouvert("CONTEXTE") && !ouvert("Plaidoirie"));
+  check("au premier écran, aucun panneau n'est ouvert", !ouvert("CONTEXTE") && !ouvert("PLAIDOIRIE"));
   check("les deux portes sont là, dans le titre du composeur",
-    !!w.document.getElementById("btnCONTEXTE") && !!w.document.getElementById("btnPlaidoirie"));
+    !!w.document.getElementById("btnCONTEXTE") && !!w.document.getElementById("btnPLAIDOIRIE"));
   check("la phrase attend un passage, donc la voix se clique aussi", !!bouton());
 
   /* LA VOIX — elle ouvre POUR ÉCRIRE, donc le panneau suivra la phrase. */
@@ -888,7 +932,7 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   w.basculerPanneau("contexte");
   check("et referme — c'est une bascule", !ouvert("CONTEXTE"));
   w.basculerPanneau("plaidoirie");
-  check("l'autre porte ouvre la Plaidoirie", ouvert("Plaidoirie"));
+  check("l'autre porte ouvre la PLAIDOIRIE", ouvert("PLAIDOIRIE"));
   check("et une seule surface à la fois", !ouvert("CONTEXTE"));
   w.fermerPanneau();
 
@@ -931,10 +975,10 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   H.composerLien(w, L2, {garder:true});
   w.basculerPanneau("plaidoirie");
   const versees = w.S.plaidoirie.length;
-  check("la phrase prête, la Plaidoirie ouverte", ouvert("Plaidoirie") && w.R.peutEnvoyer(w.S));
+  check("la phrase prête, la PLAIDOIRIE ouverte", ouvert("PLAIDOIRIE") && w.R.peutEnvoyer(w.S));
   w.envoyerCompo();
-  check("la Plaidoirie, elle, se referme à chaque envoi : on n'y écrit pas",
-    w.S.plaidoirie.length === versees + 1 && !ouvert("Plaidoirie"));
+  check("la PLAIDOIRIE, elle, se referme à chaque envoi : on n'y écrit pas",
+    w.S.plaidoirie.length === versees + 1 && !ouvert("PLAIDOIRIE"));
 }
 
 /* §4.10 — Un playtest mené au clavier : le premier geste du jeu était

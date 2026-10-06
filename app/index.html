@@ -15,9 +15,9 @@
      tabulation, et vivante si `finir` rend `.wrap` inerte. -->
 <div id="tuto" role="dialog" aria-label="Tutoriel" hidden>
   <div id="tutoCorps">
-    <span class="pas" id="tutoPas"></span>
     <span class="dit" id="tutoDit"></span>
-    <button class="passer" id="tutoPasser" onclick="tutoPasser()">je sais faire</button>
+    <!-- La croix des autres fenêtres (§4.8), sans Échap : il appartient aux panneaux. -->
+    <button class="fermer" id="tutoPasser" onclick="tutoPasser()" aria-label="Fermer le tutoriel pour de bon"><span class="x" aria-hidden="true">×</span></button>
   </div>
   <button class="tutoIcone" id="tutoIcone" hidden onclick="tutoAgrandir()" aria-label="Revoir la consigne du tutoriel">?</button>
 </div>
@@ -29,7 +29,7 @@
     <div class="body" id="discussion"></div>
   </section>
   <!-- LA PLACE LATÉRALE (§4.6) — PIÈGE : sa PLACE DANS LE DOCUMENT est toute la
-       mécanique. Deux occupants, un seul à la fois : CONTEXTE et Plaidoirie — la
+       mécanique. Deux occupants, un seul à la fois : CONTEXTE et PLAIDOIRIE — la
        pièce ouverte vit DANS le CONTEXTE (§4.6). En dessous du seuil de
        `.wrap.avecLateral`, elle s'ouvre ENTRE la conversation et le composeur,
        empilée, SANS rien recouvrir. Au-dessus, elle devient une colonne À CÔTÉ
@@ -42,10 +42,10 @@
     <h2><span id="titreCONTEXTE" tabindex="-1">CONTEXTE</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer le CONTEXTE (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="contexte"></div>
   </section>
-  <section class="col panneau" id="panPlaidoirie" hidden aria-labelledby="titrePlaidoirie">
+  <section class="col panneau" id="panPLAIDOIRIE" hidden aria-labelledby="titrePLAIDOIRIE">
     <!-- Pas de compte ici : la barre du composeur le porte, et il reste
          visible panneau ouvert ou fermé (§4.9 règle 3). -->
-    <h2><span id="titrePlaidoirie">Plaidoirie</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer la Plaidoirie (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
+    <h2><span id="titrePLAIDOIRIE">PLAIDOIRIE</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer la PLAIDOIRIE (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="plaidoirie"></div>
   </section>
   <!-- LA PIÈCE OUVERTE n'a plus de section à elle : elle s'ouvre DANS le

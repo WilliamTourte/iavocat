@@ -82,7 +82,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
    réparer l'est autrement : le défilement survit au redessin (`garderDefilement`)
    et le panneau s'ouvre sur le dernier passage retenu (`voirDernierRetenu`). */
 /* PIÈGE : `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` — sans
-   cette ligne, cacher la Plaidoirie ne ferait rien. */
+   cette ligne, cacher la PLAIDOIRIE ne ferait rien. */
 .col[hidden]{display:none}
 /* §4.6 — LA PIÈCE S'OUVRE DANS LE CONTEXTE. Le panneau cesse alors de défiler
    d'un bloc : l'index en tête, puis DEUX BANDES qui défilent chacune pour son
@@ -146,7 +146,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
   .panneau .body{max-height:45vh}
   #composeur{max-height:none}
 }
-/* AU-DESSUS DU SEUIL : la place latérale (CONTEXTE, Plaidoirie, ou la pièce
+/* AU-DESSUS DU SEUIL : la place latérale (CONTEXTE, PLAIDOIRIE, ou la pièce
    ouverte — §4.6) devient une colonne À CÔTÉ de la conversation plutôt qu'EN
    DESSOUS d'elle. Rouvert par un retour de playtest (Colas) : un joueur devait
    fermer la pièce pour relire la question qu'elle recouvrait (§3 PASSATION).
@@ -172,7 +172,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
   .wrap.avecLateral .cloture{grid-area:cloture}
   /* LE CONTEXTE PREND LES DEUX TIERS (§4.6, demande de l'auteur) : index, pièce
      et retenus se lisaient à l'étroit dans un tiers. La conversation garde le
-     tiers restant, et la question avec elle ; la Plaidoirie, une liste, garde
+     tiers restant, et la question avec elle ; la PLAIDOIRIE, une liste, garde
      sa colonne étroite. Seul le gabarit change, jamais un span. */
   .wrap.avecLateral.avecCONTEXTE{grid-template-columns: minmax(0,1fr) minmax(0,2fr)}
 }
@@ -577,7 +577,7 @@ code{font-family:var(--mono);color:var(--accent)}
     <div class="body" id="discussion"></div>
   </section>
   <!-- LA PLACE LATÉRALE (§4.6) — PIÈGE : sa PLACE DANS LE DOCUMENT est toute la
-       mécanique. Deux occupants, un seul à la fois : CONTEXTE et Plaidoirie — la
+       mécanique. Deux occupants, un seul à la fois : CONTEXTE et PLAIDOIRIE — la
        pièce ouverte vit DANS le CONTEXTE (§4.6). En dessous du seuil de
        `.wrap.avecLateral`, elle s'ouvre ENTRE la conversation et le composeur,
        empilée, SANS rien recouvrir. Au-dessus, elle devient une colonne À CÔTÉ
@@ -590,10 +590,10 @@ code{font-family:var(--mono);color:var(--accent)}
     <h2><span id="titreCONTEXTE" tabindex="-1">CONTEXTE</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer le CONTEXTE (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="contexte"></div>
   </section>
-  <section class="col panneau" id="panPlaidoirie" hidden aria-labelledby="titrePlaidoirie">
+  <section class="col panneau" id="panPLAIDOIRIE" hidden aria-labelledby="titrePLAIDOIRIE">
     <!-- Pas de compte ici : la barre du composeur le porte, et il reste
          visible panneau ouvert ou fermé (§4.9 règle 3). -->
-    <h2><span id="titrePlaidoirie">PLAIDOIRIE</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer la Plaidoirie (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
+    <h2><span id="titrePLAIDOIRIE">PLAIDOIRIE</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer la PLAIDOIRIE (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="plaidoirie"></div>
   </section>
   <!-- LA PIÈCE OUVERTE n'a plus de section à elle : elle s'ouvre DANS le
@@ -1111,7 +1111,7 @@ function creerRegles(JEU, M) {
   }
   /* LA REMISE DU TUTORIEL SE SERT DANS L'ORDRE (§3). Une phrase qui sert une
      attente À VENIR de la remise 1 est hors sujet : l'avocat répond comme à
-     toute réponse à côté, rien n'entre en Plaidoirie, et la phrase reste À
+     toute réponse à côté, rien n'entre en PLAIDOIRIE, et la phrase reste À
      ENVOYER — `versee` faux, elle repartira quand sa question viendra, puisque
      `clorePhrase` la retrouve. PIÈGE : la marquer versée la rendrait muette pour
      toujours, et la question qui l'attend ne pourrait plus être servie. Les
@@ -2248,7 +2248,7 @@ function tutoEtapeCitation(){
                       : "Retiens le passage qui répond.",
             ditLong: rate
               ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage qui y répond."
-              : "Clique sur le passage encadré qui répond pour le retenir dans ton CONTEXTE : c'est de là que tu composeras ta réponse."}
+              : "Clique sur le passage répondant à la question pour l'ajouter à ton CONTEXTE."}
       /* AU PREMIER ÉCRAN, IL SE TAIT (§4.8) : le message finit sur le bouton de
          pièces, qui dit déjà où elles sont. Il commence au CONTEXTE ouvert —
          sauf pour corriger : l'alerte, elle, parle panneau fermé. */
@@ -2258,7 +2258,7 @@ function tutoEtapeCitation(){
                       : "Ouvre une pièce.",
             ditLong: rate
               ? "Ce n'est pas ce qu'il demande. Relis sa question, puis ouvre la pièce qui y répond."
-              : "Clique sur le nom d'une pièce : elle s'ouvre ici même, dans ton CONTEXTE."}
+              : "Clique sur la pièce demandée : PV d'intervention."}
         : rate
           ? {...GESTE_CITER, n:1, ou:"#discussion .attach", alerte:true,
               dit:"Ce n'est pas ce qu'il demande.",
@@ -2591,7 +2591,7 @@ function rendreTout(){
   const force=!!focusVoulu, m=focusVoulu || memoFocus(); focusVoulu=null;
   const enBas=filEnBas();
   suivrePhrase();
-  renderDISCUSSION(); renderComposeur(); renderCONTEXTE(); renderPlaidoirie(); majCloture(); majLateral(); majTutoriel();
+  renderDISCUSSION(); renderComposeur(); renderCONTEXTE(); renderPLAIDOIRIE(); majCloture(); majLateral(); majTutoriel();
   recalerFil(enBas); majDebord();
   rendreFocus(m, force);
   voirCibleTuto();                 // APRÈS le focus, qui ne défile pas (`preventScroll`)
@@ -2721,7 +2721,7 @@ function fermerPiece(){
   rendreTout();
 }
 /* PIÈGE : UNE PIÈCE N'EST JAMAIS OUVERTE HORS DU CONTEXTE (§4.6). Toutes les
-   portes qui le referment — sa croix, la barre, l'envoi, la Plaidoirie, la
+   portes qui le referment — sa croix, la barre, l'envoi, la PLAIDOIRIE, la
    fermeture qui suit la phrase — passent par ici, en TÊTE de `rendreTout` :
    la réplique `declenche` (`R.fermerPiece`) tombe ainsi dans le fil AVANT qu'il
    soit dessiné, au moment où l'on relève les yeux (§4.10 règle 3). */
@@ -3014,7 +3014,7 @@ function viderCompo(){ R.viderCompo(S); rendreTout(); }
 /* La phrase PARTIE (§4.6) : le CONTEXTE reste tant que la REMISE ne change pas —
    la question suivante, ou la même après un refus, voudra le clavier. Il reste
    en consultation, quelle que soit la porte qui l'avait ouvert. Une remise
-   neuve le referme : un dossier arrive, on revient lire l'avocat. La Plaidoirie
+   neuve le referme : un dossier arrive, on revient lire l'avocat. La PLAIDOIRIE
    se referme toujours — on n'y écrit pas. */
 function envoyerCompo(){
   const remise=S.remisesEnvoyees;
@@ -3052,8 +3052,8 @@ function barreSurfaces(){
   return `<span class="surfaces">
     <button id="btnCONTEXTE" class="${etat("contexte")}${vientDeRetenir?" recoit":""}"
       onclick="basculerPanneau('contexte')">CONTEXTE${compte(S.retenus.length)}</button>
-    <button id="btnPlaidoirie" class="${etat("plaidoirie")}"
-      onclick="basculerPanneau('plaidoirie')">Plaidoirie${compte(moyensRetenus().length)}</button>
+    <button id="btnPLAIDOIRIE" class="${etat("plaidoirie")}"
+      onclick="basculerPanneau('plaidoirie')">PLAIDOIRIE${compte(moyensRetenus().length)}</button>
   </span>`;
 }
 function renderCompo(){
@@ -3095,7 +3095,7 @@ function renderCompo(){
   return h;
 }
 
-/* 7) LES SURFACES — l'avocat ne voit QUE la Plaidoirie, et n'y inscrit que les
+/* 7) LES SURFACES — l'avocat ne voit QUE la PLAIDOIRIE, et n'y inscrit que les
       MOYENS (§4.6). */
 /* PIÈGE : réécrire `innerHTML` remet le défilement à ZÉRO. Un panneau redessiné
    à chaque geste repartait donc en haut entre le premier passage et le second —
@@ -3136,7 +3136,7 @@ function renderComposeur(){
 function moyensRetenus(){
   return S.plaidoirie.filter(x=>S.brouillon[x.b] && R.estMoyen(S.brouillon[x.b].lien));
 }
-function renderPlaidoirie(){ garderDefilement("plaidoirie", plaidoirieHTML); }
+function renderPLAIDOIRIE(){ garderDefilement("plaidoirie", plaidoirieHTML); }
 function plaidoirieHTML(){
   const gardes=moyensRetenus();
   let h=`<div class="zone">`;
@@ -3193,7 +3193,7 @@ function finir(){
   const t=$("modalTitre"); if(t) t.focus();
 }
 
-/* §4.6 — LA PLACE LATÉRALE a deux occupants possibles — CONTEXTE et Plaidoirie
+/* §4.6 — LA PLACE LATÉRALE a deux occupants possibles — CONTEXTE et PLAIDOIRIE
    — UN SEUL À LA FOIS, et ne recouvre RIEN : la question reste
    sous les yeux, et on voit la phrase se construire en cliquant les passages.
    DEUX variables d'ÉCRAN, hors de `S`, qui est sérialisé — on ne recharge pas
@@ -3211,7 +3211,7 @@ function finir(){
 let panneau = null, panneauSuit = false;
 function majLateral(){
   { const p=$("panCONTEXTE");   if(p) p.hidden = panneau!=="contexte"; }
-  { const p=$("panPlaidoirie"); if(p) p.hidden = panneau!=="plaidoirie"; }
+  { const p=$("panPLAIDOIRIE"); if(p) p.hidden = panneau!=="plaidoirie"; }
   // La conversation, seule bande élastique, cède d'elle-même la place (§4.6) ;
   // la classe ne décide que jusqu'où elle peut céder, et c'est du CSS (§9).
   { const w=document.querySelector(".wrap"); if(w){ w.classList.toggle("avecLateral", !!panneau);
@@ -3237,7 +3237,7 @@ function voirDernierRetenu(){
    mise en page — et `npm run vue` est le seul juge (§16). */
 function majDebord(){
   const reste = b => !!b && (b.scrollHeight - b.scrollTop - b.clientHeight) > 4;
-  for(const id of ["panCONTEXTE","panPlaidoirie"]){
+  for(const id of ["panCONTEXTE","panPLAIDOIRIE"]){
     const sec=$(id); if(!sec) continue;
     sec.classList.toggle("deborde", reste(sec.querySelector(".body")));
   }
