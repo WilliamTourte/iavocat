@@ -108,6 +108,14 @@ function creerHarnais(dossier){
     if(w.S.compo.length>n) w.retirerBloc();
   };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
+  /* LES RETENUS SUIVENT LA PIÈCE (voie B, §4.6) : pièce ouverte, ils sont repliés,
+     et leurs fiches ne sont pas dessinées. Une suite qui touche une fiche les
+     déplie d'abord, par leur bascule — comme le joueur. Sans pièce, ils le sont
+     déjà, et la bascule n'existe pas. */
+  function deplierRetenus(w){
+    const b=w.document.querySelector('#zoneRetenus [data-f="retenus"]');
+    if(b && b.getAttribute("aria-expanded")==="false") b.click();
+  }
 
   /* UNE SUITE NE MARCHE QUE LES PORTES DU JOUEUR (§16). PIÈGE PAYÉ, et il a
      coûté cher : ce helper journalisait par `R.clore`, « la même porte un cran
@@ -176,7 +184,7 @@ function creerHarnais(dossier){
         const k=(L.termes||[])[0];
         const bT=idBloc(w,blocChamp(w)); if(bT<0) return -1;
         retenir(w,k);                                   // le clic retient ET pose
-        if(!w.S.compo.length) w.poserBloc(bT,iRetenu(w,k));
+        if(!w.S.compo.length) w.poserBloc(bT,iRetenu(w,k));   // sinon, sa fiche (§4.6)
         const bc=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && !x.imbrique);
         if(bc>=0) w.poserBloc(bc);
         return trouve();
@@ -210,8 +218,11 @@ function creerHarnais(dossier){
     return trouve();
   }
   /* POSER UNE COMPARAISON : un clic par passage (passe H) — le premier terme,
-     puis le second, comme la fiche les aurait pris —, puis la relation. Un second
-     clic qui ne pose rien — deux dimensions en session 1 — est un échec. */
+     puis le second, comme la fiche les aurait pris —, puis la relation. En
+     session 1, le clic ne pose que ce que la question demande (§4.6) : un
+     passage à côté, c'est sa fiche qui le prend, comme pour le joueur. Un second
+     terme que la fiche ne pose pas non plus — deux dimensions en session 1 — est
+     un échec. */
   function poserComparaison(w,L){
     const G=J(w).grammaire;
     const [t0,t1]=L.termes||[];
@@ -225,6 +236,7 @@ function creerHarnais(dossier){
     if(bD>=0){
       const n=w.S.compo.length;
       retenir(w,t1);
+      if(w.S.compo.length===n) w.poserBloc(bD,iRetenu(w,t1));
       if(w.S.compo.length===n) return echec();
       return choisirRelation(w,L.forme) || echec();
     }
@@ -383,7 +395,7 @@ function creerHarnais(dossier){
            lienVice, lienConclusion, lienFaux, lienTag, sousTerme, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
            cloreSurPlace, poserComparaison, choisirRelation, assembler, lireLeTexte, prendreLeTexte, cleArticle, prendreLiaison, livrerTout,
-           retenir, surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
+           retenir, surligner, iRetenu, deplierRetenus, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
            instruire, terminer, numeroFin, surContenu };

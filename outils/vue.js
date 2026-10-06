@@ -180,20 +180,34 @@ async function main() {
   const pid1280 = await p2.evaluate("__H.pidPremiereRemise(window)");
   await p2.click(`[data-f="d:${pid1280}"]`);
   console.log("  " + await capturer2("piece"));
-  /* UN MAUVAIS CLIC, D'ABORD (passe H, §4.8) : le clic prend, le passage à côté
-     entre dans la phrase, et la bulle montre « ← retirer » — une ancre étroite,
-     dans la barre du composeur : sa place ne se voit qu'ici. */
+  /* UN CLIC À CÔTÉ, D'ABORD (§4.6, §4.8) : en session 1, il se retient sans se
+     poser — la ligne des retenus s'allume, repliée —, et la bulle redemande le
+     bon, sur le texte de la pièce. */
   const veut1280 = await p2.evaluate(
     "__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend).termes[0]");
   const autre1280 = await p2.evaluate(`__H.empansDe(window, "${pid1280}").find(k => k !== "${veut1280}")`);
   await p2.click(`#panPiece [data-f="e:${autre1280}"]`);
-  console.log("  " + await capturer2("piece-mauvais-passage") + `   (halo : ${await haloDe(p2)})`);
+  console.log("  " + await capturer2("piece-a-cote") + `   (halo : ${await haloDe(p2)})`);
+  /* LES RETENUS SUIVENT LA PIÈCE (voie B, §4.6) : on DIT la hauteur de la pièce,
+     repliés puis dépliés — c'est la place que la voie B rend à la lecture. */
+  const hPiece = pg => pg.evaluate(`Math.round(document.getElementById("panPiece").getBoundingClientRect().height)`);
+  const hReplie1280 = await hPiece(p2);
+  await p2.click(`#zoneRetenus [data-f="retenus"]`);
+  const hDeplie1280 = await hPiece(p2);
+  console.log("  " + await capturer2("retenus-deplies"));
+  /* UNE FICHE PRISE À TORT (§4.8) : les fiches prennent tout, et la bulle
+     montre « ← retirer » — une ancre étroite, dans la barre du composeur : sa
+     place ne se voit qu'ici. */
+  await p2.click(`#zoneRetenus [data-f="c:${autre1280}"]`);
+  console.log("  " + await capturer2("fiche-a-tort") + `   (halo : ${await haloDe(p2)})`);
   await p2.click(`#composeur [data-f="retirer"]`);
+  await p2.click(`#zoneRetenus [data-f="retenus"]`);
   /* Un VRAI clic sur le passage attendu : il se retient ET se pose (passe H,
      §4.6) — la confirmation (§4.3) ne vit qu'un rendu, et seule une capture
      prise juste après la montre. Plus de fiche à prendre. */
   await p2.click(`#panPiece [data-f="e:${veut1280}"]`);
   console.log("  " + await capturer2("piece-pris"));
+  console.log(`      la pièce : ${hReplie1280}px, retenus repliés ; ${hDeplie1280}px, dépliés`);
   const pli = await p2.evaluate(`(() => {
     const e = document.querySelector(".envoi");
     return { envoi: e ? Math.round(e.getBoundingClientRect().bottom) : null, fenetre: innerHeight,
@@ -312,14 +326,23 @@ async function main() {
   console.log("  " + await capturer3("piece"));
   const veut390 = await p3.evaluate(
     "__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend).termes[0]");
-  /* Le mauvais clic, puis « ← retirer » (passe H) : la bulle montre un bouton
-     étroit au bas d'un écran étroit. */
+  /* Le clic à côté, qui se retient sans se poser (§4.6) ; puis le bon. */
   const autre390 = await p3.evaluate(`__H.empansDe(window, "${pid390}").find(k => k !== "${veut390}")`);
   await p3.click(`#panPiece [data-f="e:${autre390}"]`);
-  console.log("  " + await capturer3("piece-mauvais-passage") + `   (halo : ${await haloDe(p3)})`);
-  await p3.click(`#composeur [data-f="retirer"]`);
+  console.log("  " + await capturer3("piece-a-cote") + `   (halo : ${await haloDe(p3)})`);
   await p3.click(`#panPiece [data-f="e:${veut390}"]`);
   console.log("  " + await capturer3("piece-pris"));
+  /* La place rendue à la pièce, là où elle manquait le plus (§4.6) : repliés,
+     puis dépliés. Et la fiche prise à tort : « ← retirer », bouton étroit au
+     bas d'un écran étroit. */
+  const hReplie390 = await hPiece(p3);
+  await p3.click(`#zoneRetenus [data-f="retenus"]`);
+  const hDeplie390 = await hPiece(p3);
+  console.log("  " + await capturer3("retenus-deplies"));
+  console.log(`      la pièce : ${hReplie390}px, retenus repliés ; ${hDeplie390}px, dépliés`);
+  await p3.click(`#composeur [data-f="retirer"]`);
+  await p3.click(`#zoneRetenus [data-f="c:${autre390}"]`);
+  console.log("  " + await capturer3("fiche-a-tort") + `   (halo : ${await haloDe(p3)})`);
 
   await navigateur.close();
 

@@ -268,6 +268,29 @@ function creerRegles(JEU, M) {
     }
     majPressentiment(S);
   }
+  /* CE QUE LA QUESTION DEMANDE (§4.6, §4.11 point 6) : le LIEN que l'attente
+     courante attend — jamais un nom d'attente câblé —, ses passages, et le
+     texte de l'article de la liaison qui emboîte sa forme. Une réponse à une
+     question À VENIR n'est pas demandée : la remise 1 se sert dans l'ordre
+     (§3). Le tutoriel le lit aussi, au lieu de le redériver (§4.8). */
+  function lienAttendu(S) {
+    const a = attenteCourante(S, remiseCourante(S));
+    return (a && a.attend && (JEU.liens || []).find(L => L.tag === a.attend)) || null;
+  }
+  function liaisonAttendue(S) {
+    const L = lienAttendu(S);
+    return (L && (JEU.grammaire.blocs || []).find(b => estLiaisonArticle(b) && b.forme === L.forme)) || null;
+  }
+  function passagesDemandes(S) {
+    const out = [];
+    const feuilles = t => { for (const x of (t && t.termes) || [])
+      if (typeof x === "string") out.push(x); else feuilles(x); };
+    feuilles(lienAttendu(S));
+    const b = liaisonAttendue(S);
+    const eid = b && Object.keys((JEU.pieces[b.piece] || {}).empans || {}).find(e => estArticle(b.piece + "." + e));
+    if (eid) out.push(b.piece + "." + eid);
+    return out;
+  }
   /* RETENIR, ET PRENDRE D'UN MÊME CLIC (§4.6, passe H). Le clic sur un passage
      le retient — toujours : la pièce n'ajoute que — et, si la phrase attend un
      passage, l'y pose ; le texte d'un article fonde la phrase qui attend un
@@ -278,7 +301,8 @@ function creerRegles(JEU, M) {
      la même chose. SECOND PIÈGE : un passage déjà dans la phrase n'y retourne
      pas — en second terme, « le même passage deux fois » serait refusé, un
      reproche pour un clic de lecture. Rend ce qui a eu lieu : "pose", "refuse"
-     (`S.refus` le dit), "dejaPhrase", ou null — retenu seulement. */
+     (`S.refus` le dit), "dejaPhrase", ou null — retenu seulement : la phrase
+     n'attend rien, ou, en session 1, la question ne le demande pas. */
   const dansPhrase = (S, k) => S.compo.some(p => {
     const b = blocParId(p.bloc);
     if (!b) return false;
@@ -289,6 +313,13 @@ function creerRegles(JEU, M) {
     const k = pid + "." + eid;
     surligner(S, pid, eid);
     if (dansPhrase(S, k)) return "dejaPhrase";
+    /* §4.6 — EN SESSION 1, LE CLIC NE POSE QUE CE QUE LA QUESTION DEMANDE : un
+       passage à côté se retient, sans bruit, et la bulle redemande le bon. Une
+       règle de la REMISE, tutoriel ouvert ou fermé (§4.11). PIÈGE : les fiches,
+       elles, prennent tout — c'est par elles que se composent les lectures
+       justes (§6) ; et dès la session 2, désigner ce qui sert la question
+       serait une lampe torche. */
+    if (enCalibration(S) && !passagesDemandes(S).includes(k)) return null;
     const i = estArticle(k)
       ? blocsOfferts(S).findIndex(b => estLiaisonArticle(b) && b.piece === pid)
       : indexTermeChamp(S);
@@ -536,7 +567,7 @@ function creerRegles(JEU, M) {
            estArticle, articleRetenu, estLiaisonArticle, articleAttendu,
            comparaisonPossible, dimAttendue, estSecondTerme, relationsOffertes,
            chaineCompo, pressentir,
-           poserBloc, retenirEtPrendre, dansPhrase, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
+           poserBloc, retenirEtPrendre, dansPhrase, lienAttendu, liaisonAttendue, passagesDemandes, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, dejaEnvoyee, envoyerCompo, compoFinie,
            estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
