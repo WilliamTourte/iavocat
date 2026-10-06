@@ -415,36 +415,62 @@ console.log("\n=== Les deux gestes, montrés ===");
     bandeau().hidden && !halo() && !!w.document.querySelector("#composeur .envoi"));
 
   w.envoyerCompo();
-  check("la réponse envoyée, il se tait", bandeau().hidden && !halo());
-  check("mais il ne ferme pas encore : la comparaison reste à montrer",
+  check("la citation envoyée, il ne ferme pas : la comparaison reste à montrer",
     !w.localStorage.getItem("iavocat_tuto"));
 
   // Le second geste — même session, dès que Maître Auber attend une
-  // comparaison au lieu d'une simple citation (§4.8).
+  // comparaison au lieu d'une simple citation (§4.8). Les deux passages ne sont
+  // plus extraits d'avance par deux questions (§3) : il faut d'abord les retenir.
   const attenteSuivante = () => w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
-  const veut2 = H.lienTag(w, attenteSuivante().attend).termes[0];
-  const [pid2] = H.deK(veut2);
-  w.ouvrirPiece(pid2);
-  H.surligner(w, veut2);
-  w.fermerPiece();
-  check("une deuxième citation, geste déjà connu, ne rallume pas le halo",
-    bandeau().hidden && !halo());
-  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut2));
-  w.envoyerCompo();
-  check("elle non plus ne ferme rien pour de bon",
-    !w.localStorage.getItem("iavocat_tuto"));
-  check("Maître Auber attend maintenant une comparaison",
-    !!H.sousTerme(H.lienTag(w, attenteSuivante().attend)));
-  /* §4.6 — la remise attend encore une réponse : le CONTEXTE, ouvert par la
-     pièce, est resté ouvert, et le halo y va tout droit. */
-  check("et le halo revient aussitôt, sur la zone du CONTEXTE resté ouvert : deux passages sont requis",
-    !!halo() && halo().id === "zoneRetenus");
+  const dit = () => w.document.getElementById("tutoDit").textContent;
+  const reduit = () => bandeau().hasAttribute("data-reduit");
   const veutA = attenteSuivante().attend;
+  check("la citation servie, Maître Auber attend aussitôt une comparaison",
+    !!H.sousTerme(H.lienTag(w, veutA)));
   const [tA, tB] = H.sousTerme(H.lienTag(w, veutA)).termes;
+  const [pA, pB] = [H.deK(tA)[0], H.deK(tB)[0]];
+  check("aucun des deux passages n'est encore au CONTEXTE", !w.S.retenus.includes(tA) && !w.S.retenus.includes(tB));
+  /* §4.6 — la remise attend encore une réponse : le CONTEXTE est resté ouvert,
+     et le halo y va tout droit — à l'index, pour RETENIR, comme pour citer. */
+  check("le halo va à l'index du CONTEXTE resté ouvert : retenir d'abord",
+    !!halo() && halo().id === "zoneDossier" && !reduit() && /deux passages/.test(dit()));
+  check("le passage de la citation, resté au CONTEXTE, ne sonne pas faux",
+    !bandeau().hasAttribute("data-alerte"));
+  w.ouvrirPiece(pA);
+  check("la pièce ouverte, il montre son TEXTE, jamais un empan",
+    !!halo() && halo().classList.contains("piecetexte")
+    && ![...w.document.querySelectorAll(".empan")].some(e => e.hasAttribute("data-tuto")));
+  const servi = H.lienTag(w, w.S.satisfaits[0]).termes[0];
+  const autreA = H.empansDe(w, pA).find(k => ![tA, tB, servi].includes(k) && !w.S.retenus.includes(k));
+  H.surligner(w, autreA);
+  check("un autre passage retenu : l'alerte, comme pour citer",
+    bandeau().hasAttribute("data-alerte") && !reduit());
+  w.oublier(...H.deK(autreA));
+  H.surligner(w, tA);
+  check("le premier passage attendu retenu, l'alerte tombe", !bandeau().hasAttribute("data-alerte"));
+  if (pA !== pB) {
+    /* §4.8 — UNE PIÈCE QUI NE PORTE AUCUN PASSAGE ATTENDU RENVOIE À L'INDEX :
+       le halo restait sur un texte où il n'y avait plus rien à chercher. */
+    check("la pièce ne porte plus rien d'attendu : le halo retourne à l'index, replié par la pièce",
+      !!halo() && halo().id === "zoneDossier" && /Déplie/.test(dit()) && !reduit());
+    check("et le tutoriel ne déplie rien à la place du joueur",
+      w.document.getElementById("dossierListe").hidden);
+    w.basculerDossier();
+    check("déplié, il dit d'ouvrir la pièce demandée — une consigne neuve, développée",
+      halo().id === "zoneDossier" && dit().includes(w.JEU.pieces[pB].titre) && !reduit());
+    w.ouvrirPiece(pB);
+  } else check("(les deux passages dans la même pièce : le halo reste sur son texte)",
+    !!halo() && halo().classList.contains("piecetexte"));
+  check("dans la pièce du second passage, il montre son texte : consigne neuve",
+    !!halo() && halo().classList.contains("piecetexte") && /second/.test(dit()) && !reduit());
+  H.surligner(w, tB);
+  check("les deux retenus, il montre les retenus pour les prendre",
+    !!halo() && halo().id === "zoneRetenus");
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(tA));
   check("un premier passage posé, le halo reste sur le contexte — il en faut un second",
-    halo() && halo().id === "zoneRetenus");
+    halo() && halo().id === "zoneRetenus" && /second/.test(dit()));
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(tB));
+  w.fermerPiece();      // l'index se déplie : le cas « pièce ouverte » vient plus bas
   /* §4.5 — un texte s'invoque une fois LU. Tant que l'article n'est pas ouvert,
      le bandeau montre OÙ LE LIRE : il ne pointe pas une proposition qui n'existe
      pas, et il ne dit pas « Envoyer » alors que la leçon est l'article. */
@@ -488,6 +514,29 @@ console.log("\n=== Les deux gestes, montrés ===");
     bandeau().hidden && !halo());
   check("et il ne reviendra pas", !!w.localStorage.getItem("iavocat_tuto"));
 }
+{
+  /* §4.8 — UN GESTE DÉJÀ MONTRÉ NE RALLUME PAS LE HALO. La remise 1 du jour
+     enchaîne la citation et la comparaison (§3) : plus de seconde citation entre
+     les deux. Contenu MUTÉ, donc — on en intercale une, servie par une citation
+     sans tag qu'on tague —, sans quoi ce contrôle passerait par le vide. */
+  const c = H.contenuLivre();
+  const as = H.attentesContenu(c.remises[0]);
+  const libre = c.liens.find(L => !L.tag && typeof L.termes[0] === "string");
+  check("le contenu muté a sa seconde citation", !!libre && as.length > 1);
+  if (libre && as.length > 1) {
+    libre.tag = "_seconde_citation";
+    as.splice(1, 0, { attend: libre.tag, question: "Et celle-ci ?" });
+    const w = H.boot({ contenu: c, url: "http://localhost/" });
+    const bandeau = () => w.document.getElementById("tuto");
+    H.composerLien(w, H.lienTag(w, as[0].attend));
+    w.basculerPanneau("contexte");
+    check("une seconde citation, geste déjà connu, ne rallume pas le halo",
+      w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend === libre.tag
+      && bandeau().hidden && !w.document.querySelector("[data-tuto]"));
+    H.composerLien(w, libre);
+    check("et la comparaison venue, il reparle", !bandeau().hidden && !!w.document.querySelector("[data-tuto]"));
+  }
+}
 /* §3 — LA REMISE DU TUTORIEL SE SERT DANS L'ORDRE (retour de playtest, Jean).
    La réponse à la deuxième question, envoyée à la première, la servait par
    anticipation : sa réplique tombait, la phrase entrait en PLAIDOIRIE, la
@@ -501,7 +550,7 @@ console.log("\n=== La remise du tutoriel se sert dans l'ordre ===");
   const courante = () => w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
   const [a1, a2] = w.R.attentesDe(w.R.remiseCourante(w.S));
   const L1 = H.lienTag(w, a1.attend), L2 = H.lienTag(w, a2.attend);
-  check("la remise 1 attend au moins deux citations", !!L1 && !!L2 && typeof L2.termes[0] === "string");
+  check("la remise 1 attend au moins deux réponses", !!L1 && !!L2);
 
   const i = H.composerLien(w, L2);
   check("la réponse à la question suivante, envoyée trop tôt, part bien", i >= 0);
@@ -936,15 +985,13 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   check("et une seule surface à la fois", !ouvert("CONTEXTE"));
   w.fermerPanneau();
 
-  /* LA COMPARAISON — le panneau doit tenir entre les DEUX passages. */
-  const veut2 = H.lienTag(w, attente().attend).termes[0];
-  const [pid2] = H.deK(veut2);
-  w.ouvrirPiece(pid2); H.surligner(w, veut2); w.fermerPiece();
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, veut2));
-  w.envoyerCompo();
+  /* LA COMPARAISON — le panneau doit tenir entre les DEUX passages. Elle suit
+     la citation (§3) : on retient ses deux passages, chacun dans sa pièce. */
   const sous = H.sousTerme(H.lienTag(w, attente().attend));
   check("Maître Auber attend maintenant une comparaison", !!sous);
   const [tA, tB] = sous.termes;
+  for (const k of [tA, tB]) { w.ouvrirPiece(H.deK(k)[0]); H.surligner(w, k); w.fermerPiece(); }
+  w.fermerPanneau();
   /* L'article LU d'abord : non lu, le CONTEXTE reste — c'est là qu'on va le
      lire (§4.6), et le contrôle qui suit figeait ce défaut. */
   H.lireLeTexte(w, H.lienTag(w, attente().attend).forme);

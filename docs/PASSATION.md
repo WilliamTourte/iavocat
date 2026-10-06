@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 6 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 552 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 560 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -300,6 +300,24 @@ l'auteur** : l'agacement de l'avocat **retombe à chaque remise** (§4.11), et l
 l'article (§4.6). Un contrôle de `test_declencheurs` passait par le vide une fois le tag retiré : il
 fabrique désormais son lien libre, et le dit.
 
+**Le 6 octobre, la passe E du `TODO.md` : la remise 1 en deux questions** (retour de Bérengère,
+tranché par l'auteur ; §3, §4.8). Elle demandait l'heure d'arrivée, puis l'heure des éclats de voix,
+puis leur lien : la citation qu'on apprenait était la moitié de la comparaison qu'on demandait
+ensuite. Elle demande désormais **qui a rédigé le PV** — un passage étranger à la comparaison —,
+puis **les deux heures sous l'article 3**, sans plus dire *« cette incohérence »* : la question
+nomme les deux heures, jamais leur contradiction. Le passage qui répond **nomme le brigadier**
+(*« par mes soins, brigadier N. »*, §6) — arbitré par l'auteur : réduit à *« par mes soins »*, il
+apprenait à lire une signature, le geste même que le vice exigera. Les citations de 22h04 et de
+22h30 perdent leur lien : seules, elles reçoivent *« Ce n'est pas ce que je te demande »*, juste aux
+deux questions — un lien ne connaît pas sa question. **Le tutoriel apprend à retenir pour comparer**
+(`tutoRetenir`, commun aux deux gestes) : l'index, puis le texte de la pièce, jusqu'à ce que les
+deux passages soient au CONTEXTE ; **une pièce qui ne porte aucun passage attendu renvoie à
+l'index**, aux deux gestes — arbitré par l'auteur ; l'alerte se dérive du dernier passage retenu, la
+citation déjà servie exceptée. Le cas *« déjà envoyée »* de Jean sort du chemin, la règle reste
+(§4.5). `npm run vue` capture les temps de *retenir pour comparer* par de vrais clics. **Une
+friction à voir en jeu** : à la seconde question, la voix du composeur dit *« Prends un ou plusieurs
+passages de ton contexte »* — le CONTEXTE n'est plus vide — pendant que la bulle dit de retenir.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -445,6 +463,11 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   `S.satisfaits` ne veut dire « citation acquise » que parce que la remise 1 se sert DANS L'ORDRE**
   (`horsOrdre`, §3 CONCEPTION) : une réponse qui servait par anticipation la deuxième question
   passait pour la première, et le tutoriel se taisait au milieu de *citer*.
+- **Retenir se dérive aux deux gestes** (`tutoRetenir`, §4.8) des passages du lien attendu
+  (`tutoTermes`). Son alerte lit le DERNIER passage retenu, ni attendu ni cité par une réponse servie
+  (`tutoServis`) : sans cette exception, la citation de la première question sonnait faux à la
+  seconde. Et la clé de `tutoVues` distingue le second passage cherché (`n`) : sans elle, *« Ouvre une
+  pièce »* restait réduite au moment même où elle nomme une autre pièce.
 - **Cacher la clôture, c'est cacher le BOUTON et son aide, jamais `.cloture`** : la barre porte aussi
   *« ⟲ recommencer »*, qui ne s'absente jamais (§4.9). Et `disabled` **double** `hidden` — trois
   contrôles lisent `btnCloture.disabled` pour dire que le refus est vrai, et il doit l'être aussi pour
@@ -472,7 +495,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   réponse la plus facile** — l'ancien libellé était juridiquement faux, et un joueur l'avait vu avant
   nous. La question reste entière sur le nouveau.
 - **La CALIBRATION tient-elle ?** Première chose à regarder : la session 1 se sent-elle comme un
-  examen, et la remise 2 comme une charnière ? Si l'examen ne se sent pas, la session 1 redevient une
+  examen, et la remise 2 comme une charnière ? *Depuis la passe E, en deux questions : un fait sans
+  lendemain, puis la comparaison entière (§3).* Si l'examen ne se sent pas, la session 1 redevient une
   dictée — et c'est la seule chose que le recadrage du 1ᵉʳ octobre devait réparer (§3). **Non joué.**
 - **La compréhension est-elle encore *exprimée* ?** Et **une question posée guide-t-elle trop ?** Repli
   sans code : retirer les `question` une à une, couper le tutoriel avant le 3ᵉ temps. *Le rapport du
@@ -624,6 +648,11 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   et à côté d'une zone longue comme le texte de la pièce, couvre-t-elle ce qu'on vient chercher ? Elle
   se réduit au geste suivant ; reste à savoir si ça suffit.
 
+- **La seconde question de la calibration, deux voix qui ne disent pas la même chose** (passe E) :
+  la bulle dit de retenir les deux heures, la voix du composeur de prendre un passage du CONTEXTE —
+  qui n'est plus vide, la citation y est restée. La voix se dérive de la phrase et du CONTEXTE,
+  jamais de la question (§4.9 règle 1) ; reste à voir si un joueur y prend la citation pour une
+  heure. Le même écart existe en remise 2, CONTEXTE plein. **Non joué.**
 - **Le rapport du 6 octobre (Jean 4) laisse cinq points à trancher** — au `TODO.md`, §0 : les réponses
   de calibration en PLAIDOIRIE (le §4.6 les y veut), le dilemme jamais posé (rejoint les directives
   et le canal de révélation, ci-dessus), le féminin de la Fin 2, le palier sans séjour, le même
@@ -806,3 +835,8 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   dit *« Prends »* et dérive sa pièce (`pieceDemandee`) ; les compteurs d'agacement remis à zéro par
   `envoyerRemise` ; `suivrePhrase` attend un relais (`blocsOfferts`, `compoFinie`) ; contenu : `libelle`
   des articles, deux liens sans tag, fins réécrites. 552 contrôles, 8 règles du gardien, ESLint.
+- **6 octobre, passe E du `TODO.md` : la remise 1 en deux questions** (§3, §4.8) — `q_redacteur`
+  remplace `q_arrivee` et `q_voix` ; `e_sig` nomme le brigadier ; les liens de 22h04 et 22h30
+  retirés ; `tutoRetenir`, `tutoTermes`, `tutoServis` (`tutoAttendu` retiré), la pièce sans passage
+  attendu renvoie à l'index ; une seconde citation, sur contenu muté, ne rallume pas le halo ; `npm
+  run vue` capture *retenir pour comparer*. 560 contrôles, 8 règles du gardien, ESLint.

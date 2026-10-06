@@ -234,14 +234,14 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **516 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **560 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
 | `test_o5.js` (44) | l'index du dossier, **et le bouton de pièces qui compte comme lui** ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
-| `test_declencheurs.js` (42) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (325) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le CONTEXTE qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, les remises closes (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
+| `test_declencheurs.js` (40) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
+| `test_parcours.js` (335) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel — **retenir aux deux gestes** (§4.8) —, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le CONTEXTE qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, les remises closes (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
 | `smoke_atelier.js` (103) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
@@ -334,7 +334,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | **envoyer** — le seul geste ; la remise du tutoriel servie **dans l'ordre** (§3) | `envoyerCompo` → `clore` → `envoyer` (`horsOrdre` d'abord) → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPLAIDOIRIE` |
 | ce qui entre à la PLAIDOIRIE | `estMoyen` | `renderPLAIDOIRIE`, `moyensRetenus` — **panneau**, ouvert par sa porte (§4.9) |
 | clôturer, répétition, fin ; **opposer** un moyen à une affirmation | `instructionComplete`, `cloturer`, `verserContre` (pose `contre`, même sur une phrase déjà versée — **si l'affirmation la prend**, `repondA`), `avancerRepetition`, `finir` | `majCloture`, le présentoir dans `renderDISCUSSION` (les **moyens** seuls, l'affirmation redite en tête, *« déplacer ici »*), `finir` (modale) |
-| le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoArticle`, `tutoEtape`, `majTutoriel` → `voirCibleTuto`, `placerTuto` — **bulle ancrée au halo**, en surimpression, premier enfant de `<body>` ; une étape vise une zone (`ou`, littéral) et, au besoin, un élément précis dedans (`f`, une clé `data-f`) |
+| le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoTermes`, `tutoRetenir` (retenir, aux deux gestes), `tutoArticle`, `tutoEtape`, `majTutoriel` → `voirCibleTuto`, `placerTuto` — **bulle ancrée au halo**, en surimpression, premier enfant de `<body>` ; une étape vise une zone (`ou`, littéral) et, au besoin, un élément précis dedans (`f`, une clé `data-f`) |
 
 - **Les deux voies de clôture** sont le **même** `clore`, appelé par le **même** `envoyerCompo` ; ce qui
   les sépare vit dans le contenu — une liaison `cite:true` contre une forme d'arité 2 déduite.

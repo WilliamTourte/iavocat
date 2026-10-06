@@ -64,8 +64,8 @@ jamais un verrou** — c'est parce qu'il est hors du chemin obligatoire que les 
 
 ```
 Session 1  PV + audition + article 3, D'UN SEUL LOT
-           deux questions d'horaire — un empan : un fait se cite
-           puis, sans nouvelle livraison : conclure sur le témoignage
+           qui a rédigé le PV — un empan : un fait se cite
+           puis, sans nouvelle livraison : les deux heures, sous l'article 3
            — deux empans + l'article 3 : une relation se fonde
 Session 2  labo, les deux pièces de prélèvement, protocole, seuil
            ★ la preuve, ⚠ le vice (hors chemin), ✗ le faux vice
@@ -73,9 +73,17 @@ Session 2  labo, les deux pièces de prélèvement, protocole, seuil
 Clôture → répétition → procès hors-champ → Fin 3 / Fin 1 / Fin 2
 ```
 
-Session 1 apprend à lire, à citer, **puis** à mettre en rapport — ses deux questions d'horaire ont
-extrait la paire que la troisième fera comparer ; prix assumé, elles expriment déjà la moitié de la
-compréhension. **Charnière de la Fin 3** : la dernière attente servie, **c'est l'avocat qui demande
+Session 1 apprend à lire, à citer, **puis** à mettre en rapport — **en deux questions**, retour de
+playtest (Bérengère), tranché par l'auteur le 6 octobre. Elle en posait trois : l'heure d'arrivée,
+l'heure des éclats de voix, puis leur lien sous l'article 3. Les deux premières extrayaient la paire
+que la troisième faisait comparer — un prix qu'on disait assumé : la citation qu'on apprenait était
+la moitié de la comparaison qu'on demandait ensuite, et la compréhension était à moitié exprimée
+avant d'être demandée. **La première question porte donc sur un passage étranger à la
+comparaison** — *qui a rédigé le PV ?* —, un fait sans lendemain, qui apprend à citer sans rien
+préparer ; **la seconde demande la comparaison entière**, les deux heures sous l'article 3, et c'est
+elle qui les fait retenir (§4.8). Chaque geste du tutoriel a sa question. Et cette question **nomme
+les deux heures, jamais leur contradiction** : la voir reste au joueur, et l'avocat ne la dit
+qu'après (§4.8). **Charnière de la Fin 3** : la dernière attente servie, **c'est l'avocat qui demande
 s'il tient tout** — l'IA *peut* répondre que oui, et laisser filer. La question est portée par le
 **contenu**, sur la **dernière** attente de la dernière session : elle paraît donc à l'instant exact
 où le droit de répondre s'ouvre, sans qu'aucune règle ait à le savoir (§4.9).
@@ -203,9 +211,12 @@ réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte 
   **un seul geste** : *« → Envoyer »*, pour un empan comme pour deux.
 - **Une phrase déjà envoyée ne repart pas, et le composeur le dit** — retour de playtest (Jean, 6
   octobre) : renvoyée, elle s'effaçait du composeur, rien n'arrivait dans la DISCUSSION, et rien ne
-  l'annonçait. Le cas est naturel — à la troisième question de la remise 1, le premier passage posé
-  forme déjà la citation envoyée à la première, et *« → Envoyer »* est le seul bouton plein. Le bouton
-  cède donc la place à *« déjà envoyée »*, et la phrase **reste** : on la complète, ou on la défait.
+  l'annonçait. Le cas était naturel — à la troisième question de la remise 1, le premier passage
+  posé formait déjà la citation envoyée à la première, et *« → Envoyer »* était le seul bouton
+  plein. La remise 1 en deux questions l'a retiré du chemin (§3) — la citation qu'on apprend n'est
+  plus la moitié de la comparaison —, mais il reste à portée de qui recompose ce qu'il a déjà dit.
+  Le bouton cède donc la place à *« déjà envoyée »*, et la phrase **reste** : on la complète, ou on
+  la défait.
   L'avocat n'a rien à en dire, rien ne lui est parvenu. Une phrase dite **hors ordre** en remise 1
   n'a pas été versée (§3) : elle repart, comme avant.
 - **L'article est le verbe** : la liaison *« …, en violation de l'article 7 »* **est** la base
@@ -439,8 +450,9 @@ session 1. **Pressentir ne produit rien** : qui comprend et vide son composeur a
 **Le tutoriel pointe *où le geste a lieu*, jamais *quoi répondre*** — seul endroit où l'écran s'adresse
 au joueur hors fiction. Il enseigne **deux gestes**, chacun la première fois qu'il se présente : la
 citation d'abord, puis — dans la même session, dès que Maître Auber attend une comparaison — la mise en
-relation. Entre les deux, et une fois les deux acquis, il se tait ; il ne réapparaît pas pour un geste
-déjà montré (une seconde citation, par exemple).
+relation. Les deux s'enchaînent : la citation envoyée, la question suivante demande la comparaison
+(§3). Une fois les deux acquis, il se tait ; et il ne réapparaît pas pour un geste déjà montré — une
+seconde citation, si une affaire en demandait une avant la comparaison.
 
 **La fiction peut désigner ; le chrome, jamais.** Maître Auber *sait* — la session 1 est une
 calibration (§3) — et il a donc le droit de dire que deux horaires ne tiennent pas ensemble : il
@@ -450,8 +462,10 @@ Un joueur a trouvé l'incohérence seul, puis lu dans le bandeau ce qu'il venait
 **Et l'avocat ne la dit qu'APRÈS** : vérifier, c'est commenter ce que le joueur a composé, jamais le
 lui dicter. Sa réplique à la deuxième question énonçait la contradiction avant que la troisième ne
 demande de la composer — elle annonçait au lieu de vérifier, relevé par deux playtests (le second,
-Jean). Le constat passe dans la réplique qui **accueille** la comparaison ; avant, l'avocat prend
-acte de l'heure, rien de plus. Même exigence pour ses refus : il **renvoie à la lecture** de
+Jean). Le constat passe dans la réplique qui **accueille** la comparaison. **Et sa question ne la
+nomme pas davantage** — garde-fou relevé par les mêmes playtests : elle nomme **les deux heures**,
+jamais **leur contradiction** ; une question qui demande quoi faire *« de cette incohérence »* a
+déjà trouvé à la place du joueur. Même exigence pour ses refus : il **renvoie à la lecture** de
 l'article (*« Relis ce qu'il exige »*), il ne le résume pas — un refus qui résume donne la solution
 à la deuxième erreur. Et ses réactions spontanées à une pièce (`declenche`) peuvent pousser vers une
 piste — le faux vice en vit (§6) —, jamais faire le calcul à la place du joueur.
@@ -468,10 +482,23 @@ plus, c'est l'avocat** : lui est quelqu'un.
 | | 2 | un passage se retient | **le texte de la pièce**, en entier — ouverte dans le CONTEXTE, plus rien à refermer (§4.6) |
 | | 3 | ce qu'on retient est le clavier | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
 | | — | *rien ne part tant qu'on n'envoie pas* | **rien** : *« → Envoyer »*, seul bouton plein, se montre seul |
-| **mettre en relation** | 1 | une réponse peut tenir sur **deux** passages | **toute la zone des retenus**, au premier passage comme au second |
-| | 2 | une relation seule ne suffit pas, et on n'invoque que ce qu'on a lu (§4.5) — *s'il n'est pas lu* | **la puce de l'article**, dans l'index — la porte CONTEXTE s'il est fermé ; *« déplier »* si l'index est replié, ce qu'une pièce encore ouverte fait d'ordinaire : le tutoriel ne déplie rien à la place du joueur |
-| | 3 | il lui faut un article qui la fonde | **le bloc de l'article**, dans les propositions du composeur |
+| **mettre en relation** | 1 | une réponse peut tenir sur **deux** passages, et chacun se retient comme on retient pour citer | l'index, puis **le texte de la pièce** — tant que les deux passages attendus ne sont pas retenus, jamais l'empan ; la porte CONTEXTE s'il est fermé |
+| | 2 | les deux se prennent, l'un puis l'autre | **toute la zone des retenus**, au premier passage comme au second |
+| | 3 | une relation seule ne suffit pas, et on n'invoque que ce qu'on a lu (§4.5) — *s'il n'est pas lu* | **la puce de l'article**, dans l'index — la porte CONTEXTE s'il est fermé ; *« déplier »* si l'index est replié, ce qu'une pièce encore ouverte fait d'ordinaire : le tutoriel ne déplie rien à la place du joueur |
+| | 4 | il lui faut un article qui la fonde | **le bloc de l'article**, dans les propositions du composeur |
 | | — | *le même envoi qu'au premier geste* | **rien**, pour la même raison |
+
+**Retenir se montre aux deux gestes** — retour de playtest (Bérengère). Les deux heures n'étant plus
+extraites d'avance par deux questions (§3), la comparaison commence par les chercher : le halo va à
+l'index, puis au texte de la pièce, comme pour citer, et ne passe aux retenus que les deux passages
+attendus retenus. Il ne désigne jamais l'empan ; la bulle nomme la pièce demandée, que la question
+nomme déjà. **Une pièce ouverte qui ne porte aucun passage attendu renvoie à l'index**, aux deux
+gestes — arbitré par l'auteur : la comparaison court sur deux pièces, et le premier passage retenu,
+la pièce encore ouverte, le halo serait resté sur un texte où il n'y a plus rien à chercher.
+L'index replié — une pièce ouverte le replie —, le halo l'entoure tel quel et la bulle dit de le
+déplier : la zone, toujours, pas le bouton. **L'alerte se dérive du dernier passage retenu** : ni
+attendu, ni cité par une réponse déjà servie — sans quoi le passage de la citation, retenu pour la
+première question, sonnerait faux à la seconde.
 
 **La bulle ne compte pas** — retour de l'auteur. Elle a porté un rang (*citer · 2/4*), puis deux
 séries chacune son total, une numérotation unique revenant de *6/6* à *4/6* au moment d'envoyer ;
@@ -482,7 +509,8 @@ plutôt qu'un simple empan. Le tutoriel le lit dans `JEU.liens`, jamais dans un 
 
 **L'article se désigne, la relation jamais** — demandé par l'auteur, et c'est la seule exception à
 *le halo entoure la zone*. La trouvaille de la comparaison est la **relation entre deux passages** :
-le halo ne la montre pas, il entoure toute la zone des retenus. L'article, lui, Maître Auber le
+le halo ne la montre pas : il entoure le texte de chaque pièce pour retenir, puis toute la zone des
+retenus pour prendre. L'article, lui, Maître Auber le
 demande déjà (*« quel article est-ce qu'on peut citer »*), et la remise de calibration n'en livre
 qu'un : désigner sa puce, puis son bloc, ne choisit rien à la place du joueur — il épargne seulement
 de chercher où se lit un texte et où il s'invoque. La désignation se **dérive** du lien attendu (sa
@@ -496,15 +524,14 @@ lève rien, puisque le tutoriel ne décide rien (§4.11).
 
 **Le halo entoure la zone, jamais le bon empan** (§4.3). **Il corrige, il n'empêche pas** : rien n'est
 refusé, il ne dit jamais lequel c'était, et la dérivation par laquelle il sait ce qu'attend la question
-**s'éteint avec lui**. **Il ne décide rien** — aucun état neuf, aucune règle, et il peut se taire — y
-compris entre le geste 4 et le geste 5, le temps d'une citation déjà connue.
+**s'éteint avec lui**. **Il ne décide rien** — aucun état neuf, aucune règle, et il peut se taire.
 
 **Il se tait là où l'écran parle seul** — demande de l'auteur. Ni *« Ouvre ton CONTEXTE »* au premier
 écran : le message de l'avocat finit sur le bouton de pièces, qui dit déjà où elles sont ; ni
 *« Clique sur → Envoyer »* : la phrase qui se tient allume le seul bouton plein de l'écran (§4.9). Le
 tutoriel commence donc au CONTEXTE ouvert, et une phrase complète le fait taire jusqu'à l'envoi.
 *« Ouvre ton CONTEXTE »* survit là où la porte n'est plus évidente — un passage retenu puis le panneau
-refermé, ou la comparaison commencée panneau fermé.
+refermé, ou la comparaison demandée panneau fermé.
 
 **La consigne est une BULLE posée à côté de ce qu'elle montre** — retour de playtest (Jean). Dans le
 flux, en tête de page, le bandeau poussait tout le jeu à chaque fois qu'il se redéployait (une
@@ -704,6 +731,12 @@ absence, mais **le jeu ne le lit nulle part** (§16).
   qu'il l'a fait *lui-même*.
 - **Le camouflage** : `brigadier N.` signe les deux pièces de la session 1, si bien que `qui` est
   peuplée de doublons réguliers *avant* qu'on sache qu'il faut la regarder (§4.4).
+- **La première question demande qui a rédigé le PV** (§3), et **le passage qui répond nomme le
+  brigadier** : *« par mes soins, brigadier N. »* — tranché par l'auteur le 6 octobre. Réduit à
+  *« par mes soins »*, il obligeait à lire une signature en s'aidant de la tête de la pièce : c'est
+  le geste même que le vice exigera (*« J'ai relevé moi-même les traces »*, §4.1), et l'apprendre
+  pendant la calibration serait une lampe torche (§4.3). Le `nom` du passage, lui, reste sans
+  valeur, comme tous les autres : la valeur vit dans la citation.
 - **L'incohérence de la session 1 doit être une IMPOSSIBILITÉ, pas un simple décalage** : des éclats
   de voix à 22h30, après une patrouille arrivée à 22h04, se concilient très bien — un playtester
   l'a vu avant nous. C'est la **constatation** faite à 22h04, dans le PV, qui les rend impossibles :

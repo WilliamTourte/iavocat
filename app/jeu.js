@@ -126,13 +126,24 @@ function tutoLienAttente(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
   return (a&&a.attend&&(JEU.liens||[]).find(x=>x.tag===a.attend)) || null;
 }
-function tutoAttendu(){
+/* Les passages que cite le lien attendu, dans son ordre : un pour citer, les
+   deux termes de la comparaison pour mettre en relation. */
+function tutoTermes(){
   const t=tutoLienAttente(), p=t&&(t.termes||[])[0];
-  return typeof p==="string" ? p : null;
+  if(typeof p==="string") return [p];
+  return p && typeof p==="object" ? (p.termes||[]).filter(k=>typeof k==="string") : [];
 }
 function tutoAttenteComparaison(){
   const t=tutoLienAttente(), p=t&&(t.termes||[])[0];
   return !!p && typeof p==="object";
+}
+/* Les passages qu'une réponse déjà servie a cités : celui de la première
+   question reste au CONTEXTE, et ne doit pas sonner faux à la seconde. */
+function tutoServis(){
+  const vus=new Set();
+  const feuilles=t=>{ for(const x of (t&&t.termes)||[]) if(typeof x==="string") vus.add(x); else feuilles(x); };
+  for(const L of JEU.liens||[]) if(L.tag && S.satisfaits.includes(L.tag)) feuilles(L);
+  return vus;
 }
 /* L'ARTICLE SE DÉSIGNE, LA RELATION JAMAIS (§4.8) : le bloc de liaison qui
    emboîte la forme du lien attendu, et sa pièce. Dérivé du lien, jamais d'un
@@ -152,37 +163,57 @@ const GESTE_RELIER = {geste:"mettre en relation"};
    place du joueur ; l'avocat, lui, a le droit : il sait, il calibre (§3). */
 /* La pièce se DÉRIVE du lien attendu, jamais d'un titre câblé : écrit en dur,
    le texte cassait au premier changement d'affaire. */
-function pieceDemandee(veut){
-  const p=veut && JEU.pieces[veut.slice(0,veut.indexOf("."))];
-  return p ? "Clique sur la pièce demandée : "+p.titre+"." : "Clique sur la pièce demandée.";
+function pieceDemandee(k){
+  const p=k && JEU.pieces[k.slice(0,k.indexOf("."))];
+  return p ? p.titre : null;
+}
+/* RETENIR, AUX DEUX GESTES (§4.8) : tant qu'un passage attendu manque au
+   CONTEXTE, le halo va à l'index, puis au texte d'une pièce qui en porte un —
+   jamais à l'empan. PIÈGE : une pièce ouverte qui n'en porte AUCUN renvoie à
+   l'index. La comparaison court sur deux pièces : le premier passage retenu, la
+   pièce encore ouverte, le halo restait sur un texte où il n'y avait plus rien
+   à chercher. L'alerte se dérive du DERNIER passage retenu — ni attendu, ni
+   cité par une réponse servie : celui de la citation reste au CONTEXTE.
+   Rend `undefined` quand rien ne manque : le temps suivant prend le relais. */
+function tutoRetenir(geste, attendus){
+  const manque=attendus.filter(k=>!S.retenus.includes(k));
+  if(attendus.length ? !manque.length : S.retenus.length>0) return undefined;
+  const relier=geste===GESTE_RELIER, second=relier && manque.length<attendus.length;
+  const dernier=S.retenus[S.retenus.length-1];
+  const rate=!!attendus.length && !!dernier && !attendus.includes(dernier) && !tutoServis().has(dernier);
+  const ici=!!S.modalPiece && (!manque.length || manque.some(k=>k.startsWith(S.modalPiece+".")));
+  // La clé de `tutoVues` : le second passage cherché est une consigne NEUVE.
+  const n=k=>relier ? k+(second?"b":"a") : k;
+  const RATE="Ce n'est pas ce qu'il demande.";
+  if(ici) return {...geste, n:n(2), ou:"#panPiece .piecetexte", alerte:rate,
+    dit: rate ? RATE : !relier ? "Retiens le passage qui répond."
+       : second ? "Retiens le second passage." : "Retiens un premier passage.",
+    ditLong: rate ? RATE+" Relis sa question, et retiens "+(relier?"les passages qui y répondent.":"le passage qui y répond.")
+       : !relier ? "Clique sur le passage répondant à la question pour l'ajouter à ton CONTEXTE."
+       : second ? "Clique sur le second passage qu'il demande pour l'ajouter à ton CONTEXTE."
+       : "Une réponse peut tenir sur deux passages : clique sur l'un de ceux qu'il demande pour l'ajouter à ton CONTEXTE."};
+  /* AU PREMIER ÉCRAN, IL SE TAIT (§4.8) : le message finit sur le bouton de
+     pièces, qui dit déjà où elles sont. Il commence au CONTEXTE ouvert — sauf
+     pour corriger : l'alerte, elle, parle panneau fermé. La question de la
+     comparaison n'a pas de bouton de pièces : on montre la porte CONTEXTE. */
+  if(panneau==="contexte"){
+    const plie=indexPlie(), titre=pieceDemandee(manque[0]);
+    const quelle=(relier && !second ? "une des pièces qu'il demande" : "la pièce demandée")+(titre?" : "+titre:"")+".";
+    return {...geste, n:n(1), ou:"#zoneDossier", alerte:rate,
+      dit: rate ? RATE : plie ? "Déplie ton dossier." : "Ouvre une pièce.",
+      ditLong: rate ? RATE+" Relis sa question, puis ouvre la pièce qui y répond."
+        : (relier && !second ? "Une réponse peut tenir sur deux passages. " : "")
+          +(plie ? "Déplie ton dossier, puis clique sur " : "Clique sur ")+quelle};
+  }
+  if(relier) return {...geste, n:n(1), ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
+    ditLong: second ? "Ouvre ton CONTEXTE : le second passage est dans une pièce de ton dossier."
+                    : "Ouvre ton CONTEXTE : une réponse peut tenir sur deux passages, et ton dossier y est."};
+  return rate ? {...geste, n:1, ou:"#discussion .attach", alerte:true, dit:RATE,
+      ditLong:RATE+" Relis sa question, puis choisis la bonne pièce dans ton CONTEXTE."} : null;
 }
 function tutoEtapeCitation(){
-  const veut=tutoAttendu();
-  if(veut ? !S.retenus.includes(veut) : !S.retenus.length){
-    const rate = !!veut && S.retenus.length>0;
-    return S.modalPiece
-      ? {...GESTE_CITER, n:2, ou:"#panPiece .piecetexte", alerte:rate,
-            dit: rate ? "Ce n'est pas ce qu'il demande."
-                      : "Retiens le passage qui répond.",
-            ditLong: rate
-              ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage qui y répond."
-              : "Clique sur le passage répondant à la question pour l'ajouter à ton CONTEXTE."}
-      /* AU PREMIER ÉCRAN, IL SE TAIT (§4.8) : le message finit sur le bouton de
-         pièces, qui dit déjà où elles sont. Il commence au CONTEXTE ouvert —
-         sauf pour corriger : l'alerte, elle, parle panneau fermé. */
-      : panneau==="contexte"
-        ? {...GESTE_CITER, n:1, ou:"#zoneDossier", alerte:rate,
-            dit: rate ? "Ce n'est pas ce qu'il demande."
-                      : "Ouvre une pièce.",
-            ditLong: rate
-              ? "Ce n'est pas ce qu'il demande. Relis sa question, puis ouvre la pièce qui y répond."
-              : pieceDemandee(veut)}
-        : rate
-          ? {...GESTE_CITER, n:1, ou:"#discussion .attach", alerte:true,
-              dit:"Ce n'est pas ce qu'il demande.",
-              ditLong:"Ce n'est pas ce qu'il demande. Relis sa question, puis choisis la bonne pièce dans ton CONTEXTE."}
-          : null;
-  }
+  const e=tutoRetenir(GESTE_CITER, tutoTermes());
+  if(e!==undefined) return e;
   /* Plus de temps « Referme la pièce » (§4.6) : elle vit DANS le CONTEXTE, et le
      passage retenu paraît juste en dessous, prêt à être pris. */
   if(!R.peutEnvoyer(S))
@@ -197,15 +228,21 @@ function tutoEtapeCitation(){
      plein de l'écran, se montre seul. */
   return null;
 }
+/* METTRE EN RELATION (§4.8) : retenir les deux passages, comme pour citer — ils
+   ne sont plus extraits d'avance par deux questions (§3) —, puis les prendre,
+   puis l'article. Retenir ne vaut que tant que la phrase prend un passage :
+   deux termes posés, c'est l'article qui manque, quels qu'ils soient. */
 function tutoEtapeComparaison(){
   if(R.indexTermeChamp(S)>=0){
+    const e=tutoRetenir(GESTE_RELIER, tutoTermes());
+    if(e!==undefined) return e;
     const dit = S.compo.length ? "Prends un second passage." : "Prends un premier passage.";
     const ditLong = S.compo.length
       ? "Prends un second passage pour le comparer au premier : une réponse peut tenir sur deux."
-      : "Une réponse peut tenir sur deux passages. Prends-en un premier dans ton CONTEXTE.";
+      : "Prends un premier passage dans ton CONTEXTE pour l'ajouter à ta RÉPONSE.";
     return panneau==="contexte"
-      ? {...GESTE_RELIER, n:1, ou:"#zoneRetenus", dit, ditLong}
-      : {...GESTE_RELIER, n:1, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
+      ? {...GESTE_RELIER, n:2, ou:"#zoneRetenus", dit, ditLong}
+      : {...GESTE_RELIER, n:2, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
           ditLong:"Ouvre ton CONTEXTE : "+ditLong[0].toLowerCase()+ditLong.slice(1)};
   }
   /* PIÈGE : une comparaison nue EST envoyable (§4.5), donc ce temps doit passer
@@ -219,7 +256,7 @@ function tutoEtapeComparaison(){
     const aLire = art ? !S.examinees.includes(art.piece)
                       : !R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique);
     if(!aLire)
-      return {...GESTE_RELIER, n:3, ou:"#composeur .offre", f: art && "b:"+art.id,
+      return {...GESTE_RELIER, n:4, ou:"#composeur .offre", f: art && "b:"+art.id,
         dit:"Prends l'article qui la fonde.",
         ditLong:"Une relation seule ne suffit pas : prends l'article sur lequel elle s'appuie."};
     const ditLong="Une relation seule ne suffit pas : il lui faut un article qui la fonde.";
@@ -227,12 +264,12 @@ function tutoEtapeComparaison(){
        COURANT, la citation d'avant ayant laissé sa pièce ouverte. On montre
        alors « déplier », la porte de la puce — jamais on ne déplie à sa place. */
     if(panneau!=="contexte")
-      return {...GESTE_RELIER, n:2, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
+      return {...GESTE_RELIER, n:3, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
           ditLong:ditLong+" Ton dossier est dans ton CONTEXTE."};
     return art && indexPlie()
-      ? {...GESTE_RELIER, n:2, ou:"#zoneDossier", f:"dossier", dit:"Déplie ton dossier.",
+      ? {...GESTE_RELIER, n:3, ou:"#zoneDossier", f:"dossier", dit:"Déplie ton dossier.",
           ditLong:ditLong+" Déplie ton dossier : l'article y est, et on n'invoque que ce qu'on a lu."}
-      : {...GESTE_RELIER, n:2, ou:"#zoneDossier", f: art && "d:"+art.piece, dit:"Lis l'article.",
+      : {...GESTE_RELIER, n:3, ou:"#zoneDossier", f: art && "d:"+art.piece, dit:"Lis l'article.",
           ditLong:ditLong+" Ouvre-le dans ton dossier : on n'invoque que ce qu'on a lu."};
   }
   return null;   // la phrase qui se tient : « → Envoyer » se montre seul (§4.8)

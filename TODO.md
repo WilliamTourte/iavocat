@@ -82,7 +82,8 @@ relire par l'auteur**.*
 
 - [ ] **⚖ Les réponses de calibration entrent en PLAIDOIRIE** (`q_arrivee`, `q_voix`) : le §4.6 le
       veut (*« une réponse citée y entre »*). Jean : elles encombrent le présentoir de la répétition,
-      où chacune ne reçoit que « Ça ne répond pas à celle-ci ». *Jean 4*
+      où chacune ne reçoit que « Ça ne répond pas à celle-ci ». *Jean 4* — *Allégé par la passe E :
+      une seule citation de calibration désormais, `q_redacteur`.*
 - [ ] **⚖ Le dilemme n'est jamais posé** : ni les directives (§5), ni un soupçon que Kessler est
       coupable. Envoyer le vice est toujours le geste évident, et la Fin 2 ne s'atteint que par
       accident — assembler l'article 7 en essayant les trois, reculer, plaider la statistique. Rejoint
@@ -132,7 +133,7 @@ réécriture du §4.5** pour les deux, à faire relire, puis F codée avant G.*
 **Passe E — la calibration : un fait sans lendemain, puis la contradiction.** *Tranché par l'auteur ;
 document d'abord (§3, §4.8), puis le contenu et le tutoriel.*
 
-- [ ] **La première réponse du jeu porte sur un passage étranger à la comparaison** — *qui a rédigé le
+- [x] **La première réponse du jeu porte sur un passage étranger à la comparaison** — *qui a rédigé le
       PV d'intervention ?* Aujourd'hui, la remise 1 demande l'heure d'arrivée, l'heure des éclats de
       voix, puis leur lien sous l'article 3 : la citation qu'on apprend est la moitié de la comparaison
       qu'on demande ensuite — *« prix assumé »*, écrit au §3. **Tranché : deux questions** — (1) qui a
@@ -156,13 +157,24 @@ document d'abord (§3, §4.8), puis le contenu et le tutoriel.*
     retirer les liens. Le texte de remise annonce *« trois questions »*.
   - **Pour l'auteur** : lire *« par mes soins »* comme une signature, c'est le geste que le vice
     exigera (*« J'ai relevé moi-même les traces »*, §4.1). Un apprentissage loyal, ou une lampe
-    torche ?
+    torche ? — *Tranché : le passage nomme le brigadier (« par mes soins, brigadier N. ») ; plus de
+    signature à déchiffrer (§6).*
   - **Code.** Aucune règle ne bouge : `horsOrdre` et `pieceDemandee` dérivent du contenu, et aucune
     suite ne nomme `q_arrivee`, `q_voix`, `e_arr` ni `e_voix`. `tutoEtapeComparaison` suppose les
     deux passages déjà retenus (*« Prends un premier passage »*, halo sur les retenus) : il reprend la
     logique de `tutoEtapeCitation` pour chaque terme manquant. À vérifier : les contrôles du tutoriel
     de `test_parcours` et les captures de `outils/vue.js` qui comptent sur deux citations avant la
     comparaison. Puis la relecture à l'œil des répliques de la remise 1.
+  - *Fait, document d'abord (§3, §4.5, §4.8, §6).* `q_redacteur` (qui a rédigé le PV), puis
+    `temoin` ; la question 2 nomme les deux heures, plus *« cette incohérence »*. Les liens de
+    `e_arr` et `e_voix` **retirés** (arbitré : une heure seule reçoit `rep_hors_sujet`, juste aux deux
+    questions). `tutoRetenir`, commun aux deux gestes : index, puis texte de la pièce ; **une pièce
+    sans passage attendu renvoie à l'index**, citer compris (arbitré) ; l'alerte lit le dernier
+    passage retenu, la citation servie exceptée. Les deux répliques de lectures justes ne disent plus
+    *« les deux heures que tu m'as données »*. Une seconde citation qui ne rallume pas le halo
+    s'éprouve désormais sur contenu muté. `npm run vue` : `relier-*`. **À voir en jeu** : à la
+    question 2, la voix du composeur dit *« Prends un ou plusieurs passages »* pendant que la bulle
+    dit de retenir (§3 de `docs/PASSATION.md`).
 
 **Passe F — l'article se retient, puis se prend.** *Document d'abord (§4.5, §4.6, §4.8, §11) ;
 grammaire, règles, écran, atelier, suites — la plus lourde des trois. Deux points de Bérengère, un seul
