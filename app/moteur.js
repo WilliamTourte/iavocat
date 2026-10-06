@@ -152,15 +152,22 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
 
 const _projections = (function () {
 
-function champsDe(contenu) {
+/* PIÈGE : le passage d'un ARTICLE n'est pas un champ (§11, passe F) — ni
+   dimension ni valeur, jamais un terme. `champsDe` ne le rend pas : le moteur
+   ne le voit jamais, et aucune boucle « par dimension » n'a à l'écarter.
+   `articlesDe` le rend, pour l'écran et l'atelier. */
+const projeter = (contenu, garder) => {
   const out = [];
   for (const [pid, p] of Object.entries((contenu || {}).pieces || {}))
     for (const [eid, e] of Object.entries(p.empans || {}))
-      out.push({ id: pid + "." + eid, pid, eid, dim: e.dim, valeur: e.valeur,
-                 texte: e.texte, nom: e.nom || e.texte, qui: e.qui || p.qui || "",
-                 court: p.court || "" });
+      if (garder(e))
+        out.push({ id: pid + "." + eid, pid, eid, dim: e.dim, valeur: e.valeur,
+                   texte: e.texte, nom: e.nom || e.texte, qui: e.qui || p.qui || "",
+                   court: p.court || "" });
   return out;
-}
+};
+const champsDe   = contenu => projeter(contenu, e => !e.article);
+const articlesDe = contenu => projeter(contenu, e => !!e.article);
 
 function comparaisonsDe(liens, formes) {
   const out = [], vus = new Set();
@@ -193,7 +200,7 @@ function traitDim(dimensions, d) {
   return i < 0 ? null : TRAITS_DIM[i % TRAITS_DIM.length];
 }
 
-  return { champsDe, comparaisonsDe, couleurDim, traitDim, PALETTE_DIM, TRAITS_DIM };
+  return { champsDe, articlesDe, comparaisonsDe, couleurDim, traitDim, PALETTE_DIM, TRAITS_DIM };
 })();
 
 const _api = { creerMoteur, ..._projections };

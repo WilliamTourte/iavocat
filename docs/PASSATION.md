@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 6 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 552 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 587 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -300,6 +300,44 @@ l'auteur** : l'agacement de l'avocat **retombe à chaque remise** (§4.11), et l
 l'article (§4.6). Un contrôle de `test_declencheurs` passait par le vide une fois le tag retiré : il
 fabrique désormais son lien libre, et le dit.
 
+**Le 6 octobre, le retour de Bérengère**, rangé en passes au `TODO.md` (§0 bis). **Passe D, l'écran** :
+*on ne purge pas le CONTEXTE entre deux remises* — le pli *« 1ʳᵉ remise, close »* du 5 est défait, et
+la gêne de Jean qu'il réparait est rouverte (§4.6) ; **cliquer DISCUSSION agrandit la
+conversation**, CONTEXTE ouvert seulement : les deux colonnes échangent leurs parts au-dessus du
+seuil, le panneau descend à son plancher en dessous, et une pièce ouverte depuis l'index rend la
+place (§4.6, *à relire par l'auteur*).
+
+**Le 6 octobre, la passe E du `TODO.md` : la remise 1 en deux questions** (retour de Bérengère,
+tranché par l'auteur ; §3, §4.8). Elle demandait l'heure d'arrivée, puis l'heure des éclats de voix,
+puis leur lien : la citation qu'on apprenait était la moitié de la comparaison qu'on demandait
+ensuite. Elle demande désormais **qui a rédigé le PV** — un passage étranger à la comparaison —,
+puis **les deux heures sous l'article 3**, sans plus dire *« cette incohérence »* : la question
+nomme les deux heures, jamais leur contradiction. Le passage qui répond **nomme le brigadier**
+(*« par mes soins, brigadier N. »*, §6) — arbitré par l'auteur : réduit à *« par mes soins »*, il
+apprenait à lire une signature, le geste même que le vice exigera. Les citations de 22h04 et de
+22h30 perdent leur lien : seules, elles reçoivent *« Ce n'est pas ce que je te demande »*, juste aux
+deux questions — un lien ne connaît pas sa question. **Le tutoriel apprend à retenir pour comparer**
+(`tutoRetenir`, commun aux deux gestes) : l'index, puis le texte de la pièce, jusqu'à ce que les
+deux passages soient au CONTEXTE ; **une pièce qui ne porte aucun passage attendu renvoie à
+l'index**, aux deux gestes — arbitré par l'auteur ; l'alerte se dérive du dernier passage retenu, la
+citation déjà servie exceptée. Le cas *« déjà envoyée »* de Jean sort du chemin, la règle reste
+(§4.5). `npm run vue` capture les temps de *retenir pour comparer* par de vrais clics. **Une
+friction à voir en jeu** : à la seconde question, la voix du composeur dit *« Prends un ou plusieurs
+passages de ton contexte »* — le CONTEXTE n'est plus vide — pendant que la bulle dit de retenir.
+
+**Le 6 octobre, le document de la passe F — à relire par l'auteur avant le code.** L'article **se
+retient, puis se prend** (§4.5, §4.6) : son texte entier est un passage sans dimension ni valeur
+(`article:true`, §11), que le moteur ne voit pas ; sa fiche, au CONTEXTE, est le bouton de sa
+liaison, sous un nom neutre (*« Article 7 »*) — le composeur ne propose plus d'article, et l'offre
+suit *retenu* au lieu d'*ouvert*. Le §4.5 est réécrit **d'un seul tenant pour F et G**, comme le
+voulait le `TODO.md` : ce qui ne vaudra qu'avec la passe G — le joueur choisit la relation — y est
+marqué **[G]**. Relu par l'auteur, puis **codé le même jour** : un passage `art` sur chaque règle,
+`champsDe` qui l'écarte et `articlesDe` qui le rend, l'offre sur `articleRetenu`, le groupe
+*ARTICLES* dont la fiche prend la liaison (`prendreArticle`) ou dit pourquoi elle ne le peut pas, le
+composeur sans article, la voix qui mène au CONTEXTE, le tutoriel qui montre la puce, le texte, puis
+la fiche ; l'atelier suit (diagnostic, inspecteur, graphe, pas-à-pas). `npm run vue` capture
+l'article à retenir et à prendre.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -325,6 +363,12 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Le flag `cite` est porté par la liaison, jamais par le terme** — `t0` est partagé par la citation et
   la comparaison.
 - **L'index `iBloc` de `poserBloc` est positionnel dans la liste filtrée**, donc lié à la session.
+  La fiche d'un article le cherche donc AU CLIC (`prendreArticle`), jamais au rendu — et le harnais
+  passe par elle (`H.prendreLiaison`).
+- **Le passage d'un article n'est PAS un champ** (§11) : `champsDe` l'écarte, `articlesDe` le rend.
+  Tout ce qui lit `S.retenus` doit savoir qu'il y trouvera aussi des articles — `EMPAN[k]` y est
+  indéfini : une fiche, une voix ou un contrôle qui compte des *passages* filtre par `EMPAN` ou
+  `CHAMPS`. Un lien qui le citerait ferait jeter `dimDe` : le diagnostic l'arrête avant.
 - **`muter(f)` porte `pushUndo` AVANT et `autosave(); render()` APRÈS** : une mutation qui renonce garde
   sa garde *avant* l'appel.
 - **L'ordre des `<script src>` de l'atelier compte** (`noyau.js` en premier), et les `window.X = X`
@@ -372,9 +416,11 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   `disabled` sort de la tabulation et n'a plus de clic — la raison n'avait plus de porte. Son
   `onclick` devient `passageRefuse`, qui redit la raison ; `FOCALISABLES` la compte donc parmi les
   boutons vivants, et c'est voulu. Un contrôle lit `.disabled` pour le dire faux.
-- **Les remises closes se replient par un état d'ÉCRAN** (`remisesDepliees`), comme `dossierPlie` :
-  jamais sauvé. `surligner` déplie celle d'une pièce close — sans lui, la fiche neuve naîtrait
-  sous `hidden` et *retenir se voit* (§4.3) mentirait.
+- **La bascule DISCUSSION est un troisième état d'ÉCRAN** (`discussionAgrandie`), jamais sauvé, qui
+  n'existe que CONTEXTE ouvert : `majLateral` l'oublie dès que `panneau` n'est plus `"contexte"`, et
+  `ouvrirPiece` le remet à faux, comme `dossierDeplie` — ‹ › (`voisine`) n'y touchent pas. Elle ne
+  change que le **gabarit** (`.wrap.discussionAgrandie`), jamais un span. L'en-tête est réécrit à
+  chaque rendu (`enteteDISCUSSION`) : le bouton porte sa clé, `data-f="discussion"`.
 - **Pièce ouverte, `#contexte` porte deux bandes défilantes de plus** (`.defile[id]`) :
   `garderDefilement` les retrouve par leur id. Une bande sans id repartirait en haut à chaque geste.
 - **Un passage est un `span[role=button][tabindex=0]`, jamais un `<button>`** : un bouton est une
@@ -445,6 +491,11 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   `S.satisfaits` ne veut dire « citation acquise » que parce que la remise 1 se sert DANS L'ORDRE**
   (`horsOrdre`, §3 CONCEPTION) : une réponse qui servait par anticipation la deuxième question
   passait pour la première, et le tutoriel se taisait au milieu de *citer*.
+- **Retenir se dérive aux deux gestes** (`tutoRetenir`, §4.8) des passages du lien attendu
+  (`tutoTermes`). Son alerte lit le DERNIER passage retenu, ni attendu ni cité par une réponse servie
+  (`tutoServis`) : sans cette exception, la citation de la première question sonnait faux à la
+  seconde. Et la clé de `tutoVues` distingue le second passage cherché (`n`) : sans elle, *« Ouvre une
+  pièce »* restait réduite au moment même où elle nomme une autre pièce.
 - **Cacher la clôture, c'est cacher le BOUTON et son aide, jamais `.cloture`** : la barre porte aussi
   *« ⟲ recommencer »*, qui ne s'absente jamais (§4.9). Et `disabled` **double** `hidden` — trois
   contrôles lisent `btnCloture.disabled` pour dire que le refus est vrai, et il doit l'être aussi pour
@@ -472,7 +523,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   réponse la plus facile** — l'ancien libellé était juridiquement faux, et un joueur l'avait vu avant
   nous. La question reste entière sur le nouveau.
 - **La CALIBRATION tient-elle ?** Première chose à regarder : la session 1 se sent-elle comme un
-  examen, et la remise 2 comme une charnière ? Si l'examen ne se sent pas, la session 1 redevient une
+  examen, et la remise 2 comme une charnière ? *Depuis la passe E, en deux questions : un fait sans
+  lendemain, puis la comparaison entière (§3).* Si l'examen ne se sent pas, la session 1 redevient une
   dictée — et c'est la seule chose que le recadrage du 1ᵉʳ octobre devait réparer (§3). **Non joué.**
 - **La compréhension est-elle encore *exprimée* ?** Et **une question posée guide-t-elle trop ?** Repli
   sans code : retirer les `question` une à une, couper le tutoriel avant le 3ᵉ temps. *Le rapport du
@@ -540,9 +592,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   fait toute la session 2 (§6). Le retirer est une ligne ; **à juger sur une partie, le recadrage en
   place.** *Tranché le 5 octobre (§4.11) : l'étiquette devient une marque sans mot — la couleur et le
   trait de la dimension sous le titre de l'article.*
-- **L'article s'offre sans avoir été lu** : `blocsDepuis` filtre sur `piecesLivrees` — *reçu*, pas
-  *lu*. Passer à `S.examinees` est un mot, et l'invariant du §4.5 deviendrait *« on n'invoque pas un
-  texte qu'on n'a pas lu »*. Non tranché.
+- *Fermé par la passe F : « l'article s'offre sans avoir été lu ».* Il s'offrait *reçu*, puis
+  *ouvert* ; il s'offre désormais *retenu* — on n'invoque pas un texte qu'on n'a pas retenu (§4.5).
 - *Fermé le 2 octobre : la **légende** de chaque pièce nomme les dimensions qu'elle porte (§4.3).
   Deux playtests l'avaient demandée, et le `title` qui la remplaçait n'existait ni au clavier ni au
   toucher. Reste à voir si elle suffit, ou si le joueur passe à côté.* **Rouvert par Jean : il passe
@@ -563,7 +614,9 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   replie pièce ouverte (§4.6) — à 1280×800 la pièce se lit en entier ; à 390×800 elle reste à deux
   lignes, le panneau entier ne faisant que 353 px — et l'auteur l'y garde, entre la conversation et
   le composeur. Le 5 octobre : les passages d'une remise close se rangent sous ceux de la remise en
-  cours, repliés (§4.6) — à voir sur une partie si le pli se trouve.*
+  cours, repliés (§4.6) — à voir sur une partie si le pli se trouve.* **Défait le 6 octobre**
+  (Bérengère, tranché par l'auteur) : on ne purge pas le CONTEXTE entre deux remises. La gêne de
+  Jean est rouverte ; si elle remord, un repli qui ne dise pas *remise* (§4.6).
 - **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
   accès. Le §4.9 interdit de redire, pas d'offrir deux chemins. **Réponse partielle du 1ᵉʳ octobre :
   elles coûtent avant de servir** — au premier écran, un joueur a noté *« CONTEXTE / PLAIDOIRIE :
@@ -624,6 +677,11 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   et à côté d'une zone longue comme le texte de la pièce, couvre-t-elle ce qu'on vient chercher ? Elle
   se réduit au geste suivant ; reste à savoir si ça suffit.
 
+- **La seconde question de la calibration, deux voix qui ne disent pas la même chose** (passe E) :
+  la bulle dit de retenir les deux heures, la voix du composeur de prendre un passage du CONTEXTE —
+  qui n'est plus vide, la citation y est restée. La voix se dérive de la phrase et du CONTEXTE,
+  jamais de la question (§4.9 règle 1) ; reste à voir si un joueur y prend la citation pour une
+  heure. Le même écart existe en remise 2, CONTEXTE plein. **Non joué.**
 - **Le rapport du 6 octobre (Jean 4) laisse cinq points à trancher** — au `TODO.md`, §0 : les réponses
   de calibration en PLAIDOIRIE (le §4.6 les y veut), le dilemme jamais posé (rejoint les directives
   et le canal de révélation, ci-dessus), le féminin de la Fin 2, le palier sans séjour, le même
@@ -806,3 +864,18 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   dit *« Prends »* et dérive sa pièce (`pieceDemandee`) ; les compteurs d'agacement remis à zéro par
   `envoyerRemise` ; `suivrePhrase` attend un relais (`blocsOfferts`, `compoFinie`) ; contenu : `libelle`
   des articles, deux liens sans tag, fins réécrites. 552 contrôles, 8 règles du gardien, ESLint.
+- **6 octobre, le retour de Bérengère, passe D** (§4.6) — le pli des remises closes défait
+  (`remiseClose`, `remisesDepliees`, `basculerRemise`, `ordinal` supprimés, sept contrôles réduits à
+  un) ; la DISCUSSION qui s'agrandit (`enteteDISCUSSION`, `basculerDISCUSSION`, `discussionAgrandie`,
+  `.wrap.discussionAgrandie`), capturée par `npm run vue` en 1280×800 et 390×800. 555 contrôles,
+  8 règles du gardien, ESLint.
+- **6 octobre, passe E du `TODO.md` : la remise 1 en deux questions** (§3, §4.8) — `q_redacteur`
+  remplace `q_arrivee` et `q_voix` ; `e_sig` nomme le brigadier ; les liens de 22h04 et 22h30
+  retirés ; `tutoRetenir`, `tutoTermes`, `tutoServis` (`tutoAttendu` retiré), la pièce sans passage
+  attendu renvoie à l'index ; une seconde citation, sur contenu muté, ne rallume pas le halo ; `npm
+  run vue` capture *retenir pour comparer*. Fusionnée avec la passe D : 563 contrôles, 8 règles du
+  gardien, ESLint.
+- **6 octobre, passe F : l'article se retient, puis se prend** (§4.5, §4.6, §4.8, §11, §15) — le
+  document d'abord, avec le §4.5 entier pour F et G, relu ; puis `articlesDe`, `articleRetenu`,
+  `estLiaisonArticle`, `articleAttendu`, `prendreArticle`, `articleRefuse`, `tutoCleArticle`, le
+  groupe *ARTICLES* ; l'atelier et les suites suivent. 587 contrôles, 8 règles du gardien, ESLint.

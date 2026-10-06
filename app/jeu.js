@@ -45,6 +45,10 @@ if(!M){
     `<div class="panne">moteur.js n'a pas été chargé. Le fichier doit rester à côté de index.html (voir docs/ARCHITECTURE.md §9).</div>`);
 }
 const EMPAN = Object.fromEntries(CHAMPS.map(c=>[c.id,c]));
+/* Le passage d'un ARTICLE n'est pas un champ (§11, passe F) : sans dimension ni
+   valeur, jamais un terme — `CHAMPS` ne le porte pas, le moteur ne le voit pas.
+   Sa fiche est le bouton de sa liaison (§4.6). */
+const ARTICLE = Object.fromEntries((MoteurAPI.articlesDe ? MoteurAPI.articlesDe(JEU) : []).map(a=>[a.id,a]));
 const couleurDim = d =>
   (MoteurAPI.couleurDim ? MoteurAPI.couleurDim(JEU.dimensions,d) : null) || "var(--muted)";
 /* La couleur ET le trait : aucune dimension ne se lit à la couleur seule (§4.3). */
@@ -126,13 +130,24 @@ function tutoLienAttente(){
   const a=R.attenteCourante(S,R.remiseCourante(S));
   return (a&&a.attend&&(JEU.liens||[]).find(x=>x.tag===a.attend)) || null;
 }
-function tutoAttendu(){
+/* Les passages que cite le lien attendu, dans son ordre : un pour citer, les
+   deux termes de la comparaison pour mettre en relation. */
+function tutoTermes(){
   const t=tutoLienAttente(), p=t&&(t.termes||[])[0];
-  return typeof p==="string" ? p : null;
+  if(typeof p==="string") return [p];
+  return p && typeof p==="object" ? (p.termes||[]).filter(k=>typeof k==="string") : [];
 }
 function tutoAttenteComparaison(){
   const t=tutoLienAttente(), p=t&&(t.termes||[])[0];
   return !!p && typeof p==="object";
+}
+/* Les passages qu'une réponse déjà servie a cités : celui de la première
+   question reste au CONTEXTE, et ne doit pas sonner faux à la seconde. */
+function tutoServis(){
+  const vus=new Set();
+  const feuilles=t=>{ for(const x of (t&&t.termes)||[]) if(typeof x==="string") vus.add(x); else feuilles(x); };
+  for(const L of JEU.liens||[]) if(L.tag && S.satisfaits.includes(L.tag)) feuilles(L);
+  return vus;
 }
 /* L'ARTICLE SE DÉSIGNE, LA RELATION JAMAIS (§4.8) : le bloc de liaison qui
    emboîte la forme du lien attendu, et sa pièce. Dérivé du lien, jamais d'un
@@ -140,8 +155,11 @@ function tutoAttenteComparaison(){
 function tutoArticle(){
   const t=tutoLienAttente();
   return (t && (JEU.grammaire.blocs||[]).find(b=>
-    b.type==="liaison" && b.imbrique && b.piece && b.forme===t.forme)) || null;
+    R.estLiaisonArticle(b) && b.forme===t.forme)) || null;
 }
+/* Le passage de l'article de cette pièce : c'est lui qu'on retient, et sa fiche
+   qu'on prend (passe F). */
+const tutoCleArticle = pid => Object.keys(ARTICLE).find(k=>ARTICLE[k].pid===pid) || null;
 /* LA BULLE NE COMPTE PAS (§4.8) : le rang `n` ne sert plus qu'à la clé de
    `tutoVues`. Elle a porté « citer · 2/4 », puis deux séries chacune son total ;
    un rang n'apprenait rien au joueur. */
@@ -152,37 +170,59 @@ const GESTE_RELIER = {geste:"mettre en relation"};
    place du joueur ; l'avocat, lui, a le droit : il sait, il calibre (§3). */
 /* La pièce se DÉRIVE du lien attendu, jamais d'un titre câblé : écrit en dur,
    le texte cassait au premier changement d'affaire. */
-function pieceDemandee(veut){
-  const p=veut && JEU.pieces[veut.slice(0,veut.indexOf("."))];
-  return p ? "Clique sur la pièce demandée : "+p.titre+"." : "Clique sur la pièce demandée.";
+function pieceDemandee(k){
+  const p=k && JEU.pieces[k.slice(0,k.indexOf("."))];
+  return p ? p.titre : null;
+}
+/* RETENIR, AUX DEUX GESTES (§4.8) : tant qu'un passage attendu manque au
+   CONTEXTE, le halo va à l'index, puis au texte d'une pièce qui en porte un —
+   jamais à l'empan. PIÈGE : une pièce ouverte qui n'en porte AUCUN renvoie à
+   l'index. La comparaison court sur deux pièces : le premier passage retenu, la
+   pièce encore ouverte, le halo restait sur un texte où il n'y avait plus rien
+   à chercher. L'alerte se dérive du DERNIER passage retenu — ni attendu, ni
+   cité par une réponse servie : celui de la citation reste au CONTEXTE ; ni
+   `tolere` — l'article que la question demande aussi, retenu en avance.
+   Rend `undefined` quand rien ne manque : le temps suivant prend le relais. */
+function tutoRetenir(geste, attendus, tolere=[]){
+  const manque=attendus.filter(k=>!S.retenus.includes(k));
+  if(attendus.length ? !manque.length : S.retenus.length>0) return undefined;
+  const relier=geste===GESTE_RELIER, second=relier && manque.length<attendus.length;
+  const dernier=S.retenus[S.retenus.length-1];
+  const rate=!!attendus.length && !!dernier && !attendus.includes(dernier) && !tolere.includes(dernier)
+    && !tutoServis().has(dernier);
+  const ici=!!S.modalPiece && (!manque.length || manque.some(k=>k.startsWith(S.modalPiece+".")));
+  // La clé de `tutoVues` : le second passage cherché est une consigne NEUVE.
+  const n=k=>relier ? k+(second?"b":"a") : k;
+  const RATE="Ce n'est pas ce qu'il demande.";
+  if(ici) return {...geste, n:n(2), ou:"#panPiece .piecetexte", alerte:rate,
+    dit: rate ? RATE : !relier ? "Retiens le passage qui répond."
+       : second ? "Retiens le second passage." : "Retiens un premier passage.",
+    ditLong: rate ? RATE+" Relis sa question, et retiens "+(relier?"les passages qui y répondent.":"le passage qui y répond.")
+       : !relier ? "Clique sur le passage répondant à la question pour l'ajouter à ton CONTEXTE."
+       : second ? "Clique sur le second passage qu'il demande pour l'ajouter à ton CONTEXTE."
+       : "Une réponse peut tenir sur deux passages : clique sur l'un de ceux qu'il demande pour l'ajouter à ton CONTEXTE."};
+  /* AU PREMIER ÉCRAN, IL SE TAIT (§4.8) : le message finit sur le bouton de
+     pièces, qui dit déjà où elles sont. Il commence au CONTEXTE ouvert — sauf
+     pour corriger : l'alerte, elle, parle panneau fermé. La question de la
+     comparaison n'a pas de bouton de pièces : on montre la porte CONTEXTE. */
+  if(panneau==="contexte"){
+    const plie=indexPlie(), titre=pieceDemandee(manque[0]);
+    const quelle=(relier && !second ? "une des pièces qu'il demande" : "la pièce demandée")+(titre?" : "+titre:"")+".";
+    return {...geste, n:n(1), ou:"#zoneDossier", alerte:rate,
+      dit: rate ? RATE : plie ? "Déplie ton dossier." : "Ouvre une pièce.",
+      ditLong: rate ? RATE+" Relis sa question, puis ouvre la pièce qui y répond."
+        : (relier && !second ? "Une réponse peut tenir sur deux passages. " : "")
+          +(plie ? "Déplie ton dossier, puis clique sur " : "Clique sur ")+quelle};
+  }
+  if(relier) return {...geste, n:n(1), ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
+    ditLong: second ? "Ouvre ton CONTEXTE : le second passage est dans une pièce de ton dossier."
+                    : "Ouvre ton CONTEXTE : une réponse peut tenir sur deux passages, et ton dossier y est."};
+  return rate ? {...geste, n:1, ou:"#discussion .attach", alerte:true, dit:RATE,
+      ditLong:RATE+" Relis sa question, puis choisis la bonne pièce dans ton CONTEXTE."} : null;
 }
 function tutoEtapeCitation(){
-  const veut=tutoAttendu();
-  if(veut ? !S.retenus.includes(veut) : !S.retenus.length){
-    const rate = !!veut && S.retenus.length>0;
-    return S.modalPiece
-      ? {...GESTE_CITER, n:2, ou:"#panPiece .piecetexte", alerte:rate,
-            dit: rate ? "Ce n'est pas ce qu'il demande."
-                      : "Retiens le passage qui répond.",
-            ditLong: rate
-              ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage qui y répond."
-              : "Clique sur le passage répondant à la question pour l'ajouter à ton CONTEXTE."}
-      /* AU PREMIER ÉCRAN, IL SE TAIT (§4.8) : le message finit sur le bouton de
-         pièces, qui dit déjà où elles sont. Il commence au CONTEXTE ouvert —
-         sauf pour corriger : l'alerte, elle, parle panneau fermé. */
-      : panneau==="contexte"
-        ? {...GESTE_CITER, n:1, ou:"#zoneDossier", alerte:rate,
-            dit: rate ? "Ce n'est pas ce qu'il demande."
-                      : "Ouvre une pièce.",
-            ditLong: rate
-              ? "Ce n'est pas ce qu'il demande. Relis sa question, puis ouvre la pièce qui y répond."
-              : pieceDemandee(veut)}
-        : rate
-          ? {...GESTE_CITER, n:1, ou:"#discussion .attach", alerte:true,
-              dit:"Ce n'est pas ce qu'il demande.",
-              ditLong:"Ce n'est pas ce qu'il demande. Relis sa question, puis choisis la bonne pièce dans ton CONTEXTE."}
-          : null;
-  }
+  const e=tutoRetenir(GESTE_CITER, tutoTermes());
+  if(e!==undefined) return e;
   /* Plus de temps « Referme la pièce » (§4.6) : elle vit DANS le CONTEXTE, et le
      passage retenu paraît juste en dessous, prêt à être pris. */
   if(!R.peutEnvoyer(S))
@@ -197,43 +237,55 @@ function tutoEtapeCitation(){
      plein de l'écran, se montre seul. */
   return null;
 }
+/* METTRE EN RELATION (§4.8) : retenir les deux passages, comme pour citer — ils
+   ne sont plus extraits d'avance par deux questions (§3) —, puis les prendre,
+   puis l'article. Retenir ne vaut que tant que la phrase prend un passage :
+   deux termes posés, c'est l'article qui manque, quels qu'ils soient. */
 function tutoEtapeComparaison(){
   if(R.indexTermeChamp(S)>=0){
+    const art=tutoArticle(), cle=art && tutoCleArticle(art.piece);
+    const e=tutoRetenir(GESTE_RELIER, tutoTermes(), cle ? [cle] : []);
+    if(e!==undefined) return e;
     const dit = S.compo.length ? "Prends un second passage." : "Prends un premier passage.";
     const ditLong = S.compo.length
       ? "Prends un second passage pour le comparer au premier : une réponse peut tenir sur deux."
-      : "Une réponse peut tenir sur deux passages. Prends-en un premier dans ton CONTEXTE.";
+      : "Prends un premier passage dans ton CONTEXTE pour l'ajouter à ta RÉPONSE.";
     return panneau==="contexte"
-      ? {...GESTE_RELIER, n:1, ou:"#zoneRetenus", dit, ditLong}
-      : {...GESTE_RELIER, n:1, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
+      ? {...GESTE_RELIER, n:2, ou:"#zoneRetenus", dit, ditLong}
+      : {...GESTE_RELIER, n:2, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
           ditLong:"Ouvre ton CONTEXTE : "+ditLong[0].toLowerCase()+ditLong.slice(1)};
   }
   /* PIÈGE : une comparaison nue EST envoyable (§4.5), donc ce temps doit passer
      AVANT le silence de la phrase qui se tient — sans quoi la bulle se tairait
-     là où la leçon est « il te faut un article ». Et depuis qu'un texte s'invoque une fois
-     LU, l'article peut n'être offert nulle part : on montre alors où le lire —
-     SA puce dans l'index, puis SON bloc dans les propositions (`f`, §4.8). Sans
-     article dérivable, la zone seule, comme avant. */
+     là où la leçon est « il te faut un article ». Et depuis que l'article SE
+     RETIENT, PUIS SE PREND (passe F), il n'est offert nulle part tant qu'il
+     n'est pas au CONTEXTE : on montre SA puce dans l'index, puis SON texte,
+     puis SA fiche (`f`, §4.8). Une liaison sans article — hors du contenu
+     livré — reste au composeur, et la zone de ses propositions avec elle. */
   if(S.compo.length && !R.compoFinie(S)){
-    const art=tutoArticle();
-    const aLire = art ? !S.examinees.includes(art.piece)
-                      : !R.blocsOfferts(S).some(b=>b.type==="liaison"&&b.imbrique);
-    if(!aLire)
-      return {...GESTE_RELIER, n:3, ou:"#composeur .offre", f: art && "b:"+art.id,
-        dit:"Prends l'article qui la fonde.",
-        ditLong:"Une relation seule ne suffit pas : prends l'article sur lequel elle s'appuie."};
+    const art=tutoArticle(), cle=art && tutoCleArticle(art.piece);
+    if(!art) return {...GESTE_RELIER, n:4, ou:"#composeur .offre",
+        dit:"Prends ce qui la fonde.",
+        ditLong:"Une relation seule ne suffit pas : prends ce sur quoi elle s'appuie."};
     const ditLong="Une relation seule ne suffit pas : il lui faut un article qui la fonde.";
-    /* Une pièce encore ouverte replie l'index, et la puce y est cachée : le cas
-       COURANT, la citation d'avant ayant laissé sa pièce ouverte. On montre
-       alors « déplier », la porte de la puce — jamais on ne déplie à sa place. */
     if(panneau!=="contexte")
-      return {...GESTE_RELIER, n:2, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
+      return {...GESTE_RELIER, n:3, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
           ditLong:ditLong+" Ton dossier est dans ton CONTEXTE."};
-    return art && indexPlie()
-      ? {...GESTE_RELIER, n:2, ou:"#zoneDossier", f:"dossier", dit:"Déplie ton dossier.",
-          ditLong:ditLong+" Déplie ton dossier : l'article y est, et on n'invoque que ce qu'on a lu."}
-      : {...GESTE_RELIER, n:2, ou:"#zoneDossier", f: art && "d:"+art.piece, dit:"Lis l'article.",
-          ditLong:ditLong+" Ouvre-le dans ton dossier : on n'invoque que ce qu'on a lu."};
+    if(R.articleRetenu(S, art.piece))
+      return {...GESTE_RELIER, n:4, ou:"#zoneRetenus", f: cle && "c:"+cle,
+        dit:"Prends l'article qui la fonde.",
+        ditLong:"Une relation seule ne suffit pas : prends, dans ton CONTEXTE, l'article sur lequel elle s'appuie."};
+    if(S.modalPiece===art.piece)
+      return {...GESTE_RELIER, n:3, ou:"#panPiece .piecetexte", dit:"Retiens l'article.",
+        ditLong:"Clique sur son texte pour le retenir : on n'invoque que ce qu'on a retenu."};
+    /* Une pièce encore ouverte replie l'index, et la puce y est cachée : le cas
+       COURANT, la pièce du second passage restant ouverte. On montre alors
+       « déplier », la porte de la puce — jamais on ne déplie à sa place. */
+    return indexPlie()
+      ? {...GESTE_RELIER, n:3, ou:"#zoneDossier", f:"dossier", dit:"Déplie ton dossier.",
+          ditLong:ditLong+" Déplie ton dossier : l'article y est, et on n'invoque que ce qu'on a retenu."}
+      : {...GESTE_RELIER, n:3, ou:"#zoneDossier", f:"d:"+art.piece, dit:"Lis l'article.",
+          ditLong:ditLong+" Ouvre-le dans ton dossier, puis retiens-le : on n'invoque que ce qu'on a retenu."};
   }
   return null;   // la phrase qui se tient : « → Envoyer » se montre seul (§4.8)
 }
@@ -338,7 +390,7 @@ function rectVisible(el, ouNul){
    gagne, sinon celle qui couvre le moins — l'ancre comptant pour beaucoup plus. */
 // Les BOUTONS de la barre du composeur, pas la barre : son milieu est vide, et
 // c'est la meilleure place pour une bulle qui montre « → Envoyer ».
-const TUTO_EVITE = ".rappel, .raison, .aide, .phrase, .compo .barre button, .ptete button, .col > h2 .fermer, .ztitle .surfaces";
+const TUTO_EVITE = ".rappel, .raison, .aide, .phrase, .compo .barre button, .ptete button, .col > h2 .fermer, .col > h2 .bascule, .ztitle .surfaces";
 function placerTuto(){
   const bulle=$("tuto");
   if(!bulle || bulle.hidden) return;
@@ -509,7 +561,7 @@ function rendreTout(){
   rendreFocus(m, force);
   voirCibleTuto();                 // APRÈS le focus, qui ne défile pas (`preventScroll`)
   placerTuto();                    // APRÈS le recalage du fil, le focus et `voirCibleTuto` : ils déplacent l'ancre
-  rappelRetrait=null; vientDeRetenir=null; rappelPleine=false;
+  rappelRetrait=null; vientDeRetenir=null; rappelPleine=false; raisonArticle=null;
   annoncerNouveautes(); publierAnnonces();
   sauverPartie();
 }
@@ -604,11 +656,13 @@ function rendreTexte(pid){
          sauterait à la ligne d'un bloc au lieu de couler dans la prose (§4.10).
          Entrée et Espace passent par `clavier`. Pas d'`aria-pressed` : ce n'est
          pas un interrupteur, la pièce n'ajoute que (§4.3). */
-      const k=pid+"."+eid, pris=S.retenus.includes(k);
-      h+=`<span class="empan ${pris?'pris':''}" role="button" tabindex="0" data-f="e:${k}"
-            style="--dc:${couleurDim(e.dim)};--ds:${traitDim(e.dim)}"
-            onclick="surligner('${pid}','${eid}')" title="${escapeAttr(e.dim)} — ${escapeAttr(e.qui||p.qui||'')}">${
-            escapeAttr(e.texte)}<span class="sr"> — ${escapeAttr(e.dim)}${pris?", retenu":""}</span></span>`;
+      /* §4.3 — le texte d'un ARTICLE est un passage comme un autre, sans dimension :
+         ni couleur ni trait, la bordure et le fond neutres (passe F). */
+      const k=pid+"."+eid, pris=S.retenus.includes(k), quoi=e.article?"article":e.dim;
+      h+=`<span class="${["empan", e.article&&"article", pris&&"pris"].filter(Boolean).join(" ")}" role="button" tabindex="0" data-f="e:${k}"
+            ${e.article?"":`style="--dc:${couleurDim(e.dim)};--ds:${traitDim(e.dim)}"`}
+            onclick="surligner('${pid}','${eid}')" title="${escapeAttr(quoi)} — ${escapeAttr(e.qui||p.qui||'')}">${
+            escapeAttr(e.texte)}<span class="sr"> — ${escapeAttr(quoi)}${pris?", retenu":""}</span></span>`;
     } else h+=escapeAttr(m[0]);
     reste=reste.slice(m.index+m[0].length);
   }
@@ -623,7 +677,10 @@ function ouvrirPiece(pid){
   ouvreur = memoFocus();
   if(S.modalPiece && S.modalPiece!==pid) R.fermerPiece(S);
   R.ouvrirPiece(S,pid);
-  panneau="contexte"; panneauSuit=false; dossierDeplie=false;
+  // Une pièce ouverte depuis l'index replie l'index et rend sa place au
+  // CONTEXTE : la lire dans un tiers, c'est le défaut que les deux tiers
+  // réparaient (§4.6). ‹ › (`voisine`) ne touchent ni à l'un ni à l'autre.
+  panneau="contexte"; panneauSuit=false; dossierDeplie=false; discussionAgrandie=false;
   focusVoulu = { cle:"#pieceTitre", zone:"#panPiece" };
   rendreTout();
 }
@@ -639,12 +696,14 @@ function fermerPiece(){
    la réplique `declenche` (`R.fermerPiece`) tombe ainsi dans le fil AVANT qu'il
    soit dessiné, au moment où l'on relève les yeux (§4.10 règle 3). */
 /* …ET NE SE REFERME QUE SI LE COMPOSEUR PREND LE RELAIS (§4.6) : un bloc à
-   poser — un article à invoquer —, ou une phrase achevée. PIÈGE PAYÉ : la
-   comparaison posée, l'article pas encore lu, il se refermait — et la voix
-   disait aussitôt d'aller le lire, DANS le CONTEXTE qu'on venait de fermer. Et
-   `peutEnvoyer` n'est PAS un relais : une comparaison nue part (§4.5). */
+   poser, ou une phrase achevée. PIÈGE PAYÉ : la comparaison posée, l'article
+   pas encore lu, il se refermait — et la voix disait aussitôt d'aller le lire,
+   DANS le CONTEXTE qu'on venait de fermer. Et depuis que l'article SE PREND
+   DANS LE CONTEXTE (passe F), une phrase qui attend un article n'a rien à
+   prendre au composeur : le panneau reste. `peutEnvoyer` n'est PAS un relais :
+   une comparaison nue part (§4.5). */
 function suivrePhrase(){
-  const relais = () => R.blocsOfferts(S).length>0 || R.compoFinie(S);
+  const relais = () => R.compoFinie(S) || R.blocsOfferts(S).some(b=>!R.estLiaisonArticle(b));
   if(panneau==="contexte" && panneauSuit && R.indexTermeChamp(S) < 0 && relais()){ panneau=null; panneauSuit=false; }
   if(S.modalPiece && panneau!=="contexte") R.fermerPiece(S);
 }
@@ -735,9 +794,6 @@ function surligner(pid,eid){
   const k=pid+"."+eid;
   rappelRetrait = S.retenus.includes(k) ? k : null;
   vientDeRetenir = rappelRetrait ? null : k;
-  // Retenu depuis une pièce d'une remise close : sa remise se déplie, sans quoi
-  // la fiche neuve naîtrait cachée — retenir se voit (§4.3, §4.6).
-  if(vientDeRetenir && remiseClose(remiseDePiece(pid))) remisesDepliees.add(remiseDePiece(pid));
   R.surligner(S,pid,eid);
   annoncer(rappelRetrait ? RAPPEL_RETRAIT : "Retenu dans ton CONTEXTE.");
   const neuf=!!vientDeRetenir;
@@ -789,25 +845,38 @@ function piecePanelHTML(pid){
    plus atteindre (§4.10 règle 5). Les fiches restent donc atteignables
    (`aria-disabled`), et les toucher redit la raison. */
 const RAISON_PLEINE="Ta phrase ne prend plus de passage : « ← retirer » pour revenir en arrière.";
+const RAISON_ARTICLE_ATTENDU="Ta phrase ne prend plus de passage : elle attend un article.";
+const raisonPleine=()=>R.articleAttendu(S) ? RAISON_ARTICLE_ATTENDU : RAISON_PLEINE;
 let rappelPleine=false;
 function passageRefuse(cle){
-  rappelPleine=true; annoncer(RAISON_PLEINE);
+  rappelPleine=true; annoncer(raisonPleine());
   focusVoulu={ cle, zone:"#zoneRetenus" };
   rendreTout();
 }
-/* §4.6 — LES PASSAGES D'UNE REMISE CLOSE SE RANGENT, repliés sous ceux de la
-   remise en cours. Ce n'est pas juger : c'est un fait de remise, et rien n'est
-   retiré. Une remise est close quand la suivante est arrivée. `remisesDepliees`
-   est un état d'ÉCRAN, comme `dossierPlie` : jamais sauvé. */
-const remiseDePiece = pid => (JEU.remises||[]).findIndex(r=>(r.pieces||[]).includes(pid));
-const remiseClose = r => r>=0 && r < S.remisesEnvoyees-1;
-const remisesDepliees=new Set();
-function basculerRemise(r){
-  if(remisesDepliees.has(r)) remisesDepliees.delete(r); else remisesDepliees.add(r);
-  focusVoulu={ cle:"s:"+r, zone:"#zoneRetenus" };
+/* §4.6 — LA FICHE D'UN ARTICLE EST LE BOUTON DE SA LIAISON (passe F) : on prend
+   l'article là où on l'a retenu, le composeur ne le propose plus. L'indice du
+   bloc se cherche AU CLIC — il est positionnel dans les blocs offerts (PIÈGE de
+   `iBloc`) —, et c'est par ici que passe le harnais : une porte du joueur
+   (R13). Refusée, la fiche le dit, comme une fiche de passage. */
+const RAISON_ARTICLE="Un article fonde une relation : il se prend une fois ses deux passages posés.";
+const RAISON_COMPLETE="Ta phrase est complète : « ← retirer » pour revenir en arrière.";
+let raisonArticle=null;
+const blocArticle = k => R.blocsOfferts(S).findIndex(b=>R.estLiaisonArticle(b) && ARTICLE[k] && b.piece===ARTICLE[k].pid);
+function prendreArticle(k){
+  const i=blocArticle(k);
+  if(i<0) return articleRefuse("c:"+k);
+  focusVoulu={ cle:"c:"+k, zone:"#zoneRetenus" };
+  poserBloc(i);
+}
+function articleRefuse(cle){
+  raisonArticle = R.compoFinie(S) ? RAISON_COMPLETE : RAISON_ARTICLE;
+  annoncer(raisonArticle);
+  focusVoulu={ cle, zone:"#zoneRetenus" };
   rendreTout();
 }
-const ordinal = n => n===1 ? "1ʳᵉ" : n+"ᵉ";
+/* §4.6 — ON NE PURGE PAS LE CONTEXTE ENTRE DEUX REMISES (Bérengère, tranché par
+   l'auteur) : un pli « 1ʳᵉ remise, close » a vécu un jour, et il est défait. Tous
+   les passages restent à plat, rangés par dimension. */
 function renderRetenus(){
   const iT=R.indexTermeChamp(S);
   /* §4.11 — l'assombrissement annonçait le refus d'écran : il vit avec lui, en
@@ -816,6 +885,21 @@ function renderRetenus(){
   const dimReq=R.enCalibration(S) ? R.dimAttendue(S) : null;   // `null` : rien à assombrir
   const pleine = iT<0 && S.compo.length>0;
   const dansPhrase=new Set(S.compo.map(p=>p.valeur).filter(v=>typeof v==="string"));
+  /* L'article pris se lit dans la phrase par sa liaison, pas par une valeur. */
+  const articlePris=pid=>S.compo.some(p=>{ const b=R.blocParId(p.bloc); return b && R.estLiaisonArticle(b) && b.piece===pid; });
+  const ficheArticle=k=>{
+    const a=ARTICLE[k], pris=articlePris(a.pid), ok=blocArticle(k)>=0;
+    return `<div class="mchip article${k===vientDeRetenir?" neuf":""}${pris?" pris":""}">
+              <button class="corps" data-f="c:${k}" ${ok
+                ? `onclick="prendreArticle('${k}')"`
+                : `aria-disabled="true" ${raisonArticle?'aria-describedby="raisonArticle"':""} onclick="articleRefuse('c:${k}')"`}>
+                <span class="nom">${escapeAttr(a.nom)}${pris?`<span class="dansPhrase">dans ta phrase</span>`:""}</span>
+                <span class="prov"><span class="cit">« ${escapeAttr(a.texte)} »</span><span class="sig">— ${escapeAttr(a.qui)}, ${escapeAttr(JEU.pieces[a.pid].court)}</span></span>
+              </button>
+              <button class="del" data-f="x:${k}" onclick="oublier('${a.pid}','${a.eid}')"
+                      aria-label="Oublier « ${escapeAttr(a.nom)} »">oublier</button>
+            </div>`;
+  };
   const fiche=(k,j,d,hors)=>{
     const e=EMPAN[k], pris=dansPhrase.has(k);
     return `<div class="mchip${k===vientDeRetenir?" neuf":""}${pris?" pris":""}" style="--dc:${couleurDim(d)}">
@@ -845,23 +929,14 @@ function renderRetenus(){
   if(!S.retenus.length){
     h+=`<div class="aide">Ouvre une pièce, puis clique un passage encadré pour le retenir : il viendra ici.</div>`;
   } else {
-    if(pleine) h+=`<p class="raison${rappelPleine?" rappelle":""}" id="raisonPleine">${RAISON_PLEINE}</p>`;
-    const items=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k]);
-    const closes=new Map();
-    const courants=items.filter(x=>{
-      const r=remiseDePiece(EMPAN[x.k].pid);
-      if(!remiseClose(r)) return true;
-      if(!closes.has(r)) closes.set(r,[]);
-      closes.get(r).push(x); return false;
-    });
-    h+=parDimension(courants);
-    for(const r of [...closes.keys()].sort((a,b)=>a-b)){
-      const ouvert=remisesDepliees.has(r), n=closes.get(r).length;
-      h+=`<div class="remiseClose"><button type="button" class="dplier" data-f="s:${r}" aria-expanded="${ouvert}"
-            aria-controls="remise${r}" onclick="basculerRemise(${r})"><span class="dtitre">${ordinal(r+1)} remise, close</span><span class="dcompte">${
-            compte(n,"passage")}</span><span class="dsens">${ouvert?"▴ replier":"▾ déplier"}</span></button>
-          <div id="remise${r}" ${ouvert?"":"hidden"}>${parDimension(closes.get(r))}</div></div>`;
-    }
+    if(pleine) h+=`<p class="raison${rappelPleine?" rappelle":""}" id="raisonPleine">${raisonPleine()}</p>`;
+    h+=parDimension(S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k]));
+    /* HORS DES DIMENSIONS, en fin de liste : un article n'en a pas, et il n'est
+       jamais un terme (§4.6). Ni couleur ni assombrissement. */
+    const arts=S.retenus.filter(k=>ARTICLE[k]);
+    if(arts.length) h+=`<div class="dimgrp articles"><div class="dnom">articles</div>${
+      raisonArticle?`<p class="raison rappelle" id="raisonArticle">${raisonArticle}</p>`:""}${
+      arts.map(ficheArticle).join("")}</div>`;
   }
   h+=`</div>`;
   return h;
@@ -883,7 +958,7 @@ function souffle(){
     // §4.6 — pendant la répétition on n'écrit plus, on oppose : la voix se tait,
     // et ne reparle que si le joueur recommence une phrase.
     if(R.repetitionEnCours(S)) return "";
-    if(!S.retenus.length) return "Ouvre une pièce et retiens un passage.";
+    if(!S.retenus.some(k=>EMPAN[k])) return "Ouvre une pièce et retiens un passage.";
     return second ? "Prends un ou plusieurs passages de ton contexte." : "Prends un passage de ton contexte pour répondre.";
   }
   if(offerts.some(b=>b.cite) || R.compoFinie(S)) return "";
@@ -891,9 +966,9 @@ function souffle(){
     return "Prends un second passage pour le mettre en relation.";
   return offerts.length
     ? "Sur quel article t'appuies-tu pour montrer qu'il y a une irrégularité ?"
-    // §4.5 — un texte s'invoque une fois LU : la voix dit où aller le lire,
-    // sans quoi le joueur bloque sans savoir pourquoi.
-    : "Aucun texte que tu as lu ne fonde ça. Les articles sont dans ton dossier — ouvre-les.";
+    // §4.5 — un texte s'invoque une fois RETENU (passe F) : la voix dit où aller
+    // le chercher, sans quoi le joueur bloque sans savoir pourquoi.
+    : "Aucun texte que tu as retenu ne fonde ça. Les articles sont dans ton dossier — retiens celui qui la fonde.";
 }
 /* §4.9 règle 1 — LA VOIX DEVIENT UN BOUTON quand le geste qu'elle nomme a lieu
    dans l'AUTRE colonne. Le prédicat est `indexTermeChamp`, le MÊME qui active
@@ -905,7 +980,9 @@ function rendreVoix(txt, classe){
   if(!txt) return "";
   // Cliquable, elle a l'air d'un bouton — jamais d'un champ vide (§4.9 règle 1) :
   // la flèche montre où le panneau s'ouvre, au-dessus.
-  return R.indexTermeChamp(S) >= 0
+  // L'article se retient et se prend DANS le CONTEXTE (passe F) : la voix qui le
+  // réclame y mène aussi.
+  return R.indexTermeChamp(S) >= 0 || R.articleAttendu(S)
     ? `<button class="${classe} versCONTEXTE" data-f="voix" onclick="ouvrirCONTEXTE()">${escapeAttr(txt)}<span class="fl" aria-hidden="true">↑</span></button>`
     : `<span class="${classe}">${escapeAttr(txt)}</span>`;
 }
@@ -984,6 +1061,7 @@ function renderCompo(){
   const implicite=R.clotureImplicite(S);
   offerts.forEach((b,i)=>{
     if(implicite && b.id===implicite.id) return;
+    if(R.estLiaisonArticle(b)) return;      // sa fiche, au CONTEXTE, est son bouton (§4.6)
     if(b.type==="liaison"){
       // PIÈGE : `fondement` est propre à `.bbloc` ; `.msg.suite` est le même
       // mot pour un sens sans rapport.
@@ -1133,13 +1211,37 @@ function finir(){
    LA PIÈCE N'EST PAS UN OCCUPANT : elle s'ouvre DANS le CONTEXTE (`renderCONTEXTE`),
    et `suivrePhrase` la replie dès que le CONTEXTE quitte l'écran. */
 let panneau = null, panneauSuit = false;
+/* §4.6 — CLIQUER DISCUSSION AGRANDIT LA CONVERSATION (retour de Bérengère). Un
+   troisième état d'ÉCRAN, comme `dossierPlie` — jamais sauvé —, qui n'existe que
+   CONTEXTE ouvert : fermé, la conversation a déjà toute la place, et un bouton qui
+   ne ferait rien n'a pas à s'afficher (§4.9 règle 4). Il ne change que le GABARIT
+   (`.wrap.discussionAgrandie`), jamais un span. */
+let discussionAgrandie = false;
 function majLateral(){
+  if(panneau!=="contexte") discussionAgrandie=false;      // le CONTEXTE refermé l'oublie
   { const p=$("panCONTEXTE");   if(p) p.hidden = panneau!=="contexte"; }
   { const p=$("panPLAIDOIRIE"); if(p) p.hidden = panneau!=="plaidoirie"; }
   // La conversation, seule bande élastique, cède d'elle-même la place (§4.6) ;
   // la classe ne décide que jusqu'où elle peut céder, et c'est du CSS (§9).
   { const w=document.querySelector(".wrap"); if(w){ w.classList.toggle("avecLateral", !!panneau);
-                                                   w.classList.toggle("avecCONTEXTE", panneau==="contexte"); } }
+                                                   w.classList.toggle("avecCONTEXTE", panneau==="contexte");
+                                                   w.classList.toggle("discussionAgrandie", discussionAgrandie); } }
+  enteteDISCUSSION();
+}
+/* L'en-tête nomme toujours la surface (§4.9 règle 2) ; CONTEXTE ouvert, il est en
+   plus la bascule. Réécrit à chaque rendu : le focus le retrouve par sa clé. La
+   section reste nommée par `#nomDISCUSSION` seul — sans l'aide de la bascule. */
+function enteteDISCUSSION(){
+  const h=$("titreDISCUSSION"); if(!h) return;
+  const nom=`<span id="nomDISCUSSION">DISCUSSION</span>`;
+  h.innerHTML = panneau!=="contexte" ? nom
+    : `<button type="button" class="bascule" data-f="discussion" aria-pressed="${discussionAgrandie}"
+         onclick="basculerDISCUSSION()">${nom}<span class="sens"><span aria-hidden="true">↔</span> agrandir</span></button>`;
+}
+function basculerDISCUSSION(){
+  discussionAgrandie=!discussionAgrandie;
+  focusVoulu={ cle:"discussion", zone:null };
+  rendreTout();
 }
 /* LE PANNEAU S'OUVRE SUR CE QU'ON VIENT DE RETENIR. À dix-sept fiches, la
    dernière est sous le pli et rien ne le disait : un joueur a cherché son

@@ -119,20 +119,36 @@ function creerRegles(JEU, M) {
     for (const p of S.compo) { const b = blocParId(p.bloc); if (b) e = b.vers; }
     return e;
   }
-  /* ON N'INVOQUE PAS UN TEXTE QU'ON N'A PAS LU (§4.5). Une TOURNURE se reçoit —
-     il suffit que sa pièce soit livrée ; un TEXTE s'invoque, et on n'invoque que
-     ce qu'on a ouvert. PIÈGE : la distinction se fait sur le TYPE DE BLOC, pas
-     sur la nature de la pièce — dans l'affaire du jour, le terme de comparaison
-     porte lui aussi une pièce-règle, et l'exiger lue couperait la grammaire de
-     comparaison, que le §4.5 veut complète dès la première phrase. */
+  /* ON N'INVOQUE PAS UN TEXTE QU'ON N'A PAS RETENU (§4.5, passe F). Une
+     TOURNURE se reçoit — il suffit que sa pièce soit livrée ; un TEXTE s'invoque,
+     et on n'invoque que ce qu'on a retenu : le passage d'article de sa pièce est
+     au CONTEXTE. L'offre a suivi « reçu », puis « ouvert » — ouvrir valait lire,
+     et l'article paraissait de lui-même au composeur. PIÈGE : la distinction se
+     fait sur le TYPE DE BLOC, pas sur la nature de la pièce — dans l'affaire du
+     jour, le terme de comparaison porte lui aussi une pièce-règle, et l'exiger
+     retenue couperait la grammaire de comparaison, que le §4.5 veut complète
+     dès la première phrase. */
+  const estArticle = k => {
+    const s = String(k), i = s.indexOf("."), p = JEU.pieces[s.slice(0, i)];
+    return i > 0 && !!p && !!((p.empans || {})[s.slice(i + 1)] || {}).article;
+  };
+  const articleRetenu = (S, pid) => S.retenus.some(k => k.startsWith(pid + ".") && estArticle(k));
+  const estLiaisonArticle = b => b.type === "liaison" && !!b.imbrique && !!b.piece;
   function blocsDepuis(e, S) {
     const livrees = new Set(piecesLivrees(S));
     return (JEU.grammaire.blocs || []).filter(b => {
       if (b.de !== e) return false;
       if (!b.piece) return true;
       if (!livrees.has(b.piece)) return false;
-      return b.type !== "liaison" || S.examinees.includes(b.piece);
+      return b.type !== "liaison" || articleRetenu(S, b.piece);
     });
+  }
+  /* La phrase ATTEND un article — retenu ou non : l'écran en tire où a lieu le
+     geste suivant (la voix, le panneau qui reste) et la raison d'une fiche
+     d'article refusée. */
+  function articleAttendu(S) {
+    const e = etatCompo(S), livrees = new Set(piecesLivrees(S));
+    return (JEU.grammaire.blocs || []).some(b => b.de === e && estLiaisonArticle(b) && livrees.has(b.piece));
   }
   function blocsOfferts(S) { return blocsDepuis(etatCompo(S), S); }
   function indexTermeChamp(S) {
@@ -443,6 +459,7 @@ function creerRegles(JEU, M) {
   return { etatInitial, signatureContenu, pousser, envoyerRemise, ouvrirPiece, fermerPiece,
            piecesLivrees, estRegle, reglesLivrees, porteDe,
            surligner, oublier, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
+           estArticle, articleRetenu, estLiaisonArticle, articleAttendu,
            comparaisonPossible, dimAttendue,
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,

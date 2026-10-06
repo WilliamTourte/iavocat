@@ -67,7 +67,7 @@ function renderFrise(){
     <h3>Les quatre surfaces <span class="cid">— deux privées, deux transmises</span></h3>
     <div class="repline">${mir("lire → SURLIGNER : l'empan tombe dans le contexte (privé). Rien ne se passe")}</div>
     <div class="repline">${mir("COMPOSER : les blocs de l'état courant, de gauche à droite ; seules les erreurs de catégorie sont refusées")}</div>
-    <div class="repline">${mir("deux voies de clôture : un fait SE CITE (un empan, clos par sa citation) — une relation SE FONDE (deux empans, clos par un article)")}</div>
+    <div class="repline">${mir("deux voies de clôture : un fait SE CITE (un empan, clos par sa citation) — une relation SE FONDE (deux empans, clos par un article retenu)")}</div>
     <div class="repline">${mir("la phrase close tombe au BROUILLON (privé) — jamais jugée, gratuite, illimitée, dédoublonnée")}</div>
     <div class="repline">${mir("VERSER au plan de plaidoirie : le seul geste transmis, donc le seul à conséquence")}</div>
     <div class="repline">${mir("l'index du dossier (pièces reçues, marqueur vu/pas-vu) — pur affichage, rien à éditer ici")}</div>

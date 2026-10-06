@@ -75,14 +75,15 @@ relire par l'auteur**.*
 
 **Reste ouvert, à trancher avec l'auteur**
 
-- [ ] **⚖ « Article 7 » tout court sur le bouton**, comme Jean le propose : se lirait comme un choix,
+- [x] **⚖ « Article 7 » tout court sur le bouton**, comme Jean le propose : se lirait comme un choix,
       et forcerait à lire l'article. Contre le §4.5, où le libellé *n'est pas neutre* et annonce ce que
       l'article fait du fait (arbitré le 16 septembre). *Jean 4* — *Une issue : la passe F (§0 bis) —
-      le nom neutre sur la fiche du CONTEXTE, le libellé dans la phrase.*
+      le nom neutre sur la fiche du CONTEXTE, le libellé dans la phrase.* — *Fait par la passe F.*
 
 - [ ] **⚖ Les réponses de calibration entrent en PLAIDOIRIE** (`q_arrivee`, `q_voix`) : le §4.6 le
       veut (*« une réponse citée y entre »*). Jean : elles encombrent le présentoir de la répétition,
-      où chacune ne reçoit que « Ça ne répond pas à celle-ci ». *Jean 4*
+      où chacune ne reçoit que « Ça ne répond pas à celle-ci ». *Jean 4* — *Allégé par la passe E :
+      une seule citation de calibration désormais, `q_redacteur`.*
 - [ ] **⚖ Le dilemme n'est jamais posé** : ni les directives (§5), ni un soupçon que Kessler est
       coupable. Envoyer le vice est toujours le geste évident, et la Fin 2 ne s'atteint que par
       accident — assembler l'article 7 en essayant les trois, reculer, plaider la statistique. Rejoint
@@ -105,7 +106,7 @@ réécriture du §4.5** pour les deux, à faire relire, puis F codée avant G.*
 
 **Passe D — l'écran, sans arbitrage.** *Document d'abord (§4.6), puis `npm test` et `npm run vue`.*
 
-- [ ] **Retirer « remise close » : on ne purge pas le CONTEXTE entre deux remises.** La remise
+- [x] **Retirer « remise close » : on ne purge pas le CONTEXTE entre deux remises.** La remise
       suivante arrivée, les passages des pièces de la précédente passent sous une ligne repliée
       *« 1ʳᵉ remise, close »* (`renderRetenus`). Retrait **confirmé par l'auteur** : c'est sa réponse
       au ⚖ *« Ranger les affaires closes »* (§2 ci-dessous, tranché le 5 octobre *à relire par
@@ -116,8 +117,9 @@ réécriture du §4.5** pour les deux, à faire relire, puis F codée avant G.*
       REMISE CLOSE SE RANGENT »*), un seul survit, réécrit : *les passages de la remise 1 restent
       composables en remise 2, sans ligne de repli*. **Ce que ça rouvre** : la gêne de Jean, *les
       fiches de la session 1 restent en tête*. Si elle remord, un repli qui ne dit pas *remise* — le
-      plus récent en tête de chaque dimension — et seulement si elle remord en jeu. *Bérengère*
-- [ ] **Cliquer DISCUSSION agrandit la conversation et réduit le CONTEXTE.** L'en-tête est un `<h2>`
+      plus récent en tête de chaque dimension — et seulement si elle remord en jeu. *Bérengère* —
+      *Fait : le §4.6 le dit, le code et le PIÈGE sont retirés, un contrôle survit.*
+- [x] **Cliquer DISCUSSION agrandit la conversation et réduit le CONTEXTE.** L'en-tête est un `<h2>`
       sans action ; au-dessus du seuil, le CONTEXTE prend les deux tiers (§4.6, demande de l'auteur
       du 4 octobre). Proposé : l'en-tête devient une **bascule** (`aria-pressed`), un état d'**écran**
       jamais sauvé comme `dossierPlie`, qui n'existe que CONTEXTE ouvert (§4.9 règle 4). Au-dessus du
@@ -127,12 +129,14 @@ réécriture du §4.5** pour les deux, à faire relire, puis F codée avant G.*
       ouvrir une pièce rend-il la place au CONTEXTE (proposé : oui, comme une pièce replie l'index —
       lire une pièce dans un tiers, c'est le défaut que les deux tiers réparaient) ; la PLAIDOIRIE
       (proposé : sans objet, sa colonne est déjà étroite). `npm run vue` capture l'état agrandi en
-      1280×800 et 390×800, la bulle comprise (`placerTuto`). *Bérengère*
+      1280×800 et 390×800, la bulle comprise (`placerTuto`). *Bérengère* — *Fait, les deux
+      propositions retenues, à relire par l'auteur ; et ‹ › ne rendent pas la place, comme ils ne
+      replient pas l'index. La bascule ne vit que CONTEXTE ouvert, et l'oublie quand il se ferme.*
 
 **Passe E — la calibration : un fait sans lendemain, puis la contradiction.** *Tranché par l'auteur ;
 document d'abord (§3, §4.8), puis le contenu et le tutoriel.*
 
-- [ ] **La première réponse du jeu porte sur un passage étranger à la comparaison** — *qui a rédigé le
+- [x] **La première réponse du jeu porte sur un passage étranger à la comparaison** — *qui a rédigé le
       PV d'intervention ?* Aujourd'hui, la remise 1 demande l'heure d'arrivée, l'heure des éclats de
       voix, puis leur lien sous l'article 3 : la citation qu'on apprend est la moitié de la comparaison
       qu'on demande ensuite — *« prix assumé »*, écrit au §3. **Tranché : deux questions** — (1) qui a
@@ -156,23 +160,34 @@ document d'abord (§3, §4.8), puis le contenu et le tutoriel.*
     retirer les liens. Le texte de remise annonce *« trois questions »*.
   - **Pour l'auteur** : lire *« par mes soins »* comme une signature, c'est le geste que le vice
     exigera (*« J'ai relevé moi-même les traces »*, §4.1). Un apprentissage loyal, ou une lampe
-    torche ?
+    torche ? — *Tranché : le passage nomme le brigadier (« par mes soins, brigadier N. ») ; plus de
+    signature à déchiffrer (§6).*
   - **Code.** Aucune règle ne bouge : `horsOrdre` et `pieceDemandee` dérivent du contenu, et aucune
     suite ne nomme `q_arrivee`, `q_voix`, `e_arr` ni `e_voix`. `tutoEtapeComparaison` suppose les
     deux passages déjà retenus (*« Prends un premier passage »*, halo sur les retenus) : il reprend la
     logique de `tutoEtapeCitation` pour chaque terme manquant. À vérifier : les contrôles du tutoriel
     de `test_parcours` et les captures de `outils/vue.js` qui comptent sur deux citations avant la
     comparaison. Puis la relecture à l'œil des répliques de la remise 1.
+  - *Fait, document d'abord (§3, §4.5, §4.8, §6).* `q_redacteur` (qui a rédigé le PV), puis
+    `temoin` ; la question 2 nomme les deux heures, plus *« cette incohérence »*. Les liens de
+    `e_arr` et `e_voix` **retirés** (arbitré : une heure seule reçoit `rep_hors_sujet`, juste aux deux
+    questions). `tutoRetenir`, commun aux deux gestes : index, puis texte de la pièce ; **une pièce
+    sans passage attendu renvoie à l'index**, citer compris (arbitré) ; l'alerte lit le dernier
+    passage retenu, la citation servie exceptée. Les deux répliques de lectures justes ne disent plus
+    *« les deux heures que tu m'as données »*. Une seconde citation qui ne rallume pas le halo
+    s'éprouve désormais sur contenu muté. `npm run vue` : `relier-*`. **À voir en jeu** : à la
+    question 2, la voix du composeur dit *« Prends un ou plusieurs passages »* pendant que la bulle
+    dit de retenir (§3 de `docs/PASSATION.md`).
 
 **Passe F — l'article se retient, puis se prend.** *Document d'abord (§4.5, §4.6, §4.8, §11) ;
 grammaire, règles, écran, atelier, suites — la plus lourde des trois. Deux points de Bérengère, un seul
 geste : l'article suit enfin les deux verbes du §4.6.*
 
-- [ ] **Cliquer un passage de l'article pour le retenir au CONTEXTE** — pour montrer qu'on l'a lu, et
+- [x] **Cliquer un passage de l'article pour le retenir au CONTEXTE** — pour montrer qu'on l'a lu, et
       un seul geste pour tout ce qui y entre. L'article n'a aucun passage (`empans: {}`), et il s'offre
       dès que sa pièce a été **ouverte** (`blocsDepuis` lit `S.examinees`) : ouvrir vaut lire.
       *Bérengère*
-- [ ] **L'article ne paraît plus de lui-même au composeur** : il s'y offre parmi les propositions
+- [x] **L'article ne paraît plus de lui-même au composeur** : il s'y offre parmi les propositions
       (`.offre`) dès la comparaison posée, et *« les gens croient qu'il est déjà ajouté »*. Il se
       **prend** sur sa fiche, dans le CONTEXTE, comme un passage. *Bérengère*
   - **§4.6** : *un empan retenu n'existe qu'une fois à l'écran* s'étend à l'article — sa fiche **est**
@@ -191,11 +206,30 @@ geste : l'article suit enfin les deux verbes du §4.6.*
     de `iBloc` (§2 de `docs/PASSATION.md`) mord ici.
   - **À trancher** : quel passage se clique — le texte entier de l'article, ou sa seule proposition
     qui règle (*« ne peut fonder à elle seule la conviction du tribunal »*) ?
+  - *Tranché avec l'auteur, document écrit — **à relire avant le code** (§4.3, §4.5, §4.6, §4.8,
+    §4.9 règle 1, §6, §7, §11, §15)* : le **texte entier**, sans le titre (sa proposition seule, pour
+    l'article 7, serait la clause du vice) ; un drapeau `article:true`, sans `dim` ni `valeur`, que
+    `champsDe` ne rend pas ; la fiche porte le nom neutre et le début du texte, le libellé ne vit
+    plus que dans la phrase. Le §4.5 est réécrit d'un tenant pour F et G, ce qui ne vaut qu'avec G
+    marqué **[G]**. La carte (§17) suivra le code.
+  - *Codé, document relu par l'auteur.* Contenu : un passage `art` sur chaque règle, les `libelle`
+    d'article retirés. Moteur : `champsDe` les écarte, `articlesDe` les rend. Règles :
+    `articleRetenu`, `estLiaisonArticle`, `articleAttendu` ; `blocsDepuis` suit *retenu*. Écran : le
+    passage d'article sans dimension, le groupe *ARTICLES* et `prendreArticle` / `articleRefuse`, la
+    raison *« elle attend un article »*, le composeur sans article, la voix qui mène au CONTEXTE,
+    `suivrePhrase` qui ne compte plus les liaisons d'article comme relais, le tutoriel (puce, texte,
+    fiche ; l'article demandé, retenu tôt, ne sonne pas faux). Atelier : diagnostic, inspecteur,
+    graphe, pas-à-pas, frise. Suites : `H.lireLeTexte` retient, `H.prendreLiaison` prend par la
+    fiche ; chaque contrôle neuf vu tomber. `npm run vue` : `article-a-retenir`, `article-a-prendre`.
 
 **Passe G — le joueur choisit la relation : le §4.5 s'inverse.** *Tranché par l'auteur le 6 octobre,
 parti du « conforme / non conforme » de Bérengère ; reprend le chantier **d** du §5. Le plus gros de
 la liste : document d'abord (§4.2, §4.4, §4.5, §4.7, §4.8, §4.11, §11, §14), puis moteur, règles,
 écran, atelier, suites.*
+
+*Le §4.5 est déjà réécrit pour elle, avec la passe F (marqué **[G]**) : la relation choisie parmi
+les deux de la dimension, l'ordre par valeur gardé, la relation fausse refusée par l'avocat partout.
+Le reste du document — §4.2, §4.4, §4.7, §4.8, §4.11, §11, §14 — viendra avec elle.*
 
 - [ ] **Deux passages posés, le joueur choisit ce qui les lie**, entre **les deux relations de leur
       dimension** — celles que le contenu déclare déjà : *une seule et même personne / pas la même

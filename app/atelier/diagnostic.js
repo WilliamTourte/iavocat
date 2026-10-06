@@ -71,14 +71,24 @@ function diagnostiquer(){
     const txt=String(p.texte||"");
     const marques=[...txt.matchAll(/\{\{([A-Za-z0-9_]+)\}\}/g)].map(x=>x[1]);
     for(const [eid,e] of Object.entries(p.empans||{})){
-      if(!e.dim) add("erreur",`Empan sans dimension : ${p.court}·${joli(eid)}`,
+      /* LE PASSAGE D'UN ARTICLE (§11, passe F) : ni dimension ni valeur, sur une
+         règle seulement ; son nom est celui de sa fiche. */
+      if(e.article){
+        if(!estRegle(p)) add("erreur",`Passage d'article hors d'une règle : ${p.court}·${joli(eid)}`,
+          "Seul le texte d'un article s'invoque : sur une autre pièce, ce passage ne fonderait rien et ne se comparerait à rien. Retire « article », ou déplace-le.",{champ:[pid,eid]});
+        if(e.dim!==undefined || e.valeur!==undefined) add("avert",`Passage d'article avec une dimension ou une valeur : ${p.court}·${joli(eid)}`,
+          "Le moteur ne le voit jamais : une dimension ou une valeur n'y servirait à rien et laisserait croire qu'il se compare (§11).",{champ:[pid,eid]});
+      }
+      else if(!e.dim) add("erreur",`Empan sans dimension : ${p.court}·${joli(eid)}`,
         "Un empan sans dimension n'est comparable à rien.",{champ:[pid,eid]});
       else if(!dims.includes(e.dim)) add("erreur",`Dimension inconnue « ${e.dim} » : ${p.court}·${joli(eid)}`,
         `« ${e.dim} » n'est pas dans la liste « dimensions » — le jeu ne saurait pas la colorer.`,{champ:[pid,eid]});
       if(!String(e.texte||"").trim()) add("erreur",`Empan sans texte : ${p.court}·${joli(eid)}`,
         "L'empan est ce que le joueur LIT — pas seulement une valeur.",{champ:[pid,eid]});
       if(!String(e.nom||"").trim()) add("avert",`Empan sans nom : ${p.court}·${joli(eid)}`,
-        "Sans nom, c'est la citation entière qui entre dans les phrases composées — elles se lisent alors comme un empilement, pas comme une pensée (§4.1). Donne un groupe nominal : « l'heure des éclats de voix ».",{champ:[pid,eid]});
+        e.article
+          ? "Sans nom, la fiche de l'article porterait tout son texte. Donne-lui son nom neutre : « Article 7 » (§4.5)."
+          : "Sans nom, c'est la citation entière qui entre dans les phrases composées — elles se lisent alors comme un empilement, pas comme une pensée (§4.1). Donne un groupe nominal : « l'heure des éclats de voix ».",{champ:[pid,eid]});
       if(!marques.includes(eid)) add("erreur",`Empan non marqué dans le texte : ${p.court}·${joli(eid)}`,
         `Ajoute {{${eid}}} dans le texte de la pièce, là où l'empan se lit — sinon il est inatteignable (règle de surlignage, §4.3).`,{champ:[pid,eid]});
       else if(marques.filter(x=>x===eid).length>1)
@@ -99,15 +109,21 @@ function diagnostiquer(){
     const f=formeDe(L.forme);
     if((L.termes||[]).length!==(f.arite||2))
       add("erreur",`Lien ${i} : ${(L.termes||[]).length} terme(s) pour une forme d'arité ${f.arite}`,"",{edge:i});
+    let cite_article=false;
     for(const k of feuillesLien(L)){
       const [pid,eid]=deK(k);
       if(!empanExiste(pid,eid))
         add("erreur",`Lien ${i} pointe vers un empan inexistant (${k})`,"Empan ou pièce supprimé ?",{edge:i});
+      else if(estPassageArticle(pid,eid)){
+        cite_article=true;
+        add("erreur",`Lien ${i} prend un passage d'article pour terme (${k})`,
+          "Un article fonde, il ne se compare ni ne se cite (§11) : le moteur ne le voit pas, et cette phrase ne se formerait jamais.",{edge:i});
+      }
       else if(!livrees.has(pid))
         add("erreur",`Lien ${i} injouable : « ${courtDe(pid)} » n'est livrée par aucune remise`,
           "Le joueur ne peut surligner que dans les pièces reçues.",{edge:i});
     }
-    if(m && !lienSense(L))
+    if(m && !cite_article && !lienSense(L))
       add("erreur",`Lien ${i} insensé : ${m.valider({forme:L.forme,termes:L.termes||[]})}`,
         `« ${labelLien(L)} » serait refusée à la composition — le joueur ne pourrait jamais la former.`,{edge:i});
     if(L.vice&&L.faux)
@@ -125,13 +141,23 @@ function diagnostiquer(){
     if(memeLien(LI[i],LI[j]))
       add("avert",`Liens dupliqués (${i} et ${j})`,`« ${labelLien(LI[i])} » apparaît deux fois.`,{edge:j});
 
-  /* ---- les articles : des RÉFÉRENCES, jamais des porteurs d'empan ----
-     L'invariant du §4.5 rendu vérifiable ; `porte` est indicatif. */
+  /* ---- les articles : des TEXTES qu'on invoque, jamais des porteurs de valeur ----
+     L'invariant du §4.5 rendu vérifiable ; `porte` est indicatif. Un article a
+     UN passage — son texte, qu'on retient pour l'invoquer (passe F) — et aucun
+     empan qui se compare. */
+  const liaisonsArticle=((CONTENU.grammaire||{}).blocs||[]).filter(b=>b.type==="liaison" && b.imbrique && b.piece);
   for(const [pid,p] of Object.entries(P)){
     if(!estRegle(p)) continue;
-    const n=Object.keys(p.empans||{}).length;
-    if(n) add("erreur",`La règle « ${p.court} » porte ${n} empan(s)`,
-      "Un article est une référence qu'on invoque, pas un texte qu'on retraverse : déplace cet empan dans la pièce qui l'énonce (le rapport qui cite le seuil, par exemple).",{piece:pid});
+    const es=Object.values(p.empans||{});
+    const n=es.filter(e=>!e.article).length, nArt=es.length-n;
+    if(n) add("erreur",`La règle « ${p.court} » porte ${n} empan(s) qui se compare(nt)`,
+      "Un article est un texte qu'on invoque, pas un fait qu'on compare : déplace cet empan dans la pièce qui l'énonce (le rapport qui cite le seuil, par exemple).",{piece:pid});
+    if(!nArt && liaisonsArticle.some(b=>b.piece===pid))
+      add("erreur",`La règle « ${p.court} » n'a pas de passage d'article`,
+        "Sa liaison ne s'offre qu'une fois ce passage retenu (§4.5) : sans lui, l'article ne s'invoquerait jamais. Ajoute un empan « article » sur son texte.",{piece:pid});
+    else if(nArt>1)
+      add("avert",`La règle « ${p.court} » a ${nArt} passages d'article`,
+        "Un seul suffit — le texte entier : en découper un morceau, c'est désigner la clause qui compte (§4.5).",{piece:pid});
     if(!livrees.has(pid)) continue;
     const porte=p.porte;
     if(!Array.isArray(porte) || !porte.length)
@@ -280,7 +306,7 @@ function diagnostiquer(){
   /* ---- empans inertes, pièces non livrées ---- */
   for(const [pid,p] of Object.entries(P))
     for(const eid of Object.keys(p.empans||{})){
-      if(empanRelie(pid,eid)) continue;
+      if(empanRelie(pid,eid) || estPassageArticle(pid,eid)) continue;   // un article ne se lie pas : il fonde
       if(estBruit(pid,eid)) add("info",`Bruit assumé : ${p.court}·${joli(eid)}`,"Marqué comme leurre décoratif — ignoré.",{champ:[pid,eid]});
       else add("avert",`Empan inerte : ${p.court}·${joli(eid)}`,
         "Dans aucun lien. C'est normal pour du bruit (et il en faut) — marque-le pour faire taire cet avertissement.",{champ:[pid,eid]});

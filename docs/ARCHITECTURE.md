@@ -82,6 +82,13 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
                           nom:"l'heure de l'appel",                  // ce qui parle dans une phrase
                           bruit:true }, … },                         // leurre assumé (optionnel)
       declenche: { une_fois:true, qui, replique }            // optionnel
+    },
+    r_protocole: {                                          // une RÈGLE : son texte est son passage
+      titre, court, type:"règle du manuel", qui, porte:["qui","quoi"],
+      texte: "Article 7 — {{art}}",
+      empans: { art:{ article:true,                          // ni `dim` ni `valeur` (passe F)
+                      texte:"L'échantillon de scène et le prélèvement de référence sont …",
+                      nom:"Article 7" } }                    // le nom NEUTRE de la fiche
     }
   },
   grammaire: { depart:"S0", finaux:["FIN"], blocs:[…], formes:{…} },
@@ -100,8 +107,11 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   corrige une virgule. `nom` absent → le `texte` en tient lieu.
 - **Attributs d'un bloc** : `imbrique` (la liaison **emboîte** l'acquis comme terme unique) · `deduit`
   (le bloc **clôt une paire** : forme déduite, termes rangés dans l'ordre canonique) · `piece` (offert
-  une fois la pièce livrée — **sur les liaisons *et* sur les termes**, §4.5) · `libelle` (le texte du
-  bouton) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa pièce).
+  une fois la pièce livrée — **sur les liaisons *et* sur les termes**, §4.5 ; une liaison
+  `imbrique`, une fois **retenu** le passage d'article de sa pièce, passe F) · `libelle` (le texte du
+  bouton, quand le composeur en fait un ; une liaison-article n'en a plus, sa fiche porte le `nom`
+  de son passage) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa
+  pièce).
 - **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`, `"juxtaposition"`) · `sens` (`"asc"` par
   défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8).
   **L'ordre de déclaration est signifiant** : `deduire` rend la première forme qui convient. C'est
@@ -122,7 +132,14 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   tient aucune liste à côté. Une telle liste a existé (`_bruit`), que l'export jetait ; `migrerContenu`
   la replie.
 - **Attribut d'une pièce** : `porte`, sur une pièce « règle » seulement — affiché, **jamais lu par le
-  moteur** ; une telle pièce ne porte aucun empan (diagnostic, pas moteur).
+  moteur** ; une telle pièce ne porte aucun empan qui se compare (diagnostic, pas moteur).
+- **Le passage d'un article** (`article:true`, passe F, §4.5) : sur une pièce « règle », **un et un
+  seul**, son texte entier sans le titre ; **ni `dim` ni `valeur`**, et son `nom` est le nom neutre de
+  sa fiche (*« Article 7 »*), jamais un groupe nominal de phrase. **`champsDe` ne le rend pas** : le
+  moteur ne le voit jamais, il ne devient jamais un terme, et aucune boucle *par dimension* — moteur,
+  suites, diagnostic — n'a à l'écarter ; une projection à part le rend à l'écran. Il se retient dans
+  `S.retenus` comme un passage — un seul geste, et rien de neuf à sauver. Un drapeau plutôt qu'une
+  pseudo-dimension : celle-ci serait entrée dans toutes ces boucles.
 - **Les attentes** sont servies dans l'ordre, et le **désordre est accepté** ; l'ancienne forme
   (`attend`/`apres` sur la remise) se lit comme une liste à un élément.
 - **La juxtaposition** (§4.11) : une forme `deduction:"juxtaposition"`, slots `"*"`, patron
@@ -221,8 +238,10 @@ du gardien tienne l'écart (§16).
 
 **Ce que le diagnostic contrôle** : la règle de surlignage, le nom d'empan, le doublon banal dans les
 deux sens, la grammaire (impasse, clôture sans forme, forme indicible, lien insensé, emboîtement dans
-le vide, forme ordonnée sans `sens`, dimension sans forme déductible), les articles, le vice, les
-sessions — plus l'article livré **trop tard**, qui rend une session inclôturable.
+le vide, forme ordonnée sans `sens`, dimension sans forme déductible), les articles — **un passage
+d'article par règle, et aucun ailleurs ; une liaison dont l'article n'a pas de passage ne
+s'offrirait jamais** (passe F) —, le vice, les sessions — plus l'article livré **trop tard**, qui
+rend une session inclôturable.
 
 - **« Forme indicible »** : une forme existe de **deux façons** — déclarée par une liaison, ou déduite
   par un bloc `deduit` ; celle-là n'est nommée par aucun bloc.
@@ -234,16 +253,16 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **516 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **587 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
 | `test_o5.js` (44) | l'index du dossier, **et le bouton de pièces qui compte comme lui** ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
-| `test_declencheurs.js` (42) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (325) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le CONTEXTE qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, les remises closes (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
+| `test_declencheurs.js` (40) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
+| `test_parcours.js` (359) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel — **retenir aux deux gestes** (§4.8) —, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le CONTEXTE qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, et **jamais purgé entre deux remises** (§4.6) ; **l'article qui se retient, puis se prend par sa fiche** (§4.5, passe F) ; **la DISCUSSION qui s'agrandit**, CONTEXTE ouvert (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
-| `smoke_atelier.js` (103) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
+| `smoke_atelier.js` (106) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
 - **Le contrat de lecture : `w.R.x(w.S)`** — une suite *lit* les règles ; elle *agit* par les **gestes**
   de la fenêtre, parce qu'eux redessinent.
@@ -259,7 +278,7 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
 - **Les tests ne nomment aucun contenu** : tout se dérive de la *forme*, si bien que **changer
   d'affaire ne casse pas une seule suite**. Sont épinglées, en revanche, des chaînes de chrome
   (`Envoyer`, `effacer`, `Opposer une phrase`, `opposer`, `● `, `✓ `, `zoneRetenus`, `dans ton CONTEXTE`,
-  `nouvelle`, `dans ta phrase`, `ne prend plus de passage`, `remise`, et pour le clavier `retenu`,
+  `nouvelle`, `dans ta phrase`, `ne prend plus de passage`, et pour le clavier `retenu`,
   `déjà lue`, `Tutoriel`, `CONTEXTE`) : on les
   renomme si on veut, jamais sans toucher au test qui les nomme.
 - *Les Manuels n'ont plus de suite : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par
@@ -309,7 +328,8 @@ qui a raison.*
 
 `regles.js` et `moteur.js` sont en **mode double** — `require` ou `<script src>` — et exposent une
 **fabrique**. Hors fabrique et cloîtrés (§9) : `MoteurGrammaire.champsDe`, `.comparaisonsDe`,
-`.couleurDim`, `.traitDim`, `ReglesJeu.estRegle`.
+`.couleurDim`, `.traitDim`, `.articlesDe` (les passages d'article, que `champsDe` écarte, §11),
+`ReglesJeu.estRegle`.
 
 **Les huit modules de l'atelier, dans l'ordre de chargement** : `noyau.js` (contenu, outils, état
 d'interface, annulation, onglets — **et les quatre gestes** ci-dessous ; en premier) · `graphe.js` (le
@@ -324,17 +344,17 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
 | l'avocat ouvre une session — **un seul message, sa première question puis ses pièces** (§4.6) ; ouvrir et refermer une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion` (qui pose la question SUR le message de remise : champ `question` du fil), `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDISCUSSION` (le bouton de pièces : `comptePieces`, `recuAvant`), `renderCONTEXTE` → `pieceHTML` (‹ › : `ordreIndex`, `pieceVoisine`, `voisine`) → `piecePanelHTML`, `rendreTexte`, `cadresPorte` (`porte` en cadres, §4.11), `renderDossier` — **repliable en une ligne à tout moment, replié d'office pièce ouverte** (`dossierPlie`, `dossierDeplie`, `basculerDossier`) |
-| **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, CONTEXTE seul) | `surligner`, `oublier` | `renderRetenus` dans `renderCONTEXTE` — *dans ta phrase*, la raison d'un refus (`passageRefuse`, `RAISON_PLEINE`), les remises closes repliées (`remiseClose`, `remisesDepliees`, `basculerRemise`) ; `rappelRetrait` quand on reclique un passage retenu ; `voirDernierRetenu` à l'ouverture du panneau |
-| ce que le composeur offre ; ce qui se devine avant le clic — **en session 1 seulement** (§4.11) ; la voix | `blocsOfferts`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante`, `enCalibration`, `juxtapose` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
-| **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du CONTEXTE | `rendreVoix`, `ouvrirCONTEXTE`, `suivrePhrase` (en tête de `rendreTout`), `majLateral` |
-| ouvrir et fermer une surface de côté | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `clavier` (Échap) |
+| **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, CONTEXTE seul) — un passage comme un article (passe F) | `surligner`, `oublier`, `estArticle`, `articleRetenu` | `renderRetenus` dans `renderCONTEXTE` — *dans ta phrase*, la raison d'un refus (`passageRefuse`, `raisonPleine`) ; le groupe *ARTICLES*, dont la fiche **prend** la liaison (`prendreArticle`) ou dit pourquoi elle ne le peut pas (`articleRefuse`, `#raisonArticle`) ; `rappelRetrait` quand on reclique un passage retenu ; `voirDernierRetenu` à l'ouverture du panneau |
+| ce que le composeur offre — **jamais un article**, qui se prend au CONTEXTE ; ce qui se devine avant le clic — **en session 1 seulement** (§4.11) ; la voix | `blocsOfferts` (une liaison-article sur `articleRetenu`), `estLiaisonArticle`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante`, `enCalibration`, `juxtapose` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
+| **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du CONTEXTE ; `articleAttendu`, la phrase qui attend un article | `rendreVoix`, `ouvrirCONTEXTE`, `suivrePhrase` (en tête de `rendreTout`), `majLateral` |
+| ouvrir et fermer une surface de côté ; **agrandir la DISCUSSION**, CONTEXTE ouvert (§4.6) | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `clavier` (Échap) ; `enteteDISCUSSION`, `basculerDISCUSSION`, `discussionAgrandie` (dans `majLateral`) |
 | **le clavier et la voix d'annonce** (§4.10) — le focus qui survit, la pièce DANS le CONTEXTE (§4.6), ce qui s'annonce | `fermerPiece`, seule règle que l'écran appelle en refermant — par la croix, ou par `suivrePhrase` quand le CONTEXTE quitte l'écran | `clavier`, `memoFocus` → `rendreFocus` (par la clé `data-f`), `ouvrirPiece`/`fermerPiece`/`suivrePhrase` (écran) — `modal`/`inert` sur `.wrap` ne servent plus que `finir`, écran terminal (§4.9 règle 5), `annoncer` → `#annonce` |
 | **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
 | **envoyer** — le seul geste ; la remise du tutoriel servie **dans l'ordre** (§3) | `envoyerCompo` → `clore` → `envoyer` (`horsOrdre` d'abord) → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPLAIDOIRIE` |
 | ce qui entre à la PLAIDOIRIE | `estMoyen` | `renderPLAIDOIRIE`, `moyensRetenus` — **panneau**, ouvert par sa porte (§4.9) |
 | clôturer, répétition, fin ; **opposer** un moyen à une affirmation | `instructionComplete`, `cloturer`, `verserContre` (pose `contre`, même sur une phrase déjà versée — **si l'affirmation la prend**, `repondA`), `avancerRepetition`, `finir` | `majCloture`, le présentoir dans `renderDISCUSSION` (les **moyens** seuls, l'affirmation redite en tête, *« déplacer ici »*), `finir` (modale) |
-| le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoArticle`, `tutoEtape`, `majTutoriel` → `voirCibleTuto`, `placerTuto` — **bulle ancrée au halo**, en surimpression, premier enfant de `<body>` ; une étape vise une zone (`ou`, littéral) et, au besoin, un élément précis dedans (`f`, une clé `data-f`) |
+| le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoTermes`, `tutoRetenir` (retenir, aux deux gestes), `tutoArticle`, `tutoCleArticle` (le passage de l'article : son texte, puis sa fiche), `tutoEtape`, `majTutoriel` → `voirCibleTuto`, `placerTuto` — **bulle ancrée au halo**, en surimpression, premier enfant de `<body>` ; une étape vise une zone (`ou`, littéral) et, au besoin, un élément précis dedans (`f`, une clé `data-f`) |
 
 - **Les deux voies de clôture** sont le **même** `clore`, appelé par le **même** `envoyerCompo` ; ce qui
   les sépare vit dans le contenu — une liaison `cite:true` contre une forme d'arité 2 déduite.
@@ -357,7 +377,7 @@ ne paraît plus à l'écran : il servait aux deux.
 | Dans le code | Ce que ça désigne |
 |---|---|
 | **pièce** / **dossier** | un document (`JEU.pieces`) / l'ensemble des pièces livrées |
-| **empan** | un fragment marqué : `texte`, `dim`, `valeur`, `qui`, `nom` |
+| **empan** | un fragment marqué : `texte`, `dim`, `valeur`, `qui`, `nom` — ou, `article:true`, le texte d'un article, sans `dim` ni `valeur` (§11) |
 | **citation** / **nom** | son écriture dans la pièce (`e.texte`) / comme sujet d'une phrase (`e.nom`) |
 | **terme** | un empan (ou un lien imbriqué) **une fois posé** : un rôle, pas un objet |
 | **bloc** / **liaison** / **lien** | la transition offerte par l'automate (les deux premiers mots sont interchangeables) / le triplet `{forme, termes}` **reconnu** : le lien est le résultat, la liaison le geste |

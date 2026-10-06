@@ -18,7 +18,7 @@ window.CONTENU = {
       "type": "procès-verbal",
       "qui": "brigadier N.",
       "resume": "L'appel, l'heure d'arrivée, l'état de la porte, le décès constaté sur place.",
-      "texte": "Le 12 mars, {{e_app}} ; {{e_arr}}, {{e_equip}} engagés ; {{e_porte}}. La victime gisait dans le séjour ; le médecin dépêché sur place n'a pu que constater le décès. Les lieux ont été tenus et l'immeuble bouclé jusqu'à l'arrivée du magistrat. Constatations faites {{e_sig}}.",
+      "texte": "Le 12 mars, {{e_app}} ; {{e_arr}}, {{e_equip}} engagés ; {{e_porte}}. La victime gisait dans le séjour ; le médecin dépêché sur place n'a pu que constater le décès. Les lieux ont été tenus et l'immeuble bouclé jusqu'à l'arrivée du magistrat. Constatations faites et procès-verbal dressé {{e_sig}}.",
       "empans": {
         "e_app": {
           "dim": "quand",
@@ -50,7 +50,7 @@ window.CONTENU = {
         "e_sig": {
           "dim": "qui",
           "valeur": "brigadier N.",
-          "texte": "par mes soins",
+          "texte": "par mes soins, brigadier N.",
           "nom": "le rédacteur du procès-verbal"
         }
       }
@@ -103,8 +103,14 @@ window.CONTENU = {
       "porte": [
         "quand"
       ],
-      "texte": "Article 3 — Une déclaration de témoin dont les indications horaires sont contredites par les constatations des services ne peut fonder à elle seule la conviction du tribunal.",
-      "empans": {}
+      "texte": "Article 3 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Une déclaration de témoin dont les indications horaires sont contredites par les constatations des services ne peut fonder à elle seule la conviction du tribunal",
+          "nom": "Article 3"
+        }
+      }
     },
     "p_adn": {
       "titre": "Rapport du laboratoire",
@@ -249,8 +255,14 @@ window.CONTENU = {
         "qui",
         "quoi"
       ],
-      "texte": "Article 7 — L'échantillon de scène et le prélèvement de référence sont recueillis par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux opérations est indifférent.",
-      "empans": {}
+      "texte": "Article 7 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "L'échantillon de scène et le prélèvement de référence sont recueillis par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux opérations est indifférent",
+          "nom": "Article 7"
+        }
+      }
     },
     "r_seuil": {
       "titre": "Article 12 — seuil probatoire",
@@ -261,8 +273,14 @@ window.CONTENU = {
       "porte": [
         "combien"
       ],
-      "texte": "Article 12 — Une correspondance dont la probabilité de coïncidence est inférieure à une sur un million est réputée probante.",
-      "empans": {}
+      "texte": "Article 12 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Une correspondance dont la probabilité de coïncidence est inférieure à une sur un million est réputée probante",
+          "nom": "Article 12"
+        }
+      }
     }
   },
   "grammaire": {
@@ -305,7 +323,6 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_temoin",
         "texte": ", et l'article 3 permet la mise de côté de ce témoignage",
-        "libelle": "l'article 3 permet la mise de côté de ce témoignage",
         "forme": "article_3"
       },
       {
@@ -316,7 +333,6 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_protocole",
         "texte": ", en violation de l'article 7",
-        "libelle": "en violation de l'article 7",
         "forme": "article_7"
       },
       {
@@ -327,7 +343,6 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_seuil",
         "texte": ", au regard de l'article 12",
-        "libelle": "au regard de l'article 12",
         "forme": "article_12"
       }
     ],
@@ -538,10 +553,10 @@ window.CONTENU = {
     {
       "forme": "citation",
       "termes": [
-        "p_pv.e_arr"
+        "p_pv.e_sig"
       ],
-      "tag": "q_arrivee",
-      "rep": "22h04, oui. L'heure à laquelle la police dit être arrivée sur place. C'est elle qui fait foi, retiens-la."
+      "tag": "q_redacteur",
+      "rep": "Le brigadier N., oui. C'est ce que j'avais."
     },
     {
       "forme": "citation",
@@ -549,14 +564,6 @@ window.CONTENU = {
         "p_pv.e_equip"
       ],
       "rep": "Deux équipages, oui. Pour un appel de nuit, rien d'étonnant — ça ne nous dit rien de plus."
-    },
-    {
-      "forme": "citation",
-      "termes": [
-        "t_voisin.e_voix"
-      ],
-      "tag": "q_voix",
-      "rep": "Vers 22h30, oui. C'est l'heure qu'il donne. Retiens-la aussi."
     },
     {
       "forme": "article_3",
@@ -583,7 +590,7 @@ window.CONTENU = {
           ]
         }
       ],
-      "rep": "Juste : l'appel tombe avant la dispute qu'il raconte. Mais je t'ai demandé le lien entre les deux heures que tu m'as données."
+      "rep": "Juste : l'appel tombe avant la dispute qu'il raconte. Mais je t'ai demandé l'heure d'arrivée de la patrouille, pas celle de l'appel."
     },
     {
       "forme": "article_3",
@@ -596,7 +603,7 @@ window.CONTENU = {
           ]
         }
       ],
-      "rep": "Bien vu : quand il a regardé, la police était déjà en bas — ça va dans notre sens. Mais l'article 3 regarde les heures : reviens aux deux que tu m'as données."
+      "rep": "Bien vu : quand il a regardé, la police était déjà en bas — ça va dans notre sens. Mais l'article 3 regarde les heures : reviens aux deux que je t'ai demandées."
     },
     {
       "forme": "article_3",
@@ -709,7 +716,7 @@ window.CONTENU = {
   "remises": [
     {
       "qui": "Maître Auber",
-      "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Ton travail : démonter l'accusation, pièce par pièce. Mais personne ne m'a encore montré que tu sais lire un dossier — alors d'abord trois questions dont j'ai déjà les réponses.",
+      "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Ton travail : démonter l'accusation, pièce par pièce. Mais personne ne m'a encore montré que tu sais lire un dossier — alors d'abord deux questions dont j'ai déjà les réponses.",
       "pieces": [
         "p_pv",
         "t_voisin",
@@ -717,16 +724,12 @@ window.CONTENU = {
       ],
       "attentes": [
         {
-          "question": "Dans le PV d'intervention, à quelle heure la patrouille dit-elle être arrivée sur les lieux ?",
-          "attend": "q_arrivee"
-        },
-        {
-          "question": "Passe à l'audition du voisin : à quelle heure dit-il avoir entendu des éclats de voix ?",
-          "attend": "q_voix"
+          "question": "Le PV d'intervention : qui l'a rédigé ?",
+          "attend": "q_redacteur"
         },
         {
           "attend": "temoin",
-          "question": "Et donc, quel lien tu fais entre les deux ? Et quel article est-ce qu'on peut citer pour se servir de cette incohérence devant le tribunal ?"
+          "question": "Maintenant, deux heures : celle à laquelle la patrouille dit être arrivée sur les lieux, et celle à laquelle le voisin dit avoir entendu des éclats de voix. Quel lien tu fais entre les deux ? Et quel article est-ce qu'on peut citer pour s'en servir devant le tribunal ?"
         }
       ]
     },

@@ -168,6 +168,11 @@ async function main() {
      n'est visible d'une suite. */
   await p2.click("#discussion .attach");
   console.log("  " + await capturer2("contexte-recu"));
+  /* CLIQUER DISCUSSION AGRANDIT LA CONVERSATION (§4.6) : les colonnes échangent
+     leurs parts, la bulle se replace (`placerTuto`). Un second clic rend la place. */
+  await p2.click(`#titreDISCUSSION [data-f="discussion"]`);
+  console.log("  " + await capturer2("discussion-agrandie"));
+  await p2.click(`#titreDISCUSSION [data-f="discussion"]`);
   const pid1280 = await p2.evaluate("__H.pidPremiereRemise(window)");
   await p2.click(`[data-f="d:${pid1280}"]`);
   console.log("  " + await capturer2("piece"));
@@ -212,22 +217,37 @@ async function main() {
     // PIÈGE : la porte de la barre est une BASCULE — sur un CONTEXTE déjà
     // ouvert, elle le refermerait. Et la voix ouvre POUR ÉCRIRE : la phrase
     // pleine, il se refermerait de lui-même. On consulte donc, par la barre.
-    const consulter = () => { if (panneau !== "contexte") basculerPanneau("contexte"); };
-    consulter();
+    if (panneau !== "contexte") basculerPanneau("contexte");
     H.composerLien(window, L());
-    const ouvert = !document.getElementById("panCONTEXTE").hidden;
-    H.composerLien(window, L());
-    consulter();
-    /* Les deux passages posés À LA MAIN, l'article NON LU : c'est le temps où
-       le tutoriel désigne sa puce, puis son bloc (§4.8). */
-    const [tA, tB] = H.sousTerme(L()).termes;
-    poserBloc(R.indexTermeChamp(S), S.retenus.indexOf(tA));
-    poserBloc(R.indexTermeChamp(S), S.retenus.indexOf(tB));
-    return ouvert;
+    return !document.getElementById("panCONTEXTE").hidden;
   })()`);
   console.log(`      après un envoi, le CONTEXTE ${resteOuvert ? "reste ouvert" : "S'EST REFERMÉ"}`);
+  /* RETENIR LES DEUX PASSAGES (§4.8) : la remise 1 ne les extrait plus d'avance
+     (§3). De VRAIS clics, là où le halo les montre : le texte de la pièce,
+     l'index quand elle ne porte plus rien d'attendu, la pièce suivante. */
+  const halo = () => p2.evaluate(`(() => { const h = document.querySelector("[data-tuto]");
+    return !h ? "(aucun)" : h.getAttribute("data-f") || "#" + (h.id || h.className); })()`);
+  const [tA, tB] = await p2.evaluate("__H.sousTerme(__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend)).termes");
+  const pieceDe = k => k.slice(0, k.indexOf("."));
+  console.log("  " + await capturer2("relier-retenir") + `   (halo : ${await halo()})`);
+  if (await p2.evaluate(`S.modalPiece !== "${pieceDe(tA)}"`)) {
+    if (await p2.evaluate("indexPlie()")) await p2.click(`#zoneDossier [data-f="dossier"]`);
+    await p2.click(`#zoneDossier [data-f="d:${pieceDe(tA)}"]`);
+  }
+  await p2.click(`#panPiece [data-f="e:${tA}"]`);
+  console.log("  " + await capturer2("relier-premier-retenu") + `   (halo : ${await halo()})`);
+  if (pieceDe(tA) !== pieceDe(tB)) {
+    if (await p2.evaluate("indexPlie()")) await p2.click(`#zoneDossier [data-f="dossier"]`);
+    console.log("  " + await capturer2("relier-autre-piece") + `   (halo : ${await halo()})`);
+    await p2.click(`#zoneDossier [data-f="d:${pieceDe(tB)}"]`);
+  }
+  await p2.click(`#panPiece [data-f="e:${tB}"]`);
+  console.log("  " + await capturer2("relier-retenus") + `   (halo : ${await halo()})`);
+  /* Les deux passages PRIS À LA MAIN, l'article NON LU : c'est le temps où le
+     tutoriel désigne sa puce, puis son bloc (§4.8). */
+  await p2.click(`#contexte [data-f="c:${tA}"]`);
+  await p2.click(`#contexte [data-f="c:${tB}"]`);
   /* De VRAIS clics : la puce de l'article, puis son bloc — ceux que le halo montre. */
-  const halo = () => p2.evaluate(`(document.querySelector("[data-tuto]") || {}).getAttribute?.("data-f") || "(zone)"`);
   console.log("  " + await capturer2("article-a-lire") + `   (halo : ${await halo()})`);
   /* Une pièce encore ouverte replie l'index : le halo montre d'abord « déplier ». */
   if (await halo() === "dossier") {
@@ -236,9 +256,14 @@ async function main() {
   }
   const fArticle = await halo();
   if (fArticle.startsWith("d:")) await p2.click(`#zoneDossier [data-f="${fArticle}"]`);
+  /* L'ARTICLE SE RETIENT, PUIS SE PREND (passe F) : son texte dans la pièce,
+     puis sa fiche au CONTEXTE — plus un bouton du composeur. */
+  console.log("  " + await capturer2("article-a-retenir") + `   (halo : ${await halo()})`);
+  const cleArt = await p2.evaluate(`__H.cleArticle(window, S.modalPiece)`);
+  if (cleArt) await p2.click(`#panPiece [data-f="e:${cleArt}"]`);
   console.log("  " + await capturer2("article-a-prendre") + `   (halo : ${await halo()})`);
-  const fBloc = await halo();
-  if (fBloc.startsWith("b:")) await p2.click(`#composeur [data-f="${fBloc}"]`);
+  const fFiche = await halo();
+  if (fFiche.startsWith("c:")) await p2.click(`#zoneRetenus [data-f="${fFiche}"]`);
   console.log("  " + await capturer2("comparaison"));
   const hauteurs = await p2.evaluate(`(() => {
     const h = id => Math.round(document.getElementById(id).getBoundingClientRect().height);
@@ -265,6 +290,11 @@ async function main() {
   console.log("  " + await capturer3("depart"));
   await p3.click("#discussion .attach");
   console.log("  " + await capturer3("contexte-recu"));
+  /* Sous le seuil, le panneau descend à son plancher et la conversation prend
+     le reste (§4.6). */
+  await p3.click(`#titreDISCUSSION [data-f="discussion"]`);
+  console.log("  " + await capturer3("discussion-agrandie"));
+  await p3.click(`#titreDISCUSSION [data-f="discussion"]`);
   const pid390 = await p3.evaluate("__H.pidPremiereRemise(window)");
   await p3.click(`[data-f="d:${pid390}"]`);
   console.log("  " + await capturer3("piece"));
