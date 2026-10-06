@@ -143,29 +143,29 @@ que couleur et trait *signifient* quelque chose sans survol, et le `title` qui l
 au clavier ni au toucher —, elle nommait sous chaque pièce les dimensions qu'elle portait. **L'auteur
 l'a retirée** : depuis que le marquage ne se montre qu'au survol ou au clic, elle ne disait rien qu'on
 ne voie en passant sur un passage, et Jean, au bas d'une pièce, ne la voyait pas. Le code se lit sur
-le passage même, au survol, et dans le Contexte, où chaque retenu se range sous le nom de sa
+le passage même, au survol, et dans le CONTEXTE, où chaque retenu se range sous le nom de sa
 dimension, à sa couleur.
 
-**Retenir a lieu dans la pièce, retirer dans le Contexte.** Recliquer un passage déjà retenu ne
+**Retenir a lieu dans la pièce, retirer dans le CONTEXTE.** Recliquer un passage déjà retenu ne
 l'oublie pas — arbitré le 16 septembre, reconduit le 30 après un playtest qui attendait un
-interrupteur — mais **l'écran le dit** : une ligne sous la pièce renvoie au Contexte. Un passage retenu
+interrupteur — mais **l'écran le dit** : une ligne sous la pièce renvoie au CONTEXTE. Un passage retenu
 se marque **par son fond, jamais par sa graisse** : le texte autour ne bouge pas. **Retirer s'écrit
 *oublier*, en toutes lettres, jamais d'une croix** — retour de playtest (Colas) : la fiche et le panneau
-portaient le même ×, et un joueur a fermé le Contexte en croyant retirer un passage. Le × ferme ou
+portaient le même ×, et un joueur a fermé le CONTEXTE en croyant retirer un passage. Le × ferme ou
 replie ; il ne retire rien. Un signe, un acte.
 
 **Et retenir se voit au moment même** — retour de playtest (Colas) : rien ne disait qu'un clic avait
-*ajouté* quelque chose au Contexte, ni où. Le fond seul ne suffisait pas : à côté du fond léger que
+*ajouté* quelque chose au CONTEXTE, ni où. Le fond seul ne suffisait pas : à côté du fond léger que
 porte tout passage, il se lisait comme un survol. Trois marques, aucune qui fasse bouger le texte ni
 qui dure plus d'un geste : le passage retenu porte un **✓ en exposant**, posé hors du flux (§4.10
 règle 5 : un état s'écrit) ; **la même ligne que le rappel**, sous la pièce, dit *« ✓ Retenu dans ton
-Contexte »* le temps d'un rendu — comme lui, sans minuteur, puisque ce jeu ne rend jamais hors d'un
+CONTEXTE »* le temps d'un rendu — comme lui, sans minuteur, puisque ce jeu ne rend jamais hors d'un
 geste du joueur ; et **la fiche neuve s'allume une fois** dans les retenus, juste sous la pièce
-(§4.6) — là où le passage est allé, et où on va le prendre —, comme le compte de la porte Contexte.
+(§4.6) — là où le passage est allé, et où on va le prendre —, comme le compte de la porte CONTEXTE.
 La ligne reste **dans le flux** : collée au bas de la pièce, elle couvrait, dans la bande étroite du
-Contexte, le texte même qu'on venait de cliquer.
+CONTEXTE, le texte même qu'on venait de cliquer.
 La confirmation vit **là où le geste a lieu**, pas dans un coin de l'écran : c'est la pièce qu'on
-regarde quand on clique. Le Contexte vide, de son côté, dit **comment** on le remplit — ouvrir une
+regarde quand on clique. Le CONTEXTE vide, de son côté, dit **comment** on le remplit — ouvrir une
 pièce, y cliquer un passage —, plus seulement *qu'*il se remplit.
 
 ### 4.4 Le doublon banal
@@ -207,38 +207,38 @@ réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte 
   tous les articles. **Seules les erreurs de catégorie sont refusées**, et l'écran ne les refuse
   qu'en session 1 (§4.11).
 - **Ce que l'écran laisse deviner, avant le clic** — aucun mode, aucun refus nouveau : la **voix**
-  regarde un pas en avant et annonce la comparaison ; le **Contexte** s'assombrit **par dimension**
+  regarde un pas en avant et annonce la comparaison ; le **CONTEXTE** s'assombrit **par dimension**
   (§4.3), jamais empan par empan — **en session 1 seulement**, comme le refus qu'il annonce
   (§4.11) ; le **bouton qui fonde** porte une marque distincte.
 
 ### 4.6 Les trois surfaces — la frontière morale
 
-**Un seul nom par surface, partout** : **Discussion**, **Contexte**, **Plaidoirie**. Une seule frontière
+**Un seul nom par surface, partout** : **DISCUSSION**, **CONTEXTE**, **Plaidoirie**. Une seule frontière
 de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui protège la fiction (§8.6).
 
 | Surface | Statut | Rôle |
 |---|---|---|
-| La **Discussion** + les pièces — *la bande du haut* | lecture | l'entrée |
-| Le **Contexte** — *panneau, au milieu* | **privé** | le dossier et les empans retenus (`S.retenus`) — jamais jugés |
+| La **DISCUSSION** + les pièces — *la bande du haut* | lecture | l'entrée |
+| Le **CONTEXTE** — *panneau, au milieu* | **privé** | le dossier et les empans retenus (`S.retenus`) — jamais jugés |
 | La **Plaidoirie** — *panneau, au milieu* | **transmis** | ce que l'avocat retient (`S.plaidoirie`) |
 | **Le composeur** — *bandeau du bas* | **privé** | la phrase qu'on écrit — jamais jugée |
 
 - **Un empan retenu n'existe qu'une fois à l'écran** : les puces du contexte **sont** les boutons de
   terme. Le composeur ne porte aucune étiquette « privé » — son statut se lit dans ce qui s'y passe.
-- **Deux verbes, un par geste, partout** : on **retient** un passage — de la pièce vers le Contexte —
-  et on le **prend** — du Contexte vers la phrase. *Sélectionner* ne paraît plus à l'écran : il
+- **Deux verbes, un par geste, partout** : on **retient** un passage — de la pièce vers le CONTEXTE —
+  et on le **prend** — du CONTEXTE vers la phrase. *Sélectionner* ne paraît plus à l'écran : il
   servait aux deux, et un joueur a lu trois verbes là où il n'y a que deux gestes.
-- **Les surfaces de côté — Contexte et Plaidoirie — partagent une même place LATÉRALE, un seul
+- **Les surfaces de côté — CONTEXTE et Plaidoirie — partagent une même place LATÉRALE, un seul
   occupant à la fois**, et **ne recouvrent rien** : la conversation **cède pour lui faire place**. La
-  pièce ouverte n'est plus un troisième occupant : **elle s'ouvre DANS le Contexte** (ci-dessous). **En dessous d'un seuil de largeur** (l'essentiel des téléphones), la place latérale
+  pièce ouverte n'est plus un troisième occupant : **elle s'ouvre DANS le CONTEXTE** (ci-dessous). **En dessous d'un seuil de largeur** (l'essentiel des téléphones), la place latérale
   s'ouvre ENTRE la conversation et le composeur, empilée — l'écran montre alors ses trois temps d'un
   coup, de haut en bas : *ce qu'on me demande*, *ce dont je dispose*, *ce que j'écris*. **Au-dessus du
   seuil**, elle devient une colonne À CÔTÉ de la conversation plutôt qu'en dessous : la conversation
   cède de la largeur, pas de la hauteur, et la question reste sous les yeux même pièce ouverte (§4.9
   règle 3 ne mord alors plus que par surcroît). Trois portes y mènent, et ce sont trois registres : **la
-  voix du composeur enseigne** — elle dit le geste et ouvre le Contexte —, **la barre nomme** les deux
-  panneaux, donne leur compte et y donne accès à tout moment, et **la Discussion renvoie** — un message
-  qui remet des pièces ne porte plus qu'un bouton unique vers le Contexte, où chacune s'ouvre à son
+  voix du composeur enseigne** — elle dit le geste et ouvre le CONTEXTE —, **la barre nomme** les deux
+  panneaux, donne leur compte et y donne accès à tout moment, et **la DISCUSSION renvoie** — un message
+  qui remet des pièces ne porte plus qu'un bouton unique vers le CONTEXTE, où chacune s'ouvre à son
   tour, comme un panneau ouvert par la barre : on la consulte, on ne la referme pas pour elle. Les
   portes **tranchent sur le fond** : ce sont des outils, pas des étiquettes.
 - **La remise et sa première question ne font qu'UN message, les pièces APRÈS la question** —
@@ -255,18 +255,18 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   qu'il apporte, l'index ce qu'on a.
 - **LA PIÈCE S'OUVRE DANS LE CONTEXTE, entre l'index et les passages retenus** — retour de playtest
   (Colas), et idée de l'auteur. Tant que la pièce occupait seule la place latérale, citer coûtait
-  cinq temps : ouvrir la pièce, retenir, **refermer la pièce**, rouvrir le Contexte, prendre. Le
-  troisième n'enseignait rien — il ne servait qu'à faire revenir le Contexte que la pièce avait
+  cinq temps : ouvrir la pièce, retenir, **refermer la pièce**, rouvrir le CONTEXTE, prendre. Le
+  troisième n'enseignait rien — il ne servait qu'à faire revenir le CONTEXTE que la pièce avait
   chassé. Désormais **lire, retenir et prendre ont lieu sous les yeux l'un de l'autre** : on retient
   dans la pièce, le passage paraît aussitôt plus bas dans le même panneau, on le prend sans rien
-  fermer. Le Contexte ouvert avec une pièce se lit de haut en bas : **l'index** (on choisit), **la
+  fermer. Le CONTEXTE ouvert avec une pièce se lit de haut en bas : **l'index** (on choisit), **la
   pièce** (on lit, on retient), **les retenus** (on prend). Trois règles le tiennent :
   - **Deux bandes qui défilent chacune pour son compte**, la pièce au-dessus, les retenus en dessous :
     une pièce longue ne pousse jamais les retenus hors du panneau, et dix-sept fiches ne poussent
     jamais la pièce. **La pièce prend la hauteur de son texte, jusqu'à un plafond ; les retenus,
     tout le reste** — demande de l'auteur : une pièce courte laissait du papier vide pendant que les
     retenus, plafonnés, défilaient dessous. Une pièce longue s'arrête au plafond et défile ; à
-    dix-sept fiches, ce sont les retenus qui défilent. **Au-dessus du seuil, le Contexte prend les DEUX
+    dix-sept fiches, ce sont les retenus qui défilent. **Au-dessus du seuil, le CONTEXTE prend les DEUX
     TIERS de la largeur**, pièce ouverte ou non — demande de l'auteur : index, pièce et retenus se
     lisaient à l'étroit dans une colonne d'un tiers. La conversation garde le tiers restant, et la
     question avec elle ; la Plaidoirie, qui ne porte qu'une liste, garde sa colonne étroite. **En
@@ -289,17 +289,17 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
     sauter loin. Une rangée d'onglets a été écartée : huit titres entiers ne tiennent pas sur une
     ligne, et des titres abrégés referaient deux noms pour une pièce (ci-dessous).
   - **Une seule pièce à la fois** : un autre chip de l'index la remplace ; la croix de la pièce la
-    replie et rend toute la hauteur aux retenus ; refermer le Contexte la replie avec lui. Une pièce
-    n'est **jamais** ouverte hors du Contexte — l'ouvrir ouvre le Contexte, en consultation (il ne se
+    replie et rend toute la hauteur aux retenus ; refermer le CONTEXTE la replie avec lui. Une pièce
+    n'est **jamais** ouverte hors du CONTEXTE — l'ouvrir ouvre le CONTEXTE, en consultation (il ne se
     referme pas tout seul, comme ouvert par la barre).
   - **La réplique `declenche` part quand la pièce quitte l'écran** — repliée, remplacée, ou le
-    Contexte refermé —, plus seulement à la croix : c'est toujours le moment où l'on relève les yeux
+    CONTEXTE refermé —, plus seulement à la croix : c'est toujours le moment où l'on relève les yeux
     (§4.10 règle 3).
-  La matière ne change pas : la pièce garde son **papier** au milieu de l'écran du Contexte (deux
+  La matière ne change pas : la pièce garde son **papier** au milieu de l'écran du CONTEXTE (deux
   matières, ci-dessous) — c'est même ce qui la détache de l'index et des retenus qui l'encadrent.
-- **Le Contexte dit l'état de la phrase** — retour de playtest (Jean). Un passage **déjà pris**
+- **Le CONTEXTE dit l'état de la phrase** — retour de playtest (Jean). Un passage **déjà pris**
   porte *« dans ta phrase »* : on voit ce qu'on a posé là où on l'a pris. Et quand la phrase ne
-  prend plus de passage, **le Contexte le dit, en une ligne** — *« Ta phrase ne prend plus de
+  prend plus de passage, **le CONTEXTE le dit, en une ligne** — *« Ta phrase ne prend plus de
   passage »*, avec le geste qui la rouvre — au lieu d'un bouton seulement grisé dont la raison
   vivait dans un `title`, que ni le toucher ni le clavier n'atteignent (§4.10). Les fiches restent
   atteignables, et les toucher redit la raison. Ce n'est pas une seconde voix : la voix dit le geste
@@ -320,7 +320,7 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 - **Mais « élastique » n'est pas « compressible à zéro », et L'ORDRE DANS LEQUEL LES BANDES CÈDENT
   est une règle — À TOUTES LES LARGEURS** : au-dessus du seuil aussi, le composeur occupe une rangée
   sous la place latérale, et lui dispute la même verticale. Retour de playtest (Jean, 5 octobre) : à
-  1280×800, la réponse grandissait pendant la comparaison et écrasait le Contexte, pièce coupée — la
+  1280×800, la réponse grandissait pendant la comparaison et écrasait le CONTEXTE, pièce coupée — la
   règle, écrite pour le seul empilement, ne mordait pas là. Le panneau a cédé devant le composeur jusqu'à **disparaître** —
   à deux passages retenus, un joueur ne voyait plus le haut d'une seule fiche ; à la fin, plus rien. Or
   le panneau **est le clavier** (§4.6) : le vider pendant qu'on écrit retire le clavier au milieu du
@@ -335,7 +335,7 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 - **Deux matières** : les pièces ont celle du **papier** — fond clair, caractères à empattements, en
   corps de lecture et non d'affiche (demande de l'auteur : à 17 px, une pièce ne tenait pas dans son
   cadre) —, la machine celle de l'**écran**. Ce qu'on lit vient du monde, ce qu'on écrit sort de l'IA ; la chasse
-  fixe de ses messages dans la Discussion est le même contraste, pris dans l'autre sens.
+  fixe de ses messages dans la DISCUSSION est le même contraste, pris dans l'autre sens.
 - **Un panneau ne s'ouvre jamais tout seul**, et deux fermetures coexistent, selon la porte par
   laquelle il est venu. **Ouvert pour ÉCRIRE** (par la voix), il suit la phrase : il se referme dès
   qu'elle ne peut plus recevoir de passage, et à son départ. **Ouvert pour CONSULTER** (par la barre),
@@ -343,16 +343,16 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   détail : un passage posé, la voix se tait parce que la phrase se tient, mais **la grammaire ne sait
   pas encore** si le joueur cite ou entame une comparaison (§4.5). Refermer là retirerait le clavier au
   milieu du geste le plus difficile du jeu.
-  **Envoyer ne referme le Contexte que si la remise change** — retour de playtest (Jean, trois
+  **Envoyer ne referme le CONTEXTE que si la remise change** — retour de playtest (Jean, trois
   sessions de suite : *« tout se referme après chaque envoi »*). Tant que la remise attend encore une
-  réponse — la question suivante, ou la même après un refus —, on aura besoin du clavier : le Contexte
+  réponse — la question suivante, ou la même après un refus —, on aura besoin du clavier : le CONTEXTE
   reste, en consultation, quelle que soit la porte qui l'avait ouvert. Quand l'envoi ouvre une
   nouvelle remise, il se referme : un nouveau dossier arrive, on revient lire l'avocat, et son bouton
-  de pièces rouvrira le Contexte. La Plaidoirie, elle, se referme à chaque envoi : on n'y écrit pas.
-- **Une pièce porte un seul nom, et l'index du Contexte est désormais seul à le porter** : la Discussion
+  de pièces rouvrira le CONTEXTE. La Plaidoirie, elle, se referme à chaque envoi : on n'y écrit pas.
+- **Une pièce porte un seul nom, et l'index du CONTEXTE est désormais seul à le porter** : la DISCUSSION
   n'annonce plus qu'un nombre de pièces reçues et renvoie vers lui. Le nom court ne survit que dans la
   **provenance** d'un passage retenu et dans la phrase composée — là, il *référence*, il ne *nomme* pas.
-- **On écrit sa réponse sous la question** : le clavier est dans le Contexte, la phrase s'écrit sous la
+- **On écrit sa réponse sous la question** : le clavier est dans le CONTEXTE, la phrase s'écrit sous la
   conversation. **L'arbitrage du va-et-vient entre deux colonnes, clos le 30 septembre faute d'objet,
   rouvre** : l'objet, cette fois, est nommé — un joueur devait fermer la pièce pour relire ce qu'on lui
   demandait, et la conversation ne quittait l'écran qu'en apparence puisqu'il fallait fermer ce qui la
@@ -364,7 +364,7 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   deux-colonnes ?* (§3 PASSATION)
 - **Comprendre et dire restent deux gestes, non négociable** — l'intervalle sépare l'**assemblage** de
   l'**envoi** : c'est lui qui compte, pas le nombre de clics.
-- **L'avocat ne voit que la Plaidoirie**, d'où la gratuité du Contexte. Il **ne retient que les
+- **L'avocat ne voit que la Plaidoirie**, d'où la gratuité du CONTEXTE. Il **ne retient que les
   moyens** et l'envoi est **irréversible** ; une citation versée étant au dossier, une réponse citée
   y entre.
 - **LA RÉPÉTITION EST LE DERNIER GESTE RÉEL, et on n'y envoie pas : on OPPOSE.** L'avocat lit les
@@ -441,8 +441,8 @@ plus, c'est l'avocat** : lui est quelqu'un.
 
 | Le geste | | Ce qu'on apprend | Ce que le halo entoure |
 |---|---|---|---|
-| **citer** | 1/4 | ce qu'on reçoit se retrouve dans le Contexte | le bouton de pièces, dans la Discussion — puis l'index, une fois le Contexte ouvert |
-| | 2/4 | un passage se retient | **le texte de la pièce**, en entier — ouverte dans le Contexte, plus rien à refermer (§4.6) |
+| **citer** | 1/4 | ce qu'on reçoit se retrouve dans le CONTEXTE | le bouton de pièces, dans la DISCUSSION — puis l'index, une fois le CONTEXTE ouvert |
+| | 2/4 | un passage se retient | **le texte de la pièce**, en entier — ouverte dans le CONTEXTE, plus rien à refermer (§4.6) |
 | | 3/4 | ce qu'on retient est le clavier | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
 | | 4/4 | rien ne part tant qu'on n'envoie pas | *« → Envoyer »*, dès que la phrase se tient |
 | **mettre en relation** | 1/3 | une réponse peut tenir sur **deux** passages | **toute la zone des retenus**, au premier passage comme au second |
@@ -456,7 +456,7 @@ les deux gestes** n'est pas un compteur de clics mais le **contenu** : une atten
 emboîte une forme (une comparaison sous un article) plutôt qu'un simple empan. Le tutoriel le lit dans
 `JEU.liens`, jamais dans un nom d'attente câblé en dur.
 
-**Les garde-fous ne sont pas le tutoriel** : le refus d'écran et l'assombrissement du Contexte
+**Les garde-fous ne sont pas le tutoriel** : le refus d'écran et l'assombrissement du CONTEXTE
 vivent pendant la **remise** de calibration, que le tutoriel soit là ou non — *« je sais faire »* ne
 lève rien, puisque le tutoriel ne décide rien (§4.11).
 
@@ -476,7 +476,7 @@ va vers ce qui suit. Elle suit la zone quand l'écran défile ou change de taill
 en réservant sa place, l'ancrage le garantit en la choisissant : **la bulle ne recouvre jamais sa
 propre ancre**. **Ni, autant qu'elle le peut, ce qui parle ou agit autour** — retour de playtest
 (Jean, 5 octobre) : posée au premier côté libre, elle cachait la confirmation *« ✓ Retenu »*, la raison
-d'une phrase pleine, l'aide du Contexte, *« ← retirer / tout effacer »*. Sur chaque côté, elle essaie
+d'une phrase pleine, l'aide du CONTEXTE, *« ← retirer / tout effacer »*. Sur chaque côté, elle essaie
 donc plusieurs alignements, et prend la première position qui ne couvre ni une commande ni une ligne
 qui parle ; si aucune n'y parvient, celle qui en couvre le moins. L'ordre des côtés reste une
 préférence, plus une fatalité. Réduite, elle n'est plus que le *« ? »* collé à la zone. Ses consignes
@@ -501,7 +501,7 @@ Cinq règles d'écran — le coupable d'une page illisible est le **chrome**, ja
 1. **Une voix par état — et parfois aucune** : le geste suivant se dit une fois, dans le fantôme tant
    que la phrase est vide, dans l'aide ensuite ; si un bouton le dit déjà, l'aide se tait. **Et la voix
    elle-même se clique quand le geste qu'elle nomme a lieu dans l'autre colonne** — elle mène alors au
-   Contexte et l'ouvre ; elle reste du texte quand le geste a lieu ici même, choisir l'article ou
+   CONTEXTE et l'ouvre ; elle reste du texte quand le geste a lieu ici même, choisir l'article ou
    envoyer. Un bouton ne promet ainsi jamais un effet qu'il ne produit pas (§4.5). Cliquable, elle a
    l'air d'un bouton — jamais d'un champ vide ni d'une zone de dépôt, ce que son cadre en pointillés
    dans un autre cadre en pointillés faisait croire.
@@ -557,17 +557,17 @@ qui ne dépasse pas soixante-dix signes à la ligne.
 souris.* Ce ne sont pas des options — c'est l'écran, pour tout le monde.
 
 1. **Tout geste est un bouton** : on l'atteint par Tab, il part sur Entrée ou Espace, et un lecteur
-   d'écran le présente comme tel. Les pièces jointes, les puces du dossier et celles du Contexte sont
+   d'écran le présente comme tel. Les pièces jointes, les puces du dossier et celles du CONTEXTE sont
    de vrais boutons. **Les passages restent de la prose** : un bouton ne sait pas se couper en fin de
    ligne, et un passage long sauterait à la ligne d'un bloc. Ils se *déclarent* boutons sans en être.
 2. **Le focus survit au redessin** : l'écran se redessine à chaque geste, le joueur au clavier reste
    pourtant où il était — sur le même passage, la même puce —, et si la chose a disparu, dans la même
    zone.
-3. **La pièce ouverte vit DANS le Contexte** (§4.6) : le jeu autour reste vivant — composeur,
+3. **La pièce ouverte vit DANS le CONTEXTE** (§4.6) : le jeu autour reste vivant — composeur,
    conversation et passages retenus restent atteignables pendant qu'elle est ouverte, ce qui permet de
    relire la question sans la fermer. Le focus entre dans la pièce à l'ouverture et revient, quand on
    la replie, au chip de l'index qui l'a ouverte — par CLÉ, comme pour tout panneau. Échap replie
-   d'abord la pièce, puis, au second appui, referme le Contexte. L'ordre de tabulation suit l'ordre de
+   d'abord la pièce, puis, au second appui, referme le CONTEXTE. L'ordre de tabulation suit l'ordre de
    lecture : index, pièce, retenus. Elle n'a jamais
    été, et n'est toujours pas, un `<dialog>` natif : la question ne s'est jamais posée, puisqu'elle n'a
    plus rien d'une boîte modale.
@@ -578,10 +578,10 @@ souris.* Ce ne sont pas des options — c'est l'écran, pour tout le monde.
    état s'écrit (✓, « retenu ») ou se colore franchement. Une pièce déjà lue porte un ✓, elle n'est pas
    grisée comme un bouton désactivé. **Et un refus se dit à l'écran, jamais dans un `title`** : un
    `title` n'existe ni au clavier ni au toucher, et un bouton `disabled` ne se laisse même plus
-   atteindre pour demander pourquoi (§4.6, *le Contexte dit l'état de la phrase*).
+   atteindre pour demander pourquoi (§4.6, *le CONTEXTE dit l'état de la phrase*).
 6. **Aucune confirmation ne se retire d'elle-même** : elle attend qu'on réponde. Et **Échap se lit à
    l'écran**, là où il agit — sur la croix de la pièce et sur celle des panneaux — **et seulement là** :
-   pièce ouverte, Échap la replie, et la croix du Contexte perd sa touche. Retour de playtest (Jean) :
+   pièce ouverte, Échap la replie, et la croix du CONTEXTE perd sa touche. Retour de playtest (Jean) :
    deux *« × Échap »* empilés promettaient deux effets à une seule touche.
 
 ### 4.11 Ce que le jeu aide, et quand
@@ -598,7 +598,7 @@ laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — l
 
 1. **L'article se marque, il ne s'étiquette plus.** *« Ce texte porte sur : quand »* faisait le tri
    dans la tête du joueur. Le texte de l'article est désormais **encadré, sans un mot**, de la couleur
-   de chaque dimension qu'il régit — celle qui nomme ses groupes dans le Contexte — et de son **trait**
+   de chaque dimension qu'il régit — celle qui nomme ses groupes dans le CONTEXTE — et de son **trait**
    (§4.3) : plein, double, pointillé, tirets, ondulé. Qui a appris le code le reconnaît ; qui ne l'a
    pas appris lit l'article. Un rappel, plus une étiquette. Le trait double la couleur, si bien que
    rien ne s'y dit par la couleur seule (§4.10 règle 5) ; un article qui régit deux dimensions porte
@@ -612,7 +612,7 @@ laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — l
    une **forme du contenu**, déclarée comme les autres (§11) ; le moteur ne fait que la rendre quand les
    dimensions diffèrent. En session 1, le refus d'écran demeure : on y apprend ce qu'est une
    comparaison.
-3. **Le Contexte ne s'assombrit plus, hors session 1.** L'assombrissement par dimension (§4.5)
+3. **Le CONTEXTE ne s'assombrit plus, hors session 1.** L'assombrissement par dimension (§4.5)
    annonçait le refus d'écran ; le refus levé, il annoncerait ce que l'avocat va dire. Le seul rappel
    qui reste est celui que la phrase porte déjà : **le premier passage posé garde sa couleur** au
    composeur.

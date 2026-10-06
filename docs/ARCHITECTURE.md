@@ -241,7 +241,7 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
 |---|---|
 | `test_o5.js` (44) | l'index du dossier, **et le bouton de pièces qui compte comme lui** ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (41) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (290) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le Contexte qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, les remises closes (§4.6) |
+| `test_parcours.js` (290) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le CONTEXTE qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, les remises closes (§4.6) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
 | `smoke_atelier.js` (103) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
@@ -258,9 +258,9 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
   affirmant l'ancienne vérité — et **les suites ne se lisent pas elles-mêmes**.
 - **Les tests ne nomment aucun contenu** : tout se dérive de la *forme*, si bien que **changer
   d'affaire ne casse pas une seule suite**. Sont épinglées, en revanche, des chaînes de chrome
-  (`Envoyer`, `effacer`, `Opposer une phrase`, `opposer`, `● `, `✓ `, `zoneRetenus`, `dans ton Contexte`,
+  (`Envoyer`, `effacer`, `Opposer une phrase`, `opposer`, `● `, `✓ `, `zoneRetenus`, `dans ton CONTEXTE`,
   `nouvelle`, `dans ta phrase`, `ne prend plus de passage`, `remise`, et pour le clavier `retenu`,
-  `déjà lue`, `Tutoriel`, `Contexte`) : on les
+  `déjà lue`, `Tutoriel`, `CONTEXTE`) : on les
   renomme si on veut, jamais sans toucher au test qui les nomme.
 - *Les Manuels n'ont plus de suite : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par
   le jeu, alors que la frise les édite.*
@@ -323,17 +323,17 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
-| l'avocat ouvre une session — **un seul message, sa première question puis ses pièces** (§4.6) ; ouvrir et refermer une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion` (qui pose la question SUR le message de remise : champ `question` du fil), `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDiscussion` (le bouton de pièces : `comptePieces`, `recuAvant`), `renderContexte` → `pieceHTML` (‹ › : `ordreIndex`, `pieceVoisine`, `voisine`) → `piecePanelHTML`, `rendreTexte`, `cadresPorte` (`porte` en cadres, §4.11), `renderDossier` — **repliable en une ligne à tout moment, replié d'office pièce ouverte** (`dossierPlie`, `dossierDeplie`, `basculerDossier`) |
-| **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, Contexte seul) | `surligner`, `oublier` | `renderRetenus` dans `renderContexte` — *dans ta phrase*, la raison d'un refus (`passageRefuse`, `RAISON_PLEINE`), les remises closes repliées (`remiseClose`, `remisesDepliees`, `basculerRemise`) ; `rappelRetrait` quand on reclique un passage retenu ; `voirDernierRetenu` à l'ouverture du panneau |
+| l'avocat ouvre une session — **un seul message, sa première question puis ses pièces** (§4.6) ; ouvrir et refermer une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion` (qui pose la question SUR le message de remise : champ `question` du fil), `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDISCUSSION` (le bouton de pièces : `comptePieces`, `recuAvant`), `renderCONTEXTE` → `pieceHTML` (‹ › : `ordreIndex`, `pieceVoisine`, `voisine`) → `piecePanelHTML`, `rendreTexte`, `cadresPorte` (`porte` en cadres, §4.11), `renderDossier` — **repliable en une ligne à tout moment, replié d'office pièce ouverte** (`dossierPlie`, `dossierDeplie`, `basculerDossier`) |
+| **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, CONTEXTE seul) | `surligner`, `oublier` | `renderRetenus` dans `renderCONTEXTE` — *dans ta phrase*, la raison d'un refus (`passageRefuse`, `RAISON_PLEINE`), les remises closes repliées (`remiseClose`, `remisesDepliees`, `basculerRemise`) ; `rappelRetrait` quand on reclique un passage retenu ; `voirDernierRetenu` à l'ouverture du panneau |
 | ce que le composeur offre ; ce qui se devine avant le clic — **en session 1 seulement** (§4.11) ; la voix | `blocsOfferts`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante`, `enCalibration`, `juxtapose` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
-| **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du Contexte | `rendreVoix`, `ouvrirContexte`, `suivrePhrase` (en tête de `rendreTout`), `majLateral` |
+| **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du CONTEXTE | `rendreVoix`, `ouvrirCONTEXTE`, `suivrePhrase` (en tête de `rendreTout`), `majLateral` |
 | ouvrir et fermer une surface de côté | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `clavier` (Échap) |
-| **le clavier et la voix d'annonce** (§4.10) — le focus qui survit, la pièce DANS le Contexte (§4.6), ce qui s'annonce | `fermerPiece`, seule règle que l'écran appelle en refermant — par la croix, ou par `suivrePhrase` quand le Contexte quitte l'écran | `clavier`, `memoFocus` → `rendreFocus` (par la clé `data-f`), `ouvrirPiece`/`fermerPiece`/`suivrePhrase` (écran) — `modal`/`closeModal`/`inert` sur `.wrap` ne servent plus que `finir`, `annoncer` → `#annonce` |
+| **le clavier et la voix d'annonce** (§4.10) — le focus qui survit, la pièce DANS le CONTEXTE (§4.6), ce qui s'annonce | `fermerPiece`, seule règle que l'écran appelle en refermant — par la croix, ou par `suivrePhrase` quand le CONTEXTE quitte l'écran | `clavier`, `memoFocus` → `rendreFocus` (par la clé `data-f`), `ouvrirPiece`/`fermerPiece`/`suivrePhrase` (écran) — `modal`/`closeModal`/`inert` sur `.wrap` ne servent plus que `finir`, `annoncer` → `#annonce` |
 | **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
 | **envoyer** — le seul geste ; la remise du tutoriel servie **dans l'ordre** (§3) | `envoyerCompo` → `clore` → `envoyer` (`horsOrdre` d'abord) → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPlaidoirie` |
 | ce qui entre à la Plaidoirie | `estMoyen` | `renderPlaidoirie`, `moyensRetenus` — **panneau**, ouvert par sa porte (§4.9) |
-| clôturer, répétition, fin ; **opposer** un moyen à une affirmation | `instructionComplete`, `cloturer`, `verserContre` (pose `contre`, même sur une phrase déjà versée — **si l'affirmation la prend**, `repondA`), `avancerRepetition`, `finir` | `majCloture`, le présentoir dans `renderDiscussion` (les **moyens** seuls, l'affirmation redite en tête, *« déplacer ici »*), `finir` (modale) |
+| clôturer, répétition, fin ; **opposer** un moyen à une affirmation | `instructionComplete`, `cloturer`, `verserContre` (pose `contre`, même sur une phrase déjà versée — **si l'affirmation la prend**, `repondA`), `avancerRepetition`, `finir` | `majCloture`, le présentoir dans `renderDISCUSSION` (les **moyens** seuls, l'affirmation redite en tête, *« déplacer ici »*), `finir` (modale) |
 | le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoAttendu`, `tutoEtape`, `majTutoriel` → `placerTuto` — **bulle ancrée au halo**, en surimpression, premier enfant de `<body>` |
 
 - **Les deux voies de clôture** sont le **même** `clore`, appelé par le **même** `envoyerCompo` ; ce qui
@@ -345,13 +345,13 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
   `attentesEditables` et `migrerContenu`.
 
 **Les mots.** Le joueur ne lit jamais `empan`, `bloc`, `lien`, `forme`, `terme` : dans une chaîne
-d'écran, c'est une fuite. À l'écran : **Discussion**, **Contexte**, **Plaidoirie** (§4.6) ; **passage**
-(un empan, vu du côté joueur) ; **Ta réponse** (la zone du composeur) ; **→ Envoyer** (clôt et transmet,
+d'écran, c'est une fuite. À l'écran : **DISCUSSION**, **CONTEXTE**, **Plaidoirie** (§4.6) ; **passage**
+(un empan, vu du côté joueur) ; **RÉPONSE** (la zone du composeur) ; **→ Envoyer** (clôt et transmet,
 irréversible) ; **Je n'ai rien d'autre**, puis **Je n'ai rien à opposer** (l'IA répond ; c'est l'avocat
 qui dépose et ferme l'affaire — §4.9).
 
-**Deux verbes, un par geste** (§4.6) : on **retient** un passage — de la pièce vers le Contexte,
-`surligner` dans le code — et on le **prend** — du Contexte vers la phrase, `poserBloc`. *Sélectionner*
+**Deux verbes, un par geste** (§4.6) : on **retient** un passage — de la pièce vers le CONTEXTE,
+`surligner` dans le code — et on le **prend** — du CONTEXTE vers la phrase, `poserBloc`. *Sélectionner*
 ne paraît plus à l'écran : il servait aux deux.
 
 | Dans le code | Ce que ça désigne |

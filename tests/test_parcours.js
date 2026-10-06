@@ -369,10 +369,10 @@ console.log("\n=== Les deux gestes, montrés ===");
   const w = H.boot({url:"http://localhost/"});
   const halo = () => w.document.querySelector("[data-tuto]");
   const bandeau = () => w.document.getElementById("tuto");
-  const dansDiscussion = el => !!el && w.document.getElementById("discussion").contains(el);
+  const dansDISCUSSION = el => !!el && w.document.getElementById("discussion").contains(el);
 
   check("au premier écran, le tutoriel parle", !bandeau().hidden);
-  check("et il montre la pièce à ouvrir, dans la Discussion", dansDiscussion(halo()));
+  check("et il montre la pièce à ouvrir, dans la DISCUSSION", dansDISCUSSION(halo()));
 
   const pid = H.pidPremiereRemise(w);
   w.ouvrirPiece(pid);
@@ -396,12 +396,12 @@ console.log("\n=== Les deux gestes, montrés ===");
   H.surligner(w, veut);
   check("le bon passage retenu, l'alerte tombe",
     !w.document.getElementById("tuto").hasAttribute("data-alerte"));
-  check("pièce ouverte DANS le Contexte, il montre les retenus juste dessous — plus rien à refermer (§4.6)",
+  check("pièce ouverte DANS le CONTEXTE, il montre les retenus juste dessous — plus rien à refermer (§4.6)",
     !!halo() && halo().id === "zoneRetenus" && !!w.S.modalPiece);
   w.fermerPanneau();
-  check("le Contexte refermé replie la pièce avec lui", !w.S.modalPiece);
+  check("le CONTEXTE refermé replie la pièce avec lui", !w.S.modalPiece);
   check("le contexte étant un panneau FERMÉ, il montre la porte, pas la zone cachée",
-    !!halo() && halo().id === "btnContexte");
+    !!halo() && halo().id === "btnCONTEXTE");
   w.basculerPanneau("contexte");
   const zone = halo();
   check("et une fois ouvert, il montre le contexte", !!zone && zone.contains(w.document.querySelector(".mchip")));
@@ -432,9 +432,9 @@ console.log("\n=== Les deux gestes, montrés ===");
     !w.localStorage.getItem("iavocat_tuto"));
   check("Maître Auber attend maintenant une comparaison",
     !!H.sousTerme(H.lienTag(w, attenteSuivante().attend)));
-  /* §4.6 — la remise attend encore une réponse : le Contexte, ouvert par la
+  /* §4.6 — la remise attend encore une réponse : le CONTEXTE, ouvert par la
      pièce, est resté ouvert, et le halo y va tout droit. */
-  check("et le halo revient aussitôt, sur la zone du Contexte resté ouvert : deux passages sont requis",
+  check("et le halo revient aussitôt, sur la zone du CONTEXTE resté ouvert : deux passages sont requis",
     !!halo() && halo().id === "zoneRetenus");
   const veutA = attenteSuivante().attend;
   const [tA, tB] = H.sousTerme(H.lienTag(w, veutA)).termes;
@@ -831,32 +831,32 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
 {
   const w = boot();
   const ouvert  = n => !w.document.getElementById("pan"+n).hidden;
-  const bouton  = () => w.document.querySelector("#composeur button.versContexte");
+  const bouton  = () => w.document.querySelector("#composeur button.versCONTEXTE");
   const attente = () => w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
   const question = () => attente().question;
 
-  check("au premier écran, aucun panneau n'est ouvert", !ouvert("Contexte") && !ouvert("Plaidoirie"));
+  check("au premier écran, aucun panneau n'est ouvert", !ouvert("CONTEXTE") && !ouvert("Plaidoirie"));
   check("les deux portes sont là, dans le titre du composeur",
-    !!w.document.getElementById("btnContexte") && !!w.document.getElementById("btnPlaidoirie"));
+    !!w.document.getElementById("btnCONTEXTE") && !!w.document.getElementById("btnPlaidoirie"));
   check("la phrase attend un passage, donc la voix se clique aussi", !!bouton());
 
   /* LA VOIX — elle ouvre POUR ÉCRIRE, donc le panneau suivra la phrase. */
-  w.ouvrirContexte();
-  check("la voix ouvre le Contexte", ouvert("Contexte"));
+  w.ouvrirCONTEXTE();
+  check("la voix ouvre le CONTEXTE", ouvert("CONTEXTE"));
 
   const veut = H.lienTag(w, attente().attend).termes[0];
   const [pid] = H.deK(veut);
   w.ouvrirPiece(pid); H.surligner(w, veut); w.fermerPiece();
-  check("ouvrir une pièce depuis le panneau ne le referme pas", ouvert("Contexte"));
+  check("ouvrir une pièce depuis le panneau ne le referme pas", ouvert("CONTEXTE"));
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, veut));
   check("un passage posé, la voix se tait — plus de bouton", !bouton());
-  check("mais le panneau RESTE ouvert : la phrase accepterait encore un passage", ouvert("Contexte"));
+  check("mais le panneau RESTE ouvert : la phrase accepterait encore un passage", ouvert("CONTEXTE"));
   w.envoyerCompo();
-  /* §4.6 — envoyer ne referme le Contexte que si la REMISE change : la question
+  /* §4.6 — envoyer ne referme le CONTEXTE que si la REMISE change : la question
      suivante voudra le clavier. Il reste, mais en CONSULTATION désormais. */
-  check("la phrase partie, la remise attend encore : le Contexte RESTE ouvert", ouvert("Contexte"));
+  check("la phrase partie, la remise attend encore : le CONTEXTE RESTE ouvert", ouvert("CONTEXTE"));
   w.rendreTout();
-  check("et il ne suit plus la phrase : on consulte", ouvert("Contexte"));
+  check("et il ne suit plus la phrase : on consulte", ouvert("CONTEXTE"));
   w.fermerPanneau();
 
   /* §4.9 règle 3 — ce qui reste LISIBLE ne se répète pas, et LISIBLE est la
@@ -884,12 +884,12 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
 
   /* LA BARRE — on consulte : le panneau ne suit plus la phrase. */
   w.basculerPanneau("contexte");
-  check("la porte ouvre", ouvert("Contexte"));
+  check("la porte ouvre", ouvert("CONTEXTE"));
   w.basculerPanneau("contexte");
-  check("et referme — c'est une bascule", !ouvert("Contexte"));
+  check("et referme — c'est une bascule", !ouvert("CONTEXTE"));
   w.basculerPanneau("plaidoirie");
   check("l'autre porte ouvre la Plaidoirie", ouvert("Plaidoirie"));
-  check("et une seule surface à la fois", !ouvert("Contexte"));
+  check("et une seule surface à la fois", !ouvert("CONTEXTE"));
   w.fermerPanneau();
 
   /* LA COMPARAISON — le panneau doit tenir entre les DEUX passages. */
@@ -901,11 +901,11 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   const sous = H.sousTerme(H.lienTag(w, attente().attend));
   check("Maître Auber attend maintenant une comparaison", !!sous);
   const [tA, tB] = sous.termes;
-  w.ouvrirContexte();
+  w.ouvrirCONTEXTE();
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tA));
-  check("le PREMIER des deux posé, il en faut un second : le panneau RESTE ouvert", ouvert("Contexte"));
+  check("le PREMIER des deux posé, il en faut un second : le panneau RESTE ouvert", ouvert("CONTEXTE"));
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tB));
-  check("les deux posés, seul l'article manque : il s'est refermé", !ouvert("Contexte"));
+  check("les deux posés, seul l'article manque : il s'est refermé", !ouvert("CONTEXTE"));
   check("et la voix qui réclame l'article n'est plus un bouton — le geste est ICI",
     !bouton() && !!w.document.querySelector("#composeur span.aide"));
 
@@ -913,11 +913,11 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
      bien que la phrase n'accepte plus aucun passage. */
   w.basculerPanneau("contexte");
   check("depuis la barre, le panneau s'ouvre même quand plus aucun passage n'est posable",
-    ouvert("Contexte"));
+    ouvert("CONTEXTE"));
   w.rendreTout();
-  check("et il ne se referme pas tout seul : on consulte, on n'écrit pas", ouvert("Contexte"));
+  check("et il ne se referme pas tout seul : on consulte, on n'écrit pas", ouvert("CONTEXTE"));
   w.fermerPanneau();
-  check("la croix referme", !ouvert("Contexte"));
+  check("la croix referme", !ouvert("CONTEXTE"));
 
   /* §4.6 — la remise CHANGE : un dossier arrive, on revient lire l'avocat. */
   w.basculerPanneau("contexte");
@@ -925,7 +925,7 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   H.lireLeTexte(w, H.lienTag(w, attente().attend).forme);
   H.composerLien(w, H.lienTag(w, attente().attend));
   check("la dernière réponse ouvre une remise neuve", w.S.remisesEnvoyees === remise + 1);
-  check("et le Contexte se referme avec la remise close", !ouvert("Contexte"));
+  check("et le CONTEXTE se referme avec la remise close", !ouvert("CONTEXTE"));
   const L2 = H.lienTag(w, attente().attend);
   H.lireLeTexte(w, L2.forme);
   H.composerLien(w, L2, {garder:true});
@@ -963,21 +963,21 @@ console.log("\n=== Le jeu se joue au clavier ===");
   const jointe = d.querySelector(`#discussion [data-f="a:${pid}"]`);
   check("le bouton de pièces reçues est un vrai bouton", !!jointe && jointe.tagName === "BUTTON");
   jointe.focus(); jointe.click();
-  const panContexte = d.getElementById("panContexte");
-  check("il ouvre le Contexte", !!panContexte && !panContexte.hidden);
-  check("le focus entre dans le Contexte", panContexte.contains(actif()));
-  check("le Contexte ouvert, le halo quitte le bouton franchi pour l'index (§4.8)",
+  const panCONTEXTE = d.getElementById("panCONTEXTE");
+  check("il ouvre le CONTEXTE", !!panCONTEXTE && !panCONTEXTE.hidden);
+  check("le focus entre dans le CONTEXTE", panCONTEXTE.contains(actif()));
+  check("le CONTEXTE ouvert, le halo quitte le bouton franchi pour l'index (§4.8)",
     !!d.querySelector("[data-tuto]") && d.querySelector("[data-tuto]").id === "zoneDossier");
   check("consigne neuve, elle s'affiche développée",
     !d.getElementById("tuto").hasAttribute("data-reduit"));
-  check("Contexte ouvert, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
+  check("CONTEXTE ouvert, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
 
   const chip = d.querySelector(`#contexte [data-f="d:${pid}"]`);
   check("la pièce s'ouvre depuis un vrai bouton du dossier", !!chip && chip.tagName === "BUTTON");
   chip.focus(); chip.click();
   const boite = d.getElementById("panPiece");
-  check("la pièce s'ouvre DANS le Contexte, nommée pour qui ne la voit pas (§4.6)",
-    !!boite && panContexte.contains(boite) && !panContexte.hidden
+  check("la pièce s'ouvre DANS le CONTEXTE, nommée pour qui ne la voit pas (§4.6)",
+    !!boite && panCONTEXTE.contains(boite) && !panCONTEXTE.hidden
     && d.getElementById(boite.getAttribute("aria-labelledby")) === boite.querySelector("#pieceTitre"));
   check("entre l'index et les retenus, dans l'ordre de lecture",
     !!(d.getElementById("zoneDossier").compareDocumentPosition(boite) & 4)
@@ -1000,13 +1000,13 @@ console.log("\n=== Le jeu se joue au clavier ===");
   check("un passage retenu le dit à qui ne voit pas le fond",
     /retenu/.test(passage(autre).textContent));
   check("retenir se voit sous la pièce, au moment même (§4.3)",
-    /Retenu dans ton Contexte/.test((d.querySelector("#panPiece .rappel.retenu") || {}).textContent || ""));
-  check("et la porte Contexte s'allume", d.getElementById("btnContexte").classList.contains("recoit"));
+    /Retenu dans ton CONTEXTE/.test((d.querySelector("#panPiece .rappel.retenu") || {}).textContent || ""));
+  check("et la porte CONTEXTE s'allume", d.getElementById("btnCONTEXTE").classList.contains("recoit"));
   check("et la fiche neuve s'allume juste sous la pièce, là où on va la prendre",
     !!d.querySelector(`#zoneRetenus .mchip.neuf [data-f="c:${autre}"]`));
   w.rendreTout();                       // un redessin qui n'est PAS un geste
   check("la confirmation ne vit qu'un rendu",
-    !d.querySelector("#panPiece .rappel.retenu") && !d.getElementById("btnContexte").classList.contains("recoit")
+    !d.querySelector("#panPiece .rappel.retenu") && !d.getElementById("btnCONTEXTE").classList.contains("recoit")
     && !d.querySelector(".mchip.neuf"));
   passage(autre).focus();
   check("mais ce n'est pas un interrupteur : aucun aria-pressed",
@@ -1017,35 +1017,35 @@ console.log("\n=== Le jeu se joue au clavier ===");
   touche(passage(autre), " ");
   check("Espace sur un passage retenu ne l'oublie pas", w.S.retenus.includes(autre));
   check("mais l'écran dit où l'on retire", !!d.querySelector("#panPiece .rappel")
-    && /Contexte/.test(d.querySelector("#panPiece .rappel").textContent));
-  check("et le dit à l'oreille", /Contexte/.test(annonce()));
+    && /CONTEXTE/.test(d.querySelector("#panPiece .rappel").textContent));
+  check("et le dit à l'oreille", /CONTEXTE/.test(annonce()));
   w.rendreTout();                       // un redessin qui n'est PAS un reclic
   check("le rappel ne vit qu'un rendu", !d.querySelector("#panPiece .rappel"));
   touche(passage(veut), "Enter");
 
   /* §4.10 règle 6 — Échap se lit là où il agit, ET SEULEMENT LÀ : deux
      « × Échap » empilés promettaient deux effets à une touche (Jean). */
-  const croixContexte = d.querySelector("#panContexte > h2 .fermer");
+  const croixCONTEXTE = d.querySelector("#panCONTEXTE > h2 .fermer");
   const prometEchap = b => b.hasAttribute("aria-keyshortcuts") || /Échap/.test(b.getAttribute("aria-label") || "");
-  check("pièce ouverte, Échap n'est promis qu'à elle : la croix du Contexte perd sa touche",
-    !prometEchap(croixContexte) && panContexte.classList.contains("avecPiece")
+  check("pièce ouverte, Échap n'est promis qu'à elle : la croix du CONTEXTE perd sa touche",
+    !prometEchap(croixCONTEXTE) && panCONTEXTE.classList.contains("avecPiece")
     && prometEchap(d.querySelector('#panPiece [data-f="replier"]')));
   touche(d.body, "Escape");
   check("Échap replie la pièce — le jeu n'avait jamais cessé d'être vivant", !w.S.modalPiece && !inerte());
-  check("et la croix du Contexte reprend la touche, puisque c'est elle qu'Échap fermerait",
-    prometEchap(croixContexte) && !panContexte.classList.contains("avecPiece"));
-  check("et le Contexte reste ouvert : c'est le second Échap qui le fermerait (§4.10 règle 3)",
-    !panContexte.hidden);
+  check("et la croix du CONTEXTE reprend la touche, puisque c'est elle qu'Échap fermerait",
+    prometEchap(croixCONTEXTE) && !panCONTEXTE.classList.contains("avecPiece"));
+  check("et le CONTEXTE reste ouvert : c'est le second Échap qui le fermerait (§4.10 règle 3)",
+    !panCONTEXTE.hidden);
   check("le focus revient au chip du dossier qui l'avait ouverte", cleActive() === "d:" + pid);
   check("lue, elle le dit par son nom — pas par un gris",
     /déjà lue/.test(d.querySelector(`#contexte [data-f="d:${pid}"]`).getAttribute("aria-label") || ""));
 
-  // Le Contexte est déjà ouvert depuis `voirPiecesRecues` et ne s'est jamais
+  // Le CONTEXTE est déjà ouvert depuis `voirPiecesRecues` et ne s'est jamais
   // refermé (§4.6) : pas de bascule ici, elle le fermerait.
   const puce = d.querySelector(`#contexte [data-f="c:${veut}"]`);
   puce.focus();
   w.rendreTout();
-  check("le focus survit au redessin d'une puce du Contexte",
+  check("le focus survit au redessin d'une puce du CONTEXTE",
     cleActive() === "c:" + veut && actif() !== puce);
   // Les GESTES désignent leur élément par sa clé ; seuls les contrôles de focus
   // lisent le focus — sans quoi une panne en amont en masquerait une en aval.
@@ -1106,7 +1106,7 @@ console.log("\n=== Le jeu se joue au clavier ===");
     !/effacer/.test(b.textContent) && a.hidden && !!w.localStorage.getItem("iavocat_partie"));
 }
 
-console.log("\n=== Le Contexte dit son état (§4.6) ===");
+console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
 {
   // CHANGER DE PIÈCE COÛTE UN CLIC : ‹ et ›, dans l'ordre de l'index, en boucle.
   const w = boot(), d = w.document;
@@ -1152,7 +1152,7 @@ console.log("\n=== Le Contexte dit son état (§4.6) ===");
   check("la phrase prend encore un passage : pas de ligne de refus", !d.getElementById("raisonPleine"));
   fiche(autre).click();
   const raison = d.getElementById("raisonPleine");
-  check("la phrase pleine, le Contexte le dit en une ligne", !!raison && /ne prend plus de passage/.test(raison.textContent));
+  check("la phrase pleine, le CONTEXTE le dit en une ligne", !!raison && /ne prend plus de passage/.test(raison.textContent));
   check("les fiches restent atteignables : refusées, pas désactivées",
     !fiche(veut).disabled && fiche(veut).getAttribute("aria-disabled") === "true"
     && fiche(veut).getAttribute("aria-describedby") === "raisonPleine");

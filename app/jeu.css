@@ -111,7 +111,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 #contexte .bande.deborde::after{content:"";position:absolute;left:1px;right:1px;bottom:0;height:26px;
   pointer-events:none;border-radius:0 0 8px 8px;
   background:linear-gradient(to top, var(--panel) 20%, rgba(22,27,34,0))}
-/* Le Contexte qui porte une pièce a besoin de plus de hauteur EN DESSOUS DU SEUIL ;
+/* Le CONTEXTE qui porte une pièce a besoin de plus de hauteur EN DESSOUS DU SEUIL ;
    au-dessus, il a déjà la hauteur pleine de la conversation. */
 @media (max-width:899.98px){
   .panneau.avecPiece{max-height:62vh;min-height:320px}
@@ -121,7 +121,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
    LES LARGEURS. PIÈGE PAYÉ : on l'avait cru inutile au-dessus du seuil, où
    `#composeur` a sa propre rangée du gabarit — mais cette rangée est `auto`, et
    ce qu'elle prend, la place latérale le perd. À 1280×800, la comparaison en
-   cours écrasait le Contexte, pièce coupée (retour de playtest, Jean). */
+   cours écrasait le CONTEXTE, pièce coupée (retour de playtest, Jean). */
 .wrap.avecLateral #composeur{max-height:28vh}
 #composeur{flex:none;max-height:46vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);
   border-radius:10px;padding:12px 16px}
@@ -136,7 +136,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
   .panneau .body{max-height:45vh}
   #composeur{max-height:none}
 }
-/* AU-DESSUS DU SEUIL : la place latérale (Contexte, Plaidoirie, ou la pièce
+/* AU-DESSUS DU SEUIL : la place latérale (CONTEXTE, Plaidoirie, ou la pièce
    ouverte — §4.6) devient une colonne À CÔTÉ de la conversation plutôt qu'EN
    DESSOUS d'elle. Rouvert par un retour de playtest (Colas) : un joueur devait
    fermer la pièce pour relire la question qu'elle recouvrait (§3 PASSATION).
@@ -164,7 +164,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
      et retenus se lisaient à l'étroit dans un tiers. La conversation garde le
      tiers restant, et la question avec elle ; la Plaidoirie, une liste, garde
      sa colonne étroite. Seul le gabarit change, jamais un span. */
-  .wrap.avecLateral.avecContexte{grid-template-columns: minmax(0,1fr) minmax(0,2fr)}
+  .wrap.avecLateral.avecCONTEXTE{grid-template-columns: minmax(0,1fr) minmax(0,2fr)}
 }
 /* --- ce qui se lit au clavier (§4.10) --- un double anneau en `box-shadow`,
    qui ne se bat pas avec l'`outline` du halo du tutoriel. */
@@ -183,9 +183,9 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .col > h2 .fermer,.ptete .fermer{margin-left:auto}
 .col > h2 .fermer:hover,.ptete .fermer:hover,.modal .close:hover{border-color:var(--accent)}
 .fermer .x,.close .x{font-size:20px;line-height:1}
-/* Pièce ouverte, Échap la replie : la croix du Contexte perd sa touche — deux
+/* Pièce ouverte, Échap la replie : la croix du CONTEXTE perd sa touche — deux
    « × Échap » empilés promettaient deux effets à une seule (§4.10 règle 6). */
-#panContexte.avecPiece > h2 .fermer kbd{display:none}
+#panCONTEXTE.avecPiece > h2 .fermer kbd{display:none}
 .ztitle .surfaces{margin-left:auto;display:flex;gap:6px}
 .versSurface{background:#20303f;border:1px solid var(--accent);border-radius:7px;
   color:var(--txt);font-size:13px;font-weight:600;text-transform:none;letter-spacing:0;
@@ -232,15 +232,15 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
    l'autre colonne. Elle ne ressemble PAS à un `.bbloc` — celui-là POSE un bloc,
    celle-ci ne fait que montrer où aller. Et plus de pointillés : dans le cadre
    du composeur, elle passait pour un champ vide, ou une zone de dépôt. */
-.versContexte{display:inline-flex;align-items:center;gap:10px;text-align:left;
+.versCONTEXTE{display:inline-flex;align-items:center;gap:10px;text-align:left;
   background:#1a2a38;color:var(--txt);font:inherit;font-size:13.5px;font-style:normal;
   border:1px solid var(--accent);border-radius:7px;padding:6px 12px;cursor:pointer}
-.versContexte:hover{background:#223a4e}
-.versContexte .fl{color:var(--accent);font-weight:700}
+.versCONTEXTE:hover{background:#223a4e}
+.versCONTEXTE .fl{color:var(--accent);font-weight:700}
 /* PIÈGE : `.phrase .trou` (le fantôme) vient plus loin, à spécificité égale —
    d'où la double classe : sans elle, la voix cliquable repassait en italique
    grisé, l'air d'un champ vide. */
-.phrase .trou.versContexte{color:var(--txt);font-style:normal}
+.phrase .trou.versCONTEXTE{color:var(--txt);font-style:normal}
 .aide.question{margin-top:0;margin-bottom:10px;color:var(--txt);border-left:2px solid var(--muted);padding-left:8px}
 /* --- les empans dans le texte d'une pièce --- la couleur ET le trait (§4.3) ;
    le soulignement est une DÉCORATION, pas une bordure : il suit la coupure de
@@ -265,7 +265,7 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 /* --- contexte : une seule liste, qui sert AUSSI de clavier au composeur --- */
 .dimgrp{margin-bottom:9px}
 .dimgrp .dnom{font-size:12px;color:var(--dc,var(--muted));text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
-/* §4.5 : le Contexte s'assombrit PAR DIMENSION — par la couleur, plus par une
+/* §4.5 : le CONTEXTE s'assombrit PAR DIMENSION — par la couleur, plus par une
    transparence qui éteignait le contraste (§4.10 règle 5). */
 .dimgrp.horsdim .dnom{color:var(--muted)}
 .dimgrp.horsdim .mchip{border-left-color:var(--line);background:#181e27}
@@ -278,7 +278,7 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .mchip .corps{flex:1;min-width:0;text-align:left;background:none;border:none;color:var(--txt);
   padding:6px 9px;cursor:pointer;font:inherit;font-size:13.5px;line-height:1.4}
 .mchip .corps:disabled,.mchip .corps[aria-disabled="true"]{cursor:default;color:var(--muted)}
-/* §4.6 — le Contexte dit l'état de la phrase : ce qu'on y a pris s'ÉCRIT (§4.10
+/* §4.6 — le CONTEXTE dit l'état de la phrase : ce qu'on y a pris s'ÉCRIT (§4.10
    règle 5), et la raison d'un refus se lit en clair, au-dessus des fiches. */
 .mchip.pris{border-color:var(--accent)}
 .mchip .dansPhrase{margin-left:8px;padding:0 6px;border:1px solid var(--accent);border-radius:4px;
@@ -457,7 +457,7 @@ code{font-family:var(--mono);color:var(--accent)}
 .bande.piece .rappel{margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--encre2);
   background:#ebe4d4;color:var(--encre);font-family:var(--sans);font-size:14px}
 /* PIÈGE PAYÉ (le 4 octobre, le temps d'une passe) : la ligne a été COLLÉE au bas
-   de la pièce pour rester sous les yeux — dans la bande étroite du Contexte,
+   de la pièce pour rester sous les yeux — dans la bande étroite du CONTEXTE,
    elle couvrait le texte même qu'on venait de cliquer. Elle reste dans le flux ;
    ce qui se voit à coup sûr, c'est la fiche neuve juste dessous (`.mchip.neuf`). */
 .bande.piece .rappel.retenu{border-left-color:#3d6b3f;background:#e3ead8}
@@ -473,7 +473,7 @@ code{font-family:var(--mono);color:var(--accent)}
 .dcol .dtitre{flex:none;font-size:12.5px;font-weight:600;color:var(--muted)}
 .dcol .dchips{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .dcol .dvide{color:var(--muted);font-size:12.5px;font-style:italic}
-/* La puce porte le TITRE de la pièce, celui sous lequel la Discussion l'a
+/* La puce porte le TITRE de la pièce, celui sous lequel la DISCUSSION l'a
    transmise (§4.6) : de la prose, donc ni mono ni corps de matricule. */
 .dchip{display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:13px;
   border:1px solid var(--line);border-radius:6px;background:var(--panel2);padding:3px 7px;cursor:pointer;color:var(--txt)}

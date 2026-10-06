@@ -304,7 +304,7 @@ window.CONTENU = {
         "vers": "FIN",
         "imbrique": true,
         "piece": "r_temoin",
-        "texte": ", et l'article 3 écarte la déposition qui s'y heurte",
+        "texte": ", et l'article 3 permet la mise de côté de ce témoignage",
         "forme": "article_3"
       },
       {
@@ -689,22 +689,22 @@ window.CONTENU = {
       ],
       "attentes": [
         {
-          "question": "Le procès-verbal, pour commencer. À quelle heure la patrouille est-elle arrivée sur les lieux ?",
+          "question": "Dans le PV d'intervention, à quelle heure la patrouille dit-elle être arrivée sur les lieux ?",
           "attend": "q_arrivee"
         },
         {
-          "question": "Deuxième. L'audition du voisin : à quelle heure situe-t-il les éclats de voix qu'il dit avoir entendus ?",
+          "question": "Passe à l'audition du voisin : à quelle heure dit-il avoir entendu des éclats de voix ?",
           "attend": "q_voix"
         },
         {
           "attend": "temoin",
-          "question": "Alors mets-les face à face, les deux heures — et dis-moi sous quel article ça tombe."
+          "question": "Et donc, quel lien tu fais entre les deux ? Et quel article est-ce qu'on peut citer pour se servir de cette incohérence dans une cour de Justice ?"
         }
       ]
     },
     {
       "qui": "Maître Auber",
-      "texte": "Le vrai dossier, maintenant. Le rapport du laboratoire, et tout ce qui l'entoure. Celui-là, je l'ai lu dix fois sans rien y trouver.",
+      "texte": "Je t'envoie la suite du dossier maintenant. Le rapport du laboratoire, et tout ce qui l'entoure. Celui-là, je l'ai lu dix fois sans rien y trouver.",
       "pieces": [
         "p_adn",
         "p_scene",
@@ -714,7 +714,7 @@ window.CONTENU = {
       ],
       "attentes": [
         {
-          "question": "À toi, maintenant. Qu'est-ce qui permet d'écarter ce rapport, et sous quel article ?",
+          "question": "À toi, maintenant. Trouve de quoi écarter le rapport et l'article sur lequel on peut s'appuyer pour cela.",
           "attend": "adn",
           "apres": {
             "replique": "Je tiens quelque chose à plaider. Je rédige mes conclusions cette nuit — à moins que tu aies encore quelque chose pour moi ?"

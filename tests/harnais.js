@@ -26,7 +26,7 @@ function creerHarnais(dossier){
      contenu livré ; graine : semée dans localStorage AVANT les scripts ; url :
      origine, posée d'office si graine. */
   /* PIÈGE : jsdom n'a NI `matchMedia` NI `scrollIntoView`. Sans ces deux bouchons,
-     `attirerContexte` jette — et c'était, jusqu'ici, la seule fonction d'écran
+     `attirerCONTEXTE` jette — et c'était, jusqu'ici, la seule fonction d'écran
      qu'aucune suite ne pouvait appeler. Rien d'autre du dépôt ne lit ces API. */
   const bouchonsNavigateur = win => {
     win.matchMedia = q => ({ matches:false, media:q,

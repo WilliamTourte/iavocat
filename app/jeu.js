@@ -153,8 +153,8 @@ function tutoEtapeCitation(){
                       : "Retiens le passage qui répond.",
             ditLong: rate
               ? "Ce n'est pas ce qu'il demande. Relis sa question, et retiens le passage qui y répond."
-              : "Clique sur le passage encadré qui répond pour le retenir dans ton Contexte : c'est de là que tu composeras ta réponse."}
-      /* Le Contexte ouvert, le halo quitte le bouton du message pour l'index :
+              : "Clique sur le passage encadré qui répond pour le retenir dans ton CONTEXTE : c'est de là que tu composeras ta réponse."}
+      /* Le CONTEXTE ouvert, le halo quitte le bouton du message pour l'index :
          il ne pulse plus sur une porte qu'on vient de franchir (§4.8). */
       : panneau==="contexte"
         ? {...GESTE_CITER, n:1, ou:"#zoneDossier", alerte:rate,
@@ -162,24 +162,24 @@ function tutoEtapeCitation(){
                       : "Ouvre une pièce.",
             ditLong: rate
               ? "Ce n'est pas ce qu'il demande. Relis sa question, puis ouvre la pièce qui y répond."
-              : "Clique sur le nom d'une pièce : elle s'ouvre ici même, dans ton Contexte."}
+              : "Clique sur le nom d'une pièce : elle s'ouvre ici même, dans ton CONTEXTE."}
         : {...GESTE_CITER, n:1, ou:"#discussion .attach", alerte:rate,
             dit: rate ? "Ce n'est pas ce qu'il demande."
-                      : "Ouvre ton Contexte.",
+                      : "Ouvre ton CONTEXTE.",
             ditLong: rate
-              ? "Ce n'est pas ce qu'il demande. Relis sa question, puis choisis la bonne pièce dans ton Contexte."
-              : "Ouvre ton Contexte : la pièce qu'il te demande y est listée. Clique dessus pour l'ouvrir."};
+              ? "Ce n'est pas ce qu'il demande. Relis sa question, puis choisis la bonne pièce dans ton CONTEXTE."
+              : "Ouvre ton CONTEXTE pour voir les documents à ta disposition."};
   }
-  /* Plus de temps « Referme la pièce » (§4.6) : elle vit DANS le Contexte, et le
+  /* Plus de temps « Referme la pièce » (§4.6) : elle vit DANS le CONTEXTE, et le
      passage retenu paraît juste en dessous, prêt à être pris. */
   if(!R.peutEnvoyer(S))
     return panneau==="contexte"
         ? {...GESTE_CITER, n:3, ou:"#zoneRetenus",
             dit:"Prends le passage retenu.",
             ditLong:"Prends le passage qui répond, juste sous la pièce : il entrera dans ta réponse."}
-        : {...GESTE_CITER, n:3, ou:"#btnContexte",
-            dit:"Ouvre ton Contexte.",
-            ditLong:"Ouvre ton Contexte : le passage que tu viens de retenir s'y trouve, prêt à être pris."};
+        : {...GESTE_CITER, n:3, ou:"#btnCONTEXTE",
+            dit:"Ouvre ton CONTEXTE.",
+            ditLong:"Ouvre ton CONTEXTE : le passage que tu viens de retenir s'y trouve, prêt à être pris."};
   return  {...GESTE_CITER, n:4, ou:"#composeur button.envoi",
             dit:"Clique sur → Envoyer"};
 }
@@ -188,11 +188,11 @@ function tutoEtapeComparaison(){
     const dit = S.compo.length ? "Prends un second passage." : "Prends un premier passage.";
     const ditLong = S.compo.length
       ? "Prends un second passage pour le comparer au premier : une réponse peut tenir sur deux."
-      : "Une réponse peut tenir sur deux passages. Prends-en un premier dans ton Contexte.";
+      : "Une réponse peut tenir sur deux passages. Prends-en un premier dans ton CONTEXTE.";
     return panneau==="contexte"
       ? {...GESTE_RELIER, n:1, ou:"#zoneRetenus", dit, ditLong}
-      : {...GESTE_RELIER, n:1, ou:"#btnContexte", dit:"Ouvre ton Contexte.",
-          ditLong:"Ouvre ton Contexte : "+ditLong[0].toLowerCase()+ditLong.slice(1)};
+      : {...GESTE_RELIER, n:1, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
+          ditLong:"Ouvre ton CONTEXTE : "+ditLong[0].toLowerCase()+ditLong.slice(1)};
   }
   /* PIÈGE : une comparaison nue EST envoyable (§4.5), donc ce temps doit passer
      AVANT celui de l'envoi — sans quoi le bandeau dirait « Envoyer » là où la
@@ -207,8 +207,8 @@ function tutoEtapeComparaison(){
     return panneau==="contexte"
       ? {...GESTE_RELIER, n:2, ou:"#zoneDossier", dit:"Il lui faut un article.",
           ditLong:ditLong+" Va le lire dans ton dossier."}
-      : {...GESTE_RELIER, n:2, ou:"#btnContexte", dit:"Ouvre ton Contexte.",
-          ditLong:ditLong+" Ton dossier est dans ton Contexte."};
+      : {...GESTE_RELIER, n:2, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
+          ditLong:ditLong+" Ton dossier est dans ton CONTEXTE."};
   }
   if(R.peutEnvoyer(S))
     return {...GESTE_RELIER, n:3, ou:"#composeur button.envoi",
@@ -236,7 +236,7 @@ let tutoReduit=false, tutoReouvre=false;
 /* NEUVE VEUT DIRE JAMAIS MONTRÉE (§4.8) : revenir de 4/4 à 3/4 après « tout
    effacer » redéployait une consigne déjà lue. Seule l'alerte se redéploie
    déjà vue — se tromper rouvre. La clé est le geste, le rang et le texte : à
-   un même rang, « Ouvre ton Contexte » et « Ouvre une pièce » sont deux
+   un même rang, « Ouvre ton CONTEXTE » et « Ouvre une pièce » sont deux
    consignes. */
 const tutoVues=new Set();
 function majTutoriel(){
@@ -432,7 +432,7 @@ function rendreFocus(m, force){
 
 /* §4.10 règle 4 — CE QUI ARRIVE S'ANNONCE, par une voix unique : `#annonce`,
    hors de `.wrap` (une région inerte se tait). PIÈGE : jamais `role="log"` sur
-   la Discussion — elle se réécrit à chaque geste, et un lecteur d'écran la
+   la DISCUSSION — elle se réécrit à chaque geste, et un lecteur d'écran la
    relirait d'un bout à l'autre. */
 let annonces=[], vusFil=-1, dernierRefus=null;
 function annoncer(txt){ if(txt) annonces.push(txt); }
@@ -453,7 +453,7 @@ function annoncerNouveautes(){
   if(vusFil<0){ vusFil=S.fil.length; dernierRefus=S.refus||null; tutoAnnonce=null; return; }
   S.fil.forEach((m,i)=>{ if(i<vusFil || m.ia) return;
     const n=(m.pieces||[]).length;
-    annoncer(`${m.qui} : ${texteBrut(m.texte)}${m.question ? " "+texteBrut(m.question) : ""}${n ? ` (${comptePieces(m.pieces, recuAvant(i))} dans ton Contexte)` : ""}`);
+    annoncer(`${m.qui} : ${texteBrut(m.texte)}${m.question ? " "+texteBrut(m.question) : ""}${n ? ` (${comptePieces(m.pieces, recuAvant(i))} dans ton CONTEXTE)` : ""}`);
   });
   vusFil=S.fil.length;
   if(S.refus && S.refus!==dernierRefus) annoncer(S.refus);
@@ -465,7 +465,7 @@ function rendreTout(){
   const force=!!focusVoulu, m=focusVoulu || memoFocus(); focusVoulu=null;
   const enBas=filEnBas();
   suivrePhrase();
-  renderDiscussion(); renderComposeur(); renderContexte(); renderPlaidoirie(); majCloture(); majLateral(); majTutoriel();
+  renderDISCUSSION(); renderComposeur(); renderCONTEXTE(); renderPlaidoirie(); majCloture(); majLateral(); majTutoriel();
   recalerFil(enBas); majDebord();
   rendreFocus(m, force);
   placerTuto();                    // APRÈS le recalage du fil et le focus : ils déplacent l'ancre
@@ -486,7 +486,7 @@ function comptePieces(pids, nouvelles){
   return [nP && dit(nP,"pièce"), nR && dit(nR,"règle")].filter(Boolean).join(" et ");
 }
 const recuAvant=i=>S.fil.slice(0,i).some(m=>(m.pieces||[]).length);
-function renderDiscussion(){
+function renderDISCUSSION(){
   let h="", dernier=null;
   for(const [i,m] of S.fil.entries()){
     // PIÈGE : l'avocat vient du contenu, déjà écrit pour l'écran ; la phrase
@@ -496,10 +496,10 @@ function renderDiscussion(){
       meme?"":`<div class="who">${escapeAttr(m.qui)}</div>`}<div class="bubble">${m.ia?escapeAttr(m.texte):m.texte}${
       m.question?`<div class="qremise">${m.question}</div>`:""}<div>`;
     // Le message ne nomme plus les pièces une à une (§4.6) : un seul bouton,
-    // vers le Contexte, où chacune se nomme et se lit comme avant — et il vient
+    // vers le CONTEXTE, où chacune se nomme et se lit comme avant — et il vient
     // APRÈS la question que la remise porte : on lit, puis on va chercher.
     if(m.pieces.length){
-      const dit=comptePieces(m.pieces, recuAvant(i))+" dans ton Contexte";
+      const dit=comptePieces(m.pieces, recuAvant(i))+" dans ton CONTEXTE";
       h+=`<button type="button" class="attach" data-f="a:${m.pieces[0]}" onclick="voirPiecesRecues()"
             aria-label="${dit}"><span aria-hidden="true">📎</span> ${dit}</button>`;
     }
@@ -575,7 +575,7 @@ function rendreTexte(pid){
   return h;
 }
 /* §4.6 — LA PIÈCE S'OUVRE DANS LE CONTEXTE, entre l'index et les retenus : on
-   lit, on retient, on prend, sans rien fermer. L'ouvrir ouvre donc le Contexte —
+   lit, on retient, on prend, sans rien fermer. L'ouvrir ouvre donc le CONTEXTE —
    en CONSULTATION, comme la barre : il ne se referme pas tout seul. Une autre
    pièce déjà ouverte en part d'abord, et sa réplique `declenche` avec elle. */
 function ouvrirPiece(pid){
@@ -586,7 +586,7 @@ function ouvrirPiece(pid){
   focusVoulu = { cle:"#pieceTitre", zone:"#panPiece" };
   rendreTout();
 }
-/* La replier rend sa hauteur aux retenus ; le Contexte, lui, reste. */
+/* La replier rend sa hauteur aux retenus ; le CONTEXTE, lui, reste. */
 function fermerPiece(){
   R.fermerPiece(S);
   focusVoulu = ouvreur; ouvreur = null;
@@ -681,10 +681,10 @@ function basculerDossier(){
 /* La pièce n'ajoute que — jamais n'oublie (§4.3). Mais recliquer un passage déjà
    retenu ne passe plus sous silence : l'écran dit où l'on retire. Et retenir se
    voit au moment même (§4.3) : `vientDeRetenir` allume la même ligne et le compte
-   de la porte Contexte. Tous deux vivent le temps d'un rendu. */
+   de la porte CONTEXTE. Tous deux vivent le temps d'un rendu. */
 let rappelRetrait=null, vientDeRetenir=null;
-const RAPPEL_RETRAIT="Déjà dans ton Contexte — c'est là qu'on l'oublie.";
-const ECHO_RETENU="✓ Retenu dans ton Contexte.";
+const RAPPEL_RETRAIT="Déjà dans ton CONTEXTE — c'est là qu'on l'oublie.";
+const ECHO_RETENU="✓ Retenu dans ton CONTEXTE.";
 function surligner(pid,eid){
   const k=pid+"."+eid;
   rappelRetrait = S.retenus.includes(k) ? k : null;
@@ -693,7 +693,7 @@ function surligner(pid,eid){
   // la fiche neuve naîtrait cachée — retenir se voit (§4.3, §4.6).
   if(vientDeRetenir && remiseClose(remiseDePiece(pid))) remisesDepliees.add(remiseDePiece(pid));
   R.surligner(S,pid,eid);
-  annoncer(rappelRetrait ? RAPPEL_RETRAIT : "Retenu dans ton Contexte.");
+  annoncer(rappelRetrait ? RAPPEL_RETRAIT : "Retenu dans ton CONTEXTE.");
   const neuf=!!vientDeRetenir;
   rendreTout();
   if(neuf && S.modalPiece) voirDernierRetenu();    // la fiche neuve, dans le champ
@@ -703,12 +703,12 @@ function surligner(pid,eid){
    zone, qui n'arme rien ; `#zoneRetenus` porte `tabindex="-1"` pour l'accueillir,
    et `rendreFocus` sait viser un id (§4.10 règle 2). */
 function oublier(pid,eid){
-  R.oublier(S,pid,eid);            // le Contexte seul peut retirer
+  R.oublier(S,pid,eid);            // le CONTEXTE seul peut retirer
   focusVoulu={ cle:"#zoneRetenus", zone:"#zoneRetenus" };
   rendreTout();
 }
 /* §4.3 — PLUS DE LÉGENDE : l'auteur l'a retirée, le code s'apprend en cherchant
-   — au survol du passage, et dans les groupes du Contexte. */
+   — au survol du passage, et dans les groupes du CONTEXTE. */
 /* §4.11 — `porte` SE MARQUE, IL NE S'ÉTIQUETTE PLUS : « Ce texte porte sur :
    quand » faisait le tri dans la tête du joueur. Le texte de l'article est
    encadré de la couleur ET du trait de chaque dimension qu'il régit — le code
@@ -733,7 +733,7 @@ function piecePanelHTML(pid){
 }
 /* PIÈGE : `#zoneRetenus` est l'ancre des temps 3 et 5 du tutoriel (R6), à ne
    jamais viser par `:last-child`. Et depuis qu'elle vit dans un PANNEAU, elle
-   peut être cachée : le tutoriel vise alors `#btnContexte`, la porte. Les deux
+   peut être cachée : le tutoriel vise alors `#btnCONTEXTE`, la porte. Les deux
    sélecteurs restent des LITTÉRAUX — R6 ne scanne pas un sélecteur calculé, et
    ne dirait rien le jour où l'un des deux cesserait d'exister. */
 /* §4.6 — LE CONTEXTE DIT L'ÉTAT DE LA PHRASE (retour de Jean). Un passage déjà
@@ -831,7 +831,7 @@ function souffle(){
   // regarde un cran plus loin, l'état qui suivrait la pose (§4.5).
   const second=R.comparaisonPossible(S);
   /* DEUX VERBES, UN PAR GESTE (§4.6) : on RETIENT un passage — de la pièce vers
-     le Contexte — et on le PREND — du Contexte vers la phrase. « Sélectionner »
+     le CONTEXTE — et on le PREND — du CONTEXTE vers la phrase. « Sélectionner »
      servait aux deux, et un joueur a lu trois verbes pour deux gestes. */
   if(!S.compo.length){
     // §4.6 — pendant la répétition on n'écrit plus, on oppose : la voix se tait,
@@ -851,16 +851,16 @@ function souffle(){
 }
 /* §4.9 règle 1 — LA VOIX DEVIENT UN BOUTON quand le geste qu'elle nomme a lieu
    dans l'AUTRE colonne. Le prédicat est `indexTermeChamp`, le MÊME qui active
-   les puces du Contexte (`renderRetenus`) : une seule vérité pour les deux
+   les puces du CONTEXTE (`renderRetenus`) : une seule vérité pour les deux
    surfaces. Sinon elle reste du texte — l'article et l'envoi se cliquent ici.
    Quand la voix se tait — un passage posé, la phrase se tient — il n'y a ni
-   bouton ni rien à dire : le Contexte reste ouvert et les puces suffisent. */
+   bouton ni rien à dire : le CONTEXTE reste ouvert et les puces suffisent. */
 function rendreVoix(txt, classe){
   if(!txt) return "";
   // Cliquable, elle a l'air d'un bouton — jamais d'un champ vide (§4.9 règle 1) :
   // la flèche montre où le panneau s'ouvre, au-dessus.
   return R.indexTermeChamp(S) >= 0
-    ? `<button class="${classe} versContexte" data-f="voix" onclick="ouvrirContexte()">${escapeAttr(txt)}<span class="fl" aria-hidden="true">↑</span></button>`
+    ? `<button class="${classe} versCONTEXTE" data-f="voix" onclick="ouvrirCONTEXTE()">${escapeAttr(txt)}<span class="fl" aria-hidden="true">↑</span></button>`
     : `<span class="${classe}">${escapeAttr(txt)}</span>`;
 }
 function texteCompoPartiel(){
@@ -884,7 +884,7 @@ function texteCompoPartiel(){
 function poserBloc(iBloc,iSrc){ R.poserBloc(S,iBloc,iSrc); rendreTout(); }
 function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
 function viderCompo(){ R.viderCompo(S); rendreTout(); }
-/* La phrase PARTIE (§4.6) : le Contexte reste tant que la REMISE ne change pas —
+/* La phrase PARTIE (§4.6) : le CONTEXTE reste tant que la REMISE ne change pas —
    la question suivante, ou la même après un refus, voudra le clavier. Il reste
    en consultation, quelle que soit la porte qui l'avait ouvert. Une remise
    neuve le referme : un dossier arrive, on revient lire l'avocat. La Plaidoirie
@@ -923,15 +923,15 @@ function barreSurfaces(){
      lire un id fabriqué par interpolation — il ne dirait rien le jour où l'un
      des deux disparaîtrait. */
   return `<span class="surfaces">
-    <button id="btnContexte" class="${etat("contexte")}${vientDeRetenir?" recoit":""}"
-      onclick="basculerPanneau('contexte')">Contexte${compte(S.retenus.length)}</button>
+    <button id="btnCONTEXTE" class="${etat("contexte")}${vientDeRetenir?" recoit":""}"
+      onclick="basculerPanneau('contexte')">CONTEXTE${compte(S.retenus.length)}</button>
     <button id="btnPlaidoirie" class="${etat("plaidoirie")}"
       onclick="basculerPanneau('plaidoirie')">Plaidoirie${compte(moyensRetenus().length)}</button>
   </span>`;
 }
 function renderCompo(){
   const offerts=R.blocsOfferts(S);
-  let h=`<div class="zone"><div class="ztitle">Ta réponse${barreSurfaces()}</div><div class="compo">
+  let h=`<div class="zone"><div class="ztitle">RÉPONSE${barreSurfaces()}</div><div class="compo">
     ${rappelQuestion()}
     <div class="phrase">${texteCompoPartiel()}</div>`;
   h+=`<div class="offre">`;
@@ -973,7 +973,7 @@ function renderCompo(){
 /* PIÈGE : réécrire `innerHTML` remet le défilement à ZÉRO. Un panneau redessiné
    à chaque geste repartait donc en haut entre le premier passage et le second —
    celui qu'on venait de retenir disparaissait sous le pli au moment même où le
-   tutoriel le réclamait. Et depuis que la pièce vit DANS le Contexte (§4.6),
+   tutoriel le réclamait. Et depuis que la pièce vit DANS le CONTEXTE (§4.6),
    le panneau porte jusqu'à deux bandes défilantes de plus, réécrites avec lui :
    chaque `.defile[id]` garde aussi son défilement, retrouvé par son id. */
 function garderDefilement(id, dessiner){
@@ -984,18 +984,18 @@ function garderDefilement(id, dessiner){
   el.scrollTop = haut;
   for(const [i,t] of internes){ const b=$(i); if(b) b.scrollTop=t; }
 }
-/* Pièce ouverte, le Contexte se lit de haut en bas — l'index (on choisit), la
+/* Pièce ouverte, le CONTEXTE se lit de haut en bas — l'index (on choisit), la
    pièce (on lit, on retient), les retenus (on prend) — et cesse de défiler d'un
    bloc : la pièce et les retenus défilent chacun pour son compte, pour qu'une
    longue pièce ne pousse jamais les retenus hors du panneau (§4.6). */
 let pieceDessinee=null;
-function renderContexte(){
+function renderCONTEXTE(){
   const piece=!!S.modalPiece;
   const el=$("contexte"); if(el) el.classList.toggle("avecPiece", piece);
-  { const p=$("panContexte"); if(p) p.classList.toggle("avecPiece", piece); }
+  { const p=$("panCONTEXTE"); if(p) p.classList.toggle("avecPiece", piece); }
   // Échap ne se lit que là où il agit (§4.10 règle 6) : pièce ouverte, sur elle seule.
-  { const f=document.querySelector("#panContexte > h2 .fermer");
-    if(f){ f.setAttribute("aria-label", piece ? "Fermer le Contexte" : "Fermer le Contexte (Échap)");
+  { const f=document.querySelector("#panCONTEXTE > h2 .fermer");
+    if(f){ f.setAttribute("aria-label", piece ? "Fermer le CONTEXTE" : "Fermer le CONTEXTE (Échap)");
            if(piece) f.removeAttribute("aria-keyshortcuts"); else f.setAttribute("aria-keyshortcuts","Escape"); } }
   garderDefilement("contexte", () => piece
     ? renderDossier() + pieceHTML() + `<div class="bande retenus"><div class="defile" id="defileRetenus">${renderRetenus()}</div></div>`
@@ -1066,7 +1066,7 @@ function finir(){
   const t=$("modalTitre"); if(t) t.focus();
 }
 
-/* §4.6 — LA PLACE LATÉRALE a deux occupants possibles — Contexte et Plaidoirie
+/* §4.6 — LA PLACE LATÉRALE a deux occupants possibles — CONTEXTE et Plaidoirie
    — UN SEUL À LA FOIS, et ne recouvre RIEN : la question reste
    sous les yeux, et on voit la phrase se construire en cliquant les passages.
    DEUX variables d'ÉCRAN, hors de `S`, qui est sérialisé — on ne recharge pas
@@ -1079,16 +1079,16 @@ function finir(){
    la grammaire ne sait pas encore si le joueur cite ou entame une comparaison
    (§4.5) : refermer là retirerait le clavier au milieu du geste le plus difficile
    du jeu.
-   LA PIÈCE N'EST PAS UN OCCUPANT : elle s'ouvre DANS le Contexte (`renderContexte`),
-   et `suivrePhrase` la replie dès que le Contexte quitte l'écran. */
+   LA PIÈCE N'EST PAS UN OCCUPANT : elle s'ouvre DANS le CONTEXTE (`renderCONTEXTE`),
+   et `suivrePhrase` la replie dès que le CONTEXTE quitte l'écran. */
 let panneau = null, panneauSuit = false;
 function majLateral(){
-  { const p=$("panContexte");   if(p) p.hidden = panneau!=="contexte"; }
+  { const p=$("panCONTEXTE");   if(p) p.hidden = panneau!=="contexte"; }
   { const p=$("panPlaidoirie"); if(p) p.hidden = panneau!=="plaidoirie"; }
   // La conversation, seule bande élastique, cède d'elle-même la place (§4.6) ;
   // la classe ne décide que jusqu'où elle peut céder, et c'est du CSS (§9).
   { const w=document.querySelector(".wrap"); if(w){ w.classList.toggle("avecLateral", !!panneau);
-                                                   w.classList.toggle("avecContexte", panneau==="contexte"); } }
+                                                   w.classList.toggle("avecCONTEXTE", panneau==="contexte"); } }
 }
 /* LE PANNEAU S'OUVRE SUR CE QU'ON VIENT DE RETENIR. À dix-sept fiches, la
    dernière est sous le pli et rien ne le disait : un joueur a cherché son
@@ -1110,24 +1110,24 @@ function voirDernierRetenu(){
    mise en page — et `npm run vue` est le seul juge (§16). */
 function majDebord(){
   const reste = b => !!b && (b.scrollHeight - b.scrollTop - b.clientHeight) > 4;
-  for(const id of ["panContexte","panPlaidoirie"]){
+  for(const id of ["panCONTEXTE","panPlaidoirie"]){
     const sec=$(id); if(!sec) continue;
     sec.classList.toggle("deborde", reste(sec.querySelector(".body")));
   }
-  // Pièce ouverte, chaque bande du Contexte dit SON débordement — le fondu est
+  // Pièce ouverte, chaque bande du CONTEXTE dit SON débordement — le fondu est
   // posé sur la bande, jamais sur ce qui défile dedans (même PIÈGE qu'en tête).
   for(const b of document.querySelectorAll("#contexte .bande"))
     b.classList.toggle("deborde", reste(b.querySelector(".defile")));
 }
-function ouvrirContexte(){ panneau="contexte"; panneauSuit=true; rendreTout(); voirDernierRetenu(); }
-/* Le bouton agrégé du message OUVRE le Contexte, il ne le BASCULE pas (§4.6) :
-   un second clic, sur un ancien message, ne doit pas refermer un Contexte déjà
+function ouvrirCONTEXTE(){ panneau="contexte"; panneauSuit=true; rendreTout(); voirDernierRetenu(); }
+/* Le bouton agrégé du message OUVRE le CONTEXTE, il ne le BASCULE pas (§4.6) :
+   un second clic, sur un ancien message, ne doit pas refermer un CONTEXTE déjà
    ouvert. Sans `panneauSuit` — on vient CONSULTER, pas écrire — il ne se
    referme pas tout seul à la pose d'un passage. */
 function voirPiecesRecues(){
   panneau="contexte"; panneauSuit=false;
   dossierPlie=false; dossierDeplie=true;   // on vient voir ce qu'on a reçu : l'index se déplie (§4.6)
-  focusVoulu={ cle:"#titreContexte", zone:"#panContexte" };
+  focusVoulu={ cle:"#titreCONTEXTE", zone:"#panCONTEXTE" };
   rendreTout();
 }
 function basculerPanneau(nom){
@@ -1137,7 +1137,7 @@ function basculerPanneau(nom){
 function fermerPanneau(){ panneau=null; panneauSuit=false; rendreTout(); }
 
 /* LE CLAVIER (§4.10). Échap referme ce qui est le plus DEVANT : la pièce
-   ouverte (repliée, le Contexte reste), la confirmation en attente, le panneau. Entrée et Espace font d'un SPAN qui se déclare bouton — un passage —
+   ouverte (repliée, le CONTEXTE reste), la confirmation en attente, le panneau. Entrée et Espace font d'un SPAN qui se déclare bouton — un passage —
    un vrai bouton ; les <button> n'ont besoin de personne. */
 function clavier(e){
   if(e.key==="Escape"){
@@ -1164,7 +1164,7 @@ document.addEventListener("keydown", clavier);
    s'éteindrait jamais quand on arrive en bas du panneau. */
 document.addEventListener("scroll", majDebord, true);
 if(!restaurerPartie()) R.envoyerRemise(S);   // la remise 1 arrive d'elle-même
-/* Une partie reprise sur une pièce ouverte la retrouve DANS le Contexte (§4.6) —
+/* Une partie reprise sur une pièce ouverte la retrouve DANS le CONTEXTE (§4.6) —
    sans quoi `suivrePhrase` la refermerait au premier rendu, réplique comprise. */
 if(S.modalPiece) panneau="contexte";
 rendreTout();

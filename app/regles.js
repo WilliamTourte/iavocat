@@ -97,7 +97,7 @@ function creerRegles(JEU, M) {
 
   /* ---- LE CONTEXTE — privé, gratuit, illimité ---- */
   // PIÈGE : `surligner` (la pièce) N'AJOUTE QUE — re-cliquer un passage déjà
-  // retenu ne fait rien ; seul `oublier` (le Contexte) retire. Une pièce ne
+  // retenu ne fait rien ; seul `oublier` (le CONTEXTE) retire. Une pièce ne
   // peut plus désélectionner, pour éviter une mauvaise manipulation.
   function surligner(S, pid, eid) {
     const k = pid + "." + eid;
@@ -293,7 +293,7 @@ function creerRegles(JEU, M) {
         && attentesDe(r).some(x => x.attend === L.tag && !S.satisfaits.includes(x.attend));
   }
 
-  /* UNE PHRASE QUI MÉLANGE DEUX DOSSIERS (§4.6). Le Contexte est cumulatif et
+  /* UNE PHRASE QUI MÉLANGE DEUX DOSSIERS (§4.6). Le CONTEXTE est cumulatif et
      gratuit : rien n'empêche de comparer un passage de la session 1 avec un de
      la session 2, et ça produit des phrases qui n'ont pas de sens — l'arrivée de
      la patrouille « précède » le relevé du lendemain : vrai, et sans objet. On n'INTERDIT rien (§4.5, seules les erreurs de

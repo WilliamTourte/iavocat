@@ -23,11 +23,11 @@ sans une ligne de code. La source de chaque item, en fin de ligne : *Colas*, *Je
 - [x] ~~(contenu seul) Varier la réplique de l'opposition~~ — **pas du contenu seul** : `avocat.deja`
       est lu comme une chaîne unique, et Colas demande qu'elle **trie**. Passée à la passe 3. *Colas*
 
-## 2. Passe « le Contexte dit son état » — `renderDossier`, `renderRetenus`, le message de remise
+## 2. Passe « le CONTEXTE dit son état » — `renderDossier`, `renderRetenus`, le message de remise
 
 *Un même écran, une même suite à mettre à jour. Du plus simple au plus long.*
 
-- [x] **Aligner le décompte.** Le message annonce *« 5 pièces disponibles dans ton Contexte »*
+- [x] **Aligner le décompte.** Le message annonce *« 5 pièces disponibles dans ton CONTEXTE »*
       (`m.pieces`, pièces et règles confondues : 3 + 2 nouvelles), l'index *« 5 pièces, 3 règles »*
       (le dossier entier, pièces seules) : même chiffre, deux sens. Le plus simple : le message dit
       *« 3 pièces et 2 règles »* — et *nouvelles* si c'est ce qu'il compte. *Jean 2* — *Fait : les mots
@@ -39,14 +39,14 @@ sans une ligne de code. La source de chaque item, en fin de ligne : *Colas*, *Je
       ligne pourrait tenir les deux. *Jean 2* — *Fait : ‹ et › dans la tête de la pièce, dans l'ordre
       de l'index, en boucle ; l'index reste replié. Les onglets écartés : huit titres entiers ne tiennent
       pas sur une ligne, et des titres abrégés referaient deux noms par pièce (§4.6).*
-- [x] **Rendre l'état de la réponse visible** : marquer dans le Contexte les fiches **déjà prises** dans
+- [x] **Rendre l'état de la réponse visible** : marquer dans le CONTEXTE les fiches **déjà prises** dans
       la phrase, et **dire** pourquoi une troisième est refusée. Aujourd'hui le bouton est seulement
       `disabled`, et l'explication vit dans un `title` (*« ta phrase n'attend pas un passage »*) que ni
       le toucher ni le clavier n'atteignent (§4.10). *Jean 1* — *Fait : « dans ta phrase » sur la fiche
       prise ; phrase pleine, une ligne collante dit pourquoi, et les fiches restent atteignables
       (`aria-disabled`) — les toucher redit la raison (§4.6, §4.10 règle 5).*
 - [x] **⚖ Ranger les affaires closes.** Les fiches de la session 1 restent en tête de liste : les
-      archiver ou les replier par session. Le §4.6 promet que le Contexte ne **juge** rien — mais
+      archiver ou les replier par session. Le §4.6 promet que le CONTEXTE ne **juge** rien — mais
       replier par session ne juge aucun passage, c'est un fait de remise : une phrase au §4.6 d'abord.
       Rejoint *« aucune barrière entre les affaires »* (§3 PASSATION). *Jean 1* — *Fait, à relire par
       l'auteur : la phrase est au §4.6 ; les passages d'une remise close passent sous ceux de la remise
@@ -79,7 +79,7 @@ opposé, et la réplique `fin` devenue une question).*
 **Sur un vrai téléphone** — jamais joué : ni Jean ni Colas n'ont testé le mobile.
 
 - [ ] **La pièce reste à l'étroit** : à 390×800 le panneau entier ne fait que 353 px, la pièce n'y
-      montre que deux lignes, et le panneau redéfile d'un bloc. *Arbitré par l'auteur : le Contexte y
+      montre que deux lignes, et le panneau redéfile d'un bloc. *Arbitré par l'auteur : le CONTEXTE y
       reste entre la conversation et le composeur* — ni retenus repliés, ni pièce en pleine hauteur.
       *Jean 1*
 - [ ] **La bulle ancrée**, à côté d'une zone longue (le texte de la pièce) : couvre-t-elle ce qu'on
@@ -94,13 +94,13 @@ opposé, et la réplique `fin` devenue une question).*
 - [ ] La question se lit-elle **avant** les pièces ? Colas ouvrait les pièces sans avoir lu la question
       placée dessous. *Depuis, la remise porte sa question en un seul message, le bouton de pièces
       après elle (§4.6)* — à confirmer.
-- [ ] La première consigne (« Ouvre ton Contexte », une bulle à côté du bouton de pièces) est-elle
+- [ ] La première consigne (« Ouvre ton CONTEXTE », une bulle à côté du bouton de pièces) est-elle
       encore trop abrupte sans contexte ?
 - [ ] La colonne latérale (≥ 900 px) : ordre de tabulation en L, poids visuel du deux-colonnes.
 - [ ] Ce que personne n'a encore touché : « ⟲ recommencer ». *La croix × est réglée (Jean 3 l'a
-      confirmée) : la fiche dit « oublier », la croix du Contexte perd Échap pièce ouverte — à
+      confirmée) : la fiche dit « oublier », la croix du CONTEXTE perd Échap pièce ouverte — à
       confirmer avec lui.*
-- [ ] Le Contexte qui reste ouvert d'un envoi à l'autre (même remise) : soulage-t-il, ou
+- [ ] Le CONTEXTE qui reste ouvert d'un envoi à l'autre (même remise) : soulage-t-il, ou
       encombre-t-il la lecture de la réplique ? *Jean 3*
 
 **Jean, session 3** — la suite du vrai dossier
@@ -140,7 +140,7 @@ lourd.*
 
 ## 6. Plus tard — après validation de la boucle de base
 
-**Le Contexte élargi**
+**Le CONTEXTE élargi**
 
 - [ ] **RAG** : pouvoir retenir des passages des messages de l'avocat, et des infos qui ne viennent pas
       que de lui.

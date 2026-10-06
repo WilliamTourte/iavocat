@@ -24,13 +24,13 @@
 
 <div class="wrap">
   <!-- Un en-tête nomme la SURFACE (§4.6), jamais les zones qu'elle contient. -->
-  <section class="col fil" aria-labelledby="titreDiscussion">
-    <h2 id="titreDiscussion">Discussion</h2>
+  <section class="col fil" aria-labelledby="titreDISCUSSION">
+    <h2 id="titreDISCUSSION">DISCUSSION</h2>
     <div class="body" id="discussion"></div>
   </section>
   <!-- LA PLACE LATÉRALE (§4.6) — PIÈGE : sa PLACE DANS LE DOCUMENT est toute la
-       mécanique. Deux occupants, un seul à la fois : Contexte et Plaidoirie — la
-       pièce ouverte vit DANS le Contexte (§4.6). En dessous du seuil de
+       mécanique. Deux occupants, un seul à la fois : CONTEXTE et Plaidoirie — la
+       pièce ouverte vit DANS le CONTEXTE (§4.6). En dessous du seuil de
        `.wrap.avecLateral`, elle s'ouvre ENTRE la conversation et le composeur,
        empilée, SANS rien recouvrir. Au-dessus, elle devient une colonne À CÔTÉ
        de la conversation — la question reste sous les yeux même pièce ouverte.
@@ -38,8 +38,8 @@
        ça — et aucune suite ne voit une géométrie. -->
   <!-- Les croix ont un NOM, et Échap s'y lit (§4.10) : `title` n'était qu'une
        description, le lecteur d'écran annonçait « × ». -->
-  <section class="col panneau" id="panContexte" hidden aria-labelledby="titreContexte">
-    <h2><span id="titreContexte" tabindex="-1">Contexte</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer le Contexte (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
+  <section class="col panneau" id="panCONTEXTE" hidden aria-labelledby="titreCONTEXTE">
+    <h2><span id="titreCONTEXTE" tabindex="-1">CONTEXTE</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer le CONTEXTE (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="contexte"></div>
   </section>
   <section class="col panneau" id="panPlaidoirie" hidden aria-labelledby="titrePlaidoirie">
@@ -49,13 +49,13 @@
     <div class="body" id="plaidoirie"></div>
   </section>
   <!-- LA PIÈCE OUVERTE n'a plus de section à elle : elle s'ouvre DANS le
-       Contexte, entre l'index et les passages retenus (§4.6) — `#panPiece` naît
+       CONTEXTE, entre l'index et les passages retenus (§4.6) — `#panPiece` naît
        donc du rendu de `#contexte`, plus d'ici. -->
   <!-- On répond SOUS la question (§4.6). PIÈGE : `#composeur` est le FRÈRE de
        `#discussion`, jamais son enfant — le fil se recale en bas à chaque
        message, la phrase qu'on écrit ne doit pas partir avec lui. Il est aussi
        le frère de `.scene`, et c'est ce qui le garde visible sous un panneau. -->
-  <div id="composeur" role="region" aria-label="Ta réponse"></div>
+  <div id="composeur" role="region" aria-label="RÉPONSE"></div>
   <!-- Sur une ligne : la colonne tient dans la fenêtre (§4.6). La confirmation
        de « recommencer » attend qu'on réponde — jamais un minuteur (§4.10). -->
   <div class="cloture">

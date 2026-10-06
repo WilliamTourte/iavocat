@@ -16,15 +16,15 @@ console.log("\n=== L'index du dossier ===");
   check("une pièce non consultée porte le marqueur ●", contexte(w).includes("● "));
   w.ouvrirPiece(pid);
   check("consultée, elle porte ✓", contexte(w).includes("✓ "));
-  // Une pièce ne porte qu'un nom (§4.6), et l'index du Contexte est désormais
-  // SEUL à le porter — la Discussion ne transmet plus qu'un compte.
+  // Une pièce ne porte qu'un nom (§4.6), et l'index du CONTEXTE est désormais
+  // SEUL à le porter — la DISCUSSION ne transmet plus qu'un compte.
   const puces = [...w.document.querySelectorAll("#contexte .dchip")];
   check("l'index nomme chaque pièce de son titre propre",
     puces.length > 0 && puces.every(c =>
       Object.values(w.JEU.pieces).some(p => c.textContent.replace(/^[●✓]\s*/, "").trim() === p.titre)));
   const attaches = [...w.document.querySelectorAll("#discussion .attach")];
-  check("le message ne nomme plus les pièces, un compte renvoie au Contexte",
-    attaches.length > 0 && attaches.every(b => /dans ton Contexte/.test(b.textContent)
+  check("le message ne nomme plus les pièces, un compte renvoie au CONTEXTE",
+    attaches.length > 0 && attaches.every(b => /dans ton CONTEXTE/.test(b.textContent)
       && !puces.some(c => b.textContent.includes(c.textContent.replace(/^[●✓]\s*/, "").trim()))));
   /* Le bouton compte COMME L'INDEX (§4.6) : pièces et règles à part. Le chiffre
      se dérive de la remise ; « 5 pièces » pour trois pièces et deux règles
@@ -70,7 +70,7 @@ console.log("\n=== Surligner : privé, gratuit, illimité ===");
   w.surligner(pid, eid);
   check("re-cliquer dans la pièce ne l'oublie plus", w.S.retenus.includes(tous[0]));
   w.oublier(pid, eid);
-  check("oublier — le geste du Contexte — le retire", !w.S.retenus.includes(tous[0]));
+  check("oublier — le geste du CONTEXTE — le retire", !w.S.retenus.includes(tous[0]));
   check("rien n'a été transmis dans le canal", w.S.fil.length === avant);
   check("le plan de plaidoirie reste vide", w.S.plaidoirie.length === 0);
 }

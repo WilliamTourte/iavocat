@@ -131,7 +131,7 @@ async function main() {
   /* ---- Le portable du playtest : 1280×800 (§4.6) ---- une partie neuve, dans
      un contexte neuf — tutoriel compris, puisque c'est lui qui prend la place.
      AU-DESSUS du seuil de `.wrap.avecLateral` (900px) : les panneaux — et la
-     pièce, DANS le Contexte — s'y ouvrent dans la colonne LATÉRALE, à côté de la conversation —
+     pièce, DANS le CONTEXTE — s'y ouvrent dans la colonne LATÉRALE, à côté de la conversation —
      c'est la capture "piece" qui le montre, question et composeur lisibles en
      même temps. La colonne doit tenir dans la fenêtre : on le DIT, on ne
      l'asserte pas. */
@@ -163,7 +163,7 @@ async function main() {
   };
   console.log("  " + await capturer2("depart"));
   /* De VRAIS clics, pas des appels directs : c'est ce qui éprouve le bouton
-     agrégé du message et sa porte vers le Contexte (§4.6), et la bavarde du
+     agrégé du message et sa porte vers le CONTEXTE (§4.6), et la bavarde du
      tutoriel qui se réduit en icône entre les deux (§4.8) — rien de tout ça
      n'est visible d'une suite. */
   await p2.click("#discussion .attach");
@@ -177,7 +177,7 @@ async function main() {
     "__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend).termes[0]");
   await p2.click(`#panPiece [data-f="e:${veut1280}"]`);
   console.log("  " + await capturer2("piece-retenu"));
-  /* Et on PREND le passage sans rien refermer : la pièce vit dans le Contexte,
+  /* Et on PREND le passage sans rien refermer : la pièce vit dans le CONTEXTE,
      le passage retenu paraît juste dessous (§4.6). */
   await p2.click(`#contexte [data-f="c:${veut1280}"]`);
   console.log("  " + await capturer2("contexte"));
@@ -202,33 +202,33 @@ async function main() {
   await p2.evaluate("rendreTout()");
   console.log("  " + await capturer2("tuto-reduit"));
 
-  /* LA COMPARAISON EN COURS, Contexte ouvert (§4.6) : la réponse au plus long —
-     deux passages et l'article — ne doit pas écraser le Contexte. Retour de
+  /* LA COMPARAISON EN COURS, CONTEXTE ouvert (§4.6) : la réponse au plus long —
+     deux passages et l'article — ne doit pas écraser le CONTEXTE. Retour de
      playtest (Jean) : à 1280×800, la pièce y était coupée. On DIT les hauteurs,
-     on ne les asserte pas. Et le Contexte resté ouvert entre deux envois (§4.6),
+     on ne les asserte pas. Et le CONTEXTE resté ouvert entre deux envois (§4.6),
      on le dit aussi. */
   const resteOuvert = await p2.evaluate(`(() => {
     const H = __H, L = () => H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend);
-    // PIÈGE : la porte de la barre est une BASCULE — sur un Contexte déjà
+    // PIÈGE : la porte de la barre est une BASCULE — sur un CONTEXTE déjà
     // ouvert, elle le refermerait. Et la voix ouvre POUR ÉCRIRE : la phrase
     // pleine, il se refermerait de lui-même. On consulte donc, par la barre.
     const consulter = () => { if (panneau !== "contexte") basculerPanneau("contexte"); };
     consulter();
     H.composerLien(window, L());
-    const ouvert = !document.getElementById("panContexte").hidden;
+    const ouvert = !document.getElementById("panCONTEXTE").hidden;
     H.composerLien(window, L());
     H.lireLeTexte(window, L().forme);
     H.composerLien(window, L(), { garder: true });
     consulter();
     return ouvert;
   })()`);
-  console.log(`      après un envoi, le Contexte ${resteOuvert ? "reste ouvert" : "S'EST REFERMÉ"}`);
+  console.log(`      après un envoi, le CONTEXTE ${resteOuvert ? "reste ouvert" : "S'EST REFERMÉ"}`);
   console.log("  " + await capturer2("comparaison"));
   const hauteurs = await p2.evaluate(`(() => {
     const h = id => Math.round(document.getElementById(id).getBoundingClientRect().height);
-    return { contexte: h("panContexte"), composeur: h("composeur") };
+    return { contexte: h("panCONTEXTE"), composeur: h("composeur") };
   })()`);
-  console.log(`      Contexte ${hauteurs.contexte}px, réponse ${hauteurs.composeur}px (fenêtre 800px)`);
+  console.log(`      CONTEXTE ${hauteurs.contexte}px, réponse ${hauteurs.composeur}px (fenêtre 800px)`);
 
   /* ---- EN DESSOUS DU SEUIL : 390×800 (§4.6) ---- aucune des deux largeurs
      ci-dessus ne descend sous 900px ; sans ce troisième contexte, le repli
