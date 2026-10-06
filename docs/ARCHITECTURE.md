@@ -97,7 +97,7 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
                attentes:[ { question?, attend:"tag", apres?:{ qui, replique } } ] } ],
   repetition: { intro, affirmations:[{court, texte, repond?:["tag"], oppose?}], fin },
   avocat: { rep_vice, rep_faux, rep_inutile:[…], rep_sans_rapport:[…], rep_hors_sujet:[…],
-            rep_deux_dossiers, deja, rep_a_cote },
+            rep_relation_fausse:[…], rep_deux_dossiers, deja, rep_a_cote },
   directives: […], avis_exploitation,                       // écrits, non lus par le jeu — voir §5
   fins: {1:{…},2:{…},3:{…}}
 }
@@ -105,15 +105,26 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
 
 - **Marqueurs `{{eid}}`** : pas d'appariement de sous-chaînes, donc pas de marquage qui glisse quand on
   corrige une virgule. `nom` absent → le `texte` en tient lieu.
+- **Le bloc `type:"relation"`** (passe G, §4.5) : deux termes posés, il offre **les deux relations de
+  leur dimension** — pour chaque côté, égalité puis différence ou ordre, la **première forme
+  déclarée** d'arité 2 dont le premier slot nomme la dimension — et la `valeur` posée est la forme
+  **choisie**. `reduire` la prend telle quelle et range les termes (`ordonner`) ; `rendre` écrit son
+  `patron`. Deux dimensions différentes n'ont rien à offrir : hors session 1, la juxtaposition se
+  pose d'elle-même (`auto`), et se retire avec le terme qui l'a appelée ; en session 1, le second
+  terme est refusé, comme avant. Le même passage deux fois aussi.
 - **Attributs d'un bloc** : `imbrique` (la liaison **emboîte** l'acquis comme terme unique) · `deduit`
-  (le bloc **clôt une paire** : forme déduite, termes rangés dans l'ordre canonique) · `piece` (offert
+  (le bloc **clôt une paire** : forme déduite, termes rangés dans l'ordre canonique — la relation
+  **rédigée par le moteur**, d'avant la passe G ; on ne retire pas une capacité que le contenu du
+  jour n'emploie plus) · `piece` (offert
   une fois la pièce livrée — **sur les liaisons *et* sur les termes**, §4.5 ; une liaison
   `imbrique`, une fois **retenu** le passage d'article de sa pièce, passe F) · `libelle` (le texte du
   bouton, quand le composeur en fait un ; une liaison-article n'en a plus, sa fiche porte le `nom`
   de son passage) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa
   pièce).
 - **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`, `"juxtaposition"`) · `sens` (`"asc"` par
-  défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8).
+  défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8) ·
+  `libelle`, le bouton qui la **choisit** au composeur (*« précède »*, *« une seule et même
+  personne »*) ; absent, le `patron` avec ses deux termes en points de suspension.
   **L'ordre de déclaration est signifiant** : `deduire` rend la première forme qui convient. C'est
   par là qu'une dimension obtient sa **langue** : `identite_personne` (slots `qui`, *« une seule et
   même personne »*) déclarée **avant** `identite_oui` (slots : les cinq, *« la même chose »*), et
@@ -148,6 +159,10 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   **Les règles** la refusent en session 1 (`poserBloc`, `enCalibration`), et l'avocat y répond par
   `rep_sans_rapport`, nue comme sous un article. Elle n'entre jamais dans la boucle de `deduire` :
   déclarée plus haut, elle passerait pour une *différence* entre deux passages de même dimension.
+- **Une relation fausse** (passe G) : la `forme` d'une comparaison n'est pas celle que donnent les
+  valeurs (`deduire`). Elle part ; l'avocat y répond par `rep_relation_fausse`, une escalade comme
+  les autres, son compteur remis à zéro à chaque remise (§4.11). Aucun lien ne la porte — un lien
+  dont la relation serait fausse ne se formerait jamais, et le diagnostic le dit (§15).
 - **Une affirmation trie** (§4.6) : `repond` liste les tags des liens qui la réfutent — opposer une
   phrase dont le lien porte l'un d'eux la met en face, avec la réplique `oppose` (à défaut, `deja`) ;
   une autre reçoit `rep_a_cote` et reste où elle était. **Sans `repond`, l'affirmation prend tout**
@@ -201,9 +216,12 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 
 - **Accumuler, pas écraser** : `reduire(ch)` empile les termes en retenant la forme courante ; à un bloc
   `imbrique`, l'acquis devient le **terme unique** de la nouvelle forme.
-- **La déduction** tient sur `comparer` (numérique quand les deux valeurs le sont, `hh:mm` compris ;
-  lexicographique sinon — c'est par là qu'une date ISO se trie, §11), `deduire` (la forme, ou — sur
-  dimensions différentes — la juxtaposition si le contenu en déclare une, sinon `null`, §4.11) et `ordonner`.
+- **La vérification** tient sur `comparer` (numérique quand les deux valeurs le sont, `hh:mm` compris ;
+  lexicographique sinon — c'est par là qu'une date ISO se trie, §11), `deduire` (la relation
+  **vraie**, ou — sur dimensions différentes — la juxtaposition si le contenu en déclare une, sinon
+  `null`, §4.11), `ordonner`, `relationsDe` (les deux relations qu'on offre pour une dimension) et
+  `fausse` (une comparaison, emboîtée ou non, dont la forme n'est pas la vraie). Depuis la passe G,
+  `deduire` ne rédige plus : il sert d'**oracle** — le joueur choisit, le moteur vérifie (§4.5).
 - **Rétrocompatibilité** : sans `deduit`, `deduction` ni `patron`, `reduire` et `rendre` se comportent
   comme un automate à liaisons explicites — le banc d'essai l'exerce.
 - **`valider(r)` descend dans les termes emboîtés**, sans quoi l'article obligatoire ouvrirait un trou,
@@ -238,13 +256,14 @@ du gardien tienne l'écart (§16).
 
 **Ce que le diagnostic contrôle** : la règle de surlignage, le nom d'empan, le doublon banal dans les
 deux sens, la grammaire (impasse, clôture sans forme, forme indicible, lien insensé, emboîtement dans
-le vide, forme ordonnée sans `sens`, dimension sans forme déductible), les articles — **un passage
+le vide, forme ordonnée sans `sens`, dimension sans forme déductible, **dimension qui n'offre qu'une
+relation**, **lien dont la relation est fausse**), les articles — **un passage
 d'article par règle, et aucun ailleurs ; une liaison dont l'article n'a pas de passage ne
 s'offrirait jamais** (passe F) —, le vice, les sessions — plus l'article livré **trop tard**, qui
 rend une session inclôturable.
 
-- **« Forme indicible »** : une forme existe de **deux façons** — déclarée par une liaison, ou déduite
-  par un bloc `deduit` ; celle-là n'est nommée par aucun bloc.
+- **« Forme indicible »** : une forme existe de **trois façons** — déclarée par une liaison, choisie à
+  un bloc `relation`, ou déduite par un bloc `deduit` ; celle-là n'est nommée par aucun bloc.
 - **L'ombrage n'est délibérément pas signalé** : `deduire` rend la **première** forme qui convient, et
   le signaler reviendrait à interdire le mécanisme qui tranche les ambiguïtés.
 - **Point ouvert** : la frise édite `rep_inutile` et `rep_sans_rapport`, **pas `rep_hors_sujet`**.
@@ -253,16 +272,16 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **587 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **610 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
 | `test_o5.js` (44) | l'index du dossier, **et le bouton de pièces qui compte comme lui** ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (40) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (359) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel — **retenir aux deux gestes** (§4.8) —, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le CONTEXTE qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, et **jamais purgé entre deux remises** (§4.6) ; **l'article qui se retient, puis se prend par sa fiche** (§4.5, passe F) ; **la DISCUSSION qui s'agrandit**, CONTEXTE ouvert (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
+| `test_parcours.js` (379) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel — **retenir aux deux gestes** (§4.8) —, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le CONTEXTE qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, et **jamais purgé entre deux remises** (§4.6) ; **l'article qui se retient, puis se prend par sa fiche** (§4.5, passe F) ; **la relation que le joueur choisit, et la fausse que l'avocat refuse** (§4.5, passe G) ; **la DISCUSSION qui s'agrandit**, CONTEXTE ouvert (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
-| `smoke_atelier.js` (106) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
+| `smoke_atelier.js` (109) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
 - **Le contrat de lecture : `w.R.x(w.S)`** — une suite *lit* les règles ; elle *agit* par les **gestes**
   de la fenêtre, parce qu'eux redessinent.
@@ -349,9 +368,9 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du CONTEXTE ; `articleAttendu`, la phrase qui attend un article | `rendreVoix`, `ouvrirCONTEXTE`, `suivrePhrase` (en tête de `rendreTout`), `majLateral` |
 | ouvrir et fermer une surface de côté ; **agrandir la DISCUSSION**, CONTEXTE ouvert (§4.6) | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `clavier` (Échap) ; `enteteDISCUSSION`, `basculerDISCUSSION`, `discussionAgrandie` (dans `majLateral`) |
 | **le clavier et la voix d'annonce** (§4.10) — le focus qui survit, la pièce DANS le CONTEXTE (§4.6), ce qui s'annonce | `fermerPiece`, seule règle que l'écran appelle en refermant — par la croix, ou par `suivrePhrase` quand le CONTEXTE quitte l'écran | `clavier`, `memoFocus` → `rendreFocus` (par la clé `data-f`), `ouvrirPiece`/`fermerPiece`/`suivrePhrase` (écran) — `modal`/`inert` sur `.wrap` ne servent plus que `finir`, écran terminal (§4.9 règle 5), `annoncer` → `#annonce` |
-| **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
+| **poser un bloc** ; la clôture qui n'ajoute rien ; **choisir la relation** (passe G) | `poserBloc` (une relation par son rang parmi `relationsOffertes` ; la juxtaposition `auto`), `retirerBloc`, `viderCompo`, `estSecondTerme`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` ; au moteur, `relationsDe`, `fausse` | `texteCompoPartiel`, `renderCompo` (les deux relations, `libelleRelation`), `voirRelations` — la clôture n'est PAS un bouton |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
-| **envoyer** — le seul geste ; la remise du tutoriel servie **dans l'ordre** (§3) | `envoyerCompo` → `clore` → `envoyer` (`horsOrdre` d'abord) → `reponseAvocat` → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPLAIDOIRIE` |
+| **envoyer** — le seul geste ; la remise du tutoriel servie **dans l'ordre** (§3) | `envoyerCompo` → `clore` → `envoyer` (`horsOrdre` d'abord) → `reponseAvocat` (la relation fausse : `rep_relation_fausse`, `S.fausses`) → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPLAIDOIRIE` |
 | ce qui entre à la PLAIDOIRIE | `estMoyen` | `renderPLAIDOIRIE`, `moyensRetenus` — **panneau**, ouvert par sa porte (§4.9) |
 | clôturer, répétition, fin ; **opposer** un moyen à une affirmation | `instructionComplete`, `cloturer`, `verserContre` (pose `contre`, même sur une phrase déjà versée — **si l'affirmation la prend**, `repondA`), `avancerRepetition`, `finir` | `majCloture`, le présentoir dans `renderDISCUSSION` (les **moyens** seuls, l'affirmation redite en tête, *« déplacer ici »*), `finir` (modale) |
 | le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoTermes`, `tutoRetenir` (retenir, aux deux gestes), `tutoArticle`, `tutoCleArticle` (le passage de l'article : son texte, puis sa fiche), `tutoEtape`, `majTutoriel` → `voirCibleTuto`, `placerTuto` — **bulle ancrée au halo**, en surimpression, premier enfant de `<body>` ; une étape vise une zone (`ou`, littéral) et, au besoin, un élément précis dedans (`f`, une clé `data-f`) |

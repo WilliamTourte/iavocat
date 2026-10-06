@@ -7,8 +7,10 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
   const estFinal = e => G.finaux.includes(e);
   const offerts = e => G.blocs.filter(b => b.de === e);
 
-  /* ---- LA DÉDUCTION (§4.5) ---- la relation se calcule de la dimension et des
-     valeurs : le joueur désigne, il ne déclare plus. */
+  /* ---- LA VÉRIFICATION (§4.5) ---- la relation VRAIE se calcule de la dimension
+     et des valeurs. Depuis la passe G, le joueur la déclare et le moteur la
+     vérifie : `deduire` est l'oracle, il ne rédige plus — sauf pour un contenu
+     d'avant, dont le second terme porte encore `deduit` (§11). */
   const enNombre = v => {
     const s = String(v == null ? "" : v).trim();
     if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
@@ -41,6 +43,27 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     }
     return null;
   }
+  /* LES DEUX RELATIONS D'UNE DIMENSION (passe G) : de chaque côté — égalité, puis
+     différence ou ordre —, la PREMIÈRE forme déclarée qui la nomme, celle que
+     `deduire` rendrait. La vraie est donc toujours l'une des deux. */
+  const nomme = (f, d) => !!f.deduction && !estJuxta(f) && (f.arite || 2) === 2 && !!f.slots
+    && (f.slots[0] === "*" || (f.slots[0] || []).includes(d));
+  function relationsDe(d) {
+    const fs = Object.entries(G.formes);
+    const egal = fs.find(([, f]) => nomme(f, d) && f.deduction === "egalite");
+    const autre = fs.find(([, f]) => nomme(f, d) && f.deduction !== "egalite");
+    return [egal, autre].filter(Boolean).map(([nom]) => nom);
+  }
+  /* UNE RELATION FAUSSE : une comparaison, emboîtée ou non, dont la forme n'est
+     pas celle que donnent les valeurs. Elle part, et l'avocat la refuse (§4.5). */
+  function fausse(r) {
+    if (!r || typeof r !== "object") return false;
+    const f = G.formes[r.forme] || {};
+    const t = r.termes || [];
+    if (f.deduction && !estJuxta(f) && (f.arite || 2) === 2 && t.length === 2
+        && t.every(x => typeof x === "string") && deduire(t[0], t[1]) !== r.forme) return true;
+    return t.some(x => typeof x === "object" && fausse(x));
+  }
   function ordonner(forme, termes) {
     const f = G.formes[forme];
     if (!f || !f.ordonne || termes.length !== 2) return termes;
@@ -52,16 +75,17 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     return inverser ? [y, x] : [x, y];
   }
 
-  // Une chaîne de blocs → sa forme réduite. `deduit` fait DÉDUIRE la forme des
-  // deux termes ; `imbrique` EMBOÎTE ce qui précède. Sans l'un ni l'autre : la
+  // Une chaîne de blocs → sa forme réduite. Un bloc `relation` pose la forme que
+  // le joueur a CHOISIE (passe G) ; `deduit` la fait DÉDUIRE des deux termes (un
+  // contenu d'avant) ; `imbrique` EMBOÎTE ce qui précède. Sans aucun : la
   // dernière forme gagne, termes à plat (§11).
   function reduire(ch) {
     let termes = [], forme = null;
     for (const p of ch) {
       const b = p.bloc;
       if (b.type === "terme") termes.push(p.valeur);
-      if (b.deduit) {
-        forme = termes.length === 2 ? deduire(termes[0], termes[1]) : null;
+      if (b.deduit || b.type === "relation") {
+        forme = termes.length === 2 ? (b.deduit ? deduire(termes[0], termes[1]) : p.valeur || null) : null;
         if (forme) termes = ordonner(forme, termes);
       } else if (b.forme) {
         if (b.imbrique) termes = [{ forme, termes }];
@@ -119,8 +143,8 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
         termes.push(p.valeur);
         bouts.push(b.source === "note" ? b.texte : nomDe(p.valeur));
       } else if (b.texte) bouts.push(b.texte);
-      if (b.deduit) {
-        forme = termes.length === 2 ? deduire(termes[0], termes[1]) : null;
+      if (b.deduit || b.type === "relation") {
+        forme = termes.length === 2 ? (b.deduit ? deduire(termes[0], termes[1]) : p.valeur || null) : null;
         const f = forme && G.formes[forme];
         if (f && f.patron) {
           const ord = ordonner(forme, termes);
@@ -147,7 +171,7 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     return out;
   }
   return { C, estFinal, offerts, reduire, dimDe, valider, memeTerme, memeRed, lienDe, rendre,
-           squelettes, comparer, deduire, ordonner };
+           squelettes, comparer, deduire, ordonner, relationsDe, fausse };
 }
 
 const _projections = (function () {

@@ -1,7 +1,7 @@
 /* ATELIER — L'ONGLET GRAMMAIRE : le geste de composition, pour le SENTIR.
    Branché sur LE CONTENU COURANT (§14) : il le lit, ne l'écrit jamais. Sous
    jsdom, le moteur est absent : on affiche un encart. */
-let GRAM={ squel:0, vals:{}, notes:[], _m:null };
+let GRAM={ squel:0, vals:{}, rel:null, notes:[], _m:null };
 function moteurGram(){
   const m=MG();
   if(!m) return null;
@@ -15,19 +15,39 @@ function moteurGram(){
   return GRAM._m;
 }
 function gramTermes(sq){ return sq.filter(b=>b.type==="terme"); }
-function chaineDe(sq,valeurs){
+/* LA RELATION SE CHOISIT (passe G, §4.5) : un bloc `relation` prend l'une des
+   deux relations de la dimension des deux champs qui le précèdent — ou, sur
+   deux dimensions, la juxtaposition, qui se pose d'elle-même. Le moteur le dit
+   (`relationsDe`), l'onglet ne le recalcule pas (§12). */
+function relationsPour(m,a,b){
+  if(typeof a!=="string" || typeof b!=="string" || !m.C[a] || !m.C[b]) return [];
+  if(m.dimDe(a)===m.dimDe(b)) return m.relationsDe(m.dimDe(a));
+  const j=Object.entries((CONTENU.grammaire||{}).formes||{}).find(([,f])=>f.deduction==="juxtaposition");
+  return j ? [j[0]] : [];
+}
+function chaineDe(sq,valeurs,rel){
   let ti=0;
-  return sq.map(bloc => bloc.type==="terme" ? {bloc, valeur:valeurs[ti++]} : {bloc, valeur:null});
+  return sq.map(bloc => bloc.type==="terme" ? {bloc, valeur:valeurs[ti++]}
+                      : {bloc, valeur: bloc.type==="relation" ? rel : null});
+}
+function gramRelations(sq,valeurs){
+  const m=moteurGram(), i=sq.findIndex(b=>b.type==="relation");
+  if(!m || i<0) return [];
+  const avant=gramTermes(sq.slice(0,i)).length;
+  return relationsPour(m, valeurs[avant-2], valeurs[avant-1]);
 }
 function gramChaine(sq){
-  return chaineDe(sq, gramTermes(sq).map((bloc,ti)=>{
+  const valeurs=gramTermes(sq).map((bloc,ti)=>{
     const v=GRAM.vals[ti];
     if(v==null) return undefined;
     return bloc.source==="note" ? (GRAM.notes[v]||{}).red : v;
-  }));
+  });
+  const rels=gramRelations(sq,valeurs);
+  return chaineDe(sq, valeurs, rels.includes(GRAM.rel) ? GRAM.rel : rels[0]);
 }
 function gramSetVal(ti,val){ GRAM.vals[ti]=(val===""?null:val); renderGrammaire(); }
-function gramChoixSquel(i){ GRAM.squel=+i; GRAM.vals={}; renderGrammaire(); }
+function gramSetRel(val){ GRAM.rel=val||null; renderGrammaire(); }
+function gramChoixSquel(i){ GRAM.squel=+i; GRAM.vals={}; GRAM.rel=null; renderGrammaire(); }
 function gramGarderNote(){
   const m=moteurGram(); if(!m) return;
   const sq=GRAM._sq[GRAM.squel], ch=gramChaine(sq);
@@ -49,17 +69,23 @@ function gramDensite(m){
   for(const s of GRAM._sq){
     const sources=gramTermes(s).map(b=>b.source==="note"?(notes.length?notes:[null]):CHAMPS.map(c=>c.id));
     const combos=sources.reduce((a,src)=>a.flatMap(p=>src.map(v=>[...p,v])),[[]]);
+    const choix=s.some(b=>b.type==="relation");
     for(const c of combos){
       if(c.some(v=>v==null)) continue;
-      const r=m.reduire(chaineDe(s,c));
-      total++;
-      if(!m.valider(r)){ senses++; if(m.lienDe(r)) avecLien++; }
+      // Chaque relation offerte est une phrase que le joueur peut former, la fausse comprise.
+      for(const rel of (choix ? gramRelations(s,c) : [null])){
+        const r=m.reduire(chaineDe(s,c,rel));
+        total++;
+        if(!m.valider(r)){ senses++; if(m.lienDe(r)) avecLien++; }
+      }
     }
   }
   return {total,senses,avecLien};
 }
 const formeSquelette = s =>
-  s.map(b=>b.forme).filter(Boolean).pop() || (s.some(b=>b.deduit) ? "déduite des valeurs" : "—");
+  s.map(b=>b.forme).filter(Boolean).pop()
+  || (s.some(b=>b.type==="relation") ? "choisie par le joueur" : s.some(b=>b.deduit) ? "déduite des valeurs" : "—");
+const lblBloc = b => b.type==="terme" ? null : b.type==="relation" ? "‹relation›" : b.texte;
 function renderGrammaire(){
   const pane=$("grampane");
   const m=moteurGram();
@@ -78,7 +104,7 @@ function renderGrammaire(){
   let compo=`<div class="gcompose">
     <select onchange="gramChoixSquel(this.value)">
       ${GRAM._sq.map((s,i)=>{
-        const lbl=s.map(b=>b.type==="terme"?(b.source==="note"?"«note»":"___"):b.texte).join(" ");
+        const lbl=s.map(b=>b.type==="terme"?(b.source==="note"?"«note»":"___"):lblBloc(b)).join(" ");
         return `<option value="${i}" ${i===GRAM.squel?'selected':''}>${escapeH(lbl)}</option>`;
       }).join("")}
     </select>`;
@@ -95,11 +121,19 @@ function renderGrammaire(){
       </select>`;
     }
   });
+  if(sq.some(b=>b.type==="relation")){
+    const ch0=gramChaine(sq), choisie=(ch0.find(p=>p.bloc.type==="relation")||{}).valeur;
+    const rels=gramRelations(sq, ch0.filter(p=>p.bloc.type==="terme").map(p=>p.valeur));
+    compo+=` <select onchange="gramSetRel(this.value)" ${rels.length?"":"disabled"}>
+        ${rels.length ? rels.map(f=>`<option value="${escapeAttr(f)}" ${f===choisie?'selected':''}>${escapeH(((CONTENU.grammaire.formes||{})[f]||{}).libelle||f)}</option>`).join("")
+                      : `<option>— relation —</option>`}
+      </select>`;
+  }
   compo+=`</div>`;
 
   // la phrase + le verdict
   const ch=gramChaine(sq);
-  const complet=!ch.some(p=>p.bloc.type==="terme"&&p.valeur===undefined);
+  const complet=!ch.some(p=>(p.bloc.type==="terme"||p.bloc.type==="relation")&&p.valeur==null);
   let phrase, verdict="";
   if(!complet){
     phrase=`<span class="glose">Remplis les trous pour composer une phrase…</span>`;
@@ -109,6 +143,7 @@ function renderGrammaire(){
     const pills=[];
     if(raison) pills.push(`<span class="gpill nonsense">sans rapport — ${escapeH(raison)}</span>`);
     else pills.push(`<span class="gpill sense">sensé</span>`);
+    if(!raison && m.fausse(red)) pills.push(`<span class="gpill nonsense">relation fausse — l'avocat la refusera (§4.5)</span>`);
     if(!raison){
       if(lien){
         pills.push(`<span class="gpill lien">lien reconnu du contenu</span>`);
@@ -134,7 +169,7 @@ function renderGrammaire(){
   const d=gramDensite(m);
   const ref=`<h3>Les ${GRAM._sq.length} squelettes de phrase</h3>
     <div class="gsquel">${GRAM._sq.map(s=>
-      "· "+s.map(b=>b.type==="terme"?(b.source==="note"?"<b>«note»</b>":"<b>___</b>"):escapeH(b.texte)).join(" ")
+      "· "+s.map(b=>b.type==="terme"?(b.source==="note"?"<b>«note»</b>":"<b>___</b>"):escapeH(lblBloc(b))).join(" ")
       +'  → <span class="f">'+escapeH(formeSquelette(s))+"</span>").join("<br>")}</div>
     <h3>Densité — la marge de bruit</h3>
     <div class="gstat"><b>${d.total}</b> phrases légales · <b>${d.senses}</b> sensées

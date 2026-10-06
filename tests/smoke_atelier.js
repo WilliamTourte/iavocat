@@ -207,12 +207,30 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
 }
 {
   const w = neuf();
-  const t = (w.CONTENU.grammaire.blocs || []).find(b => b.type === "terme" && b.deduit);
+  // Le SECOND terme d'une paire : celui qui mène au choix de la relation (passe G),
+  // ou qui la fait déduire. PIÈGE PAYÉ : cherché par `deduit` seul, il manquait
+  // depuis la passe G, et ce contrôle passait par le vide.
+  const G = w.CONTENU.grammaire.blocs || [];
+  const t = G.find(b => b.type === "terme" && (b.deduit || G.some(x => x.de === b.vers && x.type === "relation")));
+  check("la grammaire livrée a un second terme de paire", !!t);
   if (t) {
     t.piece = w.CONTENU.remises[w.CONTENU.remises.length - 1].pieces[0];
     check("un bloc de terme livré trop tard rend une attente inservable",
       msgs(w).includes("n'est pas encore livré"));
   }
+}
+{
+  /* LA RELATION SE CHOISIT ENTRE DEUX (passe G) : un lien dont la relation est
+     fausse sur les valeurs, et une dimension qui n'en offrirait qu'une. */
+  const w = neuf();
+  const L = w.CONTENU.liens.find(x => typeof (x.termes || [])[0] === "object");
+  const sous = L.termes[0], dim = w.MG().dimDe(sous.termes[0]);
+  sous.forme = w.MG().relationsDe(dim).find(f => f !== sous.forme);
+  check("un lien dont la relation est fausse sur les valeurs est une erreur", msgs(w).includes("relation fausse"));
+  const w2 = neuf(), F2 = w2.CONTENU.grammaire.formes;
+  const autre = w2.MG().relationsDe(dim).find(f => F2[f].deduction !== "egalite");
+  F2[autre].slots = [["ailleurs"], ["ailleurs"]];
+  check("une dimension qui n'offre qu'une relation est signalée", msgs(w2).includes(`« ${dim} » n'offre qu'une relation`));
 }
 {
   const w = neuf();

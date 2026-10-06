@@ -231,7 +231,7 @@ la liste : document d'abord (§4.2, §4.4, §4.5, §4.7, §4.8, §4.11, §11, §
 les deux de la dimension, l'ordre par valeur gardé, la relation fausse refusée par l'avocat partout.
 Le reste du document — §4.2, §4.4, §4.7, §4.8, §4.11, §11, §14 — viendra avec elle.*
 
-- [ ] **Deux passages posés, le joueur choisit ce qui les lie**, entre **les deux relations de leur
+- [x] **Deux passages posés, le joueur choisit ce qui les lie**, entre **les deux relations de leur
       dimension** — celles que le contenu déclare déjà : *une seule et même personne / pas la même
       personne*, *coïncident / précède*, *au même endroit / pas au même endroit*, *désignent la même
       chose / pas la même chose*, *sont égaux / d'un tout autre ordre*. Aujourd'hui le moteur l'écrit
@@ -271,6 +271,13 @@ Le reste du document — §4.2, §4.4, §4.7, §4.8, §4.11, §11, §14 — vien
   - **L'atelier et les suites** : les reflets de la grammaire, la frise et le diagnostic (§15) ; le
     harnais choisit la relation par la porte du joueur (R13) ; un contrôle neuf, *une relation fausse
     part, l'avocat la refuse, aucun drapeau ne se lève* — vu tomber, comme chaque contrôle neuf.
+  - *Fait le 6 octobre, document et code dans la foulée — **à relire par l'auteur*** (§4.1, §4.2,
+    §4.4, §4.6, §4.7, §4.8, §4.11, §11, §14, §15). Arbitrages pris avec l'auteur : le pressentiment
+    **au choix vrai** ; des boutons qui portent **la relation seule** (`libelle` sur la forme) ; le
+    CONTEXTE qui **reste** pendant le choix ; l'ordre par valeur gardé. Deux dimensions : la
+    juxtaposition se pose d'elle-même (`auto`). Réplique neuve à relire : `rep_relation_fausse`
+    (*« Non. Ce n'est pas ce que disent ces deux passages — relis-les. »*). **À voir en jeu** : les
+    deux relations naissent au bas du composeur plafonné — `voirRelations` les amène dans le champ.
 
 ## 1. Passe contenu — `app/content.js`, sans code
 

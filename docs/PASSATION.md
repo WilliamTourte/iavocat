@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 6 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 587 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 610 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -338,6 +338,22 @@ composeur sans article, la voix qui mène au CONTEXTE, le tutoriel qui montre la
 la fiche ; l'atelier suit (diagnostic, inspecteur, graphe, pas-à-pas). `npm run vue` capture
 l'article à retenir et à prendre.
 
+**Le 6 octobre, la passe G : le joueur choisit la relation** (§4.5, déjà relu ; le reste écrit et
+codé dans la foulée — **à relire par l'auteur**). Deux passages de même dimension posés, le composeur
+offre **les deux relations de leur dimension** — un bloc `relation` dans la grammaire, entre le
+second terme et l'article, et un `libelle` sur chaque forme (*« précède »*, *« une seule et même
+personne »*) ; le moteur ne rédige plus, il **vérifie** (`deduire` devient l'oracle, `fausse` le
+juge). Une **relation fausse part**, et Maître Auber la refuse par sa propre escalade
+(`rep_relation_fausse`), session 1 comprise ; elle ne sert rien et ne lève aucun drapeau. Trois
+arbitrages de l'auteur : **`vice_pressenti` se lève au choix de la vraie relation**, pas à la pose ;
+les boutons portent **la relation seule** ; le CONTEXTE ouvert pour écrire **reste** pendant le choix,
+l'article suivant s'y prenant. Deux dimensions n'ont rien à offrir : hors session 1, la juxtaposition
+**se pose d'elle-même** et *« ← retirer »* l'emporte avec son terme. Le tutoriel gagne *« Choisis ce
+qui les lie »* — le halo entoure les deux relations, jamais la bonne. L'atelier suit : le diagnostic
+(lien dont la relation est fausse, dimension qui n'offre qu'une relation), l'onglet Grammaire (la
+relation au choix, la fausse comptée dans la marge). Mesuré à `npm run vue` : les deux boutons
+naissaient sous le pli du composeur plafonné — `voirRelations` les amène dans le champ, une fois.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -505,8 +521,17 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   déplacer cette réplique ferait paraître la réponse sans question, et aucune suite ne le verrait.
 - **La clôture implicite compte les *liaisons* offertes**, les termes exclus : ajouter une liaison à la
   grammaire change le nombre de clics ailleurs, ajouter un terme non.
-- **Poser un bloc ne clôt plus rien** : le refus de catégorie tombe au clic qui **déduit** une paire ou
-  **achève** la phrase. Une composition en cours n'est jamais « fausse ».
+- **Poser un bloc ne clôt plus rien** : le refus de catégorie tombe au **second terme** d'une paire
+  (session 1, ou rien à offrir) ou à la phrase **achevée**. Une composition en cours n'est jamais
+  « refusée » — et une relation fausse ne l'est pas non plus : elle part (§4.5).
+- **La juxtaposition posée d'elle-même porte `auto`** (passe G) : `retirerBloc` l'emporte avec le
+  terme qui l'a appelée. Sans ce drapeau, *« ← retirer »* laissait une paire au choix impossible.
+- **`deduire` ne rédige plus, il JUGE** (passe G) : la relation vraie, à laquelle on compare celle du
+  joueur (`fausse`), et le rang des deux qu'on offre (`relationsDe` suit le même ordre de
+  déclaration). Changer l'un sans l'autre ferait offrir deux relations dont aucune n'est vraie.
+- **Un contrôle de texte attrape ses voisins** : `/les lie/` trouvait *« sur les **lie**ux »* dans la
+  question rappelée, et le contrôle de la voix restait vert sans elle — vu à la mutation. Viser
+  l'élément (`#composeur span.aide`), pas tout le composeur.
 - **`R.clore` ne redessine pas, donc ne sauve pas** : la sauvegarde est un effet du rendu.
 - **Relire `content.js` réaffecte `window.CONTENU`**, qui est *aussi* le miroir de l'état de l'atelier :
   `relireFichier` le met de côté et le remet dans le même tour (§10). Et **il faut DEUX déclencheurs** —
@@ -662,7 +687,7 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 - **Le retour de Jean, ce qui reste** — *tranché par l'auteur le 5 octobre, écrit au §4.11, puis
   codé* : la session 1 apprend, les suivantes laissent se tromper (refus d'écran
   et assombrissement levés hors session 1, la juxtaposition part et l'avocat la refuse), et la
-  patience de l'avocat reste infinie — on ne cherche pas de *game over*. **Choisir la relation reste écarté** : on rejoue avec le
+  patience de l'avocat reste infinie — on ne cherche pas de *game over*. **Choisir la relation reste écarté** — *retourné le 6 octobre, passe G* : on rejoue avec le
   §4.11 avant de le rouvrir. *Ce qui suit est l'état d'avant :* trois préconisations vont contre un
   arbitrage écrit, à trancher document d'abord : **offrir deux ou trois relations au choix, dont des
   fausses**, renverserait *désigner, pas déclarer* (§4.5) ; **réserver au tutoriel les garde-fous** —
@@ -879,3 +904,10 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   document d'abord, avec le §4.5 entier pour F et G, relu ; puis `articlesDe`, `articleRetenu`,
   `estLiaisonArticle`, `articleAttendu`, `prendreArticle`, `articleRefuse`, `tutoCleArticle`, le
   groupe *ARTICLES* ; l'atelier et les suites suivent. 587 contrôles, 8 règles du gardien, ESLint.
+- **6 octobre, passe G : le joueur choisit la relation** (§4.2, §4.5, §4.7, §4.8, §4.11, §11, §14) —
+  le bloc `relation` et le `libelle` des formes, `relationsDe` et `fausse` au moteur,
+  `relationsOffertes`, `estSecondTerme`, la juxtaposition `auto`, `rep_relation_fausse` et
+  `S.fausses` aux règles ; les deux boutons, `voirRelations`, le temps *« Choisis ce qui les lie »* ;
+  le diagnostic et l'onglet Grammaire. Deux contrôles passaient par le vide (`deduit` cherché,
+  disparu) : réécrits, avec un contrôle qui exige le second terme. 610 contrôles, 8 règles du
+  gardien, ESLint.

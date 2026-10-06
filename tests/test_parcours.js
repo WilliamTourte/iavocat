@@ -61,7 +61,10 @@ const poserLesDeux = (w, a, b) => {
   const [a, b] = deuxDimensions(w);
   check("hors session 1, on n'est plus en calibration", !w.R.enCalibration(w.S));
   poserLesDeux(w, a, b);
-  check("hors session 1, la juxtaposition se pose sans refus d'écran", !w.S.refus && w.S.compo.length === 2);
+  // §4.5, passe G — deux dimensions n'ont aucune relation à offrir : la juxtaposition
+  // se pose d'elle-même, sans choix, et se retire avec le terme qui l'a appelée.
+  check("hors session 1, la juxtaposition se pose sans refus d'écran, et sans choix",
+    !w.S.refus && w.S.compo.length === 3 && !!w.S.compo[2].auto && w.R.relationsOffertes(w.S).length === 0);
   check("et se lit sans relation : « {a} et {b} »",
     w.R.juxtapose(w.M.reduire(w.R.chaineCompo(w.S))));
   const avant = w.S.incompris;
@@ -140,7 +143,74 @@ const poserLesDeux = (w, a, b) => {
   check("à qui ne voit pas, le nom des dimensions", sr);
 }
 
-console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
+console.log("\n=== Le joueur choisit la relation, le moteur la vérifie (§4.5, passe G) ===");
+{
+  const w = boot();
+  H.livrerTout(w);
+  for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
+  const L = H.lienConclusion(w), sous = H.sousTerme(L);
+  const [a, b] = sous.termes;
+  H.surligner(w, a); H.surligner(w, b);
+  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, a));
+  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, b));
+  const rels = w.R.relationsOffertes(w.S);
+  check("deux passages de même dimension posés : le composeur offre les deux relations de la dimension",
+    rels.length === 2 && rels.includes(sous.forme)
+    && rels.every(f => !w.JEU.grammaire.formes[f].slots[0].length || w.JEU.grammaire.formes[f].slots[0].includes(w.M.dimDe(a))));
+  check("rien ne s'écrit avant le choix : la relation n'est pas dite à la place du joueur",
+    !w.R.peutEnvoyer(w.S) && w.document.querySelectorAll("#composeur .bbloc.relation").length === 2
+    && !w.R.chaineCompo(w.S).some(p => p.bloc.type === "relation"));
+  check("poser les deux passages du vice n'est pas encore le pressentir", !w.S.vice_pressenti);
+  const fausse = rels.find(f => f !== sous.forme);
+  w.poserBloc(w.R.blocsOfferts(w.S).findIndex(x => x.type === "relation"), rels.indexOf(fausse));
+  check("la relation fausse se choisit, et le moteur la sait fausse", w.M.fausse(w.M.reduire(w.R.chaineCompo(w.S))));
+  check("elle ne lève aucun drapeau", !w.S.vice_pressenti && !w.S.vice_trouve);
+  H.lireLeTexte(w, L.forme);
+  w.prendreArticle(H.cleArticle(w, w.JEU.grammaire.blocs.find(x => w.R.estLiaisonArticle(x) && x.forme === L.forme).piece));
+  check("sous son article, la phrase fausse se tient", w.R.peutEnvoyer(w.S) && !w.S.vice_trouve);
+  const avant = w.moyensRetenus().length;
+  w.envoyerCompo();
+  check("une relation fausse part, et l'avocat la refuse par sa propre escalade",
+    w.S.fausses === 1 && w.S.fil[w.S.fil.length - 1].texte === w.JEU.avocat.rep_relation_fausse[0]);
+  check("elle ne sert rien, n'entre pas en PLAIDOIRIE, et ne lève toujours aucun drapeau",
+    w.moyensRetenus().length === avant && !w.R.estMoyen(w.S.brouillon[w.S.brouillon.length - 1].lien)
+    && !w.S.vice_pressenti && !w.S.vice_trouve && !w.S.vice_expose);
+  check("les autres escalades n'ont pas bougé", w.S.incompris === 0 && w.S.inutiles === 0 && w.S.hors_sujet === 0);
+  // La VRAIE, choisie, lève le pressentiment (§4.7) — au choix, pas à la pose.
+  w.viderCompo();
+  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, a));
+  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, b));
+  check("reposés, les deux passages ne pressentent toujours rien", !w.S.vice_pressenti);
+  w.poserBloc(w.R.blocsOfferts(w.S).findIndex(x => x.type === "relation"), rels.indexOf(sous.forme));
+  check("la vraie relation choisie, le vice est pressenti", w.S.vice_pressenti && !w.S.vice_trouve);
+}
+{
+  // PARTOUT, SESSION 1 COMPRISE : à deux relations, un refus d'écran aurait donné l'autre.
+  const w = boot();
+  const L = H.lienTag(w, w.R.attentesDe(w.R.remiseCourante(w.S)).slice(-1)[0].attend);
+  H.composerLien(w, H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend));
+  const sous = H.sousTerme(L);
+  const fausse = w.M.relationsDe(w.M.dimDe(sous.termes[0])).find(f => f !== sous.forme);
+  check("en session 1, la relation fausse sous son article se compose — aucun refus d'écran",
+    H.composerLien(w, { forme: L.forme, termes: [{ forme: fausse, termes: sous.termes }] }) >= 0 && !w.S.refus);
+  check("l'avocat la refuse, la question reste posée",
+    w.S.fausses === 1 && !w.S.satisfaits.includes(L.tag));
+  H.composerLien(w, L);
+  check("la vraie la sert, et le compteur retombe à la remise suivante", w.S.remisesEnvoyees === 2 && w.S.fausses === 0);
+}
+{
+  // DEUX DIMENSIONS N'ONT RIEN À OFFRIR : la juxtaposition se pose d'elle-même, et
+  // « ← retirer » l'emporte avec le terme qui l'a appelée.
+  const w = boot();
+  H.livrerTout(w);
+  const [a, b] = deuxDimensions(w);
+  poserLesDeux(w, a, b);
+  check("juxtaposées, rien à choisir", w.R.relationsOffertes(w.S).length === 0 && !!w.S.compo[w.S.compo.length - 1].auto);
+  w.retirerBloc();
+  check("« ← retirer » retire le second passage et sa juxtaposition ensemble", w.S.compo.length === 1);
+}
+
+console.log("\n=== La vérification : la relation vraie se calcule des valeurs ===");
 {
   const w = boot();
   H.livrerTout(w);
@@ -149,7 +219,7 @@ console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
     n++;
     if (w.M.deduire(L.termes[0], L.termes[1]) !== L.forme) tous = false;
   }
-  check(`les ${n} relations déclarées se déduisent toutes des valeurs`, n > 0 && tous);
+  check(`les ${n} relations déclarées sont toutes vraies sur les valeurs`, n > 0 && tous);
 
   /* Le PATRON doit s'écrire : une régression ne casse aucune forme réduite, mais
      le verbe disparaît — c'est la relecture à l'œil qui l'avait attrapé. */
@@ -166,7 +236,7 @@ console.log("\n=== La déduction : la relation est un fait, pas un choix ===");
     if (!w.M.rendre(w.R.chaineCompo(w.S)).startsWith(attendu)) patronsOk = false;
   }
   w.viderCompo();
-  check(`les ${vus} phrases déduites s'écrivent par leur patron, verbe compris`, vus > 0 && patronsOk);
+  check(`les ${vus} relations choisies s'écrivent par leur patron, verbe compris`, vus > 0 && patronsOk);
 
   const ord = H.comparaisons(w).find(L => (w.JEU.grammaire.formes[L.forme]||{}).ordonne);
   if (ord) {
@@ -278,7 +348,10 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
 {
   const w = boot();
   const G = w.JEU.grammaire;
-  const second = (G.blocs || []).find(b => b.type === "terme" && b.deduit);
+  // Le SECOND terme d'une paire — PIÈGE PAYÉ : cherché par `deduit` seul, il manquait
+  // depuis la passe G, et tout ce bloc passait par le vide.
+  const second = (G.blocs || []).find(b => w.R.estSecondTerme(b));
+  check("la grammaire livrée a un second terme de paire", !!second);
   if (second) {
     check("le second empan porte une pièce, comme une liaison", !!second.piece);
     check("et l'affaire la livre d'emblée",
@@ -294,7 +367,7 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
     H.surligner(w, e.id);
     w.poserBloc(H.iTermeChamp(w), 0);
     check("un empan posé, le second est offert — et pour tous, sans préférence",
-      w.R.blocsOfferts(w.S).some(b => b.type === "terme" && b.deduit));
+      w.R.blocsOfferts(w.S).some(b => w.R.estSecondTerme(b)));
     check("la citation est là à côté : deux voies, pas une bascule",
       !!w.R.clotureImplicite(w.S));
     check("et la phrase se tient déjà, dès le premier empan", w.R.peutEnvoyer(w.S));
@@ -306,7 +379,7 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
        le filtre de livraison ne fait donc pas d'exception pour les termes. */
     if (second.piece) {
       const c = H.contenuLivre();
-      const b2 = c.grammaire.blocs.find(b => b.type === "terme" && b.deduit);
+      const b2 = c.grammaire.blocs.find(b => b.id === second.id);
       for (const r of c.remises) r.pieces = (r.pieces || []).filter(p => p !== b2.piece);
       const derniere = c.remises[c.remises.length - 1];
       derniere.pieces = (derniere.pieces || []).concat([b2.piece]);
@@ -317,7 +390,7 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
       H.surligner(w2, w2.CHAMPS[0].id);
       w2.poserBloc(H.iTermeChamp(w2), 0);
       check("pièce repoussée, aucun second empan n'est offert",
-        !w2.R.blocsOfferts(w2.S).some(b => b.type === "terme" && b.deduit));
+        !w2.R.blocsOfferts(w2.S).some(b => w2.R.estSecondTerme(b)));
       check("seule la citation reste, et elle suffit à envoyer",
         !!w2.R.clotureImplicite(w2.S) && w2.R.peutEnvoyer(w2.S));
     }
@@ -472,6 +545,14 @@ console.log("\n=== Les deux gestes, montrés ===");
   check("un premier passage posé, le halo reste sur le contexte — il en faut un second",
     halo() && halo().id === "zoneRetenus" && /second/.test(dit()));
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(tB));
+  /* §4.8, passe G — CHOISIR CE QUI LES LIE : le halo entoure les DEUX relations,
+     jamais la bonne. */
+  const rels = () => [...w.document.querySelectorAll("#composeur .bbloc.relation")];
+  check("les deux posés, il montre les deux relations au composeur — toute la zone, jamais la bonne",
+    !!halo() && halo().matches("#composeur .offre") && rels().length === 2
+    && !rels().some(b => b.hasAttribute("data-tuto")) && /choisis/i.test(bandeau().textContent));
+  const vraie = H.sousTerme(H.lienTag(w, veutA)).forme;
+  w.document.querySelector(`#composeur [data-f="rel:${vraie}"]`).click();
   w.fermerPiece();      // l'index se déplie : le cas « pièce ouverte » vient plus bas
   /* §4.5 — un texte s'invoque une fois RETENU (passe F). Tant que l'article ne
      l'est pas, le bandeau montre OÙ LE LIRE : il ne dit pas « Envoyer » alors
@@ -1007,6 +1088,12 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tA));
   check("le PREMIER des deux posé, il en faut un second : le panneau RESTE ouvert", ouvert("CONTEXTE"));
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tB));
+  /* §4.6, passe G — le choix de la relation a lieu au composeur, et le panneau
+     ouvert pour écrire RESTE : l'article qui suit se prend chez lui. */
+  check("les deux posés, la relation à choisir au composeur : le panneau RESTE ouvert", ouvert("CONTEXTE"));
+  check("et la voix demande ce qui les lie, sans mener ailleurs — le geste est ICI",
+    !bouton() && /qui les lie/.test((w.document.querySelector("#composeur span.aide") || {}).textContent || ""));
+  H.choisirRelation(w, sous.forme);
   /* §4.6 — L'ARTICLE SE PREND AU CONTEXTE (passe F) : la phrase qui l'attend n'a
      rien à prendre au composeur, et le panneau ouvert pour écrire reste. */
   check("les deux posés, l'article reste à prendre au CONTEXTE : le panneau RESTE ouvert", ouvert("CONTEXTE"));

@@ -311,9 +311,14 @@ window.CONTENU = {
         "type": "terme",
         "source": "champ",
         "de": "S1",
-        "vers": "S4",
-        "deduit": true,
+        "vers": "S2",
         "piece": "r_temoin"
+      },
+      {
+        "id": "r0",
+        "type": "relation",
+        "de": "S2",
+        "vers": "S4"
       },
       {
         "id": "a3",
@@ -360,7 +365,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} sont une seule et même personne"
+        "patron": "{a} et {b} sont une seule et même personne",
+        "libelle": "sont une seule et même personne"
       },
       "distinction_personne": {
         "arite": 2,
@@ -375,7 +381,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} ne sont pas la même personne"
+        "patron": "{a} et {b} ne sont pas la même personne",
+        "libelle": "ne sont pas la même personne"
       },
       "identite_lieu": {
         "arite": 2,
@@ -390,7 +397,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} sont au même endroit"
+        "patron": "{a} et {b} sont au même endroit",
+        "libelle": "sont au même endroit"
       },
       "distinction_lieu": {
         "arite": 2,
@@ -405,7 +413,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} ne sont pas au même endroit"
+        "patron": "{a} et {b} ne sont pas au même endroit",
+        "libelle": "ne sont pas au même endroit"
       },
       "identite_heure": {
         "arite": 2,
@@ -420,7 +429,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} coïncident"
+        "patron": "{a} et {b} coïncident",
+        "libelle": "coïncident"
       },
       "identite_nombre": {
         "arite": 2,
@@ -435,7 +445,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} sont égaux"
+        "patron": "{a} et {b} sont égaux",
+        "libelle": "sont égaux"
       },
       "identite_oui": {
         "arite": 2,
@@ -450,7 +461,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} désignent la même chose"
+        "patron": "{a} et {b} désignent la même chose",
+        "libelle": "désignent la même chose"
       },
       "anteriorite": {
         "arite": 2,
@@ -465,7 +477,8 @@ window.CONTENU = {
             "quand"
           ]
         ],
-        "patron": "{a} précède {b}"
+        "patron": "{a} précède {b}",
+        "libelle": "précède"
       },
       "ordre_grandeur": {
         "arite": 2,
@@ -480,7 +493,8 @@ window.CONTENU = {
             "combien"
           ]
         ],
-        "patron": "{a} est d'un tout autre ordre que {b}"
+        "patron": "{a} est d'un tout autre ordre que {b}",
+        "libelle": "est d'un tout autre ordre que"
       },
       "identite_non": {
         "arite": 2,
@@ -495,7 +509,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} ne désignent pas la même chose"
+        "patron": "{a} et {b} ne désignent pas la même chose",
+        "libelle": "ne désignent pas la même chose"
       },
       "juxtaposition": {
         "arite": 2,
@@ -790,6 +805,11 @@ window.CONTENU = {
     "rep_sans_rapport": [
       "Je ne vois pas où tu veux en venir avec ça.",
       "Encore une phrase que je ne peux pas plaider. Qu'est-ce que tu cherches ?",
+      "…"
+    ],
+    "rep_relation_fausse": [
+      "Non. Ce n'est pas ce que disent ces deux passages — relis-les.",
+      "Encore non. Ce que tu leur fais dire, ils ne le disent pas.",
       "…"
     ],
     "rep_hors_sujet": [

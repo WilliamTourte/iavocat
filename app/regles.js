@@ -26,6 +26,7 @@ function creerRegles(JEU, M) {
     declenches: [],               // pièces dont le `declenche` une_fois a joué
     inutiles: 0, incompris: 0,    // compteurs d'agacement de l'avocat, remis à zéro à chaque remise
     hors_sujet: 0,                // …et celui des citations qui ne répondent pas
+    fausses: 0,                   // …et celui des relations fausses (passe G)
     modalPiece: null
   }; }
 
@@ -67,7 +68,7 @@ function creerRegles(JEU, M) {
     // §4.11 — l'agacement retombe à chaque remise : un nouveau dossier, une
     // nouvelle séance, et les premières répliques — les seules qui disent
     // quelque chose — se réentendent.
-    S.inutiles = S.incompris = S.hors_sujet = 0;
+    S.inutiles = S.incompris = S.hors_sujet = S.fausses = 0;
     pousser(S, r.qui, r.texte, r.pieces);
     poserQuestion(S, r, true);
   }
@@ -155,17 +156,29 @@ function creerRegles(JEU, M) {
     if (S.prete != null) return -1;
     return blocsOfferts(S).findIndex(b => b.type === "terme" && b.source !== "note");
   }
+  /* LE SECOND TERME D'UNE PAIRE : celui qui mène au choix de la relation (passe
+     G), ou — contenu d'avant — celui qui la fait déduire (`deduit`, §11). */
+  const estSecondTerme = b => !!b && b.type === "terme" && (!!b.deduit
+    || (JEU.grammaire.blocs || []).some(x => x.de === b.vers && x.type === "relation"));
   function comparaisonPossible(S) {
     const offerts = blocsOfferts(S);
-    if (S.compo.length) return offerts.some(b => b.type === "terme" && b.deduit);
-    return offerts.some(b => b.type === "terme"
-      && blocsDepuis(b.vers, S).some(x => x.type === "terme" && x.deduit));
+    if (S.compo.length) return offerts.some(estSecondTerme);
+    return offerts.some(b => b.type === "terme" && blocsDepuis(b.vers, S).some(estSecondTerme));
+  }
+  /* LES DEUX RELATIONS QUE LA PHRASE OFFRE (passe G, §4.5) : deux termes de même
+     dimension posés, et le bloc `relation` en attente. Ailleurs, aucune. */
+  const termesPoses = S => S.compo.map(p => p.valeur).filter(v => typeof v === "string");
+  function relationsOffertes(S) {
+    if (!blocsOfferts(S).some(b => b.type === "relation")) return [];
+    const t = termesPoses(S).slice(-2);
+    if (t.length !== 2 || M.dimDe(t[0]) !== M.dimDe(t[1])) return [];
+    return M.relationsDe(M.dimDe(t[0]));
   }
   function dimAttendue(S) {
     const i = indexTermeChamp(S);
     if (i < 0) return null;
     const b = blocsOfferts(S)[i];
-    if (!b.deduit) return null;
+    if (!estSecondTerme(b)) return null;
     const premier = S.compo.find(p => { const pb = blocParId(p.bloc); return pb && pb.type === "terme"; });
     return premier ? M.dimDe(premier.valeur) : null;
   }
@@ -204,10 +217,26 @@ function creerRegles(JEU, M) {
      nue ou sous un article. */
   const juxtapose = r => !!r && typeof r === "object" && (formeDe(r).deduction === "juxtaposition"
     || (r.termes || []).some(t => juxtapose(t)));
+  const formeJuxtaposition = () =>
+    (Object.entries(JEU.grammaire.formes || {}).find(([, f]) => f.deduction === "juxtaposition") || [null])[0];
+  /* LA RELATION SE CHOISIT (passe G, §4.5) : `iSrc` désigne l'une des deux
+     relations offertes. Deux termes de dimensions différentes n'en ont aucune à
+     offrir : en session 1, le second est refusé ; ensuite, la juxtaposition se
+     pose d'elle-même (`auto`), et `retirerBloc` l'emporte avec le terme qui l'a
+     appelée. Le même passage deux fois ne se compare pas. */
+  function paireRefusee(S) {
+    const [x, y] = termesPoses(S).slice(-2);
+    if (x === y) return true;
+    if (M.dimDe(x) !== M.dimDe(y)) return enCalibration(S) || !formeJuxtaposition();
+    return !M.relationsDe(M.dimDe(x)).length;
+  }
   function poserBloc(S, iBloc, iSrc) {
     S.prete = null;              // reprendre abandonne la phrase qui attendait
     const b = blocsOfferts(S)[iBloc]; if (!b) return;
     let valeur = null;
+    if (b.type === "relation") {
+      valeur = relationsOffertes(S)[iSrc]; if (!valeur) return;
+    }
     if (b.type === "terme") {
       if (b.source === "note") {
         const n = S.brouillon[iSrc]; if (!n) return;
@@ -220,13 +249,20 @@ function creerRegles(JEU, M) {
     S.compo.push({ bloc: b.id, valeur });
     S.refus = null;
     const r = M.reduire(chaineCompo(S));
+    const paire = estSecondTerme(b) && !b.deduit;
     const err = b.deduit && (!r.forme || (juxtapose(r) && enCalibration(S))) ? "ces deux-là ne se comparent pas"
+              : paire && paireRefusee(S) ? "ces deux-là ne se comparent pas"
               : (JEU.grammaire.finaux || []).includes(b.vers) ? M.valider(r) : null;
     if (err) {
       S.compo.pop();
       S.refus = "Cette phrase ne veut rien dire : " + err
               + ". Rien n'est perdu — reprends avec un autre passage.";
       return;
+    }
+    if (paire) {
+      const [x, y] = termesPoses(S).slice(-2);
+      const rel = (JEU.grammaire.blocs || []).find(z => z.de === b.vers && z.type === "relation");
+      if (M.dimDe(x) !== M.dimDe(y) && rel) S.compo.push({ bloc: rel.id, valeur: formeJuxtaposition(), auto: true });
     }
     majPressentiment(S);
   }
@@ -247,7 +283,11 @@ function creerRegles(JEU, M) {
     return M.valider(M.reduire(ch)) ? null : ch;
   }
   const peutEnvoyer = S => !!chaineEnvoyable(S);
-  function retirerBloc(S) { S.compo.pop(); S.refus = null; }
+  function retirerBloc(S) {
+    const p = S.compo.pop();
+    if (p && p.auto) S.compo.pop();   // la juxtaposition part avec le terme qui l'a posée
+    S.refus = null;
+  }
   function viderCompo(S) { S.compo = []; S.refus = null; }
   function effacerPrete(S) { S.prete = null; }
 
@@ -361,6 +401,9 @@ function creerRegles(JEU, M) {
     // §4.11 — hors session 1, la juxtaposition part : c'est l'avocat qui la
     // refuse, nue comme sous un article — un refus d'avocat, plus de grammaire.
     else if (juxtapose(n.reduite))   pousser(S, "Maître Auber", esc1(A.rep_sans_rapport || ["…"], "incompris"));
+    // §4.5 — UNE RELATION FAUSSE PART, ET L'AVOCAT LA REFUSE, partout : à deux
+    // relations, un refus d'écran aurait donné l'autre (passe G).
+    else if (M.fausse(n.reduite))    pousser(S, "Maître Auber", esc1(A.rep_relation_fausse || A.rep_sans_rapport || ["…"], "fausses"));
     else {
       const f = (JEU.grammaire.formes || {})[n.reduite.forme] || {};
       const emboite = typeof ((n.reduite.termes || [])[0]) === "object";
@@ -460,7 +503,7 @@ function creerRegles(JEU, M) {
            piecesLivrees, estRegle, reglesLivrees, porteDe,
            surligner, oublier, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
            estArticle, articleRetenu, estLiaisonArticle, articleAttendu,
-           comparaisonPossible, dimAttendue,
+           comparaisonPossible, dimAttendue, estSecondTerme, relationsOffertes,
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, dejaEnvoyee, envoyerCompo, compoFinie,

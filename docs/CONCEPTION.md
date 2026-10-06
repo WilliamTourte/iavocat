@@ -114,8 +114,8 @@ sans qu'aucune interface n'ait rien signalé.
 
 **Un empan = quelqu'un affirme quelque chose** : pas `agent_scene : "T-14"` mais *« j'ai relevé
 moi-même les traces »*, signé. Fragment du texte d'une pièce, cliquable, portant `texte`, dimension,
-valeur, signataire, `nom`. **La `valeur` porte la relation** (§4.5) : le moteur compare, le joueur
-désigne — un numéro sert à vérifier, jamais à déduire.
+valeur, signataire, `nom`. **La `valeur` porte la relation** (§4.5) : le joueur la déclare, le moteur
+la vérifie — un numéro sert à vérifier, jamais à rédiger à la place du joueur.
 
 **Un empan se lit deux fois** : sa **citation** dans la pièce, son **nom** dans une phrase composée —
 groupe nominal, jamais une proposition (§8.8). Le vice cesse ainsi d'être un matricule répété : c'est
@@ -123,11 +123,16 @@ un homme qui écrit deux fois qu'il l'a fait lui-même, sans s'en apercevoir.
 
 ### 4.2 Les cinq dimensions — QQOQC
 
-| Famille | Dimensions | Ce qui se **déduit** | Forme |
+| Famille | Dimensions | Les deux relations, et ce qui se **vérifie** | Forme |
 |---|---|---|---|
-| **Identité** | `qui`, `quoi`, `ou` | égales → la même chose ; sinon → pas la même | `arite:2, ordonne:false` |
-| **Écart** | `quand`, `combien` | l'**ordre** des valeurs | `arite:2, ordonne:true` |
-| **Qualification** | *aucune* — sur une comparaison close | rien : le seul endroit où le joueur choisit | `arite:1` |
+| **Identité** | `qui`, `quoi`, `où` | *la même* / *pas la même* — vraie si les valeurs sont égales, ou si elles diffèrent | `arite:2, ordonne:false` |
+| **Écart** | `quand`, `combien` | *coïncident* ou *sont égaux* / *précède* ou *d'un tout autre ordre* — l'égalité, sinon l'**ordre** des valeurs | `arite:2, ordonne:true` |
+| **Qualification** | *aucune* — sur une comparaison close | rien : le joueur y choisit l'article, après la relation | `arite:1` |
+
+**Le joueur choisit la relation, le moteur la vérifie** (passe G, §4.5) : deux passages posés, le
+composeur offre les deux relations de leur dimension, et c'est la valeur qui dit laquelle est
+vraie. Ce qui se *déduisait* — le moteur rédigeait la relation seul — se *vérifie*. Choisir n'est
+donc plus réservé à la qualification.
 
 **L'égalité vaut dans les cinq dimensions**, sinon les doublons banals (§4.4) cesseraient d'être
 composables et inertes. `qui` porte le vice, `combien` le faux vice, `quand` la contradiction qui
@@ -192,19 +197,23 @@ pièce, y cliquer un passage —, plus seulement *qu'*il se remplit.
 
 **Si toutes les valeurs d'une dimension sont uniques, le premier doublon est la réponse ; s'il y en a
 déjà plusieurs, un de plus ne dit rien.** La dimension du vice compte donc au moins **deux doublons
-réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte tout le camouflage.**
+réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte tout le camouflage.** Et il
+compte davantage depuis que le joueur choisit la relation (passe G, §4.5) : l'écran n'écrit plus
+*« sont une seule et même personne »* à la pose de deux passages — c'est au joueur de **voir**
+l'identité, et chaque doublon banal est une identité de plus à voir, et à trouver sans objet.
 
 ### 4.5 Composer : désigner, puis déclarer
 
 *Réécrit le 6 octobre pour deux passes du `TODO.md`, d'un seul tenant parce que toutes deux changent
-la manière de fonder : la **passe F** — l'article se retient, puis se prend —, codée d'abord, et la
-**passe G** — le joueur choisit la relation —, codée ensuite. Ce qui ne vaudra qu'avec la seconde est
-marqué **[G]** ; d'ici là, le moteur rédige encore la relation seul. Relu par l'auteur ; la passe F
-est codée.*
+la manière de fonder : la **passe F** — l'article se retient, puis se prend — et la **passe G** — le
+joueur choisit la relation. Relu par l'auteur, puis codé, F puis G. Ce que la passe G a réécrit
+ailleurs — §4.1, §4.2, §4.4, §4.6, §4.7, §4.8, §4.11 — l'a été et codé dans la foulée, avec ses trois
+arbitrages (le pressentiment au choix vrai, les libellés de relation, le CONTEXTE qui reste) : **à
+relire par l'auteur**.*
 
 - **La livraison** — la grammaire de comparaison est complète dès la première phrase ; seuls les
   **articles** arrivent avec le dossier, un article étant une pièce et non une tournure.
-- **Désigner, puis déclarer [G]** — le joueur désigne *ces deux-là*, puis **déclare ce qui les lie**,
+- **Désigner, puis déclarer** — le joueur désigne *ces deux-là*, puis **déclare ce qui les lie**,
   puis l'appuie *sous ce texte*. Il choisit entre **les deux relations de leur dimension**, celles que
   le contenu déclare déjà : *une seule et même personne / pas la même personne*, *coïncident /
   précède*, *au même endroit / pas au même endroit*, *désignent la même chose / pas la même chose*,
@@ -215,14 +224,15 @@ est codée.*
   il ne tranche toujours aucune question de droit.
 - **La vérification** — (1) même dimension, sinon rien à comparer — **le seul refus d'écran qui
   existe, et en session 1 seulement** : ensuite, les deux passages se juxtaposent et l'avocat refuse
-  (§4.11) ; deux dimensions différentes n'ont aucune relation à offrir **[G]** ; (2) égales → *la
-  même chose* ; (3) différentes en dimension d'écart → l'**ordre** ; (4) différentes en identité →
+  (§4.11) ; deux dimensions différentes n'ont aucune relation à offrir, et la juxtaposition s'y
+  pose d'elle-même, sans choix ; (2) égales → *la même chose* ; (3) différentes en dimension d'écart → l'**ordre** ; (4) différentes en identité →
   *pas la même chose*. Ambiguïté → la **première forme déclarée** dont le prédicat tient. Le moteur
   range les termes d'une dimension d'écart par valeur, si bien que *« précède »* est vrai dès que deux
-  heures diffèrent — **gardé [G]** : le choix reste à deux, *« 22h30 précède 22h04 »* n'en devient
-  pas une troisième. Aujourd'hui, la relation vraie s'écrit d'elle-même ; **[G]** elle est celle
-  que le joueur a choisie, ou la phrase est fausse.
-- **Une relation fausse part, et l'avocat la refuse — partout [G]**, session 1 comprise : à deux
+  heures diffèrent — **gardé** : le choix reste à deux, *« 22h30 précède 22h04 »* n'en devient pas
+  une troisième. Les deux relations offertes sont, pour la dimension, la **première forme déclarée**
+  de chaque côté — égalité, puis différence ou ordre ; la vraie est celle que le moteur aurait
+  rédigée. La relation de la phrase est celle que le joueur a choisie : vraie, ou fausse.
+- **Une relation fausse part, et l'avocat la refuse — partout**, session 1 comprise : à deux
   relations, un refus d'écran donnerait l'autre. Sa réplique est la sienne, avec son escalade,
   distincte de *rien à comparer* (`rep_sans_rapport`) et de la comparaison nue (`rep_inutile`) ; la
   phrase ne sert aucune attente, n'entre pas en PLAIDOIRIE, ne lève aucun drapeau. **Écartés en
@@ -231,8 +241,8 @@ est codée.*
   pas ; et deux heures ne se jugent pas sur leurs valeurs (21h52 et 22h04 diffèrent, et concordent).
   *Trois relations ou plus, dont des fausses* (Jean) : du contenu à écrire, et une devinette.
 - **Les deux régimes** — *un fait se cite, une relation se fonde* : un empan est déjà une déclaration
-  attribuée, un rapport entre deux faits n'est l'affirmation d'aucun témoin — **[G]** c'est celle du
-  joueur, qui la déclare.
+  attribuée, un rapport entre deux faits n'est l'affirmation d'aucun témoin — c'est celle du joueur,
+  qui la déclare.
 - **L'invariant mord au versement**, plus à la clôture : la grammaire laisse partir une comparaison
   nue, **Maître Auber** la refuse (*« Et donc ? »*) et elle ne sert aucune attente. **Rien n'est
   *plaidé* qui ne soit fondé** ; le refus reste de l'agacement d'avocat, jamais un reproche (§8.4).
@@ -272,7 +282,7 @@ est codée.*
   porte **ni dimension ni valeur** : il ne se compare à rien, n'est jamais un terme — on ne cite pas
   un article seul —, et le moteur ne le voit pas (§11).
 - **La continuation** — les liaisons-articles retenues emboîtent la comparaison et closent la phrase
-  dessus : la frontière passe **après le second empan** — **[G]** après la relation choisie.
+  dessus : la frontière passe **après la relation choisie**.
   L'automate n'oblige plus, mais la relance *« Et donc ? »* ne se coupe pas, sans quoi le refus
   arrive comme une surprise.
 - **Un article n'interdit rien** : `porte` annonce — par une marque sans mot sous son titre, plus
@@ -441,7 +451,8 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   l'article pas encore lu, il se refermait, et la voix répondait aussitôt *« ouvre-les »* — le jeu
   fermait la porte, puis demandait de la rouvrir. Quand le geste suivant est d'aller lire, *dans* le
   CONTEXTE, il reste ; et depuis que l'article s'y prend (passe F), il reste aussi jusqu'à ce qu'on
-  l'ait pris. **Ouvert pour CONSULTER** (par la barre),
+  l'ait pris — **y compris pendant le choix de la relation** (passe G), qui a lieu au composeur :
+  le refermer là pour le faire rouvrir à l'article, ce serait la friction de Jean une fois de plus. **Ouvert pour CONSULTER** (par la barre),
   il reste jusqu'à ce qu'on le ferme — regarder n'est pas écrire. La nuance de la première n'est pas un
   détail : un passage posé, la voix se tait parce que la phrase se tient, mais **la grammaire ne sait
   pas encore** si le joueur cite ou entame une comparaison (§4.5). Refermer là retirerait le clavier au
@@ -506,13 +517,16 @@ suivante, ou ferme la session.
 
 | Drapeau | Acquis quand | Surface |
 |---|---|---|
-| `vice_pressenti` | la comparaison du vice **s'affiche au composeur** — avant tout article | privée |
+| `vice_pressenti` | la comparaison du vice **s'affiche au composeur, sa vraie relation choisie** — avant tout article | privée |
 | `vice_trouve` | la conclusion **s'assemble au composeur** : comparaison-vice qualifiée par un article | privée |
 | `vice_expose` | cette conclusion est **envoyée** | transmise |
 
 C'est l'intervalle entre l'**assemblage** et l'**envoi**, si court soit-il, qui porte la Fin 2. **Une
 citation ne lève aucun drapeau** — les trois dérivent de la comparaison du **vice**, absente de la
 session 1. **Pressentir ne produit rien** : qui comprend et vide son composeur a la Fin 3 au bout.
+**Poser n'est pas encore comprendre** (passe G, arbitré par l'auteur) : les deux passages du vice
+côte à côte ne lèvent rien ; c'est **choisir** *« une seule et même personne »* qui le lève, et
+choisir l'autre relation ne lève aucun drapeau.
 
 ### 4.8 Le premier geste, montré
 
@@ -553,8 +567,9 @@ plus, c'est l'avocat** : lui est quelqu'un.
 | | — | *rien ne part tant qu'on n'envoie pas* | **rien** : *« → Envoyer »*, seul bouton plein, se montre seul |
 | **mettre en relation** | 1 | une réponse peut tenir sur **deux** passages, et chacun se retient comme on retient pour citer | l'index, puis **le texte de la pièce** — tant que les deux passages attendus ne sont pas retenus, jamais l'empan ; la porte CONTEXTE s'il est fermé |
 | | 2 | les deux se prennent, l'un puis l'autre | **toute la zone des retenus**, au premier passage comme au second |
-| | 3 | une relation seule ne suffit pas, et on n'invoque que ce qu'on a retenu (§4.5) — *s'il n'est pas retenu* | **la puce de l'article**, dans l'index — la porte CONTEXTE s'il est fermé ; *« déplier »* si l'index est replié, ce qu'une pièce encore ouverte fait d'ordinaire : le tutoriel ne déplie rien à la place du joueur ; l'article ouvert, **son texte**, à retenir comme un passage (passe F) |
-| | 4 | il lui faut un article qui la fonde | **la fiche de l'article**, dans les retenus — plus le composeur, qui ne le propose plus (passe F) |
+| | 3 | deux passages ne disent pas ce qui les lie : on le **déclare** (§4.5, passe G) | **les deux relations**, dans les propositions du composeur — toute la zone, jamais la bonne |
+| | 4 | une relation seule ne suffit pas, et on n'invoque que ce qu'on a retenu (§4.5) — *s'il n'est pas retenu* | **la puce de l'article**, dans l'index — la porte CONTEXTE s'il est fermé ; *« déplier »* si l'index est replié, ce qu'une pièce encore ouverte fait d'ordinaire : le tutoriel ne déplie rien à la place du joueur ; l'article ouvert, **son texte**, à retenir comme un passage (passe F) |
+| | 5 | il lui faut un article qui la fonde | **la fiche de l'article**, dans les retenus — plus le composeur, qui ne le propose plus (passe F) |
 | | — | *le même envoi qu'au premier geste* | **rien**, pour la même raison |
 
 **Retenir se montre aux deux gestes** — retour de playtest (Bérengère). Les deux heures n'étant plus
@@ -578,8 +593,10 @@ plutôt qu'un simple empan. Le tutoriel le lit dans `JEU.liens`, jamais dans un 
 
 **L'article se désigne, la relation jamais** — demandé par l'auteur, et c'est la seule exception à
 *le halo entoure la zone*. La trouvaille de la comparaison est la **relation entre deux passages** :
-le halo ne la montre pas : il entoure le texte de chaque pièce pour retenir, puis toute la zone des
-retenus pour prendre. L'article, lui, Maître Auber le
+le halo ne la montre pas : il entoure le texte de chaque pièce pour retenir, toute la zone des
+retenus pour prendre, puis **les deux relations ensemble** pour choisir (passe G) — la bonne n'est
+jamais désignée, et un mauvais choix n'est pas signalé : c'est Maître Auber qui le refuse, après
+l'envoi. Plus que jamais, *la relation jamais*. L'article, lui, Maître Auber le
 demande déjà (*« quel article est-ce qu'on peut citer »*), et la remise de calibration n'en livre
 qu'un : désigner sa puce, son texte, puis sa fiche, ne choisit rien à la place du joueur — il
 épargne seulement de chercher où se lit un texte, et qu'il se retient et se prend comme un passage. La désignation se **dérive** du lien attendu (sa
@@ -639,8 +656,8 @@ Cinq règles d'écran — le coupable d'une page illisible est le **chrome**, ja
 1. **Une voix par état — et parfois aucune** : le geste suivant se dit une fois, dans le fantôme tant
    que la phrase est vide, dans l'aide ensuite ; si un bouton le dit déjà, l'aide se tait. **Et la voix
    elle-même se clique quand le geste qu'elle nomme a lieu dans l'autre colonne** — elle mène alors au
-   CONTEXTE et l'ouvre ; elle reste du texte quand le geste a lieu ici même — envoyer, et **[G]**
-   choisir la relation (§4.5). Prendre un article a quitté le composeur (passe F) : la voix qui le
+   CONTEXTE et l'ouvre ; elle reste du texte quand le geste a lieu ici même — envoyer, et choisir
+   la relation (§4.5). Prendre un article a quitté le composeur (passe F) : la voix qui le
    réclame — à retenir ou à prendre — mène donc au CONTEXTE. Un bouton ne promet ainsi jamais un effet qu'il ne produit pas (§4.5). Cliquable, elle a
    l'air d'un bouton — jamais d'un champ vide ni d'une zone de dépôt, ce que son cadre en pointillés
    dans un autre cadre en pointillés faisait croire.
@@ -752,7 +769,7 @@ laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — l
    forme, pas un garde-fou.*
 2. **L'erreur de catégorie part, hors session 1.** Deux passages de dimensions différentes ne se
    refusent plus à l'écran : ils se **juxtaposent** — *« {a} et {b} »*, sans relation, puisqu'il n'y en
-   a pas à déduire — et la phrase part. **C'est Maître Auber qui refuse**, par l'escalade de
+   a pas à choisir : elle se pose d'elle-même (§4.5) — et la phrase part. **C'est Maître Auber qui refuse**, par l'escalade de
    `rep_sans_rapport` : un refus d'avocat, pas un refus de grammaire (§4.5, §8.4). La juxtaposition est
    une **forme du contenu**, déclarée comme les autres (§11) ; le moteur ne fait que la rendre quand les
    dimensions diffèrent. En session 1, le refus d'écran demeure : on y apprend ce qu'est une
@@ -765,7 +782,8 @@ laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — l
    un prix (une jauge de patience, des envois comptés) ; une jauge visible rendrait l'enjeu
    calculable (§8.4), et une patience qui s'épuise, même invisible, ferait d'un essai de trop une
    porte qui se ferme. **La patience de Maître Auber est infinie.** Le prix de l'erreur reste dans
-   la fiction : l'escalade d'agacement (`rep_hors_sujet`, `rep_sans_rapport`, `rep_inutile`), des
+   la fiction : l'escalade d'agacement (`rep_hors_sujet`, `rep_sans_rapport`, `rep_inutile`, et
+   `rep_relation_fausse` depuis la passe G), des
    répliques qui se raccourcissent jusqu'au *« … »*, sans conséquence. Le droit d'être perdu (§8.6)
    tient entier. **Et l'agacement retombe à chaque remise** — retour de playtest (Jean, 6 octobre) :
    les compteurs vivaient toute la partie, et quelques essais pendant la calibration suffisaient pour
@@ -774,11 +792,12 @@ laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — l
    et ses premières répliques, les seules qui disent quelque chose, se réentendent. Ce qui rend l'essai systématique moins payant, ce sont les points 1 à 3 : sans
    étiquette, sans assombrissement, sans refus d'écran, essayer toutes les combinaisons redevient
    long — et l'avocat le fait sentir.
-5. **Choisir la relation reste écarté.** Proposer deux ou trois relations, dont des fausses,
-   renverserait *désigner, pas déclarer* (§4.5). Les points 1 à 3 rendent déjà au joueur le
-   droit de se tromper ; on rejoue avec eux avant de rouvrir celui-là (§3 de `docs/PASSATION.md`).
-   **Retourné par l'auteur le 6 octobre** : le joueur choisira entre les deux relations de la
-   dimension (passe G, §4.5) ; ce point se réécrira avec elle.
+5. **Le joueur choisit la relation** — écarté le 5 octobre pour rejouer d'abord avec les points 1
+   à 3, **retourné par l'auteur le 6** (passe G, §4.5) : Bérengère a montré ce que coûtait le
+   moteur qui rédigeait seul — l'écran disait la trouvaille. Deux passages posés, le composeur
+   offre les deux relations de leur dimension ; la fausse **part**, et Maître Auber la refuse, par
+   l'escalade de `rep_relation_fausse` — **session 1 comprise** : à deux relations, un refus d'écran
+   donnerait l'autre. C'est le droit de se tromper des points 1 à 3, étendu à la relation.
 
 ## 5. Les directives (le manuel de soi)
 
@@ -842,6 +861,7 @@ au §3 de `docs/PASSATION.md`.*
 | Un empan se lit deux fois ; le marquage ne varie jamais avec la pertinence | §4.1, §4.3 |
 | Une dimension sans doublon désigne sa réponse ; la marge de bruit reste non nulle | §4.4, §14 |
 | Rien n'est *plaidé* qui ne soit fondé ; on n'invoque pas un texte qu'on n'a pas retenu | §4.5 |
+| Le joueur déclare la relation, le moteur la vérifie — jamais ne la rédige ; une relation fausse part, l'avocat la refuse | §4.5, §4.11 |
 | Une clôture qui n'ajoute rien n'est pas un choix ; `imbrique` n'en est jamais une | §4.5 |
 | Un article annonce, ne filtre rien, ne porte aucun empan qui se compare ; le moteur ne dit pas le droit | §4.5, §6 |
 | La session 1 apprend, les suivantes laissent se tromper ; la frontière est la remise, jamais le tutoriel | §4.11 |

@@ -16,7 +16,7 @@ function diagnostiquer(){
     add("erreur","Grammaire absente","Sans « grammaire » (automate + formes), le jeu refuse le contenu : plus aucune phrase n'est composable.",{});
   } else {
     const finaux=new Set(G.finaux||[]);
-    const fixeUneForme = b => !!b.forme || !!b.deduit;
+    const fixeUneForme = b => !!b.forme || !!b.deduit || b.type==="relation";
     const sansForme=new Set([G.depart]); let zf=true;
     while(zf){ zf=false; for(const b of G.blocs)
       if(sansForme.has(b.de) && !fixeUneForme(b) && !sansForme.has(b.vers)){ sansForme.add(b.vers); zf=true; } }
@@ -31,7 +31,8 @@ function diagnostiquer(){
     for(const [nom,f] of Object.entries(G.formes||{}))
       if(f.deduction==="ordre" && f.ordonne && !f.sens)
         add("avert",`Forme « ${nom} » ordonnée sans « sens »`,"Sans « sens », les deux termes sont rangés par ordre croissant de valeur. Écris-le (asc/desc) plutôt que de le subir : c'est ce qui décide de la lecture de la phrase.",{});
-    if((G.blocs||[]).some(b=>b.deduit))
+    const parChoix=(G.blocs||[]).some(b=>b.type==="relation");
+    if((G.blocs||[]).some(b=>b.deduit) || parChoix)
       for(const d of dims){
         // La juxtaposition (§4.11) prend toutes les dimensions et n'en compare aucune :
         // elle ne compte pas — sinon elle ferait taire cet avertissement partout.
@@ -41,13 +42,18 @@ function diagnostiquer(){
         });
         if(!prise) add("avert",`Dimension « ${d} » sans forme déductible`,
           "Aucune forme ne se déduit sur cette dimension : ses empans seraient surlignables, mais deux d'entre eux ne se compareraient jamais.",{});
+        /* LE JOUEUR CHOISIT ENTRE DEUX (passe G, §4.5) : une seule relation offerte,
+           c'est un choix qui n'en est pas un — il dirait la vraie. */
+        else if(parChoix && m && m.relationsDe(d).length===1)
+          add("avert",`Dimension « ${d} » n'offre qu'une relation`,
+            "Le joueur choisit entre les deux relations de la dimension : n'en offrir qu'une, c'est la lui souffler. Déclare l'autre côté — égalité, ou différence et ordre.",{});
       }
     const prod=new Set(finaux); let z=true;
     while(z){ z=false; for(const b of G.blocs) if(prod.has(b.vers)&&!prod.has(b.de)){ prod.add(b.de); z=true; } }
     const etats=new Set([G.depart,...G.blocs.flatMap(b=>[b.de,b.vers])]);
     for(const e of etats) if(!prod.has(e))
       add("erreur",`Impasse dans l'automate : état « ${e} »`,"Aucun chemin ne mène de cet état à une fin de phrase — le joueur y resterait coincé.",{});
-    const parDeduction=(G.blocs||[]).some(b=>b.deduit);
+    const parDeduction=(G.blocs||[]).some(b=>b.deduit || b.type==="relation");
     const slotOuvert=F=>{ const s=F.slots&&F.slots[0];
       return s==="*" || (Array.isArray(s) && s.some(d=>dims.includes(d))); };
     for(const [f,F] of Object.entries(G.formes)){
@@ -57,7 +63,7 @@ function diagnostiquer(){
           "Aucune liaison ne la produit, et elle ne peut pas se déduire — une forme déduite porte « deduction » et une arité 2. Elle est indicible.",{});
       else if(!parDeduction)
         add("avert",`Forme « ${f} » déductible, mais rien ne la déduit`,
-          "Elle porte « deduction », mais aucun bloc de la grammaire ne porte « deduit » : rien ne déclencherait le calcul.",{});
+          "Elle porte « deduction », mais aucun bloc de la grammaire ne la fait choisir (`relation`) ni déduire (`deduit`) : rien ne la produirait.",{});
       else if(!slotOuvert(F))
         add("avert",`Forme « ${f} » se déduirait sur une dimension absente`,
           `Son premier slot ne nomme aucune dimension déclarée (${dims.join(", ")}) : deux empans de ce dossier ne la produiront jamais.`,{});
@@ -123,6 +129,12 @@ function diagnostiquer(){
         add("erreur",`Lien ${i} injouable : « ${courtDe(pid)} » n'est livrée par aucune remise`,
           "Le joueur ne peut surligner que dans les pièces reçues.",{edge:i});
     }
+    /* UNE RELATION FAUSSE (passe G) : la forme du lien n'est pas celle que donnent
+       les valeurs — le joueur pourrait la choisir, mais l'avocat la refuserait,
+       et ce lien ne se reconnaîtrait jamais en vrai. */
+    if(m && !cite_article && lienSense(L) && m.fausse({forme:L.forme,termes:L.termes||[]}))
+      add("erreur",`Lien ${i} : relation fausse sur les valeurs`,
+        `« ${labelLien(L)} » : les valeurs de ces empans disent l'autre relation (§4.5). Change la forme du lien, ou les valeurs.`,{edge:i});
     if(m && !cite_article && !lienSense(L))
       add("erreur",`Lien ${i} insensé : ${m.valider({forme:L.forme,termes:L.termes||[]})}`,
         `« ${labelLien(L)} » serait refusée à la composition — le joueur ne pourrait jamais la former.`,{edge:i});

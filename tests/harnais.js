@@ -181,8 +181,11 @@ function creerHarnais(dossier){
     const n0=w.S.brouillon.length, p0=w.S.prete;
     const echec=()=>{ w.S.brouillon.length=n0; w.S.prete=p0; w.viderCompo(); return false; };
     w.poserBloc(bT,iRetenu(w,t0));
-    const bD=w.R.blocsOfferts(w.S).findIndex(x=>x.type==="terme"&&x.source!=="note"&&x.deduit);
-    if(bD>=0){ w.poserBloc(bD,iRetenu(w,t1)); return true; }
+    const bD=w.R.blocsOfferts(w.S).findIndex(x=>x.source!=="note"&&w.R.estSecondTerme(x));
+    if(bD>=0){
+      w.poserBloc(bD,iRetenu(w,t1));
+      return choisirRelation(w,L.forme) || echec();
+    }
     const chemin=cheminVers(w,L.forme);
     if(!chemin.length) return echec();
     for(const etape of chemin){
@@ -190,6 +193,19 @@ function creerHarnais(dossier){
       const bloc=G.blocs.find(x=>x.id===etape);
       w.poserBloc(b, bloc.type==="terme" ? iRetenu(w,t1) : undefined);
     }
+    return true;
+  }
+  /* LA RELATION SE CHOISIT (passe G, §4.5) : par le bouton du composeur — la
+     porte du joueur, `poserBloc` avec l'indice de la relation parmi les deux
+     offertes. Rien à choisir — juxtaposition posée d'elle-même, ou contenu
+     d'avant qui la déduit (`deduit`) — : rien à faire. Une forme qui n'est pas
+     offerte : échec. */
+  function choisirRelation(w,forme){
+    const iR=w.R.blocsOfferts(w.S).findIndex(x=>x.type==="relation");
+    if(iR<0) return true;
+    const j=w.R.relationsOffertes(w.S).indexOf(forme);
+    if(j<0) return false;
+    w.poserBloc(iR,j);
     return true;
   }
   /* ASSEMBLER — composer et s'arrêter là. Rien n'est transmis, la phrase se
@@ -231,7 +247,8 @@ function creerHarnais(dossier){
   function phrasesBruit(w,n){
     const G=J(w).grammaire;
     const emp=w.CHAMPS;
-    const deduction=(G.blocs||[]).some(x=>x.deduit);
+    // La relation VRAIE : déduite (contenu d'avant) ou choisie (passe G), c'est la même.
+    const deduction=(G.blocs||[]).some(x=>x.deduit || x.type==="relation");
     const forme2=Object.entries(G.formes).find(([,f])=>(f.arite||2)===2&&f.relation==="meme_dim");
     if(!deduction && !forme2) return 0;
     const arts=articlesDisponibles(w);
@@ -322,7 +339,7 @@ function creerHarnais(dossier){
            discussion, contexte, composeur, plaidoirie, plaidoirieVisible,
            lienVice, lienConclusion, lienFaux, lienTag, sousTerme, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
-           cloreSurPlace, poserComparaison, assembler, lireLeTexte, cleArticle, prendreLiaison, livrerTout,
+           cloreSurPlace, poserComparaison, choisirRelation, assembler, lireLeTexte, cleArticle, prendreLiaison, livrerTout,
            surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,

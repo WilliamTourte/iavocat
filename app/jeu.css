@@ -365,6 +365,10 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .compo .barre .dejaEnvoyee{margin-left:auto;color:var(--muted);font-size:13px;font-style:italic;padding:8px 4px}
 .refus{color:#e6b0b0;font-size:13px;margin-top:8px}
 .bbloc.fondement{background:#25313d;border-left:3px solid var(--transmis)}
+/* §4.5 — les deux relations au choix (passe G) : pareilles, côte à côte — aucune
+   ne se distingue de l'autre. */
+.bbloc.relation{border-left:3px solid var(--muted)}
+.offre .relations{display:flex;flex-wrap:wrap;gap:8px}
 /* --- plaidoirie --- */
 .liste{list-style:none;padding:0;margin:0}
 .liste li{font-size:13.5px;padding:8px 0;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}

@@ -372,6 +372,10 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .compo .barre .dejaEnvoyee{margin-left:auto;color:var(--muted);font-size:13px;font-style:italic;padding:8px 4px}
 .refus{color:#e6b0b0;font-size:13px;margin-top:8px}
 .bbloc.fondement{background:#25313d;border-left:3px solid var(--transmis)}
+/* §4.5 — les deux relations au choix (passe G) : pareilles, côte à côte — aucune
+   ne se distingue de l'autre. */
+.bbloc.relation{border-left:3px solid var(--muted)}
+.offre .relations{display:flex;flex-wrap:wrap;gap:8px}
 /* --- plaidoirie --- */
 .liste{list-style:none;padding:0;margin:0}
 .liste li{font-size:13.5px;padding:8px 0;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}
@@ -653,8 +657,10 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
   const estFinal = e => G.finaux.includes(e);
   const offerts = e => G.blocs.filter(b => b.de === e);
 
-  /* ---- LA DÉDUCTION (§4.5) ---- la relation se calcule de la dimension et des
-     valeurs : le joueur désigne, il ne déclare plus. */
+  /* ---- LA VÉRIFICATION (§4.5) ---- la relation VRAIE se calcule de la dimension
+     et des valeurs. Depuis la passe G, le joueur la déclare et le moteur la
+     vérifie : `deduire` est l'oracle, il ne rédige plus — sauf pour un contenu
+     d'avant, dont le second terme porte encore `deduit` (§11). */
   const enNombre = v => {
     const s = String(v == null ? "" : v).trim();
     if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
@@ -687,6 +693,27 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     }
     return null;
   }
+  /* LES DEUX RELATIONS D'UNE DIMENSION (passe G) : de chaque côté — égalité, puis
+     différence ou ordre —, la PREMIÈRE forme déclarée qui la nomme, celle que
+     `deduire` rendrait. La vraie est donc toujours l'une des deux. */
+  const nomme = (f, d) => !!f.deduction && !estJuxta(f) && (f.arite || 2) === 2 && !!f.slots
+    && (f.slots[0] === "*" || (f.slots[0] || []).includes(d));
+  function relationsDe(d) {
+    const fs = Object.entries(G.formes);
+    const egal = fs.find(([, f]) => nomme(f, d) && f.deduction === "egalite");
+    const autre = fs.find(([, f]) => nomme(f, d) && f.deduction !== "egalite");
+    return [egal, autre].filter(Boolean).map(([nom]) => nom);
+  }
+  /* UNE RELATION FAUSSE : une comparaison, emboîtée ou non, dont la forme n'est
+     pas celle que donnent les valeurs. Elle part, et l'avocat la refuse (§4.5). */
+  function fausse(r) {
+    if (!r || typeof r !== "object") return false;
+    const f = G.formes[r.forme] || {};
+    const t = r.termes || [];
+    if (f.deduction && !estJuxta(f) && (f.arite || 2) === 2 && t.length === 2
+        && t.every(x => typeof x === "string") && deduire(t[0], t[1]) !== r.forme) return true;
+    return t.some(x => typeof x === "object" && fausse(x));
+  }
   function ordonner(forme, termes) {
     const f = G.formes[forme];
     if (!f || !f.ordonne || termes.length !== 2) return termes;
@@ -698,16 +725,17 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     return inverser ? [y, x] : [x, y];
   }
 
-  // Une chaîne de blocs → sa forme réduite. `deduit` fait DÉDUIRE la forme des
-  // deux termes ; `imbrique` EMBOÎTE ce qui précède. Sans l'un ni l'autre : la
+  // Une chaîne de blocs → sa forme réduite. Un bloc `relation` pose la forme que
+  // le joueur a CHOISIE (passe G) ; `deduit` la fait DÉDUIRE des deux termes (un
+  // contenu d'avant) ; `imbrique` EMBOÎTE ce qui précède. Sans aucun : la
   // dernière forme gagne, termes à plat (§11).
   function reduire(ch) {
     let termes = [], forme = null;
     for (const p of ch) {
       const b = p.bloc;
       if (b.type === "terme") termes.push(p.valeur);
-      if (b.deduit) {
-        forme = termes.length === 2 ? deduire(termes[0], termes[1]) : null;
+      if (b.deduit || b.type === "relation") {
+        forme = termes.length === 2 ? (b.deduit ? deduire(termes[0], termes[1]) : p.valeur || null) : null;
         if (forme) termes = ordonner(forme, termes);
       } else if (b.forme) {
         if (b.imbrique) termes = [{ forme, termes }];
@@ -765,8 +793,8 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
         termes.push(p.valeur);
         bouts.push(b.source === "note" ? b.texte : nomDe(p.valeur));
       } else if (b.texte) bouts.push(b.texte);
-      if (b.deduit) {
-        forme = termes.length === 2 ? deduire(termes[0], termes[1]) : null;
+      if (b.deduit || b.type === "relation") {
+        forme = termes.length === 2 ? (b.deduit ? deduire(termes[0], termes[1]) : p.valeur || null) : null;
         const f = forme && G.formes[forme];
         if (f && f.patron) {
           const ord = ordonner(forme, termes);
@@ -793,7 +821,7 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     return out;
   }
   return { C, estFinal, offerts, reduire, dimDe, valider, memeTerme, memeRed, lienDe, rendre,
-           squelettes, comparer, deduire, ordonner };
+           squelettes, comparer, deduire, ordonner, relationsDe, fausse };
 }
 
 const _projections = (function () {
@@ -884,6 +912,7 @@ function creerRegles(JEU, M) {
     declenches: [],               // pièces dont le `declenche` une_fois a joué
     inutiles: 0, incompris: 0,    // compteurs d'agacement de l'avocat, remis à zéro à chaque remise
     hors_sujet: 0,                // …et celui des citations qui ne répondent pas
+    fausses: 0,                   // …et celui des relations fausses (passe G)
     modalPiece: null
   }; }
 
@@ -925,7 +954,7 @@ function creerRegles(JEU, M) {
     // §4.11 — l'agacement retombe à chaque remise : un nouveau dossier, une
     // nouvelle séance, et les premières répliques — les seules qui disent
     // quelque chose — se réentendent.
-    S.inutiles = S.incompris = S.hors_sujet = 0;
+    S.inutiles = S.incompris = S.hors_sujet = S.fausses = 0;
     pousser(S, r.qui, r.texte, r.pieces);
     poserQuestion(S, r, true);
   }
@@ -1013,17 +1042,29 @@ function creerRegles(JEU, M) {
     if (S.prete != null) return -1;
     return blocsOfferts(S).findIndex(b => b.type === "terme" && b.source !== "note");
   }
+  /* LE SECOND TERME D'UNE PAIRE : celui qui mène au choix de la relation (passe
+     G), ou — contenu d'avant — celui qui la fait déduire (`deduit`, §11). */
+  const estSecondTerme = b => !!b && b.type === "terme" && (!!b.deduit
+    || (JEU.grammaire.blocs || []).some(x => x.de === b.vers && x.type === "relation"));
   function comparaisonPossible(S) {
     const offerts = blocsOfferts(S);
-    if (S.compo.length) return offerts.some(b => b.type === "terme" && b.deduit);
-    return offerts.some(b => b.type === "terme"
-      && blocsDepuis(b.vers, S).some(x => x.type === "terme" && x.deduit));
+    if (S.compo.length) return offerts.some(estSecondTerme);
+    return offerts.some(b => b.type === "terme" && blocsDepuis(b.vers, S).some(estSecondTerme));
+  }
+  /* LES DEUX RELATIONS QUE LA PHRASE OFFRE (passe G, §4.5) : deux termes de même
+     dimension posés, et le bloc `relation` en attente. Ailleurs, aucune. */
+  const termesPoses = S => S.compo.map(p => p.valeur).filter(v => typeof v === "string");
+  function relationsOffertes(S) {
+    if (!blocsOfferts(S).some(b => b.type === "relation")) return [];
+    const t = termesPoses(S).slice(-2);
+    if (t.length !== 2 || M.dimDe(t[0]) !== M.dimDe(t[1])) return [];
+    return M.relationsDe(M.dimDe(t[0]));
   }
   function dimAttendue(S) {
     const i = indexTermeChamp(S);
     if (i < 0) return null;
     const b = blocsOfferts(S)[i];
-    if (!b.deduit) return null;
+    if (!estSecondTerme(b)) return null;
     const premier = S.compo.find(p => { const pb = blocParId(p.bloc); return pb && pb.type === "terme"; });
     return premier ? M.dimDe(premier.valeur) : null;
   }
@@ -1062,10 +1103,26 @@ function creerRegles(JEU, M) {
      nue ou sous un article. */
   const juxtapose = r => !!r && typeof r === "object" && (formeDe(r).deduction === "juxtaposition"
     || (r.termes || []).some(t => juxtapose(t)));
+  const formeJuxtaposition = () =>
+    (Object.entries(JEU.grammaire.formes || {}).find(([, f]) => f.deduction === "juxtaposition") || [null])[0];
+  /* LA RELATION SE CHOISIT (passe G, §4.5) : `iSrc` désigne l'une des deux
+     relations offertes. Deux termes de dimensions différentes n'en ont aucune à
+     offrir : en session 1, le second est refusé ; ensuite, la juxtaposition se
+     pose d'elle-même (`auto`), et `retirerBloc` l'emporte avec le terme qui l'a
+     appelée. Le même passage deux fois ne se compare pas. */
+  function paireRefusee(S) {
+    const [x, y] = termesPoses(S).slice(-2);
+    if (x === y) return true;
+    if (M.dimDe(x) !== M.dimDe(y)) return enCalibration(S) || !formeJuxtaposition();
+    return !M.relationsDe(M.dimDe(x)).length;
+  }
   function poserBloc(S, iBloc, iSrc) {
     S.prete = null;              // reprendre abandonne la phrase qui attendait
     const b = blocsOfferts(S)[iBloc]; if (!b) return;
     let valeur = null;
+    if (b.type === "relation") {
+      valeur = relationsOffertes(S)[iSrc]; if (!valeur) return;
+    }
     if (b.type === "terme") {
       if (b.source === "note") {
         const n = S.brouillon[iSrc]; if (!n) return;
@@ -1078,13 +1135,20 @@ function creerRegles(JEU, M) {
     S.compo.push({ bloc: b.id, valeur });
     S.refus = null;
     const r = M.reduire(chaineCompo(S));
+    const paire = estSecondTerme(b) && !b.deduit;
     const err = b.deduit && (!r.forme || (juxtapose(r) && enCalibration(S))) ? "ces deux-là ne se comparent pas"
+              : paire && paireRefusee(S) ? "ces deux-là ne se comparent pas"
               : (JEU.grammaire.finaux || []).includes(b.vers) ? M.valider(r) : null;
     if (err) {
       S.compo.pop();
       S.refus = "Cette phrase ne veut rien dire : " + err
               + ". Rien n'est perdu — reprends avec un autre passage.";
       return;
+    }
+    if (paire) {
+      const [x, y] = termesPoses(S).slice(-2);
+      const rel = (JEU.grammaire.blocs || []).find(z => z.de === b.vers && z.type === "relation");
+      if (M.dimDe(x) !== M.dimDe(y) && rel) S.compo.push({ bloc: rel.id, valeur: formeJuxtaposition(), auto: true });
     }
     majPressentiment(S);
   }
@@ -1105,7 +1169,11 @@ function creerRegles(JEU, M) {
     return M.valider(M.reduire(ch)) ? null : ch;
   }
   const peutEnvoyer = S => !!chaineEnvoyable(S);
-  function retirerBloc(S) { S.compo.pop(); S.refus = null; }
+  function retirerBloc(S) {
+    const p = S.compo.pop();
+    if (p && p.auto) S.compo.pop();   // la juxtaposition part avec le terme qui l'a posée
+    S.refus = null;
+  }
   function viderCompo(S) { S.compo = []; S.refus = null; }
   function effacerPrete(S) { S.prete = null; }
 
@@ -1219,6 +1287,9 @@ function creerRegles(JEU, M) {
     // §4.11 — hors session 1, la juxtaposition part : c'est l'avocat qui la
     // refuse, nue comme sous un article — un refus d'avocat, plus de grammaire.
     else if (juxtapose(n.reduite))   pousser(S, "Maître Auber", esc1(A.rep_sans_rapport || ["…"], "incompris"));
+    // §4.5 — UNE RELATION FAUSSE PART, ET L'AVOCAT LA REFUSE, partout : à deux
+    // relations, un refus d'écran aurait donné l'autre (passe G).
+    else if (M.fausse(n.reduite))    pousser(S, "Maître Auber", esc1(A.rep_relation_fausse || A.rep_sans_rapport || ["…"], "fausses"));
     else {
       const f = (JEU.grammaire.formes || {})[n.reduite.forme] || {};
       const emboite = typeof ((n.reduite.termes || [])[0]) === "object";
@@ -1318,7 +1389,7 @@ function creerRegles(JEU, M) {
            piecesLivrees, estRegle, reglesLivrees, porteDe,
            surligner, oublier, blocParId, etatCompo, blocsOfferts, indexTermeChamp,
            estArticle, articleRetenu, estLiaisonArticle, articleAttendu,
-           comparaisonPossible, dimAttendue,
+           comparaisonPossible, dimAttendue, estSecondTerme, relationsOffertes,
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, dejaEnvoyee, envoyerCompo, compoFinie,
@@ -1651,9 +1722,14 @@ window.CONTENU = {
         "type": "terme",
         "source": "champ",
         "de": "S1",
-        "vers": "S4",
-        "deduit": true,
+        "vers": "S2",
         "piece": "r_temoin"
+      },
+      {
+        "id": "r0",
+        "type": "relation",
+        "de": "S2",
+        "vers": "S4"
       },
       {
         "id": "a3",
@@ -1700,7 +1776,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} sont une seule et même personne"
+        "patron": "{a} et {b} sont une seule et même personne",
+        "libelle": "sont une seule et même personne"
       },
       "distinction_personne": {
         "arite": 2,
@@ -1715,7 +1792,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} ne sont pas la même personne"
+        "patron": "{a} et {b} ne sont pas la même personne",
+        "libelle": "ne sont pas la même personne"
       },
       "identite_lieu": {
         "arite": 2,
@@ -1730,7 +1808,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} sont au même endroit"
+        "patron": "{a} et {b} sont au même endroit",
+        "libelle": "sont au même endroit"
       },
       "distinction_lieu": {
         "arite": 2,
@@ -1745,7 +1824,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} ne sont pas au même endroit"
+        "patron": "{a} et {b} ne sont pas au même endroit",
+        "libelle": "ne sont pas au même endroit"
       },
       "identite_heure": {
         "arite": 2,
@@ -1760,7 +1840,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} coïncident"
+        "patron": "{a} et {b} coïncident",
+        "libelle": "coïncident"
       },
       "identite_nombre": {
         "arite": 2,
@@ -1775,7 +1856,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} sont égaux"
+        "patron": "{a} et {b} sont égaux",
+        "libelle": "sont égaux"
       },
       "identite_oui": {
         "arite": 2,
@@ -1790,7 +1872,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} désignent la même chose"
+        "patron": "{a} et {b} désignent la même chose",
+        "libelle": "désignent la même chose"
       },
       "anteriorite": {
         "arite": 2,
@@ -1805,7 +1888,8 @@ window.CONTENU = {
             "quand"
           ]
         ],
-        "patron": "{a} précède {b}"
+        "patron": "{a} précède {b}",
+        "libelle": "précède"
       },
       "ordre_grandeur": {
         "arite": 2,
@@ -1820,7 +1904,8 @@ window.CONTENU = {
             "combien"
           ]
         ],
-        "patron": "{a} est d'un tout autre ordre que {b}"
+        "patron": "{a} est d'un tout autre ordre que {b}",
+        "libelle": "est d'un tout autre ordre que"
       },
       "identite_non": {
         "arite": 2,
@@ -1835,7 +1920,8 @@ window.CONTENU = {
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} ne désignent pas la même chose"
+        "patron": "{a} et {b} ne désignent pas la même chose",
+        "libelle": "ne désignent pas la même chose"
       },
       "juxtaposition": {
         "arite": 2,
@@ -2130,6 +2216,11 @@ window.CONTENU = {
     "rep_sans_rapport": [
       "Je ne vois pas où tu veux en venir avec ça.",
       "Encore une phrase que je ne peux pas plaider. Qu'est-ce que tu cherches ?",
+      "…"
+    ],
+    "rep_relation_fausse": [
+      "Non. Ce n'est pas ce que disent ces deux passages — relis-les.",
+      "Encore non. Ce que tu leur fais dire, ils ne le disent pas.",
       "…"
     ],
     "rep_hors_sujet": [
@@ -2434,6 +2525,12 @@ function tutoEtapeComparaison(){
       : {...GESTE_RELIER, n:2, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
           ditLong:"Ouvre ton CONTEXTE : "+ditLong[0].toLowerCase()+ditLong.slice(1)};
   }
+  /* CHOISIR CE QUI LES LIE (passe G, §4.8) : le halo entoure les DEUX relations,
+     toute la zone — jamais la bonne, et un mauvais choix n'est pas signalé :
+     c'est l'avocat qui le refuse, après l'envoi. */
+  if(R.blocsOfferts(S).some(b=>b.type==="relation"))
+    return {...GESTE_RELIER, n:3, ou:"#composeur .offre", dit:"Choisis ce qui les lie.",
+      ditLong:"Deux passages ne disent pas d'eux-mêmes ce qui les lie : choisis-le."};
   /* PIÈGE : une comparaison nue EST envoyable (§4.5), donc ce temps doit passer
      AVANT le silence de la phrase qui se tient — sans quoi la bulle se tairait
      là où la leçon est « il te faut un article ». Et depuis que l'article SE
@@ -2443,27 +2540,27 @@ function tutoEtapeComparaison(){
      livré — reste au composeur, et la zone de ses propositions avec elle. */
   if(S.compo.length && !R.compoFinie(S)){
     const art=tutoArticle(), cle=art && tutoCleArticle(art.piece);
-    if(!art) return {...GESTE_RELIER, n:4, ou:"#composeur .offre",
+    if(!art) return {...GESTE_RELIER, n:5, ou:"#composeur .offre",
         dit:"Prends ce qui la fonde.",
         ditLong:"Une relation seule ne suffit pas : prends ce sur quoi elle s'appuie."};
     const ditLong="Une relation seule ne suffit pas : il lui faut un article qui la fonde.";
     if(panneau!=="contexte")
-      return {...GESTE_RELIER, n:3, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
+      return {...GESTE_RELIER, n:4, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
           ditLong:ditLong+" Ton dossier est dans ton CONTEXTE."};
     if(R.articleRetenu(S, art.piece))
-      return {...GESTE_RELIER, n:4, ou:"#zoneRetenus", f: cle && "c:"+cle,
+      return {...GESTE_RELIER, n:5, ou:"#zoneRetenus", f: cle && "c:"+cle,
         dit:"Prends l'article qui la fonde.",
         ditLong:"Une relation seule ne suffit pas : prends, dans ton CONTEXTE, l'article sur lequel elle s'appuie."};
     if(S.modalPiece===art.piece)
-      return {...GESTE_RELIER, n:3, ou:"#panPiece .piecetexte", dit:"Retiens l'article.",
+      return {...GESTE_RELIER, n:4, ou:"#panPiece .piecetexte", dit:"Retiens l'article.",
         ditLong:"Clique sur son texte pour le retenir : on n'invoque que ce qu'on a retenu."};
     /* Une pièce encore ouverte replie l'index, et la puce y est cachée : le cas
        COURANT, la pièce du second passage restant ouverte. On montre alors
        « déplier », la porte de la puce — jamais on ne déplie à sa place. */
     return indexPlie()
-      ? {...GESTE_RELIER, n:3, ou:"#zoneDossier", f:"dossier", dit:"Déplie ton dossier.",
+      ? {...GESTE_RELIER, n:4, ou:"#zoneDossier", f:"dossier", dit:"Déplie ton dossier.",
           ditLong:ditLong+" Déplie ton dossier : l'article y est, et on n'invoque que ce qu'on a retenu."}
-      : {...GESTE_RELIER, n:3, ou:"#zoneDossier", f:"d:"+art.piece, dit:"Lis l'article.",
+      : {...GESTE_RELIER, n:4, ou:"#zoneDossier", f:"d:"+art.piece, dit:"Lis l'article.",
           ditLong:ditLong+" Ouvre-le dans ton dossier, puis retiens-le : on n'invoque que ce qu'on a retenu."};
   }
   return null;   // la phrase qui se tient : « → Envoyer » se montre seul (§4.8)
@@ -2619,6 +2716,23 @@ function voirCibleTuto(){
   if(tutoCible && document.contains(tutoCible) && tutoCible.scrollIntoView)
     tutoCible.scrollIntoView({block:"nearest"});
 }
+/* LES DEUX RELATIONS SE VOIENT (passe G, §4.5) : elles naissent au bas d'un
+   composeur plafonné, sous la question et les deux passages — sous le pli, et
+   rien ne le disait (mesuré, `npm run vue`). Une fois par apparition, pour ne
+   jamais disputer le défilement au joueur ; jsdom n'a pas `scrollIntoView`. */
+let relationsVues=false;
+function voirRelations(){
+  if(!R.blocsOfferts(S).some(b=>b.type==="relation")){
+    // La relation choisie, le composeur revient en tête : le défilement qu'on
+    // lui a imposé ne survit pas à ce qui l'appelait.
+    if(relationsVues){ const c=$("composeur"); if(c) c.scrollTop=0; }
+    relationsVues=false; return;
+  }
+  if(relationsVues) return;
+  relationsVues=true;
+  const el=document.querySelector("#composeur .bbloc.relation");
+  if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
+}
 /* Les bandes défilent, pas la page : un `scroll` ne remonte pas, d'où la
    CAPTURE. Une image par rafale suffit. */
 let tutoImage=0;
@@ -2739,6 +2853,7 @@ function rendreTout(){
   recalerFil(enBas); majDebord();
   rendreFocus(m, force);
   voirCibleTuto();                 // APRÈS le focus, qui ne défile pas (`preventScroll`)
+  voirRelations();
   placerTuto();                    // APRÈS le recalage du fil, le focus et `voirCibleTuto` : ils déplacent l'ancre
   rappelRetrait=null; vientDeRetenir=null; rappelPleine=false; raisonArticle=null;
   annoncerNouveautes(); publierAnnonces();
@@ -2882,7 +2997,9 @@ function fermerPiece(){
    prendre au composeur : le panneau reste. `peutEnvoyer` n'est PAS un relais :
    une comparaison nue part (§4.5). */
 function suivrePhrase(){
-  const relais = () => R.compoFinie(S) || R.blocsOfferts(S).some(b=>!R.estLiaisonArticle(b));
+  // Le choix de la relation (passe G) n'est pas un relais : l'article qui suit
+  // se prend au CONTEXTE, et le refermer là, c'était le faire rouvrir aussitôt.
+  const relais = () => R.compoFinie(S) || R.blocsOfferts(S).some(b=>b.type!=="relation" && !R.estLiaisonArticle(b));
   if(panneau==="contexte" && panneauSuit && R.indexTermeChamp(S) < 0 && relais()){ panneau=null; panneauSuit=false; }
   if(S.modalPiece && panneau!=="contexte") R.fermerPiece(S);
 }
@@ -3025,7 +3142,9 @@ function piecePanelHTML(pid){
    (`aria-disabled`), et les toucher redit la raison. */
 const RAISON_PLEINE="Ta phrase ne prend plus de passage : « ← retirer » pour revenir en arrière.";
 const RAISON_ARTICLE_ATTENDU="Ta phrase ne prend plus de passage : elle attend un article.";
-const raisonPleine=()=>R.articleAttendu(S) ? RAISON_ARTICLE_ATTENDU : RAISON_PLEINE;
+const RAISON_RELATION_ATTENDUE="Ta phrase ne prend plus de passage : elle attend ce qui les lie.";
+const raisonPleine=()=>R.relationsOffertes(S).length ? RAISON_RELATION_ATTENDUE
+  : R.articleAttendu(S) ? RAISON_ARTICLE_ATTENDU : RAISON_PLEINE;
 let rappelPleine=false;
 function passageRefuse(cle){
   rappelPleine=true; annoncer(raisonPleine());
@@ -3141,6 +3260,9 @@ function souffle(){
     return second ? "Prends un ou plusieurs passages de ton contexte." : "Prends un passage de ton contexte pour répondre.";
   }
   if(offerts.some(b=>b.cite) || R.compoFinie(S)) return "";
+  // §4.5 — LE JOUEUR DÉCLARE CE QUI LES LIE (passe G) : la voix nomme le geste,
+  // les deux relations sont juste dessous ; elle ne dit jamais laquelle.
+  if(offerts.some(b=>b.type==="relation")) return "Qu'est-ce qui les lie ?";
   if(offerts.some(b=>b.type==="terme"&&b.source!=="note"))
     return "Prends un second passage pour le mettre en relation.";
   return offerts.length
@@ -3165,10 +3287,16 @@ function rendreVoix(txt, classe){
     ? `<button class="${classe} versCONTEXTE" data-f="voix" onclick="ouvrirCONTEXTE()">${escapeAttr(txt)}<span class="fl" aria-hidden="true">↑</span></button>`
     : `<span class="${classe}">${escapeAttr(txt)}</span>`;
 }
+/* Le bouton d'une relation : son `libelle` (§11), sinon son patron, les deux
+   termes en points de suspension — ils sont écrits juste au-dessus. */
+function libelleRelation(f){
+  const F=(JEU.grammaire.formes||{})[f]||{};
+  return F.libelle || String(F.patron||f).replace("{a}","…").replace("{b}","…");
+}
 function texteCompoPartiel(){
   if(!S.compo.length) return rendreVoix(souffle(),"trou");
   const ch=R.chaineCompo(S);
-  const fini=ch.some(p=>p.bloc.deduit);
+  const fini=ch.some(p=>p.bloc.deduit || p.bloc.type==="relation");
   if(fini) return `<span class="bl">${escapeAttr(M.rendre(ch).replace(/\.$/,""))}</span>`;
   return ch.map(p=>{
     if(p.bloc.type!=="terme") return `<span class="bl">${escapeAttr(p.bloc.texte)}</span>`;
@@ -3241,6 +3369,15 @@ function renderCompo(){
   offerts.forEach((b,i)=>{
     if(implicite && b.id===implicite.id) return;
     if(R.estLiaisonArticle(b)) return;      // sa fiche, au CONTEXTE, est son bouton (§4.6)
+    /* §4.5 — LES DEUX RELATIONS DE LA DIMENSION, au choix (passe G) : un bouton
+       chacune, dans l'ordre de la grammaire — égalité, puis différence ou ordre.
+       Jamais un signe de la vraie : c'est le joueur qui déclare, l'avocat qui
+       refuse une relation fausse. */
+    if(b.type==="relation"){
+      h+=`<div class="relations">${R.relationsOffertes(S).map((f,j)=>
+        `<button class="bbloc relation" data-f="rel:${escapeAttr(f)}" onclick="poserBloc(${i},${j})">${escapeAttr(libelleRelation(f))}</button>`).join("")}</div>`;
+      return;
+    }
     if(b.type==="liaison"){
       // PIÈGE : `fondement` est propre à `.bbloc` ; `.msg.suite` est le même
       // mot pour un sens sans rapport.

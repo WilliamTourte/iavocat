@@ -255,6 +255,12 @@ function tutoEtapeComparaison(){
       : {...GESTE_RELIER, n:2, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
           ditLong:"Ouvre ton CONTEXTE : "+ditLong[0].toLowerCase()+ditLong.slice(1)};
   }
+  /* CHOISIR CE QUI LES LIE (passe G, §4.8) : le halo entoure les DEUX relations,
+     toute la zone — jamais la bonne, et un mauvais choix n'est pas signalé :
+     c'est l'avocat qui le refuse, après l'envoi. */
+  if(R.blocsOfferts(S).some(b=>b.type==="relation"))
+    return {...GESTE_RELIER, n:3, ou:"#composeur .offre", dit:"Choisis ce qui les lie.",
+      ditLong:"Deux passages ne disent pas d'eux-mêmes ce qui les lie : choisis-le."};
   /* PIÈGE : une comparaison nue EST envoyable (§4.5), donc ce temps doit passer
      AVANT le silence de la phrase qui se tient — sans quoi la bulle se tairait
      là où la leçon est « il te faut un article ». Et depuis que l'article SE
@@ -264,27 +270,27 @@ function tutoEtapeComparaison(){
      livré — reste au composeur, et la zone de ses propositions avec elle. */
   if(S.compo.length && !R.compoFinie(S)){
     const art=tutoArticle(), cle=art && tutoCleArticle(art.piece);
-    if(!art) return {...GESTE_RELIER, n:4, ou:"#composeur .offre",
+    if(!art) return {...GESTE_RELIER, n:5, ou:"#composeur .offre",
         dit:"Prends ce qui la fonde.",
         ditLong:"Une relation seule ne suffit pas : prends ce sur quoi elle s'appuie."};
     const ditLong="Une relation seule ne suffit pas : il lui faut un article qui la fonde.";
     if(panneau!=="contexte")
-      return {...GESTE_RELIER, n:3, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
+      return {...GESTE_RELIER, n:4, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
           ditLong:ditLong+" Ton dossier est dans ton CONTEXTE."};
     if(R.articleRetenu(S, art.piece))
-      return {...GESTE_RELIER, n:4, ou:"#zoneRetenus", f: cle && "c:"+cle,
+      return {...GESTE_RELIER, n:5, ou:"#zoneRetenus", f: cle && "c:"+cle,
         dit:"Prends l'article qui la fonde.",
         ditLong:"Une relation seule ne suffit pas : prends, dans ton CONTEXTE, l'article sur lequel elle s'appuie."};
     if(S.modalPiece===art.piece)
-      return {...GESTE_RELIER, n:3, ou:"#panPiece .piecetexte", dit:"Retiens l'article.",
+      return {...GESTE_RELIER, n:4, ou:"#panPiece .piecetexte", dit:"Retiens l'article.",
         ditLong:"Clique sur son texte pour le retenir : on n'invoque que ce qu'on a retenu."};
     /* Une pièce encore ouverte replie l'index, et la puce y est cachée : le cas
        COURANT, la pièce du second passage restant ouverte. On montre alors
        « déplier », la porte de la puce — jamais on ne déplie à sa place. */
     return indexPlie()
-      ? {...GESTE_RELIER, n:3, ou:"#zoneDossier", f:"dossier", dit:"Déplie ton dossier.",
+      ? {...GESTE_RELIER, n:4, ou:"#zoneDossier", f:"dossier", dit:"Déplie ton dossier.",
           ditLong:ditLong+" Déplie ton dossier : l'article y est, et on n'invoque que ce qu'on a retenu."}
-      : {...GESTE_RELIER, n:3, ou:"#zoneDossier", f:"d:"+art.piece, dit:"Lis l'article.",
+      : {...GESTE_RELIER, n:4, ou:"#zoneDossier", f:"d:"+art.piece, dit:"Lis l'article.",
           ditLong:ditLong+" Ouvre-le dans ton dossier, puis retiens-le : on n'invoque que ce qu'on a retenu."};
   }
   return null;   // la phrase qui se tient : « → Envoyer » se montre seul (§4.8)
@@ -440,6 +446,23 @@ function voirCibleTuto(){
   if(tutoCible && document.contains(tutoCible) && tutoCible.scrollIntoView)
     tutoCible.scrollIntoView({block:"nearest"});
 }
+/* LES DEUX RELATIONS SE VOIENT (passe G, §4.5) : elles naissent au bas d'un
+   composeur plafonné, sous la question et les deux passages — sous le pli, et
+   rien ne le disait (mesuré, `npm run vue`). Une fois par apparition, pour ne
+   jamais disputer le défilement au joueur ; jsdom n'a pas `scrollIntoView`. */
+let relationsVues=false;
+function voirRelations(){
+  if(!R.blocsOfferts(S).some(b=>b.type==="relation")){
+    // La relation choisie, le composeur revient en tête : le défilement qu'on
+    // lui a imposé ne survit pas à ce qui l'appelait.
+    if(relationsVues){ const c=$("composeur"); if(c) c.scrollTop=0; }
+    relationsVues=false; return;
+  }
+  if(relationsVues) return;
+  relationsVues=true;
+  const el=document.querySelector("#composeur .bbloc.relation");
+  if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
+}
 /* Les bandes défilent, pas la page : un `scroll` ne remonte pas, d'où la
    CAPTURE. Une image par rafale suffit. */
 let tutoImage=0;
@@ -560,6 +583,7 @@ function rendreTout(){
   recalerFil(enBas); majDebord();
   rendreFocus(m, force);
   voirCibleTuto();                 // APRÈS le focus, qui ne défile pas (`preventScroll`)
+  voirRelations();
   placerTuto();                    // APRÈS le recalage du fil, le focus et `voirCibleTuto` : ils déplacent l'ancre
   rappelRetrait=null; vientDeRetenir=null; rappelPleine=false; raisonArticle=null;
   annoncerNouveautes(); publierAnnonces();
@@ -703,7 +727,9 @@ function fermerPiece(){
    prendre au composeur : le panneau reste. `peutEnvoyer` n'est PAS un relais :
    une comparaison nue part (§4.5). */
 function suivrePhrase(){
-  const relais = () => R.compoFinie(S) || R.blocsOfferts(S).some(b=>!R.estLiaisonArticle(b));
+  // Le choix de la relation (passe G) n'est pas un relais : l'article qui suit
+  // se prend au CONTEXTE, et le refermer là, c'était le faire rouvrir aussitôt.
+  const relais = () => R.compoFinie(S) || R.blocsOfferts(S).some(b=>b.type!=="relation" && !R.estLiaisonArticle(b));
   if(panneau==="contexte" && panneauSuit && R.indexTermeChamp(S) < 0 && relais()){ panneau=null; panneauSuit=false; }
   if(S.modalPiece && panneau!=="contexte") R.fermerPiece(S);
 }
@@ -846,7 +872,9 @@ function piecePanelHTML(pid){
    (`aria-disabled`), et les toucher redit la raison. */
 const RAISON_PLEINE="Ta phrase ne prend plus de passage : « ← retirer » pour revenir en arrière.";
 const RAISON_ARTICLE_ATTENDU="Ta phrase ne prend plus de passage : elle attend un article.";
-const raisonPleine=()=>R.articleAttendu(S) ? RAISON_ARTICLE_ATTENDU : RAISON_PLEINE;
+const RAISON_RELATION_ATTENDUE="Ta phrase ne prend plus de passage : elle attend ce qui les lie.";
+const raisonPleine=()=>R.relationsOffertes(S).length ? RAISON_RELATION_ATTENDUE
+  : R.articleAttendu(S) ? RAISON_ARTICLE_ATTENDU : RAISON_PLEINE;
 let rappelPleine=false;
 function passageRefuse(cle){
   rappelPleine=true; annoncer(raisonPleine());
@@ -962,6 +990,9 @@ function souffle(){
     return second ? "Prends un ou plusieurs passages de ton contexte." : "Prends un passage de ton contexte pour répondre.";
   }
   if(offerts.some(b=>b.cite) || R.compoFinie(S)) return "";
+  // §4.5 — LE JOUEUR DÉCLARE CE QUI LES LIE (passe G) : la voix nomme le geste,
+  // les deux relations sont juste dessous ; elle ne dit jamais laquelle.
+  if(offerts.some(b=>b.type==="relation")) return "Qu'est-ce qui les lie ?";
   if(offerts.some(b=>b.type==="terme"&&b.source!=="note"))
     return "Prends un second passage pour le mettre en relation.";
   return offerts.length
@@ -986,10 +1017,16 @@ function rendreVoix(txt, classe){
     ? `<button class="${classe} versCONTEXTE" data-f="voix" onclick="ouvrirCONTEXTE()">${escapeAttr(txt)}<span class="fl" aria-hidden="true">↑</span></button>`
     : `<span class="${classe}">${escapeAttr(txt)}</span>`;
 }
+/* Le bouton d'une relation : son `libelle` (§11), sinon son patron, les deux
+   termes en points de suspension — ils sont écrits juste au-dessus. */
+function libelleRelation(f){
+  const F=(JEU.grammaire.formes||{})[f]||{};
+  return F.libelle || String(F.patron||f).replace("{a}","…").replace("{b}","…");
+}
 function texteCompoPartiel(){
   if(!S.compo.length) return rendreVoix(souffle(),"trou");
   const ch=R.chaineCompo(S);
-  const fini=ch.some(p=>p.bloc.deduit);
+  const fini=ch.some(p=>p.bloc.deduit || p.bloc.type==="relation");
   if(fini) return `<span class="bl">${escapeAttr(M.rendre(ch).replace(/\.$/,""))}</span>`;
   return ch.map(p=>{
     if(p.bloc.type!=="terme") return `<span class="bl">${escapeAttr(p.bloc.texte)}</span>`;
@@ -1062,6 +1099,15 @@ function renderCompo(){
   offerts.forEach((b,i)=>{
     if(implicite && b.id===implicite.id) return;
     if(R.estLiaisonArticle(b)) return;      // sa fiche, au CONTEXTE, est son bouton (§4.6)
+    /* §4.5 — LES DEUX RELATIONS DE LA DIMENSION, au choix (passe G) : un bouton
+       chacune, dans l'ordre de la grammaire — égalité, puis différence ou ordre.
+       Jamais un signe de la vraie : c'est le joueur qui déclare, l'avocat qui
+       refuse une relation fausse. */
+    if(b.type==="relation"){
+      h+=`<div class="relations">${R.relationsOffertes(S).map((f,j)=>
+        `<button class="bbloc relation" data-f="rel:${escapeAttr(f)}" onclick="poserBloc(${i},${j})">${escapeAttr(libelleRelation(f))}</button>`).join("")}</div>`;
+      return;
+    }
     if(b.type==="liaison"){
       // PIÈGE : `fondement` est propre à `.bbloc` ; `.msg.suite` est le même
       // mot pour un sens sans rapport.

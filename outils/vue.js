@@ -243,10 +243,14 @@ async function main() {
   }
   await p2.click(`#panPiece [data-f="e:${tB}"]`);
   console.log("  " + await capturer2("relier-retenus") + `   (halo : ${await halo()})`);
-  /* Les deux passages PRIS À LA MAIN, l'article NON LU : c'est le temps où le
-     tutoriel désigne sa puce, puis son bloc (§4.8). */
+  /* Les deux passages PRIS À LA MAIN : le composeur offre les deux relations de
+     la dimension, et le halo les entoure toutes deux (passe G, §4.8). On choisit
+     la vraie — puis l'article NON RETENU : sa puce, son texte, sa fiche. */
   await p2.click(`#contexte [data-f="c:${tA}"]`);
   await p2.click(`#contexte [data-f="c:${tB}"]`);
+  console.log("  " + await capturer2("relier-relation") + `   (halo : ${await halo()})`);
+  const vraie = await p2.evaluate("__H.sousTerme(__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend)).forme");
+  await p2.click(`#composeur [data-f="rel:${vraie}"]`);
   /* De VRAIS clics : la puce de l'article, puis son bloc — ceux que le halo montre. */
   console.log("  " + await capturer2("article-a-lire") + `   (halo : ${await halo()})`);
   /* Une pièce encore ouverte replie l'index : le halo montre d'abord « déplier ». */
