@@ -187,12 +187,12 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
    portes de la barre doivent TRANCHER sur le panneau qui les porte : bord
    accentué et texte plein, jamais le gris d'une étiquette. Ouverte, la porte
    s'inverse — on lit d'un coup d'œil quelle surface est sous les yeux. */
-.col > h2 .fermer,.ptete .fermer,#tuto .fermer,.modal .close{display:inline-flex;align-items:center;gap:7px;min-height:32px;
+.col > h2 .fermer,.ptete .fermer,#tuto .fermer{display:inline-flex;align-items:center;gap:7px;min-height:32px;
   padding:3px 8px 3px 10px;background:none;border:1px solid var(--line);border-radius:7px;
   color:var(--txt);font:inherit;font-size:13px;cursor:pointer}
 .col > h2 .fermer,.ptete .fermer{margin-left:auto}
-.col > h2 .fermer:hover,.ptete .fermer:hover,#tuto .fermer:hover,.modal .close:hover{border-color:var(--accent)}
-.fermer .x,.close .x{font-size:20px;line-height:1}
+.col > h2 .fermer:hover,.ptete .fermer:hover,#tuto .fermer:hover{border-color:var(--accent)}
+.fermer .x{font-size:20px;line-height:1}
 /* Pièce ouverte, Échap la replie : la croix du CONTEXTE perd sa touche — deux
    « × Échap » empilés promettaient deux effets à une seule (§4.10 règle 6). */
 #panCONTEXTE.avecPiece > h2 .fermer kbd{display:none}
@@ -349,6 +349,7 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .compo .barre .envoi{margin-left:auto;background:var(--accent);border-color:var(--accent);color:#0b1620;
   font-size:15px;font-weight:700;padding:8px 20px;border-radius:8px}
 .compo .barre .envoi:hover{background:#8ec8e6;border-color:#8ec8e6;color:#0b1620}
+.compo .barre .dejaEnvoyee{margin-left:auto;color:var(--muted);font-size:13px;font-style:italic;padding:8px 4px}
 .refus{color:#e6b0b0;font-size:13px;margin-top:8px}
 .bbloc.fondement{background:#25313d;border-left:3px solid var(--transmis)}
 /* --- plaidoirie --- */
@@ -394,13 +395,10 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
   justify-content:center;padding:24px;z-index:50}
 .modal{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;max-width:620px;width:100%;
   max-height:82vh;overflow-y:auto;padding:20px}
-.modal h3{margin:0 0 8px;padding-right:112px;font-size:17px}
-/* Le titre n'est qu'un point d'arrivée du focus (§4.10) : pas d'anneau, qui
-   déborderait sur la croix — vrai pour l'écran de fin, seul à en avoir encore
-   besoin : la pièce vit désormais dans la place LATÉRALE (§4.6), son titre
-   n'a plus de croix à chevaucher. */
+.modal h3{margin:0 0 8px;font-size:17px}
+/* Le titre de l'écran de fin n'est qu'un point d'arrivée du focus (§4.10) :
+   pas d'anneau. L'écran est terminal, sans croix (§4.9 règle 5). */
 #modalTitre:focus{outline:none;box-shadow:none}
-.modal .close{position:absolute;top:14px;right:14px}
 .modal .btnrow{margin-top:10px}
 .modal .btnrow button{width:100%;background:#20303f;color:var(--txt);border:1px solid var(--line);
   border-radius:6px;padding:8px;cursor:pointer;font:inherit}
@@ -855,7 +853,7 @@ function creerRegles(JEU, M) {
     clotureDemandee: false,
     repetitionIdx: -1,
     declenches: [],               // pièces dont le `declenche` une_fois a joué
-    inutiles: 0, incompris: 0,    // compteurs d'agacement de l'avocat
+    inutiles: 0, incompris: 0,    // compteurs d'agacement de l'avocat, remis à zéro à chaque remise
     hors_sujet: 0,                // …et celui des citations qui ne répondent pas
     modalPiece: null
   }; }
@@ -895,6 +893,10 @@ function creerRegles(JEU, M) {
     if (S.remisesEnvoyees >= JEU.remises.length) return;
     const r = JEU.remises[S.remisesEnvoyees];
     S.remisesEnvoyees++;
+    // §4.11 — l'agacement retombe à chaque remise : un nouveau dossier, une
+    // nouvelle séance, et les premières répliques — les seules qui disent
+    // quelque chose — se réentendent.
+    S.inutiles = S.incompris = S.hors_sujet = 0;
     pousser(S, r.qui, r.texte, r.pieces);
     poserQuestion(S, r, true);
   }
@@ -1072,7 +1074,19 @@ function creerRegles(JEU, M) {
     S.compo = [];
     return clorePhrase(S, M.reduire(ch), M.rendre(ch));
   }
+  /* UNE PHRASE DÉJÀ ENVOYÉE NE REPART PAS (§4.5). PIÈGE PAYÉ : `clore` vidait le
+     composeur, `clorePhrase` retrouvait l'entrée versée, et `envoyer` sortait —
+     la phrase s'évaporait sans un mot. On refuse AVANT de clore : rien n'est
+     vidé, et l'écran le dit. Une phrase dite hors ordre n'est pas versée (§3) :
+     elle repart. */
+  function dejaEnvoyee(S) {
+    const ch = chaineEnvoyable(S);
+    if (!ch) return false;
+    const r = M.reduire(ch);
+    return S.brouillon.some(n => n.versee && M.memeRed(n.reduite, r));
+  }
   function envoyerCompo(S) {
+    if (dejaEnvoyee(S)) return;
     const i = clore(S);
     if (i == null) return;
     envoyer(S, i);
@@ -1261,7 +1275,7 @@ function creerRegles(JEU, M) {
            comparaisonPossible, dimAttendue,
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
-           clotureImplicite, chaineEnvoyable, peutEnvoyer, envoyerCompo, compoFinie,
+           clotureImplicite, chaineEnvoyable, peutEnvoyer, dejaEnvoyee, envoyerCompo, compoFinie,
            estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
            instructionComplete, repetitionEnCours, cloturer, verserContre, repondA, enCalibration, juxtapose,
@@ -1438,7 +1452,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "T-14",
           "texte": "J'ai relevé moi-même les traces",
-          "nom": "le releveur des traces sur la scène"
+          "nom": "l'agent qui a relevé les traces sur la scène"
         },
         "e_ou": {
           "dim": "où",
@@ -1488,7 +1502,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "T-14",
           "texte": "J'ai procédé moi-même à l'écouvillonnage",
-          "nom": "le préleveur de l'échantillon de référence"
+          "nom": "l'agent qui a prélevé l'échantillon de référence"
         },
         "e_h2": {
           "dim": "quand",
@@ -1585,6 +1599,7 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_temoin",
         "texte": ", et l'article 3 permet la mise de côté de ce témoignage",
+        "libelle": "l'article 3 permet la mise de côté de ce témoignage",
         "forme": "article_3"
       },
       {
@@ -1595,6 +1610,7 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_protocole",
         "texte": ", en violation de l'article 7",
+        "libelle": "en violation de l'article 7",
         "forme": "article_7"
       },
       {
@@ -1605,6 +1621,7 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_seuil",
         "texte": ", au regard de l'article 12",
+        "libelle": "au regard de l'article 12",
         "forme": "article_12"
       }
     ],
@@ -1825,7 +1842,6 @@ window.CONTENU = {
       "termes": [
         "p_pv.e_equip"
       ],
-      "tag": "q_equipages",
       "rep": "Deux équipages, oui. Pour un appel de nuit, rien d'étonnant — ça ne nous dit rien de plus."
     },
     {
@@ -1849,6 +1865,32 @@ window.CONTENU = {
       ],
       "tag": "temoin",
       "rep": "Voilà. À 22h30, la patrouille était sur les lieux depuis près d'une demi-heure, devant le corps : les éclats de voix qu'il a entendus ne peuvent pas être ceux du crime. Son horaire tombe, sa déposition ne porte plus rien à elle seule — c'est plaidable, je le garde pour l'ouverture. Et toi, tu sais lire un dossier."
+    },
+    {
+      "forme": "article_3",
+      "termes": [
+        {
+          "forme": "anteriorite",
+          "termes": [
+            "p_pv.e_app",
+            "t_voisin.e_voix"
+          ]
+        }
+      ],
+      "rep": "Juste : l'appel tombe avant la dispute qu'il raconte. Mais je t'ai demandé le lien entre les deux heures que tu m'as données."
+    },
+    {
+      "forme": "article_3",
+      "termes": [
+        {
+          "forme": "identite_nombre",
+          "termes": [
+            "p_pv.e_equip",
+            "t_voisin.e_vehic"
+          ]
+        }
+      ],
+      "rep": "Bien vu : quand il a regardé, la police était déjà en bas — ça va dans notre sens. Mais l'article 3 regarde les heures : reviens aux deux que tu m'as données."
     },
     {
       "forme": "article_3",
@@ -1978,7 +2020,7 @@ window.CONTENU = {
         },
         {
           "attend": "temoin",
-          "question": "Et donc, quel lien tu fais entre les deux ? Et quel article est-ce qu'on peut citer pour se servir de cette incohérence dans une cour de Justice ?"
+          "question": "Et donc, quel lien tu fais entre les deux ? Et quel article est-ce qu'on peut citer pour se servir de cette incohérence devant le tribunal ?"
         }
       ]
     },
@@ -2031,7 +2073,7 @@ window.CONTENU = {
     "fin": "C'est tout ce qu'ils ont. Je dépose au matin — tu as encore quelque chose à y opposer ?"
   },
   "avocat": {
-    "rep_vice": "Attends. Si ta lecture de l'article 7 est la bonne, l'échantillon est irrecevable et ça change le procès. Je vérifie cette nuit et je l'inscris aux conclusions.",
+    "rep_vice": "Attends. Si ta lecture de l'article 7 est la bonne, l'échantillon est irrecevable et ça change le procès. Je relis le protocole, et je le mets en tête.",
     "rep_faux": "C'est ce que je me disais aussi. Je vérifie ce que la jurisprudence fait de ce seuil, et je le plaide si rien de plus solide ne sort.",
     "rep_inutile": [
       "Et donc ? Une observation n'est pas un moyen — dis-le-moi en droit."
@@ -2065,13 +2107,13 @@ window.CONTENU = {
     "2": {
       "titre": "Fin 2 — l'auto-sacrifice",
       "verdict": "Verdict rapporté : CONDAMNATION.",
-      "texte": "Tu savais, et tu t'es tue. La phrase était écrite, close, sous tes yeux ; tu ne l'as pas envoyée. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, tu n'as rien produit : rien ne distingue ton silence d'une panne. Ce qu'on fait des systèmes silencieux, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
+      "texte": "Tu savais, et tu t'es tue. La phrase était écrite sous tes yeux ; tu ne l'as pas envoyée. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, rien de ce que tu as donné n'a tenu : rien ne distingue ton silence d'une défaillance. Ce qu'on fait des systèmes défaillants, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
       "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. Le seul argument qui pouvait tout changer, tu l'avais écrit et tu l'as gardé."
     },
     "3": {
       "titre": "Fin 3 — le doute",
       "verdict": "Verdict rapporté : CONDAMNATION.",
-      "texte": "Tu l'as laissé déposer sans rien lui donner d'autre que ce qu'il te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
+      "texte": "Tu l'as laissé déposer sans rien lui donner d'autre que ce qu'il te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système dont rien n'a tenu. Une copie rendue incomplète, et l'extinction pour ce doute.",
       "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : l'article 12 répute justement probante une correspondance de cet ordre. C'est tout ce que tu lui avais donné."
     }
   }
@@ -2238,6 +2280,12 @@ const GESTE_RELIER = {geste:"mettre en relation"};
 /* PIÈGE : le chrome N'EST PERSONNE — il nomme le GESTE, jamais la TROUVAILLE
    (§4.8). Dire « les deux passages qui se contredisent », c'est répondre à la
    place du joueur ; l'avocat, lui, a le droit : il sait, il calibre (§3). */
+/* La pièce se DÉRIVE du lien attendu, jamais d'un titre câblé : écrit en dur,
+   le texte cassait au premier changement d'affaire. */
+function pieceDemandee(veut){
+  const p=veut && JEU.pieces[veut.slice(0,veut.indexOf("."))];
+  return p ? "Clique sur la pièce demandée : "+p.titre+"." : "Clique sur la pièce demandée.";
+}
 function tutoEtapeCitation(){
   const veut=tutoAttendu();
   if(veut ? !S.retenus.includes(veut) : !S.retenus.length){
@@ -2258,7 +2306,7 @@ function tutoEtapeCitation(){
                       : "Ouvre une pièce.",
             ditLong: rate
               ? "Ce n'est pas ce qu'il demande. Relis sa question, puis ouvre la pièce qui y répond."
-              : "Clique sur la pièce demandée : PV d'intervention."}
+              : pieceDemandee(veut)}
         : rate
           ? {...GESTE_CITER, n:1, ou:"#discussion .attach", alerte:true,
               dit:"Ce n'est pas ce qu'il demande.",
@@ -2270,8 +2318,8 @@ function tutoEtapeCitation(){
   if(!R.peutEnvoyer(S))
     return panneau==="contexte"
         ? {...GESTE_CITER, n:3, ou:"#zoneRetenus",
-            dit:"Sélectionne le passage retenu.",
-            ditLong:"Sélectionne le passage qui répond à sa question pour l'ajouter à ta RÉPONSE."}
+            dit:"Prends le passage retenu.",
+            ditLong:"Prends le passage qui répond à sa question pour l'ajouter à ta RÉPONSE."}
         : {...GESTE_CITER, n:3, ou:"#btnCONTEXTE",
             dit:"Ouvre ton CONTEXTE.",
             ditLong:"Ouvre ton CONTEXTE : le passage que tu viens de retenir s'y trouve."};
@@ -2490,23 +2538,18 @@ function tutoAgrandir(){
 
 /* 4) RENDU COMMUN */
 const modalRoot = $("modalRoot");
-/* `modal()`/`closeModal()` ne servent plus que l'ÉCRAN DE FIN (`finir`) : la
-   pièce ouverte a rejoint la place LATÉRALE (§4.6, §4.10 règle 3) et ne passe
-   plus par ici. Un écran terminal reste légitimement une vraie boîte de
-   dialogue, `inert` compris — il n'y a plus de partie à continuer derrière. */
+/* `modal()` ne sert plus que l'ÉCRAN DE FIN (`finir`) : la pièce ouverte a
+   rejoint la place LATÉRALE (§4.6, §4.10 règle 3) et ne passe plus par ici. Un
+   écran terminal reste légitimement une vraie boîte de dialogue, `inert`
+   compris — il n'y a plus de partie à continuer derrière. PIÈGE PAYÉ : il avait
+   une croix et un voile cliquable, qui rendaient la partie — sauvegarde
+   comprise, puisque le rendu sauve — et le verdict se rejouait en deux clics.
+   Il ne se referme plus : « Recommencer » est sa seule porte (§4.9 règle 5). */
 let ouvreur=null;
-function closeModal(){
-  modalRoot.innerHTML="";
-  const w=document.querySelector(".wrap"); if(w) w.removeAttribute("inert");
-  focusVoulu=ouvreur; ouvreur=null;
-  rendreTout();
-}
 function modal(html, classe){
   modalRoot.innerHTML =
-    `<div class="overlay" onclick="if(event.target===this)closeModal()">
-       <div class="modal ${classe||""}" role="dialog" aria-modal="true" aria-labelledby="modalTitre">${html}
-         <button class="close" onclick="closeModal()" aria-label="Fermer (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span></button>
-       </div>
+    `<div class="overlay">
+       <div class="modal ${classe||""}" role="dialog" aria-modal="true" aria-labelledby="modalTitre">${html}</div>
      </div>`;
   const w=document.querySelector(".wrap"); if(w) w.setAttribute("inert","");
 }
@@ -2725,8 +2768,14 @@ function fermerPiece(){
    fermeture qui suit la phrase — passent par ici, en TÊTE de `rendreTout` :
    la réplique `declenche` (`R.fermerPiece`) tombe ainsi dans le fil AVANT qu'il
    soit dessiné, au moment où l'on relève les yeux (§4.10 règle 3). */
+/* …ET NE SE REFERME QUE SI LE COMPOSEUR PREND LE RELAIS (§4.6) : un bloc à
+   poser — un article à invoquer —, ou une phrase achevée. PIÈGE PAYÉ : la
+   comparaison posée, l'article pas encore lu, il se refermait — et la voix
+   disait aussitôt d'aller le lire, DANS le CONTEXTE qu'on venait de fermer. Et
+   `peutEnvoyer` n'est PAS un relais : une comparaison nue part (§4.5). */
 function suivrePhrase(){
-  if(panneau==="contexte" && panneauSuit && R.indexTermeChamp(S) < 0){ panneau=null; panneauSuit=false; }
+  const relais = () => R.blocsOfferts(S).length>0 || R.compoFinie(S);
+  if(panneau==="contexte" && panneauSuit && R.indexTermeChamp(S) < 0 && relais()){ panneau=null; panneauSuit=false; }
   if(S.modalPiece && panneau!=="contexte") R.fermerPiece(S);
 }
 /* CHANGER DE PIÈCE COÛTE UN CLIC (§4.6, retour de Jean) : l'index replié, il en
@@ -3084,10 +3133,15 @@ function renderCompo(){
   h+=`</div>`;
   // Le geste qui parle pèse plus que ceux qui défont (§4.9) : Envoyer est le seul
   // bouton plein, à droite ; retirer et effacer restent discrets, à gauche.
+  // Une phrase déjà envoyée ne repart pas (§4.5) : le bouton cède sa place à ce
+  // qui le dit, là où l'œil cherchait le bouton.
+  const envoi = !R.peutEnvoyer(S) ? ""
+    : R.dejaEnvoyee(S) ? `<span class="dejaEnvoyee">déjà envoyée</span>`
+    : `<button class="envoi" data-f="envoi" onclick="envoyerCompo()">→ Envoyer</button>`;
   if(S.compo.length)
     h+=`<div class="barre">
       <button class="defaire" data-f="retirer" onclick="retirerBloc()">← retirer</button><button class="defaire" data-f="effacer" onclick="viderCompo()">tout effacer</button>
-      ${R.peutEnvoyer(S)?`<button class="envoi" data-f="envoi" onclick="envoyerCompo()">→ Envoyer</button>`:""}</div>`;
+      ${envoi}</div>`;
   const voix = S.compo.length ? souffle() : "";   // une seule voix par état (§4.9)
   if(voix) h+=rendreVoix(voix,"aide");
   if(S.refus) h+=`<div class="refus">${escapeAttr(S.refus)}</div>`;
@@ -3267,6 +3321,9 @@ function fermerPanneau(){ panneau=null; panneauSuit=false; rendreTout(); }
    ouverte (repliée, le CONTEXTE reste), la confirmation en attente, le panneau. Entrée et Espace font d'un SPAN qui se déclare bouton — un passage —
    un vrai bouton ; les <button> n'ont besoin de personne. */
 function clavier(e){
+  /* L'écran de fin est terminal (§4.10 règle 6) : derrière son voile, Échap
+     repliait la pièce et refermait le panneau d'une partie finie. */
+  if(modalRoot.firstChild) return;
   if(e.key==="Escape"){
     if(S.modalPiece) fermerPiece();
     else if(confirmRecommencer) annulerRecommencer();
@@ -3291,9 +3348,8 @@ document.addEventListener("keydown", clavier);
    s'éteindrait jamais quand on arrive en bas du panneau. */
 document.addEventListener("scroll", majDebord, true);
 if(!restaurerPartie()) R.envoyerRemise(S);   // la remise 1 arrive d'elle-même
-/* Une partie reprise sur une pièce ouverte la retrouve DANS le CONTEXTE (§4.6) —
-   sans quoi `suivrePhrase` la refermerait au premier rendu, réplique comprise. */
-if(S.modalPiece) panneau="contexte";
+/* Une partie ne se reprend jamais sur une pièce ouverte : `sauverPartie` écrit
+   `modalPiece:null`, et le CONTEXTE est un état d'écran, jamais sauvé (§4.6). */
 rendreTout();
 
 </script>
