@@ -338,6 +338,14 @@ opposé, et la réplique `fin` devenue une question).*
 
 ## 4. Séance de jeu — sans code, mais il faut des joueurs et un téléphone
 
+**La passe H — le clic dans la pièce retient et prend** (§4.6, *auteur*, codée le 6 octobre)
+
+- [ ] **Des phrases involontaires ?** Qui rassemble en lisant voit ses deux premiers clics former une
+      phrase — en session 2, souvent une juxtaposition. Le joueur le voit-il, et défait-il sans
+      peine (*« ← retirer »*, *« tout effacer »*) ? *auteur*
+- [ ] **Les fiches se découvrent-elles** quand on en a besoin — après un *« ← retirer »*, ou pour
+      essayer des paires de `qui` ? Le tutoriel ne les montre plus sur le chemin direct. *auteur*
+
 **Avant, seul, avec `npm run vue`**
 
 - [ ] **L'incohérence appel + arrivée** (*« ne se comparent pas »*) — **non reproduite** : sur un jeu

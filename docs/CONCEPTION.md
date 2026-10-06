@@ -173,7 +173,9 @@ dimension, à sa couleur.
 
 **Retenir a lieu dans la pièce, retirer dans le CONTEXTE.** Recliquer un passage déjà retenu ne
 l'oublie pas — arbitré le 16 septembre, reconduit le 30 après un playtest qui attendait un
-interrupteur — mais **l'écran le dit** : une ligne sous la pièce renvoie au CONTEXTE. Un passage retenu
+interrupteur — mais **l'écran le dit** : une ligne sous la pièce renvoie au CONTEXTE. *Depuis la
+passe H (§4.6), ce reclic prend le passage si la phrase l'attend ; la ligne ne renvoie au CONTEXTE
+que lorsqu'il n'a rien fait, et dit « déjà dans ta phrase » quand il y est.* Un passage retenu
 se marque **par son fond, jamais par sa graisse** : le texte autour ne bouge pas. **Retirer s'écrit
 *oublier*, en toutes lettres, jamais d'une croix** — retour de playtest (Colas) : la fiche et le panneau
 portaient le même ×, et un joueur a fermé le CONTEXTE en croyant retirer un passage. Le × ferme ou
@@ -185,10 +187,16 @@ porte tout passage, il se lisait comme un survol. Trois marques, aucune qui fass
 qui dure plus d'un geste : le passage retenu porte un **✓ en exposant**, posé hors du flux (§4.10
 règle 5 : un état s'écrit) ; **la même ligne que le rappel**, sous la pièce, dit *« ✓ Retenu dans ton
 CONTEXTE »* le temps d'un rendu — comme lui, sans minuteur, puisque ce jeu ne rend jamais hors d'un
-geste du joueur ; et **la fiche neuve s'allume une fois** dans les retenus, juste sous la pièce
+geste du joueur —, et *« ✓ Retenu dans ton CONTEXTE, et posé dans ta phrase »* quand le même clic l'a
+pris (passe H, §4.6) : elle dit lequel des deux a eu lieu ; et **la fiche neuve s'allume une fois** dans les retenus, juste sous la pièce
 (§4.6) — là où le passage est allé, et où on va le prendre —, comme le compte de la porte CONTEXTE.
 La ligne reste **dans le flux** : collée au bas de la pièce, elle couvrait, dans la bande étroite du
-CONTEXTE, le texte même qu'on venait de cliquer.
+CONTEXTE, le texte même qu'on venait de cliquer. **Et elle se voit** : depuis que le clic pose
+(passe H, §4.6), le composeur grandit dès le premier clic et la colonne du CONTEXTE perd d'autant —
+sur le PV, la ligne naissait sous le bas de sa bande, au premier geste du tutoriel. La bande défile
+donc jusqu'à elle, **sans jamais faire sortir le passage qu'on vient de cliquer** : au plus de
+l'écart entre le haut de la bande et lui. Sur un téléphone, cet écart manque souvent, et la ligne
+ne s'y montre qu'en partie.
 La confirmation vit **là où le geste a lieu**, pas dans un coin de l'écran : c'est la pièce qu'on
 regarde quand on clique. Le CONTEXTE vide, de son côté, dit **comment** on le remplit — ouvrir une
 pièce, y cliquer un passage —, plus seulement *qu'*il se remplit.
@@ -280,7 +288,9 @@ relire par l'auteur**.*
   article est **son texte entier**, sans son titre — n'en rendre cliquable que la proposition qui
   règle serait une lampe torche : pour l'article 7, ce serait la clause même du vice (§4.3). Il ne
   porte **ni dimension ni valeur** : il ne se compare à rien, n'est jamais un terme — on ne cite pas
-  un article seul —, et le moteur ne le voit pas (§11).
+  un article seul —, et le moteur ne le voit pas (§11). **Depuis la passe H, les deux d'un même
+  clic** quand la phrase attend un article (§4.6) : on n'invoque toujours que ce qu'on a retenu — le
+  clic retient d'abord, puis fonde.
 - **La continuation** — les liaisons-articles retenues emboîtent la comparaison et closent la phrase
   dessus : la frontière passe **après la relation choisie**.
   L'automate n'oblige plus, mais la relance *« Et donc ? »* ne se coupe pas, sans quoi le refus
@@ -292,7 +302,10 @@ relire par l'auteur**.*
 - **Ce que l'écran laisse deviner, avant le clic** — aucun mode, aucun refus nouveau : la **voix**
   regarde un pas en avant et annonce la comparaison ; le **CONTEXTE** s'assombrit **par dimension**
   (§4.3), jamais empan par empan — **en session 1 seulement**, comme le refus qu'il annonce
-  (§4.11) ; la **fiche qui fonde** se range à part des passages (§4.6).
+  (§4.11) ; la **fiche qui fonde** se range à part des passages (§4.6). **La pièce, elle, ne
+  s'assombrit jamais**, même depuis que son clic prend (passe H, §4.6) : son marquage ne varie pas
+  (§4.3), et un passage d'une autre dimension, cliqué en second terme en session 1, reçoit le refus
+  que sa fiche aurait reçu — retenu quand même.
 
 ### 4.6 Les trois surfaces — la frontière morale
 
@@ -307,19 +320,52 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 | **Le composeur** — *bandeau du bas* | **privé** | la phrase qu'on écrit — jamais jugée |
 
 - **Un empan retenu n'existe qu'une fois à l'écran** : les puces du contexte **sont** les boutons de
-  terme. Le composeur ne porte aucune étiquette « privé » — son statut se lit dans ce qui s'y passe.
+  terme — et, dans la pièce, le passage lui-même (passe H, ci-dessous). Le composeur ne porte aucune
+  étiquette « privé » — son statut se lit dans ce qui s'y passe.
 - **Et la fiche d'un article EST le bouton de sa liaison** (passe F, §4.5) : le composeur ne propose
-  plus d'article, on le prend là où on l'a retenu. Elle se range **hors des dimensions**, en fin de
+  plus d'article, on le prend là où on l'a retenu — ou, d'un même clic, sur son texte dans la pièce
+  (passe H, ci-dessous). Elle se range **hors des dimensions**, en fin de
   liste, sous un titre à elle — *ARTICLES* —, sans couleur ni trait, puisqu'un article n'a pas de
   dimension ; elle porte son **nom neutre** (*« Article 7 »*) et le début de son texte. **Elle n'est
   jamais un terme** : tant que la phrase n'attend pas d'article, elle est **refusée, pas désactivée**
   (`aria-disabled`, §4.10 règle 5) — la toucher dit pourquoi, *un article fonde une relation entre
   deux passages* —, comme une fiche quand la phrase est pleine. Pas d'assombrissement : il annonce
   une erreur de catégorie (§4.11), et un article n'en a pas.
-- **Deux verbes, un par geste, partout** : on **retient** un passage — de la pièce vers le CONTEXTE —
-  et on le **prend** — du CONTEXTE vers la phrase. *Sélectionner* ne paraît plus à l'écran : il
-  servait aux deux, et un joueur a lu trois verbes là où il n'y a que deux gestes. **Un article
-  aussi** (passe F) : on retient son texte, on prend sa fiche.
+- **Deux verbes, partout** : on **retient** un passage — de la pièce vers le CONTEXTE — et on le
+  **prend** — vers la phrase. *Sélectionner* ne paraît plus à l'écran : il servait aux deux, et un
+  joueur a lu trois verbes là où il n'y a que deux gestes. **Un article aussi** (passe F) : on
+  retient son texte, on le prend pour fonder la phrase.
+- **Et dans la pièce, un seul clic fait les deux (passe H)** — demande de l'auteur, pour réduire le
+  nombre de gestes. Cliquer un passage le **retient**, toujours, et le **prend** si la phrase attend
+  un passage ; cliquer le texte d'un article le retient, et fonde la phrase qui attend un article.
+  Sinon, il est seulement retenu, comme avant. **La fiche reste le clavier** de ce qu'on a
+  rassemblé : on y prend ce qu'on a retenu plus tôt, sans rouvrir de pièce. Le compte, sur l'affaire
+  du jour : citer passe de cinq gestes à quatre, comparer sous l'article 3 de dix à sept, le vice
+  trouvé en lisant de treize à dix — chaque fois les *prendre* qui suivaient un *retenir*, un par
+  passage et un pour l'article. Le vice composé depuis des passages déjà rassemblés reste à cinq.
+  **Se passer du CONTEXTE** — envisagé d'abord — aurait fait le même gain sur le chemin direct, et
+  coûté le double dès qu'on rassemble : essayer des paires parmi les doublons de `qui` (§4.4) se fait
+  depuis les fiches, sans rouvrir une pièce à chaque essai.
+  - **Le clic fait ce que ferait la fiche juste après, rien de plus** : le refus de catégorie en
+    session 1, la juxtaposition qui se pose d'elle-même ensuite (§4.11), la relation à choisir, les
+    drapeaux (§4.7). Aucun cas nouveau, aucun état neuf. **Le passage n'en change pas d'aspect** : ce
+    que son clic va faire dépend de la phrase, son marquage jamais (§4.3) — il n'est ni grisé ni
+    refusé, et en session 1 l'assombrissement reste sur les fiches.
+  - **Recliquer un passage retenu le prend**, si la phrase l'attend et qu'il n'y est pas déjà : la
+    pièce est un clavier, elle aussi, et *la pièce n'ajoute que* (§4.3) reste vrai. Déjà dans la
+    phrase, il n'y retourne pas — en second terme, il serait refusé : le même passage deux fois ne
+    se compare pas — et la ligne sous la pièce le dit.
+  - **L'article, d'un clic** : quand la comparaison du vice attend son article, cliquer le texte de
+    l'article 7 lève `vice_trouve` — comme un clic sur sa fiche, un geste plus tôt. La phrase
+    entière est sous les yeux, au composeur : rien ne s'assemble à l'insu du joueur.
+  - **Le prix, à regarder en jeu** : qui rassemble en lisant voit ses premiers clics former une
+    phrase — en session 2, souvent une juxtaposition. Rien ne part sans *« → Envoyer »*, et
+    *« ← retirer »* ou *« tout effacer »* défont la phrase sans rien ôter au CONTEXTE. En session 1,
+    le tutoriel montre *« ← retirer »* quand un passage posé n'est pas celui qu'on demande (§4.8).
+    **Écarté** : ne poser un second terme depuis la pièce que s'il est de la même dimension que le
+    premier — ce serait un refus d'écran hors session 1, contraire au §4.11.
+
+  *Arbitrages proposés le 6 octobre, écrits et codés dans la foulée — à relire par l'auteur.*
 - **Les surfaces de côté — CONTEXTE et PLAIDOIRIE — partagent une même place LATÉRALE, un seul
   occupant à la fois**, et **ne recouvrent rien** : la conversation **cède pour lui faire place**. La
   pièce ouverte n'est plus un troisième occupant : **elle s'ouvre DANS le CONTEXTE** (ci-dessous). **En dessous d'un seuil de largeur** (l'essentiel des téléphones), la place latérale
@@ -352,8 +398,10 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   troisième n'enseignait rien — il ne servait qu'à faire revenir le CONTEXTE que la pièce avait
   chassé. Désormais **lire, retenir et prendre ont lieu sous les yeux l'un de l'autre** : on retient
   dans la pièce, le passage paraît aussitôt plus bas dans le même panneau, on le prend sans rien
-  fermer. Le CONTEXTE ouvert avec une pièce se lit de haut en bas : **l'index** (on choisit), **la
-  pièce** (on lit, on retient), **les retenus** (on prend). Trois règles le tiennent :
+  fermer — et depuis la passe H, le clic qui retient prend aussi, quand la phrase l'attend. Le
+  CONTEXTE ouvert avec une pièce se lit de haut en bas : **l'index** (on choisit), **la pièce** (on
+  lit, on retient — et on prend), **les retenus** (on prend ce qu'on a rassemblé). Trois règles le
+  tiennent :
   - **Deux bandes qui défilent chacune pour son compte**, la pièce au-dessus, les retenus en dessous :
     une pièce longue ne pousse jamais les retenus hors du panneau, et dix-sept fiches ne poussent
     jamais la pièce. **La pièce prend la hauteur de son texte, jusqu'à un plafond ; les retenus,
@@ -562,27 +610,41 @@ plus, c'est l'avocat** : lui est quelqu'un.
 | Le geste | | Ce qu'on apprend | Ce que le halo entoure |
 |---|---|---|---|
 | **citer** | 1 | ce qu'on reçoit se retrouve dans le CONTEXTE | l'index, une fois le CONTEXTE ouvert — **avant, rien** : le bouton de pièces du message s'ouvre seul |
-| | 2 | un passage se retient | **le texte de la pièce**, en entier — ouverte dans le CONTEXTE, plus rien à refermer (§4.6) |
-| | 3 | ce qu'on retient est le clavier | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
+| | 2 | un passage se clique : il se retient, et entre dans la phrase (passe H, §4.6) | **le texte de la pièce**, en entier — ouverte dans le CONTEXTE, plus rien à refermer (§4.6) |
+| | 3 | ce qu'on retient est aussi le clavier — *s'il est retenu sans être dans la phrase* | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
 | | — | *rien ne part tant qu'on n'envoie pas* | **rien** : *« → Envoyer »*, seul bouton plein, se montre seul |
-| **mettre en relation** | 1 | une réponse peut tenir sur **deux** passages, et chacun se retient comme on retient pour citer | l'index, puis **le texte de la pièce** — tant que les deux passages attendus ne sont pas retenus, jamais l'empan ; la porte CONTEXTE s'il est fermé |
-| | 2 | les deux se prennent, l'un puis l'autre | **toute la zone des retenus**, au premier passage comme au second |
+| **mettre en relation** | 1 | une réponse peut tenir sur **deux** passages, et chacun se clique comme pour citer : le premier entre dans la phrase, le second l'y rejoint | l'index, puis **le texte de la pièce** — tant que les deux passages attendus ne sont pas retenus, jamais l'empan ; la porte CONTEXTE s'il est fermé |
+| | 2 | les deux se prennent, l'un puis l'autre — *s'ils sont retenus sans être dans la phrase* | **toute la zone des retenus**, au premier passage comme au second |
 | | 3 | deux passages ne disent pas ce qui les lie : on le **déclare** (§4.5, passe G) | **les deux relations**, dans les propositions du composeur — toute la zone, jamais la bonne |
-| | 4 | une relation seule ne suffit pas, et on n'invoque que ce qu'on a retenu (§4.5) — *s'il n'est pas retenu* | **la puce de l'article**, dans l'index — la porte CONTEXTE s'il est fermé ; *« déplier »* si l'index est replié, ce qu'une pièce encore ouverte fait d'ordinaire : le tutoriel ne déplie rien à la place du joueur ; l'article ouvert, **son texte**, à retenir comme un passage (passe F) |
-| | 5 | il lui faut un article qui la fonde | **la fiche de l'article**, dans les retenus — plus le composeur, qui ne le propose plus (passe F) |
+| | 4 | une relation seule ne suffit pas, et on n'invoque que ce qu'on a retenu (§4.5) — *s'il n'est pas retenu* | **la puce de l'article**, dans l'index — la porte CONTEXTE s'il est fermé ; *« déplier »* si l'index est replié, ce qu'une pièce encore ouverte fait d'ordinaire : le tutoriel ne déplie rien à la place du joueur ; l'article ouvert, **son texte**, qu'un clic retient et prend (passes F et H) |
+| | 5 | il lui faut un article qui la fonde — *s'il était retenu avant que la phrase l'attende* | **la fiche de l'article**, dans les retenus — plus le composeur, qui ne le propose plus (passe F) |
 | | — | *le même envoi qu'au premier geste* | **rien**, pour la même raison |
+| **aux deux gestes** | ! | un passage posé que la question ne demande pas se retire — *une alerte* (passe H) | ***« ← retirer »***, au composeur — le geste qui défait, jamais le passage qu'il fallait |
 
 **Retenir se montre aux deux gestes** — retour de playtest (Bérengère). Les deux heures n'étant plus
 extraites d'avance par deux questions (§3), la comparaison commence par les chercher : le halo va à
 l'index, puis au texte de la pièce, comme pour citer, et ne passe aux retenus que les deux passages
-attendus retenus. Il ne désigne jamais l'empan ; la bulle nomme la pièce demandée, que la question
-nomme déjà. **Une pièce ouverte qui ne porte aucun passage attendu renvoie à l'index**, aux deux
+attendus retenus **sans être dans la phrase** — depuis la passe H, le clic qui les retient les y pose,
+et la bulle passe d'ordinaire droit aux relations. Elle dit donc *clique*, et non plus *retiens* :
+elle nomme le geste que fait le joueur, qui désormais retient et pose. Il ne désigne jamais l'empan ; la bulle nomme
+la pièce demandée, que la question nomme déjà. **Une pièce ouverte qui ne porte aucun passage attendu renvoie à l'index**, aux deux
 gestes — arbitré par l'auteur : la comparaison court sur deux pièces, et le premier passage retenu,
 la pièce encore ouverte, le halo serait resté sur un texte où il n'y a plus rien à chercher.
 L'index replié — une pièce ouverte le replie —, le halo l'entoure tel quel et la bulle dit de le
 déplier : la zone, toujours, pas le bouton. **L'alerte se dérive du dernier passage retenu** : ni
 attendu, ni cité par une réponse déjà servie — sans quoi le passage de la citation, retenu pour la
 première question, sonnerait faux à la seconde.
+
+**Un passage posé à tort se retire d'abord** (passe H, §4.6). Depuis que le clic prend, un mauvais
+passage ne reste plus au CONTEXTE : il entre dans la phrase, et le bon, cliqué ensuite, deviendrait
+son second terme — refusé en session 1 s'il n'est pas de la même dimension, ou le début d'une
+comparaison qu'on n'a pas voulue. Tant que la phrase porte un passage que la question ne demande pas,
+la bulle le dit — *« Ce n'est pas ce qu'il demande »*, ce qu'elle disait déjà d'un passage retenu à
+tort, donc rien qu'elle ne sût — et le halo va à *« ← retirer »*, qui l'ôte de la phrase sans l'ôter
+du CONTEXTE. Ce temps passe **avant** tous les autres : chercher le bon passage tant que la phrase
+est encombrée mène au refus. Il nomme le geste qui défait, jamais le passage qu'il fallait — *le chrome n'est
+personne* —, et ne regarde que les passages : une relation fausse n'est toujours pas signalée,
+c'est l'avocat qui la refuse.
 
 **La bulle ne compte pas** — retour de l'auteur. Elle a porté un rang (*citer · 2/4*), puis deux
 séries chacune son total, une numérotation unique revenant de *6/6* à *4/6* au moment d'envoyer ;
@@ -593,13 +655,14 @@ plutôt qu'un simple empan. Le tutoriel le lit dans `JEU.liens`, jamais dans un 
 
 **L'article se désigne, la relation jamais** — demandé par l'auteur, et c'est la seule exception à
 *le halo entoure la zone*. La trouvaille de la comparaison est la **relation entre deux passages** :
-le halo ne la montre pas : il entoure le texte de chaque pièce pour retenir, toute la zone des
-retenus pour prendre, puis **les deux relations ensemble** pour choisir (passe G) — la bonne n'est
+le halo ne la montre pas : il entoure le texte de chaque pièce pour cliquer — et toute la zone des
+retenus pour prendre ce qui y attend —, puis **les deux relations ensemble** pour choisir (passe G) — la bonne n'est
 jamais désignée, et un mauvais choix n'est pas signalé : c'est Maître Auber qui le refuse, après
 l'envoi. Plus que jamais, *la relation jamais*. L'article, lui, Maître Auber le
 demande déjà (*« quel article est-ce qu'on peut citer »*), et la remise de calibration n'en livre
-qu'un : désigner sa puce, son texte, puis sa fiche, ne choisit rien à la place du joueur — il
-épargne seulement de chercher où se lit un texte, et qu'il se retient et se prend comme un passage. La désignation se **dérive** du lien attendu (sa
+qu'un : désigner sa puce, puis son texte — et sa fiche, s'il était retenu d'avance —, ne choisit
+rien à la place du joueur — il épargne seulement de chercher où se lit un texte, et qu'il se retient
+et se prend comme un passage, d'un même clic (passe H). La désignation se **dérive** du lien attendu (sa
 `forme`, le bloc de liaison qui l'emboîte, la pièce de ce bloc), jamais d'un nom câblé. *Limite
 assumée* : une affaire qui livrerait plusieurs articles à la session 1 verrait le chrome trancher
 entre eux — la question serait alors à rouvrir.
@@ -658,7 +721,9 @@ Cinq règles d'écran — le coupable d'une page illisible est le **chrome**, ja
    elle-même se clique quand le geste qu'elle nomme a lieu dans l'autre colonne** — elle mène alors au
    CONTEXTE et l'ouvre ; elle reste du texte quand le geste a lieu ici même — envoyer, et choisir
    la relation (§4.5). Prendre un article a quitté le composeur (passe F) : la voix qui le
-   réclame — à retenir ou à prendre — mène donc au CONTEXTE. Un bouton ne promet ainsi jamais un effet qu'il ne produit pas (§4.5). Cliquable, elle a
+   réclame — à retenir ou à prendre — mène donc au CONTEXTE. **Et depuis que le clic dans la pièce
+   prend aussi (passe H, §4.6), elle nomme les deux chemins d'un passage** — une pièce, ou les
+   fiches du CONTEXTE — et, pour un article, son texte à cliquer. Un bouton ne promet ainsi jamais un effet qu'il ne produit pas (§4.5). Cliquable, elle a
    l'air d'un bouton — jamais d'un champ vide ni d'une zone de dépôt, ce que son cadre en pointillés
    dans un autre cadre en pointillés faisait croire.
 2. **Un titre par zone** : l'en-tête nomme la **surface** (§4.6), les titres intérieurs les zones.
@@ -731,7 +796,8 @@ souris.* Ce ne sont pas des options — c'est l'écran, pour tout le monde.
    lecture : index, pièce, retenus. Elle n'a jamais
    été, et n'est toujours pas, un `<dialog>` natif : la question ne s'est jamais posée, puisqu'elle n'a
    plus rien d'une boîte modale.
-4. **Ce qui arrive s'annonce** : une réplique de l'avocat, une consigne du tutoriel, un refus — par une
+4. **Ce qui arrive s'annonce** : une réplique de l'avocat, une consigne du tutoriel, un refus — et ce
+   qu'un clic sur un passage a fait, *retenu* ou *retenu et posé* (passe H, §4.6) — par une
    voix d'annonce unique, jamais par le fil entier, qui se réécrit à chaque geste et se relirait
    d'un bout à l'autre.
 5. **Rien ne se dit par la couleur seule** (§4.3), ni par une transparence qui éteint le contraste : un
@@ -868,6 +934,7 @@ au §3 de `docs/PASSATION.md`.*
 | L'erreur ne coûte que l'agacement de l'avocat : patience infinie, aucun compte à l'écran | §4.11, §8.4 |
 | Un mécanisme utilisé une seule fois est un panneau indicateur — sauf le tutoriel | §4, §4.8 |
 | Rien ne se passe tant que rien n'est envoyé ; composer et envoyer restent deux gestes | §4.6 |
+| Le clic dans la pièce prend ce que la fiche prendrait, rien de plus ; le passage n'en change pas d'aspect | §4.3, §4.6 |
 | Tout geste se fait au clavier ; rien ne se dit par la couleur seule | §4.3, §4.10 |
 | Le chrome ne s'arroge aucun pouvoir que la fiction refuse : l'IA répond, l'avocat dépose | §4.9 |
 | Le contenu n'existe qu'en un exemplaire, les règles qu'en un seul endroit | §12 |
