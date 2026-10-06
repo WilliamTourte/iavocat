@@ -347,7 +347,7 @@ opposé, et la réplique `fin` devenue une question).*
       essayer des paires de `qui` ? Le tutoriel ne les montre plus sur le chemin direct. *auteur*
 
 **La voie B — les retenus suivent la pièce ; en session 1, le clic ne pose que ce que la question
-demande** (§4.6, §4.11, *auteur*, écrite le 6 octobre — à coder une fois relue)
+demande** (§4.6, §4.11, *auteur*, écrite, relue et codée le 6 octobre)
 
 - [ ] **La liste repliée manque-t-elle ?** Pièce ouverte, la déplie-t-on pour composer depuis les
       fiches ? Si personne ne la déplie, la voie C la retire (§3 de `docs/PASSATION.md`) ; si la
@@ -368,8 +368,9 @@ demande** (§4.6, §4.11, *auteur*, écrite le 6 octobre — à coder une fois r
       montre que deux lignes, et le panneau redéfile d'un bloc. *Arbitré par l'auteur : le CONTEXTE y
       reste entre la conversation et le composeur* — ni retenus repliés, ni pièce en pleine hauteur.
       *Jean 1* — *Voie B (6 octobre, demande de l'auteur) : pièce ouverte, les retenus se replient,
-      et la pièce prend le reste du panneau, qui reste entre la conversation et le composeur. À
-      mesurer à 390×800.*
+      et la pièce prend le reste du panneau, qui reste entre la conversation et le composeur.
+      Mesuré à 390×800 : 170 → 177 px seulement — c'est la hauteur du panneau qui borne la pièce
+      sur un téléphone (§3 de `docs/PASSATION.md`).*
 - [ ] **La bulle ancrée**, à côté d'une zone longue (le texte de la pièce) : couvre-t-elle ce qu'on
       vient chercher ? Jouée seulement dans Chromium, 1280×800 et 390×800.
 - [ ] **Le code couleur au toucher** : sans légende ni survol, comprend-on ce que couleur et trait

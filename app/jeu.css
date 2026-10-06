@@ -105,6 +105,15 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 #contexte .bande.piece{flex:0 1 auto;max-height:70%;min-height:170px;border:1px solid var(--filet);border-radius:8px;overflow:hidden}
 #contexte .bande.retenus{flex:1 1 0;min-height:84px}
 #contexte .bande.retenus #zoneRetenus{margin:0}
+/* §4.6 — LES RETENUS SUIVENT LA PIÈCE (voie B) : repliés, ils ne sont plus
+   qu'une ligne, RETENUS · 7, collée sous la pièce ; le plafond de la pièce
+   tombe, elle prend tout le reste. Une pièce courte garde la hauteur de son
+   texte : la ligne reste sous elle, là où l'on vient de cliquer. */
+#contexte.retenusPlies .bande.piece{max-height:none}
+#contexte.retenusPlies .bande.retenus{flex:none;min-height:0}
+#zoneRetenus.plie{padding:7px 10px}
+#zoneRetenus:not(.plie) > .dplier{margin-bottom:6px}
+#retenusListe[hidden]{display:none}
 .bande.piece .ptete{flex:none;display:flex;align-items:center;gap:8px;padding:7px 10px 7px 14px;
   border-bottom:1px solid var(--filet)}
 .bande.piece .defile{padding:8px 14px 12px}
@@ -220,10 +229,10 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 @keyframes recoit{0%{box-shadow:0 0 0 0 var(--accent)}100%{box-shadow:0 0 0 10px transparent}}
 @media (prefers-reduced-motion:reduce){ .versSurface.recoit{animation:none} }
 /* La fiche qui vient d'arriver s'allume UNE fois, sous la pièce — c'est là que le
-   passage est allé, et c'est là qu'on va le prendre (§4.3). */
-.mchip.neuf{animation:neuf 1.4s ease-out 1}
+   passage est allé (§4.3) ; repliés (voie B), c'est la ligne des retenus. */
+.mchip.neuf,#zoneRetenus.plie.neuf{animation:neuf 1.4s ease-out 1}
 @keyframes neuf{0%{box-shadow:0 0 0 2px var(--accent);background:#20384b}100%{box-shadow:0 0 0 2px transparent}}
-@media (prefers-reduced-motion:reduce){ .mchip.neuf{animation:none;box-shadow:0 0 0 2px var(--accent)} }
+@media (prefers-reduced-motion:reduce){ .mchip.neuf,#zoneRetenus.plie.neuf{animation:none;box-shadow:0 0 0 2px var(--accent)} }
 /* --- canal --- */
 .msg{margin-bottom:10px;display:flex;flex-direction:column;align-items:flex-start}
 .msg.ia{align-items:flex-end}

@@ -112,6 +112,15 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 #contexte .bande.piece{flex:0 1 auto;max-height:70%;min-height:170px;border:1px solid var(--filet);border-radius:8px;overflow:hidden}
 #contexte .bande.retenus{flex:1 1 0;min-height:84px}
 #contexte .bande.retenus #zoneRetenus{margin:0}
+/* §4.6 — LES RETENUS SUIVENT LA PIÈCE (voie B) : repliés, ils ne sont plus
+   qu'une ligne, RETENUS · 7, collée sous la pièce ; le plafond de la pièce
+   tombe, elle prend tout le reste. Une pièce courte garde la hauteur de son
+   texte : la ligne reste sous elle, là où l'on vient de cliquer. */
+#contexte.retenusPlies .bande.piece{max-height:none}
+#contexte.retenusPlies .bande.retenus{flex:none;min-height:0}
+#zoneRetenus.plie{padding:7px 10px}
+#zoneRetenus:not(.plie) > .dplier{margin-bottom:6px}
+#retenusListe[hidden]{display:none}
 .bande.piece .ptete{flex:none;display:flex;align-items:center;gap:8px;padding:7px 10px 7px 14px;
   border-bottom:1px solid var(--filet)}
 .bande.piece .defile{padding:8px 14px 12px}
@@ -227,10 +236,10 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 @keyframes recoit{0%{box-shadow:0 0 0 0 var(--accent)}100%{box-shadow:0 0 0 10px transparent}}
 @media (prefers-reduced-motion:reduce){ .versSurface.recoit{animation:none} }
 /* La fiche qui vient d'arriver s'allume UNE fois, sous la pièce — c'est là que le
-   passage est allé, et c'est là qu'on va le prendre (§4.3). */
-.mchip.neuf{animation:neuf 1.4s ease-out 1}
+   passage est allé (§4.3) ; repliés (voie B), c'est la ligne des retenus. */
+.mchip.neuf,#zoneRetenus.plie.neuf{animation:neuf 1.4s ease-out 1}
 @keyframes neuf{0%{box-shadow:0 0 0 2px var(--accent);background:#20384b}100%{box-shadow:0 0 0 2px transparent}}
-@media (prefers-reduced-motion:reduce){ .mchip.neuf{animation:none;box-shadow:0 0 0 2px var(--accent)} }
+@media (prefers-reduced-motion:reduce){ .mchip.neuf,#zoneRetenus.plie.neuf{animation:none;box-shadow:0 0 0 2px var(--accent)} }
 /* --- canal --- */
 .msg{margin-bottom:10px;display:flex;flex-direction:column;align-items:flex-start}
 .msg.ia{align-items:flex-end}
@@ -1154,6 +1163,29 @@ function creerRegles(JEU, M) {
     }
     majPressentiment(S);
   }
+  /* CE QUE LA QUESTION DEMANDE (§4.6, §4.11 point 6) : le LIEN que l'attente
+     courante attend — jamais un nom d'attente câblé —, ses passages, et le
+     texte de l'article de la liaison qui emboîte sa forme. Une réponse à une
+     question À VENIR n'est pas demandée : la remise 1 se sert dans l'ordre
+     (§3). Le tutoriel le lit aussi, au lieu de le redériver (§4.8). */
+  function lienAttendu(S) {
+    const a = attenteCourante(S, remiseCourante(S));
+    return (a && a.attend && (JEU.liens || []).find(L => L.tag === a.attend)) || null;
+  }
+  function liaisonAttendue(S) {
+    const L = lienAttendu(S);
+    return (L && (JEU.grammaire.blocs || []).find(b => estLiaisonArticle(b) && b.forme === L.forme)) || null;
+  }
+  function passagesDemandes(S) {
+    const out = [];
+    const feuilles = t => { for (const x of (t && t.termes) || [])
+      if (typeof x === "string") out.push(x); else feuilles(x); };
+    feuilles(lienAttendu(S));
+    const b = liaisonAttendue(S);
+    const eid = b && Object.keys((JEU.pieces[b.piece] || {}).empans || {}).find(e => estArticle(b.piece + "." + e));
+    if (eid) out.push(b.piece + "." + eid);
+    return out;
+  }
   /* RETENIR, ET PRENDRE D'UN MÊME CLIC (§4.6, passe H). Le clic sur un passage
      le retient — toujours : la pièce n'ajoute que — et, si la phrase attend un
      passage, l'y pose ; le texte d'un article fonde la phrase qui attend un
@@ -1164,7 +1196,8 @@ function creerRegles(JEU, M) {
      la même chose. SECOND PIÈGE : un passage déjà dans la phrase n'y retourne
      pas — en second terme, « le même passage deux fois » serait refusé, un
      reproche pour un clic de lecture. Rend ce qui a eu lieu : "pose", "refuse"
-     (`S.refus` le dit), "dejaPhrase", ou null — retenu seulement. */
+     (`S.refus` le dit), "dejaPhrase", ou null — retenu seulement : la phrase
+     n'attend rien, ou, en session 1, la question ne le demande pas. */
   const dansPhrase = (S, k) => S.compo.some(p => {
     const b = blocParId(p.bloc);
     if (!b) return false;
@@ -1175,6 +1208,13 @@ function creerRegles(JEU, M) {
     const k = pid + "." + eid;
     surligner(S, pid, eid);
     if (dansPhrase(S, k)) return "dejaPhrase";
+    /* §4.6 — EN SESSION 1, LE CLIC NE POSE QUE CE QUE LA QUESTION DEMANDE : un
+       passage à côté se retient, sans bruit, et la bulle redemande le bon. Une
+       règle de la REMISE, tutoriel ouvert ou fermé (§4.11). PIÈGE : les fiches,
+       elles, prennent tout — c'est par elles que se composent les lectures
+       justes (§6) ; et dès la session 2, désigner ce qui sert la question
+       serait une lampe torche. */
+    if (enCalibration(S) && !passagesDemandes(S).includes(k)) return null;
     const i = estArticle(k)
       ? blocsOfferts(S).findIndex(b => estLiaisonArticle(b) && b.piece === pid)
       : indexTermeChamp(S);
@@ -1422,7 +1462,7 @@ function creerRegles(JEU, M) {
            estArticle, articleRetenu, estLiaisonArticle, articleAttendu,
            comparaisonPossible, dimAttendue, estSecondTerme, relationsOffertes,
            chaineCompo, pressentir,
-           poserBloc, retenirEtPrendre, dansPhrase, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
+           poserBloc, retenirEtPrendre, dansPhrase, lienAttendu, liaisonAttendue, passagesDemandes, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, dejaEnvoyee, envoyerCompo, compoFinie,
            estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
@@ -2424,22 +2464,19 @@ function tutoPasser(){
   const el=premierFocalisable(document.querySelector("#panPiece")) || premierFocalisable($("discussion"));
   if(el) el.focus();
 }
-/* Le lien de l'attente active : PIÈGE, c'est lui qui dit si le geste attendu
-   est une simple citation (un terme, une chaîne) ou une comparaison (un
-   terme emboîte une forme) — jamais un nom d'attente câblé en dur. */
-function tutoLienAttente(){
-  const a=R.attenteCourante(S,R.remiseCourante(S));
-  return (a&&a.attend&&(JEU.liens||[]).find(x=>x.tag===a.attend)) || null;
-}
-/* Les passages que cite le lien attendu, dans son ordre : un pour citer, les
-   deux termes de la comparaison pour mettre en relation. */
+/* Le lien de l'attente active, `R.lienAttendu` — la règle de la session 1 le
+   lit aussi (§4.6) : une dérivation, pas deux. PIÈGE : c'est lui qui dit si le
+   geste attendu est une simple citation (un terme, une chaîne) ou une
+   comparaison (un terme emboîte une forme) — jamais un nom d'attente câblé en
+   dur. Les passages qu'il cite, dans son ordre : un pour citer, les deux termes
+   de la comparaison pour mettre en relation. */
 function tutoTermes(){
-  const t=tutoLienAttente(), p=t&&(t.termes||[])[0];
+  const t=R.lienAttendu(S), p=t&&(t.termes||[])[0];
   if(typeof p==="string") return [p];
   return p && typeof p==="object" ? (p.termes||[]).filter(k=>typeof k==="string") : [];
 }
 function tutoAttenteComparaison(){
-  const t=tutoLienAttente(), p=t&&(t.termes||[])[0];
+  const t=R.lienAttendu(S), p=t&&(t.termes||[])[0];
   return !!p && typeof p==="object";
 }
 /* Les passages qu'une réponse déjà servie a cités : celui de la première
@@ -2451,16 +2488,9 @@ function tutoServis(){
   return vus;
 }
 /* L'ARTICLE SE DÉSIGNE, LA RELATION JAMAIS (§4.8) : le bloc de liaison qui
-   emboîte la forme du lien attendu, et sa pièce. Dérivé du lien, jamais d'un
-   nom d'article câblé. */
-function tutoArticle(){
-  const t=tutoLienAttente();
-  return (t && (JEU.grammaire.blocs||[]).find(b=>
-    R.estLiaisonArticle(b) && b.forme===t.forme)) || null;
-}
-/* Le passage de l'article de cette pièce : c'est lui qu'on retient, et sa fiche
-   qu'on prend (passe F) — d'un même clic sur lui, la phrase l'attendant (passe H). */
-const tutoCleArticle = pid => Object.keys(ARTICLE).find(k=>ARTICLE[k].pid===pid) || null;
+   emboîte la forme du lien attendu, et sa pièce — `R.liaisonAttendue`. Dérivé du
+   lien, jamais d'un nom d'article câblé. */
+const tutoArticle = () => R.liaisonAttendue(S);
 /* LA BULLE NE COMPTE PAS (§4.8) : le rang `n` ne sert plus qu'à la clé de
    `tutoVues`. Elle a porté « citer · 2/4 », puis deux séries chacune son total ;
    un rang n'apprenait rien au joueur. */
@@ -2476,14 +2506,15 @@ function pieceDemandee(k){
   return p ? p.titre : null;
 }
 const RATE="Ce n'est pas ce qu'il demande.";
-/* UN PASSAGE POSÉ À TORT SE RETIRE D'ABORD (§4.8, passe H). Depuis que le clic
-   prend, un passage qui ne répond pas finit DANS la phrase, et le bon, cliqué
-   ensuite, deviendrait son second terme — refusé en session 1, ou le début d'une
-   comparaison qu'on n'a pas voulue. Le halo va donc à « ← retirer » : le geste
-   qui défait, jamais le passage qu'il fallait — rien qu'il ne sût déjà, il
-   disait « ce n'est pas ce qu'il demande » d'un passage retenu à tort. PIÈGE :
-   il ne lit que les PASSAGES de la phrase ; une relation fausse ne se signale
-   jamais, c'est l'avocat qui la refuse. Rend `null` quand la phrase est nette. */
+/* UNE FICHE PRISE À TORT SE RETIRE D'ABORD (§4.8, passe H). En session 1, le
+   clic de la pièce ne pose que ce que la question demande (§4.6) ; mais les
+   fiches, dépliées, prennent tout — c'est par elles que se composent les
+   lectures justes. Un passage qui ne répond pas finit alors DANS la phrase, et
+   le bon, cliqué ensuite, deviendrait son second terme — refusé, ou le début
+   d'une comparaison qu'on n'a pas voulue. Le halo va donc à « ← retirer » : le
+   geste qui défait, jamais le passage qu'il fallait. PIÈGE : il ne lit que les
+   PASSAGES de la phrase ; une relation fausse ne se signale jamais, c'est
+   l'avocat qui la refuse. Rend `null` quand la phrase est nette. */
 function tutoIntrus(geste, attendus){
   if(!attendus.length) return null;
   const intrus=S.compo.some(p=>typeof p.valeur==="string" && EMPAN[p.valeur] && !attendus.includes(p.valeur));
@@ -2491,23 +2522,26 @@ function tutoIntrus(geste, attendus){
     dit:"Retire-le de ta phrase.",
     ditLong:RATE+" « ← retirer » l'ôte de ta phrase ; ton CONTEXTE le garde."} : null;
 }
-/* RETENIR, AUX DEUX GESTES (§4.8) : tant qu'un passage attendu manque au
-   CONTEXTE, le halo va à l'index, puis au texte d'une pièce qui en porte un —
-   jamais à l'empan. Depuis la passe H, la bulle dit « clique » : le clic qui
-   retient pose aussi, et c'est le geste que le joueur fait. PIÈGE : une pièce
-   ouverte qui n'en porte AUCUN renvoie à l'index. La comparaison court sur deux
-   pièces : le premier passage retenu, la
+/* RETENIR, AUX DEUX GESTES (§4.8) : tant qu'un passage attendu manque à la
+   PHRASE — retenu d'avance ou non —, le halo va à l'index, puis au texte d'une
+   pièce qui en porte un — jamais à l'empan, jamais aux fiches (voie B) : le
+   clic le pose, même recliqué. La bulle dit donc « clique » : c'est le geste
+   que le joueur fait. PIÈGE : une pièce ouverte qui n'en porte AUCUN renvoie à
+   l'index. La comparaison court sur deux pièces : le premier passage posé, la
    pièce encore ouverte, le halo restait sur un texte où il n'y avait plus rien
-   à chercher. L'alerte se dérive du DERNIER passage retenu — ni attendu, ni
-   cité par une réponse servie : celui de la citation reste au CONTEXTE ; ni
-   `tolere` — l'article que la question demande aussi, retenu en avance.
-   Rend `undefined` quand rien ne manque : le temps suivant prend le relais. */
-function tutoRetenir(geste, attendus, tolere=[]){
-  const manque=attendus.filter(k=>!S.retenus.includes(k));
+   à chercher. L'alerte se dérive du DERNIER PASSAGE CLIQUÉ (`dernierClic`) —
+   ni demandé (`R.passagesDemandes`, l'article compris), ni cité par une
+   réponse servie : celui de la citation reste au CONTEXTE. PIÈGE PAYÉ : le
+   dernier RETENU ne bougeait plus au reclic d'un passage déjà retenu, et
+   l'alerte d'un mauvais clic d'avant survivait au bon. Rend `undefined` quand
+   rien ne manque : le temps suivant prend le relais. */
+function tutoRetenir(geste, attendus){
+  const manque=attendus.filter(k=>!R.dansPhrase(S,k));
   if(attendus.length ? !manque.length : S.retenus.length>0) return undefined;
   const relier=geste===GESTE_RELIER, second=relier && manque.length<attendus.length;
-  const dernier=S.retenus[S.retenus.length-1];
-  const rate=!!attendus.length && !!dernier && !attendus.includes(dernier) && !tolere.includes(dernier)
+  // Oublié depuis, il ne sonne plus faux : l'alerte suit ce qui reste au CONTEXTE.
+  const dernier=dernierClic && S.retenus.includes(dernierClic) ? dernierClic : null;
+  const rate=!!attendus.length && !!dernier && !R.passagesDemandes(S).includes(dernier)
     && !tutoServis().has(dernier);
   const ici=!!S.modalPiece && (!manque.length || manque.some(k=>k.startsWith(S.modalPiece+".")));
   // La clé de `tutoVues` : le second passage cherché est une consigne NEUVE.
@@ -2543,42 +2577,26 @@ function tutoEtapeCitation(){
   if(x) return x;
   const e=tutoRetenir(GESTE_CITER, tutoTermes());
   if(e!==undefined) return e;
-  /* Plus de temps « Referme la pièce » (§4.6) : elle vit DANS le CONTEXTE, et le
-     passage retenu paraît juste en dessous, prêt à être pris. Depuis la passe H,
-     ce temps ne vient que pour un passage retenu SANS être pris — d'avance, ou
-     ôté de la phrase par « ← retirer » : le clic qui retient l'a d'ordinaire posé. */
-  if(!R.peutEnvoyer(S))
-    return panneau==="contexte"
-        ? {...GESTE_CITER, n:3, ou:"#zoneRetenus",
-            dit:"Prends le passage retenu.",
-            ditLong:"Prends le passage qui répond à sa question pour l'ajouter à ta RÉPONSE."}
-        : {...GESTE_CITER, n:3, ou:"#btnCONTEXTE",
-            dit:"Ouvre ton CONTEXTE.",
-            ditLong:"Ouvre ton CONTEXTE : le passage que tu viens de retenir s'y trouve."};
-  /* LA PHRASE QUI SE TIENT LE FAIT TAIRE (§4.8) : « → Envoyer », seul bouton
-     plein de l'écran, se montre seul. */
+  /* Plus de temps « Prends le passage retenu » (voie B, §4.8) : un passage
+     retenu sans être pris — d'avance, ou ôté par « ← retirer » — se reprend d'un
+     nouveau clic dans la pièce, et `tutoRetenir` y mène tant qu'il manque à la
+     phrase. LA PHRASE QUI SE TIENT LE FAIT TAIRE (§4.8) : « → Envoyer », seul
+     bouton plein de l'écran, se montre seul. */
   return null;
 }
-/* METTRE EN RELATION (§4.8) : retenir les deux passages, comme pour citer — ils
-   ne sont plus extraits d'avance par deux questions (§3) ; le clic les pose
-   aussi (passe H) —, puis les prendre s'ils attendent encore au CONTEXTE, puis
-   l'article. Retenir ne vaut que tant que la phrase prend un passage :
-   deux termes posés, c'est l'article qui manque, quels qu'ils soient. */
+/* METTRE EN RELATION (§4.8) : cliquer les deux passages, comme pour citer —
+   ils ne sont plus extraits d'avance par deux questions (§3) ; le clic les
+   pose (passe H) —, puis la relation, puis l'article. Cliquer ne vaut que tant
+   que la phrase prend un passage : deux termes posés, c'est la relation, puis
+   l'article qui manque, quels qu'ils soient. Plus de temps « Prends… » sur les
+   fiches (voie B) : `tutoRetenir` mène au texte tant qu'un passage attendu
+   manque à la phrase. */
 function tutoEtapeComparaison(){
   const x=tutoIntrus(GESTE_RELIER, tutoTermes());
   if(x) return x;
   if(R.indexTermeChamp(S)>=0){
-    const art=tutoArticle(), cle=art && tutoCleArticle(art.piece);
-    const e=tutoRetenir(GESTE_RELIER, tutoTermes(), cle ? [cle] : []);
-    if(e!==undefined) return e;
-    const dit = S.compo.length ? "Prends un second passage." : "Prends un premier passage.";
-    const ditLong = S.compo.length
-      ? "Prends un second passage pour le comparer au premier : une réponse peut tenir sur deux."
-      : "Prends un premier passage dans ton CONTEXTE pour l'ajouter à ta RÉPONSE.";
-    return panneau==="contexte"
-      ? {...GESTE_RELIER, n:2, ou:"#zoneRetenus", dit, ditLong}
-      : {...GESTE_RELIER, n:2, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
-          ditLong:"Ouvre ton CONTEXTE : "+ditLong[0].toLowerCase()+ditLong.slice(1)};
+    const e=tutoRetenir(GESTE_RELIER, tutoTermes());
+    return e===undefined ? null : e;
   }
   /* CHOISIR CE QUI LES LIE (passe G, §4.8) : le halo entoure les DEUX relations,
      toute la zone — jamais la bonne, et un mauvais choix n'est pas signalé :
@@ -2591,11 +2609,12 @@ function tutoEtapeComparaison(){
      là où la leçon est « il te faut un article ». Et depuis que l'article SE
      RETIENT, PUIS SE PREND (passe F), il n'est offert nulle part tant qu'il
      n'est pas au CONTEXTE : on montre SA puce dans l'index, puis SON texte,
-     qu'un clic retient et prend (passe H) — SA fiche (`f`, §4.8) seulement
-     s'il était retenu d'avance. Une liaison sans article — hors du contenu
-     livré — reste au composeur, et la zone de ses propositions avec elle. */
+     qu'un clic retient et prend (passe H) — retenu d'avance ou non : un nouveau
+     clic le prend, et le tutoriel ne montre plus les fiches (voie B). Une
+     liaison sans article — hors du contenu livré — reste au composeur, et la
+     zone de ses propositions avec elle. */
   if(S.compo.length && !R.compoFinie(S)){
-    const art=tutoArticle(), cle=art && tutoCleArticle(art.piece);
+    const art=tutoArticle();
     if(!art) return {...GESTE_RELIER, n:5, ou:"#composeur .offre",
         dit:"Prends ce qui la fonde.",
         ditLong:"Une relation seule ne suffit pas : prends ce sur quoi elle s'appuie."};
@@ -2603,10 +2622,6 @@ function tutoEtapeComparaison(){
     if(panneau!=="contexte")
       return {...GESTE_RELIER, n:4, ou:"#btnCONTEXTE", dit:"Ouvre ton CONTEXTE.",
           ditLong:ditLong+" Ton dossier est dans ton CONTEXTE."};
-    if(R.articleRetenu(S, art.piece))
-      return {...GESTE_RELIER, n:5, ou:"#zoneRetenus", f: cle && "c:"+cle,
-        dit:"Prends l'article qui la fonde.",
-        ditLong:"Une relation seule ne suffit pas : prends, dans ton CONTEXTE, l'article sur lequel elle s'appuie."};
     if(S.modalPiece===art.piece)
       return {...GESTE_RELIER, n:4, ou:"#panPiece .piecetexte", dit:"Clique sur le texte de l'article.",
         ditLong:"Clique sur le texte de l'article : il se retient, et fonde ta relation d'un même geste."};
@@ -2723,8 +2738,11 @@ function rectVisible(el, ouNul){
    essaie donc trois alignements ; la première position qui ne couvre rien
    gagne, sinon celle qui couvre le moins — l'ancre comptant pour beaucoup plus. */
 // Les BOUTONS de la barre du composeur, pas la barre : son milieu est vide, et
-// c'est la meilleure place pour une bulle qui montre « → Envoyer ».
-const TUTO_EVITE = ".rappel, .raison, .aide, .phrase, .compo .barre button, .ptete button, .col > h2 .fermer, .col > h2 .bascule, .ztitle .surfaces";
+// c'est la meilleure place pour une bulle qui montre « → Envoyer ». Et les
+// lignes qui se replient (`.dplier`) — PIÈGE PAYÉ (voie B, `npm run vue`) : la
+// ligne des retenus naît juste sous la pièce, et l'alerte posée sous son texte
+// la recouvrait, bascule comprise.
+const TUTO_EVITE = ".rappel, .raison, .aide, .phrase, .compo .barre button, .ptete button, .dplier, .col > h2 .fermer, .col > h2 .bascule, .ztitle .surfaces";
 function placerTuto(){
   const bulle=$("tuto");
   if(!bulle || bulle.hidden) return;
@@ -3035,7 +3053,8 @@ function ouvrirPiece(pid){
   // Une pièce ouverte depuis l'index replie l'index et rend sa place au
   // CONTEXTE : la lire dans un tiers, c'est le défaut que les deux tiers
   // réparaient (§4.6). ‹ › (`voisine`) ne touchent ni à l'un ni à l'autre.
-  panneau="contexte"; panneauSuit=false; dossierDeplie=false; discussionAgrandie=false;
+  // Les retenus aussi : ils suivent la pièce (voie B).
+  panneau="contexte"; panneauSuit=false; dossierDeplie=false; retenusDeplies=false; discussionAgrandie=false;
   focusVoulu = { cle:"#pieceTitre", zone:"#panPiece" };
   rendreTout();
 }
@@ -3137,6 +3156,21 @@ function basculerDossier(){
   focusVoulu={ cle:"dossier", zone:"#zoneDossier" };
   rendreTout();
 }
+/* §4.6 — LES RETENUS SUIVENT LA PIÈCE, COMME L'INDEX (voie B, arbitré par
+   l'auteur). Depuis que le clic de la pièce prend (passe H), leur liste n'est
+   plus le clavier de la phrase, et elle gardait la place de lecture. Pièce
+   ouverte, ils se replient en une ligne — `ouvrirPiece` remet `retenusDeplies`
+   à faux ; ‹ › n'y touchent pas. Sans pièce, rien ne leur dispute la place : ils
+   sont dépliés, et la bascule ne s'affiche pas (§4.9 règle 4). Sans aucun
+   retenu, rien à replier : l'aide dit comment on les remplit. Un état d'ÉCRAN,
+   jamais sauvé, comme `dossierDeplie`. */
+let retenusDeplies=false;
+const retenusPlies=()=>!!S.modalPiece && !retenusDeplies && S.retenus.length>0;
+function basculerRetenus(){
+  retenusDeplies=!retenusDeplies;
+  focusVoulu={ cle:"retenus", zone:"#zoneRetenus" };
+  rendreTout();
+}
 
 /* 5) LE CONTEXTE — privé, gratuit, illimité, et CLAVIER du composeur (§4.6).
       Retenir ne transmet RIEN : c'est voulu. */
@@ -3145,8 +3179,11 @@ function basculerDossier(){
    la fiche et rien de plus. La ligne sous la pièce dit lequel des deux a eu lieu
    — retenu, retenu et posé, posé par un reclic — ou, le clic n'ayant rien fait,
    où l'on oublie et comment on revient en arrière. `vientDeRetenir` allume aussi
-   la fiche neuve et le compte de la porte CONTEXTE. Tout vit le temps d'un rendu. */
-let echoPiece=null, vientDeRetenir=null;
+   la fiche neuve — repliés, la ligne des retenus (voie B) — et le compte de la
+   porte CONTEXTE. Tout vit le temps d'un rendu, sauf `dernierClic` : le passage
+   cliqué en dernier, d'où le tutoriel dérive son alerte (§4.8). Un état d'écran,
+   jamais sauvé ; une fiche prise le remplace aussi. */
+let echoPiece=null, vientDeRetenir=null, dernierClic=null;
 const ECHO_RETENU="✓ Retenu dans ton CONTEXTE.";
 const ECHO_POSE="✓ Retenu dans ton CONTEXTE, et posé dans ta phrase.";
 const ECHO_REPOSE="✓ Posé dans ta phrase.";
@@ -3155,6 +3192,7 @@ const RAPPEL_PHRASE="Déjà dans ta phrase — « ← retirer » pour revenir en
 function surligner(pid,eid){
   const k=pid+"."+eid, deja=S.retenus.includes(k);
   const fait=R.retenirEtPrendre(S,pid,eid), pose=fait==="pose";
+  dernierClic=k;
   // Un reclic refusé ne dit rien sous la pièce : le refus parle, au composeur.
   const texte = pose ? (deja ? ECHO_REPOSE : ECHO_POSE)
               : !deja ? ECHO_RETENU
@@ -3219,11 +3257,9 @@ function piecePanelHTML(pid){
     ${cadresPorte(pid, `<p class="piecetexte">${rendreTexte(pid)}</p>`)}
     ${echoPiece && echoPiece.k.startsWith(pid+".") ? `<p class="rappel${echoPiece.confirme?" retenu":""}">${echoPiece.texte}</p>` : ""}`;
 }
-/* PIÈGE : `#zoneRetenus` est l'ancre des temps 3 et 5 du tutoriel (R6), à ne
-   jamais viser par `:last-child`. Et depuis qu'elle vit dans un PANNEAU, elle
-   peut être cachée : le tutoriel vise alors `#btnCONTEXTE`, la porte. Les deux
-   sélecteurs restent des LITTÉRAUX — R6 ne scanne pas un sélecteur calculé, et
-   ne dirait rien le jour où l'un des deux cesserait d'exister. */
+/* `#zoneRetenus` n'est plus une ancre du tutoriel (voie B, §4.8) : il ne
+   montre plus les fiches. Elle reste la zone où le focus se replie
+   (`ZONES_FOCUS`), repliée ou non — d'où son `tabindex="-1"`. */
 /* §4.6 — LE CONTEXTE DIT L'ÉTAT DE LA PHRASE (retour de Jean). Un passage déjà
    pris porte « dans ta phrase » ; et quand la phrase n'en prend plus, une ligne le
    dit. PIÈGE PAYÉ : la raison vivait dans le `title` d'un bouton `disabled` — ni
@@ -3328,10 +3364,22 @@ function renderRetenus(){
     }
     return h;
   };
-  let h=`<div class="zone" id="zoneRetenus" tabindex="-1">`;
+  /* REPLIÉS (voie B, §4.6), ils ne sont qu'une ligne — RETENUS · 7 — qui
+     s'allume une fois quand un passage y entre, comme la porte CONTEXTE. Les
+     fiches ne sont pas dessinées sous `hidden` : une fiche qu'on ne voit pas ne
+     se touche pas, et une suite qui en toucherait une replié tomberait. */
+  const plie=retenusPlies();
+  let h=`<div class="zone${plie?" plie":""}${plie && vientDeRetenir?" neuf":""}" id="zoneRetenus" tabindex="-1">`;
+  if(S.modalPiece && S.retenus.length)
+    h+=`<button type="button" class="dplier" data-f="retenus" aria-expanded="${!plie}" aria-controls="retenusListe"
+      onclick="basculerRetenus()"><span class="dtitre">RETENUS</span><span class="dcompte">· ${S.retenus.length}</span><span class="dsens">${
+        plie?"▾ déplier":"▴ replier"}</span></button>`;
   if(!S.retenus.length){
     h+=`<div class="aide">Ouvre une pièce, puis clique un passage encadré pour le retenir : il viendra ici.</div>`;
+  } else if(plie){
+    h+=`<div id="retenusListe" hidden></div>`;
   } else {
+    h+=`<div id="retenusListe">`;
     if(pleine) h+=`<p class="raison${rappelPleine?" rappelle":""}" id="raisonPleine">${raisonPleine()}</p>`;
     h+=parDimension(S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k]));
     /* HORS DES DIMENSIONS, en fin de liste : un article n'en a pas, et il n'est
@@ -3340,6 +3388,7 @@ function renderRetenus(){
     if(arts.length) h+=`<div class="dimgrp articles"><div class="dnom">articles</div>${
       raisonArticle?`<p class="raison rappelle" id="raisonArticle">${raisonArticle}</p>`:""}${
       arts.map(ficheArticle).join("")}</div>`;
+    h+=`</div>`;
   }
   h+=`</div>`;
   return h;
@@ -3418,7 +3467,12 @@ function texteCompoPartiel(){
 }
 /* iBloc indexe R.blocsOfferts(S) — POSITIONNEL dans la liste filtrée, donc
    dépendant de la session ; iSrc indexe le contexte ou le brouillon. */
-function poserBloc(iBloc,iSrc){ R.poserBloc(S,iBloc,iSrc); rendreTout(); }
+function poserBloc(iBloc,iSrc){
+  // Une fiche prise est un passage cliqué : l'alerte du tutoriel le suit (§4.8).
+  const b=R.blocsOfferts(S)[iBloc];
+  if(b && b.type==="terme" && b.source!=="note" && S.retenus[iSrc]) dernierClic=S.retenus[iSrc];
+  R.poserBloc(S,iBloc,iSrc); rendreTout();
+}
 function retirerBloc(){ R.retirerBloc(S); rendreTout(); }
 function viderCompo(){ R.viderCompo(S); rendreTout(); }
 /* La phrase PARTIE (§4.6) : le CONTEXTE reste tant que la REMISE ne change pas —
@@ -3543,7 +3597,9 @@ function garderDefilement(id, dessiner){
 let pieceDessinee=null;
 function renderCONTEXTE(){
   const piece=!!S.modalPiece;
-  const el=$("contexte"); if(el) el.classList.toggle("avecPiece", piece);
+  const el=$("contexte");
+  // Les retenus repliés, le plafond de la pièce tombe : elle prend tout le reste (voie B).
+  if(el){ el.classList.toggle("avecPiece", piece); el.classList.toggle("retenusPlies", retenusPlies()); }
   { const p=$("panCONTEXTE"); if(p) p.classList.toggle("avecPiece", piece); }
   // Échap ne se lit que là où il agit (§4.10 règle 6) : pièce ouverte, sur elle seule.
   { const f=document.querySelector("#panCONTEXTE > h2 .fermer");

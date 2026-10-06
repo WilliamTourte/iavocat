@@ -743,7 +743,8 @@ va vers ce qui suit. Elle suit la zone quand l'écran défile ou change de taill
 en réservant sa place, l'ancrage le garantit en la choisissant : **la bulle ne recouvre jamais sa
 propre ancre**. **Ni, autant qu'elle le peut, ce qui parle ou agit autour** — retour de playtest
 (Jean, 5 octobre) : posée au premier côté libre, elle cachait la confirmation *« ✓ Retenu »*, la raison
-d'une phrase pleine, l'aide du CONTEXTE, *« ← retirer / tout effacer »*. Sur chaque côté, elle essaie
+d'une phrase pleine, l'aide du CONTEXTE, *« ← retirer / tout effacer »* — et, depuis la voie B, la
+ligne des retenus repliés, née juste sous la pièce (§4.6). Sur chaque côté, elle essaie
 donc plusieurs alignements, et prend la première position qui ne couvre ni une commande ni une ligne
 qui parle ; si aucune n'y parvient, celle qui en couvre le moins. L'ordre des côtés reste une
 préférence, plus une fatalité. Réduite, elle n'est plus que le *« ? »* collé à la zone. Ses consignes

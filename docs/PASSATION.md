@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 6 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 649 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 674 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -374,7 +374,7 @@ façons** : `H.retenir`, le clic, par lequel tout se compose désormais, chemin 
 jouer** : qui rassemble en lisant verra ses premiers clics former une phrase (§3).
 
 **Le 6 octobre, la voie B : les retenus suivent la pièce** (§4.6, §4.8, §4.11 — demande de l'auteur ;
-**écrite au document, à relire par l'auteur, pas encore codée**). Depuis la passe H, la liste des
+document d'abord, relu par l'auteur, puis codé). Depuis la passe H, la liste des
 retenus n'est plus le clavier de la phrase, et l'auteur doutait qu'elle ait encore sa place. Trois
 voies pesées — la garder, la replier, la retirer —, **la prudente d'abord** : elle reste, mais
 **une pièce ouverte depuis le DOSSIER la replie** en une ligne, *RETENUS · 7*, comme l'index ; la
@@ -385,7 +385,13 @@ sans bruit, et la bulle redemande le bon. Une règle de la remise de calibration
 fermé ; les fiches prennent tout, et les lectures justes de la session 1 (§6) se composent par
 elles. Sept arbitrages de l'auteur : le clic à côté, sa portée (toute la session 1), les lectures
 justes (par les fiches), la légende (rien de plus), le pli (à chaque pièce), la ligne (*RETENUS ·
-7*), et sans pièce, la liste dépliée.
+7*), et sans pièce, la liste dépliée. Aux règles, `passagesDemandes` — dérivé de `lienAttendu`, que
+le tutoriel lit désormais au lieu de le redériver ; à l'écran, `retenusDeplies` et l'alerte du
+tutoriel sur `dernierClic`. **Mesuré à `npm run vue`** : la pièce passe de 276 à 318 px à 1280×800
+(le PV s'y lit en entier, repliés comme dépliés), de 170 à 177 px seulement à 390×800 — sur un
+téléphone, c'est la hauteur du panneau, plus les retenus, qui borne la pièce (§3). Et un défaut que
+la passe faisait naître : l'alerte, posée sous le texte de la pièce, recouvrait la ligne des
+retenus et sa bascule — `TUTO_EVITE` évite désormais les lignes qui se replient.
 
 ## 2. Points de vigilance
 
@@ -396,7 +402,7 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 
 - **[R1]** `<script src="x.js"></script>` sur **une ligne, sans attribut** : une variante n'est pas inlinée *du tout*.
 - **[R2]** Les `const` de haut niveau ne sont pas des propriétés de `window` — **mais ils occupent le nom**.
-- **[R6]** Quatre ids sont des ancres du tutoriel : `#discussion`, `#panPiece`, `#zoneRetenus`, `#composeur`.
+- **[R6]** Les ancres du tutoriel (`ou:`, des littéraux) existent : `#discussion`, `#zoneDossier`, `#panPiece`, `#btnCONTEXTE`, `#composeur` ; `#zoneRetenus` n'en est plus une depuis la voie B.
 - **[R9]** Le tag vit sur l'**attente**, jamais sur la remise — quatre fonctions exceptées.
 - **[R11]** Tout renvoi `§x` désigne une section réelle, dans le bon document.
 - **[R12]** L'export commité est bien celui que produit `npm run export`.
@@ -491,7 +497,9 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   retourne pas** : sans la garde, le reclic le poserait en second terme, et *le même passage deux
   fois* tomberait en refus d'écran — un reproche pour un clic de lecture. La fiche suit la même
   garde, par le même prédicat : `R.dansPhrase` sert la pièce, l'étiquette *« dans ta phrase »* et la
-  fiche refusée (`passageDejaPris`) — une vérité, trois usages.
+  fiche refusée (`passageDejaPris`) — une vérité, trois usages. **Une seule différence, en session
+  1** (voie B) : le clic ne pose que ce que la question demande (`passagesDemandes`), la fiche prend
+  tout. C'est une règle de la remise, que `retenirEtPrendre` porte — jamais l'écran, ni le tutoriel.
 - **`H.surligner` n'est plus le clic du joueur** (passe H) : c'est *retenir seul* — le clic, puis
   *« ← retirer »* s'il a posé ; le clic, c'est `H.retenir`. Un contrôle qui veut l'état *retenu, pas
   pris* passe par le premier. **Et un drapeau ne recule pas** : si la phrase attendait l'article, le
@@ -502,11 +510,24 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   elle, jamais au point de faire sortir le passage cliqué, puis `majDebord` remesure le fondu.
   **Et `voirCibleTuto` ne défile pas vers la barre du composeur** : elle colle, *« ← retirer »* y est
   toujours dans le champ, et y défiler rognait l'en-tête RÉPONSE. Aucune suite ne voit ni l'un ni
-  l'autre — `npm run vue` seul, captures *piece-mauvais-passage* et *piece-pris*.
-- **Le tutoriel lit aussi la PHRASE** (`tutoIntrus`, passe H) : un passage retenu à tort restait au
-  CONTEXTE ; il entre désormais dans la phrase, et le bon, cliqué ensuite, y serait refusé ou
-  ouvrirait une comparaison. Ce temps passe AVANT tous les autres, et ne lit que les passages —
-  jamais la relation, qu'il ne signale pas.
+  l'autre — `npm run vue` seul, captures *piece-a-cote*, *fiche-a-tort* et *piece-pris*.
+- **Le tutoriel lit aussi la PHRASE** (`tutoIntrus`, passe H) : un passage pris à tort y entre, et le
+  bon, cliqué ensuite, y serait refusé ou ouvrirait une comparaison. Depuis la voie B, c'est une
+  **fiche** prise à tort — le clic de la session 1 ne pose plus un passage à côté. Ce temps passe
+  AVANT tous les autres, et ne lit que les passages — jamais la relation, qu'il ne signale pas.
+- **Les retenus suivent la pièce** (voie B) : pièce ouverte, leurs fiches ne sont **pas dessinées** —
+  absentes, pas `hidden` : une suite qui toucherait une fiche repliée tombe, au lieu de passer par
+  le vide. Elle déplie d'abord, par la bascule (`H.deplierRetenus`). `ouvrirPiece` (l'écran) remet
+  `retenusDeplies` à faux ; `voisine` (‹ ›) non. Et le harnais compose une réponse à côté **par ses
+  fiches** en session 1 (`H.composerLien`) : le clic ne la pose pas.
+- **L'alerte du tutoriel suit `dernierClic`**, le dernier passage cliqué — dans la pièce ou sur sa
+  fiche —, plus le dernier retenu : recliqué, un passage retenu d'avance ne bouge pas dans
+  `S.retenus`, et l'alerte d'un mauvais clic d'avant survivait au bon. Un état d'écran ; oublié, le
+  passage ne sonne plus faux. **Un contrôle qui l'éprouve se place au PREMIER terme** : la paire
+  complète, l'alerte n'est plus consultée, et il passerait par le vide (vu à la mutation).
+- **`TUTO_EVITE` évite les lignes qui se replient** (`.dplier`) : la ligne des retenus naît juste
+  sous la pièce, et l'alerte posée sous son texte la recouvrait, bascule comprise — `npm run vue`
+  seul l'a vu, le clic bloqué.
 - **Le panneau ouvert se referme sur ce que la phrase ACCEPTE, jamais sur ce que la voix RÉCLAME** :
   un passage posé, la voix se tait — la phrase se tient — mais la grammaire ne sait pas encore si c'est
   une citation ou le premier temps d'une comparaison (§4.5). Suivre la voix retirerait le clavier au
@@ -620,7 +641,11 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   liste des passages cliqués reste en interne, pour les ✓ et pour *on n'invoque qu'un texte qu'on
   a retenu* (§4.5). **Si la chasse au vice devient pénible**, B reste. Et **en session 1, le clic à
   côté qui ne pose rien** (§4.6) : la bulle qui redemande suffit-elle, ou le joueur croit-il le
-  clic cassé ? **Non joué.**
+  clic cassé ? **Non joué.** **Mesuré** (`npm run vue`) : à 1280×800 la pièce gagne 42 px ; à
+  390×800, 7 seulement (170 → 177) — sur un téléphone, c'est la hauteur du panneau qui borne la
+  pièce, plus les retenus. Si elle y reste à l'étroit, c'est le partage de la colonne qu'il faudra
+  rouvrir (le plancher du panneau, la part de la conversation), pas les retenus. Et à 390×800,
+  l'alerte du clic à côté recouvre encore la ligne des retenus : aucune position n'y couvre rien.
 - **La CALIBRATION tient-elle ?** Première chose à regarder : la session 1 se sent-elle comme un
   examen, et la remise 2 comme une charnière ? *Depuis la passe E, en deux questions : un fait sans
   lendemain, puis la comparaison entière (§3).* Si l'examen ne se sent pas, la session 1 redevient une
@@ -790,13 +815,6 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   neutre* (§4.5).
 
 ## 4. Prochaine étape
-
-**D'abord, coder la voie B, une fois relue** (§4.6, §4.8, §4.11). Aux règles, ce que la question demande — dérivé du
-lien attendu, que le tutoriel lira au lieu de le dériver lui-même — et sa garde dans
-`retenirEtPrendre`, en session 1 ; à l'écran, le pli des retenus (un état d'écran, comme l'index) et
-la pièce sans plafond ; au tutoriel, plus de temps sur les fiches, et l'alerte sur le dernier passage
-cliqué. Les contrôles neufs vus tomber, `npm run vue` à 1280×800 et 390×800 ; la carte (§17) et les
-points de vigilance, plus haut, avec le code — `#zoneRetenus` cesse d'être une ancre du tutoriel (R6).
 
 **La prochaine session porte sur le SENS, et la seule façon de la commencer est de jouer** — la
 précédente l'a prouvé : une partie rapportée geste par geste a valu plus que trois passes de
@@ -1008,3 +1026,13 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   Une relecture de cohérence suit : le compte des gestes dit qu'il compte l'envoi, le pas-à-pas
   perd une branche morte, et la fiche d'un passage déjà dans la phrase dit *« déjà dans ta
   phrase »* comme la pièce, au lieu de *« ne veut rien dire »* (`passageDejaPris`). 649 contrôles.
+- **6 octobre, voie B : les retenus suivent la pièce** (§3, §4.3, §4.5, §4.6, §4.8, §4.11, §6, §7) —
+  demande de l'auteur, qui doutait de la liste depuis la passe H ; la prudente des trois voies
+  (garder, replier, retirer). Document d'abord, relu, sept arbitrages ; puis `passagesDemandes`,
+  `lienAttendu` et `liaisonAttendue` aux règles, et la garde de la session 1 dans
+  `retenirEtPrendre` ; à l'écran, `retenusDeplies`, la ligne *RETENUS · n* qui s'allume, la pièce
+  sans plafond, le tutoriel sans temps sur les fiches et son alerte sur `dernierClic`. Le harnais
+  déplie comme le joueur (`H.deplierRetenus`) et prend sur les fiches ce que le clic ne pose plus ;
+  `npm run vue` mesure la pièce et a montré l'alerte posée sur la bascule (`TUTO_EVITE`). Treize
+  mutations, chacune vue tomber — une passait par le vide, réécrite. 674 contrôles, 8 règles du
+  gardien, ESLint.
