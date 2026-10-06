@@ -445,7 +445,13 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   passage »*, avec le geste qui la rouvre — au lieu d'un bouton seulement grisé dont la raison
   vivait dans un `title`, que ni le toucher ni le clavier n'atteignent (§4.10). Les fiches restent
   atteignables, et les toucher redit la raison. Ce n'est pas une seconde voix : la voix dit le geste
-  suivant, la ligne dit pourquoi celui-ci ne mène nulle part.
+  suivant, la ligne dit pourquoi celui-ci ne mène nulle part. **Et une fiche déjà dans la phrase ne
+  s'y pose pas deux fois** (passe H) : tant que la phrase prend encore un passage, la toucher dit
+  *« déjà dans ta phrase »*, et comment revenir en arrière — comme le même passage recliqué dans la
+  pièce —, au lieu du refus d'une phrase *« qui ne veut rien dire »*, un reproche pour un geste de
+  lecture. Refusée, pas désactivée, comme les autres (§4.10 règle 5) ; la phrase pleine, c'est la
+  ligne ci-dessus qui parle. La pièce, l'étiquette *« dans ta phrase »* et ce refus lisent la même
+  chose : ce qui est dans la phrase.
 - **On ne purge pas le CONTEXTE entre deux remises** — retour de playtest (Bérengère), tranché par
   l'auteur le 6 octobre. Le 5, pour répondre à Jean (*en session 2, les fiches de la session 1
   restent en tête*), les passages d'une remise close passaient sous ceux de la remise en cours,

@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 6 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 643 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 649 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -475,7 +475,9 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   Changer ce que la fiche accepte change ce que le clic prend ; lui donner sa propre voie ferait
   diverger deux portes qui disent faire la même chose. **Et un passage déjà dans la phrase n'y
   retourne pas** : sans la garde, le reclic le poserait en second terme, et *le même passage deux
-  fois* tomberait en refus d'écran — un reproche pour un clic de lecture.
+  fois* tomberait en refus d'écran — un reproche pour un clic de lecture. La fiche suit la même
+  garde, par le même prédicat : `R.dansPhrase` sert la pièce, l'étiquette *« dans ta phrase »* et la
+  fiche refusée (`passageDejaPris`) — une vérité, trois usages.
 - **`H.surligner` n'est plus le clic du joueur** (passe H) : c'est *retenir seul* — le clic, puis
   *« ← retirer »* s'il a posé ; le clic, c'est `H.retenir`. Un contrôle qui veut l'état *retenu, pas
   pris* passe par le premier. **Et un drapeau ne recule pas** : si la phrase attendait l'article, le
@@ -972,3 +974,6 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   ne prend plus de fiche, et a montré deux défauts que la passe faisait naître — la ligne sous la
   pièce passée sous le pli (`voirEcho`), l'en-tête RÉPONSE rogné (`voirCibleTuto`). Chaque
   contrôle neuf vu tomber, une mutation chacun. 643 contrôles, 8 règles du gardien, ESLint.
+  Une relecture de cohérence suit : le compte des gestes dit qu'il compte l'envoi, le pas-à-pas
+  perd une branche morte, et la fiche d'un passage déjà dans la phrase dit *« déjà dans ta
+  phrase »* comme la pièce, au lieu de *« ne veut rien dire »* (`passageDejaPris`). 649 contrôles.

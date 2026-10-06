@@ -1417,6 +1417,28 @@ console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
   check("la phrase rouverte, la ligne s'en va", !d.getElementById("raisonPleine"));
 }
 {
+  // DÉJÀ DANS LA PHRASE, UNE FICHE NE S'Y POSE PAS DEUX FOIS (§4.6, passe H) : la
+  // toucher dit ce que dit la pièce — plus « cette phrase ne veut rien dire ».
+  const w = boot(), d = w.document;
+  const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
+  w.ouvrirPiece(H.deK(veut)[0]);
+  H.retenir(w, veut);                                  // le clic : retenu, et posé
+  const fiche = () => d.querySelector(`#zoneRetenus [data-f="c:${veut}"]`);
+  check("(la phrase prend encore un passage)", H.iTermeChamp(w) >= 0 && w.S.compo.length === 1);
+  check("la fiche d'un passage déjà dans la phrase est refusée, pas désactivée",
+    !fiche().disabled && fiche().getAttribute("aria-disabled") === "true");
+  fiche().focus(); fiche().click();
+  check("la toucher ne pose rien, et ne reproche rien : plus de « ne veut rien dire »",
+    w.S.compo.length === 1 && !w.S.refus);
+  check("elle dit ce que dit la pièce — déjà dans ta phrase —, à l'écran comme à l'oreille",
+    /Déjà dans ta phrase/.test((d.getElementById("raisonPris") || {}).textContent || "")
+    && /Déjà dans ta phrase/.test(d.getElementById("annonce").textContent)
+    && fiche().getAttribute("aria-describedby") === "raisonPris");
+  check("le focus reste sur la fiche touchée", d.activeElement === fiche());
+  w.rendreTout();
+  check("la raison ne vit qu'un rendu", !d.getElementById("raisonPris"));
+}
+{
   // ON NE PURGE PAS LE CONTEXTE ENTRE DEUX REMISES (§4.6, Bérengère) : la remise
   // suivante arrivée, les passages de la précédente restent à plat, composables.
   const w = boot(), d = w.document;

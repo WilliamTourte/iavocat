@@ -1422,7 +1422,7 @@ function creerRegles(JEU, M) {
            estArticle, articleRetenu, estLiaisonArticle, articleAttendu,
            comparaisonPossible, dimAttendue, estSecondTerme, relationsOffertes,
            chaineCompo, pressentir,
-           poserBloc, retenirEtPrendre, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
+           poserBloc, retenirEtPrendre, dansPhrase, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, dejaEnvoyee, envoyerCompo, compoFinie,
            estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
@@ -2916,7 +2916,7 @@ function rendreTout(){
   voirCibleTuto();                 // APRÈS le focus, qui ne défile pas (`preventScroll`)
   voirRelations();
   placerTuto();                    // APRÈS le recalage du fil, le focus et `voirCibleTuto` : ils déplacent l'ancre
-  echoPiece=null; vientDeRetenir=null; rappelPleine=false; raisonArticle=null;
+  echoPiece=null; vientDeRetenir=null; rappelPleine=false; raisonArticle=null; raisonPris=null;
   annoncerNouveautes(); publierAnnonces();
   sauverPartie();
 }
@@ -3241,6 +3241,18 @@ function passageRefuse(cle){
   focusVoulu={ cle, zone:"#zoneRetenus" };
   rendreTout();
 }
+/* §4.6 — DÉJÀ DANS LA PHRASE, UNE FICHE NE S'Y POSE PAS DEUX FOIS (passe H) :
+   tant que la phrase prend encore un passage, la toucher dit ce que dit le
+   passage recliqué dans la pièce — plus « cette phrase ne veut rien dire », un
+   reproche pour un geste de lecture. Refusée, pas désactivée ; la phrase pleine,
+   c'est `passageRefuse` qui parle. Le prédicat est celui de la pièce,
+   `R.dansPhrase` : une vérité pour la garde, l'étiquette et le refus. */
+let raisonPris=null;
+function passageDejaPris(k){
+  raisonPris=k; annoncer(RAPPEL_PHRASE);
+  focusVoulu={ cle:"c:"+k, zone:"#zoneRetenus" };
+  rendreTout();
+}
 /* §4.6 — LA FICHE D'UN ARTICLE EST LE BOUTON DE SA LIAISON (passe F) : on prend
    l'article là où on l'a retenu, le composeur ne le propose plus. L'indice du
    bloc se cherche AU CLIC — il est positionnel dans les blocs offerts (PIÈGE de
@@ -3272,11 +3284,10 @@ function renderRetenus(){
      composeur, et c'est le seul rappel. */
   const dimReq=R.enCalibration(S) ? R.dimAttendue(S) : null;   // `null` : rien à assombrir
   const pleine = iT<0 && S.compo.length>0;
-  const dansPhrase=new Set(S.compo.map(p=>p.valeur).filter(v=>typeof v==="string"));
-  /* L'article pris se lit dans la phrase par sa liaison, pas par une valeur. */
-  const articlePris=pid=>S.compo.some(p=>{ const b=R.blocParId(p.bloc); return b && R.estLiaisonArticle(b) && b.piece===pid; });
+  /* Ce qui est dans la phrase : un passage par sa valeur, un article par sa
+     liaison — `R.dansPhrase`, la garde même du clic dans la pièce (passe H). */
   const ficheArticle=k=>{
-    const a=ARTICLE[k], pris=articlePris(a.pid), ok=blocArticle(k)>=0;
+    const a=ARTICLE[k], pris=R.dansPhrase(S,k), ok=blocArticle(k)>=0;
     return `<div class="mchip article${k===vientDeRetenir?" neuf":""}${pris?" pris":""}">
               <button class="corps" data-f="c:${k}" ${ok
                 ? `onclick="prendreArticle('${k}')"`
@@ -3289,10 +3300,11 @@ function renderRetenus(){
             </div>`;
   };
   const fiche=(k,j,d,hors)=>{
-    const e=EMPAN[k], pris=dansPhrase.has(k);
+    const e=EMPAN[k], pris=R.dansPhrase(S,k);
     return `<div class="mchip${k===vientDeRetenir?" neuf":""}${pris?" pris":""}" style="--dc:${couleurDim(d)}">
               <button class="corps" data-f="c:${k}" ${iT<0
                 ? `aria-disabled="true" ${pleine?'aria-describedby="raisonPleine"':""} onclick="passageRefuse('c:${k}')"`
+                : pris ? `aria-disabled="true" ${raisonPris===k?'aria-describedby="raisonPris"':""} onclick="passageDejaPris('${k}')"`
                 : `onclick="poserBloc(${iT},${j})"`}${
                 hors?` title="(comparerait sans rien construire : dimension différente)"`:""}>
                 <span class="nom">${escapeAttr(e.nom||e.texte)}${pris?`<span class="dansPhrase">dans ta phrase</span>`:""}</span>
@@ -3308,7 +3320,10 @@ function renderRetenus(){
       const ks=items.filter(x=>EMPAN[x.k].dim===d);
       if(!ks.length) continue;
       const hors=dimReq && d!==dimReq;
-      h+=`<div class="dimgrp ${hors?"horsdim":""}" style="--dc:${couleurDim(d)}"><div class="dnom">${escapeAttr(d)}</div>${
+      // La raison d'une fiche déjà dans la phrase vit dans son groupe : là où on l'a touchée.
+      const dit = raisonPris && ks.some(x=>x.k===raisonPris)
+        ? `<p class="raison rappelle" id="raisonPris">${RAPPEL_PHRASE}</p>` : "";
+      h+=`<div class="dimgrp ${hors?"horsdim":""}" style="--dc:${couleurDim(d)}"><div class="dnom">${escapeAttr(d)}</div>${dit}${
         ks.map(({k,j})=>fiche(k,j,d,hors)).join("")}</div>`;
     }
     return h;

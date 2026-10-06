@@ -536,7 +536,7 @@ function creerRegles(JEU, M) {
            estArticle, articleRetenu, estLiaisonArticle, articleAttendu,
            comparaisonPossible, dimAttendue, estSecondTerme, relationsOffertes,
            chaineCompo, pressentir,
-           poserBloc, retenirEtPrendre, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
+           poserBloc, retenirEtPrendre, dansPhrase, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, dejaEnvoyee, envoyerCompo, compoFinie,
            estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
