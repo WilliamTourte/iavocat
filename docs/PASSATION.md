@@ -373,6 +373,20 @@ façons** : `H.retenir`, le clic, par lequel tout se compose désormais, chemin 
 `H.surligner`, *retenir seul* — le clic, puis *« ← retirer »* s'il a posé (§16). **Le prix, à
 jouer** : qui rassemble en lisant verra ses premiers clics former une phrase (§3).
 
+**Le 6 octobre, la voie B : les retenus suivent la pièce** (§4.6, §4.8, §4.11 — demande de l'auteur ;
+**écrite au document, à relire par l'auteur, pas encore codée**). Depuis la passe H, la liste des
+retenus n'est plus le clavier de la phrase, et l'auteur doutait qu'elle ait encore sa place. Trois
+voies pesées — la garder, la replier, la retirer —, **la prudente d'abord** : elle reste, mais
+**une pièce ouverte depuis le DOSSIER la replie** en une ligne, *RETENUS · 7*, comme l'index ; la
+pièce prend alors toute la hauteur, et la pièce refermée, la liste revient. Dépliée, rien ne change.
+Le tutoriel ne montre plus les fiches, et **en session 1, le clic de la pièce ne pose que ce que la
+question demande** — ses passages, le texte de l'article qui la fonde : un passage à côté se retient
+sans bruit, et la bulle redemande le bon. Une règle de la remise de calibration, tutoriel ouvert ou
+fermé ; les fiches prennent tout, et les lectures justes de la session 1 (§6) se composent par
+elles. Sept arbitrages de l'auteur : le clic à côté, sa portée (toute la session 1), les lectures
+justes (par les fiches), la légende (rien de plus), le pli (à chaque pièce), la ligne (*RETENUS ·
+7*), et sans pièce, la liste dépliée.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -595,9 +609,18 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   repli est connu, et écarté d'avance : ne poser un second terme depuis la pièce que s'il est de la
   même dimension serait un refus d'écran hors session 1 (§4.11). Et **le CONTEXTE-clavier ne
   s'enseigne plus** sur le chemin direct : les fiches se découvrent-elles quand on en a besoin —
-  après un *« ← retirer »*, ou pour essayer des paires ? **Non joué.** Vu à `npm run vue` : à
+  après un *« ← retirer »*, ou pour essayer des paires ? **Non joué.** *Depuis la voie B, elles se
+  replient pièce ouverte (§4.6) : la question vaut double.* Vu à `npm run vue` : à
   1280×800, la bulle de *« ← retirer »* couvre *« tout effacer »* ; à 390×800, elle couvre la phrase
   même qu'elle demande de défaire, et la ligne sous la pièce ne s'y montre qu'à moitié.
+- **La voie B : la liste repliée manque-t-elle ?** Pièce ouverte, les retenus tiennent en une ligne
+  (§4.6) ; on les déplie pour composer depuis les fiches — essayer des paires de `qui`, c'est là
+  qu'elles servent, si elles servent. **Si personne ne la déplie en jeu, la voie C la retire** : le
+  panneau ne garde que le dossier et la pièce, le nom des dimensions passe dans la phrase, et la
+  liste des passages cliqués reste en interne, pour les ✓ et pour *on n'invoque qu'un texte qu'on
+  a retenu* (§4.5). **Si la chasse au vice devient pénible**, B reste. Et **en session 1, le clic à
+  côté qui ne pose rien** (§4.6) : la bulle qui redemande suffit-elle, ou le joueur croit-il le
+  clic cassé ? **Non joué.**
 - **La CALIBRATION tient-elle ?** Première chose à regarder : la session 1 se sent-elle comme un
   examen, et la remise 2 comme une charnière ? *Depuis la passe E, en deux questions : un fait sans
   lendemain, puis la comparaison entière (§3).* Si l'examen ne se sent pas, la session 1 redevient une
@@ -692,7 +715,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   le composeur. Le 5 octobre : les passages d'une remise close se rangent sous ceux de la remise en
   cours, repliés (§4.6) — à voir sur une partie si le pli se trouve.* **Défait le 6 octobre**
   (Bérengère, tranché par l'auteur) : on ne purge pas le CONTEXTE entre deux remises. La gêne de
-  Jean est rouverte ; si elle remord, un repli qui ne dise pas *remise* (§4.6).
+  Jean est rouverte ; si elle remord, un repli qui ne dise pas *remise* (§4.6). *La voie B y répond
+  en partie : pièce ouverte, la liste entière se replie (§4.6).*
 - **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
   accès. Le §4.9 interdit de redire, pas d'offrir deux chemins. **Réponse partielle du 1ᵉʳ octobre :
   elles coûtent avant de servir** — au premier écran, un joueur a noté *« CONTEXTE / PLAIDOIRIE :
@@ -767,6 +791,13 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 
 ## 4. Prochaine étape
 
+**D'abord, coder la voie B, une fois relue** (§4.6, §4.8, §4.11). Aux règles, ce que la question demande — dérivé du
+lien attendu, que le tutoriel lira au lieu de le dériver lui-même — et sa garde dans
+`retenirEtPrendre`, en session 1 ; à l'écran, le pli des retenus (un état d'écran, comme l'index) et
+la pièce sans plafond ; au tutoriel, plus de temps sur les fiches, et l'alerte sur le dernier passage
+cliqué. Les contrôles neufs vus tomber, `npm run vue` à 1280×800 et 390×800 ; la carte (§17) et les
+points de vigilance, plus haut, avec le code — `#zoneRetenus` cesse d'être une ancre du tutoriel (R6).
+
 **La prochaine session porte sur le SENS, et la seule façon de la commencer est de jouer** — la
 précédente l'a prouvé : une partie rapportée geste par geste a valu plus que trois passes de
 relecture. **Il faut la rendre à un joueur neuf**, qui n'a pas lu ce qui précède :
@@ -789,8 +820,8 @@ relecture. **Il faut la rendre à un joueur neuf**, qui n'a pas lu ce qui préc�
 7. **Rendre la partie au testeur du clavier**, lecteur d'écran allumé (NVDA, VoiceOver) : les annonces
    tombent-elles au bon moment, et en disent-elles trop ? Aucune suite ne l'entend (§4.10).
 8. **Le clic qui prend (passe H)** : qui rassemble en lisant voit-il sa phrase se former sous ses
-   clics, et la défait-il sans peine ? Les fiches du CONTEXTE se découvrent-elles quand on en a
-   besoin (§3) ?
+   clics, et la défait-il sans peine ? Les fiches du CONTEXTE, repliées pièce ouverte depuis la
+   voie B, se découvrent-elles quand on en a besoin (§3) ?
 
 **Méthode à conserver** : toute évolution part du document — on le réécrit, on le fait relire, puis on
 applique au code. Et la question à poser avant de déclarer une passe finie n'est pas « qu'est-ce qui

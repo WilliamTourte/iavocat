@@ -346,6 +346,15 @@ opposé, et la réplique `fin` devenue une question).*
 - [ ] **Les fiches se découvrent-elles** quand on en a besoin — après un *« ← retirer »*, ou pour
       essayer des paires de `qui` ? Le tutoriel ne les montre plus sur le chemin direct. *auteur*
 
+**La voie B — les retenus suivent la pièce ; en session 1, le clic ne pose que ce que la question
+demande** (§4.6, §4.11, *auteur*, écrite le 6 octobre — à coder une fois relue)
+
+- [ ] **La liste repliée manque-t-elle ?** Pièce ouverte, la déplie-t-on pour composer depuis les
+      fiches ? Si personne ne la déplie, la voie C la retire (§3 de `docs/PASSATION.md`) ; si la
+      chasse au vice devient pénible, B reste. *auteur*
+- [ ] **Le clic à côté, en session 1**, se retient sans se poser : la bulle qui redemande le bon
+      suffit-elle, ou le joueur croit-il le clic cassé ? *auteur*
+
 **Avant, seul, avec `npm run vue`**
 
 - [ ] **L'incohérence appel + arrivée** (*« ne se comparent pas »*) — **non reproduite** : sur un jeu
@@ -358,12 +367,15 @@ opposé, et la réplique `fin` devenue une question).*
 - [ ] **La pièce reste à l'étroit** : à 390×800 le panneau entier ne fait que 353 px, la pièce n'y
       montre que deux lignes, et le panneau redéfile d'un bloc. *Arbitré par l'auteur : le CONTEXTE y
       reste entre la conversation et le composeur* — ni retenus repliés, ni pièce en pleine hauteur.
-      *Jean 1*
+      *Jean 1* — *Voie B (6 octobre, demande de l'auteur) : pièce ouverte, les retenus se replient,
+      et la pièce prend le reste du panneau, qui reste entre la conversation et le composeur. À
+      mesurer à 390×800.*
 - [ ] **La bulle ancrée**, à côté d'une zone longue (le texte de la pièce) : couvre-t-elle ce qu'on
       vient chercher ? Jouée seulement dans Chromium, 1280×800 et 390×800.
 - [ ] **Le code couleur au toucher** : sans légende ni survol, comprend-on ce que couleur et trait
       veulent dire ? On ne les voit qu'une fois le passage retenu, rangé sous le nom de sa dimension.
-      *auteur*
+      *auteur* — *Depuis la voie B, ce nom ne se lit plus, pièce ouverte, qu'en dépliant les
+      retenus (§4.6).*
 
 **En rendant la partie à Colas**, qui s'est proposé pour tester la suite
 
