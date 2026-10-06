@@ -94,7 +94,19 @@ function creerHarnais(dossier){
      ID de bloc, pas un rang. */
   const iTermeChamp = w => w.R.indexTermeChamp(w.S);
   const deK = k => { const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; };
-  const surligner = (w,k) => { const [pid,eid]=deK(k); if(!w.S.retenus.includes(k)) w.surligner(pid,eid); };
+  /* RETENIR — le clic du joueur sur un passage : depuis la passe H, il le retient
+     ET le prend si la phrase l'attend (§4.6). C'est par lui qu'on compose. */
+  const retenir = (w,k) => { const [pid,eid]=deK(k); w.surligner(pid,eid); };
+  /* RETENIR SEUL — le même clic, puis « ← retirer » s'il a posé : deux portes du
+     joueur, pour l'état « retenu, pas pris » que les fiches supposent. PIÈGE : un
+     drapeau ne recule pas — un article pris par le clic a pu lever `vice_trouve`
+     avant que « ← retirer » le défasse. */
+  const surligner = (w,k) => {
+    if(w.S.retenus.includes(k)) return;
+    const n=w.S.compo.length;
+    retenir(w,k);
+    if(w.S.compo.length>n) w.retirerBloc();
+  };
   const iRetenu = (w,k) => w.S.retenus.indexOf(k);
 
   /* UNE SUITE NE MARCHE QUE LES PORTES DU JOUEUR (§16). PIÈGE PAYÉ, et il a
@@ -109,15 +121,28 @@ function creerHarnais(dossier){
   /* ON N'INVOQUE PAS UN TEXTE QU'ON N'A PAS RETENU (§4.5, passe F) : le joueur
      ouvre l'article, retient son texte, le replie ; la suite aussi. Ce sont des
      GESTES D'ÉCRAN — `ouvrirPiece`, `surligner`, `fermerPiece` —, pas une porte
-     dérobée (R13). */
+     dérobée (R13). `lireLeTexte` RETIENT SEUL : l'article attend sa fiche. */
   // Par la fenêtre, pas par `require` : `npm run vue` porte ce harnais dans la page.
   const cleArticle = (w,pid) => (w.MoteurGrammaire.articlesDe(J(w)).find(a=>a.pid===pid)||{}).id;
+  const blocArticle = (w,forme) => (J(w).grammaire.blocs||[]).find(x=>x.forme===forme && x.piece);
   function lireLeTexte(w,forme){
-    const b=(J(w).grammaire.blocs||[]).find(x=>x.forme===forme && x.piece);
+    const b=blocArticle(w,forme);
     if(!b || w.R.articleRetenu(w.S,b.piece)) return;
     if(!w.R.piecesLivrees(w.S).includes(b.piece)) return;
     const k=cleArticle(w,b.piece); if(!k) return;
     w.ouvrirPiece(b.piece); surligner(w,k); w.fermerPiece();
+  }
+  /* L'ARTICLE D'UN CLIC SUR SON TEXTE (passe H) : la pièce ouverte, le texte
+     cliqué — retenu, il fonde la phrase qui l'attend —, la pièce repliée. Le
+     chemin du joueur qui lit l'article au moment d'en avoir besoin. Rend vrai si
+     la liaison est posée. */
+  function prendreLeTexte(w,forme){
+    const b=blocArticle(w,forme);
+    if(!b || !w.R.estLiaisonArticle(b) || !w.R.piecesLivrees(w.S).includes(b.piece)) return false;
+    const k=cleArticle(w,b.piece); if(!k) return false;
+    const n=w.S.compo.length;
+    w.ouvrirPiece(b.piece); retenir(w,k); w.fermerPiece();
+    return w.S.compo.length>n;
   }
   /* PRENDRE UNE LIAISON : une liaison-article se prend par la FICHE de son
      article, au CONTEXTE (passe F) — la porte du joueur (R13), qui cherche
@@ -127,10 +152,13 @@ function creerHarnais(dossier){
     if(w.R.estLiaisonArticle(b)) w.prendreArticle(cleArticle(w,b.piece));
     else w.poserBloc(i);
   }
+  /* COMPOSER, PAR LE CHEMIN DU JOUEUR (passe H, §4.6) : un clic par passage, dans
+     sa pièce — il retient et pose —, la relation au composeur, puis le texte de
+     l'article, cliqué au moment où la phrase l'attend. Les fiches ne servent
+     qu'en repli : ce qui est retenu sans être pris. */
   function composerLien(w,L,{garder=false}={}){
     const f=(J(w).grammaire.formes||{})[L.forme]||{};
     w.viderCompo();
-    lireLeTexte(w,L.forme);
     /* PIÈGE : `trouve` sert AUSSI de test de réussite, aux deux branches d'arité 1.
        Sous `garder`, rien n'entre au journal — rendre -1 ferait croire à un échec
        et déclencherait le repli `note`, qui VIDE le composeur. La réussite s'y lit
@@ -146,17 +174,24 @@ function creerHarnais(dossier){
       /* 0) LA CITATION : un empan, clos par une liaison qui n'emboîte rien. */
       if(typeof (L.termes||[])[0]==="string"){
         const k=(L.termes||[])[0];
-        surligner(w,k);
         const bT=idBloc(w,blocChamp(w)); if(bT<0) return -1;
-        w.poserBloc(bT,iRetenu(w,k));
+        retenir(w,k);                                   // le clic retient ET pose
+        if(!w.S.compo.length) w.poserBloc(bT,iRetenu(w,k));
         const bc=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && !x.imbrique);
         if(bc>=0) w.poserBloc(bc);
         return trouve();
       }
-      /* 1) LA CONTINUATION : la comparaison, puis la liaison qui l'emboîte. */
-      if(sous.forme && poserComparaison(w,sous)){
+      /* La liaison qui emboîte : le texte de l'article d'un clic, sinon — une
+         liaison sans article, hors du contenu livré — au composeur. */
+      const emboiter = () => {
+        if(prendreLeTexte(w,L.forme)) return true;
         const b=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && x.imbrique);
-        if(b>=0){ prendreLiaison(w,b); const i=trouve(); if(i>=0) return i; }
+        if(b<0) return false;
+        prendreLiaison(w,b); return true;
+      };
+      /* 1) LA CONTINUATION : la comparaison, puis la liaison qui l'emboîte. */
+      if(sous.forme && poserComparaison(w,sous) && emboiter()){
+        const i=trouve(); if(i>=0) return i;
       }
       /* 2) LE REPLI `note` : la rétrocompatibilité, éprouvée (§11). */
       w.viderCompo();
@@ -164,30 +199,38 @@ function creerHarnais(dossier){
       if(i<0){ i=composerLien(w,{forme:sous.forme,termes:sous.termes}); if(i<0) return -1; }
       const b=idBloc(w,blocNote(w)); if(b<0) return -1;
       w.poserBloc(b,i);
-      const bl=idBloc(w,blocForme(w,L.forme));
-      if(bl>=0) prendreLiaison(w,bl);
+      if(!prendreLeTexte(w,L.forme)){
+        const bl=idBloc(w,blocForme(w,L.forme));
+        if(bl>=0) prendreLiaison(w,bl);
+      }
     } else {
       if(!poserComparaison(w,L)) return -1;
       cloreSurPlace(w);
     }
     return trouve();
   }
+  /* POSER UNE COMPARAISON : un clic par passage (passe H) — le premier terme,
+     puis le second, comme la fiche les aurait pris —, puis la relation. Un second
+     clic qui ne pose rien — deux dimensions en session 1 — est un échec. */
   function poserComparaison(w,L){
     const G=J(w).grammaire;
     const [t0,t1]=L.termes||[];
     if(typeof t0!=="string" || typeof t1!=="string") return false;
-    surligner(w,t0); surligner(w,t1);
     const bT=idBloc(w,blocChamp(w)); if(bT<0) return false;
     const n0=w.S.brouillon.length, p0=w.S.prete;
     const echec=()=>{ w.S.brouillon.length=n0; w.S.prete=p0; w.viderCompo(); return false; };
-    w.poserBloc(bT,iRetenu(w,t0));
+    retenir(w,t0);
+    if(!w.S.compo.length) w.poserBloc(bT,iRetenu(w,t0));
     const bD=w.R.blocsOfferts(w.S).findIndex(x=>x.source!=="note"&&w.R.estSecondTerme(x));
     if(bD>=0){
-      w.poserBloc(bD,iRetenu(w,t1));
+      const n=w.S.compo.length;
+      retenir(w,t1);
+      if(w.S.compo.length===n) return echec();
       return choisirRelation(w,L.forme) || echec();
     }
     const chemin=cheminVers(w,L.forme);
     if(!chemin.length) return echec();
+    surligner(w,t1);                                    // retenir seul : la fiche le prendra
     for(const etape of chemin){
       const b=idBloc(w,etape); if(b<0) return echec();
       const bloc=G.blocs.find(x=>x.id===etape);
@@ -339,8 +382,8 @@ function creerHarnais(dossier){
            discussion, contexte, composeur, plaidoirie, plaidoirieVisible,
            lienVice, lienConclusion, lienFaux, lienTag, sousTerme, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
-           cloreSurPlace, poserComparaison, choisirRelation, assembler, lireLeTexte, cleArticle, prendreLiaison, livrerTout,
-           surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
+           cloreSurPlace, poserComparaison, choisirRelation, assembler, lireLeTexte, prendreLeTexte, cleArticle, prendreLiaison, livrerTout,
+           retenir, surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
            instruire, terminer, numeroFin, surContenu };

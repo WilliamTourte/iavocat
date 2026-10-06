@@ -7,8 +7,9 @@
  * Ce n'est PAS une suite : aucune assertion, hors `npm test`, et il ne sort en 1
  * que sur une erreur JS. Il n'implémente rien — il injecte `tests/harnais.js`.
  *
- * ÉCART À CONNAÎTRE : le chemin docile surligne sans ouvrir les pièces, dont les
- * puces restent « ● ». Artefact du pilote, pas du jeu.
+ * ÉCART À CONNAÎTRE : le chemin docile clique les passages sans ouvrir leurs
+ * pièces, dont les puces restent « ● » — hors les articles, que `H.prendreLeTexte`
+ * ouvre pour cliquer leur texte. Artefact du pilote, pas du jeu.
  */
 const fs   = require("fs");
 const path = require("path");
@@ -136,6 +137,9 @@ async function main() {
      même temps. La colonne doit tenir dans la fenêtre : on le DIT, on ne
      l'asserte pas. */
   console.log("\n──────── 1280×800 ────────\n");
+  // Ce que le halo du tutoriel entoure : la clé `data-f` de l'élément, sinon la zone.
+  const haloDe = pg => pg.evaluate(`(() => { const h = document.querySelector("[data-tuto]");
+    return !h ? "(aucun)" : h.getAttribute("data-f") || "#" + (h.id || h.className); })()`);
   const etroit = await navigateur.newContext({ viewport: { width: 1280, height: 800 } });
   const p2 = await etroit.newPage();
   p2.on("pageerror", e => pannes.push("erreur JS (1280×800) : " + e.message));
@@ -176,16 +180,20 @@ async function main() {
   const pid1280 = await p2.evaluate("__H.pidPremiereRemise(window)");
   await p2.click(`[data-f="d:${pid1280}"]`);
   console.log("  " + await capturer2("piece"));
-  /* Un VRAI clic sur le passage attendu : la confirmation (§4.3) ne vit qu'un
-     rendu, et seule une capture prise juste après la montre. */
+  /* UN MAUVAIS CLIC, D'ABORD (passe H, §4.8) : le clic prend, le passage à côté
+     entre dans la phrase, et la bulle montre « ← retirer » — une ancre étroite,
+     dans la barre du composeur : sa place ne se voit qu'ici. */
   const veut1280 = await p2.evaluate(
     "__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend).termes[0]");
+  const autre1280 = await p2.evaluate(`__H.empansDe(window, "${pid1280}").find(k => k !== "${veut1280}")`);
+  await p2.click(`#panPiece [data-f="e:${autre1280}"]`);
+  console.log("  " + await capturer2("piece-mauvais-passage") + `   (halo : ${await haloDe(p2)})`);
+  await p2.click(`#composeur [data-f="retirer"]`);
+  /* Un VRAI clic sur le passage attendu : il se retient ET se pose (passe H,
+     §4.6) — la confirmation (§4.3) ne vit qu'un rendu, et seule une capture
+     prise juste après la montre. Plus de fiche à prendre. */
   await p2.click(`#panPiece [data-f="e:${veut1280}"]`);
-  console.log("  " + await capturer2("piece-retenu"));
-  /* Et on PREND le passage sans rien refermer : la pièce vit dans le CONTEXTE,
-     le passage retenu paraît juste dessous (§4.6). */
-  await p2.click(`#contexte [data-f="c:${veut1280}"]`);
-  console.log("  " + await capturer2("contexte"));
+  console.log("  " + await capturer2("piece-pris"));
   const pli = await p2.evaluate(`(() => {
     const e = document.querySelector(".envoi");
     return { envoi: e ? Math.round(e.getBoundingClientRect().bottom) : null, fenetre: innerHeight,
@@ -222,32 +230,29 @@ async function main() {
     return !document.getElementById("panCONTEXTE").hidden;
   })()`);
   console.log(`      après un envoi, le CONTEXTE ${resteOuvert ? "reste ouvert" : "S'EST REFERMÉ"}`);
-  /* RETENIR LES DEUX PASSAGES (§4.8) : la remise 1 ne les extrait plus d'avance
+  /* CLIQUER LES DEUX PASSAGES (§4.8) : la remise 1 ne les extrait plus d'avance
      (§3). De VRAIS clics, là où le halo les montre : le texte de la pièce,
-     l'index quand elle ne porte plus rien d'attendu, la pièce suivante. */
-  const halo = () => p2.evaluate(`(() => { const h = document.querySelector("[data-tuto]");
-    return !h ? "(aucun)" : h.getAttribute("data-f") || "#" + (h.id || h.className); })()`);
+     l'index quand elle ne porte plus rien d'attendu, la pièce suivante. Chaque
+     clic retient ET pose (passe H) : plus de fiche à prendre entre les deux. */
+  const halo = () => haloDe(p2);
   const [tA, tB] = await p2.evaluate("__H.sousTerme(__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend)).termes");
   const pieceDe = k => k.slice(0, k.indexOf("."));
-  console.log("  " + await capturer2("relier-retenir") + `   (halo : ${await halo()})`);
+  console.log("  " + await capturer2("relier-chercher") + `   (halo : ${await halo()})`);
   if (await p2.evaluate(`S.modalPiece !== "${pieceDe(tA)}"`)) {
     if (await p2.evaluate("indexPlie()")) await p2.click(`#zoneDossier [data-f="dossier"]`);
     await p2.click(`#zoneDossier [data-f="d:${pieceDe(tA)}"]`);
   }
   await p2.click(`#panPiece [data-f="e:${tA}"]`);
-  console.log("  " + await capturer2("relier-premier-retenu") + `   (halo : ${await halo()})`);
+  console.log("  " + await capturer2("relier-premier-pose") + `   (halo : ${await halo()})`);
   if (pieceDe(tA) !== pieceDe(tB)) {
     if (await p2.evaluate("indexPlie()")) await p2.click(`#zoneDossier [data-f="dossier"]`);
     console.log("  " + await capturer2("relier-autre-piece") + `   (halo : ${await halo()})`);
     await p2.click(`#zoneDossier [data-f="d:${pieceDe(tB)}"]`);
   }
+  /* Le second posé, le composeur offre les deux relations de la dimension, et
+     le halo les entoure toutes deux (passe G, §4.8). On choisit la vraie — puis
+     l'article NON RETENU : sa puce, puis son texte, qu'un clic retient et prend. */
   await p2.click(`#panPiece [data-f="e:${tB}"]`);
-  console.log("  " + await capturer2("relier-retenus") + `   (halo : ${await halo()})`);
-  /* Les deux passages PRIS À LA MAIN : le composeur offre les deux relations de
-     la dimension, et le halo les entoure toutes deux (passe G, §4.8). On choisit
-     la vraie — puis l'article NON RETENU : sa puce, son texte, sa fiche. */
-  await p2.click(`#contexte [data-f="c:${tA}"]`);
-  await p2.click(`#contexte [data-f="c:${tB}"]`);
   console.log("  " + await capturer2("relier-relation") + `   (halo : ${await halo()})`);
   const vraie = await p2.evaluate("__H.sousTerme(__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend)).forme");
   await p2.click(`#composeur [data-f="rel:${vraie}"]`);
@@ -260,15 +265,18 @@ async function main() {
   }
   const fArticle = await halo();
   if (fArticle.startsWith("d:")) await p2.click(`#zoneDossier [data-f="${fArticle}"]`);
-  /* L'ARTICLE SE RETIENT, PUIS SE PREND (passe F) : son texte dans la pièce,
-     puis sa fiche au CONTEXTE — plus un bouton du composeur. */
-  console.log("  " + await capturer2("article-a-retenir") + `   (halo : ${await halo()})`);
+  /* L'ARTICLE, D'UN CLIC SUR SON TEXTE (passes F et H) : il se retient et fonde
+     la phrase — plus de fiche à prendre, plus de bouton au composeur. */
+  console.log("  " + await capturer2("article-a-cliquer") + `   (halo : ${await halo()})`);
   const cleArt = await p2.evaluate(`__H.cleArticle(window, S.modalPiece)`);
   if (cleArt) await p2.click(`#panPiece [data-f="e:${cleArt}"]`);
-  console.log("  " + await capturer2("article-a-prendre") + `   (halo : ${await halo()})`);
+  // Ce qui resterait à prendre au CONTEXTE — rien, si le clic a fondé la phrase.
   const fFiche = await halo();
-  if (fFiche.startsWith("c:")) await p2.click(`#zoneRetenus [data-f="${fFiche}"]`);
-  console.log("  " + await capturer2("comparaison"));
+  if (fFiche.startsWith("c:")) {
+    console.log(`      l'article attend encore SA FICHE (halo : ${fFiche})`);
+    await p2.click(`#zoneRetenus [data-f="${fFiche}"]`);
+  }
+  console.log("  " + await capturer2("comparaison") + `   (halo : ${await halo()})`);
   const hauteurs = await p2.evaluate(`(() => {
     const h = id => Math.round(document.getElementById(id).getBoundingClientRect().height);
     return { contexte: h("panCONTEXTE"), composeur: h("composeur") };
@@ -304,10 +312,14 @@ async function main() {
   console.log("  " + await capturer3("piece"));
   const veut390 = await p3.evaluate(
     "__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend).termes[0]");
+  /* Le mauvais clic, puis « ← retirer » (passe H) : la bulle montre un bouton
+     étroit au bas d'un écran étroit. */
+  const autre390 = await p3.evaluate(`__H.empansDe(window, "${pid390}").find(k => k !== "${veut390}")`);
+  await p3.click(`#panPiece [data-f="e:${autre390}"]`);
+  console.log("  " + await capturer3("piece-mauvais-passage") + `   (halo : ${await haloDe(p3)})`);
+  await p3.click(`#composeur [data-f="retirer"]`);
   await p3.click(`#panPiece [data-f="e:${veut390}"]`);
-  console.log("  " + await capturer3("piece-retenu"));
-  await p3.click(`#contexte [data-f="c:${veut390}"]`);
-  console.log("  " + await capturer3("contexte"));
+  console.log("  " + await capturer3("piece-pris"));
 
   await navigateur.close();
 

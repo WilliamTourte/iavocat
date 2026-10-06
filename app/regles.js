@@ -102,8 +102,10 @@ function creerRegles(JEU, M) {
 
   /* ---- LE CONTEXTE — privé, gratuit, illimité ---- */
   // PIÈGE : `surligner` (la pièce) N'AJOUTE QUE — re-cliquer un passage déjà
-  // retenu ne fait rien ; seul `oublier` (le CONTEXTE) retire. Une pièce ne
-  // peut plus désélectionner, pour éviter une mauvaise manipulation.
+  // retenu ne l'oublie pas ; seul `oublier` (le CONTEXTE) retire. Une pièce ne
+  // peut plus désélectionner, pour éviter une mauvaise manipulation. Le clic de
+  // l'écran passe par `retenirEtPrendre` (passe H) : recliqué, un passage retenu
+  // peut entrer dans la phrase — jamais en sortir.
   function surligner(S, pid, eid) {
     const k = pid + "." + eid;
     if (!S.retenus.includes(k)) S.retenus.push(k);
@@ -265,6 +267,35 @@ function creerRegles(JEU, M) {
       if (M.dimDe(x) !== M.dimDe(y) && rel) S.compo.push({ bloc: rel.id, valeur: formeJuxtaposition(), auto: true });
     }
     majPressentiment(S);
+  }
+  /* RETENIR, ET PRENDRE D'UN MÊME CLIC (§4.6, passe H). Le clic sur un passage
+     le retient — toujours : la pièce n'ajoute que — et, si la phrase attend un
+     passage, l'y pose ; le texte d'un article fonde la phrase qui attend un
+     article. PIÈGE : c'est la FICHE, rien de plus — `poserBloc` au rang de
+     `indexTermeChamp`, le prédicat qui active les fiches, ou la liaison de
+     l'article : refus de catégorie (session 1), juxtaposition (ensuite) et
+     drapeaux compris. Une voie à lui ferait diverger deux portes qui disent faire
+     la même chose. SECOND PIÈGE : un passage déjà dans la phrase n'y retourne
+     pas — en second terme, « le même passage deux fois » serait refusé, un
+     reproche pour un clic de lecture. Rend ce qui a eu lieu : "pose", "refuse"
+     (`S.refus` le dit), "dejaPhrase", ou null — retenu seulement. */
+  const dansPhrase = (S, k) => S.compo.some(p => {
+    const b = blocParId(p.bloc);
+    if (!b) return false;
+    return estArticle(k) ? estLiaisonArticle(b) && b.piece === k.slice(0, k.indexOf("."))
+                         : b.type === "terme" && p.valeur === k;
+  });
+  function retenirEtPrendre(S, pid, eid) {
+    const k = pid + "." + eid;
+    surligner(S, pid, eid);
+    if (dansPhrase(S, k)) return "dejaPhrase";
+    const i = estArticle(k)
+      ? blocsOfferts(S).findIndex(b => estLiaisonArticle(b) && b.piece === pid)
+      : indexTermeChamp(S);
+    if (i < 0) return null;
+    const n = S.compo.length;
+    poserBloc(S, i, estArticle(k) ? undefined : S.retenus.indexOf(k));
+    return S.compo.length > n ? "pose" : "refuse";
   }
   /* LA CLÔTURE QUI N'AJOUTE RIEN (§4.5) : c'est l'envoi qui la pose, `imbrique`
      exclu. PIÈGE : SEULES LES LIAISONS comptent — les puces du contexte sont
@@ -505,7 +536,7 @@ function creerRegles(JEU, M) {
            estArticle, articleRetenu, estLiaisonArticle, articleAttendu,
            comparaisonPossible, dimAttendue, estSecondTerme, relationsOffertes,
            chaineCompo, pressentir,
-           poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
+           poserBloc, retenirEtPrendre, dansPhrase, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
            clotureImplicite, chaineEnvoyable, peutEnvoyer, dejaEnvoyee, envoyerCompo, compoFinie,
            estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,

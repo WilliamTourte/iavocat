@@ -272,14 +272,14 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **610 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **649 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
 | `test_o5.js` (44) | l'index du dossier, **et le bouton de pièces qui compte comme lui** ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (40) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (379) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel — **retenir aux deux gestes** (§4.8) —, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le CONTEXTE qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, et **jamais purgé entre deux remises** (§4.6) ; **l'article qui se retient, puis se prend par sa fiche** (§4.5, passe F) ; **la relation que le joueur choisit, et la fausse que l'avocat refuse** (§4.5, passe G) ; **la DISCUSSION qui s'agrandit**, CONTEXTE ouvert (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
+| `test_parcours.js` (418) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel — **retenir aux deux gestes** (§4.8) —, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le CONTEXTE qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, et **jamais purgé entre deux remises** (§4.6) ; **l'article qui se retient, puis se prend par sa fiche** (§4.5, passe F) ; **le clic dans la pièce qui retient et prend — ce que la fiche prendrait, rien de plus —, et la bulle qui montre *« ← retirer »* quand il a pris à tort** (§4.6, §4.8, passe H) ; **la relation que le joueur choisit, et la fausse que l'avocat refuse** (§4.5, passe G) ; **la DISCUSSION qui s'agrandit**, CONTEXTE ouvert (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
 | `smoke_atelier.js` (109) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
@@ -291,13 +291,18 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
   que *« → Envoyer »*, qui clôt **et** envoie : trois contrôles de la répétition sont restés verts
   pendant que le présentoir était mort pour tout joueur. **R13** tient cette porte-là ; `H.composerLien`
   envoie, et `H.assembler` s'arrête au composeur — *comprendre et se taire* est un état que le joueur
-  atteint, en ne cliquant pas (§4.7).
+  atteint, en ne cliquant pas (§4.7). **Deux façons de retenir, depuis la passe H** : `H.retenir`
+  est le clic du joueur, qui pose quand la phrase attend (§4.6) — c'est par lui que `H.composerLien`
+  compose, et le chemin docile avec lui ; `H.surligner` est *retenir seul* — le même clic, puis
+  *« ← retirer »* s'il a posé : deux portes du joueur, pour l'état *retenu, pas pris* que les fiches
+  supposent.
 - **Une suite ne redécide rien** : un prédicat recopié ne casse pas, ne lève pas, et reste vert en
   affirmant l'ancienne vérité — et **les suites ne se lisent pas elles-mêmes**.
 - **Les tests ne nomment aucun contenu** : tout se dérive de la *forme*, si bien que **changer
   d'affaire ne casse pas une seule suite**. Sont épinglées, en revanche, des chaînes de chrome
   (`Envoyer`, `effacer`, `Opposer une phrase`, `opposer`, `● `, `✓ `, `zoneRetenus`, `dans ton CONTEXTE`,
-  `nouvelle`, `dans ta phrase`, `ne prend plus de passage`, et pour le clavier `retenu`,
+  `nouvelle`, `dans ta phrase`, `ne prend plus de passage`, `posé dans ta phrase`, `Déjà dans ta
+  phrase`, et pour le clavier `retenu`,
   `déjà lue`, `Tutoriel`, `CONTEXTE`) : on les
   renomme si on veut, jamais sans toucher au test qui les nomme.
 - *Les Manuels n'ont plus de suite : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par
@@ -363,7 +368,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
 | l'avocat ouvre une session — **un seul message, sa première question puis ses pièces** (§4.6) ; ouvrir et refermer une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion` (qui pose la question SUR le message de remise : champ `question` du fil), `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDISCUSSION` (le bouton de pièces : `comptePieces`, `recuAvant`), `renderCONTEXTE` → `pieceHTML` (‹ › : `ordreIndex`, `pieceVoisine`, `voisine`) → `piecePanelHTML`, `rendreTexte`, `cadresPorte` (`porte` en cadres, §4.11), `renderDossier` — **repliable en une ligne à tout moment, replié d'office pièce ouverte** (`dossierPlie`, `dossierDeplie`, `basculerDossier`) |
-| **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, CONTEXTE seul) — un passage comme un article (passe F) | `surligner`, `oublier`, `estArticle`, `articleRetenu` | `renderRetenus` dans `renderCONTEXTE` — *dans ta phrase*, la raison d'un refus (`passageRefuse`, `raisonPleine`) ; le groupe *ARTICLES*, dont la fiche **prend** la liaison (`prendreArticle`) ou dit pourquoi elle ne le peut pas (`articleRefuse`, `#raisonArticle`) ; `rappelRetrait` quand on reclique un passage retenu ; `voirDernierRetenu` à l'ouverture du panneau |
+| **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, CONTEXTE seul) — un passage comme un article (passe F) ; **le clic dans la pièce, qui prend aussi** quand la phrase attend (passe H, §4.6) | `surligner`, `oublier`, `estArticle`, `articleRetenu` ; `retenirEtPrendre` — `surligner`, puis `poserBloc` au rang de `indexTermeChamp` (ou la liaison de l'article) : la fiche, rien de plus ; `dansPhrase`, la garde qu'il partage avec la fiche | `surligner` (écran) → `echoPiece`, la ligne sous la pièce (`ECHO_RETENU`, `ECHO_POSE`, `ECHO_REPOSE`, `RAPPEL_RETRAIT`, `RAPPEL_PHRASE`), ramenée dans le champ par `voirEcho` ; `renderRetenus` dans `renderCONTEXTE` — *dans ta phrase*, la raison d'un refus (`passageRefuse`, `raisonPleine` ; `passageDejaPris`, `#raisonPris` pour une fiche déjà dans la phrase) ; le groupe *ARTICLES*, dont la fiche **prend** la liaison (`prendreArticle`) ou dit pourquoi elle ne le peut pas (`articleRefuse`, `#raisonArticle`) ; `voirDernierRetenu` à l'ouverture du panneau |
 | ce que le composeur offre — **jamais un article**, qui se prend au CONTEXTE ; ce qui se devine avant le clic — **en session 1 seulement** (§4.11) ; la voix | `blocsOfferts` (une liaison-article sur `articleRetenu`), `estLiaisonArticle`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante`, `enCalibration`, `juxtapose` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
 | **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du CONTEXTE ; `articleAttendu`, la phrase qui attend un article | `rendreVoix`, `ouvrirCONTEXTE`, `suivrePhrase` (en tête de `rendreTout`), `majLateral` |
 | ouvrir et fermer une surface de côté ; **agrandir la DISCUSSION**, CONTEXTE ouvert (§4.6) | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `clavier` (Échap) ; `enteteDISCUSSION`, `basculerDISCUSSION`, `discussionAgrandie` (dans `majLateral`) |
@@ -373,7 +378,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | **envoyer** — le seul geste ; la remise du tutoriel servie **dans l'ordre** (§3) | `envoyerCompo` → `clore` → `envoyer` (`horsOrdre` d'abord) → `reponseAvocat` (la relation fausse : `rep_relation_fausse`, `S.fausses`) → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPLAIDOIRIE` |
 | ce qui entre à la PLAIDOIRIE | `estMoyen` | `renderPLAIDOIRIE`, `moyensRetenus` — **panneau**, ouvert par sa porte (§4.9) |
 | clôturer, répétition, fin ; **opposer** un moyen à une affirmation | `instructionComplete`, `cloturer`, `verserContre` (pose `contre`, même sur une phrase déjà versée — **si l'affirmation la prend**, `repondA`), `avancerRepetition`, `finir` | `majCloture`, le présentoir dans `renderDISCUSSION` (les **moyens** seuls, l'affirmation redite en tête, *« déplacer ici »*), `finir` (modale) |
-| le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoTermes`, `tutoRetenir` (retenir, aux deux gestes), `tutoArticle`, `tutoCleArticle` (le passage de l'article : son texte, puis sa fiche), `tutoEtape`, `majTutoriel` → `voirCibleTuto`, `placerTuto` — **bulle ancrée au halo**, en surimpression, premier enfant de `<body>` ; une étape vise une zone (`ou`, littéral) et, au besoin, un élément précis dedans (`f`, une clé `data-f`) |
+| le tutoriel (§4.8) | *(aucune — il ne décide rien)* | `tutoTermes`, `tutoIntrus` (un passage posé que la question ne demande pas : *« ← retirer »*, passe H), `tutoRetenir` (retenir, aux deux gestes), `tutoArticle`, `tutoCleArticle` (le passage de l'article : son texte, puis sa fiche), `tutoEtape`, `majTutoriel` → `voirCibleTuto`, `placerTuto` — **bulle ancrée au halo**, en surimpression, premier enfant de `<body>` ; une étape vise une zone (`ou`, littéral) et, au besoin, un élément précis dedans (`f`, une clé `data-f`) |
 
 - **Les deux voies de clôture** sont le **même** `clore`, appelé par le **même** `envoyerCompo` ; ce qui
   les sépare vit dans le contenu — une liaison `cite:true` contre une forme d'arité 2 déduite.
@@ -389,8 +394,9 @@ d'écran, c'est une fuite. À l'écran : **DISCUSSION**, **CONTEXTE**, **PLAIDOI
 irréversible) ; **Je n'ai rien d'autre**, puis **Je n'ai rien à opposer** (l'IA répond ; c'est l'avocat
 qui dépose et ferme l'affaire — §4.9).
 
-**Deux verbes, un par geste** (§4.6) : on **retient** un passage — de la pièce vers le CONTEXTE,
-`surligner` dans le code — et on le **prend** — du CONTEXTE vers la phrase, `poserBloc`. *Sélectionner*
+**Deux verbes** (§4.6) : on **retient** un passage — de la pièce vers le CONTEXTE, `surligner` dans
+le code — et on le **prend** — vers la phrase, `poserBloc`. Dans la pièce, un seul clic fait les
+deux quand la phrase attend un passage ou un article : `retenirEtPrendre` (passe H). *Sélectionner*
 ne paraît plus à l'écran : il servait aux deux.
 
 | Dans le code | Ce que ça désigne |

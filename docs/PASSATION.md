@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 6 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 610 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 649 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -354,6 +354,25 @@ qui les lie »* — le halo entoure les deux relations, jamais la bonne. L'ateli
 relation au choix, la fausse comptée dans la marge). Mesuré à `npm run vue` : les deux boutons
 naissaient sous le pli du composeur plafonné — `voirRelations` les amène dans le champ, une fois.
 
+**Le 6 octobre, la passe H : un clic retient et prend** (§4.6, demande de l'auteur ; document
+d'abord, code dans la foulée — **à relire par l'auteur**). L'auteur voulait réduire le nombre de
+gestes, et envisageait de se passer des passages du CONTEXTE. Compté sur l'affaire du jour, c'était
+le même gain sur le chemin direct, et le double dès qu'on rassemble : essayer des paires de `qui` se
+fait depuis les fiches, sans rouvrir de pièce. **Retenu à la place** : dans la pièce, cliquer un
+passage le retient et le **prend** si la phrase attend un passage ; cliquer le texte d'un article
+fonde la phrase qui attend un article. L'envoi compris — le 4 octobre, *« citer en quatre gestes »*
+ne le comptait pas —, citer passe de cinq gestes à quatre, comparer sous l'article 3 de dix à sept,
+le vice trouvé en lisant de treize à dix ; depuis des fiches déjà rassemblées, rien ne change. **Le clic fait ce que ferait la fiche juste après, rien de plus** (`retenirEtPrendre`) —
+refus de catégorie en session 1, juxtaposition ensuite, relation à choisir, drapeaux — et le passage
+ne change jamais d'aspect. Recliquer un passage retenu le prend, s'il n'est pas déjà dans la phrase.
+La ligne sous la pièce et l'annonce disent lequel des deux a eu lieu ; la voix nomme les deux
+chemins. **Le tutoriel** perd ses temps *« prends »* sur le chemin direct — ils restent pour ce qui
+fut retenu sans être pris — et en gagne un : **un passage posé que la question ne demande pas** se
+retire d'abord, le halo sur *« ← retirer »* (`tutoIntrus`, §4.8). **Le harnais retient de deux
+façons** : `H.retenir`, le clic, par lequel tout se compose désormais, chemin docile compris ;
+`H.surligner`, *retenir seul* — le clic, puis *« ← retirer »* s'il a posé (§16). **Le prix, à
+jouer** : qui rassemble en lisant verra ses premiers clics former une phrase (§3).
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -451,6 +470,29 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Un contrôle clavier désigne son élément par sa clé, jamais par `activeElement`** : cliquer
   `actif()` faisait tomber la suite au premier focus perdu, et masquait les contrôles d'après. Les
   31 contrôles clavier ont chacun été **cassés une fois** pour les voir tomber.
+- **Le clic dans la pièce EST la fiche** (`retenirEtPrendre`, passe H) : il appelle `poserBloc` au
+  rang de `indexTermeChamp`, le prédicat même qui active les fiches — jamais un chemin à lui.
+  Changer ce que la fiche accepte change ce que le clic prend ; lui donner sa propre voie ferait
+  diverger deux portes qui disent faire la même chose. **Et un passage déjà dans la phrase n'y
+  retourne pas** : sans la garde, le reclic le poserait en second terme, et *le même passage deux
+  fois* tomberait en refus d'écran — un reproche pour un clic de lecture. La fiche suit la même
+  garde, par le même prédicat : `R.dansPhrase` sert la pièce, l'étiquette *« dans ta phrase »* et la
+  fiche refusée (`passageDejaPris`) — une vérité, trois usages.
+- **`H.surligner` n'est plus le clic du joueur** (passe H) : c'est *retenir seul* — le clic, puis
+  *« ← retirer »* s'il a posé ; le clic, c'est `H.retenir`. Un contrôle qui veut l'état *retenu, pas
+  pris* passe par le premier. **Et un drapeau ne recule pas** : si la phrase attendait l'article, le
+  clic de `H.lireLeTexte` l'a pris avant que *« ← retirer »* le défasse — `vice_trouve` a pu se lever
+  entre les deux.
+- **La ligne sous la pièce se ramène dans le champ** (`voirEcho`, passe H) : le premier clic fait
+  grandir le composeur, et sur le PV la ligne naissait sous le bas de la bande. Elle défile jusqu'à
+  elle, jamais au point de faire sortir le passage cliqué, puis `majDebord` remesure le fondu.
+  **Et `voirCibleTuto` ne défile pas vers la barre du composeur** : elle colle, *« ← retirer »* y est
+  toujours dans le champ, et y défiler rognait l'en-tête RÉPONSE. Aucune suite ne voit ni l'un ni
+  l'autre — `npm run vue` seul, captures *piece-mauvais-passage* et *piece-pris*.
+- **Le tutoriel lit aussi la PHRASE** (`tutoIntrus`, passe H) : un passage retenu à tort restait au
+  CONTEXTE ; il entre désormais dans la phrase, et le bon, cliqué ensuite, y serait refusé ou
+  ouvrirait une comparaison. Ce temps passe AVANT tous les autres, et ne lit que les passages —
+  jamais la relation, qu'il ne signale pas.
 - **Le panneau ouvert se referme sur ce que la phrase ACCEPTE, jamais sur ce que la voix RÉCLAME** :
   un passage posé, la voix se tait — la phrase se tient — mais la grammaire ne sait pas encore si c'est
   une citation ou le premier temps d'une comparaison (§4.5). Suivre la voix retirerait le clavier au
@@ -547,6 +589,15 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   formulaire ?* Si c'est un formulaire, aucune mécanique ne le sauvera. **Le 1ᵉʳ octobre a enlevé la
   réponse la plus facile** — l'ancien libellé était juridiquement faux, et un joueur l'avait vu avant
   nous. La question reste entière sur le nouveau.
+- **Le clic qui prend (passe H) : des phrases involontaires ?** Qui rassemble en lisant voit ses
+  deux premiers clics former une phrase — en session 2, souvent une juxtaposition. Rien ne part sans
+  *« → Envoyer »*, et *« ← retirer »* ou *« tout effacer »* défont sans rien ôter au CONTEXTE. Le
+  repli est connu, et écarté d'avance : ne poser un second terme depuis la pièce que s'il est de la
+  même dimension serait un refus d'écran hors session 1 (§4.11). Et **le CONTEXTE-clavier ne
+  s'enseigne plus** sur le chemin direct : les fiches se découvrent-elles quand on en a besoin —
+  après un *« ← retirer »*, ou pour essayer des paires ? **Non joué.** Vu à `npm run vue` : à
+  1280×800, la bulle de *« ← retirer »* couvre *« tout effacer »* ; à 390×800, elle couvre la phrase
+  même qu'elle demande de défaire, et la ligne sous la pièce ne s'y montre qu'à moitié.
 - **La CALIBRATION tient-elle ?** Première chose à regarder : la session 1 se sent-elle comme un
   examen, et la remise 2 comme une charnière ? *Depuis la passe E, en deux questions : un fait sans
   lendemain, puis la comparaison entière (§3).* Si l'examen ne se sent pas, la session 1 redevient une
@@ -737,6 +788,9 @@ relecture. **Il faut la rendre à un joueur neuf**, qui n'a pas lu ce qui préc�
    replis du §3, qui ne coûtent aucune ligne de code.
 7. **Rendre la partie au testeur du clavier**, lecteur d'écran allumé (NVDA, VoiceOver) : les annonces
    tombent-elles au bon moment, et en disent-elles trop ? Aucune suite ne l'entend (§4.10).
+8. **Le clic qui prend (passe H)** : qui rassemble en lisant voit-il sa phrase se former sous ses
+   clics, et la défait-il sans peine ? Les fiches du CONTEXTE se découvrent-elles quand on en a
+   besoin (§3) ?
 
 **Méthode à conserver** : toute évolution part du document — on le réécrit, on le fait relire, puis on
 applique au code. Et la question à poser avant de déclarer une passe finie n'est pas « qu'est-ce qui
@@ -911,3 +965,15 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   le diagnostic et l'onglet Grammaire. Deux contrôles passaient par le vide (`deduit` cherché,
   disparu) : réécrits, avec un contrôle qui exige le second terme. 610 contrôles, 8 règles du
   gardien, ESLint.
+- **6 octobre, passe H : un clic retient et prend** (§4.3, §4.5, §4.6, §4.8, §4.9, §4.10) — demande
+  de l'auteur, pour réduire le nombre de gestes ; *se passer du CONTEXTE* écarté au compte.
+  `retenirEtPrendre` aux règles — la fiche, rien de plus, et la garde *déjà dans la phrase* ; à
+  l'écran, `echoPiece` (qui remplace `rappelRetrait`) et ses cinq lignes, la voix qui nomme les deux
+  chemins, `tutoIntrus` et les consignes qui disent *clique*. Le harnais compose par le clic
+  (`H.retenir`, `H.prendreLeTexte`), `H.surligner` devient *retenir seul* ; `npm run vue` clique,
+  ne prend plus de fiche, et a montré deux défauts que la passe faisait naître — la ligne sous la
+  pièce passée sous le pli (`voirEcho`), l'en-tête RÉPONSE rogné (`voirCibleTuto`). Chaque
+  contrôle neuf vu tomber, une mutation chacun. 643 contrôles, 8 règles du gardien, ESLint.
+  Une relecture de cohérence suit : le compte des gestes dit qu'il compte l'envoi, le pas-à-pas
+  perd une branche morte, et la fiche d'un passage déjà dans la phrase dit *« déjà dans ta
+  phrase »* comme la pièce, au lieu de *« ne veut rien dire »* (`passageDejaPris`). 649 contrôles.

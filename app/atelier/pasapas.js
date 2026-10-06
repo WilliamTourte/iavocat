@@ -48,12 +48,15 @@ function simComposable(L){
   return feuillesLien(L).every(k=>SIM.retenus.includes(k));
 }
 const memeReduite = (a,b) => { const m=MG(); return !!m && m.memeRed(a,b); };
+/* Le pas-à-pas retient au grain du LIEN (§12) : `surligner`, jamais
+   `retenirEtPrendre` (passe H) — il compose d'un bloc par `clorePhrase`, et une
+   phrase posée en silence dans `SIM.compo` y lèverait des drapeaux sans qu'on le
+   voie. Il n'offre que des passages non retenus, et la pièce n'ajoute que : il
+   n'a donc jamais rien à « oublier ». */
 function simSurligner(k){
   const [pid,eid]=deK(k);
-  const avant=SIM.retenus.includes(k);
   RG().surligner(SIM,pid,eid);
-  simMsg({sys:true,texte:avant?`oublie ${cflabel(k)}.`
-                             :`surligne ${cflabel(k)} — retenu, privé. Rien ne part.`});
+  simMsg({sys:true,texte:`surligne ${cflabel(k)} — retenu, privé. Rien ne part.`});
   renderEtapes();
 }
 function simComposer(i){
