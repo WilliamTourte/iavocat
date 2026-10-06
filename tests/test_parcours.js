@@ -1262,37 +1262,54 @@ console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
   check("la phrase rouverte, la ligne s'en va", !d.getElementById("raisonPleine"));
 }
 {
-  // LES PASSAGES D'UNE REMISE CLOSE SE RANGENT — repliés, jamais retirés.
+  // ON NE PURGE PAS LE CONTEXTE ENTRE DEUX REMISES (§4.6, Bérengère) : la remise
+  // suivante arrivée, les passages de la précédente restent à plat, composables.
   const w = boot(), d = w.document;
   let garde = 0;
   while (w.S.remisesEnvoyees === 1 && garde++ < 10) {
     const a = w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
     if (!a || H.composerLien(w, H.lienTag(w, a.attend)) < 0) break;
   }
-  check("la remise 1 servie, la suivante est arrivée", w.S.remisesEnvoyees === 2);
   w.basculerPanneau("contexte");
   const anciens = w.S.retenus.slice();
-  const ligne = () => d.querySelector('#zoneRetenus [data-f="s:0"]');
-  const cache = k => !!d.querySelector(`#zoneRetenus [data-f="c:${k}"]`).closest("[hidden]");
-  check("les passages de la remise close se rangent sous une ligne repliée",
-    anciens.length > 0 && !!ligne() && ligne().getAttribute("aria-expanded") === "false" && anciens.every(cache));
-  check("la ligne dit la remise et son compte", /remise/.test(ligne().textContent)
-    && ligne().textContent.includes(anciens.length + " passage"));
-  const pid2 = w.JEU.remises[1].pieces.find(p => H.empansDe(w, p).length);
-  const k2 = H.empansDe(w, pid2)[0];
-  w.ouvrirPiece(pid2); H.surligner(w, k2);
-  check("ceux de la remise en cours restent dépliés, au-dessus",
-    !cache(k2) && !!(d.querySelector(`[data-f="c:${k2}"]`).compareDocumentPosition(ligne()) & 4));
-  ligne().focus(); ligne().click();
-  check("un clic la déplie : rien n'a été retiré", anciens.every(k => !cache(k)) && ligne().getAttribute("aria-expanded") === "true");
-  check("le focus reste sur la ligne", d.activeElement === ligne());
-  check("et ses passages restent composables : aucune barrière entre les affaires",
-    w.R.indexTermeChamp(w.S) >= 0 && !d.querySelector(`[data-f="c:${anciens[0]}"]`).hasAttribute("aria-disabled"));
-  ligne().click();
-  const pid1 = w.JEU.remises[0].pieces.find(p => H.empansDe(w, p).some(k => !w.S.retenus.includes(k)));
-  const k1 = H.empansDe(w, pid1).find(k => !w.S.retenus.includes(k));
-  w.ouvrirPiece(pid1); H.surligner(w, k1);
-  check("retenir depuis une pièce close déplie sa remise : la fiche neuve se voit", !cache(k1));
+  const fiche = k => d.querySelector(`#zoneRetenus [data-f="c:${k}"]`);
+  check("la remise 2 arrivée, les passages de la remise 1 restent composables, sans ligne de repli",
+    w.S.remisesEnvoyees === 2 && anciens.length > 0
+    && anciens.every(k => !!fiche(k) && !fiche(k).closest("[hidden]") && !fiche(k).hasAttribute("aria-disabled"))
+    && !d.querySelector("#zoneRetenus [aria-expanded]"));
+}
+
+console.log("\n=== La DISCUSSION s'agrandit, CONTEXTE ouvert (§4.6) ===");
+{
+  // Retour de playtest (Bérengère) : l'en-tête DISCUSSION devient une bascule —
+  // un état d'ÉCRAN, qui n'existe que CONTEXTE ouvert, et ne change que le gabarit.
+  const w = boot(), d = w.document;
+  const bascule = () => d.querySelector('#titreDISCUSSION [data-f="discussion"]');
+  const presse = () => !!bascule() && bascule().getAttribute("aria-pressed") === "true";
+  const agrandie = () => d.querySelector(".wrap").classList.contains("discussionAgrandie");
+  check("CONTEXTE fermé, l'en-tête DISCUSSION n'est qu'un titre : aucune bascule", !bascule() && !agrandie());
+  w.basculerPanneau("plaidoirie");
+  check("la PLAIDOIRIE ouverte non plus : sa colonne est déjà étroite", !bascule() && !agrandie());
+  w.basculerPanneau("contexte");
+  check("CONTEXTE ouvert, l'en-tête devient une bascule, relâchée",
+    !!bascule() && bascule().tagName === "BUTTON" && bascule().getAttribute("aria-pressed") === "false" && !agrandie());
+  bascule().focus(); bascule().click();
+  check("un clic agrandit la conversation", presse() && agrandie());
+  check("le focus reste sur la bascule", d.activeElement === bascule());
+  bascule().click();
+  check("un second clic rend la place", !presse() && !agrandie());
+  bascule().click();
+  const pid = H.pidPremiereRemise(w);
+  d.querySelector(`#contexte [data-f="d:${pid}"]`).click();
+  check("ouvrir une pièce depuis l'index rend la place au CONTEXTE", !presse() && !agrandie());
+  bascule().click();
+  d.querySelector('#panPiece [data-f="suiv"]').click();
+  check("‹ › changent de pièce sans rien rendre", presse() && agrandie() && w.S.modalPiece !== pid);
+  w.fermerPanneau();
+  check("le CONTEXTE refermé, la bascule disparaît, et la conversation reprend toute la place",
+    !bascule() && !agrandie());
+  w.basculerPanneau("contexte");
+  check("rouvert, il ne s'en souvient pas : un état d'écran, jamais sauvé", !presse() && !agrandie());
 }
 
 console.log("\n=== Une phrase déjà envoyée ne repart pas, et le composeur le dit (§4.5) ===");

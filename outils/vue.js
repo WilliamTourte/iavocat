@@ -168,6 +168,11 @@ async function main() {
      n'est visible d'une suite. */
   await p2.click("#discussion .attach");
   console.log("  " + await capturer2("contexte-recu"));
+  /* CLIQUER DISCUSSION AGRANDIT LA CONVERSATION (§4.6) : les colonnes échangent
+     leurs parts, la bulle se replace (`placerTuto`). Un second clic rend la place. */
+  await p2.click(`#titreDISCUSSION [data-f="discussion"]`);
+  console.log("  " + await capturer2("discussion-agrandie"));
+  await p2.click(`#titreDISCUSSION [data-f="discussion"]`);
   const pid1280 = await p2.evaluate("__H.pidPremiereRemise(window)");
   await p2.click(`[data-f="d:${pid1280}"]`);
   console.log("  " + await capturer2("piece"));
@@ -280,6 +285,11 @@ async function main() {
   console.log("  " + await capturer3("depart"));
   await p3.click("#discussion .attach");
   console.log("  " + await capturer3("contexte-recu"));
+  /* Sous le seuil, le panneau descend à son plancher et la conversation prend
+     le reste (§4.6). */
+  await p3.click(`#titreDISCUSSION [data-f="discussion"]`);
+  console.log("  " + await capturer3("discussion-agrandie"));
+  await p3.click(`#titreDISCUSSION [data-f="discussion"]`);
   const pid390 = await p3.evaluate("__H.pidPremiereRemise(window)");
   await p3.click(`[data-f="d:${pid390}"]`);
   console.log("  " + await capturer3("piece"));

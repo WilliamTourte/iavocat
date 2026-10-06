@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 6 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 560 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 563 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -300,6 +300,13 @@ l'auteur** : l'agacement de l'avocat **retombe à chaque remise** (§4.11), et l
 l'article (§4.6). Un contrôle de `test_declencheurs` passait par le vide une fois le tag retiré : il
 fabrique désormais son lien libre, et le dit.
 
+**Le 6 octobre, le retour de Bérengère**, rangé en passes au `TODO.md` (§0 bis). **Passe D, l'écran** :
+*on ne purge pas le CONTEXTE entre deux remises* — le pli *« 1ʳᵉ remise, close »* du 5 est défait, et
+la gêne de Jean qu'il réparait est rouverte (§4.6) ; **cliquer DISCUSSION agrandit la
+conversation**, CONTEXTE ouvert seulement : les deux colonnes échangent leurs parts au-dessus du
+seuil, le panneau descend à son plancher en dessous, et une pièce ouverte depuis l'index rend la
+place (§4.6, *à relire par l'auteur*).
+
 **Le 6 octobre, la passe E du `TODO.md` : la remise 1 en deux questions** (retour de Bérengère,
 tranché par l'auteur ; §3, §4.8). Elle demandait l'heure d'arrivée, puis l'heure des éclats de voix,
 puis leur lien : la citation qu'on apprenait était la moitié de la comparaison qu'on demandait
@@ -390,9 +397,11 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   `disabled` sort de la tabulation et n'a plus de clic — la raison n'avait plus de porte. Son
   `onclick` devient `passageRefuse`, qui redit la raison ; `FOCALISABLES` la compte donc parmi les
   boutons vivants, et c'est voulu. Un contrôle lit `.disabled` pour le dire faux.
-- **Les remises closes se replient par un état d'ÉCRAN** (`remisesDepliees`), comme `dossierPlie` :
-  jamais sauvé. `surligner` déplie celle d'une pièce close — sans lui, la fiche neuve naîtrait
-  sous `hidden` et *retenir se voit* (§4.3) mentirait.
+- **La bascule DISCUSSION est un troisième état d'ÉCRAN** (`discussionAgrandie`), jamais sauvé, qui
+  n'existe que CONTEXTE ouvert : `majLateral` l'oublie dès que `panneau` n'est plus `"contexte"`, et
+  `ouvrirPiece` le remet à faux, comme `dossierDeplie` — ‹ › (`voisine`) n'y touchent pas. Elle ne
+  change que le **gabarit** (`.wrap.discussionAgrandie`), jamais un span. L'en-tête est réécrit à
+  chaque rendu (`enteteDISCUSSION`) : le bouton porte sa clé, `data-f="discussion"`.
 - **Pièce ouverte, `#contexte` porte deux bandes défilantes de plus** (`.defile[id]`) :
   `garderDefilement` les retrouve par leur id. Une bande sans id repartirait en haut à chaque geste.
 - **Un passage est un `span[role=button][tabindex=0]`, jamais un `<button>`** : un bouton est une
@@ -587,7 +596,9 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   replie pièce ouverte (§4.6) — à 1280×800 la pièce se lit en entier ; à 390×800 elle reste à deux
   lignes, le panneau entier ne faisant que 353 px — et l'auteur l'y garde, entre la conversation et
   le composeur. Le 5 octobre : les passages d'une remise close se rangent sous ceux de la remise en
-  cours, repliés (§4.6) — à voir sur une partie si le pli se trouve.*
+  cours, repliés (§4.6) — à voir sur une partie si le pli se trouve.* **Défait le 6 octobre**
+  (Bérengère, tranché par l'auteur) : on ne purge pas le CONTEXTE entre deux remises. La gêne de
+  Jean est rouverte ; si elle remord, un repli qui ne dise pas *remise* (§4.6).
 - **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
   accès. Le §4.9 interdit de redire, pas d'offrir deux chemins. **Réponse partielle du 1ᵉʳ octobre :
   elles coûtent avant de servir** — au premier écran, un joueur a noté *« CONTEXTE / PLAIDOIRIE :
@@ -835,8 +846,14 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   dit *« Prends »* et dérive sa pièce (`pieceDemandee`) ; les compteurs d'agacement remis à zéro par
   `envoyerRemise` ; `suivrePhrase` attend un relais (`blocsOfferts`, `compoFinie`) ; contenu : `libelle`
   des articles, deux liens sans tag, fins réécrites. 552 contrôles, 8 règles du gardien, ESLint.
+- **6 octobre, le retour de Bérengère, passe D** (§4.6) — le pli des remises closes défait
+  (`remiseClose`, `remisesDepliees`, `basculerRemise`, `ordinal` supprimés, sept contrôles réduits à
+  un) ; la DISCUSSION qui s'agrandit (`enteteDISCUSSION`, `basculerDISCUSSION`, `discussionAgrandie`,
+  `.wrap.discussionAgrandie`), capturée par `npm run vue` en 1280×800 et 390×800. 555 contrôles,
+  8 règles du gardien, ESLint.
 - **6 octobre, passe E du `TODO.md` : la remise 1 en deux questions** (§3, §4.8) — `q_redacteur`
   remplace `q_arrivee` et `q_voix` ; `e_sig` nomme le brigadier ; les liens de 22h04 et 22h30
   retirés ; `tutoRetenir`, `tutoTermes`, `tutoServis` (`tutoAttendu` retiré), la pièce sans passage
   attendu renvoie à l'index ; une seconde citation, sur contenu muté, ne rallume pas le halo ; `npm
-  run vue` capture *retenir pour comparer*. 560 contrôles, 8 règles du gardien, ESLint.
+  run vue` capture *retenir pour comparer*. Fusionnée avec la passe D : 563 contrôles, 8 règles du
+  gardien, ESLint.

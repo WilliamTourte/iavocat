@@ -375,7 +375,7 @@ function rectVisible(el, ouNul){
    gagne, sinon celle qui couvre le moins — l'ancre comptant pour beaucoup plus. */
 // Les BOUTONS de la barre du composeur, pas la barre : son milieu est vide, et
 // c'est la meilleure place pour une bulle qui montre « → Envoyer ».
-const TUTO_EVITE = ".rappel, .raison, .aide, .phrase, .compo .barre button, .ptete button, .col > h2 .fermer, .ztitle .surfaces";
+const TUTO_EVITE = ".rappel, .raison, .aide, .phrase, .compo .barre button, .ptete button, .col > h2 .fermer, .col > h2 .bascule, .ztitle .surfaces";
 function placerTuto(){
   const bulle=$("tuto");
   if(!bulle || bulle.hidden) return;
@@ -660,7 +660,10 @@ function ouvrirPiece(pid){
   ouvreur = memoFocus();
   if(S.modalPiece && S.modalPiece!==pid) R.fermerPiece(S);
   R.ouvrirPiece(S,pid);
-  panneau="contexte"; panneauSuit=false; dossierDeplie=false;
+  // Une pièce ouverte depuis l'index replie l'index et rend sa place au
+  // CONTEXTE : la lire dans un tiers, c'est le défaut que les deux tiers
+  // réparaient (§4.6). ‹ › (`voisine`) ne touchent ni à l'un ni à l'autre.
+  panneau="contexte"; panneauSuit=false; dossierDeplie=false; discussionAgrandie=false;
   focusVoulu = { cle:"#pieceTitre", zone:"#panPiece" };
   rendreTout();
 }
@@ -772,9 +775,6 @@ function surligner(pid,eid){
   const k=pid+"."+eid;
   rappelRetrait = S.retenus.includes(k) ? k : null;
   vientDeRetenir = rappelRetrait ? null : k;
-  // Retenu depuis une pièce d'une remise close : sa remise se déplie, sans quoi
-  // la fiche neuve naîtrait cachée — retenir se voit (§4.3, §4.6).
-  if(vientDeRetenir && remiseClose(remiseDePiece(pid))) remisesDepliees.add(remiseDePiece(pid));
   R.surligner(S,pid,eid);
   annoncer(rappelRetrait ? RAPPEL_RETRAIT : "Retenu dans ton CONTEXTE.");
   const neuf=!!vientDeRetenir;
@@ -832,19 +832,9 @@ function passageRefuse(cle){
   focusVoulu={ cle, zone:"#zoneRetenus" };
   rendreTout();
 }
-/* §4.6 — LES PASSAGES D'UNE REMISE CLOSE SE RANGENT, repliés sous ceux de la
-   remise en cours. Ce n'est pas juger : c'est un fait de remise, et rien n'est
-   retiré. Une remise est close quand la suivante est arrivée. `remisesDepliees`
-   est un état d'ÉCRAN, comme `dossierPlie` : jamais sauvé. */
-const remiseDePiece = pid => (JEU.remises||[]).findIndex(r=>(r.pieces||[]).includes(pid));
-const remiseClose = r => r>=0 && r < S.remisesEnvoyees-1;
-const remisesDepliees=new Set();
-function basculerRemise(r){
-  if(remisesDepliees.has(r)) remisesDepliees.delete(r); else remisesDepliees.add(r);
-  focusVoulu={ cle:"s:"+r, zone:"#zoneRetenus" };
-  rendreTout();
-}
-const ordinal = n => n===1 ? "1ʳᵉ" : n+"ᵉ";
+/* §4.6 — ON NE PURGE PAS LE CONTEXTE ENTRE DEUX REMISES (Bérengère, tranché par
+   l'auteur) : un pli « 1ʳᵉ remise, close » a vécu un jour, et il est défait. Tous
+   les passages restent à plat, rangés par dimension. */
 function renderRetenus(){
   const iT=R.indexTermeChamp(S);
   /* §4.11 — l'assombrissement annonçait le refus d'écran : il vit avec lui, en
@@ -883,22 +873,7 @@ function renderRetenus(){
     h+=`<div class="aide">Ouvre une pièce, puis clique un passage encadré pour le retenir : il viendra ici.</div>`;
   } else {
     if(pleine) h+=`<p class="raison${rappelPleine?" rappelle":""}" id="raisonPleine">${RAISON_PLEINE}</p>`;
-    const items=S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k]);
-    const closes=new Map();
-    const courants=items.filter(x=>{
-      const r=remiseDePiece(EMPAN[x.k].pid);
-      if(!remiseClose(r)) return true;
-      if(!closes.has(r)) closes.set(r,[]);
-      closes.get(r).push(x); return false;
-    });
-    h+=parDimension(courants);
-    for(const r of [...closes.keys()].sort((a,b)=>a-b)){
-      const ouvert=remisesDepliees.has(r), n=closes.get(r).length;
-      h+=`<div class="remiseClose"><button type="button" class="dplier" data-f="s:${r}" aria-expanded="${ouvert}"
-            aria-controls="remise${r}" onclick="basculerRemise(${r})"><span class="dtitre">${ordinal(r+1)} remise, close</span><span class="dcompte">${
-            compte(n,"passage")}</span><span class="dsens">${ouvert?"▴ replier":"▾ déplier"}</span></button>
-          <div id="remise${r}" ${ouvert?"":"hidden"}>${parDimension(closes.get(r))}</div></div>`;
-    }
+    h+=parDimension(S.retenus.map((k,j)=>({k,j})).filter(x=>EMPAN[x.k]));
   }
   h+=`</div>`;
   return h;
@@ -1170,13 +1145,37 @@ function finir(){
    LA PIÈCE N'EST PAS UN OCCUPANT : elle s'ouvre DANS le CONTEXTE (`renderCONTEXTE`),
    et `suivrePhrase` la replie dès que le CONTEXTE quitte l'écran. */
 let panneau = null, panneauSuit = false;
+/* §4.6 — CLIQUER DISCUSSION AGRANDIT LA CONVERSATION (retour de Bérengère). Un
+   troisième état d'ÉCRAN, comme `dossierPlie` — jamais sauvé —, qui n'existe que
+   CONTEXTE ouvert : fermé, la conversation a déjà toute la place, et un bouton qui
+   ne ferait rien n'a pas à s'afficher (§4.9 règle 4). Il ne change que le GABARIT
+   (`.wrap.discussionAgrandie`), jamais un span. */
+let discussionAgrandie = false;
 function majLateral(){
+  if(panneau!=="contexte") discussionAgrandie=false;      // le CONTEXTE refermé l'oublie
   { const p=$("panCONTEXTE");   if(p) p.hidden = panneau!=="contexte"; }
   { const p=$("panPLAIDOIRIE"); if(p) p.hidden = panneau!=="plaidoirie"; }
   // La conversation, seule bande élastique, cède d'elle-même la place (§4.6) ;
   // la classe ne décide que jusqu'où elle peut céder, et c'est du CSS (§9).
   { const w=document.querySelector(".wrap"); if(w){ w.classList.toggle("avecLateral", !!panneau);
-                                                   w.classList.toggle("avecCONTEXTE", panneau==="contexte"); } }
+                                                   w.classList.toggle("avecCONTEXTE", panneau==="contexte");
+                                                   w.classList.toggle("discussionAgrandie", discussionAgrandie); } }
+  enteteDISCUSSION();
+}
+/* L'en-tête nomme toujours la surface (§4.9 règle 2) ; CONTEXTE ouvert, il est en
+   plus la bascule. Réécrit à chaque rendu : le focus le retrouve par sa clé. La
+   section reste nommée par `#nomDISCUSSION` seul — sans l'aide de la bascule. */
+function enteteDISCUSSION(){
+  const h=$("titreDISCUSSION"); if(!h) return;
+  const nom=`<span id="nomDISCUSSION">DISCUSSION</span>`;
+  h.innerHTML = panneau!=="contexte" ? nom
+    : `<button type="button" class="bascule" data-f="discussion" aria-pressed="${discussionAgrandie}"
+         onclick="basculerDISCUSSION()">${nom}<span class="sens"><span aria-hidden="true">↔</span> agrandir</span></button>`;
+}
+function basculerDISCUSSION(){
+  discussionAgrandie=!discussionAgrandie;
+  focusVoulu={ cle:"discussion", zone:null };
+  rendreTout();
 }
 /* LE PANNEAU S'OUVRE SUR CE QU'ON VIENT DE RETENIR. À dix-sept fiches, la
    dernière est sous le pli et rien ne le disait : un joueur a cherché son

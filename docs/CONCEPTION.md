@@ -333,19 +333,33 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   vivait dans un `title`, que ni le toucher ni le clavier n'atteignent (§4.10). Les fiches restent
   atteignables, et les toucher redit la raison. Ce n'est pas une seconde voix : la voix dit le geste
   suivant, la ligne dit pourquoi celui-ci ne mène nulle part.
-- **Les passages d'une remise close se rangent** — retour de playtest (Jean) : en session 2, les
-  fiches de la session 1 restaient en tête de liste. **Replier par remise ne juge aucun passage** :
-  c'est un fait de remise, comme replier l'index n'en est pas un sur les pièces. Une fois une remise
-  close — la suivante arrivée —, les passages de ses pièces passent **sous** ceux de la remise en
-  cours, repliés en une ligne (*la remise, son compte*) qu'un clic déplie. Rien n'est retiré, rien
-  n'est barré : ils restent composables, et *aucune barrière entre les affaires* tient toujours (§3
-  de `docs/PASSATION.md`). Retenir un passage d'une pièce close déplie sa remise : ce qu'on vient de
-  retenir se voit (§4.3). L'écran dit **remise**, jamais *envoi* : envoyer est le geste du joueur.
+- **On ne purge pas le CONTEXTE entre deux remises** — retour de playtest (Bérengère), tranché par
+  l'auteur le 6 octobre. Le 5, pour répondre à Jean (*en session 2, les fiches de la session 1
+  restent en tête*), les passages d'une remise close passaient sous ceux de la remise en cours,
+  repliés en une ligne *« 1ʳᵉ remise, close »* : rien n'était retiré, mais le CONTEXTE se vidait à
+  chaque remise. **C'est défait** : tous les passages retenus restent à plat, rangés par dimension,
+  et *aucune barrière entre les affaires* tient toujours (§3 de `docs/PASSATION.md`). Ce que ça
+  rouvre, c'est la gêne de Jean. Si elle remord en jeu — et seulement alors —, un repli qui ne dise
+  pas *remise* : le plus récent en tête de chaque dimension.
 - **La colonne tient dans la fenêtre** : la page ne défile pas, chaque bande défile pour son compte.
   **En dessous du seuil**, la conversation est **la seule bande élastique EN HAUTEUR** — c'est elle qui
   cède quand la place latérale s'ouvre ou que la phrase s'allonge, et *« → Envoyer »* ne passe donc
   jamais sous le pli, même sur un portable bas. **Au-dessus**, c'est sa LARGEUR qui cède ; sa hauteur ne
   se discute plus avec le composeur, qui occupe son propre bandeau en pleine largeur.
+- **Cliquer DISCUSSION agrandit la conversation** — retour de playtest (Bérengère, 6 octobre) : le
+  CONTEXTE ouvert ne lui laisse qu'un tiers de la largeur au-dessus du seuil, et son en-tête n'avait
+  aucune action. Il devient une **bascule** (*agrandir*, `aria-pressed`) qui n'existe que
+  **CONTEXTE ouvert** : fermé, la conversation a déjà toute la place, et un bouton qui ne ferait
+  rien n'a pas à s'afficher (§4.9 règle 4). **Au-dessus du seuil**, les deux colonnes échangent
+  leurs parts — deux tiers pour la conversation, un pour le CONTEXTE ; **en dessous**, le panneau
+  descend à son plancher (ci-dessous : il montre encore deux fiches) et la conversation prend le
+  reste. Un second clic rend la place. Seul le gabarit change, jamais un span (§17 ARCHITECTURE).
+  C'est un état d'**écran**, comme le repli de l'index : jamais sauvé, et oublié dès que le
+  CONTEXTE se referme. **Ouvrir une pièce depuis l'index rend la place au CONTEXTE**, comme elle
+  replie l'index : lire une pièce dans un tiers, c'est le défaut que les deux tiers réparaient. **‹
+  et ›**, qui changent de pièce sans rien rouvrir, ne touchent ni à l'un ni à l'autre. La
+  PLAIDOIRIE n'a pas de bascule : sa colonne est déjà étroite. *Arbitrages pris le 6 octobre pour
+  avancer — à relire par l'auteur.*
 - **Mais « élastique » n'est pas « compressible à zéro », et L'ORDRE DANS LEQUEL LES BANDES CÈDENT
   est une règle — À TOUTES LES LARGEURS** : au-dessus du seuil aussi, le composeur occupe une rangée
   sous la place latérale, et lui dispute la même verticale. Retour de playtest (Jean, 5 octobre) : à
