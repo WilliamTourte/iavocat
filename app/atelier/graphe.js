@@ -39,13 +39,14 @@ function render(){
       const cls=["chip"];
       if(selA&&selA.pid===pid&&selA.champ===k) cls.push("selA");
       if(selB&&selB.pid===pid&&selB.champ===k) cls.push("selB");
-      if(!empanRelie(pid,k)) cls.push("orphan");
+      if(!empanRelie(pid,k) && !e.article) cls.push("orphan");
       if(estBruit(pid,k)) cls.push("noise");
       if(flagged.has(K(pid,k))) cls.push("flag");
       const dim=e.dim;
-      return `<div class="${cls.join(' ')}" data-k="${pid}.${k}" onclick="clicChamp('${pid}','${k}')" title="${escapeAttr((dim||'— aucune dimension —')+" — "+(e.qui||p.qui||"")+" : "+(e.texte||""))}">
-        <span class="dot" style="background:${dim?couleurDim(dim):'var(--err)'}"></span>
-        <span class="cn">${joli(k)}</span><span class="cv">${escapeH(String(e.valeur??""))}</span></div>`;
+      // Le passage d'un ARTICLE n'a pas de dimension, et ce n'est pas une faute (§11).
+      return `<div class="${cls.join(' ')}" data-k="${pid}.${k}" onclick="clicChamp('${pid}','${k}')" title="${escapeAttr((e.article?'article':dim||'— aucune dimension —')+" — "+(e.qui||p.qui||"")+" : "+(e.texte||""))}">
+        <span class="dot" style="background:${e.article?'var(--dim)':dim?couleurDim(dim):'var(--err)'}"></span>
+        <span class="cn">${joli(k)}</span><span class="cv">${escapeH(e.article?(e.nom||"article"):String(e.valeur??""))}</span></div>`;
     }).join("");
     const html=`<div class="card ${estRegle(p)?'regle':''}" data-id="${pid}" style="left:${pos.x}px;top:${pos.y}px">
       <div class="chead" data-drag="${pid}">
@@ -150,7 +151,11 @@ function armerDrag(){
 function clicChamp(pid,ch){
   reinitSelection({garderEmpans:true});
   const meme=s=>s&&s.pid===pid&&s.champ===ch;
-  if(meme(selA)){ selA=selB; selB=null; }
+  /* Un passage d'ARTICLE ne se lie à rien — il fonde, il ne se compare pas
+     (§11) : il se sélectionne seul, pour être édité, jamais en paire. */
+  const art=s=>s && estPassageArticle(s.pid,s.champ);
+  if(estPassageArticle(pid,ch) || art(selA)){ selA = meme(selA) ? null : {pid,champ:ch}; selB=null; }
+  else if(meme(selA)){ selA=selB; selB=null; }
   else if(meme(selB)){ selB=null; }
   else if(!selA){ selA={pid,champ:ch}; }
   else if(!selB){ selB={pid,champ:ch}; }

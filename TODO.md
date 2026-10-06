@@ -75,10 +75,10 @@ relire par l'auteur**.*
 
 **Reste ouvert, à trancher avec l'auteur**
 
-- [ ] **⚖ « Article 7 » tout court sur le bouton**, comme Jean le propose : se lirait comme un choix,
+- [x] **⚖ « Article 7 » tout court sur le bouton**, comme Jean le propose : se lirait comme un choix,
       et forcerait à lire l'article. Contre le §4.5, où le libellé *n'est pas neutre* et annonce ce que
       l'article fait du fait (arbitré le 16 septembre). *Jean 4* — *Une issue : la passe F (§0 bis) —
-      le nom neutre sur la fiche du CONTEXTE, le libellé dans la phrase.*
+      le nom neutre sur la fiche du CONTEXTE, le libellé dans la phrase.* — *Fait par la passe F.*
 
 - [ ] **⚖ Les réponses de calibration entrent en PLAIDOIRIE** (`q_arrivee`, `q_voix`) : le §4.6 le
       veut (*« une réponse citée y entre »*). Jean : elles encombrent le présentoir de la répétition,
@@ -183,11 +183,11 @@ document d'abord (§3, §4.8), puis le contenu et le tutoriel.*
 grammaire, règles, écran, atelier, suites — la plus lourde des trois. Deux points de Bérengère, un seul
 geste : l'article suit enfin les deux verbes du §4.6.*
 
-- [ ] **Cliquer un passage de l'article pour le retenir au CONTEXTE** — pour montrer qu'on l'a lu, et
+- [x] **Cliquer un passage de l'article pour le retenir au CONTEXTE** — pour montrer qu'on l'a lu, et
       un seul geste pour tout ce qui y entre. L'article n'a aucun passage (`empans: {}`), et il s'offre
       dès que sa pièce a été **ouverte** (`blocsDepuis` lit `S.examinees`) : ouvrir vaut lire.
       *Bérengère*
-- [ ] **L'article ne paraît plus de lui-même au composeur** : il s'y offre parmi les propositions
+- [x] **L'article ne paraît plus de lui-même au composeur** : il s'y offre parmi les propositions
       (`.offre`) dès la comparaison posée, et *« les gens croient qu'il est déjà ajouté »*. Il se
       **prend** sur sa fiche, dans le CONTEXTE, comme un passage. *Bérengère*
   - **§4.6** : *un empan retenu n'existe qu'une fois à l'écran* s'étend à l'article — sa fiche **est**
@@ -212,6 +212,15 @@ geste : l'article suit enfin les deux verbes du §4.6.*
     `champsDe` ne rend pas ; la fiche porte le nom neutre et le début du texte, le libellé ne vit
     plus que dans la phrase. Le §4.5 est réécrit d'un tenant pour F et G, ce qui ne vaut qu'avec G
     marqué **[G]**. La carte (§17) suivra le code.
+  - *Codé, document relu par l'auteur.* Contenu : un passage `art` sur chaque règle, les `libelle`
+    d'article retirés. Moteur : `champsDe` les écarte, `articlesDe` les rend. Règles :
+    `articleRetenu`, `estLiaisonArticle`, `articleAttendu` ; `blocsDepuis` suit *retenu*. Écran : le
+    passage d'article sans dimension, le groupe *ARTICLES* et `prendreArticle` / `articleRefuse`, la
+    raison *« elle attend un article »*, le composeur sans article, la voix qui mène au CONTEXTE,
+    `suivrePhrase` qui ne compte plus les liaisons d'article comme relais, le tutoriel (puce, texte,
+    fiche ; l'article demandé, retenu tôt, ne sonne pas faux). Atelier : diagnostic, inspecteur,
+    graphe, pas-à-pas, frise. Suites : `H.lireLeTexte` retient, `H.prendreLiaison` prend par la
+    fiche ; chaque contrôle neuf vu tomber. `npm run vue` : `article-a-retenir`, `article-a-prendre`.
 
 **Passe G — le joueur choisit la relation : le §4.5 s'inverse.** *Tranché par l'auteur le 6 octobre,
 parti du « conforme / non conforme » de Bérengère ; reprend le chantier **d** du §5. Le plus gros de

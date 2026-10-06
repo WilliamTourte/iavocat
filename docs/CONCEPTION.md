@@ -199,8 +199,8 @@ réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte 
 *Réécrit le 6 octobre pour deux passes du `TODO.md`, d'un seul tenant parce que toutes deux changent
 la manière de fonder : la **passe F** — l'article se retient, puis se prend —, codée d'abord, et la
 **passe G** — le joueur choisit la relation —, codée ensuite. Ce qui ne vaudra qu'avec la seconde est
-marqué **[G]** ; d'ici là, le moteur rédige encore la relation seul. À relire par l'auteur avant tout
-code.*
+marqué **[G]** ; d'ici là, le moteur rédige encore la relation seul. Relu par l'auteur ; la passe F
+est codée.*
 
 - **La livraison** — la grammaire de comparaison est complète dès la première phrase ; seuls les
   **articles** arrivent avec le dossier, un article étant une pièce et non une tournure.

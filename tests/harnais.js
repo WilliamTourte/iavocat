@@ -106,14 +106,26 @@ function creerHarnais(dossier){
      `garder:true` s'arrête un cran avant, sans rien forcer : la phrase se tient
      au composeur et n'est pas transmise — c'est l'état de la Fin 2 (§4.7), et
      c'en est un que le joueur atteint vraiment, en ne cliquant pas. */
-  /* ON N'INVOQUE PAS UN TEXTE QU'ON N'A PAS LU (§4.5) : le joueur ouvre l'article
-     avant de s'en servir, la suite aussi. C'est un GESTE D'ÉCRAN — `ouvrirPiece`
-     puis `fermerPiece` —, pas une porte dérobée (R13). */
+  /* ON N'INVOQUE PAS UN TEXTE QU'ON N'A PAS RETENU (§4.5, passe F) : le joueur
+     ouvre l'article, retient son texte, le replie ; la suite aussi. Ce sont des
+     GESTES D'ÉCRAN — `ouvrirPiece`, `surligner`, `fermerPiece` —, pas une porte
+     dérobée (R13). */
+  // Par la fenêtre, pas par `require` : `npm run vue` porte ce harnais dans la page.
+  const cleArticle = (w,pid) => (w.MoteurGrammaire.articlesDe(J(w)).find(a=>a.pid===pid)||{}).id;
   function lireLeTexte(w,forme){
     const b=(J(w).grammaire.blocs||[]).find(x=>x.forme===forme && x.piece);
-    if(!b || w.S.examinees.includes(b.piece)) return;
+    if(!b || w.R.articleRetenu(w.S,b.piece)) return;
     if(!w.R.piecesLivrees(w.S).includes(b.piece)) return;
-    w.ouvrirPiece(b.piece); w.fermerPiece();
+    const k=cleArticle(w,b.piece); if(!k) return;
+    w.ouvrirPiece(b.piece); surligner(w,k); w.fermerPiece();
+  }
+  /* PRENDRE UNE LIAISON : une liaison-article se prend par la FICHE de son
+     article, au CONTEXTE (passe F) — la porte du joueur (R13), qui cherche
+     l'indice du bloc au clic ; toute autre, au composeur. */
+  function prendreLiaison(w,i){
+    const b=w.R.blocsOfferts(w.S)[i]; if(!b) return;
+    if(w.R.estLiaisonArticle(b)) w.prendreArticle(cleArticle(w,b.piece));
+    else w.poserBloc(i);
   }
   function composerLien(w,L,{garder=false}={}){
     const f=(J(w).grammaire.formes||{})[L.forme]||{};
@@ -144,7 +156,7 @@ function creerHarnais(dossier){
       /* 1) LA CONTINUATION : la comparaison, puis la liaison qui l'emboîte. */
       if(sous.forme && poserComparaison(w,sous)){
         const b=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && x.imbrique);
-        if(b>=0){ w.poserBloc(b); const i=trouve(); if(i>=0) return i; }
+        if(b>=0){ prendreLiaison(w,b); const i=trouve(); if(i>=0) return i; }
       }
       /* 2) LE REPLI `note` : la rétrocompatibilité, éprouvée (§11). */
       w.viderCompo();
@@ -153,7 +165,7 @@ function creerHarnais(dossier){
       const b=idBloc(w,blocNote(w)); if(b<0) return -1;
       w.poserBloc(b,i);
       const bl=idBloc(w,blocForme(w,L.forme));
-      if(bl>=0) w.poserBloc(bl);
+      if(bl>=0) prendreLiaison(w,bl);
     } else {
       if(!poserComparaison(w,L)) return -1;
       cloreSurPlace(w);
@@ -310,7 +322,7 @@ function creerHarnais(dossier){
            discussion, contexte, composeur, plaidoirie, plaidoirieVisible,
            lienVice, lienConclusion, lienFaux, lienTag, sousTerme, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
-           cloreSurPlace, poserComparaison, assembler, lireLeTexte, livrerTout,
+           cloreSurPlace, poserComparaison, assembler, lireLeTexte, cleArticle, prendreLiaison, livrerTout,
            surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,

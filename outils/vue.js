@@ -256,9 +256,14 @@ async function main() {
   }
   const fArticle = await halo();
   if (fArticle.startsWith("d:")) await p2.click(`#zoneDossier [data-f="${fArticle}"]`);
+  /* L'ARTICLE SE RETIENT, PUIS SE PREND (passe F) : son texte dans la pièce,
+     puis sa fiche au CONTEXTE — plus un bouton du composeur. */
+  console.log("  " + await capturer2("article-a-retenir") + `   (halo : ${await halo()})`);
+  const cleArt = await p2.evaluate(`__H.cleArticle(window, S.modalPiece)`);
+  if (cleArt) await p2.click(`#panPiece [data-f="e:${cleArt}"]`);
   console.log("  " + await capturer2("article-a-prendre") + `   (halo : ${await halo()})`);
-  const fBloc = await halo();
-  if (fBloc.startsWith("b:")) await p2.click(`#composeur [data-f="${fBloc}"]`);
+  const fFiche = await halo();
+  if (fFiche.startsWith("c:")) await p2.click(`#zoneRetenus [data-f="${fFiche}"]`);
   console.log("  " + await capturer2("comparaison"));
   const hauteurs = await p2.evaluate(`(() => {
     const h = id => Math.round(document.getElementById(id).getBoundingClientRect().height);

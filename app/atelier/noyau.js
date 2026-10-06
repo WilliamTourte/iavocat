@@ -41,6 +41,9 @@ function toutesDims(){ return [...(CONTENU.dimensions||[])]; }
    liste se serait réparée à la main à chaque renommage et à chaque suppression,
    et l'export l'aurait jetée (§9). */
 function estBruit(pid,eid){ const e=empanDe(pid,eid); return !!(e && e.bruit); }
+/* Le passage d'un ARTICLE (§11, passe F) : sans dimension ni valeur, jamais un
+   terme — `empansPlats` ne le rend pas, `passagesArticle` si. */
+function estPassageArticle(pid,eid){ const e=empanDe(pid,eid); return !!(e && e.article); }
 /* PIÈGE — TOUTES les pièces qu'une remise livre ; `piecesLivrees(S)` de
    regles.js est PROGRESSIF. Deux questions, deux noms. */
 function toutesPiecesLivrees(){
@@ -48,6 +51,9 @@ function toutesPiecesLivrees(){
 }
 function empansPlats(){
   return window.MoteurGrammaire ? window.MoteurGrammaire.champsDe(CONTENU) : [];
+}
+function passagesArticle(){
+  return window.MoteurGrammaire && window.MoteurGrammaire.articlesDe ? window.MoteurGrammaire.articlesDe(CONTENU) : [];
 }
 let _mg=null, _mgSig=null;
 function MG(){

@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 6 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 563 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 587 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -331,7 +331,12 @@ retient, puis se prend** (§4.5, §4.6) : son texte entier est un passage sans d
 liaison, sous un nom neutre (*« Article 7 »*) — le composeur ne propose plus d'article, et l'offre
 suit *retenu* au lieu d'*ouvert*. Le §4.5 est réécrit **d'un seul tenant pour F et G**, comme le
 voulait le `TODO.md` : ce qui ne vaudra qu'avec la passe G — le joueur choisit la relation — y est
-marqué **[G]**. Rien n'est encore codé.
+marqué **[G]**. Relu par l'auteur, puis **codé le même jour** : un passage `art` sur chaque règle,
+`champsDe` qui l'écarte et `articlesDe` qui le rend, l'offre sur `articleRetenu`, le groupe
+*ARTICLES* dont la fiche prend la liaison (`prendreArticle`) ou dit pourquoi elle ne le peut pas, le
+composeur sans article, la voix qui mène au CONTEXTE, le tutoriel qui montre la puce, le texte, puis
+la fiche ; l'atelier suit (diagnostic, inspecteur, graphe, pas-à-pas). `npm run vue` capture
+l'article à retenir et à prendre.
 
 ## 2. Points de vigilance
 
@@ -358,6 +363,12 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Le flag `cite` est porté par la liaison, jamais par le terme** — `t0` est partagé par la citation et
   la comparaison.
 - **L'index `iBloc` de `poserBloc` est positionnel dans la liste filtrée**, donc lié à la session.
+  La fiche d'un article le cherche donc AU CLIC (`prendreArticle`), jamais au rendu — et le harnais
+  passe par elle (`H.prendreLiaison`).
+- **Le passage d'un article n'est PAS un champ** (§11) : `champsDe` l'écarte, `articlesDe` le rend.
+  Tout ce qui lit `S.retenus` doit savoir qu'il y trouvera aussi des articles — `EMPAN[k]` y est
+  indéfini : une fiche, une voix ou un contrôle qui compte des *passages* filtre par `EMPAN` ou
+  `CHAMPS`. Un lien qui le citerait ferait jeter `dimDe` : le diagnostic l'arrête avant.
 - **`muter(f)` porte `pushUndo` AVANT et `autosave(); render()` APRÈS** : une mutation qui renonce garde
   sa garde *avant* l'appel.
 - **L'ordre des `<script src>` de l'atelier compte** (`noyau.js` en premier), et les `window.X = X`
@@ -581,9 +592,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   fait toute la session 2 (§6). Le retirer est une ligne ; **à juger sur une partie, le recadrage en
   place.** *Tranché le 5 octobre (§4.11) : l'étiquette devient une marque sans mot — la couleur et le
   trait de la dimension sous le titre de l'article.*
-- **L'article s'offre sans avoir été lu** : `blocsDepuis` filtre sur `piecesLivrees` — *reçu*, pas
-  *lu*. Passer à `S.examinees` est un mot, et l'invariant du §4.5 deviendrait *« on n'invoque pas un
-  texte qu'on n'a pas lu »*. Non tranché.
+- *Fermé par la passe F : « l'article s'offre sans avoir été lu ».* Il s'offrait *reçu*, puis
+  *ouvert* ; il s'offre désormais *retenu* — on n'invoque pas un texte qu'on n'a pas retenu (§4.5).
 - *Fermé le 2 octobre : la **légende** de chaque pièce nomme les dimensions qu'elle porte (§4.3).
   Deux playtests l'avaient demandée, et le `title` qui la remplaçait n'existait ni au clavier ni au
   toucher. Reste à voir si elle suffit, ou si le joueur passe à côté.* **Rouvert par Jean : il passe
@@ -865,3 +875,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   attendu renvoie à l'index ; une seconde citation, sur contenu muté, ne rallume pas le halo ; `npm
   run vue` capture *retenir pour comparer*. Fusionnée avec la passe D : 563 contrôles, 8 règles du
   gardien, ESLint.
+- **6 octobre, passe F : l'article se retient, puis se prend** (§4.5, §4.6, §4.8, §11, §15) — le
+  document d'abord, avec le §4.5 entier pour F et G, relu ; puis `articlesDe`, `articleRetenu`,
+  `estLiaisonArticle`, `articleAttendu`, `prendreArticle`, `articleRefuse`, `tutoCleArticle`, le
+  groupe *ARTICLES* ; l'atelier et les suites suivent. 587 contrôles, 8 règles du gardien, ESLint.

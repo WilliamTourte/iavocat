@@ -143,14 +143,32 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
   const w = neuf();
   const pidR = SC.pidRegle(w.CONTENU);
   const regles = Object.values(w.CONTENU.pieces).filter(estRegle);
-  check("dans le contenu livré, aucune règle ne porte d'empan",
-    regles.every(p => Object.keys(p.empans||{}).length === 0));
+  // §11, passe F — un article a UN passage, son texte, et aucun empan qui se compare.
+  check("dans le contenu livré, chaque règle porte un passage d'article, et aucun empan qui se compare",
+    regles.every(p => { const es = Object.values(p.empans||{});
+      return es.length === 1 && es[0].article && es[0].dim === undefined && es[0].valeur === undefined; }));
   check("et chaque règle livrée annonce ce qu'elle régit",
     regles.every(p => Array.isArray(p.porte) && p.porte.length));
   const e = SC.unEmpan(w.CONTENU);
   w.CONTENU.pieces[pidR].empans = { intrus: { dim: e.dim, valeur: e.valeur, texte: "x", nom: "x" } };
   w.CONTENU.pieces[pidR].texte += " {{intrus}}";
-  check("une règle qui porte un empan est une erreur", msgs(w).includes("porte 1 empan"));
+  check("une règle qui porte un empan qui se compare est une erreur", msgs(w).includes("porte 1 empan"));
+}
+{
+  /* LE PASSAGE D'ARTICLE (§11, passe F) : sans lui, la liaison ne s'offrirait
+     jamais ; hors d'une règle, il ne fonderait rien. */
+  const w = neuf();
+  const b = w.CONTENU.grammaire.blocs.find(x => x.type === "liaison" && x.imbrique && x.piece);
+  const p = w.CONTENU.pieces[b.piece];
+  const [eid] = Object.keys(p.empans).filter(k => p.empans[k].article);
+  delete p.empans[eid]; p.texte = p.texte.replace("{{" + eid + "}}", "texte");
+  check("une règle invoquée sans passage d'article est une erreur", msgs(w).includes("pas de passage d'article"));
+  const w2 = neuf();
+  const e = SC.unEmpan(w2.CONTENU);
+  w2.CONTENU.pieces[e.pid].empans[e.eid].article = true;
+  check("un passage d'article hors d'une règle est une erreur", msgs(w2).includes("hors d'une règle"));
+  check("le diagnostic du contenu livré ne tient pas ses passages d'article pour inertes",
+    !msgs(neuf()).includes("Empan inerte : art."));
 }
 {
   const w = neuf();

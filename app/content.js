@@ -103,8 +103,14 @@ window.CONTENU = {
       "porte": [
         "quand"
       ],
-      "texte": "Article 3 — Une déclaration de témoin dont les indications horaires sont contredites par les constatations des services ne peut fonder à elle seule la conviction du tribunal.",
-      "empans": {}
+      "texte": "Article 3 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Une déclaration de témoin dont les indications horaires sont contredites par les constatations des services ne peut fonder à elle seule la conviction du tribunal",
+          "nom": "Article 3"
+        }
+      }
     },
     "p_adn": {
       "titre": "Rapport du laboratoire",
@@ -249,8 +255,14 @@ window.CONTENU = {
         "qui",
         "quoi"
       ],
-      "texte": "Article 7 — L'échantillon de scène et le prélèvement de référence sont recueillis par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux opérations est indifférent.",
-      "empans": {}
+      "texte": "Article 7 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "L'échantillon de scène et le prélèvement de référence sont recueillis par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux opérations est indifférent",
+          "nom": "Article 7"
+        }
+      }
     },
     "r_seuil": {
       "titre": "Article 12 — seuil probatoire",
@@ -261,8 +273,14 @@ window.CONTENU = {
       "porte": [
         "combien"
       ],
-      "texte": "Article 12 — Une correspondance dont la probabilité de coïncidence est inférieure à une sur un million est réputée probante.",
-      "empans": {}
+      "texte": "Article 12 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Une correspondance dont la probabilité de coïncidence est inférieure à une sur un million est réputée probante",
+          "nom": "Article 12"
+        }
+      }
     }
   },
   "grammaire": {
@@ -305,7 +323,6 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_temoin",
         "texte": ", et l'article 3 permet la mise de côté de ce témoignage",
-        "libelle": "l'article 3 permet la mise de côté de ce témoignage",
         "forme": "article_3"
       },
       {
@@ -316,7 +333,6 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_protocole",
         "texte": ", en violation de l'article 7",
-        "libelle": "en violation de l'article 7",
         "forme": "article_7"
       },
       {
@@ -327,7 +343,6 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_seuil",
         "texte": ", au regard de l'article 12",
-        "libelle": "au regard de l'article 12",
         "forme": "article_12"
       }
     ],

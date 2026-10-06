@@ -38,6 +38,8 @@ function simComposable(L){
     const sous=(L.termes||[])[0];
     const bloc=(CONTENU.grammaire.blocs||[]).find(b=>b.forme===L.forme);
     if(bloc && bloc.piece && !simLivrees().has(bloc.piece)) return false;
+    // On n'invoque pas un texte qu'on n'a pas retenu (§4.5, passe F).
+    if(bloc && bloc.piece && bloc.imbrique && !RG().articleRetenu(SIM,bloc.piece)) return false;
     if(typeof sous==="string") return SIM.retenus.includes(sous);
     if(!sous || typeof sous!=="object") return false;
     return feuillesLien(sous).every(k=>SIM.retenus.includes(k))
@@ -99,7 +101,7 @@ function simActions(){
     for(const pid of livrees) if(!SIM.examinees.includes(pid))
       A.push({t:`Ouvrir « ${courtDe(pid)} »`, cls:"ghost", f:()=>simOuvrir(pid)});
 
-  for(const e of empansPlats()){
+  for(const e of [...empansPlats(), ...passagesArticle()]){
     if(!livrees.has(e.pid) || SIM.retenus.includes(e.id)) continue;
     A.push({t:`Surligner : ${cflabel(e.id)} — « ${String(e.texte||"").slice(0,42)} »`, cls:"ghost", f:()=>simSurligner(e.id)});
   }

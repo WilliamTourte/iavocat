@@ -76,6 +76,20 @@ function inspPiece(pid){
 function formulaireChamp(pid){ reinitSelection(); formChamp=pid; render(); }
 function inspFormChamp(){
   const p=CONTENU.pieces[formChamp];
+  /* Sur une RÈGLE, l'empan est le passage de l'article : son texte, et le nom
+     neutre de sa fiche — ni valeur ni dimension (§11, passe F). */
+  if(estRegle(p)) return `<label>Passage de l'article — ${escapeH(p.court)}</label>
+    <label>Identifiant</label>
+    <input type="text" id="ncNom" value="art">
+    <label>Nom <span class="glose">(le nom neutre de sa fiche)</span></label>
+    <input type="text" id="ncNomCourt" placeholder="ex. Article 7">
+    <label>Ce qui se lit <span class="glose">(le texte entier de l'article, sans son titre)</span></label>
+    <textarea id="ncTexte"></textarea>
+    <div class="relbtns">
+      <button onclick="creerChamp()">Créer</button>
+      <button onclick="formChamp=null;render()">Annuler</button>
+    </div>
+    <div class="inote">Le marqueur {{id}} est ajouté au texte de la pièce — mets-le à la place du texte de l'article.</div>`;
   return `<label>Nouvel empan — ${escapeH(p.court)}</label>
     <label>Identifiant <span class="glose">(ex. e_heure_transfert)</span></label>
     <input type="text" id="ncNom" placeholder="e_…">
@@ -100,8 +114,10 @@ function creerChamp(){
   muter(()=>{
     const p=CONTENU.pieces[formChamp];
     p.empans=p.empans||{};
-    p.empans[eid]={ dim:$("ncDim").value, valeur:$("ncVal").value, texte:$("ncTexte").value||$("ncVal").value,
-                    nom:$("ncNomCourt").value||$("ncTexte").value||$("ncVal").value };
+    p.empans[eid]= estRegle(p)
+      ? { article:true, texte:$("ncTexte").value, nom:$("ncNomCourt").value||p.court||eid }
+      : { dim:$("ncDim").value, valeur:$("ncVal").value, texte:$("ncTexte").value||$("ncVal").value,
+          nom:$("ncNomCourt").value||$("ncTexte").value||$("ncVal").value };
     p.texte=String(p.texte||"")+(p.texte?" ":"")+"{{"+eid+"}}";   // marqué d'office : la règle de surlignage
     selA={pid:formChamp,champ:eid}; selB=null;
     formChamp=null;
@@ -111,6 +127,17 @@ function creerChamp(){
 function inspEmpan(s){
   const p=CONTENU.pieces[s.pid], e=empanDe(s.pid,s.champ)||{};
   const marque=String(p.texte||"").includes("{{"+s.champ+"}}");
+  if(e.article) return `<label>Passage de l'article — ${escapeH(p.court)}·${escapeH(joli(s.champ))}</label>
+    <label>Nom <span class="glose">(le nom neutre de sa fiche, au CONTEXTE)</span></label>
+    <input type="text" value="${escapeAttr(e.nom||"")}" onchange="majEmpan('${s.pid}','${s.champ}','nom',this.value)"
+           placeholder="ex. Article 7">
+    <label>Ce qui se lit <span class="glose">(le texte entier de l'article, qu'on retient pour l'invoquer)</span></label>
+    <textarea onchange="majEmpan('${s.pid}','${s.champ}','texte',this.value)">${escapeH(e.texte||"")}</textarea>
+    <div style="font-size:12px;color:${marque?'var(--muted)':'var(--err)'};margin-top:6px">
+      ${marque?"marqué dans le texte de la pièce ✓":"⚠ {{"+escapeH(s.champ)+"}} absent du texte — l'article ne s'invoquerait jamais"}</div>
+    <button class="xsmall" style="margin-top:8px" onclick="demanderRenommageEmpan('${s.pid}','${s.champ}')">✎ renommer l'id</button>
+    ${btnSuppr("champ:"+K(s.pid,s.champ),"danger",`demanderSupprChamp('${s.pid}','${s.champ}')`,
+               "Supprimer ce passage","Confirmer la suppression")}`;
   return `<label>Empan — ${escapeH(p.court)}·${escapeH(joli(s.champ))}</label>
     <label>Nom <span class="glose">(ce qui parle dans une phrase composée — un groupe nominal)</span></label>
     <input type="text" value="${escapeAttr(e.nom||"")}" onchange="majEmpan('${s.pid}','${s.champ}','nom',this.value)"

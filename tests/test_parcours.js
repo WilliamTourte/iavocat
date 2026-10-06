@@ -131,7 +131,9 @@ const poserLesDeux = (w, a, b) => {
         && (/--ds:\s*\w+/.test(st));
     });
     sansMot = sansMot && !/porte sur :/i.test(panneau.textContent.replace(/Porte sur : [^.]*\./, ""));
-    sr = sr && porte.every(d => (panneau.querySelector(".cadre .sr") || {}).textContent.includes(d));
+    // PIÈGE : `.cadre > .sr`, pas `.cadre .sr` — le texte de l'article est un
+    // passage (passe F), dont la voix dit « article » plus haut dans le cadre.
+    sr = sr && porte.every(d => (panneau.querySelector(".cadre > .sr") || {}).textContent.includes(d));
   }
   check("chaque article est encadré de la couleur de chaque dimension qu'il régit, et de son trait", ok);
   check("sans un mot à l'écran : plus d'étiquette « porte sur »", sansMot);
@@ -471,14 +473,14 @@ console.log("\n=== Les deux gestes, montrés ===");
     halo() && halo().id === "zoneRetenus" && /second/.test(dit()));
   w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(tB));
   w.fermerPiece();      // l'index se déplie : le cas « pièce ouverte » vient plus bas
-  /* §4.5 — un texte s'invoque une fois LU. Tant que l'article n'est pas ouvert,
-     le bandeau montre OÙ LE LIRE : il ne pointe pas une proposition qui n'existe
-     pas, et il ne dit pas « Envoyer » alors que la leçon est l'article. */
+  /* §4.5 — un texte s'invoque une fois RETENU (passe F). Tant que l'article ne
+     l'est pas, le bandeau montre OÙ LE LIRE : il ne dit pas « Envoyer » alors
+     que la leçon est l'article. */
   /* §4.8 — L'ARTICLE SE DÉSIGNE, LA RELATION JAMAIS : sa puce dans l'index,
-     puis son bloc dans les propositions. Dérivé du lien, comme le tutoriel. */
+     son texte, puis sa fiche. Dérivé du lien, comme le tutoriel. */
   const art = w.JEU.grammaire.blocs.find(b => b.type === "liaison" && b.imbrique
     && b.forme === H.lienTag(w, veutA).forme);
-  check("les deux posés, l'article n'est pas lu : le halo montre SA puce, dans l'index",
+  check("les deux posés, l'article n'est pas retenu : le halo montre SA puce, dans l'index",
     !!art && !!halo() && halo().getAttribute("data-f") === "d:" + art.piece
     && w.document.getElementById("zoneDossier").contains(halo()));
   check("et la bulle invite à le lire, développée",
@@ -500,15 +502,21 @@ console.log("\n=== Les deux gestes, montrés ===");
   w.basculerDossier();
   check("déplié pièce ouverte, la puce de l'article pulse",
     !!halo() && halo().getAttribute("data-f") === "d:" + art.piece);
-  w.fermerPiece();
-  H.lireLeTexte(w, H.lienTag(w, veutA).forme);
-  check("l'article lu, le halo montre SON bloc dans les propositions — pas toute la zone",
-    !!halo() && halo().classList.contains("bbloc") && halo().getAttribute("data-f") === "b:" + art.id
-    && !!halo().closest("#composeur .offre"));
-  const bArticle = w.R.blocsOfferts(w.S).findIndex(b => b.type === "liaison" && b.imbrique);
-  w.poserBloc(bArticle);
-  check("l'article choisi, la phrase se tient : il se tait, là aussi",
-    bandeau().hidden && !halo());
+  w.ouvrirPiece(art.piece);
+  check("l'article ouvert, le halo montre SON texte, à retenir",
+    !!halo() && halo().classList.contains("piecetexte") && /retenir/.test(dit()));
+  check("ouvrir ne suffit plus : l'article n'est offert nulle part (passe F)",
+    !w.R.blocsOfferts(w.S).some(b => w.R.estLiaisonArticle(b)));
+  const cle = H.cleArticle(w, art.piece);
+  H.surligner(w, cle);
+  check("retenu, le halo montre SA FICHE au CONTEXTE — plus le composeur",
+    !!halo() && halo().getAttribute("data-f") === "c:" + cle
+    && w.document.getElementById("zoneRetenus").contains(halo()));
+  check("et le composeur ne propose aucun article",
+    !w.document.querySelector("#composeur .bbloc.fondement"));
+  w.document.querySelector(`#zoneRetenus [data-f="c:${cle}"]`).click();
+  check("l'article pris sur sa fiche, la phrase se tient : il se tait, là aussi",
+    w.R.compoFinie(w.S) && bandeau().hidden && !halo());
   w.envoyerCompo();
   check("les deux gestes montrés, le tutoriel se tait pour de bon",
     bandeau().hidden && !halo());
@@ -999,14 +1007,20 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tA));
   check("le PREMIER des deux posé, il en faut un second : le panneau RESTE ouvert", ouvert("CONTEXTE"));
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tB));
-  check("les deux posés, seul l'article manque : il s'est refermé", !ouvert("CONTEXTE"));
-  check("et la voix qui réclame l'article n'est plus un bouton — le geste est ICI",
-    !bouton() && !!w.document.querySelector("#composeur span.aide"));
+  /* §4.6 — L'ARTICLE SE PREND AU CONTEXTE (passe F) : la phrase qui l'attend n'a
+     rien à prendre au composeur, et le panneau ouvert pour écrire reste. */
+  check("les deux posés, l'article reste à prendre au CONTEXTE : le panneau RESTE ouvert", ouvert("CONTEXTE"));
+  check("et la voix qui réclame l'article y mène — c'est là qu'il se prend", !!bouton());
+  const pidArt = w.JEU.grammaire.blocs.find(b => w.R.estLiaisonArticle(b)
+    && b.forme === H.lienTag(w, attente().attend).forme).piece;
+  w.prendreArticle(H.cleArticle(w, pidArt));
+  check("l'article pris sur sa fiche, la phrase achevée : il s'est refermé",
+    w.R.compoFinie(w.S) && !ouvert("CONTEXTE"));
 
   /* CONSULTER N'EST PAS ÉCRIRE — ouverte depuis la barre, elle ne se referme pas
      bien que la phrase n'accepte plus aucun passage. */
   w.basculerPanneau("contexte");
-  check("depuis la barre, le panneau s'ouvre même quand plus aucun passage n'est posable",
+  check("depuis la barre, le panneau s'ouvre même quand la phrase n'a plus rien à y prendre",
     ouvert("CONTEXTE"));
   w.rendreTout();
   check("et il ne se referme pas tout seul : on consulte, on n'écrit pas", ouvert("CONTEXTE"));
@@ -1173,7 +1187,7 @@ console.log("\n=== Le jeu se joue au clavier ===");
   const vus = new Map();
   for (const pid of Object.keys(w.JEU.pieces)) {
     w.ouvrirPiece(pid);
-    for (const e of d.querySelectorAll("#panPiece .empan")) {
+    for (const e of d.querySelectorAll("#panPiece .empan:not(.article)")) {   // un article n'a pas de dimension
       const dim = w.CHAMPS.find(c => "e:" + c.id === e.getAttribute("data-f")).dim;
       const trait = (/--ds:\s*([\w-]+)/.exec(e.getAttribute("style") || "") || [])[1];
       vus.set(dim, new Set([...(vus.get(dim) || []), trait]));
@@ -1271,7 +1285,8 @@ console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
     if (!a || H.composerLien(w, H.lienTag(w, a.attend)) < 0) break;
   }
   w.basculerPanneau("contexte");
-  const anciens = w.S.retenus.slice();
+  // Les PASSAGES : l'article retenu pour la comparaison n'est jamais un terme (passe F).
+  const anciens = w.S.retenus.filter(k => w.CHAMPS.some(c => c.id === k));
   const fiche = k => d.querySelector(`#zoneRetenus [data-f="c:${k}"]`);
   check("la remise 2 arrivée, les passages de la remise 1 restent composables, sans ligne de repli",
     w.S.remisesEnvoyees === 2 && anciens.length > 0
@@ -1329,17 +1344,78 @@ console.log("\n=== Une phrase déjà envoyée ne repart pas, et le composeur le 
     w.S.fil.length === fil && w.S.compo.length === compo && compo > 0);
 }
 
-console.log("\n=== Un bouton d'article se lit comme un choix, pas comme une virgule ===");
+console.log("\n=== L'article se retient, puis se prend (§4.5, §4.6, passe F) ===");
+{
+  const w = H.boot(), d = w.document;
+  H.livrerTout(w);
+  const arts = w.MoteurGrammaire.articlesDe(w.JEU);
+  check("chaque article a son passage, et le moteur ne le voit pas : jamais un terme",
+    arts.length > 0 && arts.every(a => !w.CHAMPS.some(c => c.id === a.id) && a.dim === undefined));
+  const L = H.lienConclusion(w);
+  const pid = w.JEU.grammaire.blocs.find(b => w.R.estLiaisonArticle(b) && b.forme === L.forme).piece;
+  const k = H.cleArticle(w, pid);
+  w.ouvrirPiece(pid);
+  const passage = d.querySelector(`#panPiece [data-f="e:${k}"]`);
+  check("son texte est un passage, sans couleur ni trait de dimension, qui se dit « article »",
+    !!passage && passage.classList.contains("article") && !/--dc/.test(passage.getAttribute("style") || "")
+    && /article/.test(passage.querySelector(".sr").textContent));
+  check("ouvert, il ne s'offre pas", !w.R.articleRetenu(w.S, pid));
+  passage.click();
+  check("cliqué, il est retenu comme un passage", w.S.retenus.includes(k) && w.R.articleRetenu(w.S, pid));
+  w.fermerPiece();
+  const fiche = () => d.querySelector(`#zoneRetenus [data-f="c:${k}"]`);
+  const groupes = [...d.querySelectorAll("#zoneRetenus .dimgrp")];
+  check("sa fiche se range hors des dimensions, en dernier, sous ARTICLES",
+    !!fiche() && groupes.length > 0 && groupes[groupes.length - 1].classList.contains("articles")
+    && groupes[groupes.length - 1].contains(fiche()));
+  check("phrase vide, la fiche est refusée, pas désactivée", !fiche().disabled && fiche().getAttribute("aria-disabled") === "true");
+  fiche().focus(); fiche().click();
+  check("la toucher ne pose rien, et dit pourquoi — à l'écran comme à l'oreille",
+    w.S.compo.length === 0 && /fonde une relation/.test((d.getElementById("raisonArticle") || {}).textContent || "")
+    && /fonde une relation/.test(d.getElementById("annonce").textContent));
+  check("le focus reste sur la fiche touchée", d.activeElement === fiche());
+  w.rendreTout();
+  check("la raison ne vit qu'un rendu", !d.getElementById("raisonArticle"));
+  w.basculerPanneau("contexte");
+  H.poserComparaison(w, H.sousTerme(L));
+  check("les deux passages posés, les fiches de passage disent que la phrase attend un article",
+    /attend un article/.test((d.getElementById("raisonPleine") || {}).textContent || ""));
+  check("la fiche de l'article, elle, prend", !fiche().hasAttribute("aria-disabled"));
+  fiche().click();
+  check("prise, elle pose la liaison de son article, et le dit", w.R.compoFinie(w.S)
+    && w.R.chaineCompo(w.S).some(p => w.R.estLiaisonArticle(p.bloc) && p.bloc.piece === pid)
+    && /dans ta phrase/.test(fiche().textContent));
+  w.retirerBloc(); w.oublier(...H.deK(k));
+  check("oubliée, l'article ne s'offre plus", !w.R.blocsOfferts(w.S).some(b => w.R.estLiaisonArticle(b)));
+  check("et la voix dit où aller le chercher, en menant au CONTEXTE",
+    /retiens/.test(composeur(w)) && !!d.querySelector('#composeur [data-f="voix"]'));
+}
+{
+  // L'ARTICLE QUE LA QUESTION DEMANDE AUSSI, retenu en avance, ne sonne pas faux (§4.8).
+  const w = H.boot({url:"http://localhost/"});
+  H.composerLien(w, H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend));
+  const L = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend);
+  const pid = w.JEU.grammaire.blocs.find(b => w.R.estLiaisonArticle(b) && b.forme === L.forme).piece;
+  w.ouvrirPiece(pid); H.surligner(w, H.cleArticle(w, pid));
+  check("retenir l'article demandé avant les deux passages n'est pas une erreur",
+    !w.document.getElementById("tuto").hidden && !w.document.getElementById("tuto").hasAttribute("data-alerte"));
+}
+
+console.log("\n=== La fiche d'un article se lit comme un choix : son nom neutre (§4.5, passe F) ===");
 {
   const w = H.boot();
   H.livrerTout(w);
   const L = H.lienConclusion(w);
   H.lireLeTexte(w, L.forme);
   check("la comparaison du vice se pose", H.poserComparaison(w, H.sousTerme(L)));
-  w.rendreTout();
-  const articles = [...w.document.querySelectorAll("#composeur .bbloc.fondement")].map(b => b.textContent);
-  check("des articles sont offerts, et aucun bouton ne commence par sa ponctuation de liaison",
-    articles.length > 0 && articles.every(t => !/^[\s,;]/.test(t)));
+  w.basculerPanneau("contexte");
+  const fiches = [...w.document.querySelectorAll("#zoneRetenus .mchip.article .corps")];
+  const noms = fiches.map(b => b.querySelector(".nom").textContent);
+  const pid = w.JEU.grammaire.blocs.find(b => w.R.estLiaisonArticle(b) && b.forme === L.forme).piece;
+  check("l'article retenu a sa fiche, qui porte le nom neutre de son passage — pas le libellé de la phrase",
+    fiches.length > 0 && noms.includes(w.JEU.pieces[pid].empans[H.deK(H.cleArticle(w, pid))[1]].nom)
+    && noms.every(t => !/^[\s,;]/.test(t)) && !fiches.some(b => b.hasAttribute("aria-disabled")));
+  check("et le composeur n'offre plus aucun article", !w.document.querySelector("#composeur .bbloc.fondement"));
 }
 
 console.log("\n=== L'agacement retombe à chaque remise (§4.11) ===");
@@ -1368,12 +1444,15 @@ console.log("\n=== Le CONTEXTE ouvert pour écrire reste quand il faut aller lir
   const pan = () => !w.document.getElementById("panCONTEXTE").hidden;
   w.fermerPanneau(); w.ouvrirCONTEXTE();
   check("ouvert par la voix", pan());
-  check("la comparaison se pose, l'article pas encore lu : rien à invoquer",
+  check("la comparaison se pose, l'article pas encore retenu : rien à invoquer",
     H.poserComparaison(w, H.sousTerme(L)) && w.R.blocsOfferts(w.S).length === 0);
   check("le CONTEXTE reste : c'est là qu'on va lire l'article", pan());
   const art = (w.JEU.grammaire.blocs || []).find(b => b.forme === L.forme && b.piece).piece;
-  w.ouvrirPiece(art); w.fermerPiece();
-  check("l'article lu, le composeur l'offre — et le CONTEXTE, où l'on a lu, reste en consultation",
+  w.ouvrirPiece(art);
+  check("ouvrir ne suffit plus : rien n'est offert tant qu'on ne le retient pas (passe F)",
+    w.R.blocsOfferts(w.S).length === 0);
+  H.surligner(w, H.cleArticle(w, art)); w.fermerPiece();
+  check("l'article retenu, il est offert — et le CONTEXTE, où il se prend, reste",
     w.R.blocsOfferts(w.S).length > 0 && pan());
 }
 
