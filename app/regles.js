@@ -24,7 +24,7 @@ function creerRegles(JEU, M) {
     clotureDemandee: false,
     repetitionIdx: -1,
     declenches: [],               // pièces dont le `declenche` une_fois a joué
-    inutiles: 0, incompris: 0,    // compteurs d'agacement de l'avocat
+    inutiles: 0, incompris: 0,    // compteurs d'agacement de l'avocat, remis à zéro à chaque remise
     hors_sujet: 0,                // …et celui des citations qui ne répondent pas
     modalPiece: null
   }; }
@@ -64,6 +64,10 @@ function creerRegles(JEU, M) {
     if (S.remisesEnvoyees >= JEU.remises.length) return;
     const r = JEU.remises[S.remisesEnvoyees];
     S.remisesEnvoyees++;
+    // §4.11 — l'agacement retombe à chaque remise : un nouveau dossier, une
+    // nouvelle séance, et les premières répliques — les seules qui disent
+    // quelque chose — se réentendent.
+    S.inutiles = S.incompris = S.hors_sujet = 0;
     pousser(S, r.qui, r.texte, r.pieces);
     poserQuestion(S, r, true);
   }
@@ -241,7 +245,19 @@ function creerRegles(JEU, M) {
     S.compo = [];
     return clorePhrase(S, M.reduire(ch), M.rendre(ch));
   }
+  /* UNE PHRASE DÉJÀ ENVOYÉE NE REPART PAS (§4.5). PIÈGE PAYÉ : `clore` vidait le
+     composeur, `clorePhrase` retrouvait l'entrée versée, et `envoyer` sortait —
+     la phrase s'évaporait sans un mot. On refuse AVANT de clore : rien n'est
+     vidé, et l'écran le dit. Une phrase dite hors ordre n'est pas versée (§3) :
+     elle repart. */
+  function dejaEnvoyee(S) {
+    const ch = chaineEnvoyable(S);
+    if (!ch) return false;
+    const r = M.reduire(ch);
+    return S.brouillon.some(n => n.versee && M.memeRed(n.reduite, r));
+  }
   function envoyerCompo(S) {
+    if (dejaEnvoyee(S)) return;
     const i = clore(S);
     if (i == null) return;
     envoyer(S, i);
@@ -430,7 +446,7 @@ function creerRegles(JEU, M) {
            comparaisonPossible, dimAttendue,
            chaineCompo, pressentir,
            poserBloc, retirerBloc, viderCompo, effacerPrete, clore, clorePhrase,
-           clotureImplicite, chaineEnvoyable, peutEnvoyer, envoyerCompo, compoFinie,
+           clotureImplicite, chaineEnvoyable, peutEnvoyer, dejaEnvoyee, envoyerCompo, compoFinie,
            estMoyen, envoyer, horsOrdre, reponseAvocat, melangeDeuxDossiers, avancerSurAttente,
            attentesDe, attenteCourante, remiseCourante,
            instructionComplete, repetitionEnCours, cloturer, verserContre, repondA, enCalibration, juxtapose,

@@ -151,10 +151,16 @@ console.log("\n=== Les attentes d'une remise : l'avancement ===");
 {
   /* …ET LES SUIVANTES GARDENT L'ANTICIPATION (§3) : la latitude s'élargira
      avec elles. Contenu MUTÉ — la remise 2 du jour n'a qu'une attente : on lui
-     en ajoute une, servie par un lien à tag qu'aucune attente n'emploie. */
+     en ajoute une, servie par un lien à tag qu'aucune attente n'emploie.
+     PIÈGE PAYÉ : ce lien, le contenu le fournissait par hasard (`q_equipages`,
+     un tag sans attente) ; le tag retiré, le bloc passait par le vide. Faute
+     de lien libre, on en FABRIQUE un, en taguant une citation qui n'en a pas. */
   const c = contenuLivre();
   const pris = new Set(c.remises.flatMap(r => H.attentesContenu(r).map(a => a.attend)));
-  const libre = c.liens.find(L => L.tag && !pris.has(L.tag) && typeof L.termes[0] === "string");
+  const citation = L => typeof L.termes[0] === "string";
+  let libre = c.liens.find(L => L.tag && !pris.has(L.tag) && citation(L));
+  if (!libre) { libre = c.liens.find(L => !L.tag && citation(L)); if (libre) libre.tag = "_anticipation"; }
+  check("le contenu muté a son lien libre, et une remise après le tutoriel", !!libre && c.remises.length > 1);
   if (libre && c.remises.length > 1) {
     H.attentesContenu(c.remises[1]).push({ attend: libre.tag });
     const w = boot(c);

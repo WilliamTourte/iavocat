@@ -150,6 +150,12 @@ const GESTE_RELIER = {geste:"mettre en relation"};
 /* PIÈGE : le chrome N'EST PERSONNE — il nomme le GESTE, jamais la TROUVAILLE
    (§4.8). Dire « les deux passages qui se contredisent », c'est répondre à la
    place du joueur ; l'avocat, lui, a le droit : il sait, il calibre (§3). */
+/* La pièce se DÉRIVE du lien attendu, jamais d'un titre câblé : écrit en dur,
+   le texte cassait au premier changement d'affaire. */
+function pieceDemandee(veut){
+  const p=veut && JEU.pieces[veut.slice(0,veut.indexOf("."))];
+  return p ? "Clique sur la pièce demandée : "+p.titre+"." : "Clique sur la pièce demandée.";
+}
 function tutoEtapeCitation(){
   const veut=tutoAttendu();
   if(veut ? !S.retenus.includes(veut) : !S.retenus.length){
@@ -170,7 +176,7 @@ function tutoEtapeCitation(){
                       : "Ouvre une pièce.",
             ditLong: rate
               ? "Ce n'est pas ce qu'il demande. Relis sa question, puis ouvre la pièce qui y répond."
-              : "Clique sur la pièce demandée : PV d'intervention."}
+              : pieceDemandee(veut)}
         : rate
           ? {...GESTE_CITER, n:1, ou:"#discussion .attach", alerte:true,
               dit:"Ce n'est pas ce qu'il demande.",
@@ -182,8 +188,8 @@ function tutoEtapeCitation(){
   if(!R.peutEnvoyer(S))
     return panneau==="contexte"
         ? {...GESTE_CITER, n:3, ou:"#zoneRetenus",
-            dit:"Sélectionne le passage retenu.",
-            ditLong:"Sélectionne le passage qui répond à sa question pour l'ajouter à ta RÉPONSE."}
+            dit:"Prends le passage retenu.",
+            ditLong:"Prends le passage qui répond à sa question pour l'ajouter à ta RÉPONSE."}
         : {...GESTE_CITER, n:3, ou:"#btnCONTEXTE",
             dit:"Ouvre ton CONTEXTE.",
             ditLong:"Ouvre ton CONTEXTE : le passage que tu viens de retenir s'y trouve."};
@@ -402,23 +408,18 @@ function tutoAgrandir(){
 
 /* 4) RENDU COMMUN */
 const modalRoot = $("modalRoot");
-/* `modal()`/`closeModal()` ne servent plus que l'ÉCRAN DE FIN (`finir`) : la
-   pièce ouverte a rejoint la place LATÉRALE (§4.6, §4.10 règle 3) et ne passe
-   plus par ici. Un écran terminal reste légitimement une vraie boîte de
-   dialogue, `inert` compris — il n'y a plus de partie à continuer derrière. */
+/* `modal()` ne sert plus que l'ÉCRAN DE FIN (`finir`) : la pièce ouverte a
+   rejoint la place LATÉRALE (§4.6, §4.10 règle 3) et ne passe plus par ici. Un
+   écran terminal reste légitimement une vraie boîte de dialogue, `inert`
+   compris — il n'y a plus de partie à continuer derrière. PIÈGE PAYÉ : il avait
+   une croix et un voile cliquable, qui rendaient la partie — sauvegarde
+   comprise, puisque le rendu sauve — et le verdict se rejouait en deux clics.
+   Il ne se referme plus : « Recommencer » est sa seule porte (§4.9 règle 5). */
 let ouvreur=null;
-function closeModal(){
-  modalRoot.innerHTML="";
-  const w=document.querySelector(".wrap"); if(w) w.removeAttribute("inert");
-  focusVoulu=ouvreur; ouvreur=null;
-  rendreTout();
-}
 function modal(html, classe){
   modalRoot.innerHTML =
-    `<div class="overlay" onclick="if(event.target===this)closeModal()">
-       <div class="modal ${classe||""}" role="dialog" aria-modal="true" aria-labelledby="modalTitre">${html}
-         <button class="close" onclick="closeModal()" aria-label="Fermer (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span></button>
-       </div>
+    `<div class="overlay">
+       <div class="modal ${classe||""}" role="dialog" aria-modal="true" aria-labelledby="modalTitre">${html}</div>
      </div>`;
   const w=document.querySelector(".wrap"); if(w) w.setAttribute("inert","");
 }
@@ -637,8 +638,14 @@ function fermerPiece(){
    fermeture qui suit la phrase — passent par ici, en TÊTE de `rendreTout` :
    la réplique `declenche` (`R.fermerPiece`) tombe ainsi dans le fil AVANT qu'il
    soit dessiné, au moment où l'on relève les yeux (§4.10 règle 3). */
+/* …ET NE SE REFERME QUE SI LE COMPOSEUR PREND LE RELAIS (§4.6) : un bloc à
+   poser — un article à invoquer —, ou une phrase achevée. PIÈGE PAYÉ : la
+   comparaison posée, l'article pas encore lu, il se refermait — et la voix
+   disait aussitôt d'aller le lire, DANS le CONTEXTE qu'on venait de fermer. Et
+   `peutEnvoyer` n'est PAS un relais : une comparaison nue part (§4.5). */
 function suivrePhrase(){
-  if(panneau==="contexte" && panneauSuit && R.indexTermeChamp(S) < 0){ panneau=null; panneauSuit=false; }
+  const relais = () => R.blocsOfferts(S).length>0 || R.compoFinie(S);
+  if(panneau==="contexte" && panneauSuit && R.indexTermeChamp(S) < 0 && relais()){ panneau=null; panneauSuit=false; }
   if(S.modalPiece && panneau!=="contexte") R.fermerPiece(S);
 }
 /* CHANGER DE PIÈCE COÛTE UN CLIC (§4.6, retour de Jean) : l'index replié, il en
@@ -996,10 +1003,15 @@ function renderCompo(){
   h+=`</div>`;
   // Le geste qui parle pèse plus que ceux qui défont (§4.9) : Envoyer est le seul
   // bouton plein, à droite ; retirer et effacer restent discrets, à gauche.
+  // Une phrase déjà envoyée ne repart pas (§4.5) : le bouton cède sa place à ce
+  // qui le dit, là où l'œil cherchait le bouton.
+  const envoi = !R.peutEnvoyer(S) ? ""
+    : R.dejaEnvoyee(S) ? `<span class="dejaEnvoyee">déjà envoyée</span>`
+    : `<button class="envoi" data-f="envoi" onclick="envoyerCompo()">→ Envoyer</button>`;
   if(S.compo.length)
     h+=`<div class="barre">
       <button class="defaire" data-f="retirer" onclick="retirerBloc()">← retirer</button><button class="defaire" data-f="effacer" onclick="viderCompo()">tout effacer</button>
-      ${R.peutEnvoyer(S)?`<button class="envoi" data-f="envoi" onclick="envoyerCompo()">→ Envoyer</button>`:""}</div>`;
+      ${envoi}</div>`;
   const voix = S.compo.length ? souffle() : "";   // une seule voix par état (§4.9)
   if(voix) h+=rendreVoix(voix,"aide");
   if(S.refus) h+=`<div class="refus">${escapeAttr(S.refus)}</div>`;
@@ -1179,6 +1191,9 @@ function fermerPanneau(){ panneau=null; panneauSuit=false; rendreTout(); }
    ouverte (repliée, le CONTEXTE reste), la confirmation en attente, le panneau. Entrée et Espace font d'un SPAN qui se déclare bouton — un passage —
    un vrai bouton ; les <button> n'ont besoin de personne. */
 function clavier(e){
+  /* L'écran de fin est terminal (§4.10 règle 6) : derrière son voile, Échap
+     repliait la pièce et refermait le panneau d'une partie finie. */
+  if(modalRoot.firstChild) return;
   if(e.key==="Escape"){
     if(S.modalPiece) fermerPiece();
     else if(confirmRecommencer) annulerRecommencer();
@@ -1203,7 +1218,6 @@ document.addEventListener("keydown", clavier);
    s'éteindrait jamais quand on arrive en bas du panneau. */
 document.addEventListener("scroll", majDebord, true);
 if(!restaurerPartie()) R.envoyerRemise(S);   // la remise 1 arrive d'elle-même
-/* Une partie reprise sur une pièce ouverte la retrouve DANS le CONTEXTE (§4.6) —
-   sans quoi `suivrePhrase` la refermerait au premier rendu, réplique comprise. */
-if(S.modalPiece) panneau="contexte";
+/* Une partie ne se reprend jamais sur une pièce ouverte : `sauverPartie` écrit
+   `modalPiece:null`, et le CONTEXTE est un état d'écran, jamais sauvé (§4.6). */
 rendreTout();

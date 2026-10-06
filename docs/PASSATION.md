@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 6 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 532 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 552 contrôles, 8 règles du gardien, ESLint.
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -285,6 +285,21 @@ par `scroll-padding-bottom`. `npm run vue` capture les trois temps de l'article.
 il commence au CONTEXTE ouvert, et une phrase complète le fait taire. **L'index ne compte plus** : son
 en-tête dit **DOSSIER**, rien d'autre (§4.6).
 
+**Le 6 octobre, le rapport de Jean sur une partie entière** (*Jean 4* au `TODO.md`, §0) — trois
+parties jouées en déroulant `S` à la main, chaque constat vérifié dans le code. **Deux bugs francs** :
+une phrase **déjà envoyée** s'évaporait au renvoi, sans un mot — le composeur dit désormais *« déjà
+envoyée »* à la place du bouton, et la phrase reste (§4.5) ; **l'écran de fin se refermait**, sauvegarde
+comprise, et le verdict se rejouait en deux clics — il est **terminal**, sans croix, sans voile qui
+ferme, Échap neutre (§4.9 règle 5, §4.10 règle 6). **Le contenu** : les boutons d'article perdent leur
+virgule de tête (`libelle`), `q_equipages` perd un tag qu'aucune attente n'attend, deux lectures justes
+de la session 1 reçoivent leur réplique au lieu de *« Je ne vois pas où tu veux en venir »* (§6), et
+les textes des Fins 2 et 3 cessent de contredire leur `variante_faux` — qui s'ajoute **toujours**,
+puisqu'aucune fin ne s'atteint sans le vice ou le faux vice (§2). **Deux règles, à relire par
+l'auteur** : l'agacement de l'avocat **retombe à chaque remise** (§4.11), et le CONTEXTE ouvert pour
+écrire **ne se referme que si le composeur prend le relais** — non plus quand il faut aller lire
+l'article (§4.6). Un contrôle de `test_declencheurs` passait par le vide une fois le tag retiré : il
+fabrique désormais son lien libre, et le dit.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque
@@ -340,8 +355,9 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   replie dès que `panneau` n'est plus `"contexte"` — toutes les portes qui le referment passent donc
   par là, et la réplique `declenche` tombe dans le fil AVANT qu'il soit dessiné. Le déplacer après
   `renderDISCUSSION` ferait paraître la réplique un geste trop tard ; le retirer laisserait une pièce
-  ouverte invisible, `S.modalPiece` compris. Une partie reprise sur une pièce ouverte rouvre le
-  CONTEXTE au démarrage, sans quoi le premier rendu la replierait, réplique comprise.
+  ouverte invisible, `S.modalPiece` compris. Une partie ne se reprend jamais sur une pièce
+  ouverte : `sauverPartie` écrit `modalPiece:null` — la reprise qui rouvrait le CONTEXTE au
+  démarrage était du code mort, retiré le 6 octobre.
 - **L'index se replie, mais `#zoneDossier` reste là** (§4.6) : c'est une ancre du tutoriel (R6), et
   le halo doit pouvoir l'entourer replié. Les puces restent dans le DOM, sous `hidden` — le motif
   *disclosure* standard, et `data-f="d:pid"` survit pour le retour du focus. **Deux** états d'ÉCRAN,
@@ -410,7 +426,7 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   `test_o5` tombent (vérifié en cassant, §16).
 - **La réplique `declenche` part à la FERMETURE de la pièce** : poussée à l'ouverture, elle tombait
   derrière une boîte de dialogue qui venait de rendre `.wrap` inerte — lue en fond flouté, ou pas
-  lue du tout. `closeModal` est le seul endroit où l'écran appelle une règle en refermant.
+  lue du tout. `fermerPiece` est le seul endroit où l'écran appelle une règle en refermant.
 - **Le chrome n'est personne, la fiction peut l'être** : le bandeau nomme le **geste**, jamais la
   **trouvaille** ; Maître Auber, lui, a le droit de désigner — il sait, il calibre (§3, §4.8).
 - **Panneau ouvert, la question redescend au composeur** : *lisible* est la condition, pas *présent*.
@@ -608,6 +624,13 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   et à côté d'une zone longue comme le texte de la pièce, couvre-t-elle ce qu'on vient chercher ? Elle
   se réduit au geste suivant ; reste à savoir si ça suffit.
 
+- **Le rapport du 6 octobre (Jean 4) laisse cinq points à trancher** — au `TODO.md`, §0 : les réponses
+  de calibration en PLAIDOIRIE (le §4.6 les y veut), le dilemme jamais posé (rejoint les directives
+  et le canal de révélation, ci-dessus), le féminin de la Fin 2, le palier sans séjour, le même
+  passage pris deux fois. Et un ⚖ né de la passe : les boutons d'article disent leur liaison sans
+  virgule — *« Article 7 »* tout court, que Jean proposait, irait contre le libellé *qui n'est pas
+  neutre* (§4.5).
+
 ## 4. Prochaine étape
 
 **La prochaine session porte sur le SENS, et la seule façon de la commencer est de jouer** — la
@@ -778,3 +801,8 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   faire »* ; l'article désigné (`tutoArticle`, la clé `f`) : *« déplier »*, sa puce, puis son bloc,
   ramené dans le champ (`voirCibleTuto`). Puis le silence au premier écran et à la phrase complète,
   et l'en-tête DOSSIER sans compte. 532 contrôles, 8 règles du gardien, ESLint.
+- **6 octobre, le rapport de Jean (Jean 4)** — `dejaEnvoyee` et *« déjà envoyée »* au composeur ;
+  l'écran de fin terminal (`closeModal` supprimé, `clavier` neutre sous `#modalRoot`) ; le tutoriel
+  dit *« Prends »* et dérive sa pièce (`pieceDemandee`) ; les compteurs d'agacement remis à zéro par
+  `envoyerRemise` ; `suivrePhrase` attend un relais (`blocsOfferts`, `compoFinie`) ; contenu : `libelle`
+  des articles, deux liens sans tag, fins réécrites. 552 contrôles, 8 règles du gardien, ESLint.

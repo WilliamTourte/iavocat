@@ -1,15 +1,97 @@
-# TODO — suites des retours de playtest (4 et 5 octobre)
+# TODO — suites des retours de playtest (4, 5 et 6 octobre)
 
 *Ce qui reste à traiter dans les retours de Colas (4 octobre) et de Jean (session 1 le 4, session 2 le
-5), **rangé par passes** : ce qui se traite d'un même geste est regroupé, et les passes vont de la plus
-facile à la plus lointaine. Le détail de ce qui est fait vit au §1 et au §3 de `docs/PASSATION.md` ;
-ici, seulement ce qui ne l'est pas.*
+5, partie entière le 6), **rangé par passes** : ce qui se traite d'un même geste est regroupé, et les
+passes vont de la plus facile à la plus lointaine. Le détail de ce qui est fait vit au §1 et au §3 de
+`docs/PASSATION.md` ; ici, seulement ce qui ne l'est pas.*
 
 *Les marques. **⚖** — la préconisation va contre un arbitrage écrit : elle se tranche avec l'auteur,
 document d'abord (CLAUDE.md, « la méthode »). **(contenu seul)** — se règle dans `app/content.js`,
 sans une ligne de code. La source de chaque item, en fin de ligne : *Colas*, *Jean 1* (session du 4),
-*Jean 2* (session du 5), *auteur*. Jean dit « affaire 1 / affaire 2 » pour les sessions 1 et 2,
-« fiches » ou « notes » pour les passages retenus, « bulle » pour le bandeau du tutoriel.*
+*Jean 2* (session du 5), *Jean 4* (partie entière du 6, jouée en déroulant le code), *auteur*. Jean
+dit « affaire 1 / affaire 2 » pour les sessions 1 et 2, « fiches » ou « notes » pour les passages
+retenus, « bulle » pour le bandeau du tutoriel.*
+
+## 0. Le rapport du 6 octobre (Jean 4) — trois passes
+
+*Jean a joué trois parties (la sage jusqu'à la Fin 1, le piège statistique jusqu'à la Fin 3, une
+partie qui tâtonne) en déroulant `S` à la main. Tout ce qu'il dit de la logique a été vérifié dans le
+code ; rien de la mise en page — ses points « à vérifier dans un vrai navigateur » rejoignent la
+séance 4 ci-dessous.*
+
+**Passe A — les bugs, sans arbitrage.** *Document d'abord (§4.5, §4.9, §4.10), puis le code,
+`npm test` et `npm run vue`.*
+
+- [x] **Une phrase déjà envoyée disparaît au renvoi, sans un mot.** `envoyerCompo` → `clorePhrase`
+      retrouve l'entrée versée → `envoyer` sort. Le cas naturel : à la troisième question de la
+      remise 1, « l'heure d'arrivée » posée seule, « → Envoyer » est le seul bouton plein. Le
+      composeur le dit à la place du bouton, et la phrase reste. *Jean 4* — *Fait : « déjà envoyée ».*
+- [x] **L'écran de fin se referme, et le verdict se rejoue** : croix, voile cliquable, puis
+      `closeModal` → `rendreTout` → `sauverPartie` réécrit la partie effacée. Écran terminal : seule
+      porte, « Recommencer ». **Et Échap agit derrière le voile** (`clavier` ignore `#modalRoot`).
+      *Jean 4* — *Fait : sans croix ni voile qui ferme, Échap neutre.*
+- [x] **Le tutoriel dit encore « Sélectionne »** au temps *citer · 3* : deux verbes pour deux
+      gestes, « retenir » et « prendre » (§4.6). *Jean 4*
+- [x] **« Clique sur la pièce demandée : PV d'intervention » est écrit en dur** : la pièce se dérive
+      de `tutoAttendu()`. *Jean 4*
+- [x] **Code mort** : la reprise « sur une pièce ouverte » au démarrage (`sauverPartie` écrit
+      toujours `modalPiece:null`), et son PIÈGE au §2 de `docs/PASSATION.md`. *Jean 4*
+
+**Passe B — le contenu.** *Relecture à l'œil des phrases composées à la fin.*
+
+- [x] **(contenu seul) Les boutons d'article affichent leur liaison**, virgule de tête comprise
+      (« , et l'article 3 permet… ») : un `libelle` « Article 3 », « Article 7 », « Article 12 ».
+      *Jean 4* — *Fait autrement : le `libelle` est la liaison sans sa virgule (« en violation de
+      l'article 7 »). « Article 7 » tout court est un ⚖, ci-dessous.*
+- [x] **(contenu seul) Les textes des Fins 2 et 3 ne sont jamais lus seuls** : la clôture exige `adn`,
+      que seuls le vice et le faux vice servent — `variante_faux` s'ajoute donc toujours aux Fins 2
+      et 3, et leur texte de base (« tu n'as rien produit », « un système qui n'a rien produit »)
+      contredit la variante qui suit. À réécrire sur ce qui arrive vraiment. Et « La phrase était
+      écrite, **close** » date d'avant que clore et envoyer ne fassent qu'un (§4.5). *Jean 4*
+- [x] **(contenu seul) `q_equipages` porte un `tag` qu'aucune attente n'attend** : la phrase
+      entre en PLAIDOIRIE juste après « ça ne nous dit rien de plus ». Retirer le tag. *Jean 4*
+- [x] **(contenu seul) Des raisonnements justes reçoivent « Je ne vois pas où tu veux en venir »** :
+      l'appel (21h52) avant les éclats de voix (22h30) sous l'article 3 ; les deux véhicules et les
+      deux équipages sous l'article 3 (sans article, `rep_inutile` enseigne, et c'est juste). Des liens
+      sans tag, avec leur réplique — l'attente reste intacte, le joueur reste de son côté. *Jean 4*
+- [x] **(contenu seul) Langue** : « cette nuit » deux fois d'affilée (`rep_vice`, puis la réplique
+      `apres`) ; « une cour de Justice » ; « le releveur des traces » accroche. *Jean 4*
+
+**Passe C — ce qui touche une règle.** *Arbitrages pris pour avancer, écrits au document, **à
+relire par l'auteur**.*
+
+- [x] **L'agacement de l'avocat ne retombe jamais** : les compteurs vivent toute la partie, et quelques
+      essais en remise 1 suffisent pour que la remise 2 réponde d'emblée « Je t'attends toujours. ».
+      Remis à zéro à chaque remise — la patience reste infinie (§4.11). *Jean 4*
+- [x] **Le CONTEXTE se ferme juste avant qu'on ait besoin de lui** : ouvert par la voix, il se
+      referme dès que la phrase ne prend plus de passage — même quand le geste suivant est d'aller
+      lire l'article, *dans* le CONTEXTE. Ne refermer que si le composeur offre de quoi continuer
+      (§4.6). *Jean 4*
+- [x] **Pas de fin sans le vice ni le faux vice** : voulu (§3, la session 2 se sert par l'un ou
+      l'autre). La sortie « Je n'ai rien trouvé » irait contre la charnière de la Fin 3 et le §4.9
+      règle 5 : **non retenue**, mais écrite au §2 avec sa conséquence sur les textes des fins (passe
+      B). *Jean 4*
+
+**Reste ouvert, à trancher avec l'auteur**
+
+- [ ] **⚖ « Article 7 » tout court sur le bouton**, comme Jean le propose : se lirait comme un choix,
+      et forcerait à lire l'article. Contre le §4.5, où le libellé *n'est pas neutre* et annonce ce que
+      l'article fait du fait (arbitré le 16 septembre). *Jean 4*
+
+- [ ] **⚖ Les réponses de calibration entrent en PLAIDOIRIE** (`q_arrivee`, `q_voix`) : le §4.6 le
+      veut (*« une réponse citée y entre »*). Jean : elles encombrent le présentoir de la répétition,
+      où chacune ne reçoit que « Ça ne répond pas à celle-ci ». *Jean 4*
+- [ ] **⚖ Le dilemme n'est jamais posé** : ni les directives (§5), ni un soupçon que Kessler est
+      coupable. Envoyer le vice est toujours le geste évident, et la Fin 2 ne s'atteint que par
+      accident — assembler l'article 7 en essayant les trois, reculer, plaider la statistique. Rejoint
+      *« les deux directives ne sont pas à l'écran »* et *« le canal de révélation »* (§3 de
+      `docs/PASSATION.md`), et le nouveau scénario (§6 ci-dessous). *Jean 4*
+- [ ] **La Fin 2 accorde au féminin** (« tu t'es tue ») : seul accord genré du jeu. L'IA est-elle
+      « elle » ? *Jean 4*
+- [ ] **Le palier** (« Ça venait du palier ») appelle le séjour, qui n'est pas un passage : la phrase
+      ne peut pas s'écrire. Un empan de plus, à peser contre la marge de bruit (§14). *Jean 4*
+- [ ] **Le même passage pris deux fois** dans une comparaison reçoit « ces deux-là ne se comparent
+      pas ». *Jean 4*
 
 ## 1. Passe contenu — `app/content.js`, sans code
 

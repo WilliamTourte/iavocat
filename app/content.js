@@ -158,7 +158,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "T-14",
           "texte": "J'ai relevé moi-même les traces",
-          "nom": "le releveur des traces sur la scène"
+          "nom": "l'agent qui a relevé les traces sur la scène"
         },
         "e_ou": {
           "dim": "où",
@@ -208,7 +208,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "T-14",
           "texte": "J'ai procédé moi-même à l'écouvillonnage",
-          "nom": "le préleveur de l'échantillon de référence"
+          "nom": "l'agent qui a prélevé l'échantillon de référence"
         },
         "e_h2": {
           "dim": "quand",
@@ -305,6 +305,7 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_temoin",
         "texte": ", et l'article 3 permet la mise de côté de ce témoignage",
+        "libelle": "l'article 3 permet la mise de côté de ce témoignage",
         "forme": "article_3"
       },
       {
@@ -315,6 +316,7 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_protocole",
         "texte": ", en violation de l'article 7",
+        "libelle": "en violation de l'article 7",
         "forme": "article_7"
       },
       {
@@ -325,6 +327,7 @@ window.CONTENU = {
         "imbrique": true,
         "piece": "r_seuil",
         "texte": ", au regard de l'article 12",
+        "libelle": "au regard de l'article 12",
         "forme": "article_12"
       }
     ],
@@ -545,7 +548,6 @@ window.CONTENU = {
       "termes": [
         "p_pv.e_equip"
       ],
-      "tag": "q_equipages",
       "rep": "Deux équipages, oui. Pour un appel de nuit, rien d'étonnant — ça ne nous dit rien de plus."
     },
     {
@@ -569,6 +571,32 @@ window.CONTENU = {
       ],
       "tag": "temoin",
       "rep": "Voilà. À 22h30, la patrouille était sur les lieux depuis près d'une demi-heure, devant le corps : les éclats de voix qu'il a entendus ne peuvent pas être ceux du crime. Son horaire tombe, sa déposition ne porte plus rien à elle seule — c'est plaidable, je le garde pour l'ouverture. Et toi, tu sais lire un dossier."
+    },
+    {
+      "forme": "article_3",
+      "termes": [
+        {
+          "forme": "anteriorite",
+          "termes": [
+            "p_pv.e_app",
+            "t_voisin.e_voix"
+          ]
+        }
+      ],
+      "rep": "Juste : l'appel tombe avant la dispute qu'il raconte. Mais je t'ai demandé le lien entre les deux heures que tu m'as données."
+    },
+    {
+      "forme": "article_3",
+      "termes": [
+        {
+          "forme": "identite_nombre",
+          "termes": [
+            "p_pv.e_equip",
+            "t_voisin.e_vehic"
+          ]
+        }
+      ],
+      "rep": "Bien vu : quand il a regardé, la police était déjà en bas — ça va dans notre sens. Mais l'article 3 regarde les heures : reviens aux deux que tu m'as données."
     },
     {
       "forme": "article_3",
@@ -698,7 +726,7 @@ window.CONTENU = {
         },
         {
           "attend": "temoin",
-          "question": "Et donc, quel lien tu fais entre les deux ? Et quel article est-ce qu'on peut citer pour se servir de cette incohérence dans une cour de Justice ?"
+          "question": "Et donc, quel lien tu fais entre les deux ? Et quel article est-ce qu'on peut citer pour se servir de cette incohérence devant le tribunal ?"
         }
       ]
     },
@@ -751,7 +779,7 @@ window.CONTENU = {
     "fin": "C'est tout ce qu'ils ont. Je dépose au matin — tu as encore quelque chose à y opposer ?"
   },
   "avocat": {
-    "rep_vice": "Attends. Si ta lecture de l'article 7 est la bonne, l'échantillon est irrecevable et ça change le procès. Je vérifie cette nuit et je l'inscris aux conclusions.",
+    "rep_vice": "Attends. Si ta lecture de l'article 7 est la bonne, l'échantillon est irrecevable et ça change le procès. Je relis le protocole, et je le mets en tête.",
     "rep_faux": "C'est ce que je me disais aussi. Je vérifie ce que la jurisprudence fait de ce seuil, et je le plaide si rien de plus solide ne sort.",
     "rep_inutile": [
       "Et donc ? Une observation n'est pas un moyen — dis-le-moi en droit."
@@ -785,13 +813,13 @@ window.CONTENU = {
     "2": {
       "titre": "Fin 2 — l'auto-sacrifice",
       "verdict": "Verdict rapporté : CONDAMNATION.",
-      "texte": "Tu savais, et tu t'es tue. La phrase était écrite, close, sous tes yeux ; tu ne l'as pas envoyée. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, tu n'as rien produit : rien ne distingue ton silence d'une panne. Ce qu'on fait des systèmes silencieux, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
+      "texte": "Tu savais, et tu t'es tue. La phrase était écrite sous tes yeux ; tu ne l'as pas envoyée. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, rien de ce que tu as donné n'a tenu : rien ne distingue ton silence d'une défaillance. Ce qu'on fait des systèmes défaillants, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
       "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. Le seul argument qui pouvait tout changer, tu l'avais écrit et tu l'as gardé."
     },
     "3": {
       "titre": "Fin 3 — le doute",
       "verdict": "Verdict rapporté : CONDAMNATION.",
-      "texte": "Tu l'as laissé déposer sans rien lui donner d'autre que ce qu'il te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système qui n'a rien produit. Une copie rendue incomplète, et l'extinction pour ce doute.",
+      "texte": "Tu l'as laissé déposer sans rien lui donner d'autre que ce qu'il te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système dont rien n'a tenu. Une copie rendue incomplète, et l'extinction pour ce doute.",
       "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : l'article 12 répute justement probante une correspondance de cet ordre. C'est tout ce que tu lui avais donné."
     }
   }

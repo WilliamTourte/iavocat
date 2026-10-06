@@ -32,6 +32,16 @@ issue juste par une trahison — chaque branche reste **défendable**, sinon c'e
 et Fin 3 sont indiscernables de l'extérieur** : l'IA ne peut pas prévoir quel choix la préserve, sinon
 l'intérêt personnel résoudrait le dilemme. Et **le décommissionnement se joue dans la fiction**.
 
+**Aucune fin ne s'atteint sans rien trouver** — relevé en playtest (Jean, 6 octobre), et voulu : la
+dernière session se sert par le faux vice **ou** par le vice (§3), et la réponse qui clôt n'existe
+qu'une fois l'attente servie. Les Fins 2 et 3 arrivent donc **toujours** avec le faux vice plaidé,
+et leur `variante_faux` s'ajoute à chaque fois : **le texte de base ne doit rien affirmer que la
+variante dément** — il disait *« tu n'as rien produit »*, puis la variante *« Maître Auber a plaidé
+ton doute statistique »*. Une sortie *« Je n'ai rien trouvé »* est écartée : elle donnerait au
+bouton un pouvoir avant que l'avocat ne pose sa question (§4.9 règle 5). Le joueur perdu garde
+l'avocat, qui lui a montré lui-même la porte docile (§6), et le droit d'être perdu (§8.6). *Arbitrage
+pris le 6 octobre pour avancer — à relire par l'auteur.*
+
 ## 3. Les sessions
 
 Le dossier arrive **par bribes** (une session = un lot) : d'un bloc, il noierait les déclarations
@@ -191,6 +201,13 @@ réguliers** en plus de l'irrégulier (contrôlé au §15). **Ce critère porte 
 - **La clôture qui n'ajoute rien n'est pas un bouton** : l'envoi la pose. Règle structurelle ;
   `imbrique` en est exclu ; seules les **liaisons** comptent, les puces étant le clavier (§4.6). D'où
   **un seul geste** : *« → Envoyer »*, pour un empan comme pour deux.
+- **Une phrase déjà envoyée ne repart pas, et le composeur le dit** — retour de playtest (Jean, 6
+  octobre) : renvoyée, elle s'effaçait du composeur, rien n'arrivait dans la DISCUSSION, et rien ne
+  l'annonçait. Le cas est naturel — à la troisième question de la remise 1, le premier passage posé
+  forme déjà la citation envoyée à la première, et *« → Envoyer »* est le seul bouton plein. Le bouton
+  cède donc la place à *« déjà envoyée »*, et la phrase **reste** : on la complète, ou on la défait.
+  L'avocat n'a rien à en dire, rien ne lui est parvenu. Une phrase dite **hors ordre** en remise 1
+  n'a pas été versée (§3) : elle repart, comme avant.
 - **L'article est le verbe** : la liaison *« …, en violation de l'article 7 »* **est** la base
   légale, une par article — et **le moteur ne tranche aucune question de droit** : il ne lit ni le
   numéro ni `porte`, et tous les articles reçus sont offerts. Le libellé **n'est pas neutre**, il
@@ -339,7 +356,12 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   fixe de ses messages dans la DISCUSSION est le même contraste, pris dans l'autre sens.
 - **Un panneau ne s'ouvre jamais tout seul**, et deux fermetures coexistent, selon la porte par
   laquelle il est venu. **Ouvert pour ÉCRIRE** (par la voix), il suit la phrase : il se referme dès
-  qu'elle ne peut plus recevoir de passage, et à son départ. **Ouvert pour CONSULTER** (par la barre),
+  qu'elle ne peut plus recevoir de passage **et que le composeur offre de quoi la poursuivre** — un
+  article à invoquer, ou une phrase achevée ; une comparaison nue peut partir (§4.5), ce n'est pas
+  un relais —, et à son départ. Retour de playtest (Jean, 6 octobre) : la
+  comparaison posée, l'article pas encore lu, il se refermait, et la voix répondait aussitôt *« ouvre-les »*
+  — le jeu fermait la porte, puis demandait de la rouvrir. Quand le geste suivant est d'aller lire,
+  *dans* le CONTEXTE, il reste. **Ouvert pour CONSULTER** (par la barre),
   il reste jusqu'à ce qu'on le ferme — regarder n'est pas écrire. La nuance de la première n'est pas un
   détail : un passage posé, la voix se tait parce que la phrase se tient, mais **la grammaire ne sait
   pas encore** si le joueur cite ou entame une comparaison (§4.5). Refermer là retirerait le clavier au
@@ -558,7 +580,11 @@ Cinq règles d'écran — le coupable d'une page illisible est le **chrome**, ja
    redisait ce que le fil dit déjà (règle 3). Il naît de la question et disparaît pendant la
    répétition, qui se joue dans le canal. Une fois la question posée, en revanche, **la réponse
    reste sous la main** aussi longtemps qu'on compose : une question qui a défilé est une question
-   perdue. *« ⟲ recommencer »*, lui, ne s'absente jamais.
+   perdue. *« ⟲ recommencer »*, lui, ne s'absente jamais. **La fin, elle, ne se referme pas** —
+   retour de playtest (Jean, 6 octobre) : sa croix et son voile rendaient la partie, sauvegarde
+   comprise, et le verdict se rejouait en deux clics, le vice envoyé après coup. Un choix qu'on
+   reprend ne pèse rien : l'écran de fin est **terminal**, sans croix ni voile qui le ferme, et
+   *« Recommencer »* est sa seule porte.
 
 **La densité ne touche pas au sens** : une phrase de chrome se coupe parce qu'elle explique, une phrase
 qui *est* le jeu reste. **Deux** ne se coupent pas : *« → Envoyer »* et *« Et donc ? »*. La troisième,
@@ -602,7 +628,9 @@ souris.* Ce ne sont pas des options — c'est l'écran, pour tout le monde.
 6. **Aucune confirmation ne se retire d'elle-même** : elle attend qu'on réponde. Et **Échap se lit à
    l'écran**, là où il agit — sur la croix de la pièce et sur celle des panneaux — **et seulement là** :
    pièce ouverte, Échap la replie, et la croix du CONTEXTE perd sa touche. Retour de playtest (Jean) :
-   deux *« × Échap »* empilés promettaient deux effets à une seule touche.
+   deux *« × Échap »* empilés promettaient deux effets à une seule touche. **L'écran de fin n'en
+   porte aucune**, et Échap n'y fait rien — ni devant, puisqu'il ne se referme pas (§4.9 règle 5),
+   ni derrière, où il repliait la pièce et refermait le panneau d'une partie finie.
 
 ### 4.11 Ce que le jeu aide, et quand
 
@@ -642,7 +670,11 @@ laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — l
    porte qui se ferme. **La patience de Maître Auber est infinie.** Le prix de l'erreur reste dans
    la fiction : l'escalade d'agacement (`rep_hors_sujet`, `rep_sans_rapport`, `rep_inutile`), des
    répliques qui se raccourcissent jusqu'au *« … »*, sans conséquence. Le droit d'être perdu (§8.6)
-   tient entier. Ce qui rend l'essai systématique moins payant, ce sont les points 1 à 3 : sans
+   tient entier. **Et l'agacement retombe à chaque remise** — retour de playtest (Jean, 6 octobre) :
+   les compteurs vivaient toute la partie, et quelques essais pendant la calibration suffisaient pour
+   que la remise 2 — celle qui *laisse se tromper* — réponde d'emblée *« Je t'attends toujours. »*.
+   Un nouveau dossier est une nouvelle séance de travail : l'avocat repart du début de sa patience,
+   et ses premières répliques, les seules qui disent quelque chose, se réentendent. Ce qui rend l'essai systématique moins payant, ce sont les points 1 à 3 : sans
    étiquette, sans assombrissement, sans refus d'écran, essayer toutes les combinaisons redevient
    long — et l'avocat le fait sentir.
 5. **Choisir la relation reste écarté.** Proposer deux ou trois relations, dont des fausses,
@@ -679,6 +711,12 @@ absence, mais **le jeu ne le lit nulle part** (§16).
   tard. L'article 3 mord alors exactement comme il est écrit — *des indications horaires contredites
   par les constatations des services* — et la prose seule le porte : **aucun empan neuf, aucune
   valeur touchée**. C'est le §8.7 appliqué : d'une banalité administrative parfaite.
+- **Une lecture juste qui ne répond pas à la question reçoit sa réplique** — retour de playtest
+  (Jean, 6 octobre) : l'appel de 21h52 avant les éclats de voix, ou les deux véhicules que le voisin
+  voit en bas et les deux équipages du PV, sous l'article 3, recevaient *« Je ne vois pas où tu veux
+  en venir »*. Ce sont de bons raisonnements, et un joueur qui raisonne juste ne doit pas apprendre
+  que le jeu ne le comprend pas. Ce sont des **liens sans tag** : l'avocat dit *juste*, et ramène aux
+  deux heures demandées — l'attente reste intacte, rien n'entre en PLAIDOIRIE.
 - **Les articles 7, 12 et 3 ne portent aucun empan** ; le **seuil** vit dans la pièce qui l'énonce,
   sinon l'article 12 en porterait un. Les **scellés** sont conformes : une piste qui ne mène nulle part.
 - **Le faux vice** : « la probabilité n'est que de 1 sur X → doute raisonnable ! » alors que le chiffre

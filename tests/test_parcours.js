@@ -945,7 +945,10 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   const sous = H.sousTerme(H.lienTag(w, attente().attend));
   check("Maître Auber attend maintenant une comparaison", !!sous);
   const [tA, tB] = sous.termes;
-  w.ouvrirCONTEXTE();
+  /* L'article LU d'abord : non lu, le CONTEXTE reste — c'est là qu'on va le
+     lire (§4.6), et le contrôle qui suit figeait ce défaut. */
+  H.lireLeTexte(w, H.lienTag(w, attente().attend).forme);
+  w.fermerPanneau(); w.ouvrirCONTEXTE();
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tA));
   check("le PREMIER des deux posé, il en faut un second : le panneau RESTE ouvert", ouvert("CONTEXTE"));
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tB));
@@ -1243,6 +1246,91 @@ console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
   const k1 = H.empansDe(w, pid1).find(k => !w.S.retenus.includes(k));
   w.ouvrirPiece(pid1); H.surligner(w, k1);
   check("retenir depuis une pièce close déplie sa remise : la fiche neuve se voit", !cache(k1));
+}
+
+console.log("\n=== Une phrase déjà envoyée ne repart pas, et le composeur le dit (§4.5) ===");
+{
+  const w = H.boot({url:"http://localhost/"});
+  const d = w.document;
+  const L = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend);
+  check("la première réponse part", H.composerLien(w, L) >= 0 && w.S.satisfaits.includes(L.tag));
+  check("recomposée, elle se tient au composeur", H.composerLien(w, L, {garder:true}) === 0);
+  w.rendreTout();
+  const barre = () => d.querySelector("#composeur .barre");
+  check("« → Envoyer » cède la place à « déjà envoyée »",
+    !d.querySelector('#composeur [data-f="envoi"]') && /déjà envoyée/.test(barre().textContent));
+  const fil = w.S.fil.length, compo = w.S.compo.length;
+  w.envoyerCompo();
+  check("et rien ne part, même forcé : la phrase reste, le fil ne bouge pas",
+    w.S.fil.length === fil && w.S.compo.length === compo && compo > 0);
+}
+
+console.log("\n=== Un bouton d'article se lit comme un choix, pas comme une virgule ===");
+{
+  const w = H.boot();
+  H.livrerTout(w);
+  const L = H.lienConclusion(w);
+  H.lireLeTexte(w, L.forme);
+  check("la comparaison du vice se pose", H.poserComparaison(w, H.sousTerme(L)));
+  w.rendreTout();
+  const articles = [...w.document.querySelectorAll("#composeur .bbloc.fondement")].map(b => b.textContent);
+  check("des articles sont offerts, et aucun bouton ne commence par sa ponctuation de liaison",
+    articles.length > 0 && articles.every(t => !/^[\s,;]/.test(t)));
+}
+
+console.log("\n=== L'agacement retombe à chaque remise (§4.11) ===");
+{
+  const w = H.boot();
+  const A = w.JEU.avocat.rep_hors_sujet;
+  const cite = H.blocCite(w).forme;
+  const lies = new Set(w.JEU.liens.filter(L => typeof L.termes[0] === "string").map(L => L.termes[0]));
+  const sansLien = r => w.CHAMPS.find(c => w.JEU.remises[r].pieces.includes(c.pid) && !lies.has(c.id));
+  const c1 = sansLien(0);
+  check("une citation sans lien, en remise 1, agace l'avocat",
+    !!c1 && H.composerLien(w, {forme:cite, termes:[c1.id]}) >= 0 && w.S.hors_sujet === 1);
+  for (const a of w.R.attentesDe(w.JEU.remises[0])) H.composerLien(w, H.lienTag(w, a.attend));
+  check("la remise 2 arrive, et les trois compteurs sont retombés",
+    w.S.remisesEnvoyees === 2 && !w.S.hors_sujet && !w.S.incompris && !w.S.inutiles);
+  const c2 = sansLien(1);
+  H.composerLien(w, {forme:cite, termes:[c2.id]});
+  check("la première réplique se réentend", w.S.fil[w.S.fil.length - 1].texte === A[0]);
+}
+
+console.log("\n=== Le CONTEXTE ouvert pour écrire reste quand il faut aller lire (§4.6) ===");
+{
+  const w = H.boot();
+  const L = w.JEU.liens.find(x => x.tag === w.R.attentesDe(w.JEU.remises[0]).slice(-1)[0].attend);
+  for (const a of w.R.attentesDe(w.JEU.remises[0]).slice(0, -1)) H.composerLien(w, H.lienTag(w, a.attend));
+  const pan = () => !w.document.getElementById("panCONTEXTE").hidden;
+  w.fermerPanneau(); w.ouvrirCONTEXTE();
+  check("ouvert par la voix", pan());
+  check("la comparaison se pose, l'article pas encore lu : rien à invoquer",
+    H.poserComparaison(w, H.sousTerme(L)) && w.R.blocsOfferts(w.S).length === 0);
+  check("le CONTEXTE reste : c'est là qu'on va lire l'article", pan());
+  const art = (w.JEU.grammaire.blocs || []).find(b => b.forme === L.forme && b.piece).piece;
+  w.ouvrirPiece(art); w.fermerPiece();
+  check("l'article lu, le composeur l'offre — et le CONTEXTE, où l'on a lu, reste en consultation",
+    w.R.blocsOfferts(w.S).length > 0 && pan());
+}
+
+console.log("\n=== L'écran de fin est terminal (§4.9 règle 5, §4.10 règle 6) ===");
+{
+  const w = H.boot({url:"http://localhost/"});
+  const d = w.document;
+  H.instruire(w);
+  if (d.getElementById("panCONTEXTE").hidden) w.basculerPanneau("contexte");
+  check("un panneau est ouvert derrière", !d.getElementById("panCONTEXTE").hidden);
+  check("une fin s'affiche", !!H.numeroFin(H.terminer(w)));
+  const fin = () => d.querySelector("#modalRoot .fin");
+  const partie = () => w.localStorage.getItem("iavocat_partie");
+  check("ni croix ni autre porte que « Recommencer »",
+    [...d.querySelectorAll("#modalRoot button")].map(b => b.textContent.trim()).join("|") === "Recommencer");
+  check("la partie finie est effacée", partie() === null);
+  d.querySelector("#modalRoot .overlay").click();
+  check("un clic sur le voile ne la referme pas", !!fin());
+  d.dispatchEvent(new w.KeyboardEvent("keydown", {key:"Escape", bubbles:true}));
+  check("Échap non plus — et n'agit pas derrière : le panneau reste, rien n'est resauvé",
+    !!fin() && !d.getElementById("panCONTEXTE").hidden && partie() === null);
 }
 
 bilan();
