@@ -23,9 +23,11 @@
 </div>
 
 <div class="wrap">
-  <!-- Un en-tête nomme la SURFACE (§4.6), jamais les zones qu'elle contient. -->
-  <section class="col fil" aria-labelledby="titreDISCUSSION">
-    <h2 id="titreDISCUSSION">DISCUSSION</h2>
+  <!-- Un en-tête nomme la SURFACE (§4.6), jamais les zones qu'elle contient.
+       CONTEXTE ouvert, celui-ci devient aussi la bascule qui agrandit la
+       conversation (`enteteDISCUSSION`) : la section reste nommée par son nom. -->
+  <section class="col fil" aria-labelledby="nomDISCUSSION">
+    <h2 id="titreDISCUSSION"><span id="nomDISCUSSION">DISCUSSION</span></h2>
     <div class="body" id="discussion"></div>
   </section>
   <!-- LA PLACE LATÉRALE (§4.6) — PIÈGE : sa PLACE DANS LE DOCUMENT est toute la

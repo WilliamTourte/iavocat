@@ -234,14 +234,14 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **516 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **555 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
 | `test_o5.js` (44) | l'index du dossier, **et le bouton de pièces qui compte comme lui** ; tout empan cliquable ; surligner et composer gratuits ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (42) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (325) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le CONTEXTE qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, les remises closes (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
+| `test_parcours.js` (328) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **le CONTEXTE qui dit son état** — ‹ ›, *dans ta phrase*, la raison d'un refus, et **jamais purgé entre deux remises** (§4.6) ; **la DISCUSSION qui s'agrandit**, CONTEXTE ouvert (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
 | `test_sauvegarde.js` (38) | la partie survit au rechargement, **composition assemblée et non envoyée comprise** ; la signature jette une sauvegarde étrangère |
 | `smoke_atelier.js` (103) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
@@ -259,7 +259,7 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
 - **Les tests ne nomment aucun contenu** : tout se dérive de la *forme*, si bien que **changer
   d'affaire ne casse pas une seule suite**. Sont épinglées, en revanche, des chaînes de chrome
   (`Envoyer`, `effacer`, `Opposer une phrase`, `opposer`, `● `, `✓ `, `zoneRetenus`, `dans ton CONTEXTE`,
-  `nouvelle`, `dans ta phrase`, `ne prend plus de passage`, `remise`, et pour le clavier `retenu`,
+  `nouvelle`, `dans ta phrase`, `ne prend plus de passage`, et pour le clavier `retenu`,
   `déjà lue`, `Tutoriel`, `CONTEXTE`) : on les
   renomme si on veut, jamais sans toucher au test qui les nomme.
 - *Les Manuels n'ont plus de suite : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par
@@ -324,10 +324,10 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
 | l'avocat ouvre une session — **un seul message, sa première question puis ses pièces** (§4.6) ; ouvrir et refermer une pièce ; l'index du dossier | `envoyerRemise` → `poserQuestion` (qui pose la question SUR le message de remise : champ `question` du fil), `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` | `renderDISCUSSION` (le bouton de pièces : `comptePieces`, `recuAvant`), `renderCONTEXTE` → `pieceHTML` (‹ › : `ordreIndex`, `pieceVoisine`, `voisine`) → `piecePanelHTML`, `rendreTexte`, `cadresPorte` (`porte` en cadres, §4.11), `renderDossier` — **repliable en une ligne à tout moment, replié d'office pièce ouverte** (`dossierPlie`, `dossierDeplie`, `basculerDossier`) |
-| **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, CONTEXTE seul) | `surligner`, `oublier` | `renderRetenus` dans `renderCONTEXTE` — *dans ta phrase*, la raison d'un refus (`passageRefuse`, `RAISON_PLEINE`), les remises closes repliées (`remiseClose`, `remisesDepliees`, `basculerRemise`) ; `rappelRetrait` quand on reclique un passage retenu ; `voirDernierRetenu` à l'ouverture du panneau |
+| **retenir** (ajoute, privé, gratuit) ; **oublier** (retire, CONTEXTE seul) | `surligner`, `oublier` | `renderRetenus` dans `renderCONTEXTE` — *dans ta phrase*, la raison d'un refus (`passageRefuse`, `RAISON_PLEINE`) ; `rappelRetrait` quand on reclique un passage retenu ; `voirDernierRetenu` à l'ouverture du panneau |
 | ce que le composeur offre ; ce qui se devine avant le clic — **en session 1 seulement** (§4.11) ; la voix | `blocsOfferts`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante`, `enCalibration`, `juxtapose` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
 | **où a lieu le geste suivant** — donc si la voix se clique et si le panneau reste ouvert | `indexTermeChamp`, le **même** prédicat qui active les puces du CONTEXTE | `rendreVoix`, `ouvrirCONTEXTE`, `suivrePhrase` (en tête de `rendreTout`), `majLateral` |
-| ouvrir et fermer une surface de côté | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `clavier` (Échap) |
+| ouvrir et fermer une surface de côté ; **agrandir la DISCUSSION**, CONTEXTE ouvert (§4.6) | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `clavier` (Échap) ; `enteteDISCUSSION`, `basculerDISCUSSION`, `discussionAgrandie` (dans `majLateral`) |
 | **le clavier et la voix d'annonce** (§4.10) — le focus qui survit, la pièce DANS le CONTEXTE (§4.6), ce qui s'annonce | `fermerPiece`, seule règle que l'écran appelle en refermant — par la croix, ou par `suivrePhrase` quand le CONTEXTE quitte l'écran | `clavier`, `memoFocus` → `rendreFocus` (par la clé `data-f`), `ouvrirPiece`/`fermerPiece`/`suivrePhrase` (écran) — `modal`/`inert` sur `.wrap` ne servent plus que `finir`, écran terminal (§4.9 règle 5), `annoncer` → `#annonce` |
 | **poser un bloc** ; la clôture qui n'ajoute rien | `poserBloc`, `retirerBloc`, `viderCompo`, `clotureImplicite`, `chaineEnvoyable`, `peutEnvoyer`, `compoFinie` | `texteCompoPartiel`, `renderCompo` — la clôture n'est PAS un bouton |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |

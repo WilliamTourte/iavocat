@@ -105,7 +105,7 @@ réécriture du §4.5** pour les deux, à faire relire, puis F codée avant G.*
 
 **Passe D — l'écran, sans arbitrage.** *Document d'abord (§4.6), puis `npm test` et `npm run vue`.*
 
-- [ ] **Retirer « remise close » : on ne purge pas le CONTEXTE entre deux remises.** La remise
+- [x] **Retirer « remise close » : on ne purge pas le CONTEXTE entre deux remises.** La remise
       suivante arrivée, les passages des pièces de la précédente passent sous une ligne repliée
       *« 1ʳᵉ remise, close »* (`renderRetenus`). Retrait **confirmé par l'auteur** : c'est sa réponse
       au ⚖ *« Ranger les affaires closes »* (§2 ci-dessous, tranché le 5 octobre *à relire par
@@ -116,8 +116,9 @@ réécriture du §4.5** pour les deux, à faire relire, puis F codée avant G.*
       REMISE CLOSE SE RANGENT »*), un seul survit, réécrit : *les passages de la remise 1 restent
       composables en remise 2, sans ligne de repli*. **Ce que ça rouvre** : la gêne de Jean, *les
       fiches de la session 1 restent en tête*. Si elle remord, un repli qui ne dit pas *remise* — le
-      plus récent en tête de chaque dimension — et seulement si elle remord en jeu. *Bérengère*
-- [ ] **Cliquer DISCUSSION agrandit la conversation et réduit le CONTEXTE.** L'en-tête est un `<h2>`
+      plus récent en tête de chaque dimension — et seulement si elle remord en jeu. *Bérengère* —
+      *Fait : le §4.6 le dit, le code et le PIÈGE sont retirés, un contrôle survit.*
+- [x] **Cliquer DISCUSSION agrandit la conversation et réduit le CONTEXTE.** L'en-tête est un `<h2>`
       sans action ; au-dessus du seuil, le CONTEXTE prend les deux tiers (§4.6, demande de l'auteur
       du 4 octobre). Proposé : l'en-tête devient une **bascule** (`aria-pressed`), un état d'**écran**
       jamais sauvé comme `dossierPlie`, qui n'existe que CONTEXTE ouvert (§4.9 règle 4). Au-dessus du
@@ -127,7 +128,9 @@ réécriture du §4.5** pour les deux, à faire relire, puis F codée avant G.*
       ouvrir une pièce rend-il la place au CONTEXTE (proposé : oui, comme une pièce replie l'index —
       lire une pièce dans un tiers, c'est le défaut que les deux tiers réparaient) ; la PLAIDOIRIE
       (proposé : sans objet, sa colonne est déjà étroite). `npm run vue` capture l'état agrandi en
-      1280×800 et 390×800, la bulle comprise (`placerTuto`). *Bérengère*
+      1280×800 et 390×800, la bulle comprise (`placerTuto`). *Bérengère* — *Fait, les deux
+      propositions retenues, à relire par l'auteur ; et ‹ › ne rendent pas la place, comme ils ne
+      replient pas l'index. La bascule ne vit que CONTEXTE ouvert, et l'oublie quand il se ferme.*
 
 **Passe E — la calibration : un fait sans lendemain, puis la contradiction.** *Tranché par l'auteur ;
 document d'abord (§3, §4.8), puis le contenu et le tutoriel.*
