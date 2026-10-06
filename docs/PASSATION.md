@@ -325,6 +325,14 @@ citation déjà servie exceptée. Le cas *« déjà envoyée »* de Jean sort du
 friction à voir en jeu** : à la seconde question, la voix du composeur dit *« Prends un ou plusieurs
 passages de ton contexte »* — le CONTEXTE n'est plus vide — pendant que la bulle dit de retenir.
 
+**Le 6 octobre, le document de la passe F — à relire par l'auteur avant le code.** L'article **se
+retient, puis se prend** (§4.5, §4.6) : son texte entier est un passage sans dimension ni valeur
+(`article:true`, §11), que le moteur ne voit pas ; sa fiche, au CONTEXTE, est le bouton de sa
+liaison, sous un nom neutre (*« Article 7 »*) — le composeur ne propose plus d'article, et l'offre
+suit *retenu* au lieu d'*ouvert*. Le §4.5 est réécrit **d'un seul tenant pour F et G**, comme le
+voulait le `TODO.md` : ce qui ne vaudra qu'avec la passe G — le joueur choisit la relation — y est
+marqué **[G]**. Rien n'est encore codé.
+
 ## 2. Points de vigilance
 
 *Le **concentré** : ce qui a déjà mordu, rassemblé pour une relecture avant de toucher au code. Chaque

@@ -206,11 +206,21 @@ geste : l'article suit enfin les deux verbes du §4.6.*
     de `iBloc` (§2 de `docs/PASSATION.md`) mord ici.
   - **À trancher** : quel passage se clique — le texte entier de l'article, ou sa seule proposition
     qui règle (*« ne peut fonder à elle seule la conviction du tribunal »*) ?
+  - *Tranché avec l'auteur, document écrit — **à relire avant le code** (§4.3, §4.5, §4.6, §4.8,
+    §4.9 règle 1, §6, §7, §11, §15)* : le **texte entier**, sans le titre (sa proposition seule, pour
+    l'article 7, serait la clause du vice) ; un drapeau `article:true`, sans `dim` ni `valeur`, que
+    `champsDe` ne rend pas ; la fiche porte le nom neutre et le début du texte, le libellé ne vit
+    plus que dans la phrase. Le §4.5 est réécrit d'un tenant pour F et G, ce qui ne vaut qu'avec G
+    marqué **[G]**. La carte (§17) suivra le code.
 
 **Passe G — le joueur choisit la relation : le §4.5 s'inverse.** *Tranché par l'auteur le 6 octobre,
 parti du « conforme / non conforme » de Bérengère ; reprend le chantier **d** du §5. Le plus gros de
 la liste : document d'abord (§4.2, §4.4, §4.5, §4.7, §4.8, §4.11, §11, §14), puis moteur, règles,
 écran, atelier, suites.*
+
+*Le §4.5 est déjà réécrit pour elle, avec la passe F (marqué **[G]**) : la relation choisie parmi
+les deux de la dimension, l'ordre par valeur gardé, la relation fausse refusée par l'avocat partout.
+Le reste du document — §4.2, §4.4, §4.7, §4.8, §4.11, §11, §14 — viendra avec elle.*
 
 - [ ] **Deux passages posés, le joueur choisit ce qui les lie**, entre **les deux relations de leur
       dimension** — celles que le contenu déclare déjà : *une seule et même personne / pas la même

@@ -82,6 +82,13 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
                           nom:"l'heure de l'appel",                  // ce qui parle dans une phrase
                           bruit:true }, … },                         // leurre assumé (optionnel)
       declenche: { une_fois:true, qui, replique }            // optionnel
+    },
+    r_protocole: {                                          // une RÈGLE : son texte est son passage
+      titre, court, type:"règle du manuel", qui, porte:["qui","quoi"],
+      texte: "Article 7 — {{art}}",
+      empans: { art:{ article:true,                          // ni `dim` ni `valeur` (passe F)
+                      texte:"L'échantillon de scène et le prélèvement de référence sont …",
+                      nom:"Article 7" } }                    // le nom NEUTRE de la fiche
     }
   },
   grammaire: { depart:"S0", finaux:["FIN"], blocs:[…], formes:{…} },
@@ -100,8 +107,11 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   corrige une virgule. `nom` absent → le `texte` en tient lieu.
 - **Attributs d'un bloc** : `imbrique` (la liaison **emboîte** l'acquis comme terme unique) · `deduit`
   (le bloc **clôt une paire** : forme déduite, termes rangés dans l'ordre canonique) · `piece` (offert
-  une fois la pièce livrée — **sur les liaisons *et* sur les termes**, §4.5) · `libelle` (le texte du
-  bouton) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa pièce).
+  une fois la pièce livrée — **sur les liaisons *et* sur les termes**, §4.5 ; une liaison
+  `imbrique`, une fois **retenu** le passage d'article de sa pièce, passe F) · `libelle` (le texte du
+  bouton, quand le composeur en fait un ; une liaison-article n'en a plus, sa fiche porte le `nom`
+  de son passage) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa
+  pièce).
 - **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`, `"juxtaposition"`) · `sens` (`"asc"` par
   défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8).
   **L'ordre de déclaration est signifiant** : `deduire` rend la première forme qui convient. C'est
@@ -122,7 +132,14 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   tient aucune liste à côté. Une telle liste a existé (`_bruit`), que l'export jetait ; `migrerContenu`
   la replie.
 - **Attribut d'une pièce** : `porte`, sur une pièce « règle » seulement — affiché, **jamais lu par le
-  moteur** ; une telle pièce ne porte aucun empan (diagnostic, pas moteur).
+  moteur** ; une telle pièce ne porte aucun empan qui se compare (diagnostic, pas moteur).
+- **Le passage d'un article** (`article:true`, passe F, §4.5) : sur une pièce « règle », **un et un
+  seul**, son texte entier sans le titre ; **ni `dim` ni `valeur`**, et son `nom` est le nom neutre de
+  sa fiche (*« Article 7 »*), jamais un groupe nominal de phrase. **`champsDe` ne le rend pas** : le
+  moteur ne le voit jamais, il ne devient jamais un terme, et aucune boucle *par dimension* — moteur,
+  suites, diagnostic — n'a à l'écarter ; une projection à part le rend à l'écran. Il se retient dans
+  `S.retenus` comme un passage — un seul geste, et rien de neuf à sauver. Un drapeau plutôt qu'une
+  pseudo-dimension : celle-ci serait entrée dans toutes ces boucles.
 - **Les attentes** sont servies dans l'ordre, et le **désordre est accepté** ; l'ancienne forme
   (`attend`/`apres` sur la remise) se lit comme une liste à un élément.
 - **La juxtaposition** (§4.11) : une forme `deduction:"juxtaposition"`, slots `"*"`, patron
@@ -221,8 +238,10 @@ du gardien tienne l'écart (§16).
 
 **Ce que le diagnostic contrôle** : la règle de surlignage, le nom d'empan, le doublon banal dans les
 deux sens, la grammaire (impasse, clôture sans forme, forme indicible, lien insensé, emboîtement dans
-le vide, forme ordonnée sans `sens`, dimension sans forme déductible), les articles, le vice, les
-sessions — plus l'article livré **trop tard**, qui rend une session inclôturable.
+le vide, forme ordonnée sans `sens`, dimension sans forme déductible), les articles — **un passage
+d'article par règle, et aucun ailleurs ; une liaison dont l'article n'a pas de passage ne
+s'offrirait jamais** (passe F) —, le vice, les sessions — plus l'article livré **trop tard**, qui
+rend une session inclôturable.
 
 - **« Forme indicible »** : une forme existe de **deux façons** — déclarée par une liaison, ou déduite
   par un bloc `deduit` ; celle-là n'est nommée par aucun bloc.
