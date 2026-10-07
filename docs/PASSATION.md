@@ -1,12 +1,21 @@
 # IAvocat — Passation de contexte
 
 *À lire en tête d'une nouvelle conversation : où on en est, ce qui mord, ce qui reste ouvert, quoi faire
-ensuite. **Court, et il doit le rester.** État au 6 octobre 2026.*
+ensuite. **Court, et il doit le rester.** État au 7 octobre 2026.*
 
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 649 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 657 contrôles, 8 règles du gardien, ESLint.
+
+**Le 7 octobre, passes I et J.** L'écran dit *ta RÉPONSE*, jamais *ta phrase* — le code et le
+document gardent *la phrase* (passe I). Puis **l'article se cherche** (passe J, §4.5) : l'avocat n'en
+livre plus ; la relation choisie, *« Chercher un article correspondant »* rend, dans le CONTEXTE, les
+trois articles dont `porte` couvre la dimension de la paire, dans un ordre tiré au hasard ; un
+résultat s'ouvre, son texte se clique, l'article fonde la phrase et rejoint le dossier — **on ne
+retient plus un article**, et la fiche de la passe F s'en va. Le tutoriel découpe la comparaison en
+trois temps ; en session 1, une comparaison nue ne part pas (§4.11 point 6). Neuf articles leurres,
+premier jet, **à réécrire par l'auteur** (`TODO.md`).
 
 Le 15 septembre a changé deux choses, toutes deux venues d'une **partie jouée** : **la session 1 va
 jusqu'à la comparaison** (l'article 3 arrive avec le premier lot, trois sessions deviennent deux, §3)
@@ -336,7 +345,8 @@ marqué **[G]**. Relu par l'auteur, puis **codé le même jour** : un passage `a
 *ARTICLES* dont la fiche prend la liaison (`prendreArticle`) ou dit pourquoi elle ne le peut pas, le
 composeur sans article, la voix qui mène au CONTEXTE, le tutoriel qui montre la puce, le texte, puis
 la fiche ; l'atelier suit (diagnostic, inspecteur, graphe, pas-à-pas). `npm run vue` capture
-l'article à retenir et à prendre.
+l'article à retenir et à prendre. *Défait le 7 par la passe J : l'article se cherche, il ne se
+retient plus ; ce qui reste de F — le passage `art`, sans dimension, que le moteur ne voit pas.*
 
 **Le 6 octobre, la passe G : le joueur choisit la relation** (§4.5, déjà relu ; le reste écrit et
 codé dans la foulée — **à relire par l'auteur**). Deux passages de même dimension posés, le composeur
@@ -398,12 +408,29 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Le flag `cite` est porté par la liaison, jamais par le terme** — `t0` est partagé par la citation et
   la comparaison.
 - **L'index `iBloc` de `poserBloc` est positionnel dans la liste filtrée**, donc lié à la session.
-  La fiche d'un article le cherche donc AU CLIC (`prendreArticle`), jamais au rendu — et le harnais
-  passe par elle (`H.prendreLiaison`).
+  Le clic sur le texte d'un article le cherche donc AU CLIC (`retenirEtPrendre`), jamais au rendu.
 - **Le passage d'un article n'est PAS un champ** (§11) : `champsDe` l'écarte, `articlesDe` le rend.
-  Tout ce qui lit `S.retenus` doit savoir qu'il y trouvera aussi des articles — `EMPAN[k]` y est
-  indéfini : une fiche, une voix ou un contrôle qui compte des *passages* filtre par `EMPAN` ou
-  `CHAMPS`. Un lien qui le citerait ferait jeter `dimDe` : le diagnostic l'arrête avant.
+  Depuis la passe J, il n'entre plus dans `S.retenus` — une partie d'avant l'y tenait, la reprise
+  l'en sort (`restaurerPartie`). Un lien qui le citerait ferait jeter `dimDe` : le diagnostic
+  l'arrête avant.
+- **Un terme ne porte jamais une pièce-règle** (passe J, §11) : le second terme de la comparaison
+  portait `r_temoin`, dont la livraison ouvrait la comparaison en session 1. Un article ne se livrant
+  plus, la comparaison serait morte — le terme n'aurait été offert qu'après la relation qui fait
+  chercher. Le diagnostic le dit ; une suite aussi.
+- **La recherche ne doit jamais dire quelles paires comptent** (§4.5) : toute dimension qui se
+  compare a ses trois articles, et la recherche prend **les trois premiers déclarés** — l'ordre des
+  pièces-règles dans `content.js` est signifiant, comme celui des formes. Un lien attendu dont
+  l'article ne sort pas de la recherche sur SA paire rend la session inclôturable : le diagnostic
+  l'appelle (`baseRecherche`, la règle même — §15), il ne la recopie pas.
+- **Trouvé ne suffit pas, il faut l'avoir ouvert** : `articleOffert` lit `S.examinees` pour un
+  résultat de recherche. Et le hasard du tirage est un ARGUMENT de `chercher` : les suites le fixent,
+  l'écran n'en passe pas. Un contrôle qui veut un ordre le tire lui-même.
+- **En session 1, `chaineEnvoyable` refuse la comparaison nue** (§4.11 point 6) : un contrôle qui
+  veut voir Maître Auber dire *« Et donc ? »* l'envoie hors session 1. Le tutoriel ne bloque rien,
+  c'est la remise.
+- **`voirRelations` mène aussi le bouton qui cherche** dans le champ, et remet le composeur en tête
+  quand la phrase les dépasse — sans lui, le bouton naissait coupé au bas du composeur plafonné et
+  l'en-tête RÉPONSE restait rogné après l'article pris (mesuré, `npm run vue`).
 - **`muter(f)` porte `pushUndo` AVANT et `autosave(); render()` APRÈS** : une mutation qui renonce garde
   sa garde *avant* l'appel.
 - **L'ordre des `<script src>` de l'atelier compte** (`noyau.js` en premier), et les `window.X = X`
@@ -480,9 +507,8 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   fiche refusée (`passageDejaPris`) — une vérité, trois usages.
 - **`H.surligner` n'est plus le clic du joueur** (passe H) : c'est *retenir seul* — le clic, puis
   *« ← retirer »* s'il a posé ; le clic, c'est `H.retenir`. Un contrôle qui veut l'état *retenu, pas
-  pris* passe par le premier. **Et un drapeau ne recule pas** : si la phrase attendait l'article, le
-  clic de `H.lireLeTexte` l'a pris avant que *« ← retirer »* le défasse — `vice_trouve` a pu se lever
-  entre les deux.
+  pris* passe par le premier. **Et un drapeau ne recule pas** : un article pris par le clic a pu
+  lever `vice_trouve` avant que *« ← retirer »* le défasse.
 - **La ligne sous la pièce se ramène dans le champ** (`voirEcho`, passe H) : le premier clic fait
   grandir le composeur, et sur le PV la ligne naissait sous le bas de la bande. Elle défile jusqu'à
   elle, jamais au point de faire sortir le passage cliqué, puis `majDebord` remesure le fondu.
@@ -589,6 +615,13 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   formulaire ?* Si c'est un formulaire, aucune mécanique ne le sauvera. **Le 1ᵉʳ octobre a enlevé la
   réponse la plus facile** — l'ancien libellé était juridiquement faux, et un joueur l'avait vu avant
   nous. La question reste entière sur le nouveau.
+- **Le RAG (passe J) : non joué.** La recherche apprend-elle à lire trois textes, ou à essayer les
+  trois — la patience de l'avocat est infinie (§4.11) ? Les leurres sont un **premier jet** : l'article
+  9 (*« sauf crime flagrant »*) est peut-être trop dur pour la calibration, l'article 8 est le piège
+  voulu contre le vice. Vu à `npm run vue` : à 1280×800, pièce ouverte, la zone RECHERCHE pousse le
+  texte de la pièce sous le pli, et la voix qui suit la recherche déborde au bas du composeur.
+  L'article 7 sort de toute recherche lancée depuis une paire de *qui* ou de *quoi* — comme sa
+  livraison le mettait sous les yeux.
 - **Le clic qui prend (passe H) : des phrases involontaires ?** Qui rassemble en lisant voit ses
   deux premiers clics former une phrase — en session 2, souvent une juxtaposition. Rien ne part sans
   *« → Envoyer »*, et *« ← retirer »* ou *« tout effacer »* défont sans rien ôter au CONTEXTE. Le
@@ -791,6 +824,8 @@ relecture. **Il faut la rendre à un joueur neuf**, qui n'a pas lu ce qui préc�
 8. **Le clic qui prend (passe H)** : qui rassemble en lisant voit-il sa phrase se former sous ses
    clics, et la défait-il sans peine ? Les fiches du CONTEXTE se découvrent-elles quand on en a
    besoin (§3) ?
+9. **La recherche (passe J)** : le joueur lit-il les trois articles, ou les essaie-t-il ? Les leurres
+   tiennent-ils — et l'auteur les réécrit d'abord (`TODO.md`) ?
 
 **Méthode à conserver** : toute évolution part du document — on le réécrit, on le fait relire, puis on
 applique au code. Et la question à poser avant de déclarer une passe finie n'est pas « qu'est-ce qui
@@ -977,3 +1012,10 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   Une relecture de cohérence suit : le compte des gestes dit qu'il compte l'envoi, le pas-à-pas
   perd une branche morte, et la fiche d'un passage déjà dans la phrase dit *« déjà dans ta
   phrase »* comme la pièce, au lieu de *« ne veut rien dire »* (`passageDejaPris`). 649 contrôles.
+- **7 octobre, passes I et J** (§4.5, §4.6, §4.8, §4.11, §6, §7, §8, §11, §15) — l'écran dit *ta
+  RÉPONSE* ; puis **l'article se cherche** : `chercher`, `baseRecherche`, `articleOffert`,
+  `suivreRecherche`, `S.recherche`, `S.trouves` aux règles ; le bouton du composeur et la zone
+  RECHERCHE à l'écran ; la fiche d'article de la passe F retirée ; le tutoriel en trois temps ; la
+  comparaison nue retenue en session 1. Neuf leurres, premier jet. Le harnais cherche, ouvre, clique
+  (`H.prendreLeTexte`) ; le diagnostic et le pas-à-pas appellent `baseRecherche`. Chaque contrôle
+  neuf vu tomber, dix mutations. 657 contrôles.

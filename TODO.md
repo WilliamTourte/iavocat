@@ -320,7 +320,7 @@ audition + article 3, d'un seul lot »*), et l'article qui **se retient** au CON
 session 1 en deux questions (§3, passe E) tient. Document d'abord (§3, §4.5, §4.6, §4.8, §8, §11,
 §12), à faire relire ; puis contenu, moteur, règles, écran, atelier, suites.*
 
-- [ ] **Séparer, dans le tutoriel, les trois apprentissages de *mettre en relation*** — **deux
+- [x] **Séparer, dans le tutoriel, les trois apprentissages de *mettre en relation*** — **deux
       passages** se sélectionnent, **la relation** qui les lie se choisit, **un article** la fonde.
       Aujourd'hui le tutoriel les enchaîne en cinq temps sous une même bulle qui les mêle (§4.8,
       *mettre en relation* 1 à 5) ; il en aura **trois, francs**, chacun attendant son geste. *auteur*
@@ -335,7 +335,7 @@ session 1 en deux questions (§3, passe E) tient. Document d'abord (§3, §4.5, 
       tient. La recherche devient l'état qu'elle attend après la relation.
   - **Ce qui tient** : la demande **nomme les deux heures, jamais leur contradiction** (§3), et les
     bulles pas davantage — *la relation jamais* (§4.8).
-- [ ] **Le RAG : l'article ne vient plus de l'avocat, l'IA le cherche** dans une base de textes, à
+- [x] **Le RAG : l'article ne vient plus de l'avocat, l'IA le cherche** dans une base de textes, à
       la manière de Légifrance — *on augmente sa réponse par une recherche*. *auteur*
   - **Le geste, proposé par l'auteur** : **la relation choisie**, le composeur offre ***« Chercher un
     article correspondant »*** ; la recherche rend **trois** articles, un léger QCM, et le joueur
@@ -389,6 +389,11 @@ session 1 en deux questions (§3, passe E) tient. Document d'abord (§3, §4.5, 
     *cherche-le*.
   - **Le récit** y gagne peut-être : l'IA qui fouille seule est aussi celle qui pourrait taire ce
     qu'elle trouve (§6 ci-dessous, *choix moraux*).
+  - *Fait le 7 octobre, document puis code* : `chercher`, `baseRecherche`, `articleOffert`,
+    `suivreRecherche` aux règles ; le bouton du composeur, la zone RECHERCHE, le tutoriel en trois
+    temps ; la comparaison nue retenue en session 1 ; diagnostic et pas-à-pas de l'atelier ;
+    `npm run vue` : `article-a-chercher`, `recherche`, `recherche-leurre`. **Reste** : réécrire les
+    leurres, et jouer (§3 et §4 de `docs/PASSATION.md`).
 
 ## 1. Passe contenu — `app/content.js`, sans code
 

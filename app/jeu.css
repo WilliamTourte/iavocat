@@ -84,7 +84,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
    trop bas pour les planchers des deux bandes (un téléphone), il redéfile d'un
    bloc plutôt que de rogner : c'est le rôle de l'`overflow-y` restant. */
 #contexte.avecPiece{display:flex;flex-direction:column;gap:10px}
-#contexte.avecPiece > #zoneDossier{flex:none;margin:0}
+#contexte.avecPiece > #zoneDossier,#contexte.avecPiece > #zoneRecherche{flex:none;margin:0}
 /* Replié, l'index n'est plus qu'une ligne : DOSSIER, sans compte (§4.6). */
 .dplier{display:flex;align-items:baseline;gap:10px;width:100%;padding:2px 0;background:none;border:0;
   color:var(--txt);font:inherit;font-size:13px;text-align:left;cursor:pointer}
@@ -241,7 +241,7 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .attach:hover{border-color:var(--accent)}
 /* --- zones --- */
 .zone{margin-bottom:12px}
-#zoneDossier,#zoneRetenus{border:1px solid var(--line);border-radius:8px;
+#zoneDossier,#zoneRecherche,#zoneRetenus{border:1px solid var(--line);border-radius:8px;
   background:var(--panel2);padding:10px 12px;margin-bottom:12px}
 /* L'index PARTAGE le panneau avec les fiches, il n'en est pas le sujet : à huit
    pièces il en mangeait la moitié. Il se resserre — les fiches sont ce qu'on
@@ -321,11 +321,22 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .mchip .del:hover{color:#e6b0b0}
 /* La puce rogne ce qui déborde (`overflow:hidden`) : l'anneau passe DEDANS. */
 .mchip .corps:focus-visible,.mchip .del:focus-visible{box-shadow:inset 0 0 0 2px #e6edf3}
-/* §4.6 — LA FICHE D'UN ARTICLE EST LE BOUTON DE SA LIAISON (passe F) : hors des
-   dimensions, sans leur couleur ; la marque de ce qui fonde, celle que portait
-   le bouton d'article au composeur (`.bbloc.fondement`). */
-.dimgrp.articles .dnom{color:var(--muted)}
-.mchip.article{border-left-color:var(--transmis)}
+/* §4.6 — LA RECHERCHE, sous l'index (passe J) : trois entrées, le nom neutre et
+   le début du texte ; ni couleur ni trait de dimension — elle ne se dit pas. La
+   marque de ce qui fonde, celle de `.bbloc.fondement`, sur le bord. */
+#zoneRecherche{padding:7px 10px;margin-bottom:9px}
+#zoneRecherche .dtitre{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.rchips{display:flex;flex-direction:column;gap:5px}
+.rchips .dvide{color:var(--muted);font-size:12.5px;font-style:italic}
+.rchip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;
+  font:inherit;font-size:13px;border:1px solid var(--line);border-left:3px solid var(--transmis);
+  border-radius:6px;background:var(--panel2);padding:4px 8px;cursor:pointer;color:var(--txt)}
+.rchip:hover{border-color:var(--accent);border-left-color:var(--transmis)}
+.rchip.vu{color:var(--muted);background:#181e27}
+.rchip.ouvert{border-color:var(--accent)}
+.rchip .nom{font-weight:600}
+.rchip .debut{font-size:12.5px;color:var(--muted);font-style:italic}
+.bbloc.chercher{align-self:flex-start;width:auto;background:#25313d;border-left:3px solid var(--transmis)}
 /* --- composeur --- un trait plein : les pointillés dans les pointillés
    faisaient croire à une zone de dépôt (§4.9). */
 .compo{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#141a21}

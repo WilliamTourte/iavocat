@@ -58,10 +58,8 @@ console.log("\n=== Une composition en cours survit aussi ===");
   H.livrerTout(w1);                           // l'article doit avoir été reçu (§4.5)
   const C = H.lienConclusion(w1);
   check("la comparaison du vice se pose", H.poserComparaison(w1, C.termes[0]));
-  H.lireLeTexte(w1, C.forme);                // on n'invoque pas un texte qu'on n'a pas lu (§4.5)
-  const b = w1.R.blocsOfferts(w1.S).findIndex(x => x.forme === C.forme && x.imbrique);
-  check("et l'article qui la qualifie est offert", b >= 0);
-  w1.poserBloc(b);
+  // L'article se cherche, se lit, et son texte se clique (§4.5, passe J).
+  check("et l'article qui la qualifie se trouve, puis se prend", H.prendreLeTexte(w1, C.forme));
   check("la conclusion est assemblée, et prête à partir", w1.R.peutEnvoyer(w1.S));
   check("elle a levé vice_trouve sans rien transmettre",
     w1.S.vice_trouve && !w1.S.vice_expose && w1.S.plaidoirie.length === 0);
@@ -72,6 +70,9 @@ console.log("\n=== Une composition en cours survit aussi ===");
   check("elle s'affiche toujours sur place, avec son geste",
     H.composeur(w2).includes("Envoyer"));
   check("vice_trouve a survécu, vice_expose non", w2.S.vice_trouve && !w2.S.vice_expose);
+  check("l'article trouvé est toujours au dossier (passe J)",
+    w1.S.trouves.length === 1 && w2.S.trouves.join() === w1.S.trouves.join()
+    && w2.R.piecesLivrees(w2.S).includes(w1.S.trouves[0]));
   w2.viderCompo();
   check("la vider ne retire pas ce qu'on avait compris",
     w2.S.compo.length === 0 && w2.S.vice_trouve);
@@ -135,6 +136,24 @@ console.log("\n=== Une sauvegarde d'avant le renommage se reprend ===");
   check("les passages retenus sont repris sous leur nom neuf",
     w2.S.retenus.join() === attendus.join());
   check("et l'ancien champ ne traîne pas dans l'état", w2.S.memoire === undefined);
+}
+
+console.log("\n=== Une sauvegarde d'avant la passe J rend ses articles au dossier ===");
+{
+  /* Même devoir (§11) : un article ne se retient plus. Une partie qui en tenait
+     au CONTEXTE les retrouve au dossier, et ses passages là où ils étaient. */
+  const w1 = boot();
+  const pid = H.pidPremiereRemise(w1);
+  w1.ouvrirPiece(pid);
+  const [k] = H.empansDe(w1, pid); H.surligner(w1, k);
+  const art = w1.MoteurGrammaire.articlesDe(w1.JEU)[0];
+  const ancienne = JSON.parse(sauvegarde(w1));
+  ancienne.retenus = [...ancienne.retenus, art.id]; delete ancienne.trouves;
+  const w2 = boot({[CLE]: JSON.stringify(ancienne)});
+  check("l'article retenu d'avant est au dossier, plus au CONTEXTE",
+    w2.S.trouves.includes(art.pid) && !w2.S.retenus.includes(art.id)
+    && w2.R.piecesLivrees(w2.S).includes(art.pid));
+  check("et les passages retenus n'ont pas bougé", w2.S.retenus.join() === w1.S.retenus.join());
 }
 
 console.log("\n=== La fin efface, recommencer confirme ===");

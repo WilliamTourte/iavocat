@@ -165,8 +165,7 @@ console.log("\n=== Le joueur choisit la relation, le moteur la vérifie (§4.5, 
   w.poserBloc(w.R.blocsOfferts(w.S).findIndex(x => x.type === "relation"), rels.indexOf(fausse));
   check("la relation fausse se choisit, et le moteur la sait fausse", w.M.fausse(w.M.reduire(w.R.chaineCompo(w.S))));
   check("elle ne lève aucun drapeau", !w.S.vice_pressenti && !w.S.vice_trouve);
-  H.lireLeTexte(w, L.forme);
-  w.prendreArticle(H.cleArticle(w, w.JEU.grammaire.blocs.find(x => w.R.estLiaisonArticle(x) && x.forme === L.forme).piece));
+  H.prendreLeTexte(w, L.forme);
   check("sous son article, la phrase fausse se tient", w.R.peutEnvoyer(w.S) && !w.S.vice_trouve);
   const avant = w.moyensRetenus().length;
   w.envoyerCompo();
@@ -268,38 +267,40 @@ console.log("\n=== La vérification : la relation vraie se calcule des valeurs =
   } else check("(aucune paire égale hors identité dans ce contenu)", true);
 }
 
-console.log("\n=== On n'invoque pas un texte qu'on n'a pas reçu ===");
+console.log("\n=== On n'invoque pas un texte qu'on n'a pas lu — il se cherche ===");
 {
   const w = boot();
   const G = w.JEU.grammaire;
   const avecPiece = G.blocs.filter(b => b.piece);
   check("des blocs sont conditionnés à une pièce", avecPiece.length > 0);
+  check("et ce sont des liaisons d'article : un terme ne porte jamais une pièce-règle (§11)",
+    avecPiece.every(b => w.R.estLiaisonArticle(b)));
   const C = H.lienConclusion(w);
   H.livrerTout(w);
+  check("aucune remise ne livre d'article : ils se cherchent (passe J)",
+    !w.R.piecesLivrees(w.S).some(pid => w.R.estRegle(w.JEU.pieces[pid])));
   H.poserComparaison(w, C.termes[0]);
   const offerts = w.R.blocsOfferts(w.S);
-  check("tout ce qui est offert a sa pièce",
-    offerts.every(b => !b.piece || new Set(w.R.piecesLivrees(w.S)).has(b.piece)));
+  check("tout ce qui est offert est au dossier, ou ouvert depuis la recherche",
+    offerts.every(b => !b.piece || w.R.articleOffert(w.S, b.piece)));
 
-  const w0 = boot();
-  const livrees0 = new Set(w0.R.piecesLivrees(w0.S));
-  const manquant = avecPiece.find(b => b.imbrique && !livrees0.has(b.piece));
-  check("l'article du vice n'est pas encore là", !!manquant);
-  check("il n'est donc offert nulle part",
-    !H.cheminVers(w0, (manquant||{}).forme).length
-    || !w0.R.blocsOfferts(w0.S).some(b => b.id === (manquant||{}).id));
-
-  /* LIVRÉ NE SUFFIT PLUS : un texte s'invoque une fois LU (§4.5). La tournure,
-     elle, se reçoit — c'est pourquoi la comparaison se pose sans avoir rien ouvert. */
+  const manquant = avecPiece.find(b => b.forme === C.forme);
+  /* LIVRÉ NE SUFFIT PLUS — RIEN NE SE LIVRE : un texte se CHERCHE, puis se lit
+     (§4.5, passe J). La tournure, elle, se reçoit — c'est pourquoi la
+     comparaison se pose sans avoir rien ouvert. */
   const w2 = boot();
   H.livrerTout(w2);
   H.poserComparaison(w2, C.termes[0]);
+  const offert = () => w2.R.blocsOfferts(w2.S).some(b => b.id === (manquant||{}).id);
   check("la comparaison se pose sans qu'aucun texte soit lu",
     w2.S.compo.length > 0 && !w2.S.examinees.some(pid => w2.R.estRegle(w2.JEU.pieces[pid])));
-  check("livré mais pas lu, l'article n'est offert nulle part",
-    !w2.R.blocsOfferts(w2.S).some(b => b.id === (manquant||{}).id));
-  H.lireLeTexte(w2, (manquant||{}).forme);
-  check("lu, il est offert", w2.R.blocsOfferts(w2.S).some(b => b.id === (manquant||{}).id));
+  check("rien cherché, l'article n'est offert nulle part", !!manquant && !offert());
+  w2.chercherArticle();
+  check("la recherche le rend, parmi trois", w2.S.recherche.length === 3 && w2.S.recherche.includes(manquant.piece));
+  check("trouvé mais pas lu, il n'est toujours pas offert", !offert());
+  w2.ouvrirPiece(manquant.piece);
+  check("ouvert, il est offert", offert());
+  w2.fermerPiece();
   check("et la conclusion devient composable", H.composerLien(w2, C) >= 0);
 }
 
@@ -353,7 +354,8 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
   const second = (G.blocs || []).find(b => w.R.estSecondTerme(b));
   check("la grammaire livrée a un second terme de paire", !!second);
   if (second) {
-    check("le second empan porte une pièce, comme une liaison", !!second.piece);
+    check("le second empan ne porte aucune pièce-règle : un article ne se livre plus (§11, passe J)",
+      !second.piece || !w.R.estRegle(w.JEU.pieces[second.piece]));
     check("et l'affaire la livre d'emblée",
       !second.piece || new Set(w.R.piecesLivrees(w.S)).has(second.piece));
     for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
@@ -400,20 +402,20 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
 console.log("\n=== La continuation : une comparaison demande toujours « et donc ? » ===");
 {
   const w = boot();
-  H.livrerTout(w);                            // l'article doit avoir été reçu…
+  H.livrerTout(w);
   const C = H.lienConclusion(w);              // arité 1 : une comparaison qualifiée
-  H.lireLeTexte(w, C.forme);                  // …ET LU, pour pouvoir être invoqué (§4.5)
   const sous = C.termes[0];                   // la comparaison qu'elle emboîte
   H.poserComparaison(w, sous);
   check("la comparaison est posée mais PAS close", w.S.compo.length > 0 && w.S.brouillon.length === 0);
-  check("l'automate offre de continuer", w.R.blocsOfferts(w.S).some(b => b.imbrique));
-  /* §4.5 — le moteur ne tranche AUCUNE question de droit : tous les articles LUS
-     sont offerts, et c'est au joueur de choisir. (Reçus ne suffit plus — on
-     n'invoque pas un texte qu'on n'a pas ouvert.) */
-  for (const b of H.articlesDisponibles(w)) H.lireLeTexte(w, b.forme);
+  check("l'automate attend de continuer : un article, qui se cherche (passe J)",
+    w.R.articleAttendu(w.S) && !!w.document.querySelector('#composeur [data-f="chercher"]'));
+  /* §4.5 — le moteur ne tranche AUCUNE question de droit : tous les articles
+     trouvés et LUS sont offerts, et c'est au joueur de choisir (passe J). */
+  w.chercherArticle();
+  for (const pid of w.S.recherche) { w.ouvrirPiece(pid); w.fermerPiece(); }
   const offerts = w.R.blocsOfferts(w.S);
-  check("tous les articles lus sont offerts, pas seulement le bon",
-    offerts.filter(b => b.imbrique).length > 1);
+  check("les trois articles trouvés et lus sont offerts, pas seulement le bon",
+    offerts.filter(b => b.imbrique).length === 3);
 
   check("aucun bloc ne clôt sans qualifier", !offerts.some(b => !b.forme && !b.imbrique));
   check("tous les blocs offerts portent un article", offerts.every(b => b.imbrique && b.forme));
@@ -569,46 +571,37 @@ console.log("\n=== Les deux gestes, montrés ===");
     && !rels().some(b => b.hasAttribute("data-tuto")) && /choisis/i.test(bandeau().textContent));
   const vraie = H.sousTerme(H.lienTag(w, veutA)).forme;
   w.document.querySelector(`#composeur [data-f="rel:${vraie}"]`).click();
-  w.fermerPiece();      // l'index se déplie : le cas « pièce ouverte » vient plus bas
-  /* §4.5 — un texte s'invoque une fois RETENU (passe F). Tant que l'article ne
-     l'est pas, le bandeau montre OÙ LE LIRE : il ne dit pas « Envoyer » alors
-     que la leçon est l'article. */
-  /* §4.8 — L'ARTICLE SE DÉSIGNE, LA RELATION JAMAIS : sa puce dans l'index, puis
-     son texte. Dérivé du lien, comme le tutoriel. */
+  /* §4.8, passe J — L'ARTICLE, TROISIÈME TEMPS : le chercher, lire les trois,
+     cliquer le texte de celui qu'on a ouvert. Ni la relation ni l'article ne se
+     désignent : le halo montre le geste, jamais le choix. Dérivé du lien. */
   const art = w.JEU.grammaire.blocs.find(b => b.type === "liaison" && b.imbrique
     && b.forme === H.lienTag(w, veutA).forme);
-  check("les deux posés, l'article n'est pas retenu : le halo montre SA puce, dans l'index",
-    !!art && !!halo() && halo().getAttribute("data-f") === "d:" + art.piece
-    && w.document.getElementById("zoneDossier").contains(halo()));
-  check("et la bulle invite à le lire, développée",
-    !bandeau().hasAttribute("data-reduit") && /dossier/.test(w.document.getElementById("tutoDit").textContent));
-  w.basculerDossier();
-  check("l'index replié, la puce cachée : le halo montre « déplier », sa porte",
-    !!halo() && halo().getAttribute("data-f") === "dossier"
-    && /Déplie/.test(w.document.getElementById("tutoDit").textContent));
-  check("et le tutoriel ne déplie rien à la place du joueur",
-    w.document.getElementById("dossierListe").hidden);
-  w.basculerDossier();
-  check("déplié, le halo revient à la puce de l'article",
-    !!halo() && halo().getAttribute("data-f") === "d:" + art.piece);
-  /* Le cas COURANT : la citation d'avant a laissé sa pièce ouverte, et une
-     pièce ouverte replie l'index. */
-  w.ouvrirPiece(H.deK(tA)[0]);
-  check("une pièce ouverte replie l'index : le halo montre « déplier »",
-    !!halo() && halo().getAttribute("data-f") === "dossier");
-  w.basculerDossier();
-  check("déplié pièce ouverte, la puce de l'article pulse",
-    !!halo() && halo().getAttribute("data-f") === "d:" + art.piece);
+  const chips = () => [...w.document.querySelectorAll("#zoneRecherche .rchip")];
+  check("la relation choisie, rien ne part sans article en session 1 (§4.11 point 6)",
+    !w.R.peutEnvoyer(w.S) && !w.document.querySelector('#composeur [data-f="envoi"]'));
+  check("le halo montre le bouton qui cherche, et la bulle dit de chercher, développée",
+    !!art && !!halo() && halo().getAttribute("data-f") === "chercher" && /Cherche/.test(dit()) && !reduit());
+  w.document.querySelector('#composeur [data-f="chercher"]').click();
+  check("la recherche rend trois articles dans le CONTEXTE ouvert, le bon parmi eux",
+    w.S.recherche.length === 3 && w.S.recherche.includes(art.piece) && chips().length === 3
+    && !w.document.getElementById("panCONTEXTE").hidden);
+  check("le halo entoure les trois résultats — toute la zone, jamais le bon",
+    !!halo() && halo().id === "zoneRecherche" && !chips().some(c => c.hasAttribute("data-tuto"))
+    && /trois articles/.test(dit()) && !reduit());
+  check("aucun résultat ne porte le titre de son article — il dirait ce qu'il régit",
+    chips().every((c, n) => !c.textContent.includes(w.JEU.pieces[w.S.recherche[n]].titre)));
+  const leurre = w.S.recherche.find(p => p !== art.piece);
+  w.ouvrirPiece(leurre);
+  check("un résultat ouvert, le halo montre son texte, quel qu'il soit",
+    !!halo() && halo().classList.contains("piecetexte") && /clique sur son texte/.test(dit()));
   w.ouvrirPiece(art.piece);
-  check("l'article ouvert, le halo montre SON texte, à cliquer",
-    !!halo() && halo().classList.contains("piecetexte") && /Clique sur le texte/.test(dit()));
-  check("ouvrir ne suffit plus : l'article n'est offert nulle part (passe F)",
-    !w.R.blocsOfferts(w.S).some(b => w.R.estLiaisonArticle(b)));
   const cle = H.cleArticle(w, art.piece);
   H.retenir(w, cle);
-  check("cliqué, son texte se retient ET fonde la phrase — plus de fiche à prendre (passe H)",
-    w.S.retenus.includes(cle) && w.R.compoFinie(w.S)
-    && w.R.chaineCompo(w.S).some(p => w.R.estLiaisonArticle(p.bloc) && p.bloc.piece === art.piece));
+  check("cliqué, son texte fonde la phrase — sans se retenir — et rejoint le dossier (passe J)",
+    !w.S.retenus.includes(cle) && w.R.compoFinie(w.S) && w.S.trouves.includes(art.piece)
+    && w.R.chaineCompo(w.S).some(p => w.R.estLiaisonArticle(p.bloc) && p.bloc.piece === art.piece)
+    && !!w.document.querySelector(`#zoneDossier [data-f="d:${art.piece}"]`));
+  check("le leurre seulement ouvert n'entre pas au dossier", !w.R.piecesLivrees(w.S).includes(leurre));
   check("et le composeur ne propose aucun article",
     !w.document.querySelector("#composeur .bbloc.fondement"));
   check("la phrase achevée, il se tait, là aussi", bandeau().hidden && !halo());
@@ -637,15 +630,22 @@ console.log("\n=== Les deux gestes, montrés ===");
   check("un premier pris sur sa fiche, il en faut un second", !!halo() && halo().id === "zoneRetenus" && /second/.test(dit()));
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tB));
   H.choisirRelation(w, sous.forme);
-  H.lireLeTexte(w, L.forme);                            // retenu seul : il attend sa fiche
+  /* §4.8, passe J — L'ARTICLE DÉJÀ AU DOSSIER se reprend là : le tutoriel ne
+     fait pas chercher de nouveau. On le trouve, puis on défait la phrase. */
+  check("(l'article trouvé et pris)", H.prendreLeTexte(w, L.forme));
   const pid = w.JEU.grammaire.blocs.find(b => w.R.estLiaisonArticle(b) && b.forme === L.forme).piece;
-  const cle = H.cleArticle(w, pid);
-  check("l'article retenu sans être pris : le halo montre SA FICHE au CONTEXTE",
-    !w.R.compoFinie(w.S) && !!halo() && halo().getAttribute("data-f") === "c:" + cle
-    && w.document.getElementById("zoneRetenus").contains(halo()));
-  w.document.querySelector(`#zoneRetenus [data-f="c:${cle}"]`).click();
-  check("pris sur sa fiche, la phrase se tient : il se tait",
-    w.R.compoFinie(w.S) && w.document.getElementById("tuto").hidden && !halo());
+  w.viderCompo();
+  check("la phrase défaite, la recherche s'efface, l'article reste au dossier",
+    w.S.recherche === null && w.R.piecesLivrees(w.S).includes(pid));
+  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tA));
+  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tB));
+  H.choisirRelation(w, sous.forme);
+  if (w.document.getElementById("panCONTEXTE").hidden) w.basculerPanneau("contexte");
+  check("recomposée, le halo montre le dossier — reprendre, pas chercher",
+    !w.R.compoFinie(w.S) && !!halo() && halo().id === "zoneDossier" && !/Cherche/.test(dit()));
+  w.ouvrirPiece(pid); H.retenir(w, H.cleArticle(w, pid));
+  check("repris d'un clic sur son texte, la phrase se tient : il se tait",
+    w.R.compoFinie(w.S) && w.S.recherche === null && w.document.getElementById("tuto").hidden && !halo());
 }
 {
   /* §4.8 — UN GESTE DÉJÀ MONTRÉ NE RALLUME PAS LE HALO. La remise 1 du jour
@@ -1124,10 +1124,6 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   check("Maître Auber attend maintenant une comparaison", !!sous);
   const [tA, tB] = sous.termes;
   for (const k of [tA, tB]) { w.ouvrirPiece(H.deK(k)[0]); H.surligner(w, k); w.fermerPiece(); }
-  w.fermerPanneau();
-  /* L'article LU d'abord : non lu, le CONTEXTE reste — c'est là qu'on va le
-     lire (§4.6), et le contrôle qui suit figeait ce défaut. */
-  H.lireLeTexte(w, H.lienTag(w, attente().attend).forme);
   w.fermerPanneau(); w.ouvrirCONTEXTE();
   w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tA));
   check("le PREMIER des deux posé, il en faut un second : le panneau RESTE ouvert", ouvert("CONTEXTE"));
@@ -1138,15 +1134,20 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   check("et la voix demande ce qui les lie, sans mener ailleurs — le geste est ICI",
     !bouton() && /qui les lie/.test((w.document.querySelector("#composeur span.aide") || {}).textContent || ""));
   H.choisirRelation(w, sous.forme);
-  /* §4.6 — L'ARTICLE SE PREND AU CONTEXTE (passe F) : la phrase qui l'attend n'a
-     rien à prendre au composeur, et le panneau ouvert pour écrire reste. */
-  check("les deux posés, l'article reste à prendre au CONTEXTE : le panneau RESTE ouvert", ouvert("CONTEXTE"));
-  check("et la voix qui réclame l'article y mène — c'est là qu'il se prend", !!bouton());
+  /* §4.6 — L'ARTICLE SE CHERCHE, PUIS SE PREND AU CONTEXTE (passe J) : la phrase
+     qui l'attend n'a rien à prendre au composeur que la recherche, et le
+     panneau ouvert pour écrire reste. */
+  check("les deux posés, l'article reste à trouver : le panneau RESTE ouvert", ouvert("CONTEXTE"));
+  check("et c'est le bouton qui cherche qui parle, au composeur — la voix se tait (§4.9 règle 1)",
+    !!w.document.querySelector('#composeur [data-f="chercher"]') && !bouton());
   const pidArt = w.JEU.grammaire.blocs.find(b => w.R.estLiaisonArticle(b)
     && b.forme === H.lienTag(w, attente().attend).forme).piece;
-  w.prendreArticle(H.cleArticle(w, pidArt));
-  check("l'article pris sur sa fiche, la phrase achevée : il s'est refermé",
-    w.R.compoFinie(w.S) && !ouvert("CONTEXTE"));
+  w.chercherArticle();
+  check("chercher ouvre le CONTEXTE sur ses résultats, et la voix y mène", ouvert("CONTEXTE") && !!bouton());
+  w.ouvrirPiece(pidArt); H.retenir(w, H.cleArticle(w, pidArt));
+  check("l'article pris dans le résultat ouvert : la phrase achevée, le CONTEXTE reste — on y lisait (§4.6)",
+    w.R.compoFinie(w.S) && ouvert("CONTEXTE"));
+  w.fermerPanneau();
 
   /* CONSULTER N'EST PAS ÉCRIRE — ouverte depuis la barre, elle ne se referme pas
      bien que la phrase n'accepte plus aucun passage. */
@@ -1161,12 +1162,10 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   /* §4.6 — la remise CHANGE : un dossier arrive, on revient lire l'avocat. */
   w.basculerPanneau("contexte");
   const remise = w.S.remisesEnvoyees;
-  H.lireLeTexte(w, H.lienTag(w, attente().attend).forme);
   H.composerLien(w, H.lienTag(w, attente().attend));
   check("la dernière réponse ouvre une remise neuve", w.S.remisesEnvoyees === remise + 1);
   check("et le CONTEXTE se referme avec la remise close", !ouvert("CONTEXTE"));
   const L2 = H.lienTag(w, attente().attend);
-  H.lireLeTexte(w, L2.forme);
   H.composerLien(w, L2, {garder:true});
   w.basculerPanneau("plaidoirie");
   const versees = w.S.plaidoirie.length;
@@ -1374,9 +1373,10 @@ console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
     && fl("suiv").getAttribute("aria-label").includes(w.JEU.pieces[apres].titre));
   const vues = [w.S.modalPiece];
   for (let i = 1; i < ordre.length; i++) { fl("suiv").click(); vues.push(w.S.modalPiece); }
+  /* Depuis la passe J, aucune remise ne livre de règle : l'ordre de l'index
+     (pièces, puis règles trouvées) peut coïncider avec celui des remises. */
   check("› parcourt tout l'index dans son ordre, un clic par pièce",
-    ordre.join() !== w.R.piecesLivrees(w.S).join()
-    && vues.join() === [...ordre.slice(i0), ...ordre.slice(0, i0)].join());
+    vues.join() === [...ordre.slice(i0), ...ordre.slice(0, i0)].join());
   check("l'index reste replié, et le focus reste sur la flèche pour enchaîner",
     plie() && cle() === "suiv");
   fl("suiv").click();
@@ -1507,78 +1507,73 @@ console.log("\n=== Une phrase déjà envoyée ne repart pas, et le composeur le 
     w.S.fil.length === fil && w.S.compo.length === compo && compo > 0);
 }
 
-console.log("\n=== L'article se retient, puis se prend (§4.5, §4.6, passe F) ===");
+console.log("\n=== L'article se cherche, puis se prend (§4.5, §4.6, passe J) ===");
 {
   const w = H.boot(), d = w.document;
   H.livrerTout(w);
   const arts = w.MoteurGrammaire.articlesDe(w.JEU);
   check("chaque article a son passage, et le moteur ne le voit pas : jamais un terme",
     arts.length > 0 && arts.every(a => !w.CHAMPS.some(c => c.id === a.id) && a.dim === undefined));
-  const L = H.lienConclusion(w);
+  const L = H.lienConclusion(w), sous = H.sousTerme(L);
   const pid = w.JEU.grammaire.blocs.find(b => w.R.estLiaisonArticle(b) && b.forme === L.forme).piece;
   const k = H.cleArticle(w, pid);
+  const ligne = () => (d.querySelector("#panPiece .rappel") || {}).textContent || "";
+  check("aucune remise ne l'a livré : il n'est pas au dossier", !w.R.piecesLivrees(w.S).includes(pid));
+  check("phrase vide, rien à chercher : ni bouton, ni recherche",
+    !d.querySelector('#composeur [data-f="chercher"]') && w.R.chercher(w.S) === null && w.S.recherche === null);
+  w.basculerPanneau("contexte");
+  H.poserComparaison(w, sous);
+  check("la relation choisie, le composeur offre de chercher", !!d.querySelector('#composeur [data-f="chercher"]'));
+  check("les fiches de passage disent que la phrase attend un article",
+    /attend un article/.test((d.getElementById("raisonPleine") || {}).textContent || ""));
+  /* LE HASARD SE FIXE (§11) : la règle reçoit son tirage. */
+  const dim = w.M.dimDe(sous.termes[0]);
+  const base = w.R.baseRecherche(dim);
+  const tirage = x => { w.R.chercher(w.S, () => x); return [...w.S.recherche]; };
+  check("la recherche rend trois articles du champ de la paire, le bon parmi eux",
+    base.length === 3 && base.includes(pid) && base.every(p => w.JEU.pieces[p].porte.includes(dim)));
+  check("l'ordre se tire au hasard : le bon n'est pas toujours premier",
+    new Set([0, 0.5, 0.99].map(x => tirage(x).join())).size > 1 && [0, 0.34, 0.67, 0.99].some(x => tirage(x)[0] !== pid));
+  check("…et ce sont toujours les trois mêmes", [0, 0.5, 0.99].every(x => tirage(x).slice().sort().join() === base.slice().sort().join()));
+  w.chercherArticle();
+  const chips = [...d.querySelectorAll("#zoneRecherche .rchip")];
+  check("ses résultats paraissent dans le CONTEXTE : un nom neutre et le début du texte, jamais le titre",
+    chips.length === 3 && chips.every((c, n) => {
+      const p = w.JEU.pieces[w.S.recherche[n]], a = arts.find(x => x.pid === w.S.recherche[n]);
+      return !c.textContent.includes(p.titre) && c.textContent.includes(a.nom) && !/--dc/.test(c.getAttribute("style") || ""); }));
+  check("trouvé mais pas ouvert, rien ne s'offre", !w.R.blocsOfferts(w.S).some(b => w.R.estLiaisonArticle(b)));
   w.ouvrirPiece(pid);
   const passage = d.querySelector(`#panPiece [data-f="e:${k}"]`);
   check("son texte est un passage, sans couleur ni trait de dimension, qui se dit « article »",
     !!passage && passage.classList.contains("article") && !/--dc/.test(passage.getAttribute("style") || "")
     && /article/.test(passage.querySelector(".sr").textContent));
-  check("ouvert, il ne s'offre pas", !w.R.articleRetenu(w.S, pid));
+  check("ouvert depuis la recherche, il s'offre", w.R.articleOffert(w.S, pid));
   passage.click();
-  check("cliqué, il est retenu comme un passage", w.S.retenus.includes(k) && w.R.articleRetenu(w.S, pid));
-  w.fermerPiece();
-  const fiche = () => d.querySelector(`#zoneRetenus [data-f="c:${k}"]`);
-  const groupes = [...d.querySelectorAll("#zoneRetenus .dimgrp")];
-  check("sa fiche se range hors des dimensions, en dernier, sous ARTICLES",
-    !!fiche() && groupes.length > 0 && groupes[groupes.length - 1].classList.contains("articles")
-    && groupes[groupes.length - 1].contains(fiche()));
-  check("phrase vide, la fiche est refusée, pas désactivée", !fiche().disabled && fiche().getAttribute("aria-disabled") === "true");
-  fiche().focus(); fiche().click();
-  check("la toucher ne pose rien, et dit pourquoi — à l'écran comme à l'oreille",
-    w.S.compo.length === 0 && /fonde une relation/.test((d.getElementById("raisonArticle") || {}).textContent || "")
-    && /fonde une relation/.test(d.getElementById("annonce").textContent));
-  check("le focus reste sur la fiche touchée", d.activeElement === fiche());
-  w.rendreTout();
-  check("la raison ne vit qu'un rendu", !d.getElementById("raisonArticle"));
-  w.basculerPanneau("contexte");
-  H.poserComparaison(w, H.sousTerme(L));
-  check("les deux passages posés, les fiches de passage disent que la phrase attend un article",
-    /attend un article/.test((d.getElementById("raisonPleine") || {}).textContent || ""));
-  check("la fiche de l'article, elle, prend", !fiche().hasAttribute("aria-disabled"));
-  fiche().click();
-  check("prise, elle pose la liaison de son article, et le dit", w.R.compoFinie(w.S)
-    && w.R.chaineCompo(w.S).some(p => w.R.estLiaisonArticle(p.bloc) && p.bloc.piece === pid)
-    && /dans ta RÉPONSE/.test(fiche().textContent));
-  w.retirerBloc(); w.oublier(...H.deK(k));
-  check("oubliée, l'article ne s'offre plus", !w.R.blocsOfferts(w.S).some(b => w.R.estLiaisonArticle(b)));
-  check("et la voix dit où aller le chercher, et quoi y cliquer, en menant au CONTEXTE",
-    /clique sur son texte/.test(composeur(w)) && !!d.querySelector('#composeur [data-f="voix"]'));
+  check("cliqué, il fonde la phrase sans se retenir, et rejoint le dossier — la ligne le dit",
+    w.R.compoFinie(w.S) && !w.S.retenus.includes(k) && w.S.trouves.includes(pid)
+    && /rangé dans ton dossier/.test(ligne()));
+  check("au CONTEXTE, plus de groupe ARTICLES : un article ne s'y range pas", !d.querySelector("#zoneRetenus .articles"));
+  w.retirerBloc();
+  check("« ← retirer » l'ôte de la phrase, pas du dossier ; la recherche reste, la relation aussi",
+    !w.R.compoFinie(w.S) && w.R.piecesLivrees(w.S).includes(pid) && w.S.recherche.length === 3);
+  w.retirerBloc();
+  check("défaite en deçà de la relation, la recherche s'efface", w.S.recherche === null);
+  const n = w.S.compo.length;
+  w.ouvrirPiece(pid); d.querySelector(`#panPiece [data-f="e:${k}"]`).click();
+  check("la phrase n'attendant pas d'article, son texte ne prend rien — et la ligne dit pourquoi",
+    w.S.compo.length === n && !w.S.retenus.includes(k) && /fonde une relation/.test(ligne()));
 }
 {
-  // L'ARTICLE QUE LA QUESTION DEMANDE AUSSI, retenu en avance, ne sonne pas faux (§4.8).
-  const w = H.boot({url:"http://localhost/"});
-  H.composerLien(w, H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend));
-  const L = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend);
-  const pid = w.JEU.grammaire.blocs.find(b => w.R.estLiaisonArticle(b) && b.forme === L.forme).piece;
-  w.ouvrirPiece(pid); H.surligner(w, H.cleArticle(w, pid));
-  check("retenir l'article demandé avant les deux passages n'est pas une erreur",
-    !w.document.getElementById("tuto").hidden && !w.document.getElementById("tuto").hasAttribute("data-alerte"));
-}
-
-console.log("\n=== La fiche d'un article se lit comme un choix : son nom neutre (§4.5, passe F) ===");
-{
+  /* §4.11 point 6 — EN SESSION 1, UNE COMPARAISON NUE NE PART PAS, tutoriel ou
+     non : un garde-fou de la REMISE. Ensuite, elle part, et l'avocat la refuse. */
   const w = H.boot();
-  H.livrerTout(w);
-  const L = H.lienConclusion(w);
-  H.lireLeTexte(w, L.forme);
-  check("la comparaison du vice se pose", H.poserComparaison(w, H.sousTerme(L)));
-  w.basculerPanneau("contexte");
-  const fiches = [...w.document.querySelectorAll("#zoneRetenus .mchip.article .corps")];
-  const noms = fiches.map(b => b.querySelector(".nom").textContent);
-  const pid = w.JEU.grammaire.blocs.find(b => w.R.estLiaisonArticle(b) && b.forme === L.forme).piece;
-  check("l'article retenu a sa fiche, qui porte le nom neutre de son passage — pas le libellé de la phrase",
-    fiches.length > 0 && noms.includes(w.JEU.pieces[pid].empans[H.deK(H.cleArticle(w, pid))[1]].nom)
-    && noms.every(t => !/^[\s,;]/.test(t)) && !fiches.some(b => b.hasAttribute("aria-disabled")));
-  check("et le composeur n'offre plus aucun article", !w.document.querySelector("#composeur .bbloc.fondement"));
+  const sous = H.sousTerme(H.lienTag(w, w.R.attentesDe(w.JEU.remises[0]).slice(-1)[0].attend));
+  check("(la comparaison de la session 1 se pose)", H.poserComparaison(w, sous));
+  check("en session 1, la comparaison nue ne part pas", !w.R.peutEnvoyer(w.S)
+    && !w.document.querySelector('#composeur [data-f="envoi"]'));
+  const w2 = H.boot();
+  H.livrerTout(w2);
+  check("hors session 1, elle part", H.poserComparaison(w2, H.sousTerme(H.lienConclusion(w2))) && w2.R.peutEnvoyer(w2.S));
 }
 
 console.log("\n=== Un clic dans la pièce retient et prend (§4.6, passe H) ===");
@@ -1595,8 +1590,8 @@ console.log("\n=== Un clic dans la pièce retient et prend (§4.6, passe H) ==="
 
   w.ouvrirPiece(pidArt);
   H.retenir(w, cle);
-  check("phrase vide, le texte d'un article se retient seulement : il n'a rien à fonder",
-    w.S.retenus.includes(cle) && !w.S.compo.length && ligne() === "✓ Retenu dans ton CONTEXTE.");
+  check("phrase vide, le texte d'un article ne se retient pas : il n'a rien à fonder, la ligne le dit",
+    !w.S.retenus.includes(cle) && !w.S.compo.length && /fonde une relation/.test(ligne()));
 
   w.ouvrirPiece(H.deK(a)[0]);
   H.retenir(w, a);
@@ -1630,16 +1625,21 @@ console.log("\n=== Un clic dans la pièce retient et prend (§4.6, passe H) ==="
 
   H.choisirRelation(w, sous.forme);
   check("la vraie relation choisie, le vice est pressenti", w.S.vice_pressenti && !w.S.vice_trouve);
+  w.chercherArticle();
   w.ouvrirPiece(pidArt);
   H.retenir(w, cle);
-  check("le texte de l'article, recliqué, fonde la phrase qui l'attend — comme sa fiche",
+  check("le texte de l'article trouvé fonde la phrase qui l'attend",
     w.R.compoFinie(w.S) && w.R.chaineCompo(w.S).some(p => w.R.estLiaisonArticle(p.bloc) && p.bloc.piece === pidArt));
-  check("et la ligne dit qu'il est posé", ligne() === "✓ Ajouté à ta RÉPONSE.");
+  check("et la ligne dit qu'il est posé, et rangé au dossier", ligne() === "✓ Ajouté à ta RÉPONSE, et rangé dans ton dossier.");
   check("la conclusion assemblée d'un clic lève vice_trouve, sans rien transmettre",
     w.S.vice_trouve && !w.S.vice_expose && !w.S.plaidoirie.length && !w.S.brouillon.length);
   w.retirerBloc();
-  check("« ← retirer » l'ôte de la phrase, pas du CONTEXTE",
-    !w.R.compoFinie(w.S) && w.S.retenus.includes(cle) && termes().length === 2);
+  check("« ← retirer » l'ôte de la phrase, pas du dossier",
+    !w.R.compoFinie(w.S) && w.R.piecesLivrees(w.S).includes(pidArt) && termes().length === 2);
+  H.retenir(w, cle);
+  check("au dossier, recliqué, il se reprend sans chercher — et la ligne ne dit que posé",
+    w.R.compoFinie(w.S) && ligne() === "✓ Ajouté à ta RÉPONSE.");
+  w.retirerBloc();
   // CE QUE LE CLIC VA FAIRE DÉPEND DE LA PHRASE, LE MARQUAGE JAMAIS (§4.3).
   w.viderCompo();
   w.ouvrirPiece(H.deK(b)[0]);
@@ -1699,15 +1699,14 @@ console.log("\n=== Le CONTEXTE ouvert pour écrire reste quand il faut aller lir
   const pan = () => !w.document.getElementById("panCONTEXTE").hidden;
   w.fermerPanneau(); w.ouvrirCONTEXTE();
   check("ouvert par la voix", pan());
-  check("la comparaison se pose, l'article pas encore retenu : rien à invoquer",
+  check("la comparaison se pose, l'article pas encore trouvé : rien à invoquer",
     H.poserComparaison(w, H.sousTerme(L)) && w.R.blocsOfferts(w.S).length === 0);
-  check("le CONTEXTE reste : c'est là qu'on va lire l'article", pan());
+  check("le CONTEXTE reste : c'est là qu'on lira l'article", pan());
   const art = (w.JEU.grammaire.blocs || []).find(b => b.forme === L.forme && b.piece).piece;
-  w.ouvrirPiece(art);
-  check("ouvrir ne suffit plus : rien n'est offert tant qu'on ne le retient pas (passe F)",
-    w.R.blocsOfferts(w.S).length === 0);
-  H.surligner(w, H.cleArticle(w, art)); w.fermerPiece();
-  check("l'article retenu, il est offert — et le CONTEXTE, où il se prend, reste",
+  w.chercherArticle();
+  check("chercher le garde ouvert, sur ses résultats", pan() && w.S.recherche.includes(art));
+  w.ouvrirPiece(art); w.fermerPiece();
+  check("l'article lu, il est offert — et le CONTEXTE, où il se prend, reste",
     w.R.blocsOfferts(w.S).length > 0 && pan());
 }
 

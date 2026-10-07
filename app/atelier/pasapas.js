@@ -37,9 +37,12 @@ function simComposable(L){
   if((f.arite||2)===1){
     const sous=(L.termes||[])[0];
     const bloc=(CONTENU.grammaire.blocs||[]).find(b=>b.forme===L.forme);
-    if(bloc && bloc.piece && !simLivrees().has(bloc.piece)) return false;
-    // On n'invoque pas un texte qu'on n'a pas retenu (§4.5, passe F).
-    if(bloc && bloc.piece && bloc.imbrique && !RG().articleRetenu(SIM,bloc.piece)) return false;
+    // L'article se cherche (§4.5, passe J) : au dossier, ou rendu par la
+    // recherche sur la paire — la règle même, appelée (§15).
+    if(bloc && bloc.piece && bloc.imbrique){
+      if(!simLivrees().has(bloc.piece) && !simTrouvable(sous,bloc.piece)) return false;
+    }
+    else if(bloc && bloc.piece && !simLivrees().has(bloc.piece)) return false;
     if(typeof sous==="string") return SIM.retenus.includes(sous);
     if(!sous || typeof sous!=="object") return false;
     return feuillesLien(sous).every(k=>SIM.retenus.includes(k))
@@ -48,6 +51,13 @@ function simComposable(L){
   return feuillesLien(L).every(k=>SIM.retenus.includes(k));
 }
 const memeReduite = (a,b) => { const m=MG(); return !!m && m.memeRed(a,b); };
+/* La recherche part du PREMIER passage de la paire (§4.5) ; elle rend la base de
+   sa dimension, dans l'ordre que tire le hasard — l'ordre ne compte pas ici. */
+function simTrouvable(sous,pid){
+  const k=sous && typeof sous==="object" ? feuillesLien(sous)[0] : null;
+  const e=k && empanDe(...deK(k));
+  return !!e && RG().baseRecherche(e.dim).includes(pid);
+}
 /* Le pas-à-pas retient au grain du LIEN (§12) : `surligner`, jamais
    `retenirEtPrendre` (passe H) — il compose d'un bloc par `clorePhrase`, et une
    phrase posée en silence dans `SIM.compo` y lèverait des drapeaux sans qu'on le
@@ -61,6 +71,9 @@ function simSurligner(k){
 }
 function simComposer(i){
   const L=CONTENU.liens[i];
+  // L'article trouvé rejoint le dossier, comme en jeu (passe J).
+  const bloc=(CONTENU.grammaire.blocs||[]).find(b=>b.forme===L.forme && b.piece && b.imbrique);
+  if(bloc && !simLivrees().has(bloc.piece)) SIM.trouves.push(bloc.piece);
   RG().clorePhrase(SIM,{forme:L.forme,termes:clone(L.termes||[])},labelLien(L));
   simMsg({sys:true,texte:`écrit : ${labelLien(L)} — elle attend sur place, privée. Rien ne part.`});
   renderEtapes();
@@ -104,7 +117,8 @@ function simActions(){
     for(const pid of livrees) if(!SIM.examinees.includes(pid))
       A.push({t:`Ouvrir « ${courtDe(pid)} »`, cls:"ghost", f:()=>simOuvrir(pid)});
 
-  for(const e of [...empansPlats(), ...passagesArticle()]){
+  // Un article ne se retient pas : il se cherche (passe J).
+  for(const e of empansPlats()){
     if(!livrees.has(e.pid) || SIM.retenus.includes(e.id)) continue;
     A.push({t:`Surligner : ${cflabel(e.id)} — « ${String(e.texte||"").slice(0,42)} »`, cls:"ghost", f:()=>simSurligner(e.id)});
   }

@@ -475,8 +475,7 @@ window.CONTENU = {
         "type": "terme",
         "source": "champ",
         "de": "S1",
-        "vers": "S2",
-        "piece": "r_temoin"
+        "vers": "S2"
       },
       {
         "id": "r0",
@@ -1069,8 +1068,7 @@ window.CONTENU = {
       "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Ton travail : démonter l'accusation, pièce par pièce. Mais personne ne m'a encore montré que tu sais lire un dossier — alors d'abord deux questions dont j'ai déjà les réponses.",
       "pieces": [
         "p_pv",
-        "t_voisin",
-        "r_temoin"
+        "t_voisin"
       ],
       "attentes": [
         {
@@ -1079,7 +1077,7 @@ window.CONTENU = {
         },
         {
           "attend": "temoin",
-          "question": "Maintenant, deux heures : celle à laquelle la patrouille dit être arrivée sur les lieux, et celle à laquelle le voisin dit avoir entendu des éclats de voix. Quel lien tu fais entre les deux ? Et quel article est-ce qu'on peut citer pour s'en servir devant le tribunal ?"
+          "question": "Maintenant, deux heures : celle à laquelle la patrouille dit être arrivée sur les lieux, et celle à laquelle le voisin dit avoir entendu des éclats de voix. Quel lien tu fais entre les deux ? Et trouve-moi l'article qui nous permet de nous en servir devant le tribunal."
         }
       ]
     },
@@ -1089,9 +1087,7 @@ window.CONTENU = {
       "pieces": [
         "p_adn",
         "p_scene",
-        "p_ref",
-        "r_protocole",
-        "r_seuil"
+        "p_ref"
       ],
       "attentes": [
         {

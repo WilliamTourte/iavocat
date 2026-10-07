@@ -118,38 +118,36 @@ function creerHarnais(dossier){
      `garder:true` s'arrête un cran avant, sans rien forcer : la phrase se tient
      au composeur et n'est pas transmise — c'est l'état de la Fin 2 (§4.7), et
      c'en est un que le joueur atteint vraiment, en ne cliquant pas. */
-  /* ON N'INVOQUE PAS UN TEXTE QU'ON N'A PAS RETENU (§4.5, passe F) : le joueur
-     ouvre l'article, retient son texte, le replie ; la suite aussi. Ce sont des
-     GESTES D'ÉCRAN — `ouvrirPiece`, `surligner`, `fermerPiece` —, pas une porte
-     dérobée (R13). `lireLeTexte` RETIENT SEUL : l'article attend sa fiche. */
+  /* L'ARTICLE SE CHERCHE, PUIS SE PREND (§4.5, passe J) : la relation choisie,
+     le joueur lance la recherche au composeur, ouvre le résultat, clique son
+     texte — il fonde la phrase et rejoint le dossier —, replie la pièce. Déjà au
+     dossier, l'article s'y reprend, sans chercher. Ce sont des GESTES D'ÉCRAN —
+     `chercherArticle`, `ouvrirPiece`, `surligner`, `fermerPiece` —, pas une porte
+     dérobée (R13). Rend vrai si la liaison est posée ; faux si la recherche sur
+     cette paire ne rend pas l'article. */
   // Par la fenêtre, pas par `require` : `npm run vue` porte ce harnais dans la page.
   const cleArticle = (w,pid) => (w.MoteurGrammaire.articlesDe(J(w)).find(a=>a.pid===pid)||{}).id;
   const blocArticle = (w,forme) => (J(w).grammaire.blocs||[]).find(x=>x.forme===forme && x.piece);
-  function lireLeTexte(w,forme){
-    const b=blocArticle(w,forme);
-    if(!b || w.R.articleRetenu(w.S,b.piece)) return;
-    if(!w.R.piecesLivrees(w.S).includes(b.piece)) return;
-    const k=cleArticle(w,b.piece); if(!k) return;
-    w.ouvrirPiece(b.piece); surligner(w,k); w.fermerPiece();
+  function chercherPour(w,pid){
+    if(w.R.articleOffert(w.S,pid)) return true;
+    if(!w.R.articleAttendu(w.S)) return false;
+    w.chercherArticle();
+    return (w.S.recherche||[]).includes(pid);
   }
-  /* L'ARTICLE D'UN CLIC SUR SON TEXTE (passe H) : la pièce ouverte, le texte
-     cliqué — retenu, il fonde la phrase qui l'attend —, la pièce repliée. Le
-     chemin du joueur qui lit l'article au moment d'en avoir besoin. Rend vrai si
-     la liaison est posée. */
   function prendreLeTexte(w,forme){
     const b=blocArticle(w,forme);
-    if(!b || !w.R.estLiaisonArticle(b) || !w.R.piecesLivrees(w.S).includes(b.piece)) return false;
+    if(!b || !w.R.estLiaisonArticle(b)) return false;
     const k=cleArticle(w,b.piece); if(!k) return false;
+    if(!chercherPour(w,b.piece)) return false;
     const n=w.S.compo.length;
     w.ouvrirPiece(b.piece); retenir(w,k); w.fermerPiece();
     return w.S.compo.length>n;
   }
-  /* PRENDRE UNE LIAISON : une liaison-article se prend par la FICHE de son
-     article, au CONTEXTE (passe F) — la porte du joueur (R13), qui cherche
-     l'indice du bloc au clic ; toute autre, au composeur. */
+  /* PRENDRE UNE LIAISON : une liaison-article se prend par le texte de son
+     article, trouvé (passe J) ; toute autre, au composeur. */
   function prendreLiaison(w,i){
     const b=w.R.blocsOfferts(w.S)[i]; if(!b) return;
-    if(w.R.estLiaisonArticle(b)) w.prendreArticle(cleArticle(w,b.piece));
+    if(w.R.estLiaisonArticle(b)) prendreLeTexte(w,b.forme);
     else w.poserBloc(i);
   }
   /* COMPOSER, PAR LE CHEMIN DU JOUEUR (passe H, §4.6) : un clic par passage, dans
@@ -283,10 +281,10 @@ function creerHarnais(dossier){
     }
     return [];
   }
-  const articlesDisponibles = w => {
-    const livrees=new Set(w.R.piecesLivrees(w.S));
-    return (J(w).grammaire.blocs||[]).filter(b=>b.imbrique && b.forme && (!b.piece || livrees.has(b.piece)));
-  };
+  /* Depuis la passe J, tout article de la base peut se trouver : la recherche
+     dira, paire par paire, lequel s'offre. */
+  const articlesDisponibles = w =>
+    (J(w).grammaire.blocs||[]).filter(b=>b.imbrique && b.forme);
   function phrasesBruit(w,n){
     const G=J(w).grammaire;
     const emp=w.CHAMPS;
@@ -307,8 +305,11 @@ function creerHarnais(dossier){
         if(!nomForme) continue;
         const termes=w.M.ordonner ? w.M.ordonner(nomForme,[a.id,b.id]) : [a.id,b.id];
         const comparaison={forme:nomForme,termes};
-        const cands = arts.length
-          ? arts.map(bl=>({forme:bl.forme, termes:[comparaison]}))
+        /* Seuls les articles que la recherche rend sur cette paire (passe J) :
+           les autres retomberaient sur la comparaison nue, envoyée seule. */
+        const trouvables = arts.filter(bl => !bl.piece || w.R.baseRecherche(a.dim).includes(bl.piece));
+        const cands = trouvables.length
+          ? trouvables.map(bl=>({forme:bl.forme, termes:[comparaison]}))
           : [comparaison];
         for(const cand of cands){
           if(fait>=n) break;
@@ -382,7 +383,7 @@ function creerHarnais(dossier){
            discussion, contexte, composeur, plaidoirie, plaidoirieVisible,
            lienVice, lienConclusion, lienFaux, lienTag, sousTerme, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
-           cloreSurPlace, poserComparaison, choisirRelation, assembler, lireLeTexte, prendreLeTexte, cleArticle, prendreLiaison, livrerTout,
+           cloreSurPlace, poserComparaison, choisirRelation, assembler, chercherPour, prendreLeTexte, cleArticle, prendreLiaison, livrerTout,
            retenir, surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,

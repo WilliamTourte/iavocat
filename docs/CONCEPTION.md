@@ -226,7 +226,7 @@ ailleurs — §4.1, §4.2, §4.4, §4.6, §4.7, §4.8, §4.11 — l'a été et c
 arbitrages (le pressentiment au choix vrai, les libellés de relation, le CONTEXTE qui reste) : **à
 relire par l'auteur**.* *Puis le 7 octobre, la **passe J** : l'article ne se livre plus, il se
 cherche, puis se prend — réécrit ici, au §3, §4.6, §4.8, §4.9, §4.11, §6, §7 et §8, puis au §11 et au
-§15 : **à relire par l'auteur avant le code**. Le §16 et la carte (§17) suivront le code.*
+§15 — relu par l'auteur, puis codé le même jour ; le §16 et la carte (§17) ont suivi le code.*
 
 - **La livraison** — la grammaire de comparaison est complète dès la première phrase ; aucun
   **article** n'arrive plus avec le dossier : il **se cherche** (passe J, ci-dessous), et rejoint le
