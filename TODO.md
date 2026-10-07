@@ -353,7 +353,10 @@ session 1 en deux questions (§3, passe E) tient. Document d'abord (§3, §4.5, 
     (§9, §11).
   - *Tranché par l'auteur le 7 octobre* :
     - **Les deux leurres sont plausibles**, du même champ que le bon : sinon le choix se fait sans
-      lire. Il faut donc une base plus large que l'affaire — **du contenu à écrire**, plusieurs
+      lire. *Premier jet écrit le 7 — neuf articles (2, 4, 6, 8, 9, 10, 11, 13, 15), trois résultats
+      par dimension : **à réécrire par l'auteur**. Pièges voulus : l'article 8 contre le vice, les
+      articles 4 et 9 en session 1 — le 9 (*« sauf crime flagrant »*) est peut-être trop dur pour
+      une calibration.* Il faut donc une base plus large que l'affaire — **du contenu à écrire**, plusieurs
       articles par dimension. Et l'**ordre** de l'écran ne trahit pas le score : la bonne réponse
       n'est pas toujours la première.
     - **Choisir, c'est lire** (*on n'invoque que ce qu'on a lu*, §4.5) : un résultat s'ouvre comme
