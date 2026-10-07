@@ -340,11 +340,17 @@ session 1 en deux questions (§3, passe E) tient. Document d'abord (§3, §4.5, 
   - **Le geste, proposé par l'auteur** : **la relation choisie**, le composeur offre ***« Chercher un
     article correspondant »*** ; la recherche rend **trois** articles, un léger QCM, et le joueur
     choisit le bon. Chercher devient un verbe neuf, entre *déclarer* (la relation) et *fonder*
-    (§4.5, §4.6) ; la relation entre dans la requête.
-  - **La recherche porte sur le texte** : les deux passages posés et leur relation, comparés au
-    **texte** des articles de la base — jamais à une étiquette de dimension (le risque du §5 a,
-    apparier des catégories). Une fonction pure, dans `regles.js` ou `moteur.js` ; la base, du
-    contenu (§9, §11).
+    (§4.5, §4.6). **Les trois résultats s'affichent dans le CONTEXTE** (*auteur*, le 7), pas au
+    composeur.
+  - **La recherche lit la dimension, en coulisses** (*tranché par l'auteur le 7*, après examen) :
+    elle rend les trois articles dont `porte` couvre la dimension des deux passages. Une recherche
+    sur les mots échoue — la paire de la session 1 et l'article 3 n'ont pas un mot en commun, et
+    une recherche sur le sens (des *embeddings*) n'existe pas sans serveur ni dépendance. L'écran
+    ne montre jamais la dimension : le joueur ne voit que des textes, et le risque du §5 a ne
+    revient pas. **Toute paire a ses trois résultats** — la recherche ne dit jamais quelles paires
+    comptent. Il faut donc **trois articles au moins par dimension comparée** (quand, qui, quoi,
+    combien) : six à huit à écrire. Une fonction pure dans `regles.js` ; la base, du contenu
+    (§9, §11).
   - *Tranché par l'auteur le 7 octobre* :
     - **Les deux leurres sont plausibles**, du même champ que le bon : sinon le choix se fait sans
       lire. Il faut donc une base plus large que l'affaire — **du contenu à écrire**, plusieurs
@@ -367,9 +373,12 @@ session 1 en deux questions (§3, passe E) tient. Document d'abord (§3, §4.5, 
       dossier.
     - **Le mauvais article choisi, l'avocat le refuse**, avec une réplique et son escalade, comme
       `rep_relation_fausse` (passe G).
-    - **Le vice (session 2)** : l'article 7 ne se trouve qu'en cherchant depuis la paire du vice —
-      la recherche devient une porte de la Fin 2 (§2, §4.7), qui doit rester **hors du chemin
-      obligatoire** (§3) : chercher autre chose ne fait jamais tomber sur l'article 7.
+    - **Le vice (session 2)**, *reformulé le 7 avec l'auteur* : l'article 7 portant sur *qui* et
+      *quoi*, toute recherche depuis une paire de la scène ou de la référence le rend — comme
+      aujourd'hui, où il est livré, et le contenu y répond déjà (greffier, scellés, délai). Ce qui
+      doit tenir : **l'attente de la session 2 se sert sans l'article 7**, par le faux vice
+      (l'article 12, sur une paire de *combien*) — c'est ce qui garde le vice **hors du chemin
+      obligatoire** (§3).
   - **Ce qui bouge** : §3, les livraisons ne portent plus d'article — le compte du message de remise
     (*« N pièces disponibles »*) avec elles ; §11, la base est un objet neuf du contenu, que
     l'atelier lit sans le recopier (§9) ; §4.8, le tutoriel apprend à chercher ; le refus *« Aucun
@@ -523,6 +532,11 @@ lourd.*
       viennent pas que de lui. *(S'appelait « RAG » ; le mot désigne désormais la recherche
       d'articles, passe J.)*
 - [ ] **Regrouper les passages retenus en clusters** (idée d'un ami).
+- [ ] **Des articles qui portent sur deux dimensions à la fois**, et des paires qui les croisent :
+      *où* et *qui* — un article sur « le lieu du crime » et « le technicien ». Aujourd'hui deux
+      dimensions différentes se juxtaposent sans relation (§4.11), et la recherche ne lit que celle
+      du premier passage (passe J, §4.5) : il faudrait une relation entre dimensions, et une
+      recherche qui lise les deux. *auteur*, le 7 octobre.
 
 **L'histoire** — à concevoir ensemble : le scénario porte les trois autres.
 

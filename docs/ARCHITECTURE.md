@@ -74,7 +74,7 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   pieces: {
     p_pv: {
       titre, court, type, resume,                           // `resume` : atelier seulement
-      porte: ["qui","quoi"],                                // RÈGLES seulement : ce que l'article régit
+      porte: ["qui","quoi"],                                // RÈGLES seulement : ce que l'article régit, et ce que la recherche lit
       qui: "brigadier N.",                                  // signataire par défaut de la pièce
       texte: "Appel reçu à {{e_appel}}, sur place à {{e_arr}}.",
       empans: { e_appel:{ dim:"quand", valeur:"2026-03-12T21:52",
@@ -93,7 +93,7 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   },
   grammaire: { depart:"S0", finaux:["FIN"], blocs:[…], formes:{…} },
   liens: [ { forme, termes:["p_f.e_a", …], tag?, vice?, conclusion?, faux?, rep? } ],
-  remises: [ { qui, texte, pieces:[…],
+  remises: [ { qui, texte, pieces:[…],                     // des pièces : un article se cherche (passe J)
                attentes:[ { question?, attend:"tag", apres?:{ qui, replique } } ] } ],
   repetition: { intro, affirmations:[{court, texte, repond?:["tag"], oppose?}], fin },
   avocat: { rep_vice, rep_faux, rep_inutile:[…], rep_sans_rapport:[…], rep_hors_sujet:[…],
@@ -117,9 +117,11 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   **rédigée par le moteur**, d'avant la passe G ; on ne retire pas une capacité que le contenu du
   jour n'emploie plus) · `piece` (offert
   une fois la pièce livrée — **sur les liaisons *et* sur les termes**, §4.5 ; une liaison
-  `imbrique`, une fois **retenu** le passage d'article de sa pièce, passe F) · `libelle` (le texte du
-  bouton, quand le composeur en fait un ; une liaison-article n'en a plus, sa fiche porte le `nom`
-  de son passage) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa
+  `imbrique`, une fois sa pièce **au dossier** ou **ouverte depuis la recherche**, passe J ; **jamais
+  une pièce-règle sur un terme** : un article ne se livre plus, et le terme qui l'exigerait ne
+  s'offrirait qu'une fois l'article trouvé — après la relation qui le fait chercher) · `libelle` (le
+  texte du bouton, quand le composeur en fait un ; une liaison-article n'en a plus, son résultat de
+  recherche porte le `nom` de son passage) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa
   pièce).
 - **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`, `"juxtaposition"`) · `sens` (`"asc"` par
   défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8) ·
@@ -142,15 +144,24 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   inerte (§15). Il vit **sur l'empan** : il suit les renommages et meurt avec lui, et l'atelier n'en
   tient aucune liste à côté. Une telle liste a existé (`_bruit`), que l'export jetait ; `migrerContenu`
   la replie.
-- **Attribut d'une pièce** : `porte`, sur une pièce « règle » seulement — affiché, **jamais lu par le
-  moteur** ; une telle pièce ne porte aucun empan qui se compare (diagnostic, pas moteur).
+- **Attribut d'une pièce** : `porte`, sur une pièce « règle » seulement — affiché, **lu par la
+  recherche seule** (`regles.js`, passe J), **jamais par le moteur** ; une telle pièce ne porte aucun
+  empan qui se compare (diagnostic, pas moteur).
 - **Le passage d'un article** (`article:true`, passe F, §4.5) : sur une pièce « règle », **un et un
   seul**, son texte entier sans le titre ; **ni `dim` ni `valeur`**, et son `nom` est le nom neutre de
   sa fiche (*« Article 7 »*), jamais un groupe nominal de phrase. **`champsDe` ne le rend pas** : le
   moteur ne le voit jamais, il ne devient jamais un terme, et aucune boucle *par dimension* — moteur,
-  suites, diagnostic — n'a à l'écarter ; une projection à part le rend à l'écran. Il se retient dans
-  `S.retenus` comme un passage — un seul geste, et rien de neuf à sauver. Un drapeau plutôt qu'une
-  pseudo-dimension : celle-ci serait entrée dans toutes ces boucles.
+  suites, diagnostic — n'a à l'écarter ; une projection à part le rend à l'écran. Un drapeau plutôt
+  qu'une pseudo-dimension : celle-ci serait entrée dans toutes ces boucles. **Il ne se retient plus**
+  (passe J) : le prendre range sa pièce au dossier, dans `S.trouves`, que la partie sauve ; une
+  partie d'avant, qui tenait des articles dans `S.retenus`, les y voit passer à la reprise.
+- **La base d'articles** (passe J, §4.5) : toutes les pièces « règle » du contenu, livrées ou non —
+  aucune remise de l'affaire du jour n'en livre, et une qui le ferait les mettrait au dossier
+  d'emblée (on ne retire pas la capacité). **La recherche** est une règle pure : la dimension du
+  premier terme, les trois premières pièces de la base dont `porte` la couvre, **dans un ordre tiré
+  au hasard** — la règle reçoit son tirage, que les suites fixent ; ses résultats vivent dans
+  `S.recherche`, ordre compris, le temps de la phrase. L'ordre de
+  déclaration des pièces est donc signifiant, ici aussi.
 - **Les attentes** sont servies dans l'ordre, et le **désordre est accepté** ; l'ancienne forme
   (`attend`/`apres` sur la remise) se lit comme une liste à un élément.
 - **La juxtaposition** (§4.11) : une forme `deduction:"juxtaposition"`, slots `"*"`, patron
@@ -259,8 +270,10 @@ deux sens, la grammaire (impasse, clôture sans forme, forme indicible, lien ins
 le vide, forme ordonnée sans `sens`, dimension sans forme déductible, **dimension qui n'offre qu'une
 relation**, **lien dont la relation est fausse**), les articles — **un passage
 d'article par règle, et aucun ailleurs ; une liaison dont l'article n'a pas de passage ne
-s'offrirait jamais** (passe F) —, le vice, les sessions — plus l'article livré **trop tard**, qui
-rend une session inclôturable.
+s'offrirait jamais** (passe F) —, le vice, les sessions — plus, depuis la passe J, **la recherche** :
+une dimension comparée qui rend moins de trois articles, un lien attendu dont l'article ne sortirait
+pas de la recherche sur sa paire (la session serait inclôturable), un terme qui porte une
+pièce-règle.
 
 - **« Forme indicible »** : une forme existe de **trois façons** — déclarée par une liaison, choisie à
   un bloc `relation`, ou déduite par un bloc `deduit` ; celle-là n'est nommée par aucun bloc.

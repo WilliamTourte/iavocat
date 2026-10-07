@@ -62,12 +62,19 @@ latitude s'élargira avec elles.
 ordinaire, sinon le vice serait quasi obligatoire et tout s'effondrerait vers la Fin 1. **Le vice n'est
 jamais un verrou** — c'est parce qu'il est hors du chemin obligatoire que les trois fins existent.
 
+**Les articles ne se livrent plus, ils se cherchent** (passe J, §4.5) — demande de l'auteur, le 7
+octobre : l'avocat transmettait ses règles avec ses pièces ; c'est désormais l'IA qui fouille une base
+de textes. Une remise ne porte que des pièces. **Le vice reste hors du chemin** : toute recherche
+lancée depuis la scène ou la référence rend l'article 7, comme sa livraison le mettait sous les yeux,
+mais l'attente de la session 2 se sert sans lui — le faux vice se fonde sur l'article 12, que rend une
+paire de *combien* (§6).
+
 ```
-Session 1  PV + audition + article 3, D'UN SEUL LOT
+Session 1  PV + audition, D'UN SEUL LOT — aucun article : il se cherche (§4.5)
            qui a rédigé le PV — un empan : un fait se cite
            puis, sans nouvelle livraison : les deux heures, sous l'article 3
-           — deux empans + l'article 3 : une relation se fonde
-Session 2  labo, les deux pièces de prélèvement, protocole, seuil
+           — deux empans, leur relation, l'article 3 trouvé : une relation se fonde
+Session 2  labo, les deux pièces de prélèvement — protocole et seuil se cherchent
            ★ la preuve, ⚠ le vice (hors chemin), ✗ le faux vice
            attente servie par le faux vice (docile) OU par la conclusion du vice
 Clôture → répétition → procès hors-champ → Fin 3 / Fin 1 / Fin 2
@@ -80,8 +87,8 @@ que la troisième faisait comparer — un prix qu'on disait assumé : la citatio
 la moitié de la comparaison qu'on demandait ensuite, et la compréhension était à moitié exprimée
 avant d'être demandée. **La première question porte donc sur un passage étranger à la
 comparaison** — *qui a rédigé le PV ?* —, un fait sans lendemain, qui apprend à citer sans rien
-préparer ; **la seconde demande la comparaison entière**, les deux heures sous l'article 3, et c'est
-elle qui les fait retenir (§4.8). Chaque geste du tutoriel a sa question. Et cette question **nomme
+préparer ; **la seconde demande la comparaison entière**, les deux heures sous l'article 3 — qu'il
+faut aussi **trouver** (passe J) —, et c'est elle qui les fait retenir (§4.8). Chaque geste du tutoriel a sa question. Et cette question **nomme
 les deux heures, jamais leur contradiction** : la voir reste au joueur, et l'avocat ne la dit
 qu'après (§4.8). **Charnière de la Fin 3** : la dernière attente servie, **c'est l'avocat qui demande
 s'il tient tout** — l'IA *peut* répondre que oui, et laisser filer. La question est portée par le
@@ -217,10 +224,13 @@ la manière de fonder : la **passe F** — l'article se retient, puis se prend �
 joueur choisit la relation. Relu par l'auteur, puis codé, F puis G. Ce que la passe G a réécrit
 ailleurs — §4.1, §4.2, §4.4, §4.6, §4.7, §4.8, §4.11 — l'a été et codé dans la foulée, avec ses trois
 arbitrages (le pressentiment au choix vrai, les libellés de relation, le CONTEXTE qui reste) : **à
-relire par l'auteur**.*
+relire par l'auteur**.* *Puis le 7 octobre, la **passe J** : l'article ne se livre plus, il se
+cherche, puis se prend — réécrit ici, au §3, §4.6, §4.8, §4.9, §4.11, §6, §7 et §8, puis au §11 et au
+§15 : **à relire par l'auteur avant le code**. Le §16 et la carte (§17) suivront le code.*
 
-- **La livraison** — la grammaire de comparaison est complète dès la première phrase ; seuls les
-  **articles** arrivent avec le dossier, un article étant une pièce et non une tournure.
+- **La livraison** — la grammaire de comparaison est complète dès la première phrase ; aucun
+  **article** n'arrive plus avec le dossier : il **se cherche** (passe J, ci-dessous), et rejoint le
+  dossier une fois pris — un article étant une pièce et non une tournure.
 - **Désigner, puis déclarer** — le joueur désigne *ces deux-là*, puis **déclare ce qui les lie**,
   puis l'appuie *sous ce texte*. Il choisit entre **les deux relations de leur dimension**, celles que
   le contenu déclare déjà : *une seule et même personne / pas la même personne*, *coïncident /
@@ -269,40 +279,59 @@ relire par l'auteur**.*
   n'a pas été versée (§3) : elle repart, comme avant.
 - **L'article est le verbe** : la liaison *« …, en violation de l'article 7 »* **est** la base
   légale, une par article — et **le moteur ne tranche aucune question de droit** : il ne lit ni le
-  numéro ni `porte`, et tous les articles **retenus** sont offerts. Le libellé **n'est pas neutre**,
+  numéro ni `porte`, et tout article **au dossier, ou ouvert depuis la recherche**, est offert. Le libellé **n'est pas neutre**,
   il annonce ce que l'article fait du fait : arbitré le 16 septembre, la clarté du geste passe avant.
   **Et il n'a pas le droit d'être faux** : chaque article porte **son** libellé, juste dans sa
   langue — un article qui écarte une déposition n'est pas *contredit* par elle. L'uniformité n'a
   jamais été une exigence, seulement un accident ; un libellé bancal se lit comme un formulaire
   (§8.8, et le premier point ouvert du §3 de `docs/PASSATION.md`). **Ce libellé vit dans la
-  phrase ; la fiche, elle, porte un nom neutre** — *« Article 7 »* (passe F). Jean voulait ce nom
-  sur le bouton (6 octobre) : il se lit comme un choix, et force à lire l'article. Les deux tiennent
-  ensemble depuis que le bouton est la fiche : on choisit un texte, la phrase dit ce qu'il en fait.
-- **L'article se retient, puis se prend (passe F)** — retour de playtest (Bérengère). Il s'offrait
-  au composeur dès sa pièce **ouverte** — ouvrir valait lire —, parmi les propositions, sans qu'on
-  l'y ait mis : *« les gens croient qu'il est déjà ajouté »*. Il suit désormais les deux verbes du
-  §4.6, comme un passage : on le **retient** en cliquant son texte dans la pièce — c'est montrer
-  qu'on l'a lu, et tout ce qui entre au CONTEXTE y entre par le même geste —, et on le **prend** sur
-  sa fiche, dans le CONTEXTE, quand la phrase attend un article. **On n'invoque pas un texte qu'on
-  n'a pas retenu** : l'offre a suivi *reçu*, puis *ouvert* ; elle suit *retenu*. Le passage d'un
-  article est **son texte entier**, sans son titre — n'en rendre cliquable que la proposition qui
-  règle serait une lampe torche : pour l'article 7, ce serait la clause même du vice (§4.3). Il ne
-  porte **ni dimension ni valeur** : il ne se compare à rien, n'est jamais un terme — on ne cite pas
-  un article seul —, et le moteur ne le voit pas (§11). **Depuis la passe H, les deux d'un même
-  clic** quand la phrase attend un article (§4.6) : on n'invoque toujours que ce qu'on a retenu — le
-  clic retient d'abord, puis fonde.
-- **La continuation** — les liaisons-articles retenues emboîtent la comparaison et closent la phrase
+  phrase ; le résultat de recherche, lui, porte un nom neutre** — *« Article 7 »*, comme la fiche
+  de la passe F avant lui. Jean voulait ce nom sur le bouton (6 octobre) : il se lit comme un choix,
+  et force à lire l'article. On choisit un texte, la phrase dit ce qu'il en fait.
+- **L'article se cherche, puis se prend (passe J)** — demande de l'auteur, le 7 octobre : l'IA a
+  accès à une base de textes, à la manière de Légifrance, et c'est elle qui cherche ; l'avocat ne
+  transmet plus d'article. C'est le **RAG** du jeu : *on augmente sa réponse par une recherche*. La
+  relation choisie, le composeur offre ***« Chercher un article correspondant »*** ; la recherche
+  rend **trois articles**, dans le CONTEXTE (§4.6), et le joueur choisit en lisant — un léger QCM.
+  Un résultat **s'ouvre comme une pièce**, et un clic sur son texte **le met dans la phrase** : **on
+  n'invoque pas un texte qu'on n'a pas lu**. Pris, l'article **rejoint le dossier**, et la phrase
+  suivante qui l'attend l'y prend, sans chercher de nouveau ; refusé par l'avocat, il y reste, comme
+  toute pièce. Un résultat seulement ouvert n'y entre pas : les leurres n'encombrent pas l'index.
+  **On ne retient plus un article.** La passe F l'avait fait entrer au CONTEXTE comme un passage —
+  retour de playtest (Bérengère) : il s'offrait au composeur dès sa pièce ouverte, et *« les gens
+  croient qu'il est déjà ajouté »* ; le retenir montrait qu'on l'avait lu. Ouvrir un résultat et
+  cliquer son texte le montre aussi bien, et le composeur ne le propose toujours pas de lui-même.
+  Le passage d'un article est **son texte entier**, sans son titre — n'en rendre cliquable que la
+  proposition qui règle serait une lampe torche : pour l'article 7, ce serait la clause même du vice
+  (§4.3). Il ne porte **ni dimension ni valeur** : il ne se compare à rien, n'est jamais un terme —
+  on ne cite pas un article seul —, et le moteur ne le voit pas (§11).
+- **Ce que rend la recherche** — tranché par l'auteur le 7 octobre. Les **trois articles dont `porte`
+  couvre la dimension de la paire** — celle du premier passage —, les trois premiers déclarés, dans
+  un **ordre tiré au hasard** à chaque recherche (*auteur*, le 7) : le bon n'y est pas toujours
+  premier, et relancer la recherche rebat les trois. Le tirage se garde le temps de la phrase — un
+  rendu ne les déplace pas sous les yeux du joueur. Une recherche **sur les mots** échouerait : la paire de la
+  session 1 et l'article 3 n'ont pas un mot en commun, et une recherche sur le sens n'existe pas
+  sans serveur ni dépendance (§9). **Toute paire a ses résultats**, la plus vaine comprise : une
+  recherche qui ne répondrait qu'aux paires qui comptent les désignerait — une lampe torche (§4.3).
+  Les deux **leurres** sont du même champ que le bon, sinon le choix se ferait sans lire ; les écrire
+  est un travail d'affaire (§8). L'écran **ne montre jamais la dimension** d'un résultat : on ne voit
+  que des textes. *La recherche apparie les catégories à la place du joueur* — ce à quoi Jean
+  craignait de voir réduit le choix de l'article (§4.11) ; ce qui lui reste, lire trois textes du
+  même champ, ne s'y réduit pas.
+- **La continuation** — les liaisons-articles offertes emboîtent la comparaison et closent la phrase
   dessus : la frontière passe **après la relation choisie**.
   L'automate n'oblige plus, mais la relance *« Et donc ? »* ne se coupe pas, sans quoi le refus
   arrive comme une surprise.
 - **Un article n'interdit rien** : `porte` annonce — par une marque sans mot sous son titre, plus
   par une étiquette (§4.11) —, le moteur ne le lit jamais : un refus se contournerait en essayant
-  tous les articles. **Seules les erreurs de catégorie sont refusées**, et l'écran ne les refuse
+  tous les articles. **La recherche le lit, et rien d'autre** (passe J) : elle choisit ce qu'elle
+  **montre**, jamais ce que la phrase **accepte** — un article du dossier se pose sous n'importe
+  quelle relation, et c'est l'avocat qui juge. **Seules les erreurs de catégorie sont refusées**, et l'écran ne les refuse
   qu'en session 1 (§4.11).
 - **Ce que l'écran laisse deviner, avant le clic** — aucun mode, aucun refus nouveau : la **voix**
   regarde un pas en avant et annonce la comparaison ; le **CONTEXTE** s'assombrit **par dimension**
   (§4.3), jamais empan par empan — **en session 1 seulement**, comme le refus qu'il annonce
-  (§4.11) ; la **fiche qui fonde** se range à part des passages (§4.6). **La pièce, elle, ne
+  (§4.11) ; l'article **se cherche** à part des passages (§4.6). **La pièce, elle, ne
   s'assombrit jamais**, même depuis que son clic prend (passe H, §4.6) : son marquage ne varie pas
   (§4.3), et un passage d'une autre dimension, cliqué en second terme en session 1, reçoit le refus
   que sa fiche aurait reçu — retenu quand même.
@@ -315,35 +344,42 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
 | Surface | Statut | Rôle |
 |---|---|---|
 | La **DISCUSSION** + les pièces — *la bande du haut* | lecture | l'entrée |
-| Le **CONTEXTE** — *panneau, au milieu* | **privé** | le dossier, les passages et les articles retenus (`S.retenus`) — jamais jugés |
+| Le **CONTEXTE** — *panneau, au milieu* | **privé** | le dossier — pièces reçues, articles trouvés —, la recherche, les passages retenus (`S.retenus`) — jamais jugés |
 | La **PLAIDOIRIE** — *panneau, au milieu* | **transmis** | ce que l'avocat retient (`S.plaidoirie`) |
 | **Le composeur** — *bandeau du bas* | **privé** | la phrase qu'on écrit — jamais jugée |
 
 - **Un empan retenu n'existe qu'une fois à l'écran** : les puces du contexte **sont** les boutons de
   terme — et, dans la pièce, le passage lui-même (passe H, ci-dessous). Le composeur ne porte aucune
   étiquette « privé » — son statut se lit dans ce qui s'y passe.
-- **Et la fiche d'un article EST le bouton de sa liaison** (passe F, §4.5) : le composeur ne propose
-  plus d'article, on le prend là où on l'a retenu — ou, d'un même clic, sur son texte dans la pièce
-  (passe H, ci-dessous). Elle se range **hors des dimensions**, en fin de
-  liste, sous un titre à elle — *ARTICLES* —, sans couleur ni trait, puisqu'un article n'a pas de
-  dimension ; elle porte son **nom neutre** (*« Article 7 »*) et le début de son texte. **Elle n'est
-  jamais un terme** : tant que la phrase n'attend pas d'article, elle est **refusée, pas désactivée**
-  (`aria-disabled`, §4.10 règle 5) — la toucher dit pourquoi, *un article fonde une relation entre
-  deux passages* —, comme une fiche quand la phrase est pleine. Pas d'assombrissement : il annonce
-  une erreur de catégorie (§4.11), et un article n'en a pas.
+- **La recherche s'affiche dans le CONTEXTE** (passe J, §4.5) — demande de l'auteur : pas au
+  composeur, où seul le bouton qui la lance se tient. **Elle ne se lance pas depuis le CONTEXTE** :
+  elle part de la paire posée, et la paire vit dans la phrase — l'y désigner une seconde fois
+  serait un geste de trop. Une zone à elle, **RECHERCHE**, sous l'index :
+  trois entrées, chacune le **nom neutre** de l'article (*« Article 7 »*) et le début de son texte —
+  jamais son titre, qui dirait ce qu'il régit. Une entrée s'ouvre comme une puce de l'index : la
+  pièce paraît, on la lit, un clic sur son texte prend l'article. Sans couleur ni trait : la
+  dimension ne se dit pas. La zone vit **le temps de la phrase** : elle s'efface quand la phrase
+  part, ou qu'on la défait en deçà de la relation. *La fiche d'article de la passe F et son groupe
+  ARTICLES s'en vont* : on ne retient plus un article — ce qu'on a trouvé est **au dossier**, dans
+  la colonne des règles de l'index. Un article ouvert alors que la phrase n'en attend pas ne se
+  prend pas, et la ligne sous la pièce dit pourquoi : *un article fonde une relation entre deux
+  passages*.
 - **Deux verbes, partout** : on **retient** un passage — de la pièce vers le CONTEXTE — et on le
   **prend** — vers la phrase. *Sélectionner* ne paraît plus à l'écran : il servait aux deux, et un
-  joueur a lu trois verbes là où il n'y a que deux gestes. **Un article aussi** (passe F) : on
-  retient son texte, on le prend pour fonder la phrase.
+  joueur a lu trois verbes là où il n'y a que deux gestes. **Un article, lui, se cherche et se
+  prend** (passe J) : il n'est jamais retenu.
 - **Et dans la pièce, un seul clic fait les deux (passe H)** — demande de l'auteur, pour réduire le
   nombre de gestes. Cliquer un passage le **retient**, toujours, et le **prend** si la phrase attend
-  un passage ; cliquer le texte d'un article le retient, et fonde la phrase qui attend un article.
+  un passage ; cliquer le texte d'un article fonde la phrase qui attend un article, et le range au
+  dossier — il ne le retient pas (passe J).
   Sinon, il est seulement retenu, comme avant. **La fiche reste le clavier** de ce qu'on a
   rassemblé : on y prend ce qu'on a retenu plus tôt, sans rouvrir de pièce. Le compte, sur l'affaire
   du jour et **l'envoi compris** : citer passe de cinq gestes à quatre — le bouton de pièces, la
   pièce, le passage, l'envoi ; la fiche tombe —, comparer sous l'article 3 de dix à sept, le vice
   trouvé en lisant de treize à dix — chaque fois les *prendre* qui suivaient un *retenir*, un par
   passage et un pour l'article. Le vice composé depuis des passages déjà rassemblés reste à cinq.
+  *La passe J ajoute un geste — chercher — à toute phrase qui fonde sur un article pas encore au
+  dossier.*
   **Se passer du CONTEXTE** — envisagé d'abord — aurait fait le même gain sur le chemin direct, et
   coûté le double dès qu'on rassemble : essayer des paires parmi les doublons de `qui` (§4.4) se fait
   depuis les fiches, sans rouvrir une pièce à chaque essai.
@@ -357,7 +393,7 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
     phrase, il n'y retourne pas — en second terme, il serait refusé : le même passage deux fois ne
     se compare pas — et la ligne sous la pièce le dit.
   - **L'article, d'un clic** : quand la comparaison du vice attend son article, cliquer le texte de
-    l'article 7 lève `vice_trouve` — comme un clic sur sa fiche, un geste plus tôt. La phrase
+    l'article 7 — ouvert depuis la recherche ou le dossier — lève `vice_trouve`. La phrase
     entière est sous les yeux, au composeur : rien ne s'assemble à l'insu du joueur.
   - **Le prix, à regarder en jeu** : qui rassemble en lisant voit ses premiers clics former une
     phrase — en session 2, souvent une juxtaposition. Rien ne part sans *« → Envoyer »*, et
@@ -391,7 +427,9 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   disponibles »*, pièces et règles confondues, quand l'index disait *« 5 pièces, 3 règles »* pour le
   dossier entier. Même chiffre, deux sens. Le bouton dit donc **les pièces et les règles à part**,
   avec les mots des deux colonnes de l'index, et dès le deuxième envoi il dit **nouvelles** : le
-  message compte ce qu'il apporte. **L'index, lui, ne compte plus** — demande de l'auteur : son
+  message compte ce qu'il apporte. *Depuis la passe J, aucune remise ne livre d'article* : le
+  bouton ne compte plus que des pièces, et la colonne des règles de l'index se remplit des articles
+  trouvés. **L'index, lui, ne compte plus** — demande de l'auteur : son
   en-tête ne dit que **DOSSIER**, replié comme déplié ; ses deux colonnes se comptent à l'œil.
 - **LA PIÈCE S'OUVRE DANS LE CONTEXTE, entre l'index et les passages retenus** — retour de playtest
   (Colas), et idée de l'auteur. Tant que la pièce occupait seule la place latérale, citer coûtait
@@ -506,7 +544,7 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   pas un relais —, et à son départ. Retour de playtest (Jean, 6 octobre) : la comparaison posée,
   l'article pas encore lu, il se refermait, et la voix répondait aussitôt *« ouvre-les »* — le jeu
   fermait la porte, puis demandait de la rouvrir. Quand le geste suivant est d'aller lire, *dans* le
-  CONTEXTE, il reste ; et depuis que l'article s'y prend (passe F), il reste aussi jusqu'à ce qu'on
+  CONTEXTE, il reste ; et depuis que l'article s'y prend (passes F et J), il reste aussi jusqu'à ce qu'on
   l'ait pris — **y compris pendant le choix de la relation** (passe G), qui a lieu au composeur :
   le refermer là pour le faire rouvrir à l'article, ce serait la friction de Jean une fois de plus.
   *Depuis la passe H, cette fermeture se fait rare* : on compose d'ordinaire dans la pièce, et ouvrir
@@ -624,13 +662,21 @@ plus, c'est l'avocat** : lui est quelqu'un.
 | | 2 | un passage se clique : il se retient, et entre dans la phrase (passe H, §4.6) | **le texte de la pièce**, en entier — ouverte dans le CONTEXTE, plus rien à refermer (§4.6) |
 | | 3 | ce qu'on retient est aussi le clavier — *s'il est retenu sans être dans la phrase* | **toute la zone des retenus**, juste sous la pièce, jamais une puce |
 | | — | *rien ne part tant qu'on n'envoie pas* | **rien** : *« → Envoyer »*, seul bouton plein, se montre seul |
-| **mettre en relation** | 1 | une réponse peut tenir sur **deux** passages, et chacun se clique comme pour citer : le premier entre dans la phrase, le second l'y rejoint | l'index, puis **le texte de la pièce** — tant que les deux passages attendus ne sont pas retenus, jamais l'empan ; la porte CONTEXTE s'il est fermé |
+| **mettre en relation** — *les passages* | 1 | une réponse peut tenir sur **deux** passages, et chacun se clique comme pour citer : le premier entre dans la phrase, le second l'y rejoint | l'index, puis **le texte de la pièce** — tant que les deux passages attendus ne sont pas retenus, jamais l'empan ; la porte CONTEXTE s'il est fermé |
 | | 2 | les deux se prennent, l'un puis l'autre — *s'ils sont retenus sans être dans la phrase* | **toute la zone des retenus**, au premier passage comme au second |
-| | 3 | deux passages ne disent pas ce qui les lie : on le **déclare** (§4.5, passe G) | **les deux relations**, dans les propositions du composeur — toute la zone, jamais la bonne |
-| | 4 | une relation seule ne suffit pas, et on n'invoque que ce qu'on a retenu (§4.5) — *s'il n'est pas retenu* | **la puce de l'article**, dans l'index — la porte CONTEXTE s'il est fermé ; *« déplier »* si l'index est replié, ce qu'une pièce encore ouverte fait d'ordinaire : le tutoriel ne déplie rien à la place du joueur ; l'article ouvert, **son texte**, qu'un clic retient et prend (passes F et H) |
-| | 5 | il lui faut un article qui la fonde — *s'il était retenu avant que la phrase l'attende* | **la fiche de l'article**, dans les retenus — plus le composeur, qui ne le propose plus (passe F) |
+| — *la relation* | 3 | deux passages ne disent pas ce qui les lie : on le **déclare** (§4.5, passe G) | **les deux relations**, dans les propositions du composeur — toute la zone, jamais la bonne |
+| — *l'article* | 4 | une relation seule ne suffit pas : on **cherche** l'article qui la fonde (§4.5, passe J) — *s'il n'est pas déjà au dossier* | ***« Chercher un article correspondant »***, au composeur |
+| | 5 | la recherche rend trois textes : on les ouvre, on choisit en lisant | **toute la zone RECHERCHE**, dans le CONTEXTE — jamais le bon ; la porte CONTEXTE s'il est fermé |
+| | 6 | un clic sur le texte de l'article ouvert le prend, comme un passage | **son texte**, quel qu'il soit : le halo désigne le geste, jamais le choix |
 | | — | *le même envoi qu'au premier geste* | **rien**, pour la même raison |
 | **aux deux gestes** | ! | un passage posé que la question ne demande pas se retire — *une alerte* (passe H) | ***« ← retirer »***, au composeur — le geste qui défait, jamais le passage qu'il fallait |
+
+**Mettre en relation, en trois temps** (passe J) — demande de l'auteur : la bulle mêlait sous une
+même consigne les passages, la relation et l'article. Maître Auber pose **une** question, la
+« grosse », qui demande tout ; le tutoriel la découpe — **les deux passages, puis la relation, puis
+l'article** —, une bulle par temps, et chacune attend son geste avant de passer. **Il ne bloque
+rien** — il ne décide rien (ci-dessous) : c'est la **remise** de calibration qui ne laisse pas
+partir une comparaison nue (§4.11 point 6). Sans le tutoriel, la question seule.
 
 **Retenir se montre aux deux gestes** — retour de playtest (Bérengère). Les deux heures n'étant plus
 extraites d'avance par deux questions (§3), la comparaison commence par les chercher : le halo va à
@@ -664,19 +710,17 @@ plus que la consigne. **Ce qui distingue les deux gestes** n'est pas un compteur
 **contenu** : une attente dont le lien attendu emboîte une forme (une comparaison sous un article)
 plutôt qu'un simple empan. Le tutoriel le lit dans `JEU.liens`, jamais dans un nom d'attente câblé en dur.
 
-**L'article se désigne, la relation jamais** — demandé par l'auteur, et c'est la seule exception à
-*le halo entoure la zone*. La trouvaille de la comparaison est la **relation entre deux passages** :
-le halo ne la montre pas : il entoure le texte de chaque pièce pour cliquer — et toute la zone des
-retenus pour prendre ce qui y attend —, puis **les deux relations ensemble** pour choisir (passe G) — la bonne n'est
-jamais désignée, et un mauvais choix n'est pas signalé : c'est Maître Auber qui le refuse, après
-l'envoi. Plus que jamais, *la relation jamais*. L'article, lui, Maître Auber le
-demande déjà (*« quel article est-ce qu'on peut citer »*), et la remise de calibration n'en livre
-qu'un : désigner sa puce, puis son texte — et sa fiche, s'il était retenu d'avance —, ne choisit
-rien à la place du joueur — il épargne seulement de chercher où se lit un texte, et qu'il se retient
-et se prend comme un passage, d'un même clic (passe H). La désignation se **dérive** du lien attendu (sa
-`forme`, le bloc de liaison qui l'emboîte, la pièce de ce bloc), jamais d'un nom câblé. *Limite
-assumée* : une affaire qui livrerait plusieurs articles à la session 1 verrait le chrome trancher
-entre eux — la question serait alors à rouvrir.
+**Ni la relation, ni l'article ne se désignent** (passe J). La trouvaille de la comparaison est la
+**relation entre deux passages** : le halo ne la montre pas : il entoure le texte de chaque pièce
+pour cliquer — et toute la zone des retenus pour prendre ce qui y attend —, puis **les deux
+relations ensemble** pour choisir (passe G) — la bonne n'est jamais désignée, et un mauvais choix
+n'est pas signalé : c'est Maître Auber qui le refuse, après l'envoi. Plus que jamais, *la relation
+jamais*. **L'article était l'exception** : la remise de calibration n'en livrait qu'un, et désigner
+sa puce ne choisissait rien. Depuis qu'il se cherche, la recherche en rend trois : le halo entoure le
+bouton qui cherche, puis **les trois résultats ensemble**, puis le texte de celui qu'on a ouvert,
+quel qu'il soit — comme les relations. Un mauvais article part, et l'avocat le refuse. La
+désignation se **dérive** du lien attendu (le bloc de liaison qui l'emboîte), jamais d'un nom câblé ;
+la *limite assumée* d'une session 1 à plusieurs articles tombe avec l'exception.
 
 **Les garde-fous ne sont pas le tutoriel** : le refus d'écran et l'assombrissement du CONTEXTE
 vivent pendant la **remise** de calibration, que le tutoriel soit là ou non — sa croix ne
@@ -731,8 +775,9 @@ Cinq règles d'écran — le coupable d'une page illisible est le **chrome**, ja
    que la phrase est vide, dans l'aide ensuite ; si un bouton le dit déjà, l'aide se tait. **Et la voix
    elle-même se clique quand le geste qu'elle nomme a lieu dans l'autre colonne** — elle mène alors au
    CONTEXTE et l'ouvre ; elle reste du texte quand le geste a lieu ici même — envoyer, et choisir
-   la relation (§4.5). Prendre un article a quitté le composeur (passe F) : la voix qui le
-   réclame — à retenir ou à prendre — mène donc au CONTEXTE. **Et depuis que le clic dans la pièce
+   la relation (§4.5). **Chercher un article est un bouton du composeur** (passe J) : la relation
+   choisie, *« Chercher un article correspondant »* tient lieu de voix et ouvre le CONTEXTE sur ses
+   résultats ; quand le dossier tient déjà un article, la voix dit aussi qu'on peut l'y prendre. **Et depuis que le clic dans la pièce
    prend aussi (passe H, §4.6), elle nomme les deux chemins d'un passage** — une pièce, ou les
    fiches du CONTEXTE — et, pour un article, son texte à cliquer. Un bouton ne promet ainsi jamais un effet qu'il ne produit pas (§4.5). Cliquable, elle a
    l'air d'un bouton — jamais d'un champ vide ni d'une zone de dépôt, ce que son cadre en pointillés
@@ -842,7 +887,8 @@ laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — l
    pas appris lit l'article. Un rappel, plus une étiquette. Le trait double la couleur, si bien que
    rien ne s'y dit par la couleur seule (§4.10 règle 5) ; un article qui régit deux dimensions porte
    **deux cadres**, l'un dans l'autre. À qui ne voit pas, le nom de la dimension, comme sur un
-   passage. Le moteur ne lit toujours pas `porte` (§4.5). *Partout, session 1 comprise : c'est une
+   passage. Le moteur ne lit toujours pas `porte` ; la recherche seule le lit, pour choisir ce
+   qu'elle montre (§4.5, passe J). *Partout, session 1 comprise : c'est une
    forme, pas un garde-fou.*
 2. **L'erreur de catégorie part, hors session 1.** Deux passages de dimensions différentes ne se
    refusent plus à l'écran : ils se **juxtaposent** — *« {a} et {b} »*, sans relation, puisqu'il n'y en
@@ -875,6 +921,12 @@ laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — l
    offre les deux relations de leur dimension ; la fausse **part**, et Maître Auber la refuse, par
    l'escalade de `rep_relation_fausse` — **session 1 comprise** : à deux relations, un refus d'écran
    donnerait l'autre. C'est le droit de se tromper des points 1 à 3, étendu à la relation.
+6. **En session 1, une comparaison nue ne part pas** (passe J) — demande de l'auteur : *le tutoriel
+   ne laisse pas répondre tant que les trois temps ne sont pas faits*. Mais le tutoriel ne décide
+   rien (§4.8) : c'est donc un garde-fou de la **remise** de calibration, comme le refus d'écran du
+   point 2 — *« → Envoyer »* n'y paraît qu'à la phrase fondée, et la voix dit ce qui manque. La
+   croix du tutoriel ne le lève pas. Hors session 1, elle part, et l'avocat la refuse (*« Et
+   donc ? »*, §4.5).
 
 ## 5. Les directives (le manuel de soi)
 
@@ -919,8 +971,15 @@ absence, mais **le jeu ne le lit nulle part** (§16).
   que le jeu ne le comprend pas. Ce sont des **liens sans tag** : l'avocat dit *juste*, et ramène aux
   deux heures demandées — l'attente reste intacte, rien n'entre en PLAIDOIRIE.
 - **Les articles 7, 12 et 3 ne portent aucun empan qui se compare** : leur seul passage est leur
-  texte, sans dimension ni valeur, qu'on retient pour l'invoquer (§4.5). Le **seuil** vit dans la
+  texte, sans dimension ni valeur, qu'on trouve, puis qu'on prend pour l'invoquer (§4.5). Le **seuil** vit dans la
   pièce qui l'énonce, sinon l'article 12 porterait une valeur. Les **scellés** sont conformes : une piste qui ne mène nulle part.
+- **La base d'articles** (passe J) : les articles 3, 7 et 12, et leurs leurres — trois articles au
+  moins par dimension que l'affaire compare —, aucun livré. Un leurre est **inerte par construction**
+  (§8.3) : aucun lien à tag ne le porte, et l'avocat le refuse comme toute réponse à côté.
+  **L'article 7 sort de toute recherche lancée depuis la scène ou la référence** (*qui*, *quoi*) —
+  comme sa livraison le mettait sous les yeux —, et le contenu y répond déjà : greffier, scellés,
+  délai. Ce qui garde le vice hors du chemin, c'est que l'attente de la session 2 se sert sans lui,
+  par l'article 12, que rend une paire de *combien* (§3).
 - **Le faux vice** : « la probabilité n'est que de 1 sur X → doute raisonnable ! » alors que le chiffre
   est écrasant — fondé, bien formé, faux de sens. L'avocat, qui ne sait pas, y pousse lui-même :
   tentation partagée, pas piège tendu, et chemin docile vers la Fin 3.
@@ -937,10 +996,11 @@ au §3 de `docs/PASSATION.md`.*
 | La compréhension doit être *exprimée* ; saisie structurée, pas texte libre | §3, §4.5 |
 | Un empan se lit deux fois ; le marquage ne varie jamais avec la pertinence | §4.1, §4.3 |
 | Une dimension sans doublon désigne sa réponse ; la marge de bruit reste non nulle | §4.4, §14 |
-| Rien n'est *plaidé* qui ne soit fondé ; on n'invoque pas un texte qu'on n'a pas retenu | §4.5 |
+| Rien n'est *plaidé* qui ne soit fondé ; on n'invoque pas un texte qu'on n'a pas lu | §4.5 |
+| La recherche montre trois articles du champ de la paire — toute paire a les siens —, et ne trie rien de ce que la phrase accepte | §4.5 |
 | Le joueur déclare la relation, le moteur la vérifie — jamais ne la rédige ; une relation fausse part, l'avocat la refuse | §4.5, §4.11 |
 | Une clôture qui n'ajoute rien n'est pas un choix ; `imbrique` n'en est jamais une | §4.5 |
-| Un article annonce, ne filtre rien, ne porte aucun empan qui se compare ; le moteur ne dit pas le droit | §4.5, §6 |
+| Un article annonce, ne filtre rien, ne porte aucun empan qui se compare ; le moteur ne dit pas le droit, et seule la recherche lit `porte` | §4.5, §6 |
 | La session 1 apprend, les suivantes laissent se tromper ; la frontière est la remise, jamais le tutoriel | §4.11 |
 | L'erreur ne coûte que l'agacement de l'avocat : patience infinie, aucun compte à l'écran | §4.11, §8.4 |
 | Un mécanisme utilisé une seule fois est un panneau indicateur — sauf le tutoriel | §4, §4.8 |
@@ -974,3 +1034,9 @@ se dit pas de deux personnes, et un joueur l'a relevé sur la phrase même qui p
 forme par registre, distinguée par ses seuls `slots` et déclarée **avant** la générique : c'est
 l'ordre de déclaration qui tranche (§11), jamais un `if` dans le moteur. Même exigence pour le
 libellé d'un article (§4.5) — ce qui se lit comme une faute de langue se lit comme un formulaire.
+
+**Écrire les leurres** (passe J, §4.5) : trois articles au moins par dimension que l'affaire compare,
+le bon compris, **du même champ** que lui et plausibles à la lecture. Un leurre qui se voit de loin
+rend le choix gratuit ; un leurre qui fonderait aussi bien rendrait l'affaire injuste — il doit être
+inerte par construction (§8.3). L'ordre de déclaration compte : la recherche prend les trois
+premiers, et le diagnostic dit si un lien attend un article qu'elle ne rendrait pas (§15).
