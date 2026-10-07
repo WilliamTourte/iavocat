@@ -257,7 +257,7 @@ function creerRegles(JEU, M) {
               : (JEU.grammaire.finaux || []).includes(b.vers) ? M.valider(r) : null;
     if (err) {
       S.compo.pop();
-      S.refus = "Cette phrase ne veut rien dire : " + err
+      S.refus = "Cette RÉPONSE ne veut rien dire : " + err
               + ". Rien n'est perdu — reprends avec un autre passage.";
       return;
     }
@@ -326,7 +326,7 @@ function creerRegles(JEU, M) {
     const ch = chaineEnvoyable(S);
     if (!ch) {
       const err = M.valider(M.reduire(chaineCompo(S))) || "arité";
-      S.refus = "Cette phrase ne veut rien dire : " + err + ". Rien n'est perdu — retire le dernier bloc.";
+      S.refus = "Cette RÉPONSE ne veut rien dire : " + err + ". Rien n'est perdu — retire le dernier bloc.";
       return null;
     }
     S.compo = [];

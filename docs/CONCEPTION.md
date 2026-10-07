@@ -175,7 +175,7 @@ dimension, à sa couleur.
 l'oublie pas — arbitré le 16 septembre, reconduit le 30 après un playtest qui attendait un
 interrupteur — mais **l'écran le dit** : une ligne sous la pièce renvoie au CONTEXTE. *Depuis la
 passe H (§4.6), ce reclic prend le passage si la phrase l'attend ; la ligne ne renvoie au CONTEXTE
-que lorsqu'il n'a rien fait, et dit « déjà dans ta phrase » quand il y est.* Un passage retenu
+que lorsqu'il n'a rien fait, et dit « déjà dans ta RÉPONSE » quand il y est.* Un passage retenu
 se marque **par son fond, jamais par sa graisse** : le texte autour ne bouge pas. **Retirer s'écrit
 *oublier*, en toutes lettres, jamais d'une croix** — retour de playtest (Colas) : la fiche et le panneau
 portaient le même ×, et un joueur a fermé le CONTEXTE en croyant retirer un passage. Le × ferme ou
@@ -187,8 +187,8 @@ porte tout passage, il se lisait comme un survol. Trois marques, aucune qui fass
 qui dure plus d'un geste : le passage retenu porte un **✓ en exposant**, posé hors du flux (§4.10
 règle 5 : un état s'écrit) ; **la même ligne que le rappel**, sous la pièce, dit *« ✓ Retenu dans ton
 CONTEXTE »* le temps d'un rendu — comme lui, sans minuteur, puisque ce jeu ne rend jamais hors d'un
-geste du joueur —, et *« ✓ Retenu dans ton CONTEXTE, et posé dans ta phrase »* quand le même clic l'a
-pris (passe H, §4.6) : elle dit lequel des deux a eu lieu ; et **la fiche neuve s'allume une fois** dans les retenus, juste sous la pièce
+geste du joueur —, et *« ✓ Ajouté à ta RÉPONSE, et retenu dans ton CONTEXTE »* quand le même clic l'a
+pris (passe H, §4.6) — *« ✓ Ajouté à ta RÉPONSE »* seul quand il était déjà retenu : elle dit lequel des deux a eu lieu ; et **la fiche neuve s'allume une fois** dans les retenus, juste sous la pièce
 (§4.6) — là où le passage est allé, et où on va le prendre —, comme le compte de la porte CONTEXTE.
 La ligne reste **dans le flux** : collée au bas de la pièce, elle couvrait, dans la bande étroite du
 CONTEXTE, le texte même qu'on venait de cliquer. **Et elle se voit** : depuis que le clic pose
@@ -440,18 +440,19 @@ de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui 
   La matière ne change pas : la pièce garde son **papier** au milieu de l'écran du CONTEXTE (deux
   matières, ci-dessous) — c'est même ce qui la détache de l'index et des retenus qui l'encadrent.
 - **Le CONTEXTE dit l'état de la phrase** — retour de playtest (Jean). Un passage **déjà pris**
-  porte *« dans ta phrase »* : on voit ce qu'on a posé là où on l'a pris. Et quand la phrase ne
-  prend plus de passage, **le CONTEXTE le dit, en une ligne** — *« Ta phrase ne prend plus de
+  porte *« dans ta RÉPONSE »* : on voit ce qu'on a posé là où on l'a pris. Et quand la phrase ne
+  prend plus de passage, **le CONTEXTE le dit, en une ligne** — *« Ta RÉPONSE ne prend plus de
   passage »*, avec le geste qui la rouvre — au lieu d'un bouton seulement grisé dont la raison
   vivait dans un `title`, que ni le toucher ni le clavier n'atteignent (§4.10). Les fiches restent
   atteignables, et les toucher redit la raison. Ce n'est pas une seconde voix : la voix dit le geste
   suivant, la ligne dit pourquoi celui-ci ne mène nulle part. **Et une fiche déjà dans la phrase ne
   s'y pose pas deux fois** (passe H) : tant que la phrase prend encore un passage, la toucher dit
-  *« déjà dans ta phrase »*, et comment revenir en arrière — comme le même passage recliqué dans la
+  *« déjà dans ta RÉPONSE »*, et comment revenir en arrière — comme le même passage recliqué dans la
   pièce —, au lieu du refus d'une phrase *« qui ne veut rien dire »*, un reproche pour un geste de
   lecture. Refusée, pas désactivée, comme les autres (§4.10 règle 5) ; la phrase pleine, c'est la
-  ligne ci-dessus qui parle. La pièce, l'étiquette *« dans ta phrase »* et ce refus lisent la même
-  chose : ce qui est dans la phrase.
+  ligne ci-dessus qui parle. La pièce, l'étiquette *« dans ta RÉPONSE »* et ce refus lisent la même
+  chose : ce qui est dans la phrase. **À l'écran, la phrase s'appelle *ta RÉPONSE*** — le titre du composeur, en
+  capitales comme le CONTEXTE (passe I, *auteur*) ; le document et le code gardent *la phrase*.
 - **On ne purge pas le CONTEXTE entre deux remises** — retour de playtest (Bérengère), tranché par
   l'auteur le 6 octobre. Le 5, pour répondre à Jean (*en session 2, les fiches de la session 1
   restent en tête*), les passages d'une remise close passaient sous ceux de la remise en cours,

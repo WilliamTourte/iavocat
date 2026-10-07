@@ -187,8 +187,8 @@ function tutoIntrus(geste, attendus){
   if(!attendus.length) return null;
   const intrus=S.compo.some(p=>typeof p.valeur==="string" && EMPAN[p.valeur] && !attendus.includes(p.valeur));
   return intrus ? {...geste, n:0, ou:"#composeur", f:"retirer", alerte:true,
-    dit:"Retire-le de ta phrase.",
-    ditLong:RATE+" « ← retirer » l'ôte de ta phrase ; ton CONTEXTE le garde."} : null;
+    dit:"Retire-le de ta RÉPONSE.",
+    ditLong:RATE+" « ← retirer » l'ôte de ta RÉPONSE."} : null;
 }
 /* RETENIR, AUX DEUX GESTES (§4.8) : tant qu'un passage attendu manque au
    CONTEXTE, le halo va à l'index, puis au texte d'une pièce qui en porte un —
@@ -215,7 +215,7 @@ function tutoRetenir(geste, attendus, tolere=[]){
     dit: rate ? RATE : !relier ? "Clique le passage qui répond."
        : second ? "Clique le second passage." : "Clique un premier passage.",
     ditLong: rate ? RATE+" Relis sa question, et clique "+(relier?"les passages qui y répondent.":"le passage qui y répond.")
-       : !relier ? "Clique sur le passage qui répond à sa question : il entre dans ta RÉPONSE, et ton CONTEXTE le garde."
+       : !relier ? "Clique sur le passage qui répond à sa question pour l'ajouter à ta RÉPONSE."
        : second ? "Clique sur le second passage qu'il demande, dans sa pièce."
        : "Une réponse peut tenir sur deux passages : clique sur l'un de ceux qu'il demande, il entre dans ta RÉPONSE."};
   /* AU PREMIER ÉCRAN, IL SE TAIT (§4.8) : le message finit sur le bouton de
@@ -847,10 +847,10 @@ function basculerDossier(){
    la fiche neuve et le compte de la porte CONTEXTE. Tout vit le temps d'un rendu. */
 let echoPiece=null, vientDeRetenir=null;
 const ECHO_RETENU="✓ Retenu dans ton CONTEXTE.";
-const ECHO_POSE="✓ Retenu dans ton CONTEXTE, et posé dans ta phrase.";
-const ECHO_REPOSE="✓ Posé dans ta phrase.";
-const RAPPEL_RETRAIT="Déjà dans ton CONTEXTE — c'est là qu'on l'oublie.";
-const RAPPEL_PHRASE="Déjà dans ta phrase — « ← retirer » pour revenir en arrière.";
+const ECHO_POSE="✓ Ajouté à ta RÉPONSE, et retenu dans ton CONTEXTE.";
+const ECHO_REPOSE="✓ Ajouté à ta RÉPONSE.";
+const RAPPEL_RETRAIT="Déjà dans ton CONTEXTE — « oublier », sur sa fiche, pour l'en retirer.";
+const RAPPEL_PHRASE="Déjà dans ta RÉPONSE — « ← retirer » pour revenir en arrière.";
 function surligner(pid,eid){
   const k=pid+"."+eid, deja=S.retenus.includes(k);
   const fait=R.retenirEtPrendre(S,pid,eid), pose=fait==="pose";
@@ -924,14 +924,14 @@ function piecePanelHTML(pid){
    sélecteurs restent des LITTÉRAUX — R6 ne scanne pas un sélecteur calculé, et
    ne dirait rien le jour où l'un des deux cesserait d'exister. */
 /* §4.6 — LE CONTEXTE DIT L'ÉTAT DE LA PHRASE (retour de Jean). Un passage déjà
-   pris porte « dans ta phrase » ; et quand la phrase n'en prend plus, une ligne le
+   pris porte « dans ta RÉPONSE » ; et quand la phrase n'en prend plus, une ligne le
    dit. PIÈGE PAYÉ : la raison vivait dans le `title` d'un bouton `disabled` — ni
    le toucher ni le clavier ne l'atteignaient, et le bouton ne se laissait même
    plus atteindre (§4.10 règle 5). Les fiches restent donc atteignables
    (`aria-disabled`), et les toucher redit la raison. */
-const RAISON_PLEINE="Ta phrase ne prend plus de passage : « ← retirer » pour revenir en arrière.";
-const RAISON_ARTICLE_ATTENDU="Ta phrase ne prend plus de passage : elle attend un article.";
-const RAISON_RELATION_ATTENDUE="Ta phrase ne prend plus de passage : elle attend ce qui les lie.";
+const RAISON_PLEINE="Ta RÉPONSE ne prend plus de passage : « ← retirer » pour revenir en arrière.";
+const RAISON_ARTICLE_ATTENDU="Ta RÉPONSE ne prend plus de passage : elle attend un article.";
+const RAISON_RELATION_ATTENDUE="Ta RÉPONSE ne prend plus de passage : elle attend ce qui les lie.";
 const raisonPleine=()=>R.relationsOffertes(S).length ? RAISON_RELATION_ATTENDUE
   : R.articleAttendu(S) ? RAISON_ARTICLE_ATTENDU : RAISON_PLEINE;
 let rappelPleine=false;
@@ -958,7 +958,7 @@ function passageDejaPris(k){
    `iBloc`) —, et c'est par ici que passe le harnais : une porte du joueur
    (R13). Refusée, la fiche le dit, comme une fiche de passage. */
 const RAISON_ARTICLE="Un article fonde une relation : il se prend une fois ses deux passages posés.";
-const RAISON_COMPLETE="Ta phrase est complète : « ← retirer » pour revenir en arrière.";
+const RAISON_COMPLETE="Ta RÉPONSE est complète : « ← retirer » pour revenir en arrière.";
 let raisonArticle=null;
 const blocArticle = k => R.blocsOfferts(S).findIndex(b=>R.estLiaisonArticle(b) && ARTICLE[k] && b.piece===ARTICLE[k].pid);
 function prendreArticle(k){
@@ -991,7 +991,7 @@ function renderRetenus(){
               <button class="corps" data-f="c:${k}" ${ok
                 ? `onclick="prendreArticle('${k}')"`
                 : `aria-disabled="true" ${raisonArticle?'aria-describedby="raisonArticle"':""} onclick="articleRefuse('c:${k}')"`}>
-                <span class="nom">${escapeAttr(a.nom)}${pris?`<span class="dansPhrase">dans ta phrase</span>`:""}</span>
+                <span class="nom">${escapeAttr(a.nom)}${pris?`<span class="dansPhrase">dans ta RÉPONSE</span>`:""}</span>
                 <span class="prov"><span class="cit">« ${escapeAttr(a.texte)} »</span><span class="sig">— ${escapeAttr(a.qui)}, ${escapeAttr(JEU.pieces[a.pid].court)}</span></span>
               </button>
               <button class="del" data-f="x:${k}" onclick="oublier('${a.pid}','${a.eid}')"
@@ -1006,7 +1006,7 @@ function renderRetenus(){
                 : pris ? `aria-disabled="true" ${raisonPris===k?'aria-describedby="raisonPris"':""} onclick="passageDejaPris('${k}')"`
                 : `onclick="poserBloc(${iT},${j})"`}${
                 hors?` title="(comparerait sans rien construire : dimension différente)"`:""}>
-                <span class="nom">${escapeAttr(e.nom||e.texte)}${pris?`<span class="dansPhrase">dans ta phrase</span>`:""}</span>
+                <span class="nom">${escapeAttr(e.nom||e.texte)}${pris?`<span class="dansPhrase">dans ta RÉPONSE</span>`:""}</span>
                 <span class="prov"><span class="cit">« ${escapeAttr(e.texte)} »</span><span class="sig">— ${escapeAttr(e.qui)}, ${escapeAttr(JEU.pieces[e.pid].court)}</span></span>
               </button>
               <button class="del" data-f="x:${k}" onclick="oublier('${e.pid}','${e.eid}')"

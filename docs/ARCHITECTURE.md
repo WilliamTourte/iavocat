@@ -301,8 +301,8 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
 - **Les tests ne nomment aucun contenu** : tout se dérive de la *forme*, si bien que **changer
   d'affaire ne casse pas une seule suite**. Sont épinglées, en revanche, des chaînes de chrome
   (`Envoyer`, `effacer`, `Opposer une phrase`, `opposer`, `● `, `✓ `, `zoneRetenus`, `dans ton CONTEXTE`,
-  `nouvelle`, `dans ta phrase`, `ne prend plus de passage`, `posé dans ta phrase`, `Déjà dans ta
-  phrase`, et pour le clavier `retenu`,
+  `nouvelle`, `dans ta RÉPONSE`, `ne prend plus de passage`, `Ajouté à ta RÉPONSE`, `Déjà dans ta
+  RÉPONSE`, et pour le clavier `retenu`,
   `déjà lue`, `Tutoriel`, `CONTEXTE`) : on les
   renomme si on veut, jamais sans toucher au test qui les nomme.
 - *Les Manuels n'ont plus de suite : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par

@@ -1241,8 +1241,8 @@ console.log("\n=== Le jeu se joue au clavier ===");
   check("un passage retenu le dit à qui ne voit pas le fond",
     /retenu/.test(passage(autre).textContent));
   check("retenir se voit sous la pièce, au moment même — et la ligne dit qu'il est aussi posé (§4.3)",
-    /Retenu dans ton CONTEXTE, et posé dans ta phrase/.test((d.querySelector("#panPiece .rappel.retenu") || {}).textContent || ""));
-  check("et le dit à l'oreille", /posé dans ta phrase/.test(annonce()));
+    /Ajouté à ta RÉPONSE, et retenu dans ton CONTEXTE/.test((d.querySelector("#panPiece .rappel.retenu") || {}).textContent || ""));
+  check("et le dit à l'oreille", /Ajouté à ta RÉPONSE, et retenu/.test(annonce()));
   check("et la porte CONTEXTE s'allume", d.getElementById("btnCONTEXTE").classList.contains("recoit"));
   check("et la fiche neuve s'allume juste sous la pièce, là où on va la prendre",
     !!d.querySelector(`#zoneRetenus .mchip.neuf [data-f="c:${autre}"]`));
@@ -1260,8 +1260,8 @@ console.log("\n=== Le jeu se joue au clavier ===");
   check("Espace sur un passage déjà dans la phrase ne l'oublie pas, ni ne l'y double",
     w.S.retenus.includes(autre) && w.S.compo.length === 1 && !w.S.refus);
   check("mais l'écran dit comment revenir en arrière", !!d.querySelector("#panPiece .rappel")
-    && /Déjà dans ta phrase/.test(d.querySelector("#panPiece .rappel").textContent));
-  check("et le dit à l'oreille", /Déjà dans ta phrase/.test(annonce()));
+    && /Déjà dans ta RÉPONSE/.test(d.querySelector("#panPiece .rappel").textContent));
+  check("et le dit à l'oreille", /Déjà dans ta RÉPONSE/.test(annonce()));
   w.rendreTout();                       // un redessin qui n'est PAS un reclic
   check("le rappel ne vit qu'un rendu", !d.querySelector("#panPiece .rappel"));
   const retirer = d.querySelector('#composeur [data-f="retirer"]');
@@ -1298,7 +1298,7 @@ console.log("\n=== Le jeu se joue au clavier ===");
   // lisent le focus — sans quoi une panne en amont en masquerait une en aval.
   // Le passage est déjà dans la phrase (passe H) : sa fiche le dit, rien à prendre.
   check("sa fiche dit qu'il est dans la phrase",
-    /dans ta phrase/.test(d.querySelector(`#contexte [data-f="c:${veut}"]`).textContent));
+    /dans ta RÉPONSE/.test(d.querySelector(`#contexte [data-f="c:${veut}"]`).textContent));
   check("phrase en cours, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
   const croix = [...d.querySelectorAll(".fermer, .mchip .del")];
   check("chaque croix a un nom, et ce nom n'est pas « × »",
@@ -1396,8 +1396,8 @@ console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
   for (const k of [veut, autre]) { w.ouvrirPiece(k.split(".")[0]); H.surligner(w, k); }
   const fiche = k => d.querySelector(`#zoneRetenus [data-f="c:${k}"]`);
   fiche(veut).click();
-  check("un passage pris porte « dans ta phrase », et lui seul",
-    /dans ta phrase/.test(fiche(veut).textContent) && !/dans ta phrase/.test(fiche(autre).textContent));
+  check("un passage pris porte « dans ta RÉPONSE », et lui seul",
+    /dans ta RÉPONSE/.test(fiche(veut).textContent) && !/dans ta RÉPONSE/.test(fiche(autre).textContent));
   check("la phrase prend encore un passage : pas de ligne de refus", !d.getElementById("raisonPleine"));
   fiche(autre).click();
   const raison = d.getElementById("raisonPleine");
@@ -1430,9 +1430,9 @@ console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
   fiche().focus(); fiche().click();
   check("la toucher ne pose rien, et ne reproche rien : plus de « ne veut rien dire »",
     w.S.compo.length === 1 && !w.S.refus);
-  check("elle dit ce que dit la pièce — déjà dans ta phrase —, à l'écran comme à l'oreille",
-    /Déjà dans ta phrase/.test((d.getElementById("raisonPris") || {}).textContent || "")
-    && /Déjà dans ta phrase/.test(d.getElementById("annonce").textContent)
+  check("elle dit ce que dit la pièce — déjà dans ta RÉPONSE —, à l'écran comme à l'oreille",
+    /Déjà dans ta RÉPONSE/.test((d.getElementById("raisonPris") || {}).textContent || "")
+    && /Déjà dans ta RÉPONSE/.test(d.getElementById("annonce").textContent)
     && fiche().getAttribute("aria-describedby") === "raisonPris");
   check("le focus reste sur la fiche touchée", d.activeElement === fiche());
   w.rendreTout();
@@ -1547,7 +1547,7 @@ console.log("\n=== L'article se retient, puis se prend (§4.5, §4.6, passe F) =
   fiche().click();
   check("prise, elle pose la liaison de son article, et le dit", w.R.compoFinie(w.S)
     && w.R.chaineCompo(w.S).some(p => w.R.estLiaisonArticle(p.bloc) && p.bloc.piece === pid)
-    && /dans ta phrase/.test(fiche().textContent));
+    && /dans ta RÉPONSE/.test(fiche().textContent));
   w.retirerBloc(); w.oublier(...H.deK(k));
   check("oubliée, l'article ne s'offre plus", !w.R.blocsOfferts(w.S).some(b => w.R.estLiaisonArticle(b)));
   check("et la voix dit où aller le chercher, et quoi y cliquer, en menant au CONTEXTE",
@@ -1603,13 +1603,13 @@ console.log("\n=== Un clic dans la pièce retient et prend (§4.6, passe H) ==="
   check("un clic sur un passage le retient ET le pose, la phrase l'attendant",
     w.S.retenus.includes(a) && termes().join() === a);
   check("la ligne sous la pièce dit les deux, et l'annonce aussi",
-    /Retenu dans ton CONTEXTE, et posé dans ta phrase/.test(ligne())
-    && /posé dans ta phrase/.test(d.getElementById("annonce").textContent));
-  check("et sa fiche dit « dans ta phrase »",
-    /dans ta phrase/.test(d.querySelector(`#zoneRetenus [data-f="c:${a}"]`).textContent));
+    /Ajouté à ta RÉPONSE, et retenu dans ton CONTEXTE/.test(ligne())
+    && /Ajouté à ta RÉPONSE, et retenu/.test(d.getElementById("annonce").textContent));
+  check("et sa fiche dit « dans ta RÉPONSE »",
+    /dans ta RÉPONSE/.test(d.querySelector(`#zoneRetenus [data-f="c:${a}"]`).textContent));
   H.retenir(w, a);
   check("recliqué, un passage déjà dans la phrase n'y retourne pas — et rien n'est refusé",
-    termes().join() === a && !w.S.refus && /Déjà dans ta phrase/.test(ligne()));
+    termes().join() === a && !w.S.refus && /Déjà dans ta RÉPONSE/.test(ligne()));
 
   w.ouvrirPiece(H.deK(b)[0]);
   H.retenir(w, b);
@@ -1634,7 +1634,7 @@ console.log("\n=== Un clic dans la pièce retient et prend (§4.6, passe H) ==="
   H.retenir(w, cle);
   check("le texte de l'article, recliqué, fonde la phrase qui l'attend — comme sa fiche",
     w.R.compoFinie(w.S) && w.R.chaineCompo(w.S).some(p => w.R.estLiaisonArticle(p.bloc) && p.bloc.piece === pidArt));
-  check("et la ligne dit qu'il est posé", ligne() === "✓ Posé dans ta phrase.");
+  check("et la ligne dit qu'il est posé", ligne() === "✓ Ajouté à ta RÉPONSE.");
   check("la conclusion assemblée d'un clic lève vice_trouve, sans rien transmettre",
     w.S.vice_trouve && !w.S.vice_expose && !w.S.plaidoirie.length && !w.S.brouillon.length);
   w.retirerBloc();
