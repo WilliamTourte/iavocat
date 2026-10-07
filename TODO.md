@@ -279,6 +279,105 @@ Le reste du document — §4.2, §4.4, §4.7, §4.8, §4.11, §11, §14 — vien
     (*« Non. Ce n'est pas ce que disent ces deux passages — relis-les. »*). **À voir en jeu** : les
     deux relations naissent au bas du composeur plafonné — `voirRelations` les amène dans le champ.
 
+## 0 ter. Les retours de l'auteur (7 octobre) — deux passes
+
+*Deux points, rangés en lisant le code ; le premier est commencé (`jeu.js`, non commité). Ordre
+conseillé : I, qui tient en une séance ; puis J, qui demande d'abord le document. Arbitrages de
+l'auteur, le 7 : la *phrase* reste le nom du code ; l'article livré (§3) et l'article retenu (passe
+F) se défont.*
+
+**Passe I — l'écran dit « ta RÉPONSE », jamais « ta phrase ».** *Le vocabulaire du joueur, sans
+arbitrage de fond : le composeur s'intitule déjà RÉPONSE (`renderCompo`, `aria-label` de
+`#composeur`), en capitales comme le CONTEXTE et la DISCUSSION. `npm test`, `npm run vue`, puis la
+relecture à l'œil.*
+
+- [x] **Harmoniser : partout où l'écran parle au joueur, « ta RÉPONSE ».** *auteur* — *Fait le 7 :
+      la ligne sous la pièce dit « ✓ Ajouté à ta RÉPONSE, et retenu dans ton CONTEXTE » au premier
+      clic, « ✓ Ajouté à ta RÉPONSE » au reclic, et « Déjà dans ton CONTEXTE — « oublier », sur sa
+      fiche, pour l'en retirer » quand il n'a rien fait ; la bulle, les raisons du CONTEXTE, le badge
+      et le refus de `regles.js` suivent ; §4.3 et §4.6, §16 et `test_parcours` aussi. Restent hors
+      du geste, à voir : la voix d'Auber et de la Fin 1 (« la phrase était écrite… »), la répétition
+      (« Opposer une phrase »).*
+  - **Commencé** : `ECHO_POSE`, `ECHO_REPOSE`, `RAPPEL_PHRASE`, deux bulles de `tutoRetenir` et le
+    `ditLong` de `tutoIntrus`. **Avant tout commit** : `RAPPEL_RETRAIT` porte un « A CORRIGER. »
+    provisoire ; et `ECHO_POSE` / `ECHO_REPOSE` disent désormais la même chose, alors que la ligne
+    sous la pièce doit dire *lequel des deux a eu lieu* — retenu **et** posé, ou posé seul (§4.6,
+    passe H).
+  - **Reste** : le `dit` de `tutoIntrus` (*« Retire-le de ta phrase. »*), les quatre `RAISON_*`
+    (*« Ta phrase ne prend plus de passage… »*, *« Ta phrase est complète… »*), le badge *« dans ta
+    phrase »* des fiches (`renderRetenus`, classe `.dansPhrase`) ; et ce que `content.js` en dit au
+    joueur, s'il en dit.
+  - **Les suites** lisent ces chaînes (`test_parcours`, les contrôles de la passe H : *« posé dans ta
+    phrase »*, *« Déjà dans ta phrase »*, le badge) — elles tombent déjà avec le travail commencé : à
+    suivre, pas à affaiblir.
+  - *Tranché par l'auteur le 7 octobre* : **le code et le document gardent *la phrase*** pour l'objet
+    du composeur (§4.5 ; `dansPhrase`, `clorePhrase`, `RAISON_PLEINE`…) ; *ta RÉPONSE* ne vaut que
+    pour ce que l'écran dit au joueur.
+
+**Passe J — mettre en relation, en trois temps ; l'article, l'IA le cherche (le RAG).** *Tranché par
+l'auteur le 7 octobre : on défait l'article que l'avocat **livre** avec ses pièces (§3, *« PV +
+audition + article 3, d'un seul lot »*), et l'article qui **se retient** au CONTEXTE (passe F) ; la
+session 1 en deux questions (§3, passe E) tient. Document d'abord (§3, §4.5, §4.6, §4.8, §8, §11,
+§12), à faire relire ; puis contenu, moteur, règles, écran, atelier, suites.*
+
+- [ ] **Séparer, dans le tutoriel, les trois apprentissages de *mettre en relation*** — **deux
+      passages** se sélectionnent, **la relation** qui les lie se choisit, **un article** la fonde.
+      Aujourd'hui le tutoriel les enchaîne en cinq temps sous une même bulle qui les mêle (§4.8,
+      *mettre en relation* 1 à 5) ; il en aura **trois, francs**, chacun attendant son geste. *auteur*
+  - *Tranché par l'auteur le 7 octobre* :
+    - **Une seule « grosse » demande de Maître Auber**, celle de la comparaison entière (§3) ; c'est
+      le **tutoriel** qui guide pas à pas. Sans le tutoriel (*« je sais faire »*), on n'a que la
+      demande. Le §4.8 tient : *la question de l'avocat porte tout ce que le geste demande, et le
+      bandeau ne dit que où*.
+    - **Un seul envoi**, que le tutoriel ne laisse pas partir tant que les trois étapes ne sont pas
+      faites — les deux passages, leur relation, la recherche d'article. La grammaire n'en change pas
+      pour autant : aucune phrase inachevée ne part, et *« une relation seule ne suffit pas »* (§4.5)
+      tient. La recherche devient l'état qu'elle attend après la relation.
+  - **Ce qui tient** : la demande **nomme les deux heures, jamais leur contradiction** (§3), et les
+    bulles pas davantage — *la relation jamais* (§4.8).
+- [ ] **Le RAG : l'article ne vient plus de l'avocat, l'IA le cherche** dans une base de textes, à
+      la manière de Légifrance — *on augmente sa réponse par une recherche*. *auteur*
+  - **Le geste, proposé par l'auteur** : **la relation choisie**, le composeur offre ***« Chercher un
+    article correspondant »*** ; la recherche rend **trois** articles, un léger QCM, et le joueur
+    choisit le bon. Chercher devient un verbe neuf, entre *déclarer* (la relation) et *fonder*
+    (§4.5, §4.6) ; la relation entre dans la requête.
+  - **La recherche porte sur le texte** : les deux passages posés et leur relation, comparés au
+    **texte** des articles de la base — jamais à une étiquette de dimension (le risque du §5 a,
+    apparier des catégories). Une fonction pure, dans `regles.js` ou `moteur.js` ; la base, du
+    contenu (§9, §11).
+  - *Tranché par l'auteur le 7 octobre* :
+    - **Les deux leurres sont plausibles**, du même champ que le bon : sinon le choix se fait sans
+      lire. Il faut donc une base plus large que l'affaire — **du contenu à écrire**, plusieurs
+      articles par dimension. Et l'**ordre** de l'écran ne trahit pas le score : la bonne réponse
+      n'est pas toujours la première.
+    - **Choisir, c'est lire** (*on n'invoque que ce qu'on a lu*, §4.5) : un résultat s'ouvre comme
+      une pièce, et **un clic sur son texte le met dans la RÉPONSE** — comme un passage. Les trois
+      montrent leur début de texte, jamais un titre qui suffise.
+    - **On ne retient plus un article** : il ne passe pas par le CONTEXTE, il va droit dans la
+      RÉPONSE. Ce que la passe F avait bâti s'en va — le groupe *ARTICLES* du CONTEXTE et sa fiche
+      qui prend la liaison (`prendreArticle`, `articleRefuse`, `#raisonArticle`), `articleRetenu`,
+      les temps 4 et 5 du tutoriel (la puce de l'article dans l'index, sa fiche), et le harnais
+      `H.prendreLiaison`. **Le passage `art` (`article:true`, §11) survit** : c'est lui que le clic
+      met dans la RÉPONSE.
+    - **Un article trouvé reste au dossier** : il rejoint l'index du CONTEXTE comme une pièce, et
+      la phrase suivante qui l'attend le prend là, d'un clic sur son texte, sans chercher de
+      nouveau. Il y entre quand il est **mis dans la RÉPONSE** — les leurres seulement ouverts
+      n'encombrent pas l'index ; un article **refusé** par l'avocat y reste, comme toute pièce. Le
+      tutoriel, qui exige la recherche à la session 1, ne l'exige plus quand l'article est déjà au
+      dossier.
+    - **Le mauvais article choisi, l'avocat le refuse**, avec une réplique et son escalade, comme
+      `rep_relation_fausse` (passe G).
+    - **Le vice (session 2)** : l'article 7 ne se trouve qu'en cherchant depuis la paire du vice —
+      la recherche devient une porte de la Fin 2 (§2, §4.7), qui doit rester **hors du chemin
+      obligatoire** (§3) : chercher autre chose ne fait jamais tomber sur l'article 7.
+  - **Ce qui bouge** : §3, les livraisons ne portent plus d'article — le compte du message de remise
+    (*« N pièces disponibles »*) avec elles ; §11, la base est un objet neuf du contenu, que
+    l'atelier lit sans le recopier (§9) ; §4.8, le tutoriel apprend à chercher ; le refus *« Aucun
+    texte que tu as lu ne fonde ça… ouvre-les »* (validé en playtest, *À garder*) devient
+    *cherche-le*.
+  - **Le récit** y gagne peut-être : l'IA qui fouille seule est aussi celle qui pourrait taire ce
+    qu'elle trouve (§6 ci-dessous, *choix moraux*).
+
 ## 1. Passe contenu — `app/content.js`, sans code
 
 *Une vérification commune : `npm run vue`, puis la relecture à l'œil des phrases composées.*
@@ -420,8 +519,9 @@ lourd.*
 
 **Le CONTEXTE élargi**
 
-- [ ] **RAG** : pouvoir retenir des passages des messages de l'avocat, et des infos qui ne viennent pas
-      que de lui.
+- [ ] **Retenir hors des pièces** : des passages des messages de l'avocat, et des infos qui ne
+      viennent pas que de lui. *(S'appelait « RAG » ; le mot désigne désormais la recherche
+      d'articles, passe J.)*
 - [ ] **Regrouper les passages retenus en clusters** (idée d'un ami).
 
 **L'histoire** — à concevoir ensemble : le scénario porte les trois autres.
