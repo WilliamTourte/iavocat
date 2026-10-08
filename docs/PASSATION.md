@@ -19,8 +19,9 @@ lignes, 654 contrôles sur 655. **Les huit questions sont tranchées le jour mê
 verdict vit dans une liste à part ; le mot est *concordent / ne concordent pas* ; une relation
 fausse, Auber la refuse tout de suite ; le lien 6 envoyé, il refuse de l'entendre ; le
 suicide-vengeance tient à une liaison soupçonnée dans la lettre, et tombe devant l'aveu, qui dit la
-compote ; le faux vice vit en `comment`, la sixième dimension (qui demande un sixième trait : CSS
-n'en a que cinq) ; le mobile reste ambigu ; la notification des droits porte la charge.
+compote ; le faux vice vit en `comment`, la sixième dimension, sans trait à elle — la couleur seule
+l'y distingue, une exception assumée au §4.10 ; le mobile reste ambigu ; la notification des droits
+porte la charge.
 **CONCEPTION, le moteur et les règles n'ont pas bougé** ; seules deux répliques de la relation
 fausse sont passées au contenu du jour (*« Non, ça n'a pas de sens… »*, *« Tu hallucines… »*).
 

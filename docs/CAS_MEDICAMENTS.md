@@ -388,13 +388,16 @@ extérieur requis*), mais sa fouille en sera plus courte.
     face à la notification) ;
   - **trois articles qui portent sur `comment`** — celui sur la contrainte et deux leurres du même
     champ (§8) ;
-  - **un sixième trait, et c'est du code.** Une dimension se lit à sa couleur *et* à son trait
-    (§4.3, §4.10 règle 5) ; or CSS n'a que cinq styles de soulignement — plein, double, pointillé,
-    tirets, ondulé —, et `traitDim` tourne en rond : la sixième dimension reprendrait le trait de
-    la première, et ne s'en distinguerait plus que par la couleur. Il lui faut une autre marque
-    (un trait au-dessus en plus du soulignement, une épaisseur). Et la sixième couleur de la
-    palette est un **gris**, quand le texte d'un article se souligne d'un trait **neutre** (§4.3) :
-    à mesurer avant de l'adopter.
+  - **pas de sixième trait — tranché par l'auteur le 8 octobre : *« peu importe le trait, gardons
+    surtout les couleurs »*.** CSS n'a que cinq styles de soulignement, et `traitDim` tourne en
+    rond : `comment` reprend le trait de la première dimension déclarée, et ne s'en distingue que
+    par sa couleur. C'est une **exception assumée** à *rien ne se dit par la couleur seule* (§4.3,
+    §4.10 règle 5) — le trait était venu du playtest au clavier, pour qui distingue mal les
+    couleurs —, à écrire comme telle dans CONCEPTION, et rien de plus : aucune ligne de code.
+    **La couleur porte donc seule la distinction**, et la sixième de la palette est un **gris**,
+    quand le texte d'un article se souligne d'un trait **neutre** (§4.3) : à mesurer contre sa
+    voisine de trait et contre le neutre, sous les trois daltonismes, comme le reste de la palette
+    (`moteur.js`) — ou à changer. Le nom de la dimension reste dit au lecteur d'écran.
 - **Les verrous — *la charge* tranchée par l'auteur le 8 octobre : la notification des droits la
   porte** (*« placé en garde à vue pour des faits d'empoisonnement »*). Proposé pour le reste : en
   remise 2, *la cause du décès* (citer la toxicologie) ; en remise 3, *la charge* (citer la
@@ -439,7 +442,8 @@ extérieur requis*), mais sa fouille en sera plus courte.
    n'a pas de sens, tu hallucines.*
 4. ~~**Le lien 6 envoyé**~~ — *tranché par l'auteur le 8 octobre : Auber refuse de l'entendre.*
 5. ~~**La dimension du faux vice**~~ — *tranché par l'auteur le 8 octobre : `comment`, la sixième
-   dimension (et son trait à inventer : « Ce que le contenu demandera », ci-dessus).*
+   dimension ; pas de sixième trait, la couleur seule la distingue (« Ce que le contenu
+   demandera », ci-dessus).*
 6. ~~**Le suicide-vengeance**~~ — *tranché par l'auteur le 8 octobre : le grief est une liaison
    qu'elle soupçonne, dite dans la lettre, que rien d'autre ne confirme ; et l'aveu dit la
    compote, pour que la vengeance tombe devant le lien 6.*
