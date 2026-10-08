@@ -165,6 +165,7 @@ function inspPaire(){
     <div class="ipath">${escapeH(cflabel(K(selA.pid,selA.champ)))}  ⟷  ${escapeH(cflabel(K(selB.pid,selB.champ)))}</div>
     <div style="color:${md?'var(--muted)':'var(--err)'};font-size:12px;margin-top:6px">
       ${md?"dimension partagée : "+escapeH(da):"⚠ dimensions différentes (« "+escapeH(da||"?")+" » / « "+escapeH(db||"?")+" ») — le composeur refuserait la phrase"}</div>
+    ${md && relationsParDossier() ? verdictPaire(K(selA.pid,selA.champ),K(selB.pid,selB.champ)) : ""}
     <div class="relbtns">
       ${formesParArite(2).map(f=>`<button onclick="creerLien('${f}')" title="${escapeAttr(texteForme(f))}">${escapeH(texteForme(f))}</button>`).join("")}
     </div>`;
@@ -183,6 +184,7 @@ function inspLien(i){
     <label class="chk"><input type="checkbox" ${L.vice?'checked':''} onchange="majLien(${i},'vice',this.checked)"> ⚑ c'est LE vice</label>
     <label class="chk"><input type="checkbox" ${L.conclusion?'checked':''} onchange="majLien(${i},'conclusion',this.checked)"> c'est la CONCLUSION (lève vice_trouve / vice_expose)</label>
     <label class="chk"><input type="checkbox" ${L.faux?'checked':''} onchange="majLien(${i},'faux',this.checked)"> ✗ c'est le faux vice</label>
+    <label class="chk"><input type="checkbox" ${L.savoir?'checked':''} onchange="majLien(${i},'savoir',this.checked)"> ✦ c'est le SAVOIR (lève « sait » ; un lien nu, qu'Auber refuse d'entendre)</label>
     <label>Tag d'attente <span class="glose">(une remise qui « attend » ce tag se ferme quand cette phrase est versée)</span></label>
     <input type="text" class="mono" value="${escapeAttr(L.tag||"")}" placeholder="—" onchange="majLien(${i},'tag',this.value)">
     <label>Réplique de l'avocat <span class="glose">(si versée au plan)</span></label>
@@ -192,6 +194,13 @@ function inspLien(i){
     ${btnSuppr("lien:"+i,"danger",`demanderSupprLien(${i})`,"Supprimer ce lien","Confirmer la suppression")}`;
 }
 
+/* LE VERDICT DE LA PAIRE (passe N) : ce que le dossier déclare, et la case qui
+   le bascule — la même que dans l'onglet Verdicts. */
+function verdictPaire(a,b){
+  const disc=estDiscordante(a,b);
+  return `<div style="font-size:12px;margin-top:6px">le dossier : <b>${disc?"ne concordent pas":"concordent"}</b></div>
+    <label class="chk"><input type="checkbox" ${disc?"checked":""} onchange="basculerDiscordance('${escapeAttr(a)}','${escapeAttr(b)}')"> ne concordent pas</label>`;
+}
 function toastInsp(m){ $("insp").insertAdjacentHTML("afterbegin",`<div class="inote">${escapeH(m)}</div>`); }
 
 /* ---- mutations — l'épilogue est dans `muter` (noyau.js) ---- */
@@ -217,6 +226,7 @@ function demanderSupprChamp(pid,ch){ demanderSuppr("champ:"+K(pid,ch),()=>{
   delete p.empans[ch];
   p.texte=String(p.texte||"").replace(new RegExp("\\s*\\{\\{"+ch+"\\}\\}",""),"");
   CONTENU.liens=CONTENU.liens.filter(L=>!feuillesLien(L).includes(k));
+  reecrireDiscordances(x=>x===k ? null : x);
   selA=selB=null;
 }); }
 function idValide(neuf,existants,ancien){
@@ -240,6 +250,7 @@ function renommerPieceId(ancien,neuf){
     CONTENU.pieces=renommerClef(CONTENU.pieces,ancien,neuf);
     const renommer = k => { const [pid,eid]=deK(k); return pid===ancien ? K(neuf,eid) : k; };
     for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
+    reecrireDiscordances(renommer);
     for(const r of (CONTENU.remises||[]))
       if(Array.isArray(r.pieces)) r.pieces=r.pieces.map(p=>p===ancien?neuf:p);
     if(CONTENU._pos && CONTENU._pos[ancien]) CONTENU._pos=renommerClef(CONTENU._pos,ancien,neuf);
@@ -259,6 +270,7 @@ function renommerEmpanId(pid,ancien,neuf){
     const av=K(pid,ancien), ap=K(pid,neuf);
     const renommer = k => k===av ? ap : k;
     for(const L of (CONTENU.liens||[])) L.termes=reecrireTermes(L.termes||[],renommer);
+    reecrireDiscordances(renommer);
     if(selA&&selA.pid===pid&&selA.champ===ancien) selA={pid,champ:neuf};
     pendingDel=null; simReset();
   });
@@ -283,6 +295,7 @@ function demanderSupprPiece(pid){ demanderSuppr("piece:"+pid,()=>{
   delete CONTENU.pieces[pid];
   delete CONTENU._pos[pid];
   CONTENU.liens=(CONTENU.liens||[]).filter(L=>!feuillesLien(L).some(k=>deK(k)[0]===pid));
+  reecrireDiscordances(k=>deK(k)[0]===pid ? null : k);
   for(const r of CONTENU.remises||[]) r.pieces=(r.pieces||[]).filter(x=>x!==pid);
   if(selA&&selA.pid===pid) selA=null;
   if(selB&&selB.pid===pid) selB=null;

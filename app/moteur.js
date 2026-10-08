@@ -1,16 +1,18 @@
 // Le moteur de la grammaire, en mode double (`require` ou `<script src>`).
-// Aucune donnée : on reçoit GRAMMAIRE / CHAMPS / LIENS et on rend les fonctions
-// pures qui composent, valident et reconnaissent une phrase (§14).
-function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
+// Aucune donnée : on reçoit GRAMMAIRE / CHAMPS / LIENS / DISCORDANCES et on rend
+// les fonctions pures qui composent, valident et reconnaissent une phrase (§14).
+function creerMoteur(GRAMMAIRE, CHAMPS, LIENS, DISCORDANCES) {
   const G = GRAMMAIRE;
   const C = Object.fromEntries(CHAMPS.map(c => [c.id, c]));
   const estFinal = e => G.finaux.includes(e);
   const offerts = e => G.blocs.filter(b => b.de === e);
 
-  /* ---- LA VÉRIFICATION (§4.5) ---- la relation VRAIE se calcule de la dimension
-     et des valeurs. Depuis la passe G, le joueur la déclare et le moteur la
-     vérifie : `deduire` est l'oracle, il ne rédige plus — sauf pour un contenu
-     d'avant, dont le second terme porte encore `deduit` (§11). */
+  /* ---- LA VÉRIFICATION (§4.5) ---- depuis la passe G, le joueur déclare la
+     relation et le moteur la vérifie : `deduire` est l'oracle, il ne rédige plus
+     — sauf pour un contenu d'avant, dont le second terme porte encore `deduit`
+     (§11). La relation VRAIE se tire du DOSSIER pour les deux relations de la
+     passe N — concordent / ne concordent pas —, des valeurs pour les formes
+     d'avant. */
   const enNombre = v => {
     const s = String(v == null ? "" : v).trim();
     if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
@@ -23,6 +25,16 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     const sa = String(a), sb = String(b);
     return sa < sb ? -1 : sa > sb ? 1 : 0;
   }
+  /* LE DOSSIER DÉCLARE SES DISCORDANCES, TOUT LE RESTE CONCORDE (§4.2, passe N).
+     Une heure ne dit pas ce qu'elle contredit : 21h52 et 22h04 diffèrent et
+     concordent. PIÈGE PAYÉ (l'essai du 8 octobre) : le verdict vivait dans les
+     liens, et changer la relation d'un lien changeait le fait sans que rien le
+     dise — il vit à part, et un lien qui le contredit est faux. */
+  const clePaire = (x, y) => [String(x), String(y)].sort().join("|");
+  const DISC = new Set((DISCORDANCES || []).filter(p => Array.isArray(p) && p.length === 2)
+                                           .map(([x, y]) => clePaire(x, y)));
+  const discorde = (idA, idB) => DISC.has(clePaire(idA, idB));
+  const parDossier = f => f.deduction === "concordance" || f.deduction === "discordance";
   // La forme qui lie deux empans. L'ORDRE de déclaration tranche les ambiguïtés
   // (§11). Dimensions différentes : la JUXTAPOSITION si le contenu en déclare
   // une, sinon null (§4.11) — ce sont les règles qui la refusent en session 1.
@@ -39,23 +51,28 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
       if (!f.deduction || (f.arite || 2) !== 2 || estJuxta(f)) continue;
       const s = f.slots && f.slots[0];
       if (s !== "*" && !(s || []).includes(a.dim)) continue;
-      if (f.deduction === "egalite" ? egal : !egal) return nom;
+      const vrai = parDossier(f) ? (f.deduction === "discordance") === discorde(idA, idB)
+                                 : (f.deduction === "egalite" ? egal : !egal);
+      if (vrai) return nom;
     }
     return null;
   }
-  /* LES DEUX RELATIONS D'UNE DIMENSION (passe G) : de chaque côté — égalité, puis
-     différence ou ordre —, la PREMIÈRE forme déclarée qui la nomme, celle que
-     `deduire` rendrait. La vraie est donc toujours l'une des deux. */
+  /* LES DEUX RELATIONS D'UNE DIMENSION (passe G) : de chaque côté — égalité ou
+     concordance, puis différence, ordre ou discordance —, la PREMIÈRE forme
+     déclarée qui la nomme, celle que `deduire` rendrait. La vraie est donc
+     toujours l'une des deux. */
   const nomme = (f, d) => !!f.deduction && !estJuxta(f) && (f.arite || 2) === 2 && !!f.slots
     && (f.slots[0] === "*" || (f.slots[0] || []).includes(d));
   function relationsDe(d) {
     const fs = Object.entries(G.formes);
-    const egal = fs.find(([, f]) => nomme(f, d) && f.deduction === "egalite");
-    const autre = fs.find(([, f]) => nomme(f, d) && f.deduction !== "egalite");
+    const positif = f => f.deduction === "egalite" || f.deduction === "concordance";
+    const egal = fs.find(([, f]) => nomme(f, d) && positif(f));
+    const autre = fs.find(([, f]) => nomme(f, d) && !positif(f));
     return [egal, autre].filter(Boolean).map(([nom]) => nom);
   }
   /* UNE RELATION FAUSSE : une comparaison, emboîtée ou non, dont la forme n'est
-     pas celle que donnent les valeurs. Elle part, et l'avocat la refuse (§4.5). */
+     pas la vraie — celle du dossier, ou des valeurs. Elle part, et l'avocat la
+     refuse (§4.5). */
   function fausse(r) {
     if (!r || typeof r !== "object") return false;
     const f = G.formes[r.forme] || {};
@@ -171,7 +188,7 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     return out;
   }
   return { C, estFinal, offerts, reduire, dimDe, valider, memeTerme, memeRed, lienDe, rendre,
-           squelettes, comparer, deduire, ordonner, relationsDe, fausse };
+           squelettes, comparer, deduire, ordonner, relationsDe, fausse, discorde };
 }
 
 const _projections = (function () {

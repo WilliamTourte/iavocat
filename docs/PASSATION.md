@@ -6,10 +6,23 @@ ensuite. **Court, et il doit le rester.** État au 8 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 655 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 687 contrôles, 8 règles du gardien, ESLint.
 
-**Le 8 octobre, le cas médicaments — tranché, écrit au document, rien n'est codé.** Un document de l'auteur remplace
-l'affaire ADN : même client, même calibration, une relation unique *cohérent / pas cohérent* pour
+**Le 8 octobre, la passe N : la relation unique** (§4.2, §4.5, §4.7, §11, §14, §15). Deux passages de
+même dimension **concordent**, sauf si le dossier les déclare discordants (`discordances`, une liste
+à part) : le moteur la lit (`deduire`, `discorde`), et les formes d'avant restent pour une affaire
+d'avant. **L'affaire ADN est convertie** — dix formes en deux, ses liens gardant leur verdict *au
+sens* (14h02 et 14h47 concordent), six `nom` de `qui` qui disent un énoncé. Le **lien nu** et le
+**savoir** (`savoir`, `S.sait`, `variante_sait`) sont au moteur et aux règles, éprouvés sur contenu
+muté — le contenu du jour n'en porte pas. L'atelier : l'onglet **Verdicts** (une grille par
+dimension, la case qui écrit la liste), la case dans l'inspecteur d'une paire, le savoir sur un lien,
+la variante à la frise, la pastille au pas-à-pas, et le diagnostic (discordance mal formée, lien faux
+sur le dossier, lien nu qui se plaiderait, savoir sans réplique, discordance banale). Seize mutations
+vues tomber ; une dix-septième a montré du code mort, retiré. Joué dans Chromium : les boutons disent
+*« concordent »* et *« ne concordent pas »*. 687 contrôles. **Reste la passe O : le cas lui-même.**
+
+**Le 8 octobre, le cas médicaments — tranché, écrit au document ; la passe N a suivi (ci-dessus).**
+Un document de l'auteur remplace l'affaire ADN : même client, même calibration, une relation unique *cohérent / pas cohérent* pour
 toutes les dimensions, trois remises, et des aveux en garde à vue qui sont à la fois la preuve
 (l'IA *sait*) et le vice (recueillis sans l'avocat demandé). Il est posé tel quel, avec l'idée d'un
 suicide-vengeance ajoutée le même jour, comme **base de réflexion** dans `docs/CAS_MEDICAMENTS.md`,
@@ -24,8 +37,8 @@ l'y distingue, une exception assumée au §4.10 ; le mobile reste ambigu ; la no
 porte la charge.
 Deux répliques de la relation fausse sont passées au contenu du jour (*« Non, ça n'a pas de
 sens… »*, *« Tu hallucines… »*). **Puis le document** : CONCEPTION et ARCHITECTURE réécrits pour le
-cas, les marques [N] et [O] sur ce que le code ne fait pas encore — **à relire par l'auteur**. Le
-moteur et les règles n'ont pas bougé.
+cas, les marques [N] et [O] sur ce que le code ne faisait pas encore — la passe N a levé les
+siennes le jour même (ci-dessus) ; restent les [O].
 
 **Le 8 octobre, relecture du glossaire (§17)** après les passes I à M. Le §17 perd `recuAvant`,
 gagne DOCUMENTS et la règle **pièce ou document** (*auteur* : *pièce* quand c'en est une, *document*
@@ -440,6 +453,16 @@ point est argumenté là où il mord — un § du système, ou un PIÈGE dans le
 remplace pas, elle les rappelle d'un trait.* Les **[Rn]** sont tenus par une règle du gardien — ils
 tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenus par rien.
 
+- **Le verdict vit dans `discordances`, à part des liens** (passe N, §11) : renommer ou supprimer un
+  passage passe par `reecrireDiscordances` — oublié, le lien qui cite la paire devient faux sans
+  qu'on y ait touché (deux contrôles de renommage l'ont attrapé). Dans les liens, c'eût été pire :
+  changer une relation y changeait le fait (l'essai du 8 octobre).
+- **Les slots des deux relations nomment les dimensions en toutes lettres, jamais `"*"`** : deux
+  contrôles lisent un slot comme une liste, et une dimension neuve doit rester sans forme.
+- **Le savoir se lève à l'assemblage de SA comparaison** — sous un article aussi, puisqu'elle s'y
+  assemble d'abord. Un contrôle qui veut une IA qui ne sait pas ne doit donc pas emboîter cette
+  comparaison sur son chemin : `test_declencheurs` la prend à un lien sans tag, hors du chemin docile.
+
 - **[R1]** `<script src="x.js"></script>` sur **une ligne, sans attribut** : une variante n'est pas inlinée *du tout*.
 - **[R2]** Les `const` de haut niveau ne sont pas des propriétés de `window` — **mais ils occupent le nom**.
 - **[R6]** Les zones du tutoriel (`ou:`) sont des littéraux qui visent quelque chose : `#zoneDossier`, `#zoneRecherche`, `#panPiece`, `#composeur`, `#btnCONTEXTE` (la porte du DOSSIER : le code garde `contexte`, §17), `#discussion`.
@@ -845,12 +868,12 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 
 ## 4. Prochaine étape
 
-**Le cas médicaments est écrit au document, à relire avant le code.** CONCEPTION et ARCHITECTURE
-disent l'état visé ; **[N]** y marque la passe N — la relation unique, *concordent / ne concordent
-pas*, la liste `discordances`, le lien nu, le savoir, la grille de l'atelier —, à coder d'abord sur
-l'affaire ADN ; **[O]**, la passe O — le cas lui-même, écrit dans l'atelier (`docs/CAS_MEDICAMENTS.md`,
-partie II, *L'ordre de travail*). Ce qui suit se joue sur l'affaire du jour et reste utile : la boucle
-ne change pas, seule la relation change.
+**Vient la passe O : le cas médicaments, écrit dans l'atelier** (`docs/CAS_MEDICAMENTS.md`, partie
+II, *L'ordre de travail* ; CONCEPTION §6 et ses marques **[O]**) — remise par remise, élagué vers une
+dizaine de pièces, les discordances relues dans l'onglet Verdicts, les leurres, les fins et leur
+`variante_sait`, `comment` en sixième dimension. La mécanique est prête (passe N). Ce qui suit se
+joue sur l'affaire du jour et reste utile : la boucle ne change pas, seule la relation a changé —
+**à jouer d'abord : *« ne concordent pas »* se lit-il comme une pensée ?**
 
 **La prochaine session porte sur le SENS, et la seule façon de la commencer est de jouer** — la
 précédente l'a prouvé : une partie rapportée geste par geste a valu plus que trois passes de
@@ -1098,3 +1121,10 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   *réponse*. ESLint, rouge depuis la passe M, revient au vert. Puis le pas-à-pas referme la pièce
   (`simRefermer`) : le `declenche` n'y partait jamais. Cinq contrôles neufs vus tomber.
   655 contrôles.
+- **8 octobre, le cas médicaments** (`docs/CAS_MEDICAMENTS.md`) — le document de l'auteur, posé tel
+  quel, une proposition d'intégration, un essai jetable du moteur, huit questions tranchées dans la
+  journée ; puis CONCEPTION et ARCHITECTURE réécrits, marques [N] et [O].
+- **8 octobre, passe N : la relation unique** (§4.2, §4.4, §4.5, §4.7, §11, §14, §15, §16, §17) —
+  `discordances`, `deduction:"concordance"`/`"discordance"`, `discorde` ; `savoir`, `S.sait`,
+  `variante_sait` ; l'affaire ADN convertie ; l'onglet Verdicts (`verdicts.js`),
+  `reecrireDiscordances`, le diagnostic. Seize mutations vues tomber. 687 contrôles.

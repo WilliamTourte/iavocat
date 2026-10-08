@@ -112,12 +112,17 @@ console.log("\n=== Le vice a un seul canal ===");
   check("un seul article la porte", new Set(conclusions.map(L => L.forme)).size === 1);
   check("le pressentiment, lui, est la comparaison emboîtée — arité 2",
         H.arite(w, H.lienVice(w)) === 2);
-  check("aucune comparaison ne se dit nue : tout lien est d'arité 1",
-        w.JEU.liens.every(L => H.arite(w, L) === 1));
+  /* LE LIEN NU (passe N, §4.5) : une comparaison sans article établit un fait,
+     elle ne se plaide jamais — une réplique, ni tag, ni faux vice. */
+  const nus = w.JEU.liens.filter(L => H.arite(w, L) === 2);
+  if (nus.length)
+    check("aucune comparaison nue n'est un moyen : ni tag, ni faux vice, ni conclusion",
+          nus.every(L => !L.tag && !L.faux && !L.conclusion && !w.R.estMoyen(L)));
+  else check("(aucun lien nu dans ce contenu — le lien nu est éprouvé sur contenu muté)", true);
   const cits = H.citations(w);
   const quals = w.JEU.liens.filter(L => typeof (L.termes || [])[0] === "object");
-  check("les liens se partagent entre citations et qualifications, sans reste",
-        cits.length + quals.length === w.JEU.liens.length);
+  check("les liens se partagent entre citations, qualifications et liens nus, sans reste",
+        cits.length + quals.length + nus.length === w.JEU.liens.length);
   check("les deux natures sont représentées", cits.length > 0 && quals.length > 0);
   check("une citation ne porte jamais de drapeau du vice",
         cits.every(L => !L.vice && !L.conclusion));

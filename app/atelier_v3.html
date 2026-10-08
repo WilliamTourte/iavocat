@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>IAvocat — Atelier v3 · banc de diagnostic du dossier</title>
 <!--
-  IAvocat — ATELIER DE CONCEPTION v3 (l'outil, pas le jeu). Quatre onglets :
+  IAvocat — ATELIER DE CONCEPTION v3 (l'outil, pas le jeu). Cinq onglets :
   Graphe & diagnostic (l'ESPACE du dossier), Étapes du jeu (le TEMPS), JSON,
-  Grammaire. LES RÈGLES NE SONT PAS RECOPIÉES ICI : elles vivent dans
-  app/regles.js, que cette page CHARGE et APPELLE comme le jeu (§12). Restent
-  propres à l'atelier : diagnostic, graphe, frise, migration, export.
+  Grammaire, Verdicts (ce que le dossier déclare discordant, passe N). LES
+  RÈGLES NE SONT PAS RECOPIÉES ICI : elles vivent dans app/regles.js, que
+  cette page CHARGE et APPELLE comme le jeu (§12). Restent propres à
+  l'atelier : diagnostic, graphe, frise, migration, export.
 -->
 <link rel="stylesheet" href="atelier/atelier.css">
 </head>
@@ -36,6 +37,7 @@
   <button id="tabEtapes" onclick="vue('etapes')">Étapes du jeu</button>
   <button id="tabJson" onclick="vue('json')">JSON</button>
   <button id="tabGrammaire" onclick="vue('grammaire')" title="Composer une phrase avec la grammaire du contenu courant">Grammaire</button>
+  <button id="tabVerdicts" onclick="vue('verdicts')" title="Relire chaque paire de même dimension, et déclarer ce qui ne concorde pas">Verdicts</button>
 </nav>
 
 <main id="main">
@@ -88,6 +90,8 @@
   </div>
 
   <div id="grampane"></div>
+
+  <div id="verdpane"></div>
 </main>
 
 <script src="moteur.js"></script>
@@ -111,6 +115,7 @@
 <script src="atelier/pasapas.js"></script>
 <script src="atelier/contenu-io.js"></script>
 <script src="atelier/grammaire.js"></script>
+<script src="atelier/verdicts.js"></script>
 
 <script>
 window.addEventListener("resize",renderEdges);

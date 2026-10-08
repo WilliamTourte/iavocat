@@ -51,7 +51,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "brigadier N.",
           "texte": "par mes soins, brigadier N.",
-          "nom": "le rédacteur du procès-verbal"
+          "nom": "la signature du procès-verbal"
         }
       }
     },
@@ -90,7 +90,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "brigadier N.",
           "texte": "par mes soins",
-          "nom": "le rédacteur de l'audition"
+          "nom": "la signature de l'audition"
         }
       }
     },
@@ -164,7 +164,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "T-14",
           "texte": "J'ai relevé moi-même les traces",
-          "nom": "l'agent qui a relevé les traces sur la scène"
+          "nom": "la déclaration de l'agent qui a relevé les traces sur la scène"
         },
         "e_ou": {
           "dim": "où",
@@ -198,7 +198,7 @@ window.CONTENU = {
           "valeur": "J. Morel",
           "texte": "réception par J. Morel",
           "qui": "J. Morel",
-          "nom": "le greffier qui reçoit l'échantillon de scène"
+          "nom": "la réception au greffe de l'échantillon de scène"
         }
       }
     },
@@ -214,7 +214,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "T-14",
           "texte": "J'ai procédé moi-même à l'écouvillonnage",
-          "nom": "l'agent qui a prélevé l'échantillon de référence"
+          "nom": "la déclaration de l'agent qui a prélevé l'échantillon de référence"
         },
         "e_h2": {
           "dim": "quand",
@@ -241,7 +241,7 @@ window.CONTENU = {
           "valeur": "J. Morel",
           "texte": "réception par J. Morel",
           "qui": "J. Morel",
-          "nom": "le greffier qui reçoit le prélèvement de référence"
+          "nom": "la réception au greffe du prélèvement de référence"
         }
       }
     },
@@ -605,165 +605,53 @@ window.CONTENU = {
       }
     ],
     "formes": {
-      "identite_personne": {
+      "concordance": {
         "arite": 2,
         "ordonne": false,
-        "deduction": "egalite",
+        "deduction": "concordance",
         "slots": [
           [
-            "qui"
-          ],
-          [
-            "qui"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} sont une seule et même personne",
-        "libelle": "sont une seule et même personne"
-      },
-      "distinction_personne": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "difference",
-        "slots": [
-          [
-            "qui"
-          ],
-          [
-            "qui"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} ne sont pas la même personne",
-        "libelle": "ne sont pas la même personne"
-      },
-      "identite_lieu": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "egalite",
-        "slots": [
-          [
-            "où"
-          ],
-          [
-            "où"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} sont au même endroit",
-        "libelle": "sont au même endroit"
-      },
-      "distinction_lieu": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "difference",
-        "slots": [
-          [
-            "où"
-          ],
-          [
-            "où"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} ne sont pas au même endroit",
-        "libelle": "ne sont pas au même endroit"
-      },
-      "identite_heure": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "egalite",
-        "slots": [
-          [
-            "quand"
-          ],
-          [
-            "quand"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} coïncident",
-        "libelle": "coïncident"
-      },
-      "identite_nombre": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "egalite",
-        "slots": [
-          [
+            "quand",
+            "qui",
+            "où",
+            "quoi",
             "combien"
           ],
           [
+            "quand",
+            "qui",
+            "où",
+            "quoi",
             "combien"
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} sont égaux",
-        "libelle": "sont égaux"
+        "patron": "{a} et {b} concordent",
+        "libelle": "concordent"
       },
-      "identite_oui": {
+      "discordance": {
         "arite": 2,
         "ordonne": false,
-        "deduction": "egalite",
+        "deduction": "discordance",
         "slots": [
           [
-            "quoi"
-          ],
-          [
-            "quoi"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} désignent la même chose",
-        "libelle": "désignent la même chose"
-      },
-      "anteriorite": {
-        "arite": 2,
-        "ordonne": true,
-        "deduction": "ordre",
-        "sens": "asc",
-        "slots": [
-          [
-            "quand"
-          ],
-          [
-            "quand"
-          ]
-        ],
-        "patron": "{a} précède {b}",
-        "libelle": "précède"
-      },
-      "ordre_grandeur": {
-        "arite": 2,
-        "ordonne": true,
-        "deduction": "ordre",
-        "sens": "desc",
-        "slots": [
-          [
+            "quand",
+            "qui",
+            "où",
+            "quoi",
             "combien"
           ],
           [
+            "quand",
+            "qui",
+            "où",
+            "quoi",
             "combien"
           ]
         ],
-        "patron": "{a} est d'un tout autre ordre que {b}",
-        "libelle": "est d'un tout autre ordre que"
-      },
-      "identite_non": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "difference",
-        "slots": [
-          [
-            "quoi"
-          ],
-          [
-            "quoi"
-          ]
-        ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} ne désignent pas la même chose",
-        "libelle": "ne désignent pas la même chose"
+        "patron": "{a} et {b} ne concordent pas",
+        "libelle": "ne concordent pas"
       },
       "juxtaposition": {
         "arite": 2,
@@ -918,7 +806,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "anteriorite",
+          "forme": "discordance",
           "termes": [
             "p_pv.e_arr",
             "t_voisin.e_voix"
@@ -932,7 +820,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "anteriorite",
+          "forme": "discordance",
           "termes": [
             "p_pv.e_app",
             "t_voisin.e_voix"
@@ -945,7 +833,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "identite_nombre",
+          "forme": "concordance",
           "termes": [
             "p_pv.e_equip",
             "t_voisin.e_vehic"
@@ -958,7 +846,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
             "p_pv.e_sig",
             "t_voisin.e_sig2"
@@ -971,7 +859,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_grf",
             "p_ref.e_grf2"
@@ -984,7 +872,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "identite_non",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_sc",
             "p_ref.e_sc2"
@@ -997,7 +885,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "anteriorite",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_h",
             "p_ref.e_h2"
@@ -1010,7 +898,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_moi",
             "p_ref.e_moi2"
@@ -1023,7 +911,7 @@ window.CONTENU = {
       "forme": "article_12",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_moi",
             "p_ref.e_moi2"
@@ -1036,7 +924,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_moi",
             "p_ref.e_moi2"
@@ -1051,7 +939,7 @@ window.CONTENU = {
       "forme": "article_12",
       "termes": [
         {
-          "forme": "ordre_grandeur",
+          "forme": "discordance",
           "termes": [
             "p_adn.e_tx",
             "p_adn.e_seuil"
@@ -1061,6 +949,20 @@ window.CONTENU = {
       "faux": true,
       "tag": "adn"
     }
+  ],
+  "discordances": [
+    [
+      "p_pv.e_arr",
+      "t_voisin.e_voix"
+    ],
+    [
+      "p_pv.e_app",
+      "t_voisin.e_voix"
+    ],
+    [
+      "p_adn.e_tx",
+      "p_adn.e_seuil"
+    ]
   ],
   "remises": [
     {

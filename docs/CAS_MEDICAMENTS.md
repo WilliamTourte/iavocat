@@ -430,7 +430,8 @@ extérieur requis*), mais sa fouille en sera plus courte.
    incohérences, la grille et le diagnostic dans l'atelier, le lien nu et le drapeau du savoir ;
    les suites suivent, chaque contrôle neuf vu tomber. L'affaire ADN convertie sert de banc —
    l'essai montre qu'elle passe. *Les suites ne nomment aucun contenu (§16) : la mécanique se prouve
-   sans le cas.*
+   sans le cas.* **Fait le 8 octobre** (la passe N) — la liste s'appelle `discordances`, la grille est
+   l'onglet Verdicts de l'atelier.
 4. **Le cas**, écrit dans l'atelier, remise par remise, élagué ; les leurres ; les fins.
 5. **Jouer** : `npm run vue`, la relecture à l'œil des phrases composées, puis un joueur neuf.
 

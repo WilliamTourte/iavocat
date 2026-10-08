@@ -7,7 +7,7 @@ let SIM=null, SIMACT=[];
 let _rg=null, _rgSig=null;
 function RG(){
   const m=MG(); if(!m) return null;
-  const sig=JSON.stringify([CONTENU.grammaire,CONTENU.pieces,CONTENU.liens,CONTENU.remises,CONTENU.repetition,CONTENU.avocat,CONTENU.fins]);
+  const sig=JSON.stringify([CONTENU.grammaire,CONTENU.pieces,CONTENU.liens,CONTENU.discordances,CONTENU.remises,CONTENU.repetition,CONTENU.avocat,CONTENU.fins]);
   if(!_rg || _rgSig!==sig){ _rg=window.ReglesJeu.creerRegles(CONTENU,m); _rgSig=sig; }
   return _rg;
 }
@@ -188,6 +188,7 @@ function renderSim(){
      <span class="flagpill ${SIM.vice_trouve?'on':''}" title="la conclusion ⚑ est composée">vice_trouve : ${SIM.vice_trouve}</span>
      <span class="flagpill ${SIM.vice_expose?'on':''}" title="la conclusion ⚑ est envoyée">vice_expose : ${SIM.vice_expose}</span>
      <span class="flagpill ${faux?'on':''}">faux envoyé : ${faux}</span>
+     <span class="flagpill ${SIM.sait?'on':''}" title="le lien de savoir s'est formé au composeur (passe N)">sait : ${!!SIM.sait}</span>
      <span class="flagpill">phase : ${simPhase()}</span>
      <span class="flagpill prev" title="vice_trouve ? (vice_expose ? 1 : 2) : 3">${SIM.finie?'→ Fin '+SIM.finie:'si clôture maintenant → Fin '+prev}</span>`;
 

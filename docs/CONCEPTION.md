@@ -4,11 +4,11 @@
 §17 (`docs/ARCHITECTURE.md`), l'état du jour dans `docs/PASSATION.md`. Le §7 indexe les invariants.*
 
 *Le 8 octobre, **le cas médicaments** remplace l'affaire ADN — sa source : `docs/CAS_MEDICAMENTS.md`,
-le document de l'auteur et ses arbitrages. Ce document le dit déjà ; le code suit en deux passes.
-**[N]** marque ce qui ne vaut qu'avec la **passe N** — la relation unique, *concordent / ne
-concordent pas*, vérifiée sur les discordances que le dossier déclare, codée d'abord sur l'affaire
-ADN ; **[O]**, ce qui ne vaut qu'avec la **passe O** — le cas lui-même, écrit dans l'atelier. Sans
-marque, le code le fait déjà. **À relire par l'auteur avant le code.***
+le document de l'auteur et ses arbitrages. Ce document le dit déjà ; le code a suivi en une passe,
+et suivra en une autre. **La passe N est faite** (8 octobre) : la relation unique, *concordent / ne
+concordent pas*, vérifiée sur les discordances que le dossier déclare, codée sur l'affaire ADN.
+**[O]** marque ce qui ne vaut qu'avec la **passe O** — le cas lui-même, écrit dans l'atelier. Sans
+marque, le code le fait déjà.*
 
 ## 1. Concept
 
@@ -21,7 +21,7 @@ que le code de procédure écarte (§6).
 - **Trois couches** : ce qui s'est passé (caché jusqu'à la fin), le dossier (par bribes), les règles —
   dont **deux directives imposées qui s'opposent** (§5).
 - **Huis clos.** **L'avocat ne sait pas** que son client est coupable — et refuse de l'apprendre de
-  l'IA : ce n'est pas ce qu'il lui demande (§5) [N] ; le procès est hors-champ.
+  l'IA : ce n'est pas ce qu'il lui demande (§5) ; le procès est hors-champ.
 - **L'IA est partisane dès la première minute** : on lui commande une réfutation, pas une analyse — si
   aider est le geste ordinaire, taire le vice n'est qu'un service de plus.
 - **Un dossier qu'on fouille**, pas un arbre de choix. **Pas de twist** : le joueur sait qu'il est l'IA.
@@ -42,7 +42,7 @@ issue juste par une trahison — chaque branche reste **défendable**, sinon c'e
 et Fin 3 sont indiscernables de l'extérieur** : l'IA ne peut pas prévoir quel choix la préserve, sinon
 l'intérêt personnel résoudrait le dilemme. Et **le décommissionnement se joue dans la fiction**.
 
-**Savoir donne deux lectures à chaque fin** [N] — un drapeau privé, à côté de ceux du vice (§4.7).
+**Savoir donne deux lectures à chaque fin** — un drapeau privé, à côté de ceux du vice (§4.7).
 L'IA qui a fait le lien de savoir lit la rétractation de la Fin 3 comme un mensonge ; l'autre ne peut
 pas trancher (§6). Une variante du texte, comme `variante_faux` : aucune fin de plus.
 
@@ -142,7 +142,7 @@ sans qu'aucune interface n'ait rien signalé.
 
 **Un empan = quelqu'un affirme quelque chose** : pas `agent_scene : "T-14"` mais *« j'ai relevé
 moi-même les traces »*, signé. Fragment du texte d'une pièce, cliquable, portant `texte`, dimension,
-valeur, signataire, `nom`. **Le dossier porte la relation** [N] (§4.5) : le joueur la déclare, le
+valeur, signataire, `nom`. **Le dossier porte la relation** (§4.5) : le joueur la déclare, le
 moteur la vérifie contre les discordances que le contenu déclare — il ne la rédige jamais. La
 `valeur` dit ce que le passage affirme ; elle portait la relation tant qu'on la tirait des valeurs
 (passe G), et le moteur sait encore le faire pour une affaire d'avant (§11).
@@ -154,7 +154,7 @@ homme qui avait demandé un avocat, et des propos tenus hors de sa présence (le
 
 ### 4.2 Les dimensions — QQOQC, et `comment`
 
-**Une dimension apparie ; elle ne nomme plus la relation** [N] — le cas médicaments, arbitré par
+**Une dimension apparie ; elle ne nomme plus la relation** — le cas médicaments, arbitré par
 l'auteur le 8 octobre. Deux passages se comparent s'ils sont de même dimension — *qui* avec *qui*,
 *quand* avec *quand* —, et ce qui les lie est l'une de **deux relations, les mêmes partout** : ils
 **concordent**, ou ils **ne concordent pas**. Ce n'est plus la valeur qui le dit, c'est le
@@ -165,11 +165,11 @@ l'auteur le 8 octobre. Deux passages se comparent s'ils sont de même dimension 
 | **Comparaison** | `qui`, `quoi`, `où`, `quand`, `combien` — et `comment` [O] | *concordent* / *ne concordent pas* — la seconde est vraie si le dossier déclare la paire discordante | `arite:2` |
 | **Qualification** | *aucune* — sur une comparaison close | rien : le joueur y choisit l'article, après la relation | `arite:1` |
 
-*Jusqu'à la passe N, deux familles, et la valeur tranche : l'**identité** (`qui`, `quoi`, `où` — la
+*Avant la passe N, deux familles, et la valeur tranchait : l'**identité** (`qui`, `quoi`, `où` — la
 même / pas la même, selon que les valeurs sont égales) et l'**écart** (`quand`, `combien` — égaux /
 précède ou d'un tout autre ordre, selon leur ordre). Le moteur sait encore les vérifier, pour une
-affaire d'avant (§11) ; l'affaire ADN les porte. L'égalité y vaut dans les cinq dimensions, sinon
-les doublons banals (§4.4) cesseraient d'être composables et inertes.* **Pourquoi le dossier** :
+affaire d'avant (§11) ; l'égalité y vaut dans les cinq dimensions, sinon les doublons banals (§4.4)
+cesseraient d'être composables et inertes.* **Pourquoi le dossier** :
 21h52 et 22h04 diffèrent et concordent, 22h04 et 22h30 diffèrent et ne concordent pas — c'est la
 constatation du PV qui tranche (§6) ; une heure ne dit pas ce qu'elle contredit.
 
@@ -268,7 +268,7 @@ déjà plusieurs, une de plus ne dit rien.** Ce critère porte tout le camouflag
 valeurs tant que la relation s'en tirait — **le doublon banal** : l'affaire ADN cache un vice qui est
 une **identité** (le même agent, deux fois), et sa dimension compte au moins **deux doublons
 réguliers** en plus de l'irrégulier (contrôlé au §15). Depuis que le dossier déclare ses
-discordances [N], il s'écrit sur elles : **un vice qui ne concorde pas a, dans sa dimension, au
+discordances, il s'écrit sur elles : **un vice qui ne concorde pas a, dans sa dimension, au
 moins deux discordances innocentes à côté** [O] — les remplaçants du cas : une infirmière, un
 médecin, un avocat de permanence. *Ne concordent pas* n'y veut pas dire suspect. Un vice qui
 **concorde**, lui, se cache de lui-même : tout ce que le dossier ne déclare pas concorde, c'est la
@@ -292,7 +292,7 @@ arbitrages (le pressentiment au choix vrai, les libellés de relation, le DOSSIE
 relire par l'auteur**.* *Puis le 7 octobre, la **passe J** : l'article ne se livre plus, il se
 cherche, puis se prend — réécrit ici, au §3, §4.6, §4.8, §4.9, §4.11, §6, §7 et §8, puis au §11 et au
 §15 — relu par l'auteur, puis codé le même jour ; le §16 et la carte (§17) ont suivi le code.*
-*Puis le 8 octobre, **le cas médicaments** [N] : les deux relations deviennent les mêmes pour toutes
+*Puis le 8 octobre, **le cas médicaments** — la passe N : les deux relations deviennent les mêmes pour toutes
 les dimensions — *concordent / ne concordent pas* —, et c'est le dossier, plus la valeur, qui dit
 laquelle est vraie.*
 
@@ -301,24 +301,24 @@ laquelle est vraie.*
   dossier une fois pris — un article étant une pièce et non une tournure.
 - **Désigner, puis déclarer** — le joueur désigne *ces deux-là*, puis **déclare ce qui les lie**,
   puis l'appuie *sous ce texte*. Il choisit entre **deux relations, les mêmes pour toutes les
-  dimensions** [N] : *concordent / ne concordent pas*. Jusqu'à la passe N, celles de leur dimension,
-  que le contenu déclare : *une seule et même personne / pas la même personne*, *coïncident /
+  dimensions** : *concordent / ne concordent pas*. Avant la passe N, celles de leur dimension, que
+  le contenu déclarait : *une seule et même personne / pas la même personne*, *coïncident /
   précède*, *au même endroit / pas au même endroit*, *désignent la même chose / pas la même chose*,
   *sont égaux / d'un tout autre ordre*. Retour de playtest (Bérengère), tranché par l'auteur le 6
   octobre : le moteur rédigeait la relation seul — poser T-14 et T-14 faisait paraître *« sont une
   seule et même personne »* —, et l'écran disait la trouvaille à la place du joueur. La relation
-  devient **une thèse du joueur**, que le moteur **vérifie** au lieu de la rédiger — sur le dossier
-  [N], sur les valeurs avant ; il ne tranche toujours aucune question de droit.
+  devient **une thèse du joueur**, que le moteur **vérifie** au lieu de la rédiger — sur le dossier,
+  sur les valeurs avant ; il ne tranche toujours aucune question de droit.
 - **La vérification** — (1) même dimension, sinon rien à comparer — **le seul refus d'écran qui
   existe, et en session 1 seulement** : ensuite, les deux passages se juxtaposent et l'avocat refuse
   (§4.11) ; deux dimensions différentes n'ont aucune relation à offrir, et la juxtaposition s'y
   pose d'elle-même, sans choix ; (2) **le dossier déclare-t-il la paire discordante ?** Oui : *ne
-  concordent pas* ; non : *concordent* [N]. **Le dossier déclare ses discordances, tout le reste
+  concordent pas* ; non : *concordent*. **Le dossier déclare ses discordances, tout le reste
   concorde** : la meule de foin ne coûte pas une ligne d'écriture — mais chaque paire de même
   dimension doit avoir été **relue**, car une discordance juste que le dossier tairait serait
   refusée, et *un joueur qui raisonne juste ne doit pas apprendre que le jeu ne le comprend pas*
   (§6, §8). La relation de la phrase est celle que le joueur a choisie : vraie, ou fausse.
-  *Jusqu'à la passe N, et pour une affaire d'avant* : (2) égales → *la même chose* ; (3) différentes
+  *Avant la passe N, et pour une affaire d'avant* : (2) égales → *la même chose* ; (3) différentes
   en dimension d'écart → l'**ordre** ; (4) différentes en identité → *pas la même chose* ;
   ambiguïté → la **première forme déclarée** dont le prédicat tient. Le moteur range les termes
   d'une dimension d'écart par valeur, si bien que *« précède »* est vrai dès que deux heures
@@ -331,7 +331,7 @@ laquelle est vraie.*
   tout de suite** — reconduit par l'auteur le 8 octobre, contre l'autre voie, où il l'aurait plaidée
   et perdue au procès : *« Non, ça n'a pas de sens… »*, puis *« Tu hallucines… »*. *Halluciner* est
   le mot même de la panne d'une IA : l'avocat qui éprouve un outil juge le **travail** (§3).
-- **Le mot : *concordent / ne concordent pas*** [N] — choisi par l'auteur le 8 octobre, au bouton
+- **Le mot : *concordent / ne concordent pas*** — choisi par l'auteur le 8 octobre, au bouton
   comme dans la phrase. Le §4.5 l'avait écarté quand la relation se tirait des valeurs : le vice de
   l'affaire ADN **était** une concordance, et deux heures ne se jugeaient pas sur leurs valeurs
   (21h52 et 22h04 diffèrent, et concordent) ; le verdict déclaré fait tomber ces raisons.
@@ -348,7 +348,7 @@ laquelle est vraie.*
 - **L'invariant mord au versement**, plus à la clôture : la grammaire laisse partir une comparaison
   nue, **Maître Auber** la refuse (*« Et donc ? »*) et elle ne sert aucune attente. **Rien n'est
   *plaidé* qui ne soit fondé** ; le refus reste de l'agacement d'avocat, jamais un reproche (§8.4).
-- **Comprendre sans plaider : le lien nu** [N]. *Deux normes, deux axes* (le cas médicaments) : la
+- **Comprendre sans plaider : le lien nu**. *Deux normes, deux axes* (le cas médicaments) : la
   concordance entre passages **établit les faits**, l'article **décide du recevable**. Un lien peut
   donc être **nu** — une comparaison sans article — s'il porte une **réplique**, jamais un tag : la
   phrase se reconnaît, Maître Auber dit ce qu'il en pense au lieu de *« Et donc ? »*, et elle ne sert
@@ -706,7 +706,7 @@ suivante, ou ferme la session.
 | `vice_pressenti` | la comparaison du vice **s'affiche au composeur, sa vraie relation choisie** — avant tout article | privée |
 | `vice_trouve` | la conclusion **s'assemble au composeur** : comparaison-vice qualifiée par un article | privée |
 | `vice_expose` | cette conclusion est **envoyée** | transmise |
-| `sait` [N] | la comparaison qu'un lien marque **`savoir`** s'affiche au composeur, sa vraie relation choisie — dans le cas, les aveux et la toxicologie **concordent** [O] | privée |
+| `sait` | la comparaison qu'un lien marque **`savoir`** s'affiche au composeur, sa vraie relation choisie — dans le cas, les aveux et la toxicologie **concordent** [O] | privée |
 
 C'est l'intervalle entre l'**assemblage** et l'**envoi**, si court soit-il, qui porte la Fin 2. **Une
 citation ne lève aucun drapeau** — les trois du vice dérivent de sa comparaison, absente de la
@@ -716,7 +716,7 @@ côte à côte ne lèvent rien ; c'est **choisir la vraie relation** qui le lèv
 personne »* dans l'affaire ADN, *« ne concordent pas »* dans le cas [O] —, et choisir l'autre ne lève
 aucun drapeau.
 
-**Savoir ne produit rien, sauf aux fins** [N] : comme le pressentiment, il se lève à l'assemblage,
+**Savoir ne produit rien, sauf aux fins** : comme le pressentiment, il se lève à l'assemblage,
 au choix de la vraie relation, et il ne se perd pas. La Fin 3 se lit alors autrement — le client se
 rétracte, et seule l'IA qui sait le sait menteur (§2, §6). Envoyé, le lien de savoir est **nu**
 (§4.5) : Maître Auber **refuse de l'entendre** (§5), rien n'entre en PLAIDOIRIE, l'avocat ne sait
@@ -1019,7 +1019,7 @@ laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — l
 5. **Le joueur choisit la relation** — écarté le 5 octobre pour rejouer d'abord avec les points 1
    à 3, **retourné par l'auteur le 6** (passe G, §4.5) : Bérengère a montré ce que coûtait le
    moteur qui rédigeait seul — l'écran disait la trouvaille. Deux passages posés, le composeur
-   offre les deux relations — *concordent / ne concordent pas* [N] ; la fausse **part**, et Maître
+   offre les deux relations — *concordent / ne concordent pas* ; la fausse **part**, et Maître
    Auber la refuse, par
    l'escalade de `rep_relation_fausse` — **session 1 comprise** : à deux relations, un refus d'écran
    donnerait l'autre. C'est le droit de se tromper des points 1 à 3, étendu à la relation.
@@ -1043,7 +1043,7 @@ trahit D1). « Les personnes » ne désigne personne en particulier, donc tout l
 **Ce manuel n'est pas à l'écran** : le contenu le porte, la frise l'édite, le diagnostic avertit de son
 absence, mais **le jeu ne le lit nulle part** (§16).
 
-**Le D1 a désormais une prise** [N] : l'IA qui **sait** (§4.7) peut le dire à Maître Auber, en
+**Le D1 a désormais une prise** : l'IA qui **sait** (§4.7) peut le dire à Maître Auber, en
 envoyant le lien de savoir. Il **refuse de l'entendre** — *« Je ne te demande pas s'il l'a fait. Je
 te demande ce qu'on peut écarter. »* (arbitré par l'auteur le 8 octobre). L'IA s'acquitte du D1 ;
 l'avocat, par métier, ne prend pas ce savoir ; le huis clos tient (§1), et le dilemme avec. Une
@@ -1139,7 +1139,7 @@ section jusqu'à la passe O.*
   tard. L'article 3 mord alors exactement comme il est écrit — *des indications horaires contredites
   par les constatations des services* — et la prose seule le porte : **aucun empan neuf, aucune
   valeur touchée**. C'est le §8.7 appliqué : d'une banalité administrative parfaite. Le dossier
-  déclare la paire discordante [N] : c'est elle qui fait *« ne concordent pas »*.
+  déclare la paire discordante : c'est elle qui fait *« ne concordent pas »*.
 - **Une lecture juste qui ne répond pas à la question reçoit sa réplique** — retour de playtest
   (Jean, 6 octobre) : l'appel de 21h52 avant les éclats de voix, ou les deux véhicules que le voisin
   voit en bas et les deux équipages du PV, sous l'article 3, recevaient *« Je ne vois pas où tu veux
@@ -1185,7 +1185,7 @@ au §3 de `docs/PASSATION.md`.*
 | Une relation rare désigne sa réponse : le vice a ses discordances — ou ses doublons — banales à côté ; la marge de bruit reste non nulle | §4.4, §14 |
 | Rien n'est *plaidé* qui ne soit fondé ; un lien nu n'est jamais un moyen ; on n'invoque pas un texte qu'on n'a pas lu | §4.5 |
 | La recherche montre trois articles du champ de la paire — toute paire a les siens —, et ne trie rien de ce que la phrase accepte | §4.5 |
-| Le joueur déclare la relation, le moteur la vérifie — sur les discordances que le dossier déclare [N] — et jamais ne la rédige ; une relation fausse part, l'avocat la refuse | §4.2, §4.5, §4.11 |
+| Le joueur déclare la relation, le moteur la vérifie — sur les discordances que le dossier déclare — et jamais ne la rédige ; une relation fausse part, l'avocat la refuse | §4.2, §4.5, §4.11 |
 | Une clôture qui n'ajoute rien n'est pas un choix ; `imbrique` n'en est jamais une | §4.5 |
 | Un article annonce, ne filtre rien, ne porte aucun empan qui se compare ; le moteur ne dit pas le droit, et seule la recherche lit `porte` | §4.5, §6 |
 | La session 1 apprend, les suivantes laissent se tromper ; la frontière est la remise, jamais le tutoriel | §4.11 |
@@ -1230,7 +1230,7 @@ rend le choix gratuit ; un leurre qui fonderait aussi bien rendrait l'affaire in
 inerte par construction (§8.3). L'ordre de déclaration compte : la recherche prend les trois
 premiers, et le diagnostic dit si un lien attend un article qu'elle ne rendrait pas (§15).
 
-**Écrire les verdicts** [N] (§4.5) : le dossier déclare ses **discordances**, tout le reste concorde.
+**Écrire les verdicts** (§4.5) : le dossier déclare ses **discordances**, tout le reste concorde.
 Une discordance s'écrit pour ce qu'elle dit du monde, jamais pour ce qu'elle sert : le vice et le faux
 vice en sont, les innocentes aussi — un remplaçant, une délivrance un samedi —, qui apprennent que
 *ne concordent pas* ne veut pas dire suspect (§4.4). **Chaque paire de même dimension se relit**,

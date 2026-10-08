@@ -129,12 +129,29 @@ function diagnostiquer(){
         add("erreur",`Lien ${i} injouable : « ${courtDe(pid)} » n'est livrée par aucune remise`,
           "Le joueur ne peut surligner que dans les pièces reçues.",{edge:i});
     }
-    /* UNE RELATION FAUSSE (passe G) : la forme du lien n'est pas celle que donnent
-       les valeurs — le joueur pourrait la choisir, mais l'avocat la refuserait,
-       et ce lien ne se reconnaîtrait jamais en vrai. */
+    /* UNE RELATION FAUSSE (passe G) : la forme du lien n'est pas la vraie — celle
+       que déclare le dossier (passe N), ou que donnent les valeurs. Le joueur
+       pourrait la choisir, mais l'avocat la refuserait, et ce lien ne se
+       reconnaîtrait jamais en vrai. */
     if(m && !cite_article && lienSense(L) && m.fausse({forme:L.forme,termes:L.termes||[]}))
-      add("erreur",`Lien ${i} : relation fausse sur les valeurs`,
-        `« ${labelLien(L)} » : les valeurs de ces empans disent l'autre relation (§4.5). Change la forme du lien, ou les valeurs.`,{edge:i});
+      add("erreur",`Lien ${i} : relation fausse sur ${parLeDossier(L)?"le dossier":"les valeurs"}`,
+        parLeDossier(L)
+          ? `« ${labelLien(L)} » : le dossier dit l'autre relation — la paire ${m.discorde(...comparaisonDu(L).termes)?"est":"n'est pas"} déclarée discordante (§4.2). Change la forme du lien, ou bascule la paire dans l'onglet Verdicts.`
+          : `« ${labelLien(L)} » : les valeurs de ces empans disent l'autre relation (§4.5). Change la forme du lien, ou les valeurs.`,{edge:i});
+    /* LE LIEN NU (passe N, §4.5) : une comparaison sans article établit un fait,
+       elle ne se plaide pas — une réplique, jamais un tag ni le faux vice. */
+    if((f.arite||2)===2 && (L.tag || L.faux))
+      add("erreur",`Lien ${i} : un lien nu qui se plaiderait`,
+        `« ${labelLien(L)} » n'a pas d'article, et porte ${L.tag?"un tag":"le faux vice"} : il entrerait en PLAIDOIRIE sans fondement. Rien n'est plaidé qui ne soit fondé (§4.5) — conclus-le par un article, ou retire ${L.tag?"le tag":"« faux vice »"}.`,{edge:i});
+    /* LE SAVOIR (passe N, §4.7) : un lien nu, qu'Auber refuse d'entendre (§5). */
+    if(L.savoir){
+      if(L.vice||L.faux) add("erreur",`Lien ${i} : savoir ET ${L.vice?"vice":"faux vice"}`,
+        "Le savoir établit la culpabilité ; il ne fonde rien et ne se plaide pas (§4.7). Décoche l'un des deux.",{edge:i});
+      if((f.arite||2)!==2) add("avert",`Lien ${i} : un savoir sous un article`,
+        "Il se lèverait encore, mais la phrase se plaiderait : le savoir établit un fait, il ne se fonde pas (§4.5, §4.7). Laisse-le nu.",{edge:i});
+      if(!String(L.rep||"").trim()) add("avert",`Lien ${i} : un savoir sans réplique`,
+        "Envoyé, il recevrait « Et donc ? » : Maître Auber doit refuser de l'entendre (§5). Écris sa réplique.",{edge:i});
+    }
     if(m && !cite_article && !lienSense(L))
       add("erreur",`Lien ${i} insensé : ${m.valider({forme:L.forme,termes:L.termes||[]})}`,
         `« ${labelLien(L)} » serait refusée à la composition — le joueur ne pourrait jamais la former.`,{edge:i});
@@ -152,6 +169,33 @@ function diagnostiquer(){
   for(let i=0;i<LI.length;i++) for(let j=i+1;j<LI.length;j++)
     if(memeLien(LI[i],LI[j]))
       add("avert",`Liens dupliqués (${i} et ${j})`,`« ${labelLien(LI[i])} » apparaît deux fois.`,{edge:j});
+  if(LI.some(L=>L.savoir) && !Object.values(CONTENU.fins||{}).some(x=>String((x||{}).variante_sait||"").trim()))
+    add("info","Le savoir ne change aucune fin","Un lien lève « sait », mais aucune fin n'a de « variante_sait » : savoir ne se lirait nulle part (§2).",{});
+
+  /* ---- les discordances (passe N, §4.2, §11) ---- le dossier déclare ce qui ne
+     concorde pas ; tout le reste concorde. Une paire qui ne désigne plus deux
+     passages de même dimension ne serait jamais posée. */
+  const DI=CONTENU.discordances;
+  if(DI!==undefined && !Array.isArray(DI))
+    add("erreur","Clé « discordances » mal formée","Elle doit être une liste de paires de passages, « pid.eid ».",{});
+  else {
+    const vues=new Set();
+    (DI||[]).forEach((p,i)=>{
+      if(!Array.isArray(p) || p.length!==2 || p.some(k=>typeof k!=="string"))
+        return add("erreur",`Discordance ${i} mal formée`,"Une discordance est une paire de deux passages, « pid.eid ».",{});
+      const [a,b]=p, ea=empanDe(...deK(a)), eb=empanDe(...deK(b));
+      if(!ea || !eb)
+        return add("erreur",`Discordance ${i} : passage inconnu (${!ea?a:b})`,"Passage supprimé, ou renommé à la main ? La paire ne désigne plus rien.",{});
+      if(ea.article || eb.article)
+        return add("erreur",`Discordance ${i} : un texte d'article`,"Un article ne se compare à rien (§11) : il ne concorde ni ne discorde.",{});
+      if(a===b) return add("erreur",`Discordance ${i} : le même passage deux fois`,"Un passage ne se compare pas à lui-même.",{});
+      if(ea.dim!==eb.dim)
+        add("erreur",`Discordance ${i} : deux dimensions (« ${ea.dim} », « ${eb.dim} »)`,"Deux passages de dimensions différentes ne se comparent pas : la paire ne serait jamais posée (§4.2).",{});
+      const cle=[a,b].sort().join("|");
+      if(vues.has(cle)) add("avert",`Discordance ${i} déclarée deux fois`,`${cflabel(a)} et ${cflabel(b)}.`,{});
+      vues.add(cle);
+    });
+  }
 
   /* ---- les articles : des TEXTES qu'on invoque, jamais des porteurs de valeur ----
      L'invariant du §4.5 rendu vérifiable ; `porte` est ce que la recherche lit
@@ -211,6 +255,18 @@ function diagnostiquer(){
     if(canaux.size>1) add("avert",`Le vice a ${canaux.size} canaux indépendants`,
       "Le design ne veut qu'UNE violation dissimulée : une seule liaison-article doit conclure le vice.",
       {edges:conclusions.map(l=>LI.indexOf(l))});
+  }
+  /* LA DISCORDANCE BANALE (§4.4, passe N) : un vice qui ne concorde pas se voit
+     si sa dimension n'en compte pas d'autres — il en faut deux innocentes à côté.
+     Un vice qui concorde se cache de lui-même : tout le reste concorde. */
+  for(const l of viceLiens){
+    const c=comparaisonDu(l), t=c.termes||[];
+    if(((formeDe(c.forme)||{}).deduction)!=="discordance" || t.length!==2 || t.some(x=>typeof x!=="string")) continue;
+    const d=dimEmpan(...deK(t[0])), cv=[...t].sort().join("|");
+    const banales=(Array.isArray(CONTENU.discordances)?CONTENU.discordances:[]).filter(p=>Array.isArray(p) && p.length===2
+      && [...p].sort().join("|")!==cv && dimEmpan(...deK(p[0]))===d).length;
+    if(banales<2) add("avert",`Dimension « ${d} » porte un vice qui ne concorde pas, avec ${banales} discordance(s) banale(s)`,
+      "Il en faut au moins deux innocentes à côté, sinon la première trouvée est la réponse (§4.4) — un remplaçant, une délivrance un samedi.",{edge:LI.indexOf(l)});
   }
   for(const l of viceLiens)
     for(const k of feuillesLien(l)){
@@ -393,3 +449,14 @@ function pointer(ref){
 function scrollVers(pid){ const pos=CONTENU._pos[pid], st=$("stage");
   if(pos && typeof st.scrollTo==="function") st.scrollTo({left:Math.max(0,pos.x-120),top:Math.max(0,pos.y-90),behavior:"smooth"}); }
 
+
+/* La comparaison d'un lien : son terme emboîté sous un article, ou le lien nu
+   lui-même (passe N). Et si sa vérité se lit au DOSSIER plutôt qu'aux valeurs. */
+function comparaisonDu(L){
+  const t0=(L.termes||[])[0];
+  return (t0 && typeof t0==="object") ? t0 : {forme:L.forme, termes:L.termes||[]};
+}
+function parLeDossier(L){
+  const d=(formeDe(comparaisonDu(L).forme)||{}).deduction;
+  return d==="concordance" || d==="discordance";
+}

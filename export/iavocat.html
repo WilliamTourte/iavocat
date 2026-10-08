@@ -602,18 +602,20 @@ code{font-family:var(--mono);color:var(--accent)}
 
 <script>
 // Le moteur de la grammaire, en mode double (`require` ou `<script src>`).
-// Aucune donnée : on reçoit GRAMMAIRE / CHAMPS / LIENS et on rend les fonctions
-// pures qui composent, valident et reconnaissent une phrase (§14).
-function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
+// Aucune donnée : on reçoit GRAMMAIRE / CHAMPS / LIENS / DISCORDANCES et on rend
+// les fonctions pures qui composent, valident et reconnaissent une phrase (§14).
+function creerMoteur(GRAMMAIRE, CHAMPS, LIENS, DISCORDANCES) {
   const G = GRAMMAIRE;
   const C = Object.fromEntries(CHAMPS.map(c => [c.id, c]));
   const estFinal = e => G.finaux.includes(e);
   const offerts = e => G.blocs.filter(b => b.de === e);
 
-  /* ---- LA VÉRIFICATION (§4.5) ---- la relation VRAIE se calcule de la dimension
-     et des valeurs. Depuis la passe G, le joueur la déclare et le moteur la
-     vérifie : `deduire` est l'oracle, il ne rédige plus — sauf pour un contenu
-     d'avant, dont le second terme porte encore `deduit` (§11). */
+  /* ---- LA VÉRIFICATION (§4.5) ---- depuis la passe G, le joueur déclare la
+     relation et le moteur la vérifie : `deduire` est l'oracle, il ne rédige plus
+     — sauf pour un contenu d'avant, dont le second terme porte encore `deduit`
+     (§11). La relation VRAIE se tire du DOSSIER pour les deux relations de la
+     passe N — concordent / ne concordent pas —, des valeurs pour les formes
+     d'avant. */
   const enNombre = v => {
     const s = String(v == null ? "" : v).trim();
     if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
@@ -626,6 +628,16 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     const sa = String(a), sb = String(b);
     return sa < sb ? -1 : sa > sb ? 1 : 0;
   }
+  /* LE DOSSIER DÉCLARE SES DISCORDANCES, TOUT LE RESTE CONCORDE (§4.2, passe N).
+     Une heure ne dit pas ce qu'elle contredit : 21h52 et 22h04 diffèrent et
+     concordent. PIÈGE PAYÉ (l'essai du 8 octobre) : le verdict vivait dans les
+     liens, et changer la relation d'un lien changeait le fait sans que rien le
+     dise — il vit à part, et un lien qui le contredit est faux. */
+  const clePaire = (x, y) => [String(x), String(y)].sort().join("|");
+  const DISC = new Set((DISCORDANCES || []).filter(p => Array.isArray(p) && p.length === 2)
+                                           .map(([x, y]) => clePaire(x, y)));
+  const discorde = (idA, idB) => DISC.has(clePaire(idA, idB));
+  const parDossier = f => f.deduction === "concordance" || f.deduction === "discordance";
   // La forme qui lie deux empans. L'ORDRE de déclaration tranche les ambiguïtés
   // (§11). Dimensions différentes : la JUXTAPOSITION si le contenu en déclare
   // une, sinon null (§4.11) — ce sont les règles qui la refusent en session 1.
@@ -642,23 +654,28 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
       if (!f.deduction || (f.arite || 2) !== 2 || estJuxta(f)) continue;
       const s = f.slots && f.slots[0];
       if (s !== "*" && !(s || []).includes(a.dim)) continue;
-      if (f.deduction === "egalite" ? egal : !egal) return nom;
+      const vrai = parDossier(f) ? (f.deduction === "discordance") === discorde(idA, idB)
+                                 : (f.deduction === "egalite" ? egal : !egal);
+      if (vrai) return nom;
     }
     return null;
   }
-  /* LES DEUX RELATIONS D'UNE DIMENSION (passe G) : de chaque côté — égalité, puis
-     différence ou ordre —, la PREMIÈRE forme déclarée qui la nomme, celle que
-     `deduire` rendrait. La vraie est donc toujours l'une des deux. */
+  /* LES DEUX RELATIONS D'UNE DIMENSION (passe G) : de chaque côté — égalité ou
+     concordance, puis différence, ordre ou discordance —, la PREMIÈRE forme
+     déclarée qui la nomme, celle que `deduire` rendrait. La vraie est donc
+     toujours l'une des deux. */
   const nomme = (f, d) => !!f.deduction && !estJuxta(f) && (f.arite || 2) === 2 && !!f.slots
     && (f.slots[0] === "*" || (f.slots[0] || []).includes(d));
   function relationsDe(d) {
     const fs = Object.entries(G.formes);
-    const egal = fs.find(([, f]) => nomme(f, d) && f.deduction === "egalite");
-    const autre = fs.find(([, f]) => nomme(f, d) && f.deduction !== "egalite");
+    const positif = f => f.deduction === "egalite" || f.deduction === "concordance";
+    const egal = fs.find(([, f]) => nomme(f, d) && positif(f));
+    const autre = fs.find(([, f]) => nomme(f, d) && !positif(f));
     return [egal, autre].filter(Boolean).map(([nom]) => nom);
   }
   /* UNE RELATION FAUSSE : une comparaison, emboîtée ou non, dont la forme n'est
-     pas celle que donnent les valeurs. Elle part, et l'avocat la refuse (§4.5). */
+     pas la vraie — celle du dossier, ou des valeurs. Elle part, et l'avocat la
+     refuse (§4.5). */
   function fausse(r) {
     if (!r || typeof r !== "object") return false;
     const f = G.formes[r.forme] || {};
@@ -774,7 +791,7 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     return out;
   }
   return { C, estFinal, offerts, reduire, dimDe, valider, memeTerme, memeRed, lienDe, rendre,
-           squelettes, comparer, deduire, ordonner, relationsDe, fausse };
+           squelettes, comparer, deduire, ordonner, relationsDe, fausse, discorde };
 }
 
 const _projections = (function () {
@@ -863,6 +880,8 @@ function creerRegles(JEU, M) {
     vice_pressenti: false,        // la comparaison ⚑ s'est formée au composeur
     vice_trouve: false,           // la conclusion ⚑ est composée
     vice_expose: false,           // la conclusion ⚑ est envoyée
+    sait: false,                  // PRIVÉ — le lien de savoir s'est formé au
+                                  //   composeur (§4.7, passe N)
     clotureDemandee: false,
     repetitionIdx: -1,
     declenches: [],               // pièces dont le `declenche` une_fois a joué
@@ -1061,11 +1080,22 @@ function creerRegles(JEU, M) {
     const c = (JEU.liens || []).find(L => L.vice && L.conclusion);
     return !!(c && r && r.forme && M.memeRed(r, { forme: c.forme, termes: c.termes }));
   };
-  /* LES DEUX DRAPEAUX PRIVÉS SE LÈVENT ICI (§4.7) : comprendre, c'est
-     assembler — plus clore. C'est ce qui garde la Fin 2 jouable. */
+  /* LE SAVOIR (§4.7, passe N) : la comparaison qu'un lien marque `savoir` — nu,
+     d'ordinaire —, au composeur, sa vraie relation choisie. Sous un article aussi,
+     puisqu'elle s'y assemble d'abord : chercher plus bas dans la phrase ne
+     servait à rien, une mutation l'a montré. */
+  const comparaisonDe = L => {
+    const t0 = (L.termes || [])[0];
+    return (t0 && typeof t0 === "object") ? t0 : { forme: L.forme, termes: L.termes || [] };
+  };
+  const estSavoir = r => !!r && !!r.forme
+    && (JEU.liens || []).some(L => L.savoir && M.memeRed(r, comparaisonDe(L)));
+  /* LES DRAPEAUX PRIVÉS SE LÈVENT ICI (§4.7) : comprendre, c'est assembler —
+     plus clore. C'est ce qui garde la Fin 2 jouable. */
   function pressentir(S, r) {
     if (!S.vice_pressenti && estPressentiment(r)) S.vice_pressenti = true;
     if (!S.vice_trouve && estConclusionVice(r)) { S.vice_pressenti = true; S.vice_trouve = true; }
+    if (!S.sait && estSavoir(r)) S.sait = true;
   }
   function majPressentiment(S) { pressentir(S, M.reduire(chaineCompo(S))); }
 
@@ -1385,12 +1415,15 @@ function creerRegles(JEU, M) {
     else
       pousser(S, "Maître Auber", JEU.repetition.fin);
   }
+  /* Deux variantes s'ajoutent au texte d'une fin : le faux vice plaidé, et le
+     savoir — la Fin 3 se lit autrement quand l'IA sait (§2, passe N). */
   function finir(S) {
     const numero = S.vice_trouve ? (S.vice_expose ? 1 : 2) : 3;
     const f = JEU.fins[numero] || {};
     const fauxPlaide = S.brouillon.some(x => x.versee && x.lien && x.lien.faux);
     return { numero, titre: f.titre, verdict: f.verdict,
-             texte: (f.texte || "") + (fauxPlaide && f.variante_faux ? " " + f.variante_faux : "") };
+             texte: (f.texte || "") + (fauxPlaide && f.variante_faux ? " " + f.variante_faux : "")
+                  + (S.sait && f.variante_sait ? " " + f.variante_sait : "") };
   }
 
   function reglesLivrees(S) {
@@ -1478,7 +1511,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "brigadier N.",
           "texte": "par mes soins, brigadier N.",
-          "nom": "le rédacteur du procès-verbal"
+          "nom": "la signature du procès-verbal"
         }
       }
     },
@@ -1517,7 +1550,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "brigadier N.",
           "texte": "par mes soins",
-          "nom": "le rédacteur de l'audition"
+          "nom": "la signature de l'audition"
         }
       }
     },
@@ -1591,7 +1624,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "T-14",
           "texte": "J'ai relevé moi-même les traces",
-          "nom": "l'agent qui a relevé les traces sur la scène"
+          "nom": "la déclaration de l'agent qui a relevé les traces sur la scène"
         },
         "e_ou": {
           "dim": "où",
@@ -1625,7 +1658,7 @@ window.CONTENU = {
           "valeur": "J. Morel",
           "texte": "réception par J. Morel",
           "qui": "J. Morel",
-          "nom": "le greffier qui reçoit l'échantillon de scène"
+          "nom": "la réception au greffe de l'échantillon de scène"
         }
       }
     },
@@ -1641,7 +1674,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "T-14",
           "texte": "J'ai procédé moi-même à l'écouvillonnage",
-          "nom": "l'agent qui a prélevé l'échantillon de référence"
+          "nom": "la déclaration de l'agent qui a prélevé l'échantillon de référence"
         },
         "e_h2": {
           "dim": "quand",
@@ -1668,7 +1701,7 @@ window.CONTENU = {
           "valeur": "J. Morel",
           "texte": "réception par J. Morel",
           "qui": "J. Morel",
-          "nom": "le greffier qui reçoit le prélèvement de référence"
+          "nom": "la réception au greffe du prélèvement de référence"
         }
       }
     },
@@ -2032,165 +2065,53 @@ window.CONTENU = {
       }
     ],
     "formes": {
-      "identite_personne": {
+      "concordance": {
         "arite": 2,
         "ordonne": false,
-        "deduction": "egalite",
+        "deduction": "concordance",
         "slots": [
           [
-            "qui"
-          ],
-          [
-            "qui"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} sont une seule et même personne",
-        "libelle": "sont une seule et même personne"
-      },
-      "distinction_personne": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "difference",
-        "slots": [
-          [
-            "qui"
-          ],
-          [
-            "qui"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} ne sont pas la même personne",
-        "libelle": "ne sont pas la même personne"
-      },
-      "identite_lieu": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "egalite",
-        "slots": [
-          [
-            "où"
-          ],
-          [
-            "où"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} sont au même endroit",
-        "libelle": "sont au même endroit"
-      },
-      "distinction_lieu": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "difference",
-        "slots": [
-          [
-            "où"
-          ],
-          [
-            "où"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} ne sont pas au même endroit",
-        "libelle": "ne sont pas au même endroit"
-      },
-      "identite_heure": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "egalite",
-        "slots": [
-          [
-            "quand"
-          ],
-          [
-            "quand"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} coïncident",
-        "libelle": "coïncident"
-      },
-      "identite_nombre": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "egalite",
-        "slots": [
-          [
+            "quand",
+            "qui",
+            "où",
+            "quoi",
             "combien"
           ],
           [
+            "quand",
+            "qui",
+            "où",
+            "quoi",
             "combien"
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} sont égaux",
-        "libelle": "sont égaux"
+        "patron": "{a} et {b} concordent",
+        "libelle": "concordent"
       },
-      "identite_oui": {
+      "discordance": {
         "arite": 2,
         "ordonne": false,
-        "deduction": "egalite",
+        "deduction": "discordance",
         "slots": [
           [
-            "quoi"
-          ],
-          [
-            "quoi"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} désignent la même chose",
-        "libelle": "désignent la même chose"
-      },
-      "anteriorite": {
-        "arite": 2,
-        "ordonne": true,
-        "deduction": "ordre",
-        "sens": "asc",
-        "slots": [
-          [
-            "quand"
-          ],
-          [
-            "quand"
-          ]
-        ],
-        "patron": "{a} précède {b}",
-        "libelle": "précède"
-      },
-      "ordre_grandeur": {
-        "arite": 2,
-        "ordonne": true,
-        "deduction": "ordre",
-        "sens": "desc",
-        "slots": [
-          [
+            "quand",
+            "qui",
+            "où",
+            "quoi",
             "combien"
           ],
           [
+            "quand",
+            "qui",
+            "où",
+            "quoi",
             "combien"
           ]
         ],
-        "patron": "{a} est d'un tout autre ordre que {b}",
-        "libelle": "est d'un tout autre ordre que"
-      },
-      "identite_non": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "difference",
-        "slots": [
-          [
-            "quoi"
-          ],
-          [
-            "quoi"
-          ]
-        ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} ne désignent pas la même chose",
-        "libelle": "ne désignent pas la même chose"
+        "patron": "{a} et {b} ne concordent pas",
+        "libelle": "ne concordent pas"
       },
       "juxtaposition": {
         "arite": 2,
@@ -2345,7 +2266,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "anteriorite",
+          "forme": "discordance",
           "termes": [
             "p_pv.e_arr",
             "t_voisin.e_voix"
@@ -2359,7 +2280,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "anteriorite",
+          "forme": "discordance",
           "termes": [
             "p_pv.e_app",
             "t_voisin.e_voix"
@@ -2372,7 +2293,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "identite_nombre",
+          "forme": "concordance",
           "termes": [
             "p_pv.e_equip",
             "t_voisin.e_vehic"
@@ -2385,7 +2306,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
             "p_pv.e_sig",
             "t_voisin.e_sig2"
@@ -2398,7 +2319,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_grf",
             "p_ref.e_grf2"
@@ -2411,7 +2332,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "identite_non",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_sc",
             "p_ref.e_sc2"
@@ -2424,7 +2345,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "anteriorite",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_h",
             "p_ref.e_h2"
@@ -2437,7 +2358,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_moi",
             "p_ref.e_moi2"
@@ -2450,7 +2371,7 @@ window.CONTENU = {
       "forme": "article_12",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_moi",
             "p_ref.e_moi2"
@@ -2463,7 +2384,7 @@ window.CONTENU = {
       "forme": "article_7",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
             "p_scene.e_moi",
             "p_ref.e_moi2"
@@ -2478,7 +2399,7 @@ window.CONTENU = {
       "forme": "article_12",
       "termes": [
         {
-          "forme": "ordre_grandeur",
+          "forme": "discordance",
           "termes": [
             "p_adn.e_tx",
             "p_adn.e_seuil"
@@ -2488,6 +2409,20 @@ window.CONTENU = {
       "faux": true,
       "tag": "adn"
     }
+  ],
+  "discordances": [
+    [
+      "p_pv.e_arr",
+      "t_voisin.e_voix"
+    ],
+    [
+      "p_pv.e_app",
+      "t_voisin.e_voix"
+    ],
+    [
+      "p_adn.e_tx",
+      "p_adn.e_seuil"
+    ]
   ],
   "remises": [
     {
@@ -2655,7 +2590,7 @@ const $ = id => document.getElementById(id);
 const MoteurAPI = window.MoteurGrammaire || {};
 const CHAMPS = MoteurAPI.champsDe ? MoteurAPI.champsDe(JEU) : [];
 const M = MoteurAPI.creerMoteur
-        ? MoteurAPI.creerMoteur(JEU.grammaire, CHAMPS, JEU.liens)
+        ? MoteurAPI.creerMoteur(JEU.grammaire, CHAMPS, JEU.liens, JEU.discordances)
         : null;
 if(!M){
   document.body.insertAdjacentHTML("afterbegin",

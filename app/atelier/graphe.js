@@ -71,6 +71,7 @@ function render(){
   renderDiag();
   renderInsp();
   renderEtapes();
+  renderVerdicts();
   majUndoBtn();
   majAccord();
 }

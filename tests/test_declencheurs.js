@@ -216,4 +216,53 @@ console.log("\n=== Les trois drapeaux du vice ===");
 }
 
 
+console.log("\n=== Le savoir, et le lien nu qui le porte (passe N) ===");
+/* Le contenu du jour n'a pas de savoir : on le lui donne. Une comparaison déjà
+   écrite sous un article — d'un lien neutre et sans tag, pour ne lever aucun
+   drapeau du vice et rester hors du chemin docile —, posée NUE, marquée `savoir`, avec sa réplique ; et chaque fin, sa
+   variante. Rien n'est nommé : tout se dérive des liens (§16). */
+function avecSavoir() {
+  const c = contenuLivre();
+  /* PIÈGE : sans tag — le chemin docile compose les liens qui servent, et une
+     phrase qui emboîte la comparaison du savoir le ferait savoir aussi. */
+  const L = c.liens.find(x => !x.vice && !x.faux && !x.tag && H.sousTerme(x));
+  const comp = JSON.parse(JSON.stringify(H.sousTerme(L)));
+  const nu = { forme: comp.forme, termes: comp.termes, savoir: true, rep: "SAVOIR — je ne te demande pas s'il l'a fait." };
+  c.liens.push(nu);
+  for (const k of Object.keys(c.fins)) c.fins[k].variante_sait = "VARIANTE-SAIT";
+  return { c, nu };
+}
+{
+  const { c, nu } = avecSavoir();
+  const w = boot(c);
+  H.instruire(w);
+  check("avant le lien de savoir, l'IA ne sait pas", !w.S.sait);
+  const autre = w.M.relationsDe(w.M.dimDe(nu.termes[0])).find(f => f !== nu.forme);
+  H.assembler(w, { forme: autre, termes: nu.termes });
+  check("la fausse relation, posée, ne fait rien savoir", !w.S.sait);
+  check("le lien nu, sa vraie relation choisie, au composeur : l'IA sait", H.assembler(w, nu) && w.S.sait);
+  check("savoir ne lève aucun drapeau du vice", !w.S.vice_pressenti && !w.S.vice_trouve && !w.S.vice_expose);
+  w.viderCompo();
+  check("vider le composeur ne fait pas oublier", w.S.sait);
+  const txt = H.terminer(w);
+  check("la fin dit le savoir (variante_sait)", txt.includes("VARIANTE-SAIT"));
+}
+{
+  const { c } = avecSavoir();
+  const w = boot(c);
+  H.instruire(w);
+  check("qui n'a pas su ne lit pas la variante", !H.terminer(w).includes("VARIANTE-SAIT"));
+}
+{
+  const { c, nu } = avecSavoir();
+  const w = boot(c);
+  H.instruire(w);
+  const moyens = w.moyensRetenus().length, servis = w.S.satisfaits.length;
+  H.composerLien(w, nu);
+  check("envoyé, le lien nu reçoit SA réplique, pas « Et donc ? »",
+    discussion(w).includes("SAVOIR — je ne te demande pas"));
+  check("il n'est pas un moyen : rien n'entre au plan", w.moyensRetenus().length === moyens);
+  check("et il ne sert aucune attente", w.S.satisfaits.length === servis);
+}
+
 bilan();

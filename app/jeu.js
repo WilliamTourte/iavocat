@@ -38,7 +38,7 @@ const $ = id => document.getElementById(id);
 const MoteurAPI = window.MoteurGrammaire || {};
 const CHAMPS = MoteurAPI.champsDe ? MoteurAPI.champsDe(JEU) : [];
 const M = MoteurAPI.creerMoteur
-        ? MoteurAPI.creerMoteur(JEU.grammaire, CHAMPS, JEU.liens)
+        ? MoteurAPI.creerMoteur(JEU.grammaire, CHAMPS, JEU.liens, JEU.discordances)
         : null;
 if(!M){
   document.body.insertAdjacentHTML("afterbegin",
