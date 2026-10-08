@@ -428,7 +428,7 @@ function creerRegles(JEU, M) {
         && attentesDe(r).some(x => x.attend === L.tag && !S.satisfaits.includes(x.attend));
   }
 
-  /* UNE PHRASE QUI MÉLANGE DEUX DOSSIERS (§4.6). Le CONTEXTE est cumulatif et
+  /* UNE PHRASE QUI MÉLANGE DEUX REMISES (§4.6). Le DOSSIER est cumulatif et
      gratuit : rien n'empêche de comparer un passage de la session 1 avec un de
      la session 2, et ça produit des phrases qui n'ont pas de sens — l'arrivée de
      la patrouille « précède » le relevé du lendemain : vrai, et sans objet. On n'INTERDIT rien (§4.5, seules les erreurs de

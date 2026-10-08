@@ -1,7 +1,8 @@
 /* ATELIER — LE PAS-À-PAS : la simulation du déroulé. Il APPELLE les mêmes
    fonctions que le jeu, sur le même état : il ne peut pas dériver (§12). Deux
    écarts assumés — il joue au grain du LIEN plutôt que bloc à bloc, et il narre
-   ses gestes privés. */
+   ses gestes privés. Un passage s'y prend comme au jeu, dans une pièce OUVERTE
+   (`S.examinees`, passe K) : pas d'état à lui pour les passages. */
 let SIM=null, SIMACT=[];
 let _rg=null, _rgSig=null;
 function RG(){
@@ -14,7 +15,6 @@ function simReset(){
   const R=RG();
   SIM = R ? R.etatInitial() : { fil:[], brouillon:[], plaidoirie:[] };
   SIM.finie=null;                   // propre à l'atelier : la fin retenue
-  SIM.surlignes=[];                 // propre à l'atelier : les passages repérés (le jeu n'en garde plus, passe K)
   window.SIM=SIM;                   // exposé pour la console et les tests
   if(R) R.envoyerRemise(SIM);       // la session 1 part au démarrage
   renderEtapes();
@@ -44,13 +44,16 @@ function simComposable(L){
       if(!simLivrees().has(bloc.piece) && !simTrouvable(sous,bloc.piece)) return false;
     }
     else if(bloc && bloc.piece && !simLivrees().has(bloc.piece)) return false;
-    if(typeof sous==="string") return SIM.surlignes.includes(sous);
+    if(typeof sous==="string") return simLu(sous);
     if(!sous || typeof sous!=="object") return false;
-    return feuillesLien(sous).every(k=>SIM.surlignes.includes(k))
+    return feuillesLien(sous).every(simLu)
         || SIM.brouillon.some(n=>n.reduite && memeReduite(n.reduite,sous));
   }
-  return feuillesLien(L).every(k=>SIM.surlignes.includes(k));
+  return feuillesLien(L).every(simLu);
 }
+/* On ne prend un passage que dans une pièce qu'on a OUVERTE (§4.6) : c'est là
+   qu'il se clique. Le jeu ne garde rien d'autre (passe K) — l'atelier non plus. */
+const simLu = k => SIM.examinees.includes(deK(k)[0]);
 const memeReduite = (a,b) => { const m=MG(); return !!m && m.memeRed(a,b); };
 /* La recherche part du PREMIER passage de la paire (§4.5) ; elle rend la base de
    sa dimension, dans l'ordre que tire le hasard — l'ordre ne compte pas ici. */
@@ -59,17 +62,11 @@ function simTrouvable(sous,pid){
   const e=k && empanDe(...deK(k));
   return !!e && RG().baseRecherche(e.dim).includes(pid);
 }
-/* Le pas-à-pas compose au grain du LIEN (§12) : il repère les passages, puis
+/* Le pas-à-pas compose au grain du LIEN (§12) : ses pièces ouvertes, il
    compose d'un bloc par `clorePhrase` — jamais `prendre` (passes H et K) : une
    phrase posée en silence dans `SIM.compo` y lèverait des drapeaux sans qu'on le
-   voie. Le jeu ne garde plus de passages de côté (passe K) : ce qu'a repéré le
-   joueur simulé est un état PROPRE À L'ATELIER, `SIM.surlignes`, comme
-   `SIM.finie`. Il n'offre que des passages non repérés. */
-function simSurligner(k){
-  if(!SIM.surlignes.includes(k)) SIM.surlignes.push(k);
-  simMsg({sys:true,texte:`surligne ${cflabel(k)} — repéré, privé. Rien ne part.`});
-  renderEtapes();
-}
+   voie. Il ne repère rien d'avance : le jeu ne garde plus de passages de côté
+   (passe K), et un `SIM.surlignes` propre à l'atelier simulait un geste parti. */
 function simComposer(i){
   const L=CONTENU.liens[i];
   // L'article trouvé rejoint le dossier, comme en jeu (passe J).
@@ -118,13 +115,9 @@ function simActions(){
     for(const pid of livrees) if(!SIM.examinees.includes(pid))
       A.push({t:`Ouvrir « ${courtDe(pid)} »`, cls:"ghost", f:()=>simOuvrir(pid)});
 
-  // Un article ne se repère pas : il se cherche (passe J).
-  for(const e of empansPlats()){
-    if(!livrees.has(e.pid) || SIM.surlignes.includes(e.id)) continue;
-    A.push({t:`Surligner : ${cflabel(e.id)} — « ${String(e.texte||"").slice(0,42)} »`, cls:"ghost", f:()=>simSurligner(e.id)});
-  }
+  // Pas de geste « repérer » : un passage se prend dans sa pièce ouverte (passe K).
   for(const r of sousComparaisons()){
-    if(!feuillesLien(r).every(k=>SIM.surlignes.includes(k))) continue;
+    if(!feuillesLien(r).every(simLu)) continue;
     A.push({t:`Comparer (sans qualifier) : ${labelLien(r)}`, cls:"ghost", f:()=>simComparer(r)});
   }
   (CONTENU.liens||[]).forEach((L,i)=>{
@@ -177,7 +170,7 @@ function renderSim(){
   const prev = SIM.vice_trouve ? (SIM.vice_expose ? 1 : 2) : 3;
   const auPlan = R ? SIM.plaidoirie.filter(x=>SIM.brouillon[x.b] && R.estMoyen(SIM.brouillon[x.b].lien)).length : 0;
   $("simflags").innerHTML=
-    `<span class="flagpill">surlignés : ${SIM.surlignes.length}</span>
+    `<span class="flagpill" title="les pièces ouvertes, où un passage se prend">lues : ${SIM.examinees.length}</span>
      <span class="flagpill" title="le journal des phrases closes — sans zone à lui">écrites : ${SIM.brouillon.length}</span>
      <span class="flagpill prev" title="le plan ne retient que les moyens">plan : ${auPlan}</span>
      <span class="flagpill ${SIM.vice_pressenti?'on':''}" title="la comparaison ⚑ s'est formée">vice_pressenti : ${SIM.vice_pressenti}</span>

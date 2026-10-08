@@ -286,16 +286,16 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **650 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **652 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
 | `test_o5.js` (44) | l'index du dossier, **et le bouton de pièces qui compte comme lui** ; tout empan cliquable ; prendre d'un clic, sans rien transmettre ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
 | `test_declencheurs.js` (40) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (414) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel — **chercher le passage aux deux gestes**, **l'article en trois temps**, **et *« → Envoyer »* montré à la fin de chacun** (§4.8, passe K) —, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **l'écran qui dit l'état de la phrase** — ‹ ›, le passage pris marqué, la raison d'un clic qui ne prend rien (§4.6) ; **l'article qui se cherche, puis se prend — trois résultats du champ de la paire, dans un ordre tiré au hasard, au dossier une fois pris —, et la comparaison nue qui ne part pas en session 1** (§4.5, §4.11, passe J) ; **le clic dans la pièce qui prend — ce que la grammaire accepte, rien de plus —, et la bulle qui montre *« ← retirer »* quand il a pris à tort** (§4.6, §4.8, passes H et K) ; **la relation que le joueur choisit, et la fausse que l'avocat refuse** (§4.5, passe G) ; **la DISCUSSION qui s'agrandit**, DOSSIER ouvert (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
+| `test_parcours.js` (415) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel — **chercher le passage aux deux gestes**, **l'article en trois temps**, **et *« → Envoyer »* montré à la fin de chacun** (§4.8, passe K) —, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **l'écran qui dit l'état de la phrase** — ‹ ›, le passage pris marqué, la raison d'un clic qui ne prend rien (§4.6) ; **l'article qui se cherche, puis se prend — trois résultats du champ de la paire, dans un ordre tiré au hasard, au dossier une fois pris —, et la comparaison nue qui ne part pas en session 1** (§4.5, §4.11, passe J) ; **le clic dans la pièce qui prend — ce que la grammaire accepte, rien de plus —, et la bulle qui montre *« ← retirer »* quand il a pris à tort** (§4.6, §4.8, passes H et K) ; **la relation que le joueur choisit, et la fausse que l'avocat refuse** (§4.5, passe G) ; **la DISCUSSION qui s'agrandit**, DOSSIER ouvert (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
 | `test_sauvegarde.js` (41) | la partie survit au rechargement, **composition assemblée et non envoyée comprise**, **l'article trouvé au dossier compris** ; la signature jette une sauvegarde étrangère ; **une partie d'avant la passe K se reprend sans `S.retenus`, ses articles d'avant la passe J au dossier** |
-| `smoke_atelier.js` (111) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet — **la recherche comprise : un article qu'elle ne rend pas sur la paire attendue** (passe J) —, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
+| `smoke_atelier.js` (112) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet — **la recherche comprise : un article qu'elle ne rend pas sur la paire attendue** (passe J) —, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
 - **Le contrat de lecture : `w.R.x(w.S)`** — une suite *lit* les règles ; elle *agit* par les **gestes**
   de la fenêtre, parce qu'eux redessinent.
@@ -315,9 +315,9 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
   affirmant l'ancienne vérité — et **les suites ne se lisent pas elles-mêmes**.
 - **Les tests ne nomment aucun contenu** : tout se dérive de la *forme*, si bien que **changer
   d'affaire ne casse pas une seule suite**. Sont épinglées, en revanche, des chaînes de chrome
-  (`Envoyer`, `Envoie`, `effacer`, `Opposer une phrase`, `opposer`, `● `, `✓ `,
-  `nouvelle`, `dans ta RÉPONSE`, `ne prend plus de passage`, `Ajouté à ta RÉPONSE`, `Déjà dans ta
-  RÉPONSE`, `rangé dans ton dossier`, `fonde une relation`, `trois articles`, et pour le clavier
+  (`Envoyer`, `Envoie`, `effacer`, `Opposer une réponse`, `opposer`, `● `, `✓ `,
+  `documents ajoutés au DOSSIER`, `dans ta RÉPONSE`, `ne prend plus de passage`, `Ajouté à ta RÉPONSE`, `Déjà dans ta
+  RÉPONSE`, `rangé dans ton DOSSIER`, `fonde une relation`, `trois articles`, et pour le clavier
   `déjà lue`, `Tutoriel`, `DOSSIER`, `DOCUMENTS`) : on les
   renomme si on veut, jamais sans toucher au test qui les nomme.
 - *Les Manuels n'ont plus de suite : `JEU.directives` et `JEU.avis_exploitation` ne sont plus lus par
@@ -382,7 +382,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
-| l'avocat ouvre une session — **un seul message, sa première question puis ses pièces** (§4.6) ; ouvrir et refermer une pièce ; l'index du dossier (*DOCUMENTS* à l'écran) | `envoyerRemise` → `poserQuestion` (qui pose la question SUR le message de remise : champ `question` du fil), `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` (+ les articles trouvés, `S.trouves`, passe J) | `renderDISCUSSION` (le bouton de pièces : `comptePieces`, `recuAvant`), `renderCONTEXTE` → `pieceHTML` (‹ › : `ordreIndex`, `pieceVoisine`, `voisine`) → `piecePanelHTML`, `rendreTexte`, `filetsPorte` (`porte` en filets sous le titre, §4.11), `renderDossier` — **repliable en une ligne à tout moment, par le joueur seul** (`dossierPlie`, `basculerDossier`) |
+| l'avocat ouvre une session — **un seul message, sa première question puis ses pièces** (§4.6) ; ouvrir et refermer une pièce ; l'index du dossier (*DOCUMENTS* à l'écran) | `envoyerRemise` → `poserQuestion` (qui pose la question SUR le message de remise : champ `question` du fil), `ouvrirPiece`, `fermerPiece` (+ `declenche`), `piecesLivrees` (+ les articles trouvés, `S.trouves`, passe J) | `renderDISCUSSION` (le bouton de pièces : `comptePieces`, *« N documents ajoutés au DOSSIER »*), `renderCONTEXTE` → `pieceHTML` (‹ › : `ordreIndex`, `pieceVoisine`, `voisine`) → `piecePanelHTML`, `rendreTexte`, `filetsPorte` (`porte` en filets sous le titre, §4.11), `renderDossier` — **repliable en une ligne à tout moment, par le joueur seul** (`dossierPlie`, `basculerDossier`) |
 | **prendre** un passage — le clic dans la pièce, qui le pose quand la phrase en attend un (passes H et K, §4.6) ; le texte d'un article, qui fonde la phrase qui l'attend (passe J) | `prendre` — `poserBloc` au rang de `indexTermeChamp`, la clé du passage en source, ou la liaison de l'article, qui rejoint alors `S.trouves` ; `dansPhrase`, la garde, qui marque aussi le passage pris ; `estArticle` | `surligner` (écran) — `surlignerArticle` pour un article — → `echoPiece`, la ligne sous la pièce (`ECHO_POSE`, `ECHO_TROUVE`, `RAPPEL_PHRASE` ; pour un clic qui ne prend rien, `raisonPleine`, et pour un article, `RAISON_ARTICLE`, `RAISON_COMPLETE`), ramenée dans le champ par `voirEcho` ; `rendreTexte` marque le passage pris (`.pris`, ✓) |
 | **chercher un article** — le RAG (passe J, §4.5) | `chercher` (le hasard en argument), `baseRecherche` (les trois premières pièces-règles dont `porte` couvre la dimension du premier terme), `suivreRecherche` (le temps de la phrase), `articleOffert` (au dossier, ou trouvé **et** ouvert) ; `S.recherche`, `S.trouves` | `chercherArticle` (le bouton du composeur, `data-f="chercher"`), `renderRecherche` (`#zoneRecherche`, sous l'index ; `.rchip`, `data-f="s:pid"`), `voirRelations`, qui amène aussi le bouton dans le champ |
 | ce que le composeur offre — **jamais un article**, qui se cherche, puis se prend dans sa pièce ; ce qui se devine avant le clic — **en session 1 seulement** (§4.11) ; la voix | `blocsOfferts` (une liaison-article sur `articleOffert`), `estLiaisonArticle`, `etatCompo`, `indexTermeChamp`, `comparaisonPossible`, `dimAttendue`, `attenteCourante`, `enCalibration`, `juxtapose` | `renderCompo`, `souffle`, `rappelQuestion`, `rendreVoix` |
@@ -405,21 +405,31 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
   `attentesEditables` et `migrerContenu`.
 
 **Les mots.** Le joueur ne lit jamais `empan`, `bloc`, `lien`, `forme`, `terme` : dans une chaîne
-d'écran, c'est une fuite. À l'écran : **DISCUSSION**, **DOSSIER**, **PLAIDOIRIE** (§4.6) ; **passage**
-(un empan, vu du côté joueur) ; **RÉPONSE** (la zone du composeur) ; **→ Envoyer** (clôt et transmet,
-irréversible) ; **Je n'ai rien d'autre**, puis **Je n'ai rien à opposer** (l'IA répond ; c'est l'avocat
-qui dépose et ferme l'affaire — §4.9).
+d'écran, c'est une fuite. À l'écran : **DISCUSSION**, **DOSSIER**, **PLAIDOIRIE** (§4.6) ; **DOCUMENTS**
+(l'index du DOSSIER, en deux colonnes : *Les pièces*, *Les articles*) ; **passage** (un empan, vu du
+côté joueur) ; **RÉPONSE** (la zone du composeur, et ce que l'IA envoie — *ta RÉPONSE*, jamais *ta
+phrase*, passe I) ; **→ Envoyer** (clôt et transmet, irréversible) ; **Je n'ai rien d'autre**, puis
+**Je n'ai rien à opposer** (l'IA répond ; c'est l'avocat qui dépose et ferme l'affaire — §4.9).
+**Pièce ou document** (*auteur*, 8 octobre) : *pièce* quand c'en est une — ce que Maître Auber
+transmet, et où vit un passage qu'il demande (*« dans sa pièce »*, *« Les pièces »*) ; *document*
+quand ce peut être une pièce **ou** un article — ce que l'index tient, ce qu'on ouvre, ce que ‹ ›
+parcourent, ce que la croix replie (*« Ouvre un document »*, *« Document suivant »*, *« Replier le
+document »*), et ce que le bouton de remise compte, du mot de l'index (*« 2 documents ajoutés au
+DOSSIER »*, passe M). Les répliques de Maître Auber parlent comme lui : *« Encore une phrase que je
+ne peux pas plaider »* est sa voix, pas du chrome.
 
 **Un seul verbe** (§4.6, passe K) : on **prend** un passage — de la pièce vers la phrase, d'un clic :
 `prendre`, qui appelle `poserBloc`. *Retenir* et *oublier* sont partis avec les fiches du CONTEXTE, devenu DOSSIER ;
-*sélectionner* ne paraît plus à l'écran depuis longtemps. Le gestionnaire de clic de l'écran
+*sélectionner* ne paraît plus à l'écran depuis longtemps. **Retenir survit dans un autre sens, celui
+de la PLAIDOIRIE** : ce que l'avocat *retient* d'une réponse, c'est un **moyen** qu'il inscrit au plan
+(`moyensRetenus`, *« Maître Auber n'a encore rien retenu de toi »*, §4.6) — jamais un passage. Le gestionnaire de clic de l'écran
 s'appelle encore `surligner` : c'est le surlignage du §4.3. **Un article se cherche et se prend**
 (passe J) : `chercher`, puis le clic sur son texte.
 
 | Dans le code | Ce que ça désigne |
 |---|---|
-| **pièce** / **dossier** | un document (`JEU.pieces`) / l'ensemble des pièces livrées, et des articles trouvés (passe J) |
-| **`contexte`** / **index** | le panneau que l'écran appelle **DOSSIER** — `#contexte`, `#panCONTEXTE`, `#btnCONTEXTE`, `panneau="contexte"`, `renderCONTEXTE`, `ouvrirCONTEXTE`, `.versCONTEXTE` : le code garde l'ancien nom (passe L, §4.6), comme *la phrase* sous *ta RÉPONSE* / sa liste repliable, que l'écran intitule **DOCUMENTS** — les pièces reçues et les articles trouvés — `#zoneDossier`, `dossierPlie`, `basculerDossier` |
+| **pièce** / **dossier** | un document (`JEU.pieces`, pièces et articles — *document* à l'écran quand ce peut être l'un ou l'autre, *pièce* quand c'en est une) / l'ensemble des pièces livrées, et des articles trouvés (passe J) |
+| **`contexte`** / **index** | le panneau que l'écran appelle **DOSSIER** — `#contexte`, `#panCONTEXTE`, `#btnCONTEXTE`, `panneau="contexte"`, `renderCONTEXTE`, `ouvrirCONTEXTE`, `.versCONTEXTE` : les identifiants gardent l'ancien nom (passe L, §4.6) — les commentaires et les libellés des suites, eux, disent DOSSIER —, comme *la phrase* sous *ta RÉPONSE* / sa liste repliable, que l'écran intitule **DOCUMENTS** — les pièces reçues et les articles trouvés — `#zoneDossier`, `dossierPlie`, `basculerDossier` |
 | **base** / **recherche** | toutes les pièces-règles du contenu, où l'on cherche / les trois qu'une recherche rend, `S.recherche` (§11) |
 | **empan** | un fragment marqué : `texte`, `dim`, `valeur`, `qui`, `nom` — ou, `article:true`, le texte d'un article, sans `dim` ni `valeur` (§11) |
 | **citation** / **nom** | son écriture dans la pièce (`e.texte`) / comme sujet d'une phrase (`e.nom`) |
@@ -429,8 +439,10 @@ s'appelle encore `surligner` : c'est le surlignage du §4.3. **Un article se che
 | **attente** / **remise** | `{question?, attend, apres?}` / un envoi de pièces avec sa liste — « session » est le mot du sens |
 | **`S.plaidoirie`** / **`S.fil`** | ce qui est entré au plan / le journal affiché — *`S.retenus`, les empans surlignés, est parti à la passe K ; une partie d'avant le perd à la reprise* |
 
-**Deux faux amis qui mordent encore** : `clore` ferme **une phrase**, `cloturer` ouvre la **fin de
+**Trois faux amis qui mordent encore** : `clore` ferme **une phrase**, `cloturer` ouvre la **fin de
 l'affaire** et déclenche une fin — jamais l'un pour l'autre, commentaires compris ; `empan` ne
 fuit jamais à l'écran, `passage` n'entre jamais dans `content.js` ni `moteur.js`. `cloturer` et
 `clotureDemandee` **restent les mots du code** : ils ne paraissent sous aucune forme à l'écran, où
-l'IA ne fait que répondre (§4.9) — les renommer ne réparerait rien et coûterait ce faux ami.
+l'IA ne fait que répondre (§4.9) — les renommer ne réparerait rien et coûterait ce faux ami. Et
+*retenir*, parti pour les passages (passe K), reste le mot de la PLAIDOIRIE : un moyen retenu n'est
+pas un passage retenu.

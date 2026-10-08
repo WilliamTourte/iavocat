@@ -78,7 +78,7 @@ function diagnostiquer(){
     const marques=[...txt.matchAll(/\{\{([A-Za-z0-9_]+)\}\}/g)].map(x=>x[1]);
     for(const [eid,e] of Object.entries(p.empans||{})){
       /* LE PASSAGE D'UN ARTICLE (§11, passe F) : ni dimension ni valeur, sur une
-         règle seulement ; son nom est celui de sa fiche. */
+         règle seulement ; son nom est celui de son résultat de recherche (passe J). */
       if(e.article){
         if(!estRegle(p)) add("erreur",`Passage d'article hors d'une règle : ${p.court}·${joli(eid)}`,
           "Seul le texte d'un article s'invoque : sur une autre pièce, ce passage ne fonderait rien et ne se comparerait à rien. Retire « article », ou déplace-le.",{champ:[pid,eid]});
@@ -93,7 +93,7 @@ function diagnostiquer(){
         "L'empan est ce que le joueur LIT — pas seulement une valeur.",{champ:[pid,eid]});
       if(!String(e.nom||"").trim()) add("avert",`Empan sans nom : ${p.court}·${joli(eid)}`,
         e.article
-          ? "Sans nom, la fiche de l'article porterait tout son texte. Donne-lui son nom neutre : « Article 7 » (§4.5)."
+          ? "Sans nom, son résultat de recherche porterait tout son texte. Donne-lui son nom neutre : « Article 7 » (§4.5)."
           : "Sans nom, c'est la citation entière qui entre dans les phrases composées — elles se lisent alors comme un empilement, pas comme une pensée (§4.1). Donne un groupe nominal : « l'heure des éclats de voix ».",{champ:[pid,eid]});
       if(!marques.includes(eid)) add("erreur",`Empan non marqué dans le texte : ${p.court}·${joli(eid)}`,
         `Ajoute {{${eid}}} dans le texte de la pièce, là où l'empan se lit — sinon il est inatteignable (règle de surlignage, §4.3).`,{champ:[pid,eid]});

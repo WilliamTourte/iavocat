@@ -6,7 +6,16 @@ ensuite. **Court, et il doit le rester.** État au 8 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 650 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 652 contrôles, 8 règles du gardien, ESLint.
+
+**Le 8 octobre, relecture du glossaire (§17)** après les passes I à M. Le §17 perd `recuAvant`,
+gagne DOCUMENTS et la règle **pièce ou document** (*auteur* : *pièce* quand c'en est une, *document*
+quand ce peut être un article — ‹ › et la croix disent désormais *« Document suivant »*, *« Replier le
+document »*), et range *retenir* parmi les faux amis : il survit au sens de la PLAIDOIRIE. Les
+commentaires et les libellés des suites disent DOSSIER, les identifiants gardent `contexte`. La
+répétition dit *« Opposer une réponse »*. L'atelier ne parle plus de fiche d'article ni de règles
+livrées, et son pas-à-pas ne « surligne » plus : un passage s'y prend dans une pièce ouverte, comme
+au jeu. Au passage, ESLint était rouge depuis la passe M (`i` inutilisé dans `renderDISCUSSION`).
 
 **Le 8 octobre, passe M : le retour de Jean.** L'index ne se replie plus d'office quand une pièce
 s'ouvre — *« Déplie tes DOCUMENTS »* coûtait un temps et un nom (§4.6) ; ‹ › restent en boucle,
@@ -429,7 +438,7 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Le flag `cite` est porté par la liaison, jamais par le terme** — `t0` est partagé par la citation et
   la comparaison.
 - **L'index `iBloc` de `poserBloc` est positionnel dans la liste filtrée**, donc lié à la session.
-  Le clic sur le texte d'un article le cherche donc AU CLIC (`retenirEtPrendre`), jamais au rendu.
+  Le clic sur le texte d'un article le cherche donc AU CLIC (`prendre`), jamais au rendu.
 - **Le passage d'un article n'est PAS un champ** (§11) : `champsDe` l'écarte, `articlesDe` le rend.
   Depuis la passe J, il n'entre plus dans `S.retenus` — une partie d'avant l'y tenait, la reprise
   l'en sort (`restaurerPartie`). Un lien qui le citerait ferait jeter `dimDe` : le diagnostic
@@ -524,7 +533,8 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **À l'écran DOSSIER, dans le code `contexte`** (passe L, §4.6, §17) : `#contexte`, `#panCONTEXTE`,
   `#btnCONTEXTE`, `panneau="contexte"`, `renderCONTEXTE`. Et ce qui s'appelle *dossier* dans le
   code — `#zoneDossier`, `dossierPlie`, `basculerDossier` — est l'INDEX, que l'écran intitule
-  DOCUMENTS. Renommer l'un sans l'autre ferait se croiser les deux.
+  DOCUMENTS. Renommer l'un sans l'autre ferait se croiser les deux. **Les identifiants seuls gardent
+  l'ancien nom** : les commentaires et les libellés des suites disent DOSSIER (§17).
 - **Le harnais prend un passage d'une seule façon** (passe K) : `H.cliquer`, le clic du joueur.
   `H.surligner` (« retenir seul ») est parti avec l'état qu'il fabriquait. **Et un drapeau ne recule
   pas** : un article pris par le clic a pu lever `vice_trouve` avant que *« ← retirer »* le défasse.
@@ -791,8 +801,9 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   fausses**, renverserait *désigner, pas déclarer* (§4.5) ; **réserver au tutoriel les garde-fous** —
   fiches d'une autre dimension assombries, refus de catégorie avant l'envoi — lèverait *le seul refus
   qui existe* (§4.5) ; **donner un coût à l'erreur** (jauge de patience, envois comptés) rendrait
-  l'enjeu calculable s'il se voit (§8.4). *Fait le 5 octobre : les fiches déjà prises sont marquées,
-  et la phrase pleine le dit en une ligne (§4.6).* *Le soulignement au survol ou au clic, demandé par
+  l'enjeu calculable s'il se voit (§8.4). *Fait le 5 octobre : les fiches déjà prises étaient marquées,
+  et la phrase pleine le dit en une ligne (§4.6). Les fiches sont parties à la passe K : la ligne
+  vit sous la pièce, et le passage pris porte ✓.* *Le soulignement au survol ou au clic, demandé par
   l'auteur, est fait (§4.3), la légende retirée et les passages encadrés d'une bordure neutre* —
   reste à voir, au toucher, si un joueur comprend ce que couleur et trait veulent dire : il ne les
   voit qu'une fois le passage pris. **Et depuis la passe K, le NOM d'une dimension ne se lit plus
@@ -807,9 +818,10 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 - **Le rapport du 6 octobre (Jean 4) laisse cinq points à trancher** — au `TODO.md`, §0 : les réponses
   de calibration en PLAIDOIRIE (le §4.6 les y veut), le dilemme jamais posé (rejoint les directives
   et le canal de révélation, ci-dessus), le féminin de la Fin 2, le palier sans séjour, le même
-  passage pris deux fois. Et un ⚖ né de la passe : les boutons d'article disent leur liaison sans
-  virgule — *« Article 7 »* tout court, que Jean proposait, irait contre le libellé *qui n'est pas
-  neutre* (§4.5).
+  passage pris deux fois. *Le ⚖ né de la passe — les boutons d'article qui disaient leur liaison,
+  quand Jean proposait *« Article 7 »* tout court — est tombé avec la passe J : l'article n'a plus de
+  bouton au composeur, le résultat de recherche porte son nom neutre, et le libellé vit dans la
+  phrase (§4.5).*
 
 ## 4. Prochaine étape
 
@@ -829,7 +841,8 @@ relecture. **Il faut la rendre à un joueur neuf**, qui n'a pas lu ce qui préc�
    premier point ouvert du §3 — et l'excuse la plus facile vient d'être retirée.
 4. **Envoyer une comparaison nue** et voir si le refus de Maître Auber enseigne (§4.5) — c'est du
    contenu qui n'a jamais pu sortir.
-5. **Retirer `porte sur`** du composeur et rejouer la session 2 : le choix entre l'article 7 et
+5. **Rejouer la session 2 sans `porte sur`** — retiré du composeur, devenu un filet sous le titre
+   de l'article (§4.11) : le choix entre l'article 7 et
    l'article 12 se fait-il encore, ou l'étiquette le faisait-elle seule (§3) ?
 6. Si la boucle tient : écrire la session 3 et placer la porte de la Fin 3. Sinon, prendre l'un des
    replis du §3, qui ne coûtent aucune ligne de code.
@@ -1050,3 +1063,10 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   titre, et le texte de l'article a l'aspect d'un passage. Deux mutations, les contrôles neufs vus
   tomber. Puis la voix (« Ouvre un document », l'index déplié) et le bouton de remise (« N documents
   ajoutés au DOSSIER »). 650 contrôles.
+- **8 octobre, relecture du glossaire** (§4.6, §4.8, §16, §17) — ce que les passes I à M avaient
+  laissé derrière : `recuAvant` au §17, `retenirEtPrendre` au §2, la fiche d'article de l'atelier,
+  les règles « livrées » de la frise, `SIM.surlignes` du pas-à-pas (remplacé par les pièces
+  ouvertes), « se retient ET se pose » dans `vue.js`, `.dcompte` mort. CONTEXTE → DOSSIER dans les
+  commentaires et les libellés ; *pièce* / *document* tranché par l'auteur ; la répétition dit
+  *réponse*. ESLint, rouge depuis la passe M, revient au vert. Deux contrôles neufs vus tomber.
+  652 contrôles.

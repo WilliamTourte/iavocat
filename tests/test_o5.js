@@ -17,7 +17,7 @@ console.log("\n=== L'index du dossier ===");
   check("une pièce non consultée porte le marqueur ●", contexte(w).includes("● "));
   w.ouvrirPiece(pid);
   check("consultée, elle porte ✓", contexte(w).includes("✓ "));
-  // Une pièce ne porte qu'un nom (§4.6), et l'index du CONTEXTE est désormais
+  // Une pièce ne porte qu'un nom (§4.6), et l'index du DOSSIER est désormais
   // SEUL à le porter — la DISCUSSION ne transmet plus qu'un compte.
   const puces = [...w.document.querySelectorAll("#contexte .dchip")];
   check("l'index nomme chaque pièce de son titre propre",

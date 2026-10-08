@@ -77,11 +77,11 @@ function formulaireChamp(pid){ reinitSelection(); formChamp=pid; render(); }
 function inspFormChamp(){
   const p=CONTENU.pieces[formChamp];
   /* Sur une RÈGLE, l'empan est le passage de l'article : son texte, et le nom
-     neutre de sa fiche — ni valeur ni dimension (§11, passe F). */
+     neutre de son résultat de recherche — ni valeur ni dimension (§11, passes F et J). */
   if(estRegle(p)) return `<label>Passage de l'article — ${escapeH(p.court)}</label>
     <label>Identifiant</label>
     <input type="text" id="ncNom" value="art">
-    <label>Nom <span class="glose">(le nom neutre de sa fiche)</span></label>
+    <label>Nom <span class="glose">(le nom neutre de son résultat de recherche)</span></label>
     <input type="text" id="ncNomCourt" placeholder="ex. Article 7">
     <label>Ce qui se lit <span class="glose">(le texte entier de l'article, sans son titre)</span></label>
     <textarea id="ncTexte"></textarea>
@@ -131,7 +131,7 @@ function inspEmpan(s){
     <label>Nom <span class="glose">(le nom neutre de son résultat de recherche)</span></label>
     <input type="text" value="${escapeAttr(e.nom||"")}" onchange="majEmpan('${s.pid}','${s.champ}','nom',this.value)"
            placeholder="ex. Article 7">
-    <label>Ce qui se lit <span class="glose">(le texte entier de l'article, qu'on retient pour l'invoquer)</span></label>
+    <label>Ce qui se lit <span class="glose">(le texte entier de l'article, qu'on clique pour l'invoquer)</span></label>
     <textarea onchange="majEmpan('${s.pid}','${s.champ}','texte',this.value)">${escapeH(e.texte||"")}</textarea>
     <div style="font-size:12px;color:${marque?'var(--muted)':'var(--err)'};margin-top:6px">
       ${marque?"marqué dans le texte de la pièce ✓":"⚠ {{"+escapeH(s.champ)+"}} absent du texte — l'article ne s'invoquerait jamais"}</div>

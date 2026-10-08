@@ -49,8 +49,8 @@ console.log("\n=== piece.declenche ===");
   check("une_fois : la seconde fermeture est muette", w.S.fil.length === apres);
 }
 
-/* La pièce vit DANS le CONTEXTE (§4.6) : elle quitte aussi l'écran quand le
-   CONTEXTE se referme, ou qu'une autre pièce prend sa place — la réplique part
+/* La pièce vit DANS le DOSSIER (§4.6) : elle quitte aussi l'écran quand le
+   DOSSIER se referme, ou qu'une autre pièce prend sa place — la réplique part
    alors de même, au moment où l'on relève les yeux. */
 console.log("\n=== piece.declenche — la pièce quitte l'écran par une autre porte ===");
 {
@@ -61,7 +61,7 @@ console.log("\n=== piece.declenche — la pièce quitte l'écran par une autre p
   const avant = w.S.fil.length;
   w.ouvrirPiece(pid);
   w.fermerPanneau();
-  check("refermer le CONTEXTE replie la pièce et pousse sa réplique",
+  check("refermer le DOSSIER replie la pièce et pousse sa réplique",
     !w.S.modalPiece && w.S.fil.length > avant && w.S.declenches.includes(pid));
 
   const w2 = boot(c);

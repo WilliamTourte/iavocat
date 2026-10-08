@@ -386,9 +386,12 @@ console.log("\n=== La simulation reflète le moteur ===");
   w.simReset();
   check("la session 1 part au démarrage", w.SIM.remisesEnvoyees === 1);
   const feuilles = w.feuillesLien(SC.sousVice(w.CONTENU));
-  for (const k of feuilles) w.simSurligner(k);
-  check("surligner remplit ce que l'atelier a repéré, pas le plan",
-    w.SIM.surlignes.length === feuilles.length && w.SIM.plaidoirie.length === 0);
+  check("rien ne se compare avant que ses pièces soient ouvertes (passe K)",
+    !w.simActions().some(a => a.t.startsWith("Comparer")));
+  for (const pid of new Set(feuilles.map(k => w.deK(k)[0]))) w.simOuvrir(pid);
+  check("ouvrir ses pièces offre la comparaison, et ne touche pas au plan",
+    w.simActions().some(a => a.t.startsWith("Comparer")) && w.SIM.plaidoirie.length === 0
+    && w.SIM.surlignes === undefined);
   w.simComparer(SC.sousVice(w.CONTENU));
   check("comparer sans qualifier lève vice_pressenti seul",
     w.SIM.vice_pressenti && !w.SIM.vice_trouve);
@@ -413,7 +416,7 @@ console.log("\n=== Le chemin docile, simulé ===");
     if (!a) break;
     const i = w.CONTENU.liens.findIndex(L => L.tag === a.attend && !L.vice);
     if (i < 0) break;
-    for (const k of w.feuillesLien(w.CONTENU.liens[i])) w.simSurligner(k);
+    for (const pid of new Set(w.feuillesLien(w.CONTENU.liens[i]).map(k => w.deK(k)[0]))) w.simOuvrir(pid);
     w.simComposer(i);
     const L = w.CONTENU.liens[i];
     w.simEnvoyer(w.SIM.brouillon.findIndex(n => n.lien === L));

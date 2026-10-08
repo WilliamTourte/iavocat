@@ -100,7 +100,7 @@ const poserLesDeux = (w, a, b) => { H.cliquer(w, a.id); H.cliquer(w, b.id); };
   const [a] = deuxDimensions(w);
   w.ouvrirPiece(a.pid);
   H.cliquer(w, a.id);
-  check("en session 1, pendant une comparaison, rien ne s'assombrit — ni la pièce, ni le CONTEXTE",
+  check("en session 1, pendant une comparaison, rien ne s'assombrit — ni la pièce, ni le DOSSIER",
     w.S.compo.length === 1 && !w.document.querySelector(".horsdim")
     && ![...w.document.querySelectorAll("#panPiece .empan")].some(e => e.hasAttribute("aria-disabled")));
   const w2 = boot();
@@ -443,10 +443,10 @@ console.log("\n=== Les deux gestes, montrés ===");
   const reduit = () => bandeau().hasAttribute("data-reduit");
 
   /* §4.8 — il se tait là où l'écran parle seul : le message finit sur le bouton
-     de pièces. Il commence au CONTEXTE ouvert. */
+     de pièces. Il commence au DOSSIER ouvert. */
   check("au premier écran, le tutoriel se tait", bandeau().hidden && !halo());
   w.document.querySelector("#discussion .attach").click();
-  check("le CONTEXTE ouvert, il parle, et montre l'index",
+  check("le DOSSIER ouvert, il parle, et montre l'index",
     !bandeau().hidden && !!halo() && halo().id === "zoneDossier" && !dansDISCUSSION(halo()));
 
   const pid = H.pidPremiereRemise(w);
@@ -494,8 +494,8 @@ console.log("\n=== Les deux gestes, montrés ===");
   check("la phrase défaite, plus de halo sur l'envoi — retour au texte de la pièce",
     !envoi() && halo() === w.document.querySelector(".piecetexte"));
   w.fermerPanneau();
-  check("le CONTEXTE refermé replie la pièce avec lui", !w.S.modalPiece);
-  check("la phrase vide, CONTEXTE fermé : il se tait — le bouton de pièces du message dit où elles sont",
+  check("le DOSSIER refermé replie la pièce avec lui", !w.S.modalPiece);
+  check("la phrase vide, DOSSIER fermé : il se tait — le bouton de pièces du message dit où elles sont",
     bandeau().hidden && !halo());
   w.basculerPanneau("contexte");
   check("rouvert, il montre l'index", !!halo() && halo().id === "zoneDossier");
@@ -518,9 +518,9 @@ console.log("\n=== Les deux gestes, montrés ===");
   const [tA, tB] = H.sousTerme(H.lienTag(w, veutA)).termes;
   const [pA, pB] = [H.deK(tA)[0], H.deK(tB)[0]];
   check("aucun des deux passages n'est encore dans la phrase", !w.R.dansPhrase(w.S, tA) && !w.R.dansPhrase(w.S, tB));
-  /* §4.6 — la remise attend encore une réponse : le CONTEXTE est resté ouvert,
+  /* §4.6 — la remise attend encore une réponse : le DOSSIER est resté ouvert,
      et le halo y va tout droit — à l'index, comme pour citer. */
-  check("le halo va à l'index du CONTEXTE resté ouvert : chercher d'abord",
+  check("le halo va à l'index du DOSSIER resté ouvert : chercher d'abord",
     !!halo() && halo().id === "zoneDossier" && !reduit() && /deux passages/.test(dit()));
   check("rien ne sonne faux : pas d'alerte", !bandeau().hasAttribute("data-alerte"));
   w.ouvrirPiece(pA);
@@ -578,7 +578,7 @@ console.log("\n=== Les deux gestes, montrés ===");
   check("le halo montre le bouton qui cherche, et la bulle dit de chercher, développée",
     !!art && !!halo() && halo().getAttribute("data-f") === "chercher" && /Cherche/.test(dit()) && !reduit());
   w.document.querySelector('#composeur [data-f="chercher"]').click();
-  check("la recherche rend trois articles dans le CONTEXTE ouvert, le bon parmi eux",
+  check("la recherche rend trois articles dans le DOSSIER ouvert, le bon parmi eux",
     w.S.recherche.length === 3 && w.S.recherche.includes(art.piece) && chips().length === 3
     && !w.document.getElementById("panCONTEXTE").hidden);
   check("le halo entoure les trois résultats — toute la zone, jamais le bon",
@@ -754,7 +754,7 @@ console.log("\n=== Le panneau de la pièce ===");
   const eid = Object.keys(w.JEU.pieces[pid].empans)[0];
   w.surligner(pid, eid);
   check("l'empan cliqué se marque « pris » dans le panneau", m().includes("empan pris"));
-  check("et entre dans la phrase — pas dans une liste du CONTEXTE (passe K)",
+  check("et entre dans la phrase — pas dans une liste du DOSSIER (passe K)",
     w.S.compo.length === 1 && !contexte(w).includes("zoneRetenus") && !w.document.querySelector(".mchip"));
   w.retirerBloc();
   check("retiré de la phrase, il perd sa marque : elle dit « dans ta RÉPONSE »", !m().includes("empan pris"));
@@ -943,7 +943,7 @@ console.log("\n=== La répétition de plaidoirie ===");
   w.cloturer();
   check("la répétition commence sur l'affirmation 1",
     discussion(w).includes(w.JEU.repetition.affirmations[0].texte.slice(0, 20)));
-  check("le présentoir propose ce qui a été écrit", discussion(w).includes("Opposer une phrase"));
+  check("le présentoir propose ce qui a été écrit", discussion(w).includes("Opposer une réponse"));
   check("confirmer pendant la répétition est refusé", w.document.getElementById("btnCloture").disabled);
   const avancer = () => w.document.querySelector('[data-f="rsuite"]').textContent;
   check("rien d'opposé encore : le bouton d'avance dit qu'on n'oppose rien", /Ne rien opposer/.test(avancer()));
@@ -1042,7 +1042,7 @@ console.log("\n=== La répétition de plaidoirie ===");
   const garde = w.S.brouillon.slice();
   w.S.brouillon.length = 0; w.S.plaidoirie.length = 0;
   w.cloturer();
-  check("journal vide → présentoir vide, sans planter", discussion(w).includes("aucune phrase à y opposer"));
+  check("journal vide → présentoir vide, sans planter", discussion(w).includes("aucune réponse à y opposer"));
   w.S.brouillon.push(...garde);
 }
 
@@ -1077,9 +1077,9 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   check("mais le panneau RESTE ouvert : la phrase accepterait encore un passage", ouvert("CONTEXTE"));
   w.fermerPiece();
   w.envoyerCompo();
-  /* §4.6 — envoyer ne referme le CONTEXTE que si la REMISE change : la question
+  /* §4.6 — envoyer ne referme le DOSSIER que si la REMISE change : la question
      suivante voudra le clavier. Il reste, mais en CONSULTATION désormais. */
-  check("la phrase partie, la remise attend encore : le CONTEXTE RESTE ouvert", ouvert("CONTEXTE"));
+  check("la phrase partie, la remise attend encore : le DOSSIER RESTE ouvert", ouvert("CONTEXTE"));
   w.rendreTout();
   check("et il ne suit plus la phrase : on consulte", ouvert("CONTEXTE"));
   w.fermerPanneau();
@@ -1132,7 +1132,7 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   check("et la voix demande ce qui les lie, sans mener ailleurs — le geste est ICI",
     !bouton() && /qui les lie/.test((w.document.querySelector("#composeur span.aide") || {}).textContent || ""));
   H.choisirRelation(w, sous.forme);
-  /* §4.6 — L'ARTICLE SE CHERCHE, PUIS SE PREND AU CONTEXTE (passe J) : la phrase
+  /* §4.6 — L'ARTICLE SE CHERCHE, PUIS SE PREND AU DOSSIER (passe J) : la phrase
      qui l'attend n'a rien à prendre au composeur que la recherche, et le
      panneau ouvert pour écrire reste. */
   check("les deux posés, l'article reste à trouver : le panneau RESTE ouvert", ouvert("CONTEXTE"));
@@ -1141,9 +1141,9 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   const pidArt = w.JEU.grammaire.blocs.find(b => w.R.estLiaisonArticle(b)
     && b.forme === H.lienTag(w, attente().attend).forme).piece;
   w.chercherArticle();
-  check("chercher ouvre le CONTEXTE sur ses résultats, et la voix y mène", ouvert("CONTEXTE") && !!bouton());
+  check("chercher ouvre le DOSSIER sur ses résultats, et la voix y mène", ouvert("CONTEXTE") && !!bouton());
   w.ouvrirPiece(pidArt); H.cliquer(w, H.cleArticle(w, pidArt));
-  check("l'article pris dans le résultat ouvert : la phrase achevée, le CONTEXTE reste — on y lisait (§4.6)",
+  check("l'article pris dans le résultat ouvert : la phrase achevée, le DOSSIER reste — on y lisait (§4.6)",
     w.R.compoFinie(w.S) && ouvert("CONTEXTE"));
   w.fermerPanneau();
 
@@ -1162,7 +1162,7 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   const remise = w.S.remisesEnvoyees;
   H.composerLien(w, H.lienTag(w, attente().attend));
   check("la dernière réponse ouvre une remise neuve", w.S.remisesEnvoyees === remise + 1);
-  check("et le CONTEXTE se referme avec la remise close", !ouvert("CONTEXTE"));
+  check("et le DOSSIER se referme avec la remise close", !ouvert("CONTEXTE"));
   const L2 = H.lienTag(w, attente().attend);
   H.composerLien(w, L2, {garder:true});
   w.basculerPanneau("plaidoirie");
@@ -1200,7 +1200,7 @@ console.log("\n=== Le jeu se joue au clavier ===");
   check("le bouton de pièces reçues est un vrai bouton", !!jointe && jointe.tagName === "BUTTON");
   jointe.focus(); jointe.click();
   const panCONTEXTE = d.getElementById("panCONTEXTE");
-  check("il ouvre le CONTEXTE", !!panCONTEXTE && !panCONTEXTE.hidden);
+  check("il ouvre le DOSSIER", !!panCONTEXTE && !panCONTEXTE.hidden);
   /* PASSE L — à l'écran, le panneau s'appelle DOSSIER ; le code garde `contexte`
      (§4.6, §17). Ni le titre, ni la porte, ni la croix ne disent l'ancien nom. */
   check("il s'intitule DOSSIER, sa porte et sa croix aussi — plus un mot de CONTEXTE à l'écran",
@@ -1210,8 +1210,8 @@ console.log("\n=== Le jeu se joue au clavier ===");
     && ![".wrap", "#tuto"].some(z => /CONTEXTE/.test(d.querySelector(z).textContent))
     && ![...d.querySelectorAll("[aria-label]")].some(e => /CONTEXTE/.test(e.getAttribute("aria-label")))
     && !/CONTEXTE/.test(annonce()));
-  check("le focus entre dans le CONTEXTE", panCONTEXTE.contains(actif()));
-  check("le CONTEXTE ouvert, le halo quitte le bouton franchi pour l'index (§4.8)",
+  check("le focus entre dans le DOSSIER", panCONTEXTE.contains(actif()));
+  check("le DOSSIER ouvert, le halo quitte le bouton franchi pour l'index (§4.8)",
     !!d.querySelector("[data-tuto]") && d.querySelector("[data-tuto]").id === "zoneDossier");
   check("consigne neuve, elle s'affiche développée",
     !d.getElementById("tuto").hasAttribute("data-reduit"));
@@ -1221,7 +1221,7 @@ console.log("\n=== Le jeu se joue au clavier ===");
   check("la pièce s'ouvre depuis un vrai bouton du dossier", !!chip && chip.tagName === "BUTTON");
   chip.focus(); chip.click();
   const boite = d.getElementById("panPiece");
-  check("la pièce s'ouvre DANS le CONTEXTE, nommée pour qui ne la voit pas (§4.6)",
+  check("la pièce s'ouvre DANS le DOSSIER, nommée pour qui ne la voit pas (§4.6)",
     !!boite && panCONTEXTE.contains(boite) && !panCONTEXTE.hidden
     && d.getElementById(boite.getAttribute("aria-labelledby")) === boite.querySelector("#pieceTitre"));
   check("sous l'index, dans l'ordre de lecture — et plus de retenus dessous (passe K)",
@@ -1277,20 +1277,20 @@ console.log("\n=== Le jeu se joue au clavier ===");
      « × Échap » empilés promettaient deux effets à une touche (Jean). */
   const croixCONTEXTE = d.querySelector("#panCONTEXTE > h2 .fermer");
   const prometEchap = b => b.hasAttribute("aria-keyshortcuts") || /Échap/.test(b.getAttribute("aria-label") || "");
-  check("pièce ouverte, Échap n'est promis qu'à elle : la croix du CONTEXTE perd sa touche",
+  check("pièce ouverte, Échap n'est promis qu'à elle : la croix du DOSSIER perd sa touche",
     !prometEchap(croixCONTEXTE) && panCONTEXTE.classList.contains("avecPiece")
     && prometEchap(d.querySelector('#panPiece [data-f="replier"]')));
   touche(d.body, "Escape");
   check("Échap replie la pièce — le jeu n'avait jamais cessé d'être vivant", !w.S.modalPiece && !inerte());
-  check("et la croix du CONTEXTE reprend la touche, puisque c'est elle qu'Échap fermerait",
+  check("et la croix du DOSSIER reprend la touche, puisque c'est elle qu'Échap fermerait",
     prometEchap(croixCONTEXTE) && !panCONTEXTE.classList.contains("avecPiece"));
-  check("et le CONTEXTE reste ouvert : c'est le second Échap qui le fermerait (§4.10 règle 3)",
+  check("et le DOSSIER reste ouvert : c'est le second Échap qui le fermerait (§4.10 règle 3)",
     !panCONTEXTE.hidden);
   check("le focus revient au chip du dossier qui l'avait ouverte", cleActive() === "d:" + pid);
   check("lue, elle le dit par son nom — pas par un gris",
     /déjà lue/.test(d.querySelector(`#contexte [data-f="d:${pid}"]`).getAttribute("aria-label") || ""));
 
-  // Le CONTEXTE est déjà ouvert depuis `voirPiecesRecues` et ne s'est jamais
+  // Le DOSSIER est déjà ouvert depuis `voirPiecesRecues` et ne s'est jamais
   // refermé (§4.6) : pas de bascule ici, elle le fermerait.
   const puce = d.querySelector(`#contexte [data-f="d:${pid}"]`);
   puce.focus();
@@ -1373,6 +1373,12 @@ console.log("\n=== Le DOSSIER dit son état (§4.6) ===");
   check("la tête de la pièce porte ‹ et ›, nommées par la pièce où elles mènent",
     ordre.length > 1 && !!fl("prec") && !!fl("suiv")
     && fl("suiv").getAttribute("aria-label").includes(w.JEU.pieces[apres].titre));
+  /* PIÈCE OU DOCUMENT (§4.6, §17) : ‹ › et la croix valent pour une pièce
+     comme pour un article — l'écran dit « document ». */
+  check("‹ › et la croix disent « document » : ils valent aussi pour un article",
+    /^Document précédent/.test(fl("prec").getAttribute("aria-label"))
+    && /^Document suivant/.test(fl("suiv").getAttribute("aria-label"))
+    && /^Replier le document/.test(fl("replier").getAttribute("aria-label")));
   const vues = [w.S.modalPiece];
   for (let i = 1; i < ordre.length; i++) { fl("suiv").click(); vues.push(w.S.modalPiece); }
   /* Depuis la passe J, aucune remise ne livre de règle : l'ordre de l'index
@@ -1434,10 +1440,10 @@ console.log("\n=== Le DOSSIER dit son état (§4.6) ===");
     w.S.remisesEnvoyees === 2 && w.R.piecesLivrees(w.S).includes(pid) && w.R.dansPhrase(w.S, k));
 }
 
-console.log("\n=== La DISCUSSION s'agrandit, CONTEXTE ouvert (§4.6) ===");
+console.log("\n=== La DISCUSSION s'agrandit, DOSSIER ouvert (§4.6) ===");
 {
   // Retour de playtest (Bérengère) : l'en-tête DISCUSSION devient une bascule —
-  // un état d'ÉCRAN, qui n'existe que CONTEXTE ouvert, et ne change que le gabarit.
+  // un état d'ÉCRAN, qui n'existe que DOSSIER ouvert, et ne change que le gabarit.
   const w = boot(), d = w.document;
   const bascule = () => d.querySelector('#titreDISCUSSION [data-f="discussion"]');
   const presse = () => !!bascule() && bascule().getAttribute("aria-pressed") === "true";
@@ -1456,12 +1462,12 @@ console.log("\n=== La DISCUSSION s'agrandit, CONTEXTE ouvert (§4.6) ===");
   bascule().click();
   const pid = H.pidPremiereRemise(w);
   d.querySelector(`#contexte [data-f="d:${pid}"]`).click();
-  check("ouvrir une pièce depuis l'index rend la place au CONTEXTE", !presse() && !agrandie());
+  check("ouvrir une pièce depuis l'index rend la place au DOSSIER", !presse() && !agrandie());
   bascule().click();
   d.querySelector('#panPiece [data-f="suiv"]').click();
   check("‹ › changent de pièce sans rien rendre", presse() && agrandie() && w.S.modalPiece !== pid);
   w.fermerPanneau();
-  check("le CONTEXTE refermé, la bascule disparaît, et la conversation reprend toute la place",
+  check("le DOSSIER refermé, la bascule disparaît, et la conversation reprend toute la place",
     !bascule() && !agrandie());
   w.basculerPanneau("contexte");
   check("rouvert, il ne s'en souvient pas : un état d'écran, jamais sauvé", !presse() && !agrandie());
@@ -1516,7 +1522,7 @@ console.log("\n=== L'article se cherche, puis se prend (§4.5, §4.6, passe J) =
   check("…et ce sont toujours les trois mêmes", [0, 0.5, 0.99].every(x => tirage(x).slice().sort().join() === base.slice().sort().join()));
   w.chercherArticle();
   const chips = [...d.querySelectorAll("#zoneRecherche .rchip")];
-  check("ses résultats paraissent dans le CONTEXTE : un nom neutre et le début du texte, jamais le titre",
+  check("ses résultats paraissent dans le DOSSIER : un nom neutre et le début du texte, jamais le titre",
     chips.length === 3 && chips.every((c, n) => {
       const p = w.JEU.pieces[w.S.recherche[n]], a = arts.find(x => x.pid === w.S.recherche[n]);
       return !c.textContent.includes(p.titre) && c.textContent.includes(a.nom) && !/--dc/.test(c.getAttribute("style") || ""); }));
@@ -1531,7 +1537,7 @@ console.log("\n=== L'article se cherche, puis se prend (§4.5, §4.6, passe J) =
   check("cliqué, il fonde la phrase, et rejoint le dossier — la ligne le dit",
     w.R.compoFinie(w.S) && w.S.trouves.includes(pid)
     && /rangé dans ton DOSSIER/.test(ligne()));
-  check("au CONTEXTE, plus de groupe ARTICLES : un article ne s'y range pas", !d.querySelector("#contexte .articles"));
+  check("au DOSSIER, plus de groupe ARTICLES : un article ne s'y range pas", !d.querySelector("#contexte .articles"));
   w.retirerBloc();
   check("« ← retirer » l'ôte de la phrase, pas du dossier ; la recherche reste, la relation aussi",
     !w.R.compoFinie(w.S) && w.R.piecesLivrees(w.S).includes(pid) && w.S.recherche.length === 3);
@@ -1672,7 +1678,7 @@ console.log("\n=== L'agacement retombe à chaque remise (§4.11) ===");
   check("la première réplique se réentend", w.S.fil[w.S.fil.length - 1].texte === A[0]);
 }
 
-console.log("\n=== Le CONTEXTE ouvert pour écrire reste quand il faut aller lire (§4.6) ===");
+console.log("\n=== Le DOSSIER ouvert pour écrire reste quand il faut aller lire (§4.6) ===");
 {
   const w = H.boot();
   const L = w.JEU.liens.find(x => x.tag === w.R.attentesDe(w.JEU.remises[0]).slice(-1)[0].attend);
@@ -1682,12 +1688,12 @@ console.log("\n=== Le CONTEXTE ouvert pour écrire reste quand il faut aller lir
   check("ouvert par la voix", pan());
   check("la comparaison se pose, l'article pas encore trouvé : rien à invoquer",
     H.poserComparaison(w, H.sousTerme(L)) && w.R.blocsOfferts(w.S).length === 0);
-  check("le CONTEXTE reste : c'est là qu'on lira l'article", pan());
+  check("le DOSSIER reste : c'est là qu'on lira l'article", pan());
   const art = (w.JEU.grammaire.blocs || []).find(b => b.forme === L.forme && b.piece).piece;
   w.chercherArticle();
   check("chercher le garde ouvert, sur ses résultats", pan() && w.S.recherche.includes(art));
   w.ouvrirPiece(art); w.fermerPiece();
-  check("l'article lu, il est offert — et le CONTEXTE, où il se prend, reste",
+  check("l'article lu, il est offert — et le DOSSIER, où il se prend, reste",
     w.R.blocsOfferts(w.S).length > 0 && pan());
 }
 
