@@ -203,7 +203,8 @@ fait mentir un lien en changeant sa relation, et attend que le diagnostic le dis
 le lien ne ment plus — il change le fait. C'est l'argument de la liste à part, et le §15 en fait
 *le danger le plus coûteux du dépôt*.
 
-**Le mot, et l'accord — ⚖.** La **phrase composée** est celle que le jeu écrit au composeur — *ta
+**Le mot, et l'accord — tranché par l'auteur le 8 octobre : *concordent / ne concordent pas*.**
+La **phrase composée** est celle que le jeu écrit au composeur — *ta
 RÉPONSE* à l'écran — à mesure que le joueur pose ses deux passages, choisit la relation, puis
 l'article ; c'est elle qui part à l'envoi, et qu'Auber lit. Le mot de la relation y est écrit par le
 `patron` de sa forme (§11), autour des `nom` des deux passages : *« {a} et {b} … »*. Or *« {a} et
@@ -308,9 +309,10 @@ vieille que la maladie. La sœur peut y ajouter une phrase à double fond ; la r
 lettre (`declenche`) peut l'énoncer, puisque la fiction a le droit de désigner. **Jamais une pièce
 qui dise le plan** : un sous-entendu, pas une preuve.
 
-**Le grief — non tranché** (*auteur*, le 8 : *« je ne sais pas »*). Deux pistes, du contenu
-seulement : rien n'en dépend avant l'écriture du cas (l'ordre de travail ci-dessous, étape 4).
-- **Une liaison qu'elle soupçonne — proposée.** La lettre la dit (*« Je sais pour elle »*), et
+**Le grief — tranché par l'auteur le 8 octobre : une liaison qu'elle soupçonne, dite dans la
+lettre.** Du contenu seulement : rien n'en dépend avant l'écriture du cas (l'ordre de travail
+ci-dessous, étape 4). Les deux pistes pesées :
+- **Une liaison qu'elle soupçonne — retenue.** La lettre la dit (*« Je sais pour elle »*), et
   aucune autre pièce ne la confirme. Elle tient à la lettre telle qu'elle est, antérieure au
   diagnostic : une rancune plus vieille que la maladie. Et c'est **un fait, deux lectures**, comme
   l'aveu : le grief de l'une, le mobile possible de l'autre. Invérifiée, elle laisse le mobile
@@ -405,12 +407,15 @@ extérieur requis*), mais sa fouille en sera plus courte.
 
 1. ~~**Où vit le verdict**~~ — *tranché par l'auteur le 8 octobre : dans une liste à part, écrite
    par une grille.*
-2. **Le mot** : *concordent*, *se tiennent*, ou *sont en cohérence* (le tableau du point 2) ?
+2. ~~**Le mot**~~ — *tranché par l'auteur le 8 octobre : « concordent / ne concordent pas », au
+   bouton comme dans la phrase.*
 3. **Le verdict faux** : refusé par Auber, comme aujourd'hui (proposé), ou plaidé et perdu au procès ?
 4. **Le lien 6 envoyé** : Auber refuse de l'entendre (proposé), *« Et donc ? »*, ou il sait ?
 5. **La dimension du faux vice** — et faut-il `comment` ?
-6. **Le suicide-vengeance** : quel grief — une liaison soupçonnée, dans la lettre (proposé), ou le
-   placement ? *Pas encore tranché ; ne bloque rien avant l'écriture du cas.* Et l'aveu dit la
-   compote, pour que la vengeance tombe devant le lien 6 (proposé, ferme).
-7. **Le mobile** : le laisser ambigu, pour que l'IA ne sache jamais *pourquoi* (§4.2) ?
+6. **Le suicide-vengeance** — *le grief tranché par l'auteur le 8 octobre : une liaison qu'elle
+   soupçonne, dite dans la lettre, que rien d'autre ne confirme.* Reste à confirmer : l'aveu dit
+   la compote, pour que la vengeance tombe devant le lien 6 (proposé, ferme).
+7. **Le mobile** : le laisser ambigu, pour que l'IA ne sache jamais *pourquoi* (§4.2) ? *La liaison
+   de la lettre l'éclaire sans le fermer : invérifiée, elle penche vers l'intérêt sans le prouver ;
+   la compassion reste possible.*
 8. **Les verrous** : où vit *la charge* ?
