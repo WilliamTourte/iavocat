@@ -132,7 +132,7 @@ async function main() {
   /* ---- Le portable du playtest : 1280×800 (§4.6) ---- une partie neuve, dans
      un contexte neuf — tutoriel compris, puisque c'est lui qui prend la place.
      AU-DESSUS du seuil de `.wrap.avecLateral` (900px) : les panneaux — et la
-     pièce, DANS le CONTEXTE — s'y ouvrent dans la colonne LATÉRALE, à côté de la conversation —
+     pièce, DANS le DOSSIER — s'y ouvrent dans la colonne LATÉRALE, à côté de la conversation —
      c'est la capture "piece" qui le montre, question et composeur lisibles en
      même temps. La colonne doit tenir dans la fenêtre : on le DIT, on ne
      l'asserte pas. */
@@ -167,7 +167,7 @@ async function main() {
   };
   console.log("  " + await capturer2("depart"));
   /* De VRAIS clics, pas des appels directs : c'est ce qui éprouve le bouton
-     agrégé du message et sa porte vers le CONTEXTE (§4.6), et la bavarde du
+     agrégé du message et sa porte vers le DOSSIER (§4.6), et la bavarde du
      tutoriel qui se réduit en icône entre les deux (§4.8) — rien de tout ça
      n'est visible d'une suite. */
   await p2.click("#discussion .attach");
@@ -189,9 +189,9 @@ async function main() {
   await p2.click(`#panPiece [data-f="e:${autre1280}"]`);
   console.log("  " + await capturer2("piece-mauvais-passage") + `   (halo : ${await haloDe(p2)})`);
   await p2.click(`#composeur [data-f="retirer"]`);
-  /* Un VRAI clic sur le passage attendu : il se retient ET se pose (passe H,
-     §4.6) — la confirmation (§4.3) ne vit qu'un rendu, et seule une capture
-     prise juste après la montre. Plus de fiche à prendre. */
+  /* Un VRAI clic sur le passage attendu : il se pose (passes H et K, §4.6) —
+     la confirmation (§4.3) ne vit qu'un rendu, et seule une capture prise
+     juste après la montre. */
   await p2.click(`#panPiece [data-f="e:${veut1280}"]`);
   console.log("  " + await capturer2("piece-pris"));
   const pli = await p2.evaluate(`(() => {
@@ -215,25 +215,25 @@ async function main() {
   await p2.evaluate("rendreTout()");
   console.log("  " + await capturer2("tuto-reduit"));
 
-  /* LA COMPARAISON EN COURS, CONTEXTE ouvert (§4.6) : la réponse au plus long —
-     deux passages et l'article — ne doit pas écraser le CONTEXTE. Retour de
+  /* LA COMPARAISON EN COURS, DOSSIER ouvert (§4.6) : la réponse au plus long —
+     deux passages et l'article — ne doit pas écraser le DOSSIER. Retour de
      playtest (Jean) : à 1280×800, la pièce y était coupée. On DIT les hauteurs,
-     on ne les asserte pas. Et le CONTEXTE resté ouvert entre deux envois (§4.6),
+     on ne les asserte pas. Et le DOSSIER resté ouvert entre deux envois (§4.6),
      on le dit aussi. */
   const resteOuvert = await p2.evaluate(`(() => {
     const H = __H, L = () => H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend);
-    // PIÈGE : la porte de la barre est une BASCULE — sur un CONTEXTE déjà
+    // PIÈGE : la porte de la barre est une BASCULE — sur un DOSSIER déjà
     // ouvert, elle le refermerait. Et la voix ouvre POUR ÉCRIRE : la phrase
     // pleine, il se refermerait de lui-même. On consulte donc, par la barre.
     if (panneau !== "contexte") basculerPanneau("contexte");
     H.composerLien(window, L());
     return !document.getElementById("panCONTEXTE").hidden;
   })()`);
-  console.log(`      après un envoi, le CONTEXTE ${resteOuvert ? "reste ouvert" : "S'EST REFERMÉ"}`);
+  console.log(`      après un envoi, le DOSSIER ${resteOuvert ? "reste ouvert" : "S'EST REFERMÉ"}`);
   /* CLIQUER LES DEUX PASSAGES (§4.8) : la remise 1 ne les extrait plus d'avance
      (§3). De VRAIS clics, là où le halo les montre : le texte de la pièce,
      l'index quand elle ne porte plus rien d'attendu, la pièce suivante. Chaque
-     clic retient ET pose (passe H) : plus de fiche à prendre entre les deux. */
+     clic pose (passes H et K) : rien à prendre ailleurs entre les deux. */
   const halo = () => haloDe(p2);
   const [tA, tB] = await p2.evaluate("__H.sousTerme(__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend)).termes");
   const pieceDe = k => k.slice(0, k.indexOf("."));
@@ -252,7 +252,7 @@ async function main() {
   /* Le second posé, le composeur offre les deux relations de la dimension, et
      le halo les entoure toutes deux (passe G, §4.8). On choisit la vraie — puis
      l'article, qui SE CHERCHE (passe J) : le bouton du composeur, les trois
-     résultats au CONTEXTE, un leurre ouvert, puis le bon, dont le texte se clique. */
+     résultats au DOSSIER, un leurre ouvert, puis le bon, dont le texte se clique. */
   await p2.click(`#panPiece [data-f="e:${tB}"]`);
   console.log("  " + await capturer2("relier-relation") + `   (halo : ${await halo()})`);
   const vraie = await p2.evaluate("__H.sousTerme(__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend)).forme");
@@ -276,7 +276,7 @@ async function main() {
     const h = id => Math.round(document.getElementById(id).getBoundingClientRect().height);
     return { contexte: h("panCONTEXTE"), composeur: h("composeur") };
   })()`);
-  console.log(`      CONTEXTE ${hauteurs.contexte}px, réponse ${hauteurs.composeur}px (fenêtre 800px)`);
+  console.log(`      DOSSIER ${hauteurs.contexte}px, réponse ${hauteurs.composeur}px (fenêtre 800px)`);
 
   /* ---- EN DESSOUS DU SEUIL : 390×800 (§4.6) ---- aucune des deux largeurs
      ci-dessus ne descend sous 900px ; sans ce troisième contexte, le repli

@@ -103,7 +103,7 @@ function renderFrise(){
 
   // ---- les manuels ----
   h+=`<div class="step">
-    <h3>Les manuels <span class="cid">— le manuel de soi ; les règles du cas sont des pièces de type « règle », affichées une fois LIVRÉES</span></h3>
+    <h3>Les manuels <span class="cid">— le manuel de soi ; les articles du cas sont des pièces de type « règle », que la recherche rend (passe J) — aucune remise n'en livre</span></h3>
     <label>Directives (une par ligne)</label>
     <textarea onchange="majDirectives(this.value)">${escapeH((CONTENU.directives||[]).join("\n"))}</textarea>
     <label>Avis d'exploitation <span class="glose">(le brouillard, consultable dans les Manuels)</span></label>

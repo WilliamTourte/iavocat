@@ -317,7 +317,8 @@ relecture à l'œil.*
       fiche, pour l'en retirer » quand il n'a rien fait ; la bulle, les raisons du CONTEXTE, le badge
       et le refus de `regles.js` suivent ; §4.3 et §4.6, §16 et `test_parcours` aussi. Restent hors
       du geste, à voir : la voix d'Auber et de la Fin 1 (« la phrase était écrite… »), la répétition
-      (« Opposer une phrase »).*
+      (« Opposer une phrase »).* — *Tranché le 8, à la relecture du glossaire : la répétition dit
+      « Opposer une réponse » ; la voix d'Auber reste la sienne (§17).*
   - **Commencé** : `ECHO_POSE`, `ECHO_REPOSE`, `RAPPEL_PHRASE`, deux bulles de `tutoRetenir` et le
     `ditLong` de `tutoIntrus`. **Avant tout commit** : `RAPPEL_RETRAIT` porte un « A CORRIGER. »
     provisoire ; et `ECHO_POSE` / `ECHO_REPOSE` disent désormais la même chose, alors que la ligne

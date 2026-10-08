@@ -96,7 +96,7 @@ function creerHarnais(dossier){
   const deK = k => { const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; };
   /* CLIQUER — le clic du joueur sur un passage : il le PREND si la phrase
      l'attend (§4.6, passes H et K). C'est par lui qu'on compose ; il n'y a pas
-     d'autre porte vers un terme — plus de fiches au CONTEXTE. */
+     d'autre porte vers un terme — plus de fiches au DOSSIER. */
   const cliquer = (w,k) => { const [pid,eid]=deK(k); w.surligner(pid,eid); };
 
   /* UNE SUITE NE MARCHE QUE LES PORTES DU JOUEUR (§16). PIÈGE PAYÉ, et il a

@@ -78,18 +78,17 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 /* PIÈGE : `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` — sans
    cette ligne, cacher la PLAIDOIRIE ne ferait rien. */
 .col[hidden]{display:none}
-/* §4.6 — LA PIÈCE S'OUVRE DANS LE CONTEXTE. Le panneau cesse alors de défiler
+/* §4.6 — LA PIÈCE S'OUVRE DANS LE DOSSIER. Le panneau cesse alors de défiler
    d'un bloc : l'index en tête, puis DEUX BANDES qui défilent chacune pour son
    compte — la pièce, seule depuis la passe K. Si le panneau est trop bas pour
    son plancher (un téléphone), il redéfile d'un bloc plutôt que de rogner :
    c'est le rôle de l'`overflow-y` restant. */
 #contexte.avecPiece{display:flex;flex-direction:column;gap:10px}
 #contexte.avecPiece > #zoneDossier,#contexte.avecPiece > #zoneRecherche{flex:none;margin:0}
-/* Replié, l'index n'est plus qu'une ligne : DOSSIER, sans compte (§4.6). */
+/* Replié, l'index n'est plus qu'une ligne : DOCUMENTS, sans compte (§4.6). */
 .dplier{display:flex;align-items:baseline;gap:10px;width:100%;padding:2px 0;background:none;border:0;
   color:var(--txt);font:inherit;font-size:13px;text-align:left;cursor:pointer}
 .dplier .dtitre{font-size:12.5px;font-weight:600;color:var(--muted)}
-.dplier .dcompte{flex:1}
 .dplier .dsens{margin-left:auto;color:var(--muted);white-space:nowrap}
 .dplier:hover .dsens{color:var(--txt)}
 #zoneDossier:not(.plie) .dplier{margin-bottom:6px}
@@ -105,7 +104,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 #contexte .bande.deborde::after{content:"";position:absolute;left:1px;right:1px;bottom:0;height:26px;
   pointer-events:none;border-radius:0 0 8px 8px;
   background:linear-gradient(to top, var(--panel) 20%, rgba(22,27,34,0))}
-/* Le CONTEXTE qui porte une pièce a besoin de plus de hauteur EN DESSOUS DU SEUIL ;
+/* Le DOSSIER qui porte une pièce a besoin de plus de hauteur EN DESSOUS DU SEUIL ;
    au-dessus, il a déjà la hauteur pleine de la conversation. */
 @media (max-width:899.98px){
   .panneau.avecPiece{max-height:62vh;min-height:320px}
@@ -115,7 +114,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
    LES LARGEURS. PIÈGE PAYÉ : on l'avait cru inutile au-dessus du seuil, où
    `#composeur` a sa propre rangée du gabarit — mais cette rangée est `auto`, et
    ce qu'elle prend, la place latérale le perd. À 1280×800, la comparaison en
-   cours écrasait le CONTEXTE, pièce coupée (retour de playtest, Jean). */
+   cours écrasait le DOSSIER, pièce coupée (retour de playtest, Jean). */
 .wrap.avecLateral #composeur{max-height:28vh}
 #composeur{flex:none;max-height:46vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);
   border-radius:10px;padding:12px 16px}
@@ -157,7 +156,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
   .wrap.avecLateral .panneau{grid-area:lateral;min-width:0;min-height:0;max-height:none}
   .wrap.avecLateral #composeur{grid-area:composeur}
   .wrap.avecLateral .cloture{grid-area:cloture}
-  /* LE CONTEXTE PREND LES DEUX TIERS (§4.6, demande de l'auteur) : index et
+  /* LE DOSSIER PREND LES DEUX TIERS (§4.6, demande de l'auteur) : index et
      pièce se lisaient à l'étroit dans un tiers. La conversation garde le
      tiers restant, et la question avec elle ; la PLAIDOIRIE, une liste, garde
      sa colonne étroite. Seul le gabarit change, jamais un span. */
@@ -199,7 +198,7 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .col > h2 .bascule .sens{margin-left:auto;font-size:12.5px;font-weight:400;color:var(--muted)}
 .col > h2 .bascule[aria-pressed="true"]{color:var(--txt);border-bottom-color:var(--accent)}
 .col > h2 .bascule[aria-pressed="true"] .sens{color:var(--accent)}
-/* Pièce ouverte, Échap la replie : la croix du CONTEXTE perd sa touche — deux
+/* Pièce ouverte, Échap la replie : la croix du DOSSIER perd sa touche — deux
    « × Échap » empilés promettaient deux effets à une seule (§4.10 règle 6). */
 #panCONTEXTE.avecPiece > h2 .fermer kbd{display:none}
 .ztitle .surfaces{margin-left:auto;display:flex;gap:6px}
@@ -436,7 +435,7 @@ code{font-family:var(--mono);color:var(--accent)}
 .bande.piece .rappel{margin:10px 0 0;padding:8px 12px;border-left:3px solid var(--encre2);
   background:#ebe4d4;color:var(--encre);font-family:var(--sans);font-size:14px}
 /* PIÈGE PAYÉ (le 4 octobre, le temps d'une passe) : la ligne a été COLLÉE au bas
-   de la pièce pour rester sous les yeux — dans la bande étroite du CONTEXTE,
+   de la pièce pour rester sous les yeux — dans la bande étroite du DOSSIER,
    elle couvrait le texte même qu'on venait de cliquer. Elle reste dans le flux,
    et `voirEcho` la ramène dans le champ. */
 .bande.piece .rappel.confirme{border-left-color:#3d6b3f;background:#e3ead8}

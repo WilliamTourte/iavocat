@@ -351,6 +351,10 @@ Son index, qui s'intitulait DOSSIER, s'intitule désormais **DOCUMENTS** (*auteu
 couvre ce qu'il range, les pièces reçues comme les articles trouvés, sans redire *« Les pièces »*, le
 nom de sa première colonne. `contexte` et *la phrase* sont des noms du code, que le joueur ne lit
 jamais ; dans ce qu'il lit, une seule frontière de registre subsiste, voulue : **`empan` (code) / « passage » (écran)**, qui protège la fiction (§8.6).
+**Pièce ou document** (*auteur*, 8 octobre) : l'écran dit *pièce* quand c'en est une — ce que
+Maître Auber transmet, où vit le passage qu'il demande —, et *document* quand ce peut être une
+pièce **ou** un article : ce que l'index range, ce qu'on ouvre, ce que ‹ › parcourent, ce que la
+croix replie (*« Ouvre un document »*, *« Document suivant »*, *« Replier le document »*).
 
 | Surface | Statut | Rôle |
 |---|---|---|
@@ -690,7 +694,7 @@ temps de plus, passes H à J : prendre aux retenus un passage retenu sans être 
 est parti avec eux (passe K).*
 
 **Un passage posé à tort se retire d'abord** (passe H, §4.6). Depuis que le clic prend, un mauvais
-passage ne reste plus au CONTEXTE : il entre dans la phrase, et le bon, cliqué ensuite, deviendrait
+passage ne reste plus de côté, à l'écart de la phrase : il y entre, et le bon, cliqué ensuite, deviendrait
 son second terme — refusé en session 1 s'il n'est pas de la même dimension, ou le début d'une
 comparaison qu'on n'a pas voulue. Tant que la phrase porte un passage que la question ne demande pas,
 la bulle le dit — *« Ce n'est pas ce qu'il demande »* — et le halo va à *« ← retirer »*, qui l'ôte
@@ -748,8 +752,8 @@ gauche** : ce qui précède la zone est ce qu'on vient de lire, la question d'ab
 va vers ce qui suit. Elle suit la zone quand l'écran défile ou change de taille. Ce que le flux garantissait
 en réservant sa place, l'ancrage le garantit en la choisissant : **la bulle ne recouvre jamais sa
 propre ancre**. **Ni, autant qu'elle le peut, ce qui parle ou agit autour** — retour de playtest
-(Jean, 5 octobre) : posée au premier côté libre, elle cachait la confirmation *« ✓ Retenu »*, la raison
-d'une phrase pleine, l'aide du CONTEXTE, *« ← retirer / tout effacer »*. Sur chaque côté, elle essaie
+(Jean, 5 octobre) : posée au premier côté libre, elle cachait la confirmation *« ✓ Retenu »* d'alors, la raison
+d'une phrase pleine, l'aide du CONTEXTE (devenu DOSSIER), *« ← retirer / tout effacer »*. Sur chaque côté, elle essaie
 donc plusieurs alignements, et prend la première position qui ne couvre ni une commande ni une ligne
 qui parle ; si aucune n'y parvient, celle qui en couvre le moins. L'ordre des côtés reste une
 préférence, plus une fatalité. Réduite, elle n'est plus que le *« ? »* collé à la zone. Ses consignes
