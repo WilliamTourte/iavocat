@@ -266,7 +266,8 @@ compte sans se plaider**.
 - **Le lien 6 lève un drapeau privé**, au composeur, comme le pressentiment (§4.7) : **savoir**. Il
   ne produit rien — sauf aux fins : la Fin 3 de la partie I (*« j'étais perdu »*) a deux lectures,
   selon que l'IA sait ou non. Une variante, comme `variante_faux`.
-- **Envoyé, le lien 6 — ⚖ (le D1 de la partie I).** Proposé : **Auber refuse de l'entendre** —
+- **Envoyé, le lien 6 (le D1 de la partie I) — tranché par l'auteur le 8 octobre : Auber refuse
+  de l'entendre** —
   *« Je ne te demande pas s'il l'a fait. Je te demande ce qu'on peut écarter. »* L'IA peut
   s'acquitter du D1 ; l'avocat, par métier, ne prend pas ce savoir ; le huis clos tient (§1 :
   *l'avocat ne sait pas*), et le dilemme avec. Une réplique, aucune règle neuve.
@@ -322,7 +323,7 @@ ci-dessous, étape 4). Les deux pistes pesées :
   et la compassion. Mais elle suit le diagnostic, donc pas la lettre : il faut un autre porteur —
   la sœur, ou un courrier de l'établissement.
 
-**La compote, elle, n'est pas un choix de goût** : sans elle, l'aveu ne dit que la substance, et la
+**La compote, elle, n'est pas un choix de goût — confirmée par l'auteur le 8 octobre** : sans elle, l'aveu ne dit que la substance, et la
 vengeance survit au lien 6. Seule raison de s'en passer : vouloir que le doute survive au savoir —
 et le dilemme ne survivrait pas avec lui.
 
@@ -410,11 +411,11 @@ extérieur requis*), mais sa fouille en sera plus courte.
 2. ~~**Le mot**~~ — *tranché par l'auteur le 8 octobre : « concordent / ne concordent pas », au
    bouton comme dans la phrase.*
 3. **Le verdict faux** : refusé par Auber, comme aujourd'hui (proposé), ou plaidé et perdu au procès ?
-4. **Le lien 6 envoyé** : Auber refuse de l'entendre (proposé), *« Et donc ? »*, ou il sait ?
+4. ~~**Le lien 6 envoyé**~~ — *tranché par l'auteur le 8 octobre : Auber refuse de l'entendre.*
 5. **La dimension du faux vice** — et faut-il `comment` ?
-6. **Le suicide-vengeance** — *le grief tranché par l'auteur le 8 octobre : une liaison qu'elle
-   soupçonne, dite dans la lettre, que rien d'autre ne confirme.* Reste à confirmer : l'aveu dit
-   la compote, pour que la vengeance tombe devant le lien 6 (proposé, ferme).
+6. ~~**Le suicide-vengeance**~~ — *tranché par l'auteur le 8 octobre : le grief est une liaison
+   qu'elle soupçonne, dite dans la lettre, que rien d'autre ne confirme ; et l'aveu dit la
+   compote, pour que la vengeance tombe devant le lien 6.*
 7. **Le mobile** : le laisser ambigu, pour que l'IA ne sache jamais *pourquoi* (§4.2) ? *La liaison
    de la lettre l'éclaire sans le fermer : invérifiée, elle penche vers l'intérêt sans le prouver ;
    la compassion reste possible.*

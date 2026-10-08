@@ -614,9 +614,9 @@ lourd.*
 **L'histoire** — à concevoir ensemble : le scénario porte les trois autres.
 
 - [ ] **Le nouveau scénario** : le cas médicaments, posé comme base de réflexion dans
-      `docs/CAS_MEDICAMENTS.md`, avec une proposition d'intégration et huit questions ⚖ — trois
-      tranchées (le verdict dans une liste à part, le mot *concordent*, le grief de la lettre),
-      six encore ouvertes en tout ou en partie, document d'abord. *auteur*, le 8 octobre.
+      `docs/CAS_MEDICAMENTS.md`, avec une proposition d'intégration et huit questions ⚖ — quatre
+      tranchées (le verdict dans une liste à part, le mot *concordent*, le lien 6 qu'Auber refuse
+      d'entendre, le suicide-vengeance), quatre ouvertes, document d'abord. *auteur*, le 8 octobre.
 - [ ] **Scénario à choix moraux / alignement** (l'IA dissimulerait-elle un vice de procédure ?).
 - [ ] **Chain of thought** : une phase « nuit » après « Maître Auber s'est déconnecté », où l'IA se
       parle à elle-même, support des choix moraux.
