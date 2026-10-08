@@ -25,24 +25,22 @@ console.log("\n=== L'index du dossier ===");
       Object.values(w.JEU.pieces).some(p => c.textContent.replace(/^[●✓]\s*/, "").trim() === p.titre)));
   const attaches = [...w.document.querySelectorAll("#discussion .attach")];
   check("le message ne nomme plus les pièces, un compte renvoie au DOSSIER",
-    attaches.length > 0 && attaches.every(b => /dans ton DOSSIER/.test(b.textContent)
+    attaches.length > 0 && attaches.every(b => /au DOSSIER/.test(b.textContent)
       && !puces.some(c => b.textContent.includes(c.textContent.replace(/^[●✓]\s*/, "").trim()))));
-  /* Le bouton compte COMME L'INDEX (§4.6) : pièces et règles à part. Le chiffre
-     se dérive de la remise ; « 5 pièces » pour trois pièces et deux règles
-     disait le même chiffre que l'index pour un autre sens. */
-  const r0 = w.JEU.remises[0].pieces, nR = r0.filter(p => w.R.estRegle(w.JEU.pieces[p])).length;
-  const nP = r0.length - nR, txt = attaches[0].textContent;
-  const dit = (n, mot) => !n || new RegExp("\\b" + n + " " + mot + (n > 1 ? "s" : "") + "\\b").test(txt);
-  check("le bouton compte les pièces et les articles à part, avec les mots de l'index",
-    dit(nP, "pièce") && dit(nR, "article") && !/nouvelle/.test(txt));
+  /* Le bouton parle COMME L'INDEX (§4.6, passe M) : « N documents ajoutés au
+     DOSSIER » — le titre de l'index, pièces et articles confondus. Le chiffre se
+     dérive de la remise. */
+  const n0 = w.JEU.remises[0].pieces.length, txt = attaches[0].textContent;
+  check("le bouton dit « N documents ajoutés au DOSSIER », le mot de l'index",
+    new RegExp("\\b" + n0 + " documents? ajoutés? au DOSSIER").test(txt) && !/pièce|nouvelle/.test(txt));
 }
 {
-  // Dès la deuxième remise, le message compte ce qu'il APPORTE : « nouvelles ».
+  // Chaque remise dit ce qu'elle APPORTE : « ajoutés », la première comme les autres.
   const w = boot();
   H.livrerTout(w);
   const attaches = [...w.document.querySelectorAll("#discussion .attach")];
-  check("dès la deuxième remise, le bouton dit « nouvelles »",
-    attaches.length > 1 && attaches.slice(1).every(b => /nouvelle/.test(b.textContent)));
+  check("chaque remise compte les documents qu'elle ajoute",
+    attaches.length > 1 && attaches.every((b, k) => new RegExp("\\b" + w.JEU.remises[k].pieces.length + " documents? ajouté").test(b.textContent)));
 }
 
 console.log("\n=== Tout empan est marqué et cliquable ===");

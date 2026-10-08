@@ -213,7 +213,7 @@ function tutoChercher(geste, attendus){
     const plie=indexPlie(), titre=pieceDemandee(manque[0]);
     const quelle=(relier && !second ? "une des pièces qu'il demande" : "la pièce demandée")+(titre?" : "+titre:"")+".";
     return {...geste, n:n(1), ou:"#zoneDossier",
-      dit: plie ? "Déplie tes DOCUMENTS." : "Ouvre une pièce.",
+      dit: plie ? "Déplie tes DOCUMENTS." : "Ouvre un document.",
       ditLong: (relier && !second ? "Une réponse peut tenir sur deux passages. " : "")
           +(plie ? "Déplie tes DOCUMENTS, puis clique sur " : "Clique sur ")+quelle};
   }
@@ -572,7 +572,7 @@ function annoncerNouveautes(){
   if(vusFil<0){ vusFil=S.fil.length; dernierRefus=S.refus||null; tutoAnnonce=null; return; }
   S.fil.forEach((m,i)=>{ if(i<vusFil || m.ia) return;
     const n=(m.pieces||[]).length;
-    annoncer(`${m.qui} : ${texteBrut(m.texte)}${m.question ? " "+texteBrut(m.question) : ""}${n ? ` (${comptePieces(m.pieces, recuAvant(i))} dans ton DOSSIER)` : ""}`);
+    annoncer(`${m.qui} : ${texteBrut(m.texte)}${m.question ? " "+texteBrut(m.question) : ""}${n ? ` (${comptePieces(m.pieces)})` : ""}`);
   });
   vusFil=S.fil.length;
   if(S.refus && S.refus!==dernierRefus) annoncer(S.refus);
@@ -596,18 +596,13 @@ function rendreTout(){
 }
 
 /* ---- Le canal : un fil de messages ---- */
-/* LE BOUTON SÉPARE COMME L'INDEX (§4.6) : les pièces et les articles à part,
-   avec les mots des deux colonnes de `renderDossier` — « 5 pièces » au message et
-   « 5 pièces, 3 règles » à l'index, c'était le même chiffre pour deux sens. Dès le
-   deuxième envoi, il dit « nouvelles » : le message compte ce qu'il apporte.
-   L'index, lui, ne compte plus — son en-tête ne dit que DOCUMENTS (passe L). */
+/* LE BOUTON PARLE COMME L'INDEX (§4.6, passe M, *auteur*) : « 2 documents
+   ajoutés au DOSSIER » — DOCUMENTS est le titre de l'index, pièces et articles
+   confondus, et « ajoutés » dit ce que le message apporte, première remise
+   comprise. Il a séparé pièces et règles, puis dit « nouvelles » dès le second
+   envoi ; l'index, lui, ne compte toujours pas. */
 const compte=(n,mot)=>n+" "+mot+(n>1?"s":"");
-function comptePieces(pids, nouvelles){
-  const nP=pids.filter(pid=>!R.estRegle(JEU.pieces[pid])).length, nR=pids.length-nP;
-  const dit=(n,mot)=>compte(n,(nouvelles?(n>1?"nouvelles ":"nouvelle "):"")+mot);
-  return [nP && dit(nP,"pièce"), nR && dit(nR,"article")].filter(Boolean).join(" et ");
-}
-const recuAvant=i=>S.fil.slice(0,i).some(m=>(m.pieces||[]).length);
+const comptePieces = pids => compte(pids.length,"document")+" "+(pids.length>1?"ajoutés":"ajouté")+" au DOSSIER";
 function renderDISCUSSION(){
   let h="", dernier=null;
   for(const [i,m] of S.fil.entries()){
@@ -621,7 +616,7 @@ function renderDISCUSSION(){
     // vers le CONTEXTE, où chacune se nomme et se lit comme avant — et il vient
     // APRÈS la question que la remise porte : on lit, puis on va chercher.
     if(m.pieces.length){
-      const dit=comptePieces(m.pieces, recuAvant(i))+" dans ton DOSSIER";
+      const dit=comptePieces(m.pieces);
       h+=`<button type="button" class="attach" data-f="a:${m.pieces[0]}" onclick="voirPiecesRecues()"
             aria-label="${dit}"><span aria-hidden="true">📎</span> ${dit}</button>`;
     }
@@ -707,10 +702,10 @@ function ouvrirPiece(pid){
   ouvreur = memoFocus();
   if(S.modalPiece && S.modalPiece!==pid) R.fermerPiece(S);
   R.ouvrirPiece(S,pid);
-  // Une pièce ouverte depuis l'index replie l'index et rend sa place au
-  // CONTEXTE : la lire dans un tiers, c'est le défaut que les deux tiers
-  // réparaient (§4.6). ‹ › (`voisine`) ne touchent ni à l'un ni à l'autre.
-  panneau="contexte"; panneauSuit=false; dossierDeplie=false; discussionAgrandie=false;
+  // Une pièce ouverte depuis l'index rend sa place au CONTEXTE : la lire dans
+  // un tiers, c'est le défaut que les deux tiers réparaient (§4.6). L'index,
+  // lui, reste comme le joueur l'a laissé (passe M). ‹ › n'y touchent pas.
+  panneau="contexte"; panneauSuit=false; discussionAgrandie=false;
   focusVoulu = { cle:"#pieceTitre", zone:"#panPiece" };
   rendreTout();
 }
@@ -820,15 +815,14 @@ function renderRecherche(){
   return `<div class="zone" id="zoneRecherche" tabindex="-1"><span class="dtitre">RECHERCHE</span>
     <div class="rchips">${S.recherche.length ? S.recherche.map(entree).join("") : `<span class="dvide">aucun article trouvé</span>`}</div></div>`;
 }
-/* Deux états d'ÉCRAN, comme `panneau` : jamais sauvés. `dossierPlie` est le
-   choix du joueur sans pièce ouverte ; `dossierDeplie`, celui qu'il fait le
-   temps d'une pièce — `ouvrirPiece` le remet à faux : chaque pièce ouverte
-   replie l'index qu'on a déplié pour la choisir, et la pièce repliée, il
-   revient au choix d'avant. */
-let dossierPlie=false, dossierDeplie=false;
-const indexPlie=()=>S.modalPiece ? !dossierDeplie : dossierPlie;
+/* Un état d'ÉCRAN, comme `panneau` : jamais sauvé. `dossierPlie` est le choix
+   du joueur, et de lui seul : une pièce ouverte ne replie plus l'index (§4.6,
+   retour de Jean, passe M) — « Déplie tes DOCUMENTS » coûtait un geste et un
+   nom, et depuis la passe K la pièce a toute la hauteur du panneau. */
+let dossierPlie=false;
+const indexPlie=()=>dossierPlie;
 function basculerDossier(){
-  if(S.modalPiece) dossierDeplie=!dossierDeplie; else dossierPlie=!dossierPlie;
+  dossierPlie=!dossierPlie;
   focusVoulu={ cle:"dossier", zone:"#zoneDossier" };
   rendreTout();
 }
@@ -906,24 +900,24 @@ function voirEcho(k){
 /* §4.3 — PLUS DE LÉGENDE : l'auteur l'a retirée, le code s'apprend en cherchant
    — au survol du passage. */
 /* §4.11 — `porte` SE MARQUE, IL NE S'ÉTIQUETTE PLUS : « Ce texte porte sur :
-   quand » faisait le tri dans la tête du joueur. Le texte de l'article est
-   encadré de la couleur ET du trait de chaque dimension qu'il régit — le code
-   des passages (§4.3), rien par la couleur seule (§4.10 règle 5). Deux
-   dimensions, deux cadres l'un dans l'autre. À qui ne voit pas, leurs noms. Le
-   moteur ne lit toujours pas `porte` (§4.5). PIÈGE : une bordure CSS ne sait
-   pas onduler — l'ondulé passe par une image de bordure (`.cadre.ondule`). */
-function cadresPorte(pid, interieur){
+   quand » faisait le tri dans la tête du joueur. Sous le titre de l'article, un
+   FILET de la couleur ET du trait de chaque dimension qu'il régit — le code des
+   passages (§4.3), rien par la couleur seule (§4.10 règle 5). Deux dimensions,
+   deux filets. À qui ne voit pas, leurs noms. Le moteur ne lit toujours pas
+   `porte` (§4.5). PIÈGE PAYÉ (Jean, passe M) : c'étaient des CADRES autour du
+   texte, et ils effaçaient la bordure qui dit que ce texte se prend (§4.3). */
+function filetsPorte(pid){
   const d=R.porteDe(pid).filter(x=>couleurDim(x));
-  if(!d.length) return interieur;
-  return d.reduceRight((dedans,x)=>{
+  if(!d.length) return "";
+  return `<div class="porte">${d.map(x=>{
     const t=traitDim(x);
-    return `<div class="cadre ${t==="wavy"?"ondule":""}" style="--dc:${couleurDim(x)};--ds:${t==="wavy"?"solid":t}">${dedans}</div>`;
-  }, interieur + `<span class="sr">Porte sur : ${d.map(escapeAttr).join(", ")}.</span>`);
+    return `<span class="filet ${t==="wavy"?"ondule":""}" style="--dc:${couleurDim(x)};--ds:${t==="wavy"?"solid":t}"></span>`;
+  }).join("")}<span class="sr">Porte sur : ${d.map(escapeAttr).join(", ")}.</span></div>`;
 }
 function piecePanelHTML(pid){
   const p=JEU.pieces[pid];
-  return `<small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
-    ${cadresPorte(pid, `<p class="piecetexte">${rendreTexte(pid)}</p>`)}
+  return `${filetsPorte(pid)}<small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
+    <p class="piecetexte">${rendreTexte(pid)}</p>
     ${echoPiece && echoPiece.k.startsWith(pid+".") ? `<p class="rappel${echoPiece.confirme?" confirme":""}">${echoPiece.texte}</p>` : ""}`;
 }
 /* 6) LE COMPOSEUR — les blocs de l'état courant ; seules les erreurs de
@@ -941,8 +935,8 @@ function souffle(){
     // §4.6 — pendant la répétition on n'écrit plus, on oppose : la voix se tait,
     // et ne reparle que si le joueur recommence une phrase.
     if(R.repetitionEnCours(S)) return "";
-    return second ? "Ouvre une pièce et clique sur un ou plusieurs passages."
-                  : "Ouvre une pièce et clique sur un passage.";
+    return second ? "Ouvre un document et clique sur un ou plusieurs passages."
+                  : "Ouvre un document et clique sur un passage.";
   }
   if(offerts.some(b=>b.cite) || R.compoFinie(S)) return "";
   // §4.5 — LE JOUEUR DÉCLARE CE QUI LES LIE (passe G) : la voix nomme le geste,
@@ -1281,14 +1275,16 @@ function majDebord(){
   for(const b of document.querySelectorAll("#contexte .bande"))
     b.classList.toggle("deborde", reste(b.querySelector(".defile")));
 }
-function ouvrirCONTEXTE(){ panneau="contexte"; panneauSuit=true; rendreTout(); }
+/* La voix mène aux documents (passe M, *auteur*) : elle dit « Ouvre un
+   document », et les montre — l'index se déplie, comme au bouton de pièces. */
+function ouvrirCONTEXTE(){ panneau="contexte"; panneauSuit=true; dossierPlie=false; rendreTout(); }
 /* Le bouton agrégé du message OUVRE le CONTEXTE, il ne le BASCULE pas (§4.6) :
    un second clic, sur un ancien message, ne doit pas refermer un CONTEXTE déjà
    ouvert. Sans `panneauSuit` — on vient CONSULTER, pas écrire — il ne se
    referme pas tout seul à la pose d'un passage. */
 function voirPiecesRecues(){
   panneau="contexte"; panneauSuit=false;
-  dossierPlie=false; dossierDeplie=true;   // on vient voir ce qu'on a reçu : l'index se déplie (§4.6)
+  dossierPlie=false;                       // on vient voir ce qu'on a reçu : l'index se déplie (§4.6)
   focusVoulu={ cle:"#titreCONTEXTE", zone:"#panCONTEXTE" };
   rendreTout();
 }

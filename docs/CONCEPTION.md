@@ -164,7 +164,12 @@ le prend, donc le marque. Fouiller y gagne un sens (§8.6 : *le joueur a le droi
 perdu*). **Uniforme toujours** : tous les passages se cachent pareil et se montrent pareil — ni lampe
 torche ni passe-droit, `bruit` compris. **Le texte d'un article est un passage comme un autre**
 (passe F, §4.5) : même bordure, même fond pris, même ✓ — mais, sans dimension, ni couleur ni
-trait ; il se souligne d'un trait neutre, et ses cadres de `porte` restent autour (§4.11).
+trait ; il se souligne d'un trait neutre. **Et il en a l'aspect** — retour de playtest (Jean, 8
+octobre) : *« rien dans l'objet ne suggère »* qu'on le prend en cliquant son texte. Les cadres
+épais de `porte` qui l'entouraient effaçaient sa bordure de passage, et tout le texte se lisait
+comme un bloc décoré, pas comme un passage : ils quittent le texte pour un **filet sous le titre**
+(§4.11), et le texte de l'article se présente comme n'importe quel passage d'une pièce — même
+bordure, même survol, même ✓.
 
 **Une bordure à peine visible, neutre et arrondie, SUGGÈRE qu'un passage se clique** — demande de
 l'auteur : nu, le texte ne disait plus où cliquer ; franche, elle le disait trop. Elle se devine plus
@@ -426,12 +431,13 @@ jamais ; dans ce qu'il lit, une seule frontière de registre subsiste, voulue : 
   le bouton ferme la bulle : on lit ce qu'il demande, puis on va chercher. La question reste un champ
   de l'**attente**, jamais du texte de la remise : c'est ce qui permet de la rappeler (§4.9 règle 3).
   Les questions suivantes, posées après une réponse, restent des messages à part.
-  **Le bouton sépare comme l'index** — retour de playtest (Jean) : le message annonçait *« 5 pièces
+  **Le bouton parle comme l'index** — retour de playtest (Jean) : le message annonçait *« 5 pièces
   disponibles »*, pièces et règles confondues, quand l'index disait *« 5 pièces, 3 règles »* pour le
-  dossier entier. Même chiffre, deux sens. Le bouton dit donc **les pièces et les articles à part**,
-  avec les mots des deux colonnes de l'index, et dès le deuxième envoi il dit **nouvelles** : le
-  message compte ce qu'il apporte. *Depuis la passe J, aucune remise ne livre d'article* : le
-  bouton ne compte plus que des pièces, et la seconde colonne de l'index se remplit des articles
+  dossier entier. Même chiffre, deux sens. Le bouton a donc séparé pièces et règles, puis dit
+  *nouvelles* dès le deuxième envoi. **Il dit désormais *« 2 documents ajoutés au DOSSIER »***
+  (passe M, *auteur*) : DOCUMENTS est le titre de l'index, pièces et articles confondus, et
+  *ajoutés* dit ce que le message apporte, à la première remise comme aux suivantes. *Depuis la
+  passe J, aucune remise ne livre d'article*, et la seconde colonne de l'index se remplit des articles
   trouvés : elle s'intitule donc *« Les articles »*, plus *« Les règles »* (passe L, *auteur*) — le
   mot que l'écran emploie partout ailleurs. **L'index, lui, ne compte plus** — demande de l'auteur : son
   en-tête ne dit que **DOCUMENTS** (DOSSIER jusqu'à la passe L, quand le panneau a pris ce nom), replié comme déplié ; ses deux colonnes se comptent à l'œil.
@@ -454,18 +460,20 @@ jamais ; dans ce qu'il lit, une seule frontière de registre subsiste, voulue : 
   - **L'index se REPLIE en une ligne** — *DOCUMENTS* — et il laisse ainsi la place au
     reste. Retour de playtest (Jean), puis de l'auteur : déplié, à huit pièces et une puce par
     ligne, il prenait la moitié du panneau ; la pièce n'y montrait plus que deux lignes, et sur un
-    téléphone plus rien. **Une bascule le replie ou le déplie à tout moment.** Une pièce ouverte le
-    replie d'elle-même ; on le déplie pour en choisir une autre, qui le replie à son tour ; la pièce
-    repliée, il revient à ce que le joueur avait choisi. **Le bouton de pièces du message le
-    déplie** : on vient voir ce qu'on a reçu. **Replier n'est pas juger** (§4.6) : ce sont des
+    téléphone plus rien. **Une bascule le replie ou le déplie à tout moment**, et **lui seul** :
+    une pièce ouverte ne le replie plus d'elle-même — retour de playtest (Jean, 8 octobre) :
+    *« Déplie tes DOCUMENTS »* lui a demandé un temps, l'index se repliant seul à chaque pièce
+    ouverte. Depuis la passe K, la pièce a toute la hauteur du panneau, et l'index n'est plus
+    qu'une rangée de puces : le laisser déplié coûte une ligne ou deux, le replier d'office coûtait
+    un geste et un nom de plus. Replié, il le reste parce que le joueur l'a voulu. **Le bouton de
+    pièces du message le déplie** : on vient voir ce qu'on a reçu. **Replier n'est pas juger** (§4.6) : ce sont des
     pièces, pas des passages, et rien n'en est retiré. Il ne colle pas (le PIÈGE ci-dessus), et
     reste l'ancre du tutoriel, replié ou non.
   - **Changer de pièce coûte un clic** — retour de playtest (Jean) : l'index replié, passer d'une
     pièce à l'autre en coûtait deux (déplier, choisir), dans un chapitre qui consiste à croiser huit
     documents. La tête de la pièce porte donc **‹ et ›**, la précédente et la suivante **dans l'ordre
     de l'index** (les pièces, puis les articles, en boucle) ; chacune se nomme à qui ne voit pas la
-    flèche. L'index reste replié : la place de lecture gagnée ne se reperd pas, et il reste là pour
-    sauter loin. Une rangée d'onglets a été écartée : huit titres entiers ne tiennent pas sur une
+    flèche. L'index reste comme il était, et il reste là pour sauter loin. Une rangée d'onglets a été écartée : huit titres entiers ne tiennent pas sur une
     ligne, et des titres abrégés referaient deux noms pour une pièce (ci-dessous).
   - **Une seule pièce à la fois** : un autre chip de l'index la remplace ; la croix de la pièce la
     replie ; refermer le DOSSIER la replie avec lui. Une pièce
@@ -503,9 +511,9 @@ jamais ; dans ce qu'il lit, une seule frontière de registre subsiste, voulue : 
   descend à son plancher (ci-dessous) et la conversation prend le
   reste. Un second clic rend la place. Seul le gabarit change, jamais un span (§17 ARCHITECTURE).
   C'est un état d'**écran**, comme le repli de l'index : jamais sauvé, et oublié dès que le
-  DOSSIER se referme. **Ouvrir une pièce depuis l'index rend la place au DOSSIER**, comme elle
-  replie l'index : lire une pièce dans un tiers, c'est le défaut que les deux tiers réparaient. **‹
-  et ›**, qui changent de pièce sans rien rouvrir, ne touchent ni à l'un ni à l'autre. La
+  DOSSIER se referme. **Ouvrir une pièce depuis l'index rend la place au DOSSIER** : lire une
+  pièce dans un tiers, c'est le défaut que les deux tiers réparaient. **‹ et ›**, qui changent de
+  pièce sans rien rouvrir, n'y touchent pas. La
   PLAIDOIRIE n'a pas de bascule : sa colonne est déjà étroite. *Arbitrages pris le 6 octobre pour
   avancer — à relire par l'auteur.*
 - **Mais « élastique » n'est pas « compressible à zéro », et L'ORDRE DANS LEQUEL LES BANDES CÈDENT
@@ -675,8 +683,9 @@ relations. Elle dit *clique* : elle nomme le geste que fait le joueur. Il ne dé
 la bulle nomme la pièce demandée, que la question nomme déjà. **Une pièce ouverte qui ne porte aucun
 passage attendu renvoie à l'index**, aux deux gestes — arbitré par l'auteur : la comparaison court
 sur deux pièces, et le premier passage posé, la pièce encore ouverte, le halo serait resté sur un
-texte où il n'y a plus rien à chercher. L'index replié — une pièce ouverte le replie —, le halo
-l'entoure tel quel et la bulle dit de le déplier : la zone, toujours, pas le bouton. *Il y avait un
+texte où il n'y a plus rien à chercher. L'index replié — par le joueur seulement, depuis le 8
+octobre —, le halo l'entoure tel quel et la bulle dit de le déplier : la zone, toujours, pas le
+bouton. *Il y avait un
 temps de plus, passes H à J : prendre aux retenus un passage retenu sans être dans la phrase ; il
 est parti avec eux (passe K).*
 
@@ -873,12 +882,13 @@ laissent se tromper.** La frontière est la **remise**, jamais le tutoriel — l
 (§3).
 
 1. **L'article se marque, il ne s'étiquette plus.** *« Ce texte porte sur : quand »* faisait le tri
-   dans la tête du joueur. Le texte de l'article est désormais **encadré, sans un mot**, de la couleur
-   de chaque dimension qu'il régit — celle de ses passages (§4.3) — et de son **trait**
-   (§4.3) : plein, double, pointillé, tirets, ondulé. Qui a appris le code le reconnaît ; qui ne l'a
+   dans la tête du joueur. L'article porte désormais, **sous son titre et sans un mot**, un filet de
+   la couleur de chaque dimension qu'il régit — celle de ses passages (§4.3) — et de son **trait**
+   (§4.3) : plein, double, pointillé, tirets, ondulé. *Le filet était un cadre autour du texte
+   jusqu'au 8 octobre : il effaçait la bordure qui dit que ce texte se prend (§4.3, Jean).* Qui a appris le code le reconnaît ; qui ne l'a
    pas appris lit l'article. Un rappel, plus une étiquette. Le trait double la couleur, si bien que
    rien ne s'y dit par la couleur seule (§4.10 règle 5) ; un article qui régit deux dimensions porte
-   **deux cadres**, l'un dans l'autre. À qui ne voit pas, le nom de la dimension, comme sur un
+   **deux filets**, côte à côte. À qui ne voit pas, le nom de la dimension, comme sur un
    passage. Le moteur ne lit toujours pas `porte` ; la recherche seule le lit, pour choisir ce
    qu'elle montre (§4.5, passe J). *Partout, session 1 comprise : c'est une
    forme, pas un garde-fou.*

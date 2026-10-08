@@ -13,6 +13,26 @@ sans une ligne de code. La source de chaque item, en fin de ligne : *Colas*, *Je
 dit « affaire 1 / affaire 2 » pour les sessions 1 et 2, « fiches » ou « notes » pour les passages
 retenus, « bulle » pour le bandeau du tutoriel.*
 
+## À trancher d'abord — la place de l'index déplié (passe M, 8 octobre)
+
+*Depuis la passe M, une pièce ouverte ne replie plus l'index (Jean, §4.6). Les captures de `npm run
+vue` montrent ce que le repli d'office évitait : à 1280×800, RECHERCHE affichée, l'index déplié, la
+recherche et l'article ne tiennent plus ensemble — l'article ne montre que son titre, il faut faire
+défiler le panneau d'un bloc (`19-1280-recherche-leurre.png`) ; à 390×800, la pièce ne montre que
+deux lignes sous l'index (`24-390-piece.png`). Deux pistes, non exclusives — proposées, pas
+tranchées. Document d'abord (§4.6).*
+
+- [ ] **Replier l'index d'office seulement quand la RECHERCHE est affichée** : c'est le seul moment où
+      trois blocs se disputent le panneau ; ailleurs, l'index reste déplié comme le veut la passe M.
+      À peser : c'est un repli d'office de plus, donc le « Déplie tes DOCUMENTS » que Jean trouvait
+      coûteux peut revenir, au moment de reprendre un article du dossier. *Proposition, le 8.*
+- [ ] **Les puces d'articles sur une ligne, d'un nom court** (*« Article 3 »*, le nom neutre des
+      résultats de recherche) plutôt que le titre entier : à quatre articles, la colonne *Les
+      articles* prend quatre lignes. À peser : le titre dit ce que l'article régit, et la recherche
+      s'interdit déjà de le montrer (§4.5) — l'index le montre-t-il, une fois l'article pris ? Et une
+      pièce ne porte qu'un nom (§4.6) : l'article en aurait deux, l'un dans l'index, l'autre en
+      tête de sa pièce. *Proposition, le 8.*
+
 ## 0. Le rapport du 6 octobre (Jean 4) — trois passes
 
 *Jean a joué trois parties (la sage jusqu'à la Fin 1, le piège statistique jusqu'à la Fin 3, une
@@ -421,6 +441,21 @@ session 1 en deux questions (§3, passe E) tient. Document d'abord (§3, §4.5, 
       l'atelier (inspecteur, frise). L'index intérieur, qui s'intitulait DOSSIER, devient
       **DOCUMENTS** (pièces et articles), sa colonne « Les règles » devient « Les articles ». L'historique des documents garde l'ancien nom. — *Fait le 8 : 647 contrôles,
       `npm run vue` relu.*
+
+**Passe M — le retour de Jean du 8 octobre.** *Document d'abord (§4.3, §4.6, §4.8, §4.11), puis
+l'écran.*
+
+- [x] **Les noms s'empilent, « Déplie tes DOCUMENTS » coûte un temps.** *Jean* — *Tranché par
+      l'auteur* : l'index ne se replie plus d'office à l'ouverture d'une pièce ; seul le joueur le
+      replie (`dossierDeplie` s'en va).
+- [x] **Changer de pièce : la bulle fait déplier l'index, et à deux pièces ‹ › mènent à la même.**
+      *Jean* — *L'auteur ne touche à rien* : la boucle reste. Le repli d'office parti, la bulle
+      montre un index déjà déplié.
+- [x] **Prendre un article = cliquer son texte, rien ne le suggère.** *Jean* — *Tranché par
+      l'auteur : harmoniser* — le texte de l'article a l'aspect d'un passage ; les cadres de `porte`
+      quittent le texte pour un filet sous le titre (§4.3, §4.11).
+- [x] **La voix dit « Ouvre un document et clique… » et déplie les DOCUMENTS ; le bouton de remise
+      dit « N documents ajoutés au DOSSIER ».** *auteur*, le 8 octobre.
 
 ## 1. Passe contenu — `app/content.js`, sans code
 

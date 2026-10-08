@@ -111,8 +111,9 @@ const poserLesDeux = (w, a, b) => { H.cliquer(w, a.id); H.cliquer(w, b.id); };
     /--dc:\s*#/.test(w2.document.querySelector("#composeur .bl.terme.pose").getAttribute("style") || ""));
 }
 {
-  // `porte` SE MARQUE, IL NE S'ÉTIQUETTE PLUS (§4.11) : un cadre par dimension,
-  // sa couleur et son trait — et son nom à qui ne voit pas.
+  // `porte` SE MARQUE, IL NE S'ÉTIQUETTE PLUS (§4.11) : un filet par dimension,
+  // sa couleur et son trait — et son nom à qui ne voit pas. Sous le titre, plus
+  // autour du texte (passe M) : le texte de l'article a l'aspect d'un passage.
   const w = boot();
   H.livrerTout(w);
   const regles = Object.keys(w.JEU.pieces).filter(p => w.R.estRegle(w.JEU.pieces[p]) && w.R.porteDe(p).length);
@@ -120,19 +121,20 @@ const poserLesDeux = (w, a, b) => { H.cliquer(w, a.id); H.cliquer(w, b.id); };
   for (const pid of regles) {
     w.ouvrirPiece(pid);
     const panneau = w.document.getElementById("panPiece");
-    const cadres = [...panneau.querySelectorAll(".cadre")];
+    const cadres = [...panneau.querySelectorAll(".porte .filet")];
     const porte = w.R.porteDe(pid);
-    ok = ok && cadres.length === porte.length && cadres.every((c, k) => {
+    ok = ok && !panneau.querySelector(".cadre") && !panneau.querySelector(".piecetexte .filet")
+      && cadres.length === porte.length && cadres.every((c, k) => {
       const st = c.getAttribute("style") || "";
       return st.includes(w.MoteurGrammaire.couleurDim(w.JEU.dimensions, porte[k]))
         && (/--ds:\s*\w+/.test(st));
     });
     sansMot = sansMot && !/porte sur :/i.test(panneau.textContent.replace(/Porte sur : [^.]*\./, ""));
-    // PIÈGE : `.cadre > .sr`, pas `.cadre .sr` — le texte de l'article est un
-    // passage (passe F), dont la voix dit « article » plus haut dans le cadre.
-    sr = sr && porte.every(d => (panneau.querySelector(".cadre > .sr") || {}).textContent.includes(d));
+    // PIÈGE : `.porte > .sr`, pas un `.sr` quelconque — le texte de l'article est
+    // un passage (passe F), dont la voix dit « article » dans son propre `.sr`.
+    sr = sr && porte.every(d => ((panneau.querySelector(".porte > .sr") || {}).textContent || "").includes(d));
   }
-  check("chaque article est encadré de la couleur de chaque dimension qu'il régit, et de son trait", ok);
+  check("chaque article porte, sous son titre, un filet de la couleur de chaque dimension qu'il régit, et de son trait — plus de cadre autour du texte", ok);
   check("sans un mot à l'écran : plus d'étiquette « porte sur »", sansMot);
   check("à qui ne voit pas, le nom des dimensions", sr);
 }
@@ -537,13 +539,19 @@ console.log("\n=== Les deux gestes, montrés ===");
   if (pA !== pB) {
     /* §4.8 — UNE PIÈCE QUI NE PORTE AUCUN PASSAGE ATTENDU RENVOIE À L'INDEX :
        le halo restait sur un texte où il n'y avait plus rien à chercher. */
-    check("la pièce ne porte plus rien d'attendu : le halo retourne à l'index, replié par la pièce",
-      !!halo() && halo().id === "zoneDossier" && /Déplie/.test(dit()) && !reduit());
-    check("et le tutoriel ne déplie rien à la place du joueur",
-      w.document.getElementById("dossierListe").hidden);
+    /* PASSE M — la pièce ne replie plus l'index (Jean) : il est resté déplié, et
+       la bulle nomme la pièce demandée sans faire déplier quoi que ce soit. */
+    check("la pièce ne porte plus rien d'attendu : le halo retourne à l'index, resté déplié (passe M)",
+      !!halo() && halo().id === "zoneDossier" && !/Déplie/.test(dit()) && !reduit()
+      && !w.document.getElementById("dossierListe").hidden);
+    check("et il dit d'ouvrir la pièce demandée — une consigne neuve, développée",
+      dit().includes(w.JEU.pieces[pB].titre));
+    // Replié par le joueur, l'index : la bulle dit de le déplier, et ne le déplie pas à sa place.
     w.basculerDossier();
-    check("déplié, il dit d'ouvrir la pièce demandée — une consigne neuve, développée",
-      halo().id === "zoneDossier" && dit().includes(w.JEU.pieces[pB].titre) && !reduit());
+    check("replié par le joueur, la bulle dit de le déplier — sans le déplier à sa place",
+      halo().id === "zoneDossier" && /Déplie tes DOCUMENTS/.test(dit())
+      && w.document.getElementById("dossierListe").hidden);
+    w.basculerDossier();
     w.ouvrirPiece(pB);
   } else check("(les deux passages dans la même pièce : le halo reste sur son texte)",
     !!halo() && halo().classList.contains("piecetexte"));
@@ -784,14 +792,19 @@ console.log("\n=== L'index se replie ===");
     !!d.getElementById("zoneDossier") && !!d.querySelector(`#dossierListe [data-f="d:${pA}"]`));
   w.basculerDossier();
 
+  /* PASSE M — UNE PIÈCE OUVERTE NE REPLIE PLUS L'INDEX (Jean) : « Déplie tes
+     DOCUMENTS » coûtait un geste et un nom. Seul le joueur le replie. */
   w.ouvrirPiece(pA);
-  check("une pièce ouverte le replie d'elle-même", replie());
-  w.basculerDossier();
-  check("un clic le déplie", deplie());
+  check("une pièce ouverte ne le replie pas : il reste déplié (passe M)", deplie());
   d.querySelector(`#contexte [data-f="d:${pB}"]`).click();
-  check("choisir une autre pièce la remplace — et replie l'index", w.S.modalPiece === pB && replie());
+  check("choisir une autre pièce la remplace — l'index toujours déplié", w.S.modalPiece === pB && deplie());
+  w.basculerDossier();
+  check("pièce ouverte, la bascule le replie, à la main", replie());
+  w.ouvrirPiece(pA);
+  check("et une autre pièce ouverte ne le déplie pas non plus : c'est le choix du joueur", replie());
   w.fermerPiece();
-  check("la pièce repliée, il revient au choix d'avant : déplié", deplie());
+  check("la pièce repliée, il reste comme le joueur l'a laissé", replie());
+  w.basculerDossier();
 
   w.basculerDossier(); w.fermerPanneau();
   w.voirPiecesRecues();
@@ -1047,8 +1060,13 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   check("la phrase attend un passage, donc la voix se clique aussi", !!bouton());
 
   /* LA VOIX — elle ouvre POUR ÉCRIRE, donc le panneau suivra la phrase. */
+  check("elle dit d'ouvrir un DOCUMENT, le mot de l'index (passe M)",
+    /^Ouvre un document et clique/.test(bouton().textContent.trim()));
+  w.basculerDossier();                    // l'index replié par le joueur…
   w.ouvrirCONTEXTE();
-  check("la voix ouvre le CONTEXTE", ouvert("CONTEXTE"));
+  check("la voix ouvre le DOSSIER", ouvert("CONTEXTE"));
+  check("…et la voix le déplie : elle mène aux documents (passe M)",
+    !w.document.getElementById("dossierListe").hidden);
 
   const veut = H.lienTag(w, attente().attend).termes[0];
   const [pid] = H.deK(veut);
@@ -1337,7 +1355,7 @@ console.log("\n=== Le jeu se joue au clavier ===");
     !/effacer/.test(b.textContent) && a.hidden && !!w.localStorage.getItem("iavocat_partie"));
 }
 
-console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
+console.log("\n=== Le DOSSIER dit son état (§4.6) ===");
 {
   // CHANGER DE PIÈCE COÛTE UN CLIC : ‹ et ›, dans l'ordre de l'index, en boucle.
   const w = boot(), d = w.document;
@@ -1350,6 +1368,7 @@ console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
   const chip = d.querySelector(`#contexte [data-f="d:${pid}"]`);
   chip.focus(); chip.click();
   const fl = c => d.querySelector(`#panPiece [data-f="${c}"]`);
+  const avantFleches = plie();
   const i0 = ordre.indexOf(pid), apres = ordre[(i0 + 1) % ordre.length];
   check("la tête de la pièce porte ‹ et ›, nommées par la pièce où elles mènent",
     ordre.length > 1 && !!fl("prec") && !!fl("suiv")
@@ -1360,8 +1379,8 @@ console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
      (pièces, puis règles trouvées) peut coïncider avec celui des remises. */
   check("› parcourt tout l'index dans son ordre, un clic par pièce",
     vues.join() === [...ordre.slice(i0), ...ordre.slice(0, i0)].join());
-  check("l'index reste replié, et le focus reste sur la flèche pour enchaîner",
-    plie() && cle() === "suiv");
+  check("l'index reste comme il était, et le focus reste sur la flèche pour enchaîner",
+    plie() === avantFleches && cle() === "suiv");
   fl("suiv").click();
   check("et boucle", w.S.modalPiece === pid);
   fl("prec").click();

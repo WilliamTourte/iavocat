@@ -6,7 +6,13 @@ ensuite. **Court, et il doit le rester.** État au 8 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 647 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 650 contrôles, 8 règles du gardien, ESLint.
+
+**Le 8 octobre, passe M : le retour de Jean.** L'index ne se replie plus d'office quand une pièce
+s'ouvre — *« Déplie tes DOCUMENTS »* coûtait un temps et un nom (§4.6) ; ‹ › restent en boucle,
+choix de l'auteur. Le texte d'un article a l'aspect d'un passage : les cadres de `porte` quittent le
+texte pour un filet sous le titre (§4.3, §4.11). Et, de l'auteur : la voix dit *« Ouvre un document
+et clique… »* et déplie l'index ; le bouton de remise dit *« 2 documents ajoutés au DOSSIER »*.
 
 **Le 8 octobre, passe L : le CONTEXTE s'appelle DOSSIER.** Les retenus partis, le panneau ne porte
 plus que des documents, et prend leur nom (§4.6, *auteur*) ; son index, qui s'intitulait DOSSIER,
@@ -481,17 +487,17 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   démarrage était du code mort, retiré le 6 octobre.
 - **L'index se replie, mais `#zoneDossier` reste là** (§4.6) : c'est une ancre du tutoriel (R6), et
   le halo doit pouvoir l'entourer replié. Les puces restent dans le DOM, sous `hidden` — le motif
-  *disclosure* standard, et `data-f="d:pid"` survit pour le retour du focus. **Deux** états d'ÉCRAN,
-  comme `panneau`, jamais sauvés : `dossierPlie` (le choix du joueur sans pièce) et `dossierDeplie`
-  (celui du temps d'une pièce, remis à faux par `ouvrirPiece`) — un seul ferait oublier, à la pièce
-  repliée, ce que le joueur avait choisi avant. `voirPiecesRecues` déplie les deux.
+  *disclosure* standard, et `data-f="d:pid"` survit pour le retour du focus. **Un seul** état
+  d'ÉCRAN, comme `panneau`, jamais sauvé : `dossierPlie`, le choix du joueur — une pièce ouverte n'y
+  touche plus (Jean, 8 octobre, §4.6) ; `dossierDeplie`, qui le doublait le temps d'une pièce, est
+  parti. `voirPiecesRecues` le déplie.
 - **La juxtaposition n'entre jamais dans la boucle de `deduire`** (§11) : déclarée en tête des
   formes, elle passerait pour une *différence* entre deux passages de même dimension. Le contenu
   livré la déclare en dernier et ne le verrait pas — un contrôle la remonte exprès. Et le diagnostic
   ne la compte pas comme une forme qui compare (*« sans forme déductible »*).
 - **La bascule DISCUSSION est un troisième état d'ÉCRAN** (`discussionAgrandie`), jamais sauvé, qui
   n'existe que DOSSIER ouvert : `majLateral` l'oublie dès que `panneau` n'est plus `"contexte"`, et
-  `ouvrirPiece` le remet à faux, comme `dossierDeplie` — ‹ › (`voisine`) n'y touchent pas. Elle ne
+  `ouvrirPiece` le remet à faux — ‹ › (`voisine`) n'y touchent pas. Elle ne
   change que le **gabarit** (`.wrap.discussionAgrandie`), jamais un span. L'en-tête est réécrit à
   chaque rendu (`enteteDISCUSSION`) : le bouton porte sa clé, `data-f="discussion"`.
 - **Pièce ouverte, `#contexte` porte une bande défilante de plus** (`.defile[id]`, `#piece`) :
@@ -1039,3 +1045,8 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
 - **8 octobre, passe L** (§4.6, §17) — le CONTEXTE s'appelle **DOSSIER** à l'écran, son index
   **DOCUMENTS** (*auteur* : il tient les pièces et les articles) ; le code garde `contexte`. Une vingtaine de chaînes, l'atelier (inspecteur, frise), et
   un contrôle qui veut qu'aucun mot de CONTEXTE ne reste à l'écran, vu tomber. 647 contrôles.
+- **8 octobre, passe M** (§4.3, §4.6, §4.8, §4.11) — le retour de Jean : `dossierDeplie` s'en va,
+  l'index ne se replie plus qu'à la main ; `cadresPorte` devient `filetsPorte`, un filet sous le
+  titre, et le texte de l'article a l'aspect d'un passage. Deux mutations, les contrôles neufs vus
+  tomber. Puis la voix (« Ouvre un document », l'index déplié) et le bouton de remise (« N documents
+  ajoutés au DOSSIER »). 650 contrôles.
