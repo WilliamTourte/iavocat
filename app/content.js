@@ -1139,8 +1139,8 @@ window.CONTENU = {
       "…"
     ],
     "rep_relation_fausse": [
-      "Non. Ce n'est pas ce que disent ces deux passages — relis-les.",
-      "Encore non. Ce que tu leur fais dire, ils ne le disent pas.",
+      "Non, ça n'a pas de sens. Ce n'est pas ce que disent ces deux passages — relis-les.",
+      "Tu hallucines. Ce que tu leur fais dire, ils ne le disent pas.",
       "…"
     ],
     "rep_hors_sujet": [

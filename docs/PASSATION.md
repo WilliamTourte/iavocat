@@ -13,13 +13,15 @@ l'affaire ADN : même client, même calibration, une relation unique *cohérent 
 toutes les dimensions, trois remises, et des aveux en garde à vue qui sont à la fois la preuve
 (l'IA *sait*) et le vice (recueillis sans l'avocat demandé). Il est posé tel quel, avec l'idée d'un
 suicide-vengeance ajoutée le même jour, comme **base de réflexion** dans `docs/CAS_MEDICAMENTS.md`,
-suivi d'une proposition d'intégration et de huit questions ⚖. Le point dur : la vérité d'une
-relation ne se tire plus des valeurs, l'auteur la déclare — **dans une liste à part**, tranché le
-jour même, avec le mot (*concordent / ne concordent pas*), le lien 6 envoyé (Auber refuse de
-l'entendre) et le suicide-vengeance (une liaison soupçonnée, dans la lettre ; l'aveu dit la
-compote) ; quatre questions restent ouvertes. Un essai jetable du moteur,
-hors du dépôt, en a mesuré le prix : +23 lignes, 654 contrôles sur 655. **CONCEPTION et le code
-n'ont pas bougé.**
+suivi d'une proposition d'intégration. Le point dur : la vérité d'une relation ne se tire plus des
+valeurs, l'auteur la déclare. Un essai jetable du moteur, hors du dépôt, en a mesuré le prix : +23
+lignes, 654 contrôles sur 655. **Tranché le jour même** par l'auteur, cinq questions sur huit : le
+verdict vit dans une liste à part ; le mot est *concordent / ne concordent pas* ; une relation
+fausse, Auber la refuse tout de suite ; le lien 6 envoyé, il refuse de l'entendre ; le
+suicide-vengeance tient à une liaison soupçonnée dans la lettre, et tombe devant l'aveu, qui dit la
+compote. Restent la dimension du faux vice, le mobile, la charge. **CONCEPTION, le moteur et les
+règles n'ont pas bougé** ; seules deux répliques de la relation fausse sont passées au contenu du
+jour (*« Non, ça n'a pas de sens… »*, *« Tu hallucines… »*).
 
 **Le 8 octobre, relecture du glossaire (§17)** après les passes I à M. Le §17 perd `recuAvant`,
 gagne DOCUMENTS et la règle **pièce ou document** (*auteur* : *pièce* quand c'en est une, *document*

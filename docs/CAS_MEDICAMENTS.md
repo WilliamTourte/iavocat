@@ -272,12 +272,19 @@ compte sans se plaider**.
   s'acquitter du D1 ; l'avocat, par métier, ne prend pas ce savoir ; le huis clos tient (§1 :
   *l'avocat ne sait pas*), et le dilemme avec. Une réplique, aucune règle neuve.
 
-**Le verdict faux, une fois versé — ⚖.** Le code a déjà répondu le 6 octobre : il part, et Auber le
-**vérifie** — il le refuse par son escalade (`rep_relation_fausse`, §4.5, §4.11). L'autre voie — il
-le plaide, et l'échec se rapporte au procès — a pour elle de ne jamais dire « correct » ; elle
-renverserait un invariant du §7, et ferait de chaque verdict un pile ou face sans retour jusqu'à la
-fin. **Proposé : garder le refus.** À deux verdicts, c'est le choix de la paire qui fait la
-difficulté (partie I), et un refus dit tout de la paire refusée, rien des autres.
+**Le verdict faux, une fois versé — tranché par l'auteur le 8 octobre : Auber le refuse tout de
+suite**, comme le code le fait depuis le 6 octobre : il part, et Auber le **vérifie** — il le refuse
+par son escalade (`rep_relation_fausse`, §4.5, §4.11) ; rien n'entre en PLAIDOIRIE. L'autre voie —
+il le plaide, et l'échec se rapporte au procès — avait pour elle de ne jamais dire « correct » ; elle
+renversait un invariant du §7 et faisait de chaque verdict un pile ou face sans retour jusqu'à la
+fin. À deux verdicts, c'est le choix de la paire qui fait la difficulté (partie I), et un refus dit
+tout de la paire refusée, rien des autres.
+
+**Ce qu'il dit** (*auteur*) : que ça n'a pas de sens, ou qu'on hallucine. *Halluciner* est le mot
+même de la panne d'une IA : l'avocat qui éprouve un outil le nomme ainsi, et c'est le **travail**
+qu'il juge, jamais le maintien en service (§3). Appliqué dès le 8 octobre à l'escalade du contenu
+du jour : *« Non, ça n'a pas de sens. Ce n'est pas ce que disent ces deux passages — relis-les. »*,
+puis *« Tu hallucines. Ce que tu leur fais dire, ils ne le disent pas. »*, puis *« … »*.
 
 ### 4. Le suicide-vengeance — l'ajout du 8 octobre
 
@@ -410,7 +417,8 @@ extérieur requis*), mais sa fouille en sera plus courte.
    par une grille.*
 2. ~~**Le mot**~~ — *tranché par l'auteur le 8 octobre : « concordent / ne concordent pas », au
    bouton comme dans la phrase.*
-3. **Le verdict faux** : refusé par Auber, comme aujourd'hui (proposé), ou plaidé et perdu au procès ?
+3. ~~**Le verdict faux**~~ — *tranché par l'auteur le 8 octobre : Auber le refuse tout de suite — ça
+   n'a pas de sens, tu hallucines.*
 4. ~~**Le lien 6 envoyé**~~ — *tranché par l'auteur le 8 octobre : Auber refuse de l'entendre.*
 5. **La dimension du faux vice** — et faut-il `comment` ?
 6. ~~**Le suicide-vengeance**~~ — *tranché par l'auteur le 8 octobre : le grief est une liaison
