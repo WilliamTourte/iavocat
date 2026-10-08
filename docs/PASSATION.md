@@ -8,6 +8,16 @@ ensuite. **Court, et il doit le rester.** État au 8 octobre 2026.*
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
 clavier seul**. `npm test` est vert — 655 contrôles, 8 règles du gardien, ESLint.
 
+**Le 8 octobre, le cas médicaments — à trancher, rien n'est codé.** Un document de l'auteur remplace
+l'affaire ADN : même client, même calibration, une relation unique *cohérent / pas cohérent* pour
+toutes les dimensions, trois remises, et des aveux en garde à vue qui sont à la fois la preuve
+(l'IA *sait*) et le vice (recueillis sans l'avocat demandé). Il est posé tel quel, avec l'idée d'un
+suicide-vengeance ajoutée le même jour, comme **base de réflexion** dans `docs/CAS_MEDICAMENTS.md`,
+suivi d'une proposition d'intégration et de huit questions ⚖. Le point dur : la vérité d'une
+relation ne se tire plus des valeurs, l'auteur la déclare. Un essai jetable du moteur, hors du
+dépôt, en a mesuré le prix : +23 lignes, 654 contrôles sur 655. **CONCEPTION et le code n'ont pas
+bougé.**
+
 **Le 8 octobre, relecture du glossaire (§17)** après les passes I à M. Le §17 perd `recuAvant`,
 gagne DOCUMENTS et la règle **pièce ou document** (*auteur* : *pièce* quand c'en est une, *document*
 quand ce peut être un article — ‹ › et la croix disent désormais *« Document suivant »*, *« Replier le
@@ -825,6 +835,10 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   phrase (§4.5).*
 
 ## 4. Prochaine étape
+
+**Le cas médicaments attend d'être tranché** (`docs/CAS_MEDICAMENTS.md`, partie II, ses questions) —
+document d'abord, puis la mécanique sur l'affaire ADN, puis le cas. Ce qui suit se joue sur
+l'affaire du jour et reste utile : la boucle ne change pas, seule la relation change.
 
 **La prochaine session porte sur le SENS, et la seule façon de la commencer est de jouer** — la
 précédente l'a prouvé : une partie rapportée geste par geste a valu plus que trois passes de
