@@ -397,7 +397,8 @@ extérieur requis*), mais sa fouille en sera plus courte.
     **La couleur porte donc seule la distinction**, et la sixième de la palette est un **gris**,
     quand le texte d'un article se souligne d'un trait **neutre** (§4.3) : à mesurer contre sa
     voisine de trait et contre le neutre, sous les trois daltonismes, comme le reste de la palette
-    (`moteur.js`) — ou à changer. Le nom de la dimension reste dit au lecteur d'écran.
+    (`moteur.js`) — ou à changer. Le nom de la dimension reste dit au lecteur d'écran. Précisé
+    par l'auteur : **les cinq traits restent, en sécurité** — seule `comment` n'a pas le sien.
 - **Les verrous — *la charge* tranchée par l'auteur le 8 octobre : la notification des droits la
   porte** (*« placé en garde à vue pour des faits d'empoisonnement »*). Proposé pour le reste : en
   remise 2, *la cause du décès* (citer la toxicologie) ; en remise 3, *la charge* (citer la
@@ -423,7 +424,8 @@ extérieur requis*), mais sa fouille en sera plus courte.
 
 1. ~~**Trancher** les ⚖ avec l'auteur~~ — *fait le 8 octobre : les huit questions (ci-dessous).*
 2. **Le document** : réécrire au besoin §2, §3, §4.1, §4.2, §4.4, §4.5, §4.7, §6, §7, §8, puis §11,
-   §14, §15, §16 — et le faire relire.
+   §14, §15, §16 — et le faire relire. *Écrit le 8 octobre — avec aussi §1, §4.3, §4.10, §4.11, §5,
+   §12 et §17 —, les marques [N] et [O] pour ce que le code ne fait pas encore : à relire.*
 3. **La mécanique, sur l'affaire ADN encore** : la famille « cohérence », la liste des
    incohérences, la grille et le diagnostic dans l'atelier, le lien nu et le drapeau du savoir ;
    les suites suivent, chaque contrôle neuf vu tomber. L'affaire ADN convertie sert de banc —

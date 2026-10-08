@@ -8,7 +8,7 @@ ensuite. **Court, et il doit le rester.** État au 8 octobre 2026.*
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
 clavier seul**. `npm test` est vert — 655 contrôles, 8 règles du gardien, ESLint.
 
-**Le 8 octobre, le cas médicaments — tranché, rien n'est codé.** Un document de l'auteur remplace
+**Le 8 octobre, le cas médicaments — tranché, écrit au document, rien n'est codé.** Un document de l'auteur remplace
 l'affaire ADN : même client, même calibration, une relation unique *cohérent / pas cohérent* pour
 toutes les dimensions, trois remises, et des aveux en garde à vue qui sont à la fois la preuve
 (l'IA *sait*) et le vice (recueillis sans l'avocat demandé). Il est posé tel quel, avec l'idée d'un
@@ -22,8 +22,10 @@ suicide-vengeance tient à une liaison soupçonnée dans la lettre, et tombe dev
 compote ; le faux vice vit en `comment`, la sixième dimension, sans trait à elle — la couleur seule
 l'y distingue, une exception assumée au §4.10 ; le mobile reste ambigu ; la notification des droits
 porte la charge.
-**CONCEPTION, le moteur et les règles n'ont pas bougé** ; seules deux répliques de la relation
-fausse sont passées au contenu du jour (*« Non, ça n'a pas de sens… »*, *« Tu hallucines… »*).
+Deux répliques de la relation fausse sont passées au contenu du jour (*« Non, ça n'a pas de
+sens… »*, *« Tu hallucines… »*). **Puis le document** : CONCEPTION et ARCHITECTURE réécrits pour le
+cas, les marques [N] et [O] sur ce que le code ne fait pas encore — **à relire par l'auteur**. Le
+moteur et les règles n'ont pas bougé.
 
 **Le 8 octobre, relecture du glossaire (§17)** après les passes I à M. Le §17 perd `recuAvant`,
 gagne DOCUMENTS et la règle **pièce ou document** (*auteur* : *pièce* quand c'en est une, *document*
@@ -843,10 +845,12 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 
 ## 4. Prochaine étape
 
-**Le cas médicaments est tranché ; vient le document** (`docs/CAS_MEDICAMENTS.md`, partie II,
-*L'ordre de travail*) : réécrire CONCEPTION et ARCHITECTURE avec ce qui est décidé, le faire
-relire, puis la mécanique sur l'affaire ADN, puis le cas. Ce qui suit se joue sur l'affaire du jour
-et reste utile : la boucle ne change pas, seule la relation change.
+**Le cas médicaments est écrit au document, à relire avant le code.** CONCEPTION et ARCHITECTURE
+disent l'état visé ; **[N]** y marque la passe N — la relation unique, *concordent / ne concordent
+pas*, la liste `discordances`, le lien nu, le savoir, la grille de l'atelier —, à coder d'abord sur
+l'affaire ADN ; **[O]**, la passe O — le cas lui-même, écrit dans l'atelier (`docs/CAS_MEDICAMENTS.md`,
+partie II, *L'ordre de travail*). Ce qui suit se joue sur l'affaire du jour et reste utile : la boucle
+ne change pas, seule la relation change.
 
 **La prochaine session porte sur le SENS, et la seule façon de la commencer est de jouer** — la
 précédente l'a prouvé : une partie rapportée geste par geste a valu plus que trois passes de

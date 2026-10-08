@@ -615,8 +615,9 @@ lourd.*
 
 - [ ] **Le nouveau scénario** : le cas médicaments, posé comme base de réflexion dans
       `docs/CAS_MEDICAMENTS.md`, avec une proposition d'intégration ; ses huit questions ⚖ sont
-      tranchées. Prochain geste : réécrire CONCEPTION et ARCHITECTURE, les faire relire, puis la
-      mécanique, puis le cas (partie II, *L'ordre de travail*). *auteur*, le 8 octobre.
+      tranchées, et CONCEPTION et ARCHITECTURE réécrits (marques [N] et [O]). Prochain geste :
+      **les relire**, puis la passe N — la mécanique, sur l'affaire ADN —, puis la passe O — le
+      cas (partie II, *L'ordre de travail*). *auteur*, le 8 octobre.
 - [ ] **Scénario à choix moraux / alignement** (l'IA dissimulerait-elle un vice de procédure ?).
 - [ ] **Chain of thought** : une phase « nuit » après « Maître Auber s'est déconnecté », où l'IA se
       parle à elle-même, support des choix moraux.

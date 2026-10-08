@@ -3,6 +3,10 @@
 *Comment le jeu est fait, où vit la vérité, où vit quoi. Le sens arbitre et il est ailleurs :
 `docs/CONCEPTION.md` (§1 à §8). L'état du jour : `docs/PASSATION.md`.*
 
+*Les marques **[N]** et **[O]** sont celles de CONCEPTION (son en-tête) : ce qui ne vaut qu'avec la
+passe N — la relation unique, *concordent / ne concordent pas* — ou la passe O — le cas médicaments.
+Sans marque, le code le fait déjà.*
+
 ## 9. Le rangement
 
 **La règle :** *le contenu ne contient aucune règle, les règles ne contiennent aucun contenu,
@@ -71,6 +75,7 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
 {
   schema: 3,
   dimensions: ["quand","qui","où","quoi","combien"],       // ordre d'affichage ; la couleur en découle
+                                                            //   — et "comment", sixième, dans le cas [O]
   pieces: {
     p_pv: {
       titre, court, type, resume,                           // `resume` : atelier seulement
@@ -92,14 +97,16 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
     }
   },
   grammaire: { depart:"S0", finaux:["FIN"], blocs:[…], formes:{…} },
-  liens: [ { forme, termes:["p_f.e_a", …], tag?, vice?, conclusion?, faux?, rep? } ],
+  liens: [ { forme, termes:["p_f.e_a", …], tag?, vice?, conclusion?, faux?, rep?,
+             savoir? } ],                                  // [N] un lien NU : rep, jamais tag
+  discordances: [ ["pid.eid","pid.eid"], … ],               // [N] ce qui ne concorde pas — le reste concorde
   remises: [ { qui, texte, pieces:[…],                     // des pièces : un article se cherche (passe J)
                attentes:[ { question?, attend:"tag", apres?:{ qui, replique } } ] } ],
   repetition: { intro, affirmations:[{court, texte, repond?:["tag"], oppose?}], fin },
   avocat: { rep_vice, rep_faux, rep_inutile:[…], rep_sans_rapport:[…], rep_hors_sujet:[…],
             rep_relation_fausse:[…], rep_deux_dossiers, deja, rep_a_cote },
   directives: […], avis_exploitation,                       // écrits, non lus par le jeu — voir §5
-  fins: {1:{…},2:{…},3:{…}}
+  fins: {1:{…},2:{…},3:{…}}                                 // texte, variante_faux, variante_sait [N]
 }
 ```
 
@@ -123,7 +130,8 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   texte du bouton, quand le composeur en fait un ; une liaison-article n'en a plus, son résultat de
   recherche porte le `nom` de son passage) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa
   pièce).
-- **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`, `"juxtaposition"`) · `sens` (`"asc"` par
+- **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`, `"juxtaposition"`, et
+  `"concordance"`, `"discordance"` [N]) · `sens` (`"asc"` par
   défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8) ·
   `libelle`, le bouton qui la **choisit** au composeur (*« précède »*, *« une seule et même
   personne »*) ; absent, le `patron` avec ses deux termes en points de suspension.
@@ -140,6 +148,27 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   valeurs d'une dimension partagent un format : une `hh:mm` à côté d'une date ISO se comparerait
   de travers, et rien ne le dirait. Et **la pièce écrit la date que porte la valeur** — un joueur
   qui lit *14h02* doit savoir de quel jour ; l'année, que personne ne lit, ne sert qu'au tri.
+- **Les deux relations du cas** [N] (§4.2, §4.5) : deux formes, `deduction:"concordance"` et
+  `"discordance"`, patrons *« {a} et {b} concordent »* / *« {a} et {b} ne concordent pas »* — un
+  verbe au pluriel, qui ne s'accorde jamais (§8.8) —, libellés les mêmes verbes. **Leurs slots
+  nomment les dimensions en toutes lettres, jamais `"*"`** : l'essai du 8 octobre l'a montré, deux
+  contrôles lisent un slot comme une liste, et une dimension neuve doit rester sans forme tant qu'on
+  ne l'y ajoute pas. `deduire` rend la discordance si la paire est dans `discordances`, la
+  concordance sinon ; `relationsDe` range la concordance du côté de l'égalité. Les formes d'avant
+  restent : un contenu emploie les unes ou les autres.
+- **`discordances`** [N] : des paires `"pid.eid"`, sans ordre — **le dossier déclare ses discordances,
+  tout le reste concorde**. Clé optionnelle : sans elle, rien ne discorde ; un contenu d'avant n'a pas
+  à la porter — ni schéma 4, ni migration. Les renommages la suivent comme les liens
+  (`reecrireTermes`). Une paire y est de même dimension et ne nomme jamais un passage d'article (le
+  diagnostic, §15). **Une liste à part, pas les liens** — arbitré par l'auteur le 8 octobre :
+  l'essai écrivait le verdict dans les liens, et changer la relation d'un lien y changeait le fait
+  sans que rien le dise ; à part, un lien qui la contredit est faux, et le diagnostic le voit.
+- **Le lien nu** [N] (§4.5) : une comparaison sans article, d'arité 2. Il porte `rep`, **jamais
+  `tag`** : il se reconnaît, il n'est jamais un moyen (`estMoyen`). Sa forme dit la vraie relation,
+  comme celle de tout lien.
+- **`savoir`** [N] (§4.7), sur un lien — nu, d'ordinaire : sa comparaison composée, la vraie relation
+  choisie, lève `S.sait` à l'assemblage (`pressentir`) ; `finir` ajoute alors `variante_sait` au
+  texte de la fin, comme `variante_faux`. Aucun autre effet.
 - **Attribut d'un empan** : `bruit` — *leurre assumé*, que le diagnostic cesse de signaler comme
   inerte (§15). Il vit **sur l'empan** : il suit les renommages et meurt avec lui, et l'atelier n'en
   tient aucune liste à côté. Une telle liste a existé (`_bruit`), que l'export jetait ; `migrerContenu`
@@ -172,7 +201,7 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   `rep_sans_rapport`, nue comme sous un article. Elle n'entre jamais dans la boucle de `deduire` :
   déclarée plus haut, elle passerait pour une *différence* entre deux passages de même dimension.
 - **Une relation fausse** (passe G) : la `forme` d'une comparaison n'est pas celle que donnent les
-  valeurs (`deduire`). Elle part ; l'avocat y répond par `rep_relation_fausse`, une escalade comme
+  valeurs — ou, pour les deux relations du cas, `discordances` [N] (`deduire`). Elle part ; l'avocat y répond par `rep_relation_fausse`, une escalade comme
   les autres, son compteur remis à zéro à chaque remise (§4.11). Aucun lien ne la porte — un lien
   dont la relation serait fausse ne se formerait jamais, et le diagnostic le dit (§15).
 - **Une affirmation trie** (§4.6) : `repond` liste les tags des liens qui la réfutent — opposer une
@@ -180,7 +209,9 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   une autre reçoit `rep_a_cote` et reste où elle était. **Sans `repond`, l'affirmation prend tout**
   — l'ancienne conduite, qu'on ne retire pas (ci-dessous) ; `repond:[]` n'en prend aucune.
 - **Un terme** est `"pid.eid"` ou un `{forme, termes}` imbriqué. Le moteur ne lit aucun nom de
-  dimension : ajouter `comment` est un geste d'atelier.
+  dimension : ajouter `comment` est un geste d'atelier — celui du cas [O]. **Il n'y a pas de sixième
+  trait** (§4.3) : `traitDim` tourne sur cinq, et `comment` partage le trait de la première
+  dimension ; sa couleur seule l'en distingue.
 - **Migration 2 → 3** (`migrerContenu()`, silencieuse) : `champs` → `empans`, marqueurs posés, liens par
   paires → `{forme, termes}`, accusé migré sur la **première attente**. Elle **n'invente aucune
   attente** (sans `attend`, la session bloquerait pour toujours) ; **le jeu ne migre pas**.
@@ -193,7 +224,7 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 
 | Nature | Source |
 |---|---|
-| **Le contenu** (pièces, empans, dimensions, grammaire, liens, sessions, répliques, fins) | `app/content.js` |
+| **Le contenu** (pièces, empans, dimensions, grammaire, liens, discordances [N], sessions, répliques, fins) | `app/content.js` |
 | **Les règles** (sessions, drapeaux, PLAIDOIRIE, répétition, fins) | `app/regles.js` |
 | **La grammaire** et les **projections** (§14) | `app/moteur.js` |
 | **Le sens** (invariants, arbitrages) | `docs/CONCEPTION.md` — le diagnostic n'en encode qu'un extrait |
@@ -223,7 +254,7 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 
 ## 14. Le moteur
 
-`creerMoteur(GRAMMAIRE, CHAMPS, LIENS)` est **pur, sans données** — `valider`, `reduire`, `lienDe`,
+`creerMoteur(GRAMMAIRE, CHAMPS, LIENS)` — et `DISCORDANCES` [N] — est **pur, sans données** — `valider`, `reduire`, `lienDe`,
 `rendre`, `squelettes`… — chargé tel quel par le jeu, l'atelier et le banc d'essai.
 
 - **Accumuler, pas écraser** : `reduire(ch)` empile les termes en retenant la forme courante ; à un bloc
@@ -231,7 +262,8 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 - **La vérification** tient sur `comparer` (numérique quand les deux valeurs le sont, `hh:mm` compris ;
   lexicographique sinon — c'est par là qu'une date ISO se trie, §11), `deduire` (la relation
   **vraie**, ou — sur dimensions différentes — la juxtaposition si le contenu en déclare une, sinon
-  `null`, §4.11), `ordonner`, `relationsDe` (les deux relations qu'on offre pour une dimension) et
+  `null`, §4.11 ; pour les deux relations du cas, la paire lue dans `discordances` [N]), `ordonner`,
+  `relationsDe` (les deux relations qu'on offre pour une dimension) et
   `fausse` (une comparaison, emboîtée ou non, dont la forme n'est pas la vraie). Depuis la passe G,
   `deduire` ne rédige plus : il sert d'**oracle** — le joueur choisit, le moteur vérifie (§4.5).
 - **Rétrocompatibilité** : sans `deduit`, `deduction` ni `patron`, `reduire` et `rendre` se comportent
@@ -274,7 +306,16 @@ d'article par règle, et aucun ailleurs ; une liaison dont l'article n'a pas de 
 s'offrirait jamais** (passe F) —, le vice, les sessions — plus, depuis la passe J, **la recherche** :
 une dimension comparée qui rend moins de trois articles, un lien attendu dont l'article ne sortirait
 pas de la recherche sur sa paire (la session serait inclôturable), un terme qui porte une
-pièce-règle.
+pièce-règle. **À la passe N** : une discordance de deux dimensions, ou qui nomme un passage inconnu
+ou un article ; un lien dont la relation contredit `discordances` — la relation fausse, qui lit
+désormais la liste ; un lien nu qui porte un tag ; un `savoir` sous un article, ou sans réplique ;
+et **la discordance banale** (§4.4) — un vice qui ne concorde pas sans deux discordances innocentes
+dans sa dimension —, à côté du doublon banal, qui reste pour un vice qui est une identité.
+
+**La grille** [N] — un reflet de plus, et c'est aussi un éditeur : un onglet de l'atelier, une grille
+par dimension, chaque paire de même dimension avec sa relation — `deduire`, **appelé**, jamais
+recopié (§12) — et une case qui écrit `discordances`. C'est l'éditeur de la liste, et la relecture
+qu'elle exige : une discordance juste que le dossier tairait serait refusée par l'avocat (§8).
 
 - **« Forme indicible »** : une forme existe de **trois façons** — déclarée par une liaison, choisie à
   un bloc `relation`, ou déduite par un bloc `deduit` ; celle-là n'est nommée par aucun bloc.
@@ -297,6 +338,15 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
 | `test_sauvegarde.js` (41) | la partie survit au rechargement, **composition assemblée et non envoyée comprise**, **l'article trouvé au dossier compris** ; la signature jette une sauvegarde étrangère ; **une partie d'avant la passe K se reprend sans `S.retenus`, ses articles d'avant la passe J au dossier** |
 | `smoke_atelier.js` (115) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet — **la recherche comprise : un article qu'elle ne rend pas sur la paire attendue** (passe J) —, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
+- **Ce que la passe N touchera** [N] — mesuré par l'essai du 8 octobre, l'affaire ADN convertie
+  (égalité → concordent, différence ou ordre → ne concordent pas) : 654 contrôles sur 655, gardien et
+  ESLint verts. `smoke_atelier` fabrique une relation fausse en changeant la forme d'un lien, et
+  attend que le diagnostic la voie : il la verra contre la liste. `test_o5` — *« aucune comparaison
+  ne se dit nue »* — devient *« aucune comparaison nue n'est un moyen »*. `test_parcours` — *« la
+  relation vraie se calcule des valeurs »* — se dit sur le dossier, et son contrôle de l'égalité
+  dans les dimensions d'écart **passe par le vide** sans forme d'ordre : à réécrire, pas à garder
+  vert. Les contrôles neufs — la discordance déclarée, la concordance par défaut, le lien nu,
+  `sait` et sa variante, la grille — chacun vu tomber.
 - **Le contrat de lecture : `w.R.x(w.S)`** — une suite *lit* les règles ; elle *agit* par les **gestes**
   de la fenêtre, parce qu'eux redessinent.
 - **ET ELLE NE MARCHE QUE LES PORTES DU JOUEUR.** Lire une règle est gratuit ; en **appeler** une que
@@ -436,6 +486,8 @@ s'appelle encore `surligner` : c'est le surlignage du §4.3. **Un article se che
 | **terme** | un empan (ou un lien imbriqué) **une fois posé** : un rôle, pas un objet |
 | **bloc** / **liaison** / **lien** | la transition offerte par l'automate (les deux premiers mots sont interchangeables) / le triplet `{forme, termes}` **reconnu** : le lien est le résultat, la liaison le geste |
 | **forme** | le patron grammatical d'une comparaison (`deduction`, `sens`, `patron`) |
+| **discordance** / **concordance** [N] | une paire que le dossier déclare (`discordances`) / toute autre paire de même dimension ; à l'écran, *ne concordent pas* / *concordent* — jamais *cohérent*, qui s'accorde |
+| **lien nu** / **`savoir`** [N] | un lien d'arité 2, sans article, qui porte une réplique et jamais un tag / l'attribut de lien qui lève `S.sait` |
 | **attente** / **remise** | `{question?, attend, apres?}` / un envoi de pièces avec sa liste — « session » est le mot du sens |
 | **`S.plaidoirie`** / **`S.fil`** | ce qui est entré au plan / le journal affiché — *`S.retenus`, les empans surlignés, est parti à la passe K ; une partie d'avant le perd à la reprise* |
 
