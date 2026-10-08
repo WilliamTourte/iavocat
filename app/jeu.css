@@ -50,8 +50,9 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
    ZÉRO devant `#composeur`, qui est `flex:none`. À deux passages retenus, un
    joueur ne voyait plus que le haut d'une fiche ; la réponse grandissant, la
    zone disparaissait. Or le panneau EST le clavier (§4.6) : le vider pendant
-   qu'on écrit retire le clavier au milieu du geste. D'où un PLANCHER qui montre
-   deux fiches entières — c'est au composeur de défiler, il sait le faire. */
+   qu'on écrit retire le clavier au milieu du geste. D'où un PLANCHER — il
+   montrait deux fiches entières ; depuis la passe K, quelques lignes de la
+   pièce — c'est au composeur de défiler, il sait le faire. */
 .panneau{flex:0 1 auto;max-height:40vh;min-height:268px}
 /* UN PANNEAU QUI DÉBORDE LE DIT. PIÈGE MESURÉ, deux fois : la barre du système
    est SUPERPOSÉE — 0 px de large, effacée au repos —, et ni `scrollbar-width`
@@ -71,18 +72,17 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 .panneau .body::-webkit-scrollbar-thumb:hover{background:#5a6b7a}
 /* PIÈGE PAYÉ : `#zoneDossier` a été rendu COLLANT pour qu'il ne parte pas hors
    champ — il a occupé le panneau en permanence, et à trois lignes il en mangeait
-   la moitié, par-dessus les fiches. Il défile avec elles. Ce qu'il devait
-   réparer l'est autrement : le défilement survit au redessin (`garderDefilement`)
-   et le panneau s'ouvre sur le dernier passage retenu (`voirDernierRetenu`). */
+   la moitié, par-dessus les fiches d'alors. Il défile avec le reste. Ce qu'il
+   devait réparer l'est autrement : le défilement survit au redessin
+   (`garderDefilement`), et l'index se replie (§4.6). */
 /* PIÈGE : `.col` pose `display:flex`, qui BAT `[hidden]{display:none}` — sans
    cette ligne, cacher la PLAIDOIRIE ne ferait rien. */
 .col[hidden]{display:none}
 /* §4.6 — LA PIÈCE S'OUVRE DANS LE CONTEXTE. Le panneau cesse alors de défiler
    d'un bloc : l'index en tête, puis DEUX BANDES qui défilent chacune pour son
-   compte — la pièce, les retenus —, pour qu'une longue pièce ne pousse jamais
-   les retenus hors du panneau, ni dix-sept fiches la pièce. Si le panneau est
-   trop bas pour les planchers des deux bandes (un téléphone), il redéfile d'un
-   bloc plutôt que de rogner : c'est le rôle de l'`overflow-y` restant. */
+   compte — la pièce, seule depuis la passe K. Si le panneau est trop bas pour
+   son plancher (un téléphone), il redéfile d'un bloc plutôt que de rogner :
+   c'est le rôle de l'`overflow-y` restant. */
 #contexte.avecPiece{display:flex;flex-direction:column;gap:10px}
 #contexte.avecPiece > #zoneDossier,#contexte.avecPiece > #zoneRecherche{flex:none;margin:0}
 /* Replié, l'index n'est plus qu'une ligne : DOSSIER, sans compte (§4.6). */
@@ -96,15 +96,9 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 .dossier[hidden]{display:none}
 #contexte .bande{position:relative;display:flex;flex-direction:column;min-height:0}
 #contexte .bande > .defile{flex:1 1 auto;min-height:0;overflow-y:auto}
-/* LA PIÈCE PREND LA HAUTEUR DE SON TEXTE, LES RETENUS TOUT LE RESTE (§4.6) : une
-   pièce courte laissait du papier vide pendant que les retenus, plafonnés,
-   défilaient dessous. La pièce part de sa taille (`flex-basis:auto`) jusqu'à un
-   plafond de 70 % — au-delà, elle défile ; les retenus partent de zéro et
-   prennent ce qui reste, plancher compris : à dix-sept fiches, ce sont EUX qui
-   défilent, jamais la pièce qui disparaît. */
-#contexte .bande.piece{flex:0 1 auto;max-height:70%;min-height:170px;border:1px solid var(--filet);border-radius:8px;overflow:hidden}
-#contexte .bande.retenus{flex:1 1 0;min-height:84px}
-#contexte .bande.retenus #zoneRetenus{margin:0}
+/* LA PIÈCE PREND TOUTE LA HAUTEUR QUI RESTE SOUS L'INDEX (§4.6, passe K) : elle
+   la partageait avec les retenus, plafonnée à 70 %. Seul son texte défile. */
+#contexte .bande.piece{flex:1 1 auto;min-height:170px;border:1px solid var(--filet);border-radius:8px;overflow:hidden}
 .bande.piece .ptete{flex:none;display:flex;align-items:center;gap:8px;padding:7px 10px 7px 14px;
   border-bottom:1px solid var(--filet)}
 .bande.piece .defile{padding:8px 14px 12px}
@@ -163,8 +157,8 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
   .wrap.avecLateral .panneau{grid-area:lateral;min-width:0;min-height:0;max-height:none}
   .wrap.avecLateral #composeur{grid-area:composeur}
   .wrap.avecLateral .cloture{grid-area:cloture}
-  /* LE CONTEXTE PREND LES DEUX TIERS (§4.6, demande de l'auteur) : index, pièce
-     et retenus se lisaient à l'étroit dans un tiers. La conversation garde le
+  /* LE CONTEXTE PREND LES DEUX TIERS (§4.6, demande de l'auteur) : index et
+     pièce se lisaient à l'étroit dans un tiers. La conversation garde le
      tiers restant, et la question avec elle ; la PLAIDOIRIE, une liste, garde
      sa colonne étroite. Seul le gabarit change, jamais un span. */
   .wrap.avecLateral.avecCONTEXTE{grid-template-columns: minmax(0,1fr) minmax(0,2fr)}
@@ -172,8 +166,8 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
      deux colonnes échangent leurs parts. Seul le gabarit change, jamais un span. */
   .wrap.avecLateral.avecCONTEXTE.discussionAgrandie{grid-template-columns: minmax(0,2fr) minmax(0,1fr)}
 }
-/* En dessous du seuil, le panneau descend à son PLANCHER — deux fiches entières,
-   il reste le clavier — et la conversation, seule bande élastique, prend le reste. */
+/* En dessous du seuil, le panneau descend à son PLANCHER — il reste le
+   clavier — et la conversation, seule bande élastique, prend le reste. */
 @media (max-width:899.98px){
   .wrap.discussionAgrandie .panneau{max-height:268px}
   .wrap.discussionAgrandie .panneau.avecPiece{max-height:320px}
@@ -214,16 +208,6 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
   padding:5px 12px;cursor:pointer}
 .versSurface:hover{background:#2b4259}
 .versSurface.ouvert{background:var(--accent);border-color:var(--accent);color:#0e1116}
-/* §4.3 — un passage vient d'arriver : la porte s'allume UNE fois, là où il est
-   allé. Le compte, lui, a changé de toute façon — l'animation n'est qu'un renfort. */
-.versSurface.recoit{animation:recoit .9s ease-out 1}
-@keyframes recoit{0%{box-shadow:0 0 0 0 var(--accent)}100%{box-shadow:0 0 0 10px transparent}}
-@media (prefers-reduced-motion:reduce){ .versSurface.recoit{animation:none} }
-/* La fiche qui vient d'arriver s'allume UNE fois, sous la pièce — c'est là que le
-   passage est allé, et c'est là qu'on va le prendre (§4.3). */
-.mchip.neuf{animation:neuf 1.4s ease-out 1}
-@keyframes neuf{0%{box-shadow:0 0 0 2px var(--accent);background:#20384b}100%{box-shadow:0 0 0 2px transparent}}
-@media (prefers-reduced-motion:reduce){ .mchip.neuf{animation:none;box-shadow:0 0 0 2px var(--accent)} }
 /* --- canal --- */
 .msg{margin-bottom:10px;display:flex;flex-direction:column;align-items:flex-start}
 .msg.ia{align-items:flex-end}
@@ -241,11 +225,11 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 .attach:hover{border-color:var(--accent)}
 /* --- zones --- */
 .zone{margin-bottom:12px}
-#zoneDossier,#zoneRecherche,#zoneRetenus{border:1px solid var(--line);border-radius:8px;
+#zoneDossier,#zoneRecherche{border:1px solid var(--line);border-radius:8px;
   background:var(--panel2);padding:10px 12px;margin-bottom:12px}
-/* L'index PARTAGE le panneau avec les fiches, il n'en est pas le sujet : à huit
-   pièces il en mangeait la moitié. Il se resserre — les fiches sont ce qu'on
-   vient chercher quand on écrit. */
+/* L'index PARTAGE le panneau avec la pièce, il n'en est pas le sujet : à huit
+   pièces il en mangeait la moitié. Il se resserre — la pièce est ce qu'on
+   vient lire quand on écrit. */
 #zoneDossier{padding:7px 10px;margin-bottom:9px}
 .zone .ztitle{font-size:14px;font-weight:600;color:var(--muted);
   margin-bottom:8px;padding:4px 0 6px;display:flex;align-items:center;gap:8px}
@@ -272,7 +256,8 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
 /* §4.3 — LE MARQUAGE NE SE MONTRE QU'AU SURVOL OU AU CLIC (demande de l'auteur) :
    le texte se lit nu ; un passage se souligne et prend son fond quand on passe
    dessus ou qu'on l'atteint au clavier (`:focus-visible`, §4.10 règle 1), et
-   garde sa marque une fois retenu — au toucher, c'est le clic qui la pose. La
+   garde sa marque tant qu'il est dans la RÉPONSE (passe K) — au toucher, c'est
+   le clic qui la pose. La
    décoration reste POSÉE, seulement transparente : rien ne bouge au survol.
    Uniforme toujours : tous les passages se cachent et se montrent pareil. */
 .empan{text-decoration-line:underline;text-decoration-style:var(--ds,solid);
@@ -284,43 +269,6 @@ kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid v
   background:color-mix(in srgb, var(--dc,#888) 18%, transparent)}
 .empan.pris{text-decoration-color:var(--dc,var(--muted));
   background:color-mix(in srgb, var(--dc,#888) 32%, transparent);text-decoration-thickness:3px}
-/* --- contexte : une seule liste, qui sert AUSSI de clavier au composeur --- */
-.dimgrp{margin-bottom:9px}
-.dimgrp .dnom{font-size:12px;color:var(--dc,var(--muted));text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
-/* §4.5 : le CONTEXTE s'assombrit PAR DIMENSION — par la couleur, plus par une
-   transparence qui éteignait le contraste (§4.10 règle 5). */
-.dimgrp.horsdim .dnom{color:var(--muted)}
-.dimgrp.horsdim .mchip{border-left-color:var(--line);background:#181e27}
-.dimgrp.horsdim .mchip .corps{color:var(--muted)}
-.mchip{display:flex;align-items:stretch;margin:3px 0;background:var(--panel2);
-  border:1px solid var(--line);border-left:3px solid var(--dc,var(--line));border-radius:6px;overflow:hidden}
-.mchip:hover{border-color:var(--accent)}
-/* PIÈGE : sans `min-width:0`, un item de flex refuse de rétrécir sous son
-   contenu — la citation pousserait la puce hors du cadre. */
-.mchip .corps{flex:1;min-width:0;text-align:left;background:none;border:none;color:var(--txt);
-  padding:6px 9px;cursor:pointer;font:inherit;font-size:13.5px;line-height:1.4}
-.mchip .corps:disabled,.mchip .corps[aria-disabled="true"]{cursor:default;color:var(--muted)}
-/* §4.6 — le CONTEXTE dit l'état de la phrase : ce qu'on y a pris s'ÉCRIT (§4.10
-   règle 5), et la raison d'un refus se lit en clair, au-dessus des fiches. */
-.mchip.pris{border-color:var(--accent)}
-.mchip .dansPhrase{margin-left:8px;padding:0 6px;border:1px solid var(--accent);border-radius:4px;
-  font-size:12px;font-style:normal;color:var(--accent);white-space:nowrap}
-/* Elle COLLE en tête de ce qui défile : touchée au bas de dix fiches, la fiche
-   refusée amène la bande à elle, et la raison partait hors champ. Une ligne, et
-   seulement phrase pleine — pas l'index collant qui mangeait le panneau (§4.6). */
-.raison{position:sticky;top:0;z-index:1;margin:0 0 8px;padding:6px 10px;border-left:3px solid var(--muted);
-  background:var(--panel2);color:var(--txt);font-size:13px}
-.raison.rappelle{border-left-color:var(--warn)}
-.mchip .nom{display:block}
-.mchip .prov{display:flex;align-items:baseline;gap:6px;margin-top:2px}
-.mchip .cit{flex:1;min-width:0;font-size:12.5px;color:var(--muted);font-style:italic;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mchip .sig{flex:none;font-size:12px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
-.mchip .del{background:none;border:none;border-left:1px solid var(--line);color:var(--muted);
-  font:inherit;font-size:12.5px;min-width:34px;padding:0 10px;cursor:pointer;align-self:stretch}
-.mchip .del:hover{color:#e6b0b0}
-/* La puce rogne ce qui déborde (`overflow:hidden`) : l'anneau passe DEDANS. */
-.mchip .corps:focus-visible,.mchip .del:focus-visible{box-shadow:inset 0 0 0 2px #e6edf3}
 /* §4.6 — LA RECHERCHE, sous l'index (passe J) : trois entrées, le nom neutre et
    le début du texte ; ni couleur ni trait de dimension — elle ne se dit pas. La
    marque de ce qui fonde, celle de `.bbloc.fondement`, sur le bord. */
@@ -461,7 +409,7 @@ code{font-family:var(--mono);color:var(--accent)}
 .bande.piece .empan.pris{text-decoration-color:var(--dcp);background:color-mix(in srgb, var(--dcp) 26%, transparent)}
 /* §4.3 / §4.10 règle 5 — l'état s'ÉCRIT : un ✓ en exposant, HORS DU FLUX, pour que
    le texte autour ne bouge pas. Le texte alternatif vide le tait au lecteur
-   d'écran, qui a déjà « retenu » dans le `.sr` du passage. */
+   d'écran, qui a déjà « dans ta RÉPONSE » dans le `.sr` du passage. */
 .bande.piece .empan.pris{position:relative}
 .bande.piece .empan.pris::after{content:"✓" / "";position:absolute;top:-.95em;right:-.35em;
   font-family:var(--sans);font-size:13px;font-weight:700;line-height:1;color:var(--dcp)}
@@ -494,9 +442,9 @@ code{font-family:var(--mono);color:var(--accent)}
   background:#ebe4d4;color:var(--encre);font-family:var(--sans);font-size:14px}
 /* PIÈGE PAYÉ (le 4 octobre, le temps d'une passe) : la ligne a été COLLÉE au bas
    de la pièce pour rester sous les yeux — dans la bande étroite du CONTEXTE,
-   elle couvrait le texte même qu'on venait de cliquer. Elle reste dans le flux ;
-   ce qui se voit à coup sûr, c'est la fiche neuve juste dessous (`.mchip.neuf`). */
-.bande.piece .rappel.retenu{border-left-color:#3d6b3f;background:#e3ead8}
+   elle couvrait le texte même qu'on venait de cliquer. Elle reste dans le flux,
+   et `voirEcho` la ramène dans le champ. */
+.bande.piece .rappel.confirme{border-left-color:#3d6b3f;background:#e3ead8}
 /* Le papier n'emprunte pas la barre de défilement SOMBRE des deux autres
    panneaux (§4.6), ni leur dégradé de débordement foncé pour le CHROME. */
 .bande.piece .defile::-webkit-scrollbar-track{background:#e8e1d0}

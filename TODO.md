@@ -395,6 +395,33 @@ session 1 en deux questions (§3, passe E) tient. Document d'abord (§3, §4.5, 
     `npm run vue` : `article-a-chercher`, `recherche`, `recherche-leurre`. **Reste** : réécrire les
     leurres, et jouer (§3 et §4 de `docs/PASSATION.md`).
 
+## 0 quater. Les retours de l'auteur (8 octobre) — passe K
+
+**Passe K — plus de passages retenus ; le tutoriel montre « → Envoyer ».** *Document d'abord (§4.3,
+§4.6, §4.8, §4.11 ; §16 et §17), relu par l'auteur, puis le code, `npm test` et `npm run vue`.*
+
+- [x] **Arrêter la notion de « passages retenus ».** *« On clique sur les passages pour les mettre
+      dans la RÉPONSE, et c'est tout. On ne garde que la notion de DOSSIER. »* *auteur* — les fiches,
+      `S.retenus`, *retenir* et *oublier* s'en vont ; le clic pose, ou la ligne sous la pièce dit
+      pourquoi il ne pose pas ; la pièce prend toute la hauteur du CONTEXTE sous l'index ; la
+      reprise d'une partie d'avant laisse tomber le champ (ses articles passent au dossier).
+- [x] **Entourer « → Envoyer » dans le tutoriel**, une fois le bon passage posé (la question sur
+      l'identité du rédacteur), et à la fin de la comparaison. *auteur* — renverse *« il se tait là
+      où l'écran parle seul »* pour l'envoi (§4.8).
+- [x] **Au passage** : `npm test` était rouge depuis `da63f26` (« ✓ Ajouté à ta RÉPONSE.. », deux
+      contrôles de `test_parcours`). — *Fait le 8, document relu par l'auteur puis code : 646
+      contrôles, `npm run vue` relu (captures *piece-pris*, *comparaison*). Reste à jouer : §4
+      ci-dessous.*
+
+**Passe L — le CONTEXTE s'appelle DOSSIER.** *auteur*, le 8 octobre. *Document d'abord (§4.6,
+§17), puis l'écran ; le code garde `contexte`.*
+
+- [x] **Renommer le panneau** : CONTEXTE → DOSSIER partout où le joueur lit ou entend — titre,
+      porte de la barre, croix, bouton de pièces du message, tutoriel, voix, annonces — et
+      l'atelier (inspecteur, frise). L'index intérieur, qui s'intitulait DOSSIER, devient
+      **DOCUMENTS** (pièces et articles), sa colonne « Les règles » devient « Les articles ». L'historique des documents garde l'ancien nom. — *Fait le 8 : 647 contrôles,
+      `npm run vue` relu.*
+
 ## 1. Passe contenu — `app/content.js`, sans code
 
 *Une vérification commune : `npm run vue`, puis la relecture à l'œil des phrases composées.*
@@ -454,13 +481,16 @@ opposé, et la réplique `fin` devenue une question).*
 
 ## 4. Séance de jeu — sans code, mais il faut des joueurs et un téléphone
 
-**La passe H — le clic dans la pièce retient et prend** (§4.6, *auteur*, codée le 6 octobre)
+**Les passes H et K — le clic dans la pièce prend** (§4.6, *auteur*, codées le 6 et le 8 octobre)
 
 - [ ] **Des phrases involontaires ?** Qui rassemble en lisant voit ses deux premiers clics former une
       phrase — en session 2, souvent une juxtaposition. Le joueur le voit-il, et défait-il sans
       peine (*« ← retirer »*, *« tout effacer »*) ? *auteur*
-- [ ] **Les fiches se découvrent-elles** quand on en a besoin — après un *« ← retirer »*, ou pour
-      essayer des paires de `qui` ? Le tutoriel ne les montre plus sur le chemin direct. *auteur*
+- [ ] **Sans fiches, essayer des paires lasse-t-il ?** Depuis la passe K, essayer des paires de
+      `qui` se fait en rouvrant les pièces (‹ ›, un clic). *auteur* — *« Les fiches se
+      découvrent-elles » est sans objet.*
+- [ ] **La bulle sur « → Envoyer »** aide-t-elle, ou dit-elle trop que la phrase est la bonne ?
+      *auteur*
 
 **Avant, seul, avec `npm run vue`**
 
@@ -472,14 +502,14 @@ opposé, et la réplique `fin` devenue une question).*
 **Sur un vrai téléphone** — jamais joué : ni Jean ni Colas n'ont testé le mobile.
 
 - [ ] **La pièce reste à l'étroit** : à 390×800 le panneau entier ne fait que 353 px, la pièce n'y
-      montre que deux lignes, et le panneau redéfile d'un bloc. *Arbitré par l'auteur : le CONTEXTE y
-      reste entre la conversation et le composeur* — ni retenus repliés, ni pièce en pleine hauteur.
-      *Jean 1*
+      montre que deux lignes, et le panneau redéfile d'un bloc. *Arbitré par l'auteur : le DOSSIER y
+      reste entre la conversation et le composeur* — ni pièce en pleine hauteur. *Depuis la passe K,
+      plus de retenus : la pièce a tout le panneau sous l'index.* *Jean 1*
 - [ ] **La bulle ancrée**, à côté d'une zone longue (le texte de la pièce) : couvre-t-elle ce qu'on
       vient chercher ? Jouée seulement dans Chromium, 1280×800 et 390×800.
 - [ ] **Le code couleur au toucher** : sans légende ni survol, comprend-on ce que couleur et trait
-      veulent dire ? On ne les voit qu'une fois le passage retenu, rangé sous le nom de sa dimension.
-      *auteur*
+      veulent dire ? On ne les voit qu'une fois le passage pris — et depuis la passe K, le nom de la
+      dimension ne se lit plus qu'au survol, que le toucher n'a pas. *auteur*
 
 **En rendant la partie à Colas**, qui s'est proposé pour tester la suite
 
@@ -487,13 +517,13 @@ opposé, et la réplique `fin` devenue une question).*
 - [ ] La question se lit-elle **avant** les pièces ? Colas ouvrait les pièces sans avoir lu la question
       placée dessous. *Depuis, la remise porte sa question en un seul message, le bouton de pièces
       après elle (§4.6)* — à confirmer.
-- [ ] La première consigne (« Ouvre ton CONTEXTE », une bulle à côté du bouton de pièces) est-elle
-      encore trop abrupte sans contexte ?
+- [ ] La première consigne (« Ouvre ton DOSSIER », une bulle à côté du bouton de pièces) est-elle
+      encore trop abrupte sans explication ?
 - [ ] La colonne latérale (≥ 900 px) : ordre de tabulation en L, poids visuel du deux-colonnes.
 - [ ] Ce que personne n'a encore touché : « ⟲ recommencer ». *La croix × est réglée (Jean 3 l'a
-      confirmée) : la fiche dit « oublier », la croix du CONTEXTE perd Échap pièce ouverte — à
+      confirmée) : la fiche dit « oublier », la croix du DOSSIER perd Échap pièce ouverte — à
       confirmer avec lui.*
-- [ ] Le CONTEXTE qui reste ouvert d'un envoi à l'autre (même remise) : soulage-t-il, ou
+- [ ] Le DOSSIER qui reste ouvert d'un envoi à l'autre (même remise) : soulage-t-il, ou
       encombre-t-il la lecture de la réplique ? *Jean 3*
 
 **Jean, session 3** — la suite du vrai dossier
@@ -534,12 +564,11 @@ lourd.*
 
 ## 6. Plus tard — après validation de la boucle de base
 
-**Le CONTEXTE élargi**
+**Le DOSSIER élargi**
 
 - [ ] **Retenir hors des pièces** : des passages des messages de l'avocat, et des infos qui ne
       viennent pas que de lui. *(S'appelait « RAG » ; le mot désigne désormais la recherche
       d'articles, passe J.)*
-- [ ] **Regrouper les passages retenus en clusters** (idée d'un ami).
 - [ ] **Des articles qui portent sur deux dimensions à la fois**, et des paires qui les croisent :
       *où* et *qui* — un article sur « le lieu du crime » et « le technicien ». Aujourd'hui deux
       dimensions différentes se juxtaposent sans relation (§4.11), et la recherche ne lit que celle

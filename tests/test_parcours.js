@@ -13,15 +13,13 @@ console.log("\n=== Le composeur, bloc par bloc ===");
   check("l'état de départ offre au moins un bloc", w.R.blocsOfferts(w.S).length > 0);
   const emp = w.CHAMPS.filter(c => c.dim === w.CHAMPS[0].dim).slice(0, 2);
   for (const pid of new Set(emp.map(e => e.pid))) w.ouvrirPiece(pid);
-  for (const e of emp) H.surligner(w, e.id);
-  const iT = H.iTermeChamp(w);
-  w.poserBloc(iT, 0);
+  H.cliquer(w, emp[0].id);
   check("poser un terme fait avancer l'automate", w.S.compo.length === 1);
   check("l'état a changé", w.R.etatCompo(w.S) !== w.JEU.grammaire.depart);
   w.retirerBloc();
   check("← retirer revient en arrière", w.S.compo.length === 0);
   check("et l'état repart du départ", w.R.etatCompo(w.S) === w.JEU.grammaire.depart);
-  w.poserBloc(iT, 0);
+  H.cliquer(w, emp[0].id);
   w.viderCompo();
   check("tout effacer vide la phrase", w.S.compo.length === 0 && !w.S.refus);
 }
@@ -33,13 +31,9 @@ function deuxDimensions(w) {
   for (const pid of livrees) w.ouvrirPiece(pid);
   const dispo = w.CHAMPS.filter(c => livrees.has(c.pid));
   const a = dispo[0], b = dispo.find(c => c.dim !== a.dim);
-  H.surligner(w, a.id); H.surligner(w, b.id);
   return [a, b];
 }
-const poserLesDeux = (w, a, b) => {
-  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(a.id));
-  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(b.id));
-};
+const poserLesDeux = (w, a, b) => { H.cliquer(w, a.id); H.cliquer(w, b.id); };
 {
   const w = boot();                   // la remise 1 : la calibration
   const [a, b] = deuxDimensions(w);
@@ -100,19 +94,19 @@ const poserLesDeux = (w, a, b) => {
     paires.length > 0 && paires.every(([x, y]) => w.M.deduire(x, y) !== nom));
 }
 {
-  // L'ASSOMBRISSEMENT ANNONÇAIT LE REFUS D'ÉCRAN : il vit avec lui (§4.11).
-  const dims = w => [...w.document.querySelectorAll("#zoneRetenus .dimgrp")];
+  // L'ASSOMBRISSEMENT VIVAIT SUR LES FICHES, ET EST PARTI AVEC ELLES (passe K,
+  // §4.11) : la pièce, elle, ne s'assombrit jamais — même en session 1.
   const w = boot();
   const [a] = deuxDimensions(w);
-  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(a.id));
-  check("en session 1, pendant une comparaison, les autres dimensions s'assombrissent",
-    dims(w).some(g => g.classList.contains("horsdim")));
+  w.ouvrirPiece(a.pid);
+  H.cliquer(w, a.id);
+  check("en session 1, pendant une comparaison, rien ne s'assombrit — ni la pièce, ni le CONTEXTE",
+    w.S.compo.length === 1 && !w.document.querySelector(".horsdim")
+    && ![...w.document.querySelectorAll("#panPiece .empan")].some(e => e.hasAttribute("aria-disabled")));
   const w2 = boot();
   H.livrerTout(w2);
   const [a2] = deuxDimensions(w2);
-  w2.poserBloc(H.iTermeChamp(w2), w2.S.retenus.indexOf(a2.id));
-  check("hors session 1, plus rien ne s'assombrit",
-    dims(w2).length > 1 && !dims(w2).some(g => g.classList.contains("horsdim")));
+  H.cliquer(w2, a2.id);
   check("et le premier passage posé garde sa couleur au composeur",
     /--dc:\s*#/.test(w2.document.querySelector("#composeur .bl.terme.pose").getAttribute("style") || ""));
 }
@@ -150,9 +144,7 @@ console.log("\n=== Le joueur choisit la relation, le moteur la vérifie (§4.5, 
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
   const L = H.lienConclusion(w), sous = H.sousTerme(L);
   const [a, b] = sous.termes;
-  H.surligner(w, a); H.surligner(w, b);
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, a));
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, b));
+  H.cliquer(w, a); H.cliquer(w, b);
   const rels = w.R.relationsOffertes(w.S);
   check("deux passages de même dimension posés : le composeur offre les deux relations de la dimension",
     rels.length === 2 && rels.includes(sous.forme)
@@ -177,8 +169,7 @@ console.log("\n=== Le joueur choisit la relation, le moteur la vérifie (§4.5, 
   check("les autres escalades n'ont pas bougé", w.S.incompris === 0 && w.S.inutiles === 0 && w.S.hors_sujet === 0);
   // La VRAIE, choisie, lève le pressentiment (§4.7) — au choix, pas à la pose.
   w.viderCompo();
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, a));
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, b));
+  H.cliquer(w, a); H.cliquer(w, b);
   check("reposés, les deux passages ne pressentent toujours rien", !w.S.vice_pressenti);
   w.poserBloc(w.R.blocsOfferts(w.S).findIndex(x => x.type === "relation"), rels.indexOf(sous.forme));
   check("la vraie relation choisie, le vice est pressenti", w.S.vice_pressenti && !w.S.vice_trouve);
@@ -314,9 +305,7 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
 
   const L = cits[0];
   for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
-  H.surligner(w, L.termes[0]);
-  const iT = H.iTermeChamp(w);
-  w.poserBloc(iT, w.S.retenus.indexOf(L.termes[0]));
+  H.cliquer(w, L.termes[0]);
   check("un seul empan posé, la phrase se tient déjà", w.S.compo.length === 1);
   check("et elle s'envoie telle quelle", w.R.peutEnvoyer(w.S));
   const imp = w.R.clotureImplicite(w.S);
@@ -366,8 +355,7 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
     check("et rien ne contraint encore un empan qu'on n'a pas posé",
       w.R.dimAttendue(w.S) === null);
     const e = w.CHAMPS[0];
-    H.surligner(w, e.id);
-    w.poserBloc(H.iTermeChamp(w), 0);
+    H.cliquer(w, e.id);
     check("un empan posé, le second est offert — et pour tous, sans préférence",
       w.R.blocsOfferts(w.S).some(b => w.R.estSecondTerme(b)));
     check("la citation est là à côté : deux voies, pas une bascule",
@@ -389,8 +377,7 @@ console.log("\n=== Un fait se cite, une relation se fonde ===");
       for (const pid of Object.keys(w2.JEU.pieces)) w2.ouvrirPiece(pid);
       check("pièce repoussée, la comparaison ne se voit pas non plus à l'avance",
         !w2.R.comparaisonPossible(w2.S));
-      H.surligner(w2, w2.CHAMPS[0].id);
-      w2.poserBloc(H.iTermeChamp(w2), 0);
+      H.cliquer(w2, w2.CHAMPS[0].id);
       check("pièce repoussée, aucun second empan n'est offert",
         !w2.R.blocsOfferts(w2.S).some(b => w2.R.estSecondTerme(b)));
       check("seule la citation reste, et elle suffit à envoyer",
@@ -449,6 +436,9 @@ console.log("\n=== Les deux gestes, montrés ===");
   const dansDISCUSSION = el => !!el && w.document.getElementById("discussion").contains(el);
   const termes = () => w.S.compo.map(p => p.valeur).filter(v => w.CHAMPS.some(c => c.id === v));
   const retirer = () => w.document.querySelector('#composeur [data-f="retirer"]');
+  const envoi = () => w.document.querySelector('#composeur [data-f="envoi"]');
+  const dit = () => w.document.getElementById("tutoDit").textContent;
+  const reduit = () => bandeau().hasAttribute("data-reduit");
 
   /* §4.8 — il se tait là où l'écran parle seul : le message finit sur le bouton
      de pièces. Il commence au CONTEXTE ouvert. */
@@ -466,49 +456,51 @@ console.log("\n=== Les deux gestes, montrés ===");
     ![...cible.querySelectorAll(".empan")].some(e => e.hasAttribute("data-tuto")));
   // PIÈGE : la forme développée (`ditLong`) et la forme courte (`dit`, l'étiquette
   // de l'icône réduite) sont deux textes — une mutation de l'une passait l'autre.
-  check("et il dit de CLIQUER le passage, développé comme réduit : le clic retient et pose (passe H)",
+  check("et il dit de CLIQUER le passage, développé comme réduit : le clic pose (passes H et K)",
     /Clique/.test(w.document.getElementById("tutoDit").textContent)
     && /Clique/.test(w.document.getElementById("tutoIcone").getAttribute("aria-label") || ""));
 
-  /* PASSE H — LE CLIC PREND : un passage à côté ne reste plus au CONTEXTE, il
-     entre dans la phrase. Le halo va d'abord à « ← retirer ». */
+  /* PASSES H ET K — LE CLIC PREND : un passage à côté entre dans la phrase. Le
+     halo va d'abord à « ← retirer ». */
   const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
   const autre = H.empansDe(w, pid).find(k => k !== veut);
-  H.retenir(w, autre);
-  check("un autre passage se retient tout de même — et le clic l'a pris",
-    w.S.retenus.includes(autre) && termes().join() === autre);
+  H.cliquer(w, autre);
+  check("un autre passage cliqué entre dans la phrase", termes().join() === autre);
   check("mais le tutoriel ne prend pas ça pour une réponse",
-    bandeau().hasAttribute("data-alerte") && !bandeau().hasAttribute("data-reduit"));
+    bandeau().hasAttribute("data-alerte") && !reduit());
   check("et il montre « ← retirer », le geste qui défait, au composeur",
     !!halo() && halo() === retirer());
   check("sans jamais désigner celui qu'il fallait",
     ![...w.document.querySelectorAll(".empan")].some(e => e.hasAttribute("data-tuto")));
   retirer().click();
-  check("retiré de la phrase, le passage reste au CONTEXTE", !w.S.compo.length && w.S.retenus.includes(autre));
-  check("et l'alerte revient au texte de la pièce : ce n'est toujours pas ce qu'il demande",
-    bandeau().hasAttribute("data-alerte") && halo() === w.document.querySelector(".piecetexte"));
+  check("retiré, rien n'en garde trace : la consigne redevient « clique », sans alerte (passe K)",
+    !w.S.compo.length && !bandeau().hasAttribute("data-alerte")
+    && halo() === w.document.querySelector(".piecetexte") && /Clique/.test(dit()));
 
-  H.retenir(w, veut);
-  check("le bon passage cliqué, l'alerte tombe — et il est déjà dans la phrase",
+  H.cliquer(w, veut);
+  check("le bon passage cliqué, il est dans la phrase, sans alerte",
     !bandeau().hasAttribute("data-alerte") && termes().join() === veut);
-  check("la phrase qui se tient, il se tait : « → Envoyer » se montre seul (§4.8)",
-    bandeau().hidden && !halo() && !!w.document.querySelector("#composeur .envoi"));
-  /* LE REPLI : retenu SANS être pris — ôté de la phrase. Le temps « prends »
-     revient, sur les retenus, juste sous la pièce (§4.6). */
+  /* PASSE K — « → ENVOYER » SE MONTRE (§4.8, *auteur*) : la phrase posée, le
+     halo l'entoure — le bouton, pas la barre —, et la bulle dit d'envoyer. */
+  check("la phrase posée, le halo entoure « → Envoyer », le bouton lui-même",
+    !!envoi() && halo() === envoi() && !retirer().hasAttribute("data-tuto"));
+  check("et la bulle dit d'envoyer, développée — une consigne neuve",
+    !bandeau().hidden && /→ Envoyer/.test(dit()) && !reduit() && /Envoie/.test(
+      w.document.getElementById("tutoIcone").getAttribute("aria-label") || ""));
+  check("sans dire que la réponse est juste", !/juste|bonne|correct/i.test(dit()));
   retirer().click();
-  check("ôté de la phrase, il reste retenu : le halo montre les retenus juste dessous, pour le prendre",
-    !!halo() && halo().id === "zoneRetenus" && !!w.S.modalPiece);
+  check("la phrase défaite, plus de halo sur l'envoi — retour au texte de la pièce",
+    !envoi() && halo() === w.document.querySelector(".piecetexte"));
   w.fermerPanneau();
   check("le CONTEXTE refermé replie la pièce avec lui", !w.S.modalPiece);
-  check("le contexte étant un panneau FERMÉ, il montre la porte, pas la zone cachée",
-    !!halo() && halo().id === "btnCONTEXTE");
+  check("la phrase vide, CONTEXTE fermé : il se tait — le bouton de pièces du message dit où elles sont",
+    bandeau().hidden && !halo());
   w.basculerPanneau("contexte");
-  const zone = halo();
-  check("et une fois ouvert, il montre le contexte", !!zone && zone.contains(w.document.querySelector(".mchip")));
-
-  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut));
-  check("pris sur sa fiche, la phrase se tient : il se tait",
-    bandeau().hidden && !halo() && !!w.document.querySelector("#composeur .envoi"));
+  check("rouvert, il montre l'index", !!halo() && halo().id === "zoneDossier");
+  w.ouvrirPiece(pid);
+  H.cliquer(w, veut);
+  check("reposé, le halo revient sur « → Envoyer »", !!envoi() && halo() === envoi());
+  w.fermerPiece();
 
   w.envoyerCompo();
   check("la citation envoyée, il ne ferme pas : la comparaison reste à montrer",
@@ -518,32 +510,28 @@ console.log("\n=== Les deux gestes, montrés ===");
   // comparaison au lieu d'une simple citation (§4.8). Les deux passages ne sont
   // plus extraits d'avance par deux questions (§3) : il faut d'abord les cliquer.
   const attenteSuivante = () => w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
-  const dit = () => w.document.getElementById("tutoDit").textContent;
-  const reduit = () => bandeau().hasAttribute("data-reduit");
   const veutA = attenteSuivante().attend;
   check("la citation servie, Maître Auber attend aussitôt une comparaison",
     !!H.sousTerme(H.lienTag(w, veutA)));
   const [tA, tB] = H.sousTerme(H.lienTag(w, veutA)).termes;
   const [pA, pB] = [H.deK(tA)[0], H.deK(tB)[0]];
-  check("aucun des deux passages n'est encore au CONTEXTE", !w.S.retenus.includes(tA) && !w.S.retenus.includes(tB));
+  check("aucun des deux passages n'est encore dans la phrase", !w.R.dansPhrase(w.S, tA) && !w.R.dansPhrase(w.S, tB));
   /* §4.6 — la remise attend encore une réponse : le CONTEXTE est resté ouvert,
      et le halo y va tout droit — à l'index, comme pour citer. */
   check("le halo va à l'index du CONTEXTE resté ouvert : chercher d'abord",
     !!halo() && halo().id === "zoneDossier" && !reduit() && /deux passages/.test(dit()));
-  check("le passage de la citation, resté au CONTEXTE, ne sonne pas faux",
-    !bandeau().hasAttribute("data-alerte"));
+  check("rien ne sonne faux : pas d'alerte", !bandeau().hasAttribute("data-alerte"));
   w.ouvrirPiece(pA);
   check("la pièce ouverte, il montre son TEXTE, jamais un empan",
     !!halo() && halo().classList.contains("piecetexte")
     && ![...w.document.querySelectorAll(".empan")].some(e => e.hasAttribute("data-tuto")));
   const servi = H.lienTag(w, w.S.satisfaits[0]).termes[0];
-  const autreA = H.empansDe(w, pA).find(k => ![tA, tB, servi].includes(k) && !w.S.retenus.includes(k));
-  H.retenir(w, autreA);
+  const autreA = H.empansDe(w, pA).find(k => ![tA, tB, servi].includes(k));
+  H.cliquer(w, autreA);
   check("un autre passage cliqué entre dans la phrase : l'alerte montre « ← retirer », comme pour citer",
     termes().join() === autreA && bandeau().hasAttribute("data-alerte") && !reduit() && halo() === retirer());
   retirer().click();
-  w.oublier(...H.deK(autreA));
-  H.retenir(w, tA);
+  H.cliquer(w, tA);
   check("le premier passage attendu cliqué, l'alerte tombe — et il entre dans la phrase",
     !bandeau().hasAttribute("data-alerte") && termes().join() === tA);
   if (pA !== pB) {
@@ -561,11 +549,11 @@ console.log("\n=== Les deux gestes, montrés ===");
     !!halo() && halo().classList.contains("piecetexte"));
   check("dans la pièce du second passage, il montre son texte : consigne neuve",
     !!halo() && halo().classList.contains("piecetexte") && /second/.test(dit()) && !reduit());
-  H.retenir(w, tB);
+  H.cliquer(w, tB);
   /* §4.8, passe G — CHOISIR CE QUI LES LIE : le halo entoure les DEUX relations,
      jamais la bonne. Depuis la passe H, il y saute : plus rien à prendre. */
   const rels = () => [...w.document.querySelectorAll("#composeur .bbloc.relation")];
-  check("le second cliqué rejoint le premier : plus de fiche à prendre, le halo montre les deux relations — toute la zone, jamais la bonne",
+  check("le second cliqué rejoint le premier : le halo montre les deux relations — toute la zone, jamais la bonne",
     termes().length === 2 && termes().includes(tB)
     && !!halo() && halo().matches("#composeur .offre") && rels().length === 2
     && !rels().some(b => b.hasAttribute("data-tuto")) && /choisis/i.test(bandeau().textContent));
@@ -596,24 +584,25 @@ console.log("\n=== Les deux gestes, montrés ===");
     !!halo() && halo().classList.contains("piecetexte") && /clique sur son texte/.test(dit()));
   w.ouvrirPiece(art.piece);
   const cle = H.cleArticle(w, art.piece);
-  H.retenir(w, cle);
-  check("cliqué, son texte fonde la phrase — sans se retenir — et rejoint le dossier (passe J)",
-    !w.S.retenus.includes(cle) && w.R.compoFinie(w.S) && w.S.trouves.includes(art.piece)
+  H.cliquer(w, cle);
+  check("cliqué, son texte fonde la phrase, et rejoint le dossier (passe J)",
+    w.R.compoFinie(w.S) && w.S.trouves.includes(art.piece)
     && w.R.chaineCompo(w.S).some(p => w.R.estLiaisonArticle(p.bloc) && p.bloc.piece === art.piece)
     && !!w.document.querySelector(`#zoneDossier [data-f="d:${art.piece}"]`));
   check("le leurre seulement ouvert n'entre pas au dossier", !w.R.piecesLivrees(w.S).includes(leurre));
   check("et le composeur ne propose aucun article",
     !w.document.querySelector("#composeur .bbloc.fondement"));
-  check("la phrase achevée, il se tait, là aussi", bandeau().hidden && !halo());
+  check("la phrase achevée, le halo entoure « → Envoyer », là aussi — une consigne neuve (passe K)",
+    !!envoi() && halo() === envoi() && /→ Envoyer/.test(dit()) && !reduit());
   w.envoyerCompo();
   check("les deux gestes montrés, le tutoriel se tait pour de bon",
     bandeau().hidden && !halo());
   check("et il ne reviendra pas", !!w.localStorage.getItem("iavocat_tuto"));
 }
 {
-  /* §4.8 — LE REPLI DES FICHES, AU SECOND GESTE : ce qui fut retenu sans être
-     pris se prend au CONTEXTE, et le halo l'y montre. Le chemin direct n'y passe
-     plus (passe H) — sans ce bloc, ces temps ne seraient plus jamais rejoués. */
+  /* §4.8, passe J — L'ARTICLE DÉJÀ AU DOSSIER se reprend là : le tutoriel ne
+     fait pas chercher de nouveau. On le trouve, on défait la phrase, on la
+     recompose. */
   const w = H.boot({url:"http://localhost/"});
   const halo = () => w.document.querySelector("[data-tuto]");
   const dit = () => w.document.getElementById("tutoDit").textContent;
@@ -621,31 +610,20 @@ console.log("\n=== Les deux gestes, montrés ===");
   H.composerLien(w, H.lienTag(w, attente().attend));
   const L = H.lienTag(w, attente().attend), sous = H.sousTerme(L);
   check("(la citation servie, la comparaison est attendue)", !!sous);
-  const [tA, tB] = sous.termes;
-  if (w.document.getElementById("panCONTEXTE").hidden) w.basculerPanneau("contexte");
-  H.surligner(w, tA); H.surligner(w, tB);              // retenus seuls
-  check("les deux retenus sans être pris : le halo montre les retenus, pour en prendre un premier",
-    !w.S.compo.length && !!halo() && halo().id === "zoneRetenus" && /premier/.test(dit()));
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tA));
-  check("un premier pris sur sa fiche, il en faut un second", !!halo() && halo().id === "zoneRetenus" && /second/.test(dit()));
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tB));
-  H.choisirRelation(w, sous.forme);
-  /* §4.8, passe J — L'ARTICLE DÉJÀ AU DOSSIER se reprend là : le tutoriel ne
-     fait pas chercher de nouveau. On le trouve, puis on défait la phrase. */
+  check("(la comparaison se pose)", H.poserComparaison(w, sous));
   check("(l'article trouvé et pris)", H.prendreLeTexte(w, L.forme));
   const pid = w.JEU.grammaire.blocs.find(b => w.R.estLiaisonArticle(b) && b.forme === L.forme).piece;
   w.viderCompo();
   check("la phrase défaite, la recherche s'efface, l'article reste au dossier",
     w.S.recherche === null && w.R.piecesLivrees(w.S).includes(pid));
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tA));
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tB));
-  H.choisirRelation(w, sous.forme);
+  check("(recomposée)", H.poserComparaison(w, sous));
   if (w.document.getElementById("panCONTEXTE").hidden) w.basculerPanneau("contexte");
   check("recomposée, le halo montre le dossier — reprendre, pas chercher",
     !w.R.compoFinie(w.S) && !!halo() && halo().id === "zoneDossier" && !/Cherche/.test(dit()));
-  w.ouvrirPiece(pid); H.retenir(w, H.cleArticle(w, pid));
-  check("repris d'un clic sur son texte, la phrase se tient : il se tait",
-    w.R.compoFinie(w.S) && w.S.recherche === null && w.document.getElementById("tuto").hidden && !halo());
+  w.ouvrirPiece(pid); H.cliquer(w, H.cleArticle(w, pid));
+  check("repris d'un clic sur son texte, la phrase se tient : le halo passe à « → Envoyer »",
+    w.R.compoFinie(w.S) && w.S.recherche === null
+    && halo() === w.document.querySelector('#composeur [data-f="envoi"]'));
 }
 {
   /* §4.8 — UN GESTE DÉJÀ MONTRÉ NE RALLUME PAS LE HALO. La remise 1 du jour
@@ -717,20 +695,22 @@ console.log("\n=== Une consigne déjà lue reste réduite ===");
   const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
   const autre = H.empansDe(w, pid).find(k => k !== veut);
 
-  H.surligner(w, autre);
+  H.cliquer(w, autre);
   check("un passage à côté : l'alerte se déploie", bulle().hasAttribute("data-alerte") && !reduite());
-  w.oublier(...H.deK(autre));
-  check("oublié, la consigne d'avant revient — déjà lue, réduite", !bulle().hasAttribute("data-alerte") && reduite());
-  H.surligner(w, autre);
+  w.retirerBloc();
+  check("retiré, la consigne d'avant revient — déjà lue, réduite", !bulle().hasAttribute("data-alerte") && reduite());
+  H.cliquer(w, autre);
   check("mais l'alerte, déjà vue, se redéploie à la nouvelle erreur", bulle().hasAttribute("data-alerte") && !reduite());
+  w.retirerBloc();
 
-  H.surligner(w, veut);
   const avant = pas();
-  w.poserBloc(H.iTermeChamp(w), w.S.retenus.indexOf(veut));
-  check("la phrase qui se tient : la bulle se tait", bulle().hidden);
+  H.cliquer(w, veut);
+  check("la phrase qui se tient : la bulle montre l'envoi, développée", /→ Envoyer/.test(pas()) && !reduite() && !bulle().hidden);
   w.viderCompo();
   check("« tout effacer » ramène la consigne d'avant", pas() === avant);
   check("déjà lue, elle reste réduite", reduite() && !bulle().hidden);
+  H.cliquer(w, veut);
+  check("et l'envoi, déjà montré, revient réduit lui aussi", /→ Envoyer/.test(pas()) && reduite());
 }
 /* §4.8 — LA BULLE NE COMPTE PAS, ET SE FERME PAR UNE CROIX (retour de l'auteur). */
 {
@@ -765,12 +745,12 @@ console.log("\n=== Le panneau de la pièce ===");
     m().includes(w.JEU.pieces[pid].titre) && m().includes(w.JEU.pieces[pid].qui));
   const eid = Object.keys(w.JEU.pieces[pid].empans)[0];
   w.surligner(pid, eid);
-  check("l'empan surligné se marque « pris » dans le panneau", m().includes("empan pris"));
-  const empan = w.JEU.pieces[pid].empans[eid];
-  check("et apparaît dans le contexte",
-    contexte(w).includes("zoneRetenus") && contexte(w).includes(empan.nom || empan.texte));
+  check("l'empan cliqué se marque « pris » dans le panneau", m().includes("empan pris"));
+  check("et entre dans la phrase — pas dans une liste du CONTEXTE (passe K)",
+    w.S.compo.length === 1 && !contexte(w).includes("zoneRetenus") && !w.document.querySelector(".mchip"));
+  w.retirerBloc();
+  check("retiré de la phrase, il perd sa marque : elle dit « dans ta RÉPONSE »", !m().includes("empan pris"));
   w.fermerPiece();
-  check("fermer la pièce n'efface pas le contexte", w.S.retenus.length === 1);
   const pidR = H.pidRegle(w);
   if (!Object.keys(w.JEU.pieces[pidR].empans || {}).length) {
     w.ouvrirPiece(pidR);
@@ -795,10 +775,10 @@ console.log("\n=== L'index se replie ===");
   const [pA, pB] = w.R.piecesLivrees(w.S);
   w.basculerPanneau("contexte");
   check("sans pièce ouverte, l'index est déplié — et une bascule le replie à tout moment", !!bascule() && deplie());
-  check("la ligne dit DOSSIER, et ne compte rien (§4.6)",
-    /DOSSIER/.test(bascule().textContent) && !/\d/.test(bascule().textContent));
+  check("la ligne dit DOCUMENTS, et ne compte rien (§4.6, passe L)",
+    /DOCUMENTS/.test(bascule().textContent) && !/DOSSIER/.test(bascule().textContent) && !/\d/.test(bascule().textContent));
   w.basculerDossier();
-  check("replié sans pièce : il laisse la place aux retenus", replie());
+  check("replié sans pièce, il tient en une ligne", replie());
   check("le focus reste sur la bascule", d.activeElement === bascule());
   check("replié, il reste l'ancre du tutoriel (R6), ses puces sous `hidden` : rien n'est retiré",
     !!d.getElementById("zoneDossier") && !!d.querySelector(`#dossierListe [data-f="d:${pA}"]`));
@@ -1072,11 +1052,12 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
 
   const veut = H.lienTag(w, attente().attend).termes[0];
   const [pid] = H.deK(veut);
-  w.ouvrirPiece(pid); H.surligner(w, veut); w.fermerPiece();
+  w.ouvrirPiece(pid);
   check("ouvrir une pièce depuis le panneau ne le referme pas", ouvert("CONTEXTE"));
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, veut));
+  H.cliquer(w, veut);
   check("un passage posé, la voix se tait — plus de bouton", !bouton());
   check("mais le panneau RESTE ouvert : la phrase accepterait encore un passage", ouvert("CONTEXTE"));
+  w.fermerPiece();
   w.envoyerCompo();
   /* §4.6 — envoyer ne referme le CONTEXTE que si la REMISE change : la question
      suivante voudra le clavier. Il reste, mais en CONSULTATION désormais. */
@@ -1119,15 +1100,14 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
   w.fermerPanneau();
 
   /* LA COMPARAISON — le panneau doit tenir entre les DEUX passages. Elle suit
-     la citation (§3) : on retient ses deux passages, chacun dans sa pièce. */
+     la citation (§3) : on clique ses deux passages, chacun dans sa pièce. */
   const sous = H.sousTerme(H.lienTag(w, attente().attend));
   check("Maître Auber attend maintenant une comparaison", !!sous);
   const [tA, tB] = sous.termes;
-  for (const k of [tA, tB]) { w.ouvrirPiece(H.deK(k)[0]); H.surligner(w, k); w.fermerPiece(); }
   w.fermerPanneau(); w.ouvrirCONTEXTE();
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tA));
+  w.ouvrirPiece(H.deK(tA)[0]); H.cliquer(w, tA);
   check("le PREMIER des deux posé, il en faut un second : le panneau RESTE ouvert", ouvert("CONTEXTE"));
-  w.poserBloc(H.iTermeChamp(w), H.iRetenu(w, tB));
+  w.ouvrirPiece(H.deK(tB)[0]); H.cliquer(w, tB);
   /* §4.6, passe G — le choix de la relation a lieu au composeur, et le panneau
      ouvert pour écrire RESTE : l'article qui suit se prend chez lui. */
   check("les deux posés, la relation à choisir au composeur : le panneau RESTE ouvert", ouvert("CONTEXTE"));
@@ -1144,7 +1124,7 @@ console.log("\n=== Les deux surfaces, en panneaux ===");
     && b.forme === H.lienTag(w, attente().attend).forme).piece;
   w.chercherArticle();
   check("chercher ouvre le CONTEXTE sur ses résultats, et la voix y mène", ouvert("CONTEXTE") && !!bouton());
-  w.ouvrirPiece(pidArt); H.retenir(w, H.cleArticle(w, pidArt));
+  w.ouvrirPiece(pidArt); H.cliquer(w, H.cleArticle(w, pidArt));
   check("l'article pris dans le résultat ouvert : la phrase achevée, le CONTEXTE reste — on y lisait (§4.6)",
     w.R.compoFinie(w.S) && ouvert("CONTEXTE"));
   w.fermerPanneau();
@@ -1203,6 +1183,15 @@ console.log("\n=== Le jeu se joue au clavier ===");
   jointe.focus(); jointe.click();
   const panCONTEXTE = d.getElementById("panCONTEXTE");
   check("il ouvre le CONTEXTE", !!panCONTEXTE && !panCONTEXTE.hidden);
+  /* PASSE L — à l'écran, le panneau s'appelle DOSSIER ; le code garde `contexte`
+     (§4.6, §17). Ni le titre, ni la porte, ni la croix ne disent l'ancien nom. */
+  check("il s'intitule DOSSIER, sa porte et sa croix aussi — plus un mot de CONTEXTE à l'écran",
+    d.getElementById("titreCONTEXTE").textContent.trim() === "DOSSIER"
+    && d.getElementById("btnCONTEXTE").textContent.trim() === "DOSSIER"
+    && /Fermer le DOSSIER/.test(d.querySelector("#panCONTEXTE > h2 .fermer").getAttribute("aria-label") || "")
+    && ![".wrap", "#tuto"].some(z => /CONTEXTE/.test(d.querySelector(z).textContent))
+    && ![...d.querySelectorAll("[aria-label]")].some(e => /CONTEXTE/.test(e.getAttribute("aria-label")))
+    && !/CONTEXTE/.test(annonce()));
   check("le focus entre dans le CONTEXTE", panCONTEXTE.contains(actif()));
   check("le CONTEXTE ouvert, le halo quitte le bouton franchi pour l'index (§4.8)",
     !!d.querySelector("[data-tuto]") && d.querySelector("[data-tuto]").id === "zoneDossier");
@@ -1217,9 +1206,9 @@ console.log("\n=== Le jeu se joue au clavier ===");
   check("la pièce s'ouvre DANS le CONTEXTE, nommée pour qui ne la voit pas (§4.6)",
     !!boite && panCONTEXTE.contains(boite) && !panCONTEXTE.hidden
     && d.getElementById(boite.getAttribute("aria-labelledby")) === boite.querySelector("#pieceTitre"));
-  check("entre l'index et les retenus, dans l'ordre de lecture",
+  check("sous l'index, dans l'ordre de lecture — et plus de retenus dessous (passe K)",
     !!(d.getElementById("zoneDossier").compareDocumentPosition(boite) & 4)
-    && !!(boite.compareDocumentPosition(d.getElementById("zoneRetenus")) & 4));
+    && !d.getElementById("zoneRetenus") && !d.querySelector("#contexte .bande.retenus"));
   check("le jeu derrière reste vivant — composeur et conversation compris",
     !inerte() && !d.getElementById("composeur").closest("[inert]") && !d.getElementById("discussion").closest("[inert]"));
   check("le focus entre dans la pièce", boite.contains(actif()));
@@ -1232,23 +1221,19 @@ console.log("\n=== Le jeu se joue au clavier ===");
   const autre = H.empansDe(w, pid).find(k => k !== veut);
   passage(autre).focus();
   touche(passage(autre), "Enter");
-  check("Entrée sur un passage le retient", w.S.retenus.includes(autre));
-  check("et le prend, la phrase l'attendant : le même geste (passe H)",
+  check("Entrée sur un passage le prend, la phrase l'attendant (passes H et K)",
     w.S.compo.length === 1 && w.S.compo[0].valeur === autre);
   check("et le focus reste sur CE passage, bien que la pièce ait été redessinée",
     cleActive() === "e:" + autre && actif() !== null && d.contains(actif()));
-  check("un passage retenu le dit à qui ne voit pas le fond",
-    /retenu/.test(passage(autre).textContent));
-  check("retenir se voit sous la pièce, au moment même — et la ligne dit qu'il est aussi posé (§4.3)",
-    /Ajouté à ta RÉPONSE./.test((d.querySelector("#panPiece .rappel.retenu") || {}).textContent || ""));
-  check("et le dit à l'oreille", /Ajouté à ta RÉPONSE, et retenu/.test(annonce()));
-  check("et la porte CONTEXTE s'allume", d.getElementById("btnCONTEXTE").classList.contains("recoit"));
-  check("et la fiche neuve s'allume juste sous la pièce, là où on va la prendre",
-    !!d.querySelector(`#zoneRetenus .mchip.neuf [data-f="c:${autre}"]`));
+  check("un passage pris le dit à qui ne voit pas le fond",
+    /dans ta RÉPONSE/.test(passage(autre).textContent));
+  check("prendre se voit sous la pièce, au moment même (§4.3)",
+    ((d.querySelector("#panPiece .rappel.confirme") || {}).textContent || "") === "✓ Ajouté à ta RÉPONSE.");
+  check("et le dit à l'oreille", /Ajouté à ta RÉPONSE\.(?!\.)/.test(annonce()));
+  check("et rien ne s'allume ailleurs : ni porte, ni fiche (passe K)",
+    !d.querySelector(".recoit, .mchip") && /^DOSSIER$/.test(d.getElementById("btnCONTEXTE").textContent.trim()));
   w.rendreTout();                       // un redessin qui n'est PAS un geste
-  check("la confirmation ne vit qu'un rendu",
-    !d.querySelector("#panPiece .rappel.retenu") && !d.getElementById("btnCONTEXTE").classList.contains("recoit")
-    && !d.querySelector(".mchip.neuf"));
+  check("la confirmation ne vit qu'un rendu", !d.querySelector("#panPiece .rappel"));
   passage(autre).focus();
   check("mais ce n'est pas un interrupteur : aucun aria-pressed",
     ![...d.querySelectorAll(".empan")].some(e => e.hasAttribute("aria-pressed")));
@@ -1256,8 +1241,8 @@ console.log("\n=== Le jeu se joue au clavier ===");
     w.CHAMPS.filter(c => c.pid === pid).every(c => passage(c.id).textContent.includes(c.dim)));
 
   touche(passage(autre), " ");
-  check("Espace sur un passage déjà dans la phrase ne l'oublie pas, ni ne l'y double",
-    w.S.retenus.includes(autre) && w.S.compo.length === 1 && !w.S.refus);
+  check("Espace sur un passage déjà dans la phrase ne l'en retire pas, ni ne l'y double",
+    w.S.compo.length === 1 && w.S.compo[0].valeur === autre && !w.S.refus);
   check("mais l'écran dit comment revenir en arrière", !!d.querySelector("#panPiece .rappel")
     && /Déjà dans ta RÉPONSE/.test(d.querySelector("#panPiece .rappel").textContent));
   check("et le dit à l'oreille", /Déjà dans ta RÉPONSE/.test(annonce()));
@@ -1265,7 +1250,8 @@ console.log("\n=== Le jeu se joue au clavier ===");
   check("le rappel ne vit qu'un rendu", !d.querySelector("#panPiece .rappel"));
   const retirer = d.querySelector('#composeur [data-f="retirer"]');
   retirer.focus(); retirer.click();
-  check("« ← retirer » l'ôte de la phrase, pas du CONTEXTE", !w.S.compo.length && w.S.retenus.includes(autre));
+  check("« ← retirer » l'ôte de la phrase — et sa marque avec lui",
+    !w.S.compo.length && !passage(autre).classList.contains("pris"));
   touche(passage(veut), "Enter");
   check("Entrée sur le bon passage le pose à son tour", w.S.compo.length === 1 && w.S.compo[0].valeur === veut);
 
@@ -1288,25 +1274,22 @@ console.log("\n=== Le jeu se joue au clavier ===");
 
   // Le CONTEXTE est déjà ouvert depuis `voirPiecesRecues` et ne s'est jamais
   // refermé (§4.6) : pas de bascule ici, elle le fermerait.
-  const puce = d.querySelector(`#contexte [data-f="c:${veut}"]`);
+  const puce = d.querySelector(`#contexte [data-f="d:${pid}"]`);
   puce.focus();
   w.rendreTout();
-  check("le focus survit au redessin d'une puce du CONTEXTE",
-    cleActive() === "c:" + veut && actif() !== puce);
+  check("le focus survit au redessin d'une puce du dossier",
+    cleActive() === "d:" + pid && actif() !== puce);
   // Les GESTES désignent leur élément par sa clé ; seuls les contrôles de focus
   // lisent le focus — sans quoi une panne en amont en masquerait une en aval.
-  // Le passage est déjà dans la phrase (passe H) : sa fiche le dit, rien à prendre.
-  check("sa fiche dit qu'il est dans la phrase",
-    /dans ta RÉPONSE/.test(d.querySelector(`#contexte [data-f="c:${veut}"]`).textContent));
   check("phrase en cours, tout ce qui se clique s'atteint au clavier", injoignables().length === 0);
-  const croix = [...d.querySelectorAll(".fermer, .mchip .del")];
+  const croix = [...d.querySelectorAll(".fermer")];
   check("chaque croix a un nom, et ce nom n'est pas « × »",
     croix.length > 0 && croix.every(c => (c.getAttribute("aria-label") || "").length > 1));
   /* §4.3 — Colas a fermé le panneau en croyant retirer un passage : la fiche
-     et le panneau portaient le même ×. Un signe, un acte. */
-  const oublis = [...d.querySelectorAll(".mchip .del")];
-  check("retirer une fiche s'écrit en toutes lettres : le × ne retire rien",
-    oublis.length > 0 && oublis.every(b => b.textContent.trim() === "oublier"));
+     et le panneau portaient le même ×. Les fiches sont parties (passe K) ; le ×
+     ne retire toujours rien, et rien ne s'écrit plus « oublier ». */
+  check("plus de fiche ni d'« oublier » : on retire au composeur",
+    !d.querySelector(".mchip") && ![...d.querySelectorAll("button")].some(b => b.textContent.trim() === "oublier"));
 
   const envoi = d.querySelector('#composeur [data-f="envoi"]');
   envoi.focus(); envoi.click();
@@ -1387,74 +1370,49 @@ console.log("\n=== Le CONTEXTE dit son état (§4.6) ===");
   check("la croix rend le focus au chip qui avait ouvert la première", cle() === "d:" + pid);
 }
 {
-  // CE QU'ON A PRIS SE VOIT, ET UN REFUS DIT POURQUOI — à l'écran, pas dans un `title`.
+  // CE QU'ON A PRIS SE VOIT, ET UN CLIC QUI NE PREND RIEN DIT POURQUOI — sous la
+  // pièce, à l'écran comme à l'oreille, jamais dans un `title` (§4.3, §4.6, passe K).
   const w = boot(), d = w.document;
   const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
   const livrees = new Set(w.R.piecesLivrees(w.S));
   const dim = w.CHAMPS.find(c => c.id === veut).dim;
   const autre = w.CHAMPS.find(c => c.id !== veut && c.dim === dim && livrees.has(c.pid)).id;
-  for (const k of [veut, autre]) { w.ouvrirPiece(k.split(".")[0]); H.surligner(w, k); }
-  const fiche = k => d.querySelector(`#zoneRetenus [data-f="c:${k}"]`);
-  fiche(veut).click();
-  check("un passage pris porte « dans ta RÉPONSE », et lui seul",
-    /dans ta RÉPONSE/.test(fiche(veut).textContent) && !/dans ta RÉPONSE/.test(fiche(autre).textContent));
-  check("la phrase prend encore un passage : pas de ligne de refus", !d.getElementById("raisonPleine"));
-  fiche(autre).click();
-  const raison = d.getElementById("raisonPleine");
-  check("la phrase pleine, le CONTEXTE le dit en une ligne", !!raison && /ne prend plus de passage/.test(raison.textContent));
-  check("les fiches restent atteignables : refusées, pas désactivées",
-    !fiche(veut).disabled && fiche(veut).getAttribute("aria-disabled") === "true"
-    && fiche(veut).getAttribute("aria-describedby") === "raisonPleine");
-  check("aucune raison ne se cache plus dans un `title`",
-    ![...d.querySelectorAll("#zoneRetenus .corps[title]")].some(b => /n'attend pas/.test(b.title)));
+  const tiers = w.CHAMPS.find(c => ![veut, autre].includes(c.id) && livrees.has(c.pid)).id;
+  const passage = k => d.querySelector(`#panPiece [data-f="e:${k}"]`);
+  const ligne = () => (d.querySelector("#panPiece .rappel") || {}).textContent || "";
+  w.ouvrirPiece(H.deK(veut)[0]); H.cliquer(w, veut);
+  check("un passage pris porte sa marque, et lui seul",
+    passage(veut).classList.contains("pris")
+    && ![...d.querySelectorAll("#panPiece .empan.pris")].some(e => e !== passage(veut)));
+  w.ouvrirPiece(H.deK(autre)[0]); H.cliquer(w, autre);
+  check("(deux passages posés : la phrase attend ce qui les lie)",
+    w.S.compo.length >= 2 && w.R.relationsOffertes(w.S).length > 0);
   const avant = w.S.compo.length;
-  fiche(veut).focus(); fiche(veut).click();
-  check("toucher une fiche refusée ne pose rien, et redit la raison",
-    w.S.compo.length === avant && /ne prend plus de passage/.test(d.getElementById("annonce").textContent)
-    && d.getElementById("raisonPleine").classList.contains("rappelle"));
-  check("le focus reste sur la fiche touchée", d.activeElement === fiche(veut));
-  w.retirerBloc();
-  check("la phrase rouverte, la ligne s'en va", !d.getElementById("raisonPleine"));
-}
-{
-  // DÉJÀ DANS LA PHRASE, UNE FICHE NE S'Y POSE PAS DEUX FOIS (§4.6, passe H) : la
-  // toucher dit ce que dit la pièce — plus « cette phrase ne veut rien dire ».
-  const w = boot(), d = w.document;
-  const veut = H.lienTag(w, w.R.attenteCourante(w.S, w.R.remiseCourante(w.S)).attend).termes[0];
-  w.ouvrirPiece(H.deK(veut)[0]);
-  H.retenir(w, veut);                                  // le clic : retenu, et posé
-  const fiche = () => d.querySelector(`#zoneRetenus [data-f="c:${veut}"]`);
-  check("(la phrase prend encore un passage)", H.iTermeChamp(w) >= 0 && w.S.compo.length === 1);
-  check("la fiche d'un passage déjà dans la phrase est refusée, pas désactivée",
-    !fiche().disabled && fiche().getAttribute("aria-disabled") === "true");
-  fiche().focus(); fiche().click();
-  check("la toucher ne pose rien, et ne reproche rien : plus de « ne veut rien dire »",
-    w.S.compo.length === 1 && !w.S.refus);
-  check("elle dit ce que dit la pièce — déjà dans ta RÉPONSE —, à l'écran comme à l'oreille",
-    /Déjà dans ta RÉPONSE/.test((d.getElementById("raisonPris") || {}).textContent || "")
-    && /Déjà dans ta RÉPONSE/.test(d.getElementById("annonce").textContent)
-    && fiche().getAttribute("aria-describedby") === "raisonPris");
-  check("le focus reste sur la fiche touchée", d.activeElement === fiche());
+  w.ouvrirPiece(H.deK(tiers)[0]); H.cliquer(w, tiers);
+  check("un troisième clic ne pose rien", w.S.compo.length === avant && !passage(tiers).classList.contains("pris"));
+  check("et la ligne sous la pièce dit pourquoi, et ce que la phrase attend",
+    /ne prend plus de passage/.test(ligne()) && /ce qui les lie/.test(ligne())
+    && !d.querySelector("#panPiece .rappel.confirme"));
+  check("à l'oreille aussi", /ne prend plus de passage/.test(d.getElementById("annonce").textContent));
+  check("aucune raison ne se cache dans un `title`",
+    ![...d.querySelectorAll("#contexte [title]")].some(b => /n'attend pas|ne prend plus/.test(b.title)));
   w.rendreTout();
-  check("la raison ne vit qu'un rendu", !d.getElementById("raisonPris"));
+  check("la raison ne vit qu'un rendu", !d.querySelector("#panPiece .rappel"));
 }
 {
-  // ON NE PURGE PAS LE CONTEXTE ENTRE DEUX REMISES (§4.6, Bérengère) : la remise
-  // suivante arrivée, les passages de la précédente restent à plat, composables.
-  const w = boot(), d = w.document;
+  // AUCUNE BARRIÈRE ENTRE LES REMISES (§4.6) : la remise suivante arrivée, les
+  // passages de la précédente restent composables — dans leur pièce, au dossier.
+  const w = boot();
   let garde = 0;
   while (w.S.remisesEnvoyees === 1 && garde++ < 10) {
     const a = w.R.attenteCourante(w.S, w.R.remiseCourante(w.S));
     if (!a || H.composerLien(w, H.lienTag(w, a.attend)) < 0) break;
   }
-  w.basculerPanneau("contexte");
-  // Les PASSAGES : l'article retenu pour la comparaison n'est jamais un terme (passe F).
-  const anciens = w.S.retenus.filter(k => w.CHAMPS.some(c => c.id === k));
-  const fiche = k => d.querySelector(`#zoneRetenus [data-f="c:${k}"]`);
-  check("la remise 2 arrivée, les passages de la remise 1 restent composables, sans ligne de repli",
-    w.S.remisesEnvoyees === 2 && anciens.length > 0
-    && anciens.every(k => !!fiche(k) && !fiche(k).closest("[hidden]") && !fiche(k).hasAttribute("aria-disabled"))
-    && !d.querySelector("#zoneRetenus [aria-expanded]"));
+  w.viderCompo();
+  const pid = H.pidPremiereRemise(w), k = H.empansDe(w, pid)[0];
+  w.ouvrirPiece(pid); H.cliquer(w, k);
+  check("la remise 2 arrivée, un passage de la remise 1 se prend toujours",
+    w.S.remisesEnvoyees === 2 && w.R.piecesLivrees(w.S).includes(pid) && w.R.dansPhrase(w.S, k));
 }
 
 console.log("\n=== La DISCUSSION s'agrandit, CONTEXTE ouvert (§4.6) ===");
@@ -1524,8 +1482,10 @@ console.log("\n=== L'article se cherche, puis se prend (§4.5, §4.6, passe J) =
   w.basculerPanneau("contexte");
   H.poserComparaison(w, sous);
   check("la relation choisie, le composeur offre de chercher", !!d.querySelector('#composeur [data-f="chercher"]'));
-  check("les fiches de passage disent que la phrase attend un article",
-    /attend un article/.test((d.getElementById("raisonPleine") || {}).textContent || ""));
+  const x = w.CHAMPS.find(c => !sous.termes.includes(c.id) && w.R.piecesLivrees(w.S).includes(c.pid)).id;
+  w.ouvrirPiece(H.deK(x)[0]); H.cliquer(w, x);
+  check("un passage cliqué ne se pose pas, et la ligne sous la pièce dit que la phrase attend un article",
+    !w.R.dansPhrase(w.S, x) && /attend un article/.test(ligne()));
   /* LE HASARD SE FIXE (§11) : la règle reçoit son tirage. */
   const dim = w.M.dimDe(sous.termes[0]);
   const base = w.R.baseRecherche(dim);
@@ -1549,10 +1509,10 @@ console.log("\n=== L'article se cherche, puis se prend (§4.5, §4.6, passe J) =
     && /article/.test(passage.querySelector(".sr").textContent));
   check("ouvert depuis la recherche, il s'offre", w.R.articleOffert(w.S, pid));
   passage.click();
-  check("cliqué, il fonde la phrase sans se retenir, et rejoint le dossier — la ligne le dit",
-    w.R.compoFinie(w.S) && !w.S.retenus.includes(k) && w.S.trouves.includes(pid)
-    && /rangé dans ton dossier/.test(ligne()));
-  check("au CONTEXTE, plus de groupe ARTICLES : un article ne s'y range pas", !d.querySelector("#zoneRetenus .articles"));
+  check("cliqué, il fonde la phrase, et rejoint le dossier — la ligne le dit",
+    w.R.compoFinie(w.S) && w.S.trouves.includes(pid)
+    && /rangé dans ton DOSSIER/.test(ligne()));
+  check("au CONTEXTE, plus de groupe ARTICLES : un article ne s'y range pas", !d.querySelector("#contexte .articles"));
   w.retirerBloc();
   check("« ← retirer » l'ôte de la phrase, pas du dossier ; la recherche reste, la relation aussi",
     !w.R.compoFinie(w.S) && w.R.piecesLivrees(w.S).includes(pid) && w.S.recherche.length === 3);
@@ -1561,7 +1521,7 @@ console.log("\n=== L'article se cherche, puis se prend (§4.5, §4.6, passe J) =
   const n = w.S.compo.length;
   w.ouvrirPiece(pid); d.querySelector(`#panPiece [data-f="e:${k}"]`).click();
   check("la phrase n'attendant pas d'article, son texte ne prend rien — et la ligne dit pourquoi",
-    w.S.compo.length === n && !w.S.retenus.includes(k) && /fonde une relation/.test(ligne()));
+    w.S.compo.length === n && /fonde une relation/.test(ligne()));
 }
 {
   /* §4.11 point 6 — EN SESSION 1, UNE COMPARAISON NUE NE PART PAS, tutoriel ou
@@ -1576,9 +1536,9 @@ console.log("\n=== L'article se cherche, puis se prend (§4.5, §4.6, passe J) =
   check("hors session 1, elle part", H.poserComparaison(w2, H.sousTerme(H.lienConclusion(w2))) && w2.R.peutEnvoyer(w2.S));
 }
 
-console.log("\n=== Un clic dans la pièce retient et prend (§4.6, passe H) ===");
+console.log("\n=== Un clic dans la pièce prend (§4.6, passes H et K) ===");
 {
-  // LE CLIC FAIT CE QUE FERAIT LA FICHE JUSTE APRÈS, RIEN DE PLUS — et le dit.
+  // LE CLIC FAIT CE QUE LA GRAMMAIRE ACCEPTE, RIEN DE PLUS — et le dit.
   const w = boot(), d = w.document;
   H.livrerTout(w);
   const L = H.lienConclusion(w), sous = H.sousTerme(L), [a, b] = sous.termes;
@@ -1586,57 +1546,58 @@ console.log("\n=== Un clic dans la pièce retient et prend (§4.6, passe H) ==="
   const cle = H.cleArticle(w, pidArt);
   const ligne = () => (d.querySelector("#panPiece .rappel") || {}).textContent || "";
   const termes = () => w.S.compo.map(p => p.valeur).filter(v => w.CHAMPS.some(c => c.id === v));
-  const marques = () => [...d.querySelectorAll("#panPiece .empan")].map(e => e.outerHTML).join("");
+  // La marque « pris » dit ce qui est dans la phrase (§4.3, passe K) : on compare
+  // les AUTRES passages, ceux que la phrase ne porte ni avant ni après.
+  const marques = () => [...d.querySelectorAll("#panPiece .empan")]
+    .filter(e => ![a, b].some(k => e.getAttribute("data-f") === "e:" + k)).map(e => e.outerHTML).join("");
 
   w.ouvrirPiece(pidArt);
-  H.retenir(w, cle);
-  check("phrase vide, le texte d'un article ne se retient pas : il n'a rien à fonder, la ligne le dit",
-    !w.S.retenus.includes(cle) && !w.S.compo.length && /fonde une relation/.test(ligne()));
+  H.cliquer(w, cle);
+  check("phrase vide, le texte d'un article ne se prend pas : il n'a rien à fonder, la ligne le dit",
+    !w.S.compo.length && /fonde une relation/.test(ligne()));
 
   w.ouvrirPiece(H.deK(a)[0]);
-  H.retenir(w, a);
-  check("un clic sur un passage le retient ET le pose, la phrase l'attendant",
-    w.S.retenus.includes(a) && termes().join() === a);
-  check("la ligne sous la pièce dit les deux, et l'annonce aussi",
-    /Ajouté à ta RÉPONSE./.test(ligne())
-    && /Ajouté à ta RÉPONSE, et retenu/.test(d.getElementById("annonce").textContent));
-  check("et sa fiche dit « dans ta RÉPONSE »",
-    /dans ta RÉPONSE/.test(d.querySelector(`#zoneRetenus [data-f="c:${a}"]`).textContent));
-  H.retenir(w, a);
+  H.cliquer(w, a);
+  check("un clic sur un passage le pose, la phrase l'attendant", termes().join() === a);
+  check("la ligne sous la pièce le dit, et l'annonce aussi",
+    ligne() === "✓ Ajouté à ta RÉPONSE."
+    && /Ajouté à ta RÉPONSE\.(?!\.)/.test(d.getElementById("annonce").textContent));
+  check("et le passage porte sa marque, « dans ta RÉPONSE » pour qui ne voit pas le fond",
+    d.querySelector(`#panPiece [data-f="e:${a}"]`).classList.contains("pris")
+    && /dans ta RÉPONSE/.test(d.querySelector(`#panPiece [data-f="e:${a}"] .sr`).textContent));
+  H.cliquer(w, a);
   check("recliqué, un passage déjà dans la phrase n'y retourne pas — et rien n'est refusé",
     termes().join() === a && !w.S.refus && /Déjà dans ta RÉPONSE/.test(ligne()));
 
   w.ouvrirPiece(H.deK(b)[0]);
-  H.retenir(w, b);
+  H.cliquer(w, b);
   check("le second, cliqué dans sa pièce, rejoint le premier : la relation est à choisir",
     termes().length === 2 && termes().includes(b) && w.R.relationsOffertes(w.S).length === 2);
   check("et poser n'est pas choisir : le vice n'est pas pressenti", !w.S.vice_pressenti);
 
   /* La phrase attend sa relation : elle ne prend plus de passage. */
-  const autre = w.CHAMPS.find(c => c.pid === H.deK(b)[0] && c.id !== b && !w.S.retenus.includes(c.id)).id;
+  const autre = w.CHAMPS.find(c => c.pid === H.deK(b)[0] && c.id !== b).id;
   const n = w.S.compo.length;
-  H.retenir(w, autre);
-  check("la phrase attendant sa relation, un autre passage se retient seulement",
-    w.S.retenus.includes(autre) && w.S.compo.length === n && ligne() === "✓ Retenu dans ton CONTEXTE.");
-  H.retenir(w, autre);
-  check("recliqué, il ne s'oublie pas, et la ligne dit où l'on oublie",
-    w.S.retenus.includes(autre) && w.S.compo.length === n && /CONTEXTE/.test(ligne()) && !/✓/.test(ligne()));
+  H.cliquer(w, autre);
+  check("la phrase attendant sa relation, un autre passage ne se pose pas — la ligne dit ce qu'elle attend",
+    w.S.compo.length === n && !w.R.dansPhrase(w.S, autre)
+    && /ce qui les lie/.test(ligne()) && !/✓/.test(ligne()));
   const pleine = marques();               // un clic n'y prendrait rien
 
   H.choisirRelation(w, sous.forme);
   check("la vraie relation choisie, le vice est pressenti", w.S.vice_pressenti && !w.S.vice_trouve);
   w.chercherArticle();
   w.ouvrirPiece(pidArt);
-  H.retenir(w, cle);
+  H.cliquer(w, cle);
   check("le texte de l'article trouvé fonde la phrase qui l'attend",
     w.R.compoFinie(w.S) && w.R.chaineCompo(w.S).some(p => w.R.estLiaisonArticle(p.bloc) && p.bloc.piece === pidArt));
-  check("et la ligne dit qu'il est posé, et rangé au dossier", ligne() === "✓ Ajouté à ta RÉPONSE, et rangé dans ton dossier.");
+  check("et la ligne dit qu'il est posé, et rangé au dossier", ligne() === "✓ Ajouté à ta RÉPONSE, et rangé dans ton DOSSIER.");
   check("la conclusion assemblée d'un clic lève vice_trouve, sans rien transmettre",
     w.S.vice_trouve && !w.S.vice_expose && !w.S.plaidoirie.length && !w.S.brouillon.length);
   w.retirerBloc();
   check("« ← retirer » l'ôte de la phrase, pas du dossier",
     !w.R.compoFinie(w.S) && w.R.piecesLivrees(w.S).includes(pidArt) && termes().length === 2);
-  H.retenir(w, cle);
+  H.cliquer(w, cle);
   check("au dossier, recliqué, il se reprend sans chercher — et la ligne ne dit que posé",
     w.R.compoFinie(w.S) && ligne() === "✓ Ajouté à ta RÉPONSE.");
   w.retirerBloc();
@@ -1649,26 +1610,27 @@ console.log("\n=== Un clic dans la pièce retient et prend (§4.6, passe H) ==="
     && ![...d.querySelectorAll("#panPiece .empan")].some(e => e.hasAttribute("aria-disabled")));
 }
 {
-  // EN SESSION 1, LE CLIC REÇOIT LE REFUS QUE SA FICHE AURAIT REÇU (§4.5, §4.11).
+  // EN SESSION 1, LE CLIC REÇOIT LE REFUS DE CATÉGORIE (§4.5, §4.11).
   const w = boot(), d = w.document;
-  const [a, b] = deuxDimensions(w);                    // retenus seuls
-  check("(retenir seul ne laisse rien dans la phrase)", !w.S.compo.length);
-  H.retenir(w, a.id);
-  check("en session 1, un passage recliqué se pose", w.S.compo.length === 1 && w.S.compo[0].valeur === a.id);
-  H.retenir(w, b.id);
-  check("un second d'une autre dimension, cliqué dans la pièce, reçoit le refus de sa fiche",
+  const [a, b] = deuxDimensions(w);
+  w.ouvrirPiece(a.pid);
+  H.cliquer(w, a.id);
+  check("en session 1, un passage cliqué se pose", w.S.compo.length === 1 && w.S.compo[0].valeur === a.id);
+  w.ouvrirPiece(b.pid);
+  H.cliquer(w, b.id);
+  check("un second d'une autre dimension, cliqué dans la pièce, reçoit le refus de catégorie",
     !!w.S.refus && /ne se comparent pas/.test(w.S.refus) && w.S.compo.length === 1);
-  check("et reste retenu", w.S.retenus.includes(b.id));
-  check("l'assombrissement reste sur les fiches : aucun passage ne s'assombrit dans la pièce",
-    !!d.querySelector("#zoneRetenus .horsdim")
-    && ![...d.querySelectorAll("#panPiece .empan")].some(e => e.closest(".horsdim") || e.hasAttribute("aria-disabled")));
+  check("et n'est mis de côté nulle part (passe K)", !w.R.dansPhrase(w.S, b.id) && w.S.retenus === undefined);
+  check("aucun passage ne s'assombrit dans la pièce", !d.querySelector(".horsdim")
+    && d.querySelectorAll("#panPiece .empan").length > 0
+    && ![...d.querySelectorAll("#panPiece .empan")].some(e => e.hasAttribute("aria-disabled")));
 }
 {
-  // ENSUITE, LA JUXTAPOSITION SE POSE D'ELLE-MÊME, comme par la fiche (§4.11).
+  // ENSUITE, LA JUXTAPOSITION SE POSE D'ELLE-MÊME (§4.11).
   const w = boot();
   H.livrerTout(w);
   const [a, b] = deuxDimensions(w);
-  H.retenir(w, a.id); H.retenir(w, b.id);
+  H.cliquer(w, a.id); H.cliquer(w, b.id);
   check("hors session 1, deux dimensions cliquées dans la pièce se juxtaposent d'elles-mêmes",
     !w.S.refus && w.S.compo.length === 3 && !!w.S.compo[2].auto && w.R.relationsOffertes(w.S).length === 0);
 }

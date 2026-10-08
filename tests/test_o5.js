@@ -10,8 +10,9 @@ console.log("\n=== L'index du dossier ===");
   check("content.js est bien le contenu qui joue", w.SOURCE_CONTENU === "contenu : content.js");
   check("moteur.js est chargé — la grammaire est branchée", !!w.M);
   check("regles.js est chargé — les règles sont branchées", !!w.R);
-  check("les pièces viennent d'abord, les règles ensuite",
-        contexte(w).indexOf("Les pièces") < contexte(w).indexOf("Les règles"));
+  check("les pièces viennent d'abord, les articles ensuite",
+        contexte(w).indexOf("Les pièces") < contexte(w).indexOf("Les articles")
+        && !contexte(w).includes("Les règles"));
   const pid = H.pidPremiereRemise(w);
   check("une pièce non consultée porte le marqueur ●", contexte(w).includes("● "));
   w.ouvrirPiece(pid);
@@ -23,8 +24,8 @@ console.log("\n=== L'index du dossier ===");
     puces.length > 0 && puces.every(c =>
       Object.values(w.JEU.pieces).some(p => c.textContent.replace(/^[●✓]\s*/, "").trim() === p.titre)));
   const attaches = [...w.document.querySelectorAll("#discussion .attach")];
-  check("le message ne nomme plus les pièces, un compte renvoie au CONTEXTE",
-    attaches.length > 0 && attaches.every(b => /dans ton CONTEXTE/.test(b.textContent)
+  check("le message ne nomme plus les pièces, un compte renvoie au DOSSIER",
+    attaches.length > 0 && attaches.every(b => /dans ton DOSSIER/.test(b.textContent)
       && !puces.some(c => b.textContent.includes(c.textContent.replace(/^[●✓]\s*/, "").trim()))));
   /* Le bouton compte COMME L'INDEX (§4.6) : pièces et règles à part. Le chiffre
      se dérive de la remise ; « 5 pièces » pour trois pièces et deux règles
@@ -32,8 +33,8 @@ console.log("\n=== L'index du dossier ===");
   const r0 = w.JEU.remises[0].pieces, nR = r0.filter(p => w.R.estRegle(w.JEU.pieces[p])).length;
   const nP = r0.length - nR, txt = attaches[0].textContent;
   const dit = (n, mot) => !n || new RegExp("\\b" + n + " " + mot + (n > 1 ? "s" : "") + "\\b").test(txt);
-  check("le bouton compte les pièces et les règles à part, avec les mots de l'index",
-    dit(nP, "pièce") && dit(nR, "règle") && !/nouvelle/.test(txt));
+  check("le bouton compte les pièces et les articles à part, avec les mots de l'index",
+    dit(nP, "pièce") && dit(nR, "article") && !/nouvelle/.test(txt));
 }
 {
   // Dès la deuxième remise, le message compte ce qu'il APPORTE : « nouvelles ».
@@ -56,21 +57,19 @@ console.log("\n=== Tout empan est marqué et cliquable ===");
   check("aucun marqueur {{…}} ne fuit à l'écran", !html.includes("{{"));
 }
 
-console.log("\n=== Surligner : privé, gratuit, illimité ===");
+console.log("\n=== Prendre : un clic, la phrase, rien de transmis (passe K) ===");
 {
   const w = boot();
-  for (const pid of Object.keys(w.JEU.pieces)) w.ouvrirPiece(pid);
-  const tous = w.CHAMPS.map(c => c.id);
-  for (const k of tous) H.surligner(w, k);
-  check(`les ${tous.length} empans tiennent dans le contexte — aucun plafond`, w.S.retenus.length === tous.length);
+  const k = H.empansDe(w, H.pidPremiereRemise(w))[0];
+  const [pid, eid] = H.deK(k);
+  w.ouvrirPiece(pid);
   const avant = w.S.fil.length;
-  H.surligner(w, tous[0]);
-  check("surligner deux fois ne double pas", w.S.retenus.filter(k => k === tous[0]).length === 1);
-  const [pid, eid] = H.deK(tous[0]);
+  check("l'état ne garde plus de passages de côté", w.S.retenus === undefined);
   w.surligner(pid, eid);
-  check("re-cliquer dans la pièce ne l'oublie plus", w.S.retenus.includes(tous[0]));
-  w.oublier(pid, eid);
-  check("oublier — le geste du CONTEXTE — le retire", !w.S.retenus.includes(tous[0]));
+  check("un clic pose le passage dans la phrase", w.S.compo.length === 1 && w.S.compo[0].valeur === k);
+  w.surligner(pid, eid);
+  check("recliquer ne le pose pas deux fois", w.S.compo.filter(p => p.valeur === k).length === 1);
+  check("et ne l'en retire pas : la pièce n'ajoute que", w.R.dansPhrase(w.S, k));
   check("rien n'a été transmis dans le canal", w.S.fil.length === avant);
   check("le plan de plaidoirie reste vide", w.S.plaidoirie.length === 0);
 }

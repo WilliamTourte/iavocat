@@ -315,7 +315,7 @@ const MOTS_CLES = new Set(["if", "for", "while", "switch", "return", "typeof", "
       }
     }
   }
-  regle("R6 · tout id visé existe, et les quatre ancres du tutoriel visent quelque chose", faux);
+  regle("R6 · tout id visé existe, et les zones du tutoriel visent quelque chose", faux);
 }
 
 /* R9 — `attend`/`apres` NE SE LISENT PLUS SUR UNE REMISE (§11). L'ancienne

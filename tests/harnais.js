@@ -94,20 +94,10 @@ function creerHarnais(dossier){
      ID de bloc, pas un rang. */
   const iTermeChamp = w => w.R.indexTermeChamp(w.S);
   const deK = k => { const s=String(k), i=s.indexOf("."); return i<0 ? [s,""] : [s.slice(0,i), s.slice(i+1)]; };
-  /* RETENIR — le clic du joueur sur un passage : depuis la passe H, il le retient
-     ET le prend si la phrase l'attend (§4.6). C'est par lui qu'on compose. */
-  const retenir = (w,k) => { const [pid,eid]=deK(k); w.surligner(pid,eid); };
-  /* RETENIR SEUL — le même clic, puis « ← retirer » s'il a posé : deux portes du
-     joueur, pour l'état « retenu, pas pris » que les fiches supposent. PIÈGE : un
-     drapeau ne recule pas — un article pris par le clic a pu lever `vice_trouve`
-     avant que « ← retirer » le défasse. */
-  const surligner = (w,k) => {
-    if(w.S.retenus.includes(k)) return;
-    const n=w.S.compo.length;
-    retenir(w,k);
-    if(w.S.compo.length>n) w.retirerBloc();
-  };
-  const iRetenu = (w,k) => w.S.retenus.indexOf(k);
+  /* CLIQUER — le clic du joueur sur un passage : il le PREND si la phrase
+     l'attend (§4.6, passes H et K). C'est par lui qu'on compose ; il n'y a pas
+     d'autre porte vers un terme — plus de fiches au CONTEXTE. */
+  const cliquer = (w,k) => { const [pid,eid]=deK(k); w.surligner(pid,eid); };
 
   /* UNE SUITE NE MARCHE QUE LES PORTES DU JOUEUR (§16). PIÈGE PAYÉ, et il a
      coûté cher : ce helper journalisait par `R.clore`, « la même porte un cran
@@ -122,7 +112,7 @@ function creerHarnais(dossier){
      le joueur lance la recherche au composeur, ouvre le résultat, clique son
      texte — il fonde la phrase et rejoint le dossier —, replie la pièce. Déjà au
      dossier, l'article s'y reprend, sans chercher. Ce sont des GESTES D'ÉCRAN —
-     `chercherArticle`, `ouvrirPiece`, `surligner`, `fermerPiece` —, pas une porte
+     `chercherArticle`, `ouvrirPiece`, `surligner` (le clic), `fermerPiece` —, pas une porte
      dérobée (R13). Rend vrai si la liaison est posée ; faux si la recherche sur
      cette paire ne rend pas l'article. */
   // Par la fenêtre, pas par `require` : `npm run vue` porte ce harnais dans la page.
@@ -140,7 +130,7 @@ function creerHarnais(dossier){
     const k=cleArticle(w,b.piece); if(!k) return false;
     if(!chercherPour(w,b.piece)) return false;
     const n=w.S.compo.length;
-    w.ouvrirPiece(b.piece); retenir(w,k); w.fermerPiece();
+    w.ouvrirPiece(b.piece); cliquer(w,k); w.fermerPiece();
     return w.S.compo.length>n;
   }
   /* PRENDRE UNE LIAISON : une liaison-article se prend par le texte de son
@@ -150,10 +140,9 @@ function creerHarnais(dossier){
     if(w.R.estLiaisonArticle(b)) prendreLeTexte(w,b.forme);
     else w.poserBloc(i);
   }
-  /* COMPOSER, PAR LE CHEMIN DU JOUEUR (passe H, §4.6) : un clic par passage, dans
-     sa pièce — il retient et pose —, la relation au composeur, puis le texte de
-     l'article, cliqué au moment où la phrase l'attend. Les fiches ne servent
-     qu'en repli : ce qui est retenu sans être pris. */
+  /* COMPOSER, PAR LE CHEMIN DU JOUEUR (passes H et K, §4.6) : un clic par
+     passage, dans sa pièce — il pose —, la relation au composeur, puis le texte
+     de l'article, cliqué au moment où la phrase l'attend. */
   function composerLien(w,L,{garder=false}={}){
     const f=(J(w).grammaire.formes||{})[L.forme]||{};
     w.viderCompo();
@@ -172,9 +161,9 @@ function creerHarnais(dossier){
       /* 0) LA CITATION : un empan, clos par une liaison qui n'emboîte rien. */
       if(typeof (L.termes||[])[0]==="string"){
         const k=(L.termes||[])[0];
-        const bT=idBloc(w,blocChamp(w)); if(bT<0) return -1;
-        retenir(w,k);                                   // le clic retient ET pose
-        if(!w.S.compo.length) w.poserBloc(bT,iRetenu(w,k));
+        if(idBloc(w,blocChamp(w))<0) return -1;
+        cliquer(w,k);                                   // le clic pose
+        if(!w.S.compo.length) return -1;
         const bc=w.R.blocsOfferts(w.S).findIndex(x=>x.forme===L.forme && !x.imbrique);
         if(bc>=0) w.poserBloc(bc);
         return trouve();
@@ -207,32 +196,33 @@ function creerHarnais(dossier){
     }
     return trouve();
   }
-  /* POSER UNE COMPARAISON : un clic par passage (passe H) — le premier terme,
-     puis le second, comme la fiche les aurait pris —, puis la relation. Un second
-     clic qui ne pose rien — deux dimensions en session 1 — est un échec. */
+  /* POSER UNE COMPARAISON : un clic par passage (passes H et K) — le premier
+     terme, puis le second —, puis la relation. Un clic qui ne pose rien — deux
+     dimensions en session 1 — est un échec. */
   function poserComparaison(w,L){
     const G=J(w).grammaire;
     const [t0,t1]=L.termes||[];
     if(typeof t0!=="string" || typeof t1!=="string") return false;
-    const bT=idBloc(w,blocChamp(w)); if(bT<0) return false;
+    if(idBloc(w,blocChamp(w))<0) return false;
     const n0=w.S.brouillon.length, p0=w.S.prete;
     const echec=()=>{ w.S.brouillon.length=n0; w.S.prete=p0; w.viderCompo(); return false; };
-    retenir(w,t0);
-    if(!w.S.compo.length) w.poserBloc(bT,iRetenu(w,t0));
+    cliquer(w,t0);
+    if(!w.S.compo.length) return echec();
     const bD=w.R.blocsOfferts(w.S).findIndex(x=>x.source!=="note"&&w.R.estSecondTerme(x));
     if(bD>=0){
       const n=w.S.compo.length;
-      retenir(w,t1);
+      cliquer(w,t1);
       if(w.S.compo.length===n) return echec();
       return choisirRelation(w,L.forme) || echec();
     }
     const chemin=cheminVers(w,L.forme);
     if(!chemin.length) return echec();
-    surligner(w,t1);                                    // retenir seul : la fiche le prendra
     for(const etape of chemin){
       const b=idBloc(w,etape); if(b<0) return echec();
-      const bloc=G.blocs.find(x=>x.id===etape);
-      w.poserBloc(b, bloc.type==="terme" ? iRetenu(w,t1) : undefined);
+      const bloc=G.blocs.find(x=>x.id===etape), n=w.S.compo.length;
+      // Le terme se prend dans la pièce, au moment où la phrase l'attend.
+      if(bloc.type==="terme") cliquer(w,t1); else w.poserBloc(b);
+      if(w.S.compo.length===n) return echec();
     }
     return true;
   }
@@ -384,7 +374,7 @@ function creerHarnais(dossier){
            lienVice, lienConclusion, lienFaux, lienTag, sousTerme, liensNeutres, comparaisons, arite,
            citations, blocCite, attentesContenu,
            cloreSurPlace, poserComparaison, choisirRelation, assembler, chercherPour, prendreLeTexte, cleArticle, prendreLiaison, livrerTout,
-           retenir, surligner, iRetenu, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
+           cliquer, iTermeChamp, deK, composerLien, phrasesBruit, cheminVers,
            blocChamp, blocNote, blocForme, idBloc, articlesDisponibles,
            pidAvecDeclenche, pidRegle, pidPremiereRemise, empansDe,
            instruire, terminer, numeroFin, surContenu };

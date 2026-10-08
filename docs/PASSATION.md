@@ -1,12 +1,27 @@
 # IAvocat — Passation de contexte
 
 *À lire en tête d'une nouvelle conversation : où on en est, ce qui mord, ce qui reste ouvert, quoi faire
-ensuite. **Court, et il doit le rester.** État au 7 octobre 2026.*
+ensuite. **Court, et il doit le rester.** État au 8 octobre 2026.*
 
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 657 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 647 contrôles, 8 règles du gardien, ESLint.
+
+**Le 8 octobre, passe L : le CONTEXTE s'appelle DOSSIER.** Les retenus partis, le panneau ne porte
+plus que des documents, et prend leur nom (§4.6, *auteur*) ; son index, qui s'intitulait DOSSIER,
+s'intitule **DOCUMENTS** — pièces reçues et articles trouvés —, et sa seconde colonne *Les
+articles*, plus *Les règles*. À l'écran seulement : le code garde `contexte`, comme il garde *la phrase*
+(§17). L'historique ci-dessous garde l'ancien nom.
+
+**Le 8 octobre, passe K : plus de passages retenus.** Demande de l'auteur : *« on clique sur les
+passages pour les mettre dans la RÉPONSE, et c'est tout ; on ne garde que la notion de DOSSIER »*.
+Les fiches du CONTEXTE s'en vont, et avec elles `S.retenus`, *retenir* et *oublier* (§4.6) : un clic
+dans la pièce pose le passage, ou la ligne sous la pièce dit pourquoi il ne le peut pas (§4.3) ; le
+CONTEXTE ne porte plus que l'index, la recherche et la pièce, qui prend toute la hauteur. Le tutoriel
+perd son temps *« prends sur ta fiche »*, et **gagne *« → Envoyer »***, entouré à la fin de chaque
+geste (§4.8) — un arbitrage du §4.8 renversé. Ce que ça coûte : essayer des paires se fait en
+rouvrant les pièces, et le nom d'une dimension ne se lit plus qu'au survol (§3).
 
 **Le 7 octobre, passes I et J.** L'écran dit *ta RÉPONSE*, jamais *ta phrase* — le code et le
 document gardent *la phrase* (passe I). Puis **l'article se cherche** (passe J, §4.5) : l'avocat n'en
@@ -392,7 +407,7 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 
 - **[R1]** `<script src="x.js"></script>` sur **une ligne, sans attribut** : une variante n'est pas inlinée *du tout*.
 - **[R2]** Les `const` de haut niveau ne sont pas des propriétés de `window` — **mais ils occupent le nom**.
-- **[R6]** Quatre ids sont des ancres du tutoriel : `#discussion`, `#panPiece`, `#zoneRetenus`, `#composeur`.
+- **[R6]** Les zones du tutoriel (`ou:`) sont des littéraux qui visent quelque chose : `#zoneDossier`, `#zoneRecherche`, `#panPiece`, `#composeur`, `#btnCONTEXTE` (la porte du DOSSIER : le code garde `contexte`, §17), `#discussion`.
 - **[R9]** Le tag vit sur l'**attente**, jamais sur la remise — quatre fonctions exceptées.
 - **[R11]** Tout renvoi `§x` désigne une section réelle, dans le bon document.
 - **[R12]** L'export commité est bien celui que produit `npm run export`.
@@ -447,7 +462,7 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   la garde au-dessus de l'`.overlay` (50).
 - **La PLACE DES PANNEAUX DANS LE DOCUMENT est toute la mécanique** : entre la section DISCUSSION et
   `#composeur`, dans le flux, en dessous du seuil de `.wrap.avecLateral` — la pièce ouverte, elle, vit
-  DANS le CONTEXTE (§4.6, §4.10 règle 3 CONCEPTION) et ne passe plus par `#modalRoot`. Les déplacer
+  DANS le DOSSIER (`#contexte`, §4.6, §4.10 règle 3 CONCEPTION) et ne passe plus par `#modalRoot`. Les déplacer
   ailleurs dans `.wrap`, ou les repasser en `position:absolute` (ce qu'ils ont été une heure), leur
   refait recouvrir la conversation — et **rien ne le dirait**, aucune suite ne voyant une géométrie.
 - **La colonne tient dans la fenêtre, et la conversation est la SEULE bande élastique EN HAUTEUR en
@@ -457,12 +472,12 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   son gabarit habituel, est AU-DESSUS du seuil de 900px : la capture y exerce désormais la colonne
   latérale en grille, pas l'empilement — `npm run vue` doit aussi capturer un gabarit sous 900px pour
   éprouver l'élasticité verticale d'origine.*
-- **Une pièce n'est JAMAIS ouverte hors du CONTEXTE** : `suivrePhrase`, en TÊTE de `rendreTout`, la
+- **Une pièce n'est JAMAIS ouverte hors du DOSSIER** : `suivrePhrase`, en TÊTE de `rendreTout`, la
   replie dès que `panneau` n'est plus `"contexte"` — toutes les portes qui le referment passent donc
   par là, et la réplique `declenche` tombe dans le fil AVANT qu'il soit dessiné. Le déplacer après
   `renderDISCUSSION` ferait paraître la réplique un geste trop tard ; le retirer laisserait une pièce
   ouverte invisible, `S.modalPiece` compris. Une partie ne se reprend jamais sur une pièce
-  ouverte : `sauverPartie` écrit `modalPiece:null` — la reprise qui rouvrait le CONTEXTE au
+  ouverte : `sauverPartie` écrit `modalPiece:null` — la reprise qui rouvrait le DOSSIER au
   démarrage était du code mort, retiré le 6 octobre.
 - **L'index se replie, mais `#zoneDossier` reste là** (§4.6) : c'est une ancre du tutoriel (R6), et
   le halo doit pouvoir l'entourer replié. Les puces restent dans le DOM, sous `hidden` — le motif
@@ -474,17 +489,13 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   formes, elle passerait pour une *différence* entre deux passages de même dimension. Le contenu
   livré la déclare en dernier et ne le verrait pas — un contrôle la remonte exprès. Et le diagnostic
   ne la compte pas comme une forme qui compare (*« sans forme déductible »*).
-- **Une fiche refusée est `aria-disabled`, jamais `disabled`** (§4.6, §4.10 règle 5) : un bouton
-  `disabled` sort de la tabulation et n'a plus de clic — la raison n'avait plus de porte. Son
-  `onclick` devient `passageRefuse`, qui redit la raison ; `FOCALISABLES` la compte donc parmi les
-  boutons vivants, et c'est voulu. Un contrôle lit `.disabled` pour le dire faux.
 - **La bascule DISCUSSION est un troisième état d'ÉCRAN** (`discussionAgrandie`), jamais sauvé, qui
-  n'existe que CONTEXTE ouvert : `majLateral` l'oublie dès que `panneau` n'est plus `"contexte"`, et
+  n'existe que DOSSIER ouvert : `majLateral` l'oublie dès que `panneau` n'est plus `"contexte"`, et
   `ouvrirPiece` le remet à faux, comme `dossierDeplie` — ‹ › (`voisine`) n'y touchent pas. Elle ne
   change que le **gabarit** (`.wrap.discussionAgrandie`), jamais un span. L'en-tête est réécrit à
   chaque rendu (`enteteDISCUSSION`) : le bouton porte sa clé, `data-f="discussion"`.
-- **Pièce ouverte, `#contexte` porte deux bandes défilantes de plus** (`.defile[id]`) :
-  `garderDefilement` les retrouve par leur id. Une bande sans id repartirait en haut à chaque geste.
+- **Pièce ouverte, `#contexte` porte une bande défilante de plus** (`.defile[id]`, `#piece`) :
+  `garderDefilement` la retrouve par son id. Une bande sans id repartirait en haut à chaque geste.
 - **Un passage est un `span[role=button][tabindex=0]`, jamais un `<button>`** : un bouton est une
   boîte insécable même en `display:inline` (mesuré, Chromium 141) — un passage long sauterait à la
   ligne d'un bloc. Entrée et Espace passent par `clavier`, délégué sur `document`.
@@ -497,28 +508,30 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **Un contrôle clavier désigne son élément par sa clé, jamais par `activeElement`** : cliquer
   `actif()` faisait tomber la suite au premier focus perdu, et masquait les contrôles d'après. Les
   31 contrôles clavier ont chacun été **cassés une fois** pour les voir tomber.
-- **Le clic dans la pièce EST la fiche** (`retenirEtPrendre`, passe H) : il appelle `poserBloc` au
-  rang de `indexTermeChamp`, le prédicat même qui active les fiches — jamais un chemin à lui.
-  Changer ce que la fiche accepte change ce que le clic prend ; lui donner sa propre voie ferait
-  diverger deux portes qui disent faire la même chose. **Et un passage déjà dans la phrase n'y
-  retourne pas** : sans la garde, le reclic le poserait en second terme, et *le même passage deux
-  fois* tomberait en refus d'écran — un reproche pour un clic de lecture. La fiche suit la même
-  garde, par le même prédicat : `R.dansPhrase` sert la pièce, l'étiquette *« dans ta phrase »* et la
-  fiche refusée (`passageDejaPris`) — une vérité, trois usages.
-- **`H.surligner` n'est plus le clic du joueur** (passe H) : c'est *retenir seul* — le clic, puis
-  *« ← retirer »* s'il a posé ; le clic, c'est `H.retenir`. Un contrôle qui veut l'état *retenu, pas
-  pris* passe par le premier. **Et un drapeau ne recule pas** : un article pris par le clic a pu
-  lever `vice_trouve` avant que *« ← retirer »* le défasse.
+- **Le clic dans la pièce suit la grammaire** (`prendre`, passes H et K) : il appelle `poserBloc` au
+  rang de `indexTermeChamp` — le prédicat même qui fait se cliquer la voix et décide si le panneau
+  suit la phrase —, la **clé** du passage en source (plus un rang dans `S.retenus`, parti). Jamais
+  un chemin à lui. **Et un passage déjà dans la phrase n'y retourne pas** : sans la garde, le
+  reclic le poserait en second terme, et *le même passage deux fois* tomberait en refus d'écran —
+  un reproche pour un clic de lecture. `R.dansPhrase` sert la garde, la marque du passage pris
+  (`.pris`, ✓) et le tutoriel — une vérité, trois usages.
+- **À l'écran DOSSIER, dans le code `contexte`** (passe L, §4.6, §17) : `#contexte`, `#panCONTEXTE`,
+  `#btnCONTEXTE`, `panneau="contexte"`, `renderCONTEXTE`. Et ce qui s'appelle *dossier* dans le
+  code — `#zoneDossier`, `dossierPlie`, `basculerDossier` — est l'INDEX, que l'écran intitule
+  DOCUMENTS. Renommer l'un sans l'autre ferait se croiser les deux.
+- **Le harnais prend un passage d'une seule façon** (passe K) : `H.cliquer`, le clic du joueur.
+  `H.surligner` (« retenir seul ») est parti avec l'état qu'il fabriquait. **Et un drapeau ne recule
+  pas** : un article pris par le clic a pu lever `vice_trouve` avant que *« ← retirer »* le défasse.
 - **La ligne sous la pièce se ramène dans le champ** (`voirEcho`, passe H) : le premier clic fait
   grandir le composeur, et sur le PV la ligne naissait sous le bas de la bande. Elle défile jusqu'à
   elle, jamais au point de faire sortir le passage cliqué, puis `majDebord` remesure le fondu.
   **Et `voirCibleTuto` ne défile pas vers la barre du composeur** : elle colle, *« ← retirer »* y est
   toujours dans le champ, et y défiler rognait l'en-tête RÉPONSE. Aucune suite ne voit ni l'un ni
   l'autre — `npm run vue` seul, captures *piece-mauvais-passage* et *piece-pris*.
-- **Le tutoriel lit aussi la PHRASE** (`tutoIntrus`, passe H) : un passage retenu à tort restait au
-  CONTEXTE ; il entre désormais dans la phrase, et le bon, cliqué ensuite, y serait refusé ou
-  ouvrirait une comparaison. Ce temps passe AVANT tous les autres, et ne lit que les passages —
-  jamais la relation, qu'il ne signale pas.
+- **Le tutoriel lit la PHRASE, et rien d'autre** (`tutoIntrus`, `tutoChercher`, passes H et K) : un
+  passage posé à tort y serait le premier terme, et le bon, cliqué ensuite, y serait refusé ou
+  ouvrirait une comparaison. L'alerte passe AVANT tous les autres temps, et ne lit que les passages
+  — jamais la relation, qu'il ne signale pas.
 - **Le panneau ouvert se referme sur ce que la phrase ACCEPTE, jamais sur ce que la voix RÉCLAME** :
   un passage posé, la voix se tait — la phrase se tient — mais la grammaire ne sait pas encore si c'est
   une citation ou le premier temps d'une comparaison (§4.5). Suivre la voix retirerait le clavier au
@@ -541,16 +554,17 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 - **`#composeur` est le frère de `#discussion`, jamais son enfant** — `renderDISCUSSION` finit par
   `scrollTop = scrollHeight`. Enfant direct de `.wrap`, en bandeau plein largeur après les trois
   `.col` — jamais dans une section colonne.
-- **`.col{display:flex}` bat `[hidden]{display:none}`** : cacher un panneau (CONTEXTE, PLAIDOIRIE, et
+- **`.col{display:flex}` bat `[hidden]{display:none}`** : cacher un panneau (DOSSIER, PLAIDOIRIE, et
   désormais la pièce) demande `.col[hidden]{display:none}` — sans lui, `display:flex` l'emporterait.
   *Point corrigé : `.cloture` et `#composeur` ne sont plus « câblés sur trois colonnes » depuis que la
   grille `.wrap.sansPlan` a disparu avec elle (commit `63a7e06`) — ils sont de simples enfants du flex
   `.wrap`, pleine largeur par défaut. La classe `.wrap.avecLateral` (§4.6 CONCEPTION) qui rouvre une
   colonne latérale n'y touche pas davantage : elle pose `grid-area` une fois pour toutes, jamais un
   span recalculé.*
-- **`S.retenus` est sérialisé dans `localStorage`** et s'appelait `S.memoire` : la signature de contenu
-  **ne protège pas** d'un renommage d'état — `restaurerPartie` porte la reprise, et tout futur
-  renommage aura le même devoir.
+- **La signature de contenu ne protège pas d'un changement d'état** : `S.retenus` (né `S.memoire`)
+  est parti à la passe K, et une partie d'avant le porte encore — `restaurerPartie` en sort les
+  articles vers le dossier, puis supprime le champ. Tout futur renommage ou retrait aura le même
+  devoir.
 - **`lienDe` apparie sur `{forme, termes}`** : renommer une forme oblige à faire suivre **tous** les
   liens qui l'écrivaient — **le vice compris**. Oublié, il cesse d'exister et sept contrôles de
   `test_o5` tombent (vérifié en cassant, §16).
@@ -575,11 +589,11 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
   `S.satisfaits` ne veut dire « citation acquise » que parce que la remise 1 se sert DANS L'ORDRE**
   (`horsOrdre`, §3 CONCEPTION) : une réponse qui servait par anticipation la deuxième question
   passait pour la première, et le tutoriel se taisait au milieu de *citer*.
-- **Retenir se dérive aux deux gestes** (`tutoRetenir`, §4.8) des passages du lien attendu
-  (`tutoTermes`). Son alerte lit le DERNIER passage retenu, ni attendu ni cité par une réponse servie
-  (`tutoServis`) : sans cette exception, la citation de la première question sonnait faux à la
-  seconde. Et la clé de `tutoVues` distingue le second passage cherché (`n`) : sans elle, *« Ouvre une
-  pièce »* restait réduite au moment même où elle nomme une autre pièce.
+- **Chercher le passage se dérive aux deux gestes** (`tutoChercher`, §4.8) des passages du lien
+  attendu (`tutoTermes`) qui ne sont pas encore dans la phrase. La clé de `tutoVues` distingue le
+  second passage cherché (`n`) : sans elle, *« Ouvre une pièce »* restait réduite au moment même où
+  elle nomme une autre pièce. **La bulle finit sur *« → Envoyer »*** (passe K) : `f:"envoi"` dans
+  `#composeur` — la barre colle, `voirCibleTuto` n'y défile pas.
 - **Cacher la clôture, c'est cacher le BOUTON et son aide, jamais `.cloture`** : la barre porte aussi
   *« ⟲ recommencer »*, qui ne s'absente jamais (§4.9). Et `disabled` **double** `hidden` — trois
   contrôles lisent `btnCloture.disabled` pour dire que le refus est vrai, et il doit l'être aussi pour
@@ -624,11 +638,11 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   livraison le mettait sous les yeux.
 - **Le clic qui prend (passe H) : des phrases involontaires ?** Qui rassemble en lisant voit ses
   deux premiers clics former une phrase — en session 2, souvent une juxtaposition. Rien ne part sans
-  *« → Envoyer »*, et *« ← retirer »* ou *« tout effacer »* défont sans rien ôter au CONTEXTE. Le
+  *« → Envoyer »*, et *« ← retirer »* ou *« tout effacer »* défont la phrase. Le
   repli est connu, et écarté d'avance : ne poser un second terme depuis la pièce que s'il est de la
-  même dimension serait un refus d'écran hors session 1 (§4.11). Et **le CONTEXTE-clavier ne
-  s'enseigne plus** sur le chemin direct : les fiches se découvrent-elles quand on en a besoin —
-  après un *« ← retirer »*, ou pour essayer des paires ? **Non joué.** Vu à `npm run vue` : à
+  même dimension serait un refus d'écran hors session 1 (§4.11). *Depuis la passe K, plus de fiches
+  à découvrir : qui veut essayer des paires rouvre les pièces — le coût que l'auteur a pris (§4.6).*
+  **Non joué.** Vu à `npm run vue` : à
   1280×800, la bulle de *« ← retirer »* couvre *« tout effacer »* ; à 390×800, elle couvre la phrase
   même qu'elle demande de défaire, et la ligne sous la pièce ne s'y montre qu'à moitié.
 - **La CALIBRATION tient-elle ?** Première chose à regarder : la session 1 se sent-elle comme un
@@ -685,13 +699,15 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   CONTEXTE — le CONTEXTE ouvert, il passe désormais à l'index (§4.8).
 - *Fermé le 4 octobre, suites 3 et 4 : « un visuel qui dit qu'un passage a été ajouté au CONTEXTE ».*
   ✓ sur le passage, ligne sous la pièce, fiche neuve allumée juste dessous, porte allumée (§4.3).
-- **La pièce dans le CONTEXTE tient-elle sur un téléphone ?** En 390×800, index, pièce et retenus se
+  *Depuis la passe K, le passage va à la RÉPONSE : le ✓ et la ligne restent, la fiche et la porte
+  allumées sont parties.*
+- **La pièce dans le DOSSIER tient-elle sur un téléphone ?** En 390×800, index et pièce se
   partagent un panneau bas : il redéfile d'un bloc, l'index part hors champ. Lisible, mais serré —
   **à jouer sur un vrai téléphone.** Et au-dessus du seuil : la conversation rétrécie par la colonne
   élargie reste-t-elle confortable ?
 - **RAG sur les messages de l'avocat** (pouvoir citer un passage qui ne vient pas d'une pièce jointe),
-  **regroupement des passages retenus en clusters**, **chain-of-thought pour les choix moraux** (une
-  phase où l'IA se parle à elle-même, suggérée après une déconnexion de Maître Auber) : trois idées
+  **chain-of-thought pour les choix moraux** (une
+  phase où l'IA se parle à elle-même, suggérée après une déconnexion de Maître Auber) : deux idées
   venues d'un retour de playtest, **aucune encore nulle part dans la documentation**. Consignées ici pour
   ne pas les perdre — à ne pas coder avant que la boucle de base (le sujet de cette passe) soit validée
   par un joueur neuf, conformément au §4.
@@ -702,7 +718,8 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   place.** *Tranché le 5 octobre (§4.11) : l'étiquette devient une marque sans mot — la couleur et le
   trait de la dimension sous le titre de l'article.*
 - *Fermé par la passe F : « l'article s'offre sans avoir été lu ».* Il s'offrait *reçu*, puis
-  *ouvert* ; il s'offre désormais *retenu* — on n'invoque pas un texte qu'on n'a pas retenu (§4.5).
+  *ouvert*, puis *retenu* ; il se cherche et se prend désormais (passe J) — on n'invoque pas un
+  texte qu'on n'a pas lu (§4.5).
 - *Fermé le 2 octobre : la **légende** de chaque pièce nomme les dimensions qu'elle porte (§4.3).
   Deux playtests l'avaient demandée, et le `title` qui la remplaçait n'existait ni au clavier ni au
   toucher. Reste à voir si elle suffit, ou si le joueur passe à côté.* **Rouvert par Jean : il passe
@@ -711,21 +728,11 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   **Retirée par l'auteur** (§4.3) : depuis que le marquage ne se montre qu'au survol ou au clic, elle
   ne disait rien qu'on ne voie en passant sur un passage. Le code s'apprend en cherchant ; une
   bordure neutre dit seulement qu'un passage se clique.
-- **Le CONTEXTE à dix-sept fiches** : l'index du dossier grossit avec le dossier, et les passages de
-  la session 1 restent en tête. Trier, replier ou filtrer serait *juger* ce que le §4.6 promet de ne
-  jamais juger — d'où, pour l'instant, un plancher au panneau, un index resserré, le dernier retenu
-  amené dans le champ et le fondu qui dit qu'il en reste. **Sorti du panneau, l'index donnerait de
-  l'air** : écarté le 2 octobre pour ne pas ouvrir une troisième porte, à rouvrir si ça remord.
-  **Ça remord (Jean)** : en session 2, la pièce ouverte ne montre que deux lignes — et déjà en
-  session 1 à 1280×800, sur les captures —, et les fiches de l'affaire close restent en tête. Il
-  propose de replier index et retenus pièce ouverte, et de ranger les affaires closes : replier par
-  remise ne juge aucun passage, c'est un fait de remise. *Le 4 octobre, sixième passe : l'index se
-  replie pièce ouverte (§4.6) — à 1280×800 la pièce se lit en entier ; à 390×800 elle reste à deux
-  lignes, le panneau entier ne faisant que 353 px — et l'auteur l'y garde, entre la conversation et
-  le composeur. Le 5 octobre : les passages d'une remise close se rangent sous ceux de la remise en
-  cours, repliés (§4.6) — à voir sur une partie si le pli se trouve.* **Défait le 6 octobre**
-  (Bérengère, tranché par l'auteur) : on ne purge pas le CONTEXTE entre deux remises. La gêne de
-  Jean est rouverte ; si elle remord, un repli qui ne dise pas *remise* (§4.6).
+- *Fermé par la passe K : « le CONTEXTE à dix-sept fiches ».* Jean trouvait la pièce à l'étroit,
+  à deux lignes en session 2, et les fiches de l'affaire close en tête ; l'index s'est replié pièce
+  ouverte (4 octobre), un repli par remise a vécu un jour (5-6 octobre). **Il n'y a plus de
+  fiches** : la pièce prend toute la hauteur sous l'index. À 390×800, le panneau reste bas — c'est
+  le point *téléphone* ci-dessus.
 - **Deux portes valent-elles mieux qu'une ?** La voix du composeur enseigne, la barre nomme et donne
   accès. Le §4.9 interdit de redire, pas d'offrir deux chemins. **Réponse partielle du 1ᵉʳ octobre :
   elles coûtent avant de servir** — au premier écran, un joueur a noté *« CONTEXTE / PLAIDOIRIE :
@@ -756,11 +763,12 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   (Jean : *« 14h02, c'est le lendemain du crime ? »*) et chaque valeur `quand` la sienne, en ISO
   (§11) : le relevé du 13 à 14h02 vient désormais **après** l'arrivée du 12 à 22h04, sans une
   ligne de moteur.
-- **Aucune barrière entre les affaires** : fiches et articles de la session 1 restent composables
-  dans la session 2. C'est voulu — le CONTEXTE est gratuit et cumulatif (§4.6) — mais ça produit des
+- **Aucune barrière entre les affaires** : pièces et articles de la session 1 restent au dossier,
+  et leurs passages composables dans la session 2. C'est voulu — le DOSSIER est gratuit et cumulatif (§4.6) — mais ça produit des
   phrases qui n'ont pas de sens, et le joueur l'a essayé exprès.
 - *Fermé le 5 octobre :* la croix d'un panneau et celle d'une fiche portaient le même signe — la
-  fiche dit désormais *oublier* (§4.3), et la croix du CONTEXTE perd Échap pièce ouverte (§4.10).
+  fiche disait *oublier* (§4.3), et la croix du CONTEXTE perd Échap pièce ouverte (§4.10). *La fiche
+  est partie à la passe K ; la leçon reste : le × ferme ou replie, il ne retire rien.*
 - **La question épinglée n'existe pas en session 2** : sa demande vit dans le *texte de la remise*,
   qu'aucune règle ne sait rappeler (§4.9 règle 3). Le repli est connu — descendre la demande sur une
   `question` d'attente, comme en session 1 — et il coûte zéro ligne de code.
@@ -781,16 +789,15 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
   et la phrase pleine le dit en une ligne (§4.6).* *Le soulignement au survol ou au clic, demandé par
   l'auteur, est fait (§4.3), la légende retirée et les passages encadrés d'une bordure neutre* —
   reste à voir, au toucher, si un joueur comprend ce que couleur et trait veulent dire : il ne les
-  voit qu'une fois le passage retenu.
+  voit qu'une fois le passage pris. **Et depuis la passe K, le NOM d'une dimension ne se lit plus
+  qu'au survol** — les fiches le portaient en tête de groupe : au toucher, il n'est plus nulle part.
 - **La bulle ancrée n'a été jouée que dans Chromium**, 1280×800 et 390×800 : sur un vrai téléphone,
   et à côté d'une zone longue comme le texte de la pièce, couvre-t-elle ce qu'on vient chercher ? Elle
   se réduit au geste suivant ; reste à savoir si ça suffit.
 
-- **La seconde question de la calibration, deux voix qui ne disent pas la même chose** (passe E) :
-  la bulle dit de retenir les deux heures, la voix du composeur de prendre un passage du CONTEXTE —
-  qui n'est plus vide, la citation y est restée. La voix se dérive de la phrase et du CONTEXTE,
-  jamais de la question (§4.9 règle 1) ; reste à voir si un joueur y prend la citation pour une
-  heure. Le même écart existe en remise 2, CONTEXTE plein. **Non joué.**
+- *Fermé par la passe K : « la seconde question de la calibration, deux voix qui ne disent pas la
+  même chose ».* La voix du composeur disait de prendre un passage du CONTEXTE, où la citation était
+  restée ; elle dit désormais de cliquer un passage dans une pièce, comme la bulle.
 - **Le rapport du 6 octobre (Jean 4) laisse cinq points à trancher** — au `TODO.md`, §0 : les réponses
   de calibration en PLAIDOIRIE (le §4.6 les y veut), le dilemme jamais posé (rejoint les directives
   et le canal de révélation, ci-dessus), le féminin de la Fin 2, le palier sans séjour, le même
@@ -808,8 +815,9 @@ relecture. **Il faut la rendre à un joueur neuf**, qui n'a pas lu ce qui préc�
    moment où l'avocat cesse de savoir ? *Le 2 octobre a répondu à moitié — « l'affaire 1 assumée
    comme examen » — mais le même joueur trouvait encore que l'avocat raisonne à sa place. Le bandeau
    a cessé de le doubler depuis ; à rejouer.*
-2. **Le CONTEXTE tient-il sous la composition ?** C'est la question du 2 octobre, et la seule que
-   `npm run vue` sait poser : à deux fiches pendant la comparaison, puis à dix-sept.
+2. **La pièce tient-elle sous la composition ?** C'est la question du 2 octobre, et `npm run vue`
+   sait la poser : la pièce, seule sous l'index depuis la passe K, pendant que la comparaison
+   grandit au composeur.
 3. **Rejouer la session 1 avec les nouveaux libellés** (*« et l'article 3 écarte la déposition qui
    s'y heurte »*) : la phrase composée se lit-elle comme une pensée ou comme un formulaire ? C'est le
    premier point ouvert du §3 — et l'excuse la plus facile vient d'être retirée.
@@ -821,9 +829,9 @@ relecture. **Il faut la rendre à un joueur neuf**, qui n'a pas lu ce qui préc�
    replis du §3, qui ne coûtent aucune ligne de code.
 7. **Rendre la partie au testeur du clavier**, lecteur d'écran allumé (NVDA, VoiceOver) : les annonces
    tombent-elles au bon moment, et en disent-elles trop ? Aucune suite ne l'entend (§4.10).
-8. **Le clic qui prend (passe H)** : qui rassemble en lisant voit-il sa phrase se former sous ses
-   clics, et la défait-il sans peine ? Les fiches du CONTEXTE se découvrent-elles quand on en a
-   besoin (§3) ?
+8. **Le clic qui prend (passes H et K)** : qui clique en lisant voit-il sa phrase se former, et la
+   défait-il sans peine ? Sans fiches, essayer des paires en rouvrant les pièces lasse-t-il (§3) ?
+   Et la bulle sur *« → Envoyer »* : aide-t-elle, ou dit-elle trop que la phrase est la bonne ?
 9. **La recherche (passe J)** : le joueur lit-il les trois articles, ou les essaie-t-il ? Les leurres
    tiennent-ils — et l'auteur les réécrit d'abord (`TODO.md`) ?
 
@@ -1019,3 +1027,15 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   comparaison nue retenue en session 1. Neuf leurres, premier jet. Le harnais cherche, ouvre, clique
   (`H.prendreLeTexte`) ; le diagnostic et le pas-à-pas appellent `baseRecherche`. Chaque contrôle
   neuf vu tomber, dix mutations. 657 contrôles.
+- **8 octobre, passe K** (§4.3, §4.6, §4.8, §4.11, §16, §17) — **plus de passages retenus** :
+  `S.retenus`, `surligner`/`oublier` aux règles, `renderRetenus` et les fiches à l'écran s'en vont ;
+  `retenirEtPrendre` devient `prendre`, et `poserBloc` reçoit la clé du passage. La pièce prend la
+  hauteur du CONTEXTE ; un clic qui ne prend rien dit pourquoi sous la pièce. Le tutoriel perd
+  *« prends sur ta fiche »* et gagne *« → Envoyer »* aux deux gestes (`tutoEnvoyer`,
+  `tutoChercher`). La reprise laisse tomber `retenus`/`memoire`. Le pas-à-pas de l'atelier garde
+  ses repérages à lui (`SIM.surlignes`). Le harnais n'a plus que `H.cliquer`. Sept mutations, chaque
+  contrôle neuf vu tomber. Au passage, `npm test` était rouge depuis `da63f26` (*« RÉPONSE.. »*).
+  646 contrôles.
+- **8 octobre, passe L** (§4.6, §17) — le CONTEXTE s'appelle **DOSSIER** à l'écran, son index
+  **DOCUMENTS** (*auteur* : il tient les pièces et les articles) ; le code garde `contexte`. Une vingtaine de chaînes, l'atelier (inspecteur, frise), et
+  un contrôle qui veut qu'aucun mot de CONTEXTE ne reste à l'écran, vu tomber. 647 contrôles.
