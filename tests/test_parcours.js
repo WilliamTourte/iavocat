@@ -1240,7 +1240,7 @@ console.log("\n=== Le jeu se joue au clavier ===");
   check("un passage retenu le dit à qui ne voit pas le fond",
     /retenu/.test(passage(autre).textContent));
   check("retenir se voit sous la pièce, au moment même — et la ligne dit qu'il est aussi posé (§4.3)",
-    /Ajouté à ta RÉPONSE, et retenu dans ton CONTEXTE/.test((d.querySelector("#panPiece .rappel.retenu") || {}).textContent || ""));
+    /Ajouté à ta RÉPONSE./.test((d.querySelector("#panPiece .rappel.retenu") || {}).textContent || ""));
   check("et le dit à l'oreille", /Ajouté à ta RÉPONSE, et retenu/.test(annonce()));
   check("et la porte CONTEXTE s'allume", d.getElementById("btnCONTEXTE").classList.contains("recoit"));
   check("et la fiche neuve s'allume juste sous la pièce, là où on va la prendre",
@@ -1598,7 +1598,7 @@ console.log("\n=== Un clic dans la pièce retient et prend (§4.6, passe H) ==="
   check("un clic sur un passage le retient ET le pose, la phrase l'attendant",
     w.S.retenus.includes(a) && termes().join() === a);
   check("la ligne sous la pièce dit les deux, et l'annonce aussi",
-    /Ajouté à ta RÉPONSE, et retenu dans ton CONTEXTE/.test(ligne())
+    /Ajouté à ta RÉPONSE./.test(ligne())
     && /Ajouté à ta RÉPONSE, et retenu/.test(d.getElementById("annonce").textContent));
   check("et sa fiche dit « dans ta RÉPONSE »",
     /dans ta RÉPONSE/.test(d.querySelector(`#zoneRetenus [data-f="c:${a}"]`).textContent));

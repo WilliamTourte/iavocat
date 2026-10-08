@@ -292,7 +292,7 @@ arbitrage de fond : le composeur s'intitule déjà RÉPONSE (`renderCompo`, `ari
 relecture à l'œil.*
 
 - [x] **Harmoniser : partout où l'écran parle au joueur, « ta RÉPONSE ».** *auteur* — *Fait le 7 :
-      la ligne sous la pièce dit « ✓ Ajouté à ta RÉPONSE, et retenu dans ton CONTEXTE » au premier
+      la ligne sous la pièce dit « ✓ Ajouté à ta RÉPONSE. » au premier
       clic, « ✓ Ajouté à ta RÉPONSE » au reclic, et « Déjà dans ton CONTEXTE — « oublier », sur sa
       fiche, pour l'en retirer » quand il n'a rien fait ; la bulle, les raisons du CONTEXTE, le badge
       et le refus de `regles.js` suivent ; §4.3 et §4.6, §16 et `test_parcours` aussi. Restent hors

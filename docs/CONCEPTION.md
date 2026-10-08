@@ -194,7 +194,7 @@ porte tout passage, il se lisait comme un survol. Trois marques, aucune qui fass
 qui dure plus d'un geste : le passage retenu porte un **✓ en exposant**, posé hors du flux (§4.10
 règle 5 : un état s'écrit) ; **la même ligne que le rappel**, sous la pièce, dit *« ✓ Retenu dans ton
 CONTEXTE »* le temps d'un rendu — comme lui, sans minuteur, puisque ce jeu ne rend jamais hors d'un
-geste du joueur —, et *« ✓ Ajouté à ta RÉPONSE, et retenu dans ton CONTEXTE »* quand le même clic l'a
+geste du joueur —, et *« ✓ Ajouté à ta RÉPONSE. »* quand le même clic l'a
 pris (passe H, §4.6) — *« ✓ Ajouté à ta RÉPONSE »* seul quand il était déjà retenu : elle dit lequel des deux a eu lieu ; et **la fiche neuve s'allume une fois** dans les retenus, juste sous la pièce
 (§4.6) — là où le passage est allé, et où on va le prendre —, comme le compte de la porte CONTEXTE.
 La ligne reste **dans le flux** : collée au bas de la pièce, elle couvrait, dans la bande étroite du

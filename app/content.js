@@ -1077,7 +1077,7 @@ window.CONTENU = {
         },
         {
           "attend": "temoin",
-          "question": "Maintenant, deux heures : celle à laquelle la patrouille dit être arrivée sur les lieux, et celle à laquelle le voisin dit avoir entendu des éclats de voix. Quel lien tu fais entre les deux ? Et trouve-moi l'article qui nous permet de nous en servir devant le tribunal."
+          "question": "Maintenant, donne-moi deux heures : celle à laquelle la patrouille dit être arrivée sur les lieux, et celle à laquelle le voisin dit avoir entendu des éclats de voix. Quel lien fais-tu entre les deux ? Et trouve-moi l'article qui nous permet de nous en servir devant le tribunal."
         }
       ]
     },
