@@ -14,7 +14,8 @@ toutes les dimensions, trois remises, et des aveux en garde à vue qui sont à l
 (l'IA *sait*) et le vice (recueillis sans l'avocat demandé). Il est posé tel quel, avec l'idée d'un
 suicide-vengeance ajoutée le même jour, comme **base de réflexion** dans `docs/CAS_MEDICAMENTS.md`,
 suivi d'une proposition d'intégration et de huit questions ⚖. Le point dur : la vérité d'une
-relation ne se tire plus des valeurs, l'auteur la déclare. Un essai jetable du moteur, hors du
+relation ne se tire plus des valeurs, l'auteur la déclare — **dans une liste à part**, tranché le
+jour même ; les sept autres questions restent ouvertes. Un essai jetable du moteur, hors du
 dépôt, en a mesuré le prix : +23 lignes, 654 contrôles sur 655. **CONCEPTION et le code n'ont pas
 bougé.**
 

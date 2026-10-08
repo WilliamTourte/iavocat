@@ -177,7 +177,8 @@ pas écrite : une **grille par dimension** dans l'atelier, où l'auteur ne coche
 incohérences — un reflet qui appelle `deduire`, jamais une copie (§15). À vingt pièces, de l'ordre
 de trois cents paires à relire ; à dix, une centaine. Un argument de plus pour l'élagage.
 
-**Où l'écrire — ⚖.**
+**Où l'écrire — tranché par l'auteur le 8 octobre : dans une liste à part.** Les deux options
+pesées :
 
 | | Dans les liens | Dans une liste à part |
 |---|---|---|
@@ -185,7 +186,7 @@ de trois cents paires à relire ; à dix, une centaine. Un argument de plus pour
 | **Ce que ça coûte** | rien au schéma : l'atelier sait déjà écrire un lien | une clé neuve (schéma 4, `migrerContenu`), les renommages à suivre (`reecrireTermes`) |
 | **Ce qui mord** | **le fait se cache dans une réplique** : changer la relation d'un lien change le dossier, sans que rien le dise | rien de neuf : un lien dont la relation contredit la liste est faux, et le diagnostic garde son sens (§15) |
 
-**Proposé : la liste à part, écrite par la grille.** La grille est due dans les deux cas — elle est
+**Retenu : la liste à part, écrite par la grille.** La grille est due dans les deux cas — elle est
 l'éditeur de la liste, si bien que son coût se confond avec celui de la relecture. Dans les liens,
 basculer un verdict depuis la grille voudrait dire créer ou supprimer une réplique, sous un article
 qu'il faudrait choisir. Et l'essai a montré le danger de l'autre voie (ci-dessous). **Les formes
@@ -202,16 +203,30 @@ fait mentir un lien en changeant sa relation, et attend que le diagnostic le dis
 le lien ne ment plus — il change le fait. C'est l'argument de la liste à part, et le §15 en fait
 *le danger le plus coûteux du dépôt*.
 
-**Le mot, et l'accord — ⚖.** *« {a} et {b} sont cohérents »* s'accorde (*« l'heure d'arrivée… et
-l'heure des éclats de voix sont cohérentes »*), et le moteur ne connaît pas le genre d'un nom : ce
-serait un accident de langue sur la phrase même de la calibration (§8.8). Trois voies :
-- **un verbe qui ne s'accorde pas** — l'essai a pris *« concordent / ne concordent pas »*. Le §4.5
-  l'avait écarté pour trois raisons que le verdict déclaré fait tomber : le vice était une
-  concordance, il devient une discordance ; deux heures ne se jugeaient pas sur leurs valeurs ;
-  et *« 21h52 et 22h04 concordent »* devient vrai ;
-- ***« se tiennent / ne se tiennent pas »***, plus proche de « cohérent » ;
-- **« cohérent » sur le bouton** (une étiquette ne s'accorde pas) **et un verbe dans la phrase** :
-  deux mots pour une chose, ce que l'écran s'interdit ailleurs (§4.6).
+**Le mot, et l'accord — ⚖.** La **phrase composée** est celle que le jeu écrit au composeur — *ta
+RÉPONSE* à l'écran — à mesure que le joueur pose ses deux passages, choisit la relation, puis
+l'article ; c'est elle qui part à l'envoi, et qu'Auber lit. Le mot de la relation y est écrit par le
+`patron` de sa forme (§11), autour des `nom` des deux passages : *« {a} et {b} … »*. Or *« {a} et
+{b} sont cohérents »* s'accorde (*« l'heure d'arrivée… et l'heure des éclats de voix sont
+cohérentes »*), et le moteur ne connaît pas le genre d'un nom : un patron unique écrirait
+*« … ne sont pas cohérents »* sur la phrase même de la calibration — un accident de langue
+(§8.8). La seule tournure sûre est **« {a} et {b} » suivis d'un verbe au pluriel, ou d'une
+locution invariable** : le sujet est toujours pluriel, et rien ne s'accorde en genre. Trois
+candidates, sur deux phrases du cas (la calibration, rendue par l'essai ; le vice, avec des `nom`
+encore à écrire) :
+
+| Le mot | La calibration | Le vice |
+|---|---|---|
+| **concordent** | *l'heure d'arrivée de la patrouille et l'heure des éclats de voix ne concordent pas, et l'article 3 permet la mise de côté de ce témoignage.* | *la demande d'un avocat et les propos tenus hors la présence de son conseil ne concordent pas, en violation de l'article …* |
+| **se tiennent** | *… et l'heure des éclats de voix ne se tiennent pas, et l'article 3 …* | *… et les propos tenus hors la présence de son conseil ne se tiennent pas, en violation …* |
+| **sont en cohérence** | *… et l'heure des éclats de voix ne sont pas en cohérence, et l'article 3 …* | *… et les propos tenus hors la présence de son conseil ne sont pas en cohérence, en violation …* |
+
+*Concordent* a été écarté au §4.5 pour trois raisons que le verdict déclaré fait tomber : le vice
+était une concordance, il devient une discordance ; deux heures ne se jugeaient pas sur leurs
+valeurs ; et *« 21h52 et 22h04 concordent »* devient vrai. *Sont en cohérence* garde le mot de la
+partie I, au prix d'un ton plus administratif. Le bouton dit le même mot que la phrase — *« ne
+concordent pas »* —, jamais *« cohérent »* sur le bouton et un autre verbe dans la phrase : deux
+mots pour une chose, ce que l'écran s'interdit ailleurs (§4.6).
 
 Dans tous les cas, **le `nom` d'un passage devient un énoncé plutôt qu'une personne**. Rendu par
 l'essai, *« le rédacteur du procès-verbal et le rédacteur de l'audition concordent »* se lit mal ;
@@ -293,6 +308,22 @@ vieille que la maladie. La sœur peut y ajouter une phrase à double fond ; la r
 lettre (`declenche`) peut l'énoncer, puisque la fiction a le droit de désigner. **Jamais une pièce
 qui dise le plan** : un sous-entendu, pas une preuve.
 
+**Le grief — non tranché** (*auteur*, le 8 : *« je ne sais pas »*). Deux pistes, du contenu
+seulement : rien n'en dépend avant l'écriture du cas (l'ordre de travail ci-dessous, étape 4).
+- **Une liaison qu'elle soupçonne — proposée.** La lettre la dit (*« Je sais pour elle »*), et
+  aucune autre pièce ne la confirme. Elle tient à la lettre telle qu'elle est, antérieure au
+  diagnostic : une rancune plus vieille que la maladie. Et c'est **un fait, deux lectures**, comme
+  l'aveu : le grief de l'une, le mobile possible de l'autre. Invérifiée, elle laisse le mobile
+  ambigu — l'IA ne saura jamais *pourquoi* (§4.2), ce que la question du mobile demande peut-être.
+- **Le placement en établissement.** Il avait demandé une place ; elle l'a vécu comme un abandon.
+  Elle reste dans le monde du soin déjà au dossier, et laisse le mobile du mari entre l'épuisement
+  et la compassion. Mais elle suit le diagnostic, donc pas la lettre : il faut un autre porteur —
+  la sœur, ou un courrier de l'établissement.
+
+**La compote, elle, n'est pas un choix de goût** : sans elle, l'aveu ne dit que la substance, et la
+vengeance survit au lien 6. Seule raison de s'en passer : vouloir que le doute survive au savoir —
+et le dilemme ne survivrait pas avec lui.
+
 **À écrire avec soin** : un suicide, une femme qui vient d'apprendre sa maladie. Sous-entendu
 seulement, jamais une méthode — les molécules fictives de la partie I y pourvoient déjà.
 
@@ -372,12 +403,14 @@ extérieur requis*), mais sa fouille en sera plus courte.
 
 ### 9. Les questions pour l'auteur
 
-1. **Où vit le verdict** : dans une liste à part écrite par une grille (proposé), ou dans les liens ?
-2. **Le mot** : *concordent*, *se tiennent*, ou *cohérent* — avec l'accord à résoudre ?
+1. ~~**Où vit le verdict**~~ — *tranché par l'auteur le 8 octobre : dans une liste à part, écrite
+   par une grille.*
+2. **Le mot** : *concordent*, *se tiennent*, ou *sont en cohérence* (le tableau du point 2) ?
 3. **Le verdict faux** : refusé par Auber, comme aujourd'hui (proposé), ou plaidé et perdu au procès ?
 4. **Le lien 6 envoyé** : Auber refuse de l'entendre (proposé), *« Et donc ? »*, ou il sait ?
 5. **La dimension du faux vice** — et faut-il `comment` ?
-6. **Le suicide-vengeance** : quel grief, porté par quelle pièce ? Et l'aveu dit-il bien la compote,
-   pour que la vengeance tombe devant le lien 6 ?
+6. **Le suicide-vengeance** : quel grief — une liaison soupçonnée, dans la lettre (proposé), ou le
+   placement ? *Pas encore tranché ; ne bloque rien avant l'écriture du cas.* Et l'aveu dit la
+   compote, pour que la vengeance tombe devant le lien 6 (proposé, ferme).
 7. **Le mobile** : le laisser ambigu, pour que l'IA ne sache jamais *pourquoi* (§4.2) ?
 8. **Les verrous** : où vit *la charge* ?
