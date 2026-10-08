@@ -154,9 +154,10 @@ function diagnostiquer(){
       add("avert",`Liens dupliqués (${i} et ${j})`,`« ${labelLien(LI[i])} » apparaît deux fois.`,{edge:j});
 
   /* ---- les articles : des TEXTES qu'on invoque, jamais des porteurs de valeur ----
-     L'invariant du §4.5 rendu vérifiable ; `porte` est indicatif. Un article a
-     UN passage — son texte, qu'on retient pour l'invoquer (passe F) — et aucun
-     empan qui se compare. */
+     L'invariant du §4.5 rendu vérifiable ; `porte` est ce que la recherche lit
+     (passe J). Un article a UN passage — son texte, qu'on clique pour l'invoquer —
+     et aucun empan qui se compare. La base, c'est toutes les règles du contenu :
+     livrées ou non, chacune doit dire ce qu'elle régit. */
   const liaisonsArticle=((CONTENU.grammaire||{}).blocs||[]).filter(b=>b.type==="liaison" && b.imbrique && b.piece);
   for(const [pid,p] of Object.entries(P)){
     if(!estRegle(p)) continue;
@@ -166,11 +167,10 @@ function diagnostiquer(){
       "Un article est un texte qu'on invoque, pas un fait qu'on compare : déplace cet empan dans la pièce qui l'énonce (le rapport qui cite le seuil, par exemple).",{piece:pid});
     if(!nArt && liaisonsArticle.some(b=>b.piece===pid))
       add("erreur",`La règle « ${p.court} » n'a pas de passage d'article`,
-        "Sa liaison ne s'offre qu'une fois ce passage retenu (§4.5) : sans lui, l'article ne s'invoquerait jamais. Ajoute un empan « article » sur son texte.",{piece:pid});
+        "Sa liaison se prend d'un clic sur ce passage (§4.5) : sans lui, l'article ne s'invoquerait jamais. Ajoute un empan « article » sur son texte.",{piece:pid});
     else if(nArt>1)
       add("avert",`La règle « ${p.court} » a ${nArt} passages d'article`,
         "Un seul suffit — le texte entier : en découper un morceau, c'est désigner la clause qui compte (§4.5).",{piece:pid});
-    if(!livrees.has(pid)) continue;
     const porte=p.porte;
     if(!Array.isArray(porte) || !porte.length)
       add("avert",`La règle « ${p.court} » n'annonce pas ce qu'elle régit`,
@@ -179,6 +179,25 @@ function diagnostiquer(){
       add("erreur",`La règle « ${p.court} » régit une dimension inconnue : « ${d} »`,
         `Les dimensions déclarées sont : ${dims.join(", ")}.`,{piece:pid});
   }
+  /* LA RECHERCHE (passe J, §4.5) : toute paire a ses résultats — trois articles par
+     dimension que l'affaire compare, le bon et deux leurres du même champ. La base
+     vient de la RÈGLE même, appelée (§15). */
+  const baseDe = d => { const R=RG(); return R && R.baseRecherche ? R.baseRecherche(d) : []; };
+  for(const d of dims){
+    if(empansPlats().filter(e=>livrees.has(e.pid) && e.dim===d).length<2) continue;
+    const n=baseDe(d).length;
+    if(n<3) add("avert",`Recherche : ${n} article(s) pour « ${d} »`,
+      "Deux passages de cette dimension se comparent : la recherche doit rendre trois articles — le bon, et deux leurres du même champ, sinon le choix se fait sans lire (§4.5, §8). Ajoute une règle dont « porte » couvre cette dimension.",{});
+  }
+  /* Un lien qui fonde sur un article que la recherche, sur SA paire, ne rend pas
+     ne se formera que si l'article est déjà au dossier. */
+  const blocArticleDe = L => ((CONTENU.grammaire||{}).blocs||[]).find(b=>b.forme===L.forme && b.piece && b.imbrique);
+  const trouvable = L => {
+    const b=blocArticleDe(L); if(!b) return true;
+    const sous=(L.termes||[])[0], k=sous && typeof sous==="object" ? feuillesLien(sous)[0] : null;
+    const e=k && empanDe(...deK(k));
+    return !e || baseDe(e.dim).includes(b.piece);
+  };
 
   /* ---- le vice, le faux vice, les canaux ---- */
   const viceLiens=LI.filter(l=>l.vice);
@@ -249,7 +268,8 @@ function diagnostiquer(){
       if(vue && fins.has(e)) return true;
       for(const b of (G.blocs||[])){
         if(b.de!==e) continue;
-        if(b.piece && !dispo.has(b.piece)) continue;
+        // Une liaison d'article ne se livre pas : elle se cherche (passe J).
+        if(b.piece && !dispo.has(b.piece) && !(b.type==="liaison" && b.imbrique)) continue;
         file.push([b.vers, vue || b.forme===forme]);
       }
     }
@@ -285,6 +305,9 @@ function diagnostiquer(){
       if(!servables.length)
         add("erreur",`Remise ${i+1}${ou} attend « ${a.attend} », mais de quoi l'écrire n'est pas encore livré`,
           "Toutes les phrases qui serviraient cette attente passent par un bloc dont la pièce n'a pas encore été remise : la session est inclôturable. Livre la pièce plus tôt, ou déplace l'attente.",{});
+      else if(!servables.some(trouvable))
+        add("erreur",`Remise ${i+1}${ou} attend « ${a.attend} », mais la recherche ne rend pas son article`,
+          "Chaque phrase qui servirait cette attente fonde sur un article que la recherche, sur sa paire, ne rend pas (passe J) : la session est inclôturable. Ajoute la dimension de la paire à son « porte », ou déclare l'article plus haut — la recherche prend les trois premiers.",{});
     });
   });
 
@@ -323,8 +346,9 @@ function diagnostiquer(){
       else add("avert",`Empan inerte : ${p.court}·${joli(eid)}`,
         "Dans aucun lien. C'est normal pour du bruit (et il en faut) — marque-le pour faire taire cet avertissement.",{champ:[pid,eid]});
     }
+  // Une règle non livrée est dans la base de la recherche (passe J) : rien à dire.
   for(const [pid,p] of Object.entries(P))
-    if(!livrees.has(pid)) add("avert",`Pièce jamais livrée : ${p.court}`,"Aucune remise ne la transmet (ajoute-la à une remise dans l'onglet Étapes).",{piece:pid});
+    if(!livrees.has(pid) && !estRegle(p)) add("avert",`Pièce jamais livrée : ${p.court}`,"Aucune remise ne la transmet (ajoute-la à une remise dans l'onglet Étapes).",{piece:pid});
 
   return out;
 }

@@ -128,7 +128,7 @@ function inspEmpan(s){
   const p=CONTENU.pieces[s.pid], e=empanDe(s.pid,s.champ)||{};
   const marque=String(p.texte||"").includes("{{"+s.champ+"}}");
   if(e.article) return `<label>Passage de l'article — ${escapeH(p.court)}·${escapeH(joli(s.champ))}</label>
-    <label>Nom <span class="glose">(le nom neutre de sa fiche, au CONTEXTE)</span></label>
+    <label>Nom <span class="glose">(le nom neutre de son résultat de recherche)</span></label>
     <input type="text" value="${escapeAttr(e.nom||"")}" onchange="majEmpan('${s.pid}','${s.champ}','nom',this.value)"
            placeholder="ex. Article 7">
     <label>Ce qui se lit <span class="glose">(le texte entier de l'article, qu'on retient pour l'invoquer)</span></label>

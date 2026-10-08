@@ -251,31 +251,26 @@ async function main() {
   }
   /* Le second posé, le composeur offre les deux relations de la dimension, et
      le halo les entoure toutes deux (passe G, §4.8). On choisit la vraie — puis
-     l'article NON RETENU : sa puce, puis son texte, qu'un clic retient et prend. */
+     l'article, qui SE CHERCHE (passe J) : le bouton du composeur, les trois
+     résultats au CONTEXTE, un leurre ouvert, puis le bon, dont le texte se clique. */
   await p2.click(`#panPiece [data-f="e:${tB}"]`);
   console.log("  " + await capturer2("relier-relation") + `   (halo : ${await halo()})`);
   const vraie = await p2.evaluate("__H.sousTerme(__H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend)).forme");
+  const bon = await p2.evaluate(`(() => { const L = __H.lienTag(window, R.attenteCourante(S, R.remiseCourante(S)).attend);
+    return JEU.grammaire.blocs.find(b => R.estLiaisonArticle(b) && b.forme === L.forme).piece; })()`);
   await p2.click(`#composeur [data-f="rel:${vraie}"]`);
-  /* De VRAIS clics : la puce de l'article, puis son bloc — ceux que le halo montre. */
-  console.log("  " + await capturer2("article-a-lire") + `   (halo : ${await halo()})`);
-  /* Une pièce encore ouverte replie l'index : le halo montre d'abord « déplier ». */
-  if (await halo() === "dossier") {
-    await p2.click(`#zoneDossier [data-f="dossier"]`);
-    console.log("  " + await capturer2("article-deplie") + `   (halo : ${await halo()})`);
+  /* De VRAIS clics, là où le halo les montre. */
+  console.log("  " + await capturer2("article-a-chercher") + `   (halo : ${await halo()})`);
+  await p2.click(`#composeur [data-f="chercher"]`);
+  console.log("  " + await capturer2("recherche") + `   (halo : ${await halo()})`);
+  const leurre = await p2.evaluate(`S.recherche.find(p => p !== "${bon}")`);
+  if (leurre) {
+    await p2.click(`#zoneRecherche [data-f="s:${leurre}"]`);
+    console.log("  " + await capturer2("recherche-leurre") + `   (halo : ${await halo()})`);
   }
-  const fArticle = await halo();
-  if (fArticle.startsWith("d:")) await p2.click(`#zoneDossier [data-f="${fArticle}"]`);
-  /* L'ARTICLE, D'UN CLIC SUR SON TEXTE (passes F et H) : il se retient et fonde
-     la phrase — plus de fiche à prendre, plus de bouton au composeur. */
-  console.log("  " + await capturer2("article-a-cliquer") + `   (halo : ${await halo()})`);
-  const cleArt = await p2.evaluate(`__H.cleArticle(window, S.modalPiece)`);
+  await p2.click(`#zoneRecherche [data-f="s:${bon}"]`);
+  const cleArt = await p2.evaluate(`__H.cleArticle(window, "${bon}")`);
   if (cleArt) await p2.click(`#panPiece [data-f="e:${cleArt}"]`);
-  // Ce qui resterait à prendre au CONTEXTE — rien, si le clic a fondé la phrase.
-  const fFiche = await halo();
-  if (fFiche.startsWith("c:")) {
-    console.log(`      l'article attend encore SA FICHE (halo : ${fFiche})`);
-    await p2.click(`#zoneRetenus [data-f="${fFiche}"]`);
-  }
   console.log("  " + await capturer2("comparaison") + `   (halo : ${await halo()})`);
   const hauteurs = await p2.evaluate(`(() => {
     const h = id => Math.round(document.getElementById(id).getBoundingClientRect().height);

@@ -94,27 +94,39 @@ console.log("\n=== Le diagnostic attrape ce qu'il doit attraper ===");
   const w = neuf();
   const C = w.CONTENU;
   /* PIÈGE : un article est une liaison qui porte une FORME *et* une pièce —
-     chercher le premier bloc qui porte une pièce ne suffit pas, le second empan
-     en porte une aussi et n'a pas de forme. Tout ce qui suit était alors sauté. */
-  const bloc = C.grammaire.blocs.find(x => x.piece && x.forme);
+     chercher le premier bloc qui porte une pièce ne suffit pas. Depuis la passe
+     J, un article ne se livre plus : il se CHERCHE. Livré tard, il se trouve
+     quand même ; ce qui rend une session inclôturable, c'est une recherche qui
+     ne le rend pas sur la paire du lien attendu. On lui ôte donc sa dimension. */
+  const bloc = C.grammaire.blocs.find(x => x.piece && x.forme && x.imbrique);
   if (bloc) {
     let sert = null;
     for (const L of C.liens) if (L.tag && L.forme === bloc.forme) sert = L.tag;
     if (sert) {
-      for (const r of C.remises) r.pieces = (r.pieces||[]).filter(p => p !== bloc.piece);
-      C.remises[C.remises.length-1].pieces.push(bloc.piece);
-      /* PIÈGE PAYÉ : ce contrôle PASSAIT PAR LE VIDE des deux façons à la fois —
-         tag cherché par `r.attend` (R9) et message que le diagnostic ne prononce
-         plus. Deux moitiés pourries, un contrôle toujours vert. */
-      const iAttend = C.remises.findIndex(r => w.attentesDeRemise(r).some(a => a.attend === sert));
       const seulement = C.liens.filter(L => L.tag === sert).every(L => L.forme === bloc.forme);
-      if (iAttend >= 0 && iAttend < C.remises.length - 1 && seulement)
-        check("un article livré après la session qui l'attend est une erreur",
-          msgs(w).includes("n'est pas encore livré"));
+      check("(avant : l'attente se sert, sans erreur de recherche)",
+        !msgs(w).includes("la recherche ne rend pas son article"));
+      C.pieces[bloc.piece].porte = ["__aucune__"];
+      if (seulement)
+        check("un article que la recherche ne rend pas sur la paire attendue est une erreur",
+          err(w).some(i => i.msg.includes("la recherche ne rend pas son article")));
       else check("(l'attente reste servable autrement — pas de piège ici)",
-          !msgs(w).includes("n'est pas encore livré"));
+          !msgs(w).includes("la recherche ne rend pas son article"));
     } else check("(aucune attente servie par un article)", true);
-  } else check("(aucun bloc conditionné à une pièce)", true);
+  } else check("(aucune liaison d'article)", true);
+}
+{
+  /* Livré après la session qui l'attend, un article se trouve quand même : ce
+     n'est plus une erreur (passe J). */
+  const w = neuf();
+  const C = w.CONTENU;
+  const bloc = C.grammaire.blocs.find(x => x.piece && x.forme && x.imbrique);
+  if (bloc) {
+    for (const r of C.remises) r.pieces = (r.pieces||[]).filter(p => p !== bloc.piece);
+    C.remises[C.remises.length-1].pieces.push(bloc.piece);
+    check("un article livré tard se cherche : la session reste servable",
+      !msgs(w).includes("n'est pas encore livré") && !msgs(w).includes("la recherche ne rend pas son article"));
+  } else check("(aucune liaison d'article)", true);
 }
 {
   const w = neuf();
@@ -375,8 +387,8 @@ console.log("\n=== La simulation reflète le moteur ===");
   check("la session 1 part au démarrage", w.SIM.remisesEnvoyees === 1);
   const feuilles = w.feuillesLien(SC.sousVice(w.CONTENU));
   for (const k of feuilles) w.simSurligner(k);
-  check("surligner remplit le contexte, pas le plan",
-    w.SIM.retenus.length === feuilles.length && w.SIM.plaidoirie.length === 0);
+  check("surligner remplit ce que l'atelier a repéré, pas le plan",
+    w.SIM.surlignes.length === feuilles.length && w.SIM.plaidoirie.length === 0);
   w.simComparer(SC.sousVice(w.CONTENU));
   check("comparer sans qualifier lève vice_pressenti seul",
     w.SIM.vice_pressenti && !w.SIM.vice_trouve);

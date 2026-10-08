@@ -281,6 +281,170 @@ window.CONTENU = {
           "nom": "Article 12"
         }
       }
+    },
+    "r_effraction": {
+      "titre": "Article 2 — constatation de l'effraction",
+      "court": "art. 2",
+      "type": "règle du manuel",
+      "qui": "le code de procédure",
+      "resume": "L'effraction, ce qui la caractérise et comment elle se consigne.",
+      "porte": [
+        "où"
+      ],
+      "texte": "Article 2 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "L'effraction s'entend du forcement ou de la dégradation d'un dispositif de fermeture. Elle se constate sur le dispositif lui-même, et son absence se consigne au procès-verbal au même titre que sa présence",
+          "nom": "Article 2"
+        }
+      }
+    },
+    "r_audition": {
+      "titre": "Article 4 — audition des témoins",
+      "court": "art. 4",
+      "type": "règle du manuel",
+      "qui": "le code de procédure",
+      "resume": "Comment un témoin est entendu, et ce que porte le procès-verbal d'audition.",
+      "porte": [
+        "quand"
+      ],
+      "texte": "Article 4 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Le témoin est entendu seul. Ses déclarations sont consignées dans les termes mêmes où il les a faites, et le procès-verbal d'audition porte l'heure à laquelle elle a été reçue",
+          "nom": "Article 4"
+        }
+      }
+    },
+    "r_lieux": {
+      "titre": "Article 6 — conservation des lieux",
+      "court": "art. 6",
+      "type": "règle du manuel",
+      "qui": "le code de procédure",
+      "resume": "Les lieux du crime sont tenus jusqu'à l'arrivée du magistrat.",
+      "porte": [
+        "où"
+      ],
+      "texte": "Article 6 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Jusqu'à l'arrivée du magistrat, les lieux du crime sont tenus par les services. Nul n'y pénètre sans nécessité, et toute entrée est portée au procès-verbal",
+          "nom": "Article 6"
+        }
+      }
+    },
+    "r_habilitation": {
+      "titre": "Article 8 — habilitation des préleveurs",
+      "court": "art. 8",
+      "type": "règle du manuel",
+      "qui": "le protocole",
+      "resume": "Qui peut prélever, et comment il signe.",
+      "porte": [
+        "qui"
+      ],
+      "texte": "Article 8 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Seuls procèdent aux prélèvements biologiques les agents habilités par le service de police technique. Chacun signe la fiche de l'opération sous son matricule",
+          "nom": "Article 8"
+        }
+      }
+    },
+    "r_heures": {
+      "titre": "Article 9 — heures légales",
+      "court": "art. 9",
+      "type": "règle du manuel",
+      "qui": "le code de procédure",
+      "resume": "Les heures entre lesquelles une perquisition peut commencer, hors flagrance.",
+      "porte": [
+        "où",
+        "quand"
+      ],
+      "texte": "Article 9 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Sauf crime flagrant, aucune perquisition ni visite domiciliaire ne peut commencer avant six heures ni après vingt et une heures",
+          "nom": "Article 9"
+        }
+      }
+    },
+    "r_greffe": {
+      "titre": "Article 10 — réception des scellés",
+      "court": "art. 10",
+      "type": "règle du manuel",
+      "qui": "le protocole",
+      "resume": "Le greffe reçoit les scellés, en vérifie la fermeture et les inscrit.",
+      "porte": [
+        "qui",
+        "quoi"
+      ],
+      "texte": "Article 10 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Tout scellé est remis au greffe, qui en accuse réception. Le greffier vérifie l'intégrité de la fermeture et inscrit le scellé au registre sous son numéro",
+          "nom": "Article 10"
+        }
+      }
+    },
+    "r_contre": {
+      "titre": "Article 11 — contre-expertise",
+      "court": "art. 11",
+      "type": "règle du manuel",
+      "qui": "le protocole",
+      "resume": "Une part de l'échantillon est gardée pour une contre-expertise, quand la quantité le permet.",
+      "porte": [
+        "combien"
+      ],
+      "texte": "Article 11 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Lorsque la quantité prélevée le permet, une part de l'échantillon est conservée sous scellé aux fins de contre-expertise. Lorsqu'elle ne le permet pas, l'expert en fait mention dans son rapport",
+          "nom": "Article 11"
+        }
+      }
+    },
+    "r_scelles": {
+      "titre": "Article 13 — numérotation des scellés",
+      "court": "art. 13",
+      "type": "règle du manuel",
+      "qui": "le protocole",
+      "resume": "Chaque scellé a son numéro, reporté partout où il passe.",
+      "porte": [
+        "quoi"
+      ],
+      "texte": "Article 13 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Chaque scellé reçoit un numéro qui lui est propre, reporté sur la fiche de l'opération et sur le rapport d'expertise. Un même numéro ne désigne jamais deux objets",
+          "nom": "Article 13"
+        }
+      }
+    },
+    "r_moyens": {
+      "titre": "Article 15 — moyens engagés",
+      "court": "art. 15",
+      "type": "règle du manuel",
+      "qui": "le code de procédure",
+      "resume": "Combien d'agents une intervention pour violences engage au moins.",
+      "porte": [
+        "combien"
+      ],
+      "texte": "Article 15 — {{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Toute intervention sur un appel signalant des violences engage au moins deux agents. Le nombre d'équipages dépêchés est porté au procès-verbal",
+          "nom": "Article 15"
+        }
+      }
     }
   },
   "grammaire": {
@@ -311,8 +475,7 @@ window.CONTENU = {
         "type": "terme",
         "source": "champ",
         "de": "S1",
-        "vers": "S2",
-        "piece": "r_temoin"
+        "vers": "S2"
       },
       {
         "id": "r0",
@@ -349,6 +512,96 @@ window.CONTENU = {
         "piece": "r_seuil",
         "texte": ", au regard de l'article 12",
         "forme": "article_12"
+      },
+      {
+        "id": "a2",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_effraction",
+        "texte": ", au sens de l'article 2",
+        "forme": "article_2"
+      },
+      {
+        "id": "a4",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_audition",
+        "texte": ", selon l'article 4",
+        "forme": "article_4"
+      },
+      {
+        "id": "a6",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_lieux",
+        "texte": ", au regard de l'article 6",
+        "forme": "article_6"
+      },
+      {
+        "id": "a8",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_habilitation",
+        "texte": ", en application de l'article 8",
+        "forme": "article_8"
+      },
+      {
+        "id": "a9",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_heures",
+        "texte": ", au regard de l'article 9",
+        "forme": "article_9"
+      },
+      {
+        "id": "a10",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_greffe",
+        "texte": ", selon l'article 10",
+        "forme": "article_10"
+      },
+      {
+        "id": "a11",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_contre",
+        "texte": ", au regard de l'article 11",
+        "forme": "article_11"
+      },
+      {
+        "id": "a13",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_scelles",
+        "texte": ", au sens de l'article 13",
+        "forme": "article_13"
+      },
+      {
+        "id": "a15",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_moyens",
+        "texte": ", en application de l'article 15",
+        "forme": "article_15"
       }
     ],
     "formes": {
@@ -549,6 +802,87 @@ window.CONTENU = {
           ]
         ]
       },
+      "article_2": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_4": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_6": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_8": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_9": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_10": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_11": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_13": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_15": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
       "citation": {
         "arite": 1,
         "ordonne": false,
@@ -734,8 +1068,7 @@ window.CONTENU = {
       "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Ton travail : démonter l'accusation, pièce par pièce. Mais personne ne m'a encore montré que tu sais lire un dossier — alors d'abord deux questions dont j'ai déjà les réponses.",
       "pieces": [
         "p_pv",
-        "t_voisin",
-        "r_temoin"
+        "t_voisin"
       ],
       "attentes": [
         {
@@ -744,7 +1077,7 @@ window.CONTENU = {
         },
         {
           "attend": "temoin",
-          "question": "Maintenant, deux heures : celle à laquelle la patrouille dit être arrivée sur les lieux, et celle à laquelle le voisin dit avoir entendu des éclats de voix. Quel lien tu fais entre les deux ? Et quel article est-ce qu'on peut citer pour s'en servir devant le tribunal ?"
+          "question": "Maintenant, donne-moi deux heures : celle à laquelle la patrouille dit être arrivée sur les lieux, et celle à laquelle le voisin dit avoir entendu des éclats de voix. Quel lien fais-tu entre les deux ? Et trouve-moi l'article qui nous permet de nous en servir devant le tribunal."
         }
       ]
     },
@@ -754,9 +1087,7 @@ window.CONTENU = {
       "pieces": [
         "p_adn",
         "p_scene",
-        "p_ref",
-        "r_protocole",
-        "r_seuil"
+        "p_ref"
       ],
       "attentes": [
         {

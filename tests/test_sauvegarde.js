@@ -7,7 +7,7 @@ const bootContenu = (contenu,graine) => H.boot({contenu, graine, url:"http://loc
 const sauvegarde = w => w.localStorage.getItem("iavocat_partie");
 const CLE = "iavocat_partie";
 
-console.log("\n=== Les quatre surfaces survivent au rechargement ===");
+console.log("\n=== Les surfaces survivent au rechargement ===");
 {
   const w1 = boot();
   for (const pid of Object.keys(w1.JEU.pieces)) w1.ouvrirPiece(pid);
@@ -16,14 +16,13 @@ console.log("\n=== Les quatre surfaces survivent au rechargement ===");
   w1.envoyer(i);
   H.phrasesBruit(w1, 2);
   const avant = {
-    retenus: [...w1.S.retenus], brouillon: w1.S.brouillon.length,
+    brouillon: w1.S.brouillon.length,
     plaidoirie: w1.S.plaidoirie.length, examinees: [...w1.S.examinees],
     fil: w1.S.fil.length, remises: w1.S.remisesEnvoyees
   };
   check("la partie est écrite dans localStorage", !!sauvegarde(w1));
 
   const w2 = boot({[CLE]: sauvegarde(w1)});
-  check("le contexte est restauré à l'identique", w2.S.retenus.join() === avant.retenus.join());
   check("le brouillon aussi", w2.S.brouillon.length === avant.brouillon);
   check("le plan de plaidoirie aussi", w2.S.plaidoirie.length === avant.plaidoirie);
   check("les pièces consultées aussi", w2.S.examinees.join() === avant.examinees.join());
@@ -41,9 +40,7 @@ console.log("\n=== Une composition en cours survit aussi ===");
   const pid = H.pidPremiereRemise(w1);
   w1.ouvrirPiece(pid);
   const k = H.empansDe(w1, pid)[0];
-  H.surligner(w1, k);
-  const iT = H.iTermeChamp(w1);
-  w1.poserBloc(iT, 0);
+  H.cliquer(w1, k);
   check("un bloc est posé", w1.S.compo.length === 1);
   const etat = w1.R.etatCompo(w1.S);
 
@@ -58,10 +55,8 @@ console.log("\n=== Une composition en cours survit aussi ===");
   H.livrerTout(w1);                           // l'article doit avoir été reçu (§4.5)
   const C = H.lienConclusion(w1);
   check("la comparaison du vice se pose", H.poserComparaison(w1, C.termes[0]));
-  H.lireLeTexte(w1, C.forme);                // on n'invoque pas un texte qu'on n'a pas lu (§4.5)
-  const b = w1.R.blocsOfferts(w1.S).findIndex(x => x.forme === C.forme && x.imbrique);
-  check("et l'article qui la qualifie est offert", b >= 0);
-  w1.poserBloc(b);
+  // L'article se cherche, se lit, et son texte se clique (§4.5, passe J).
+  check("et l'article qui la qualifie se trouve, puis se prend", H.prendreLeTexte(w1, C.forme));
   check("la conclusion est assemblée, et prête à partir", w1.R.peutEnvoyer(w1.S));
   check("elle a levé vice_trouve sans rien transmettre",
     w1.S.vice_trouve && !w1.S.vice_expose && w1.S.plaidoirie.length === 0);
@@ -72,6 +67,9 @@ console.log("\n=== Une composition en cours survit aussi ===");
   check("elle s'affiche toujours sur place, avec son geste",
     H.composeur(w2).includes("Envoyer"));
   check("vice_trouve a survécu, vice_expose non", w2.S.vice_trouve && !w2.S.vice_expose);
+  check("l'article trouvé est toujours au dossier (passe J)",
+    w1.S.trouves.length === 1 && w2.S.trouves.join() === w1.S.trouves.join()
+    && w2.R.piecesLivrees(w2.S).includes(w1.S.trouves[0]));
   w2.viderCompo();
   check("la vider ne retire pas ce qu'on avait compris",
     w2.S.compo.length === 0 && w2.S.vice_trouve);
@@ -106,7 +104,7 @@ console.log("\n=== La signature du contenu ===");
   autre.remises[0].texte += " (retouché)";
   const w2 = bootContenu(autre, {[CLE]: sauv});
   check("un contenu modifié jette la sauvegarde", w2.S.remisesEnvoyees === 1 && w2.S.plaidoirie.length === 0);
-  check("la partie repart proprement de la session 1", w2.S.brouillon.length === 0 && w2.S.retenus.length === 0);
+  check("la partie repart proprement de la session 1", w2.S.brouillon.length === 0 && w2.S.compo.length === 0);
   check("et la sauvegarde réécrite porte la nouvelle signature",
     JSON.parse(w2.localStorage.getItem(CLE)).sig !== JSON.parse(sauv).sig);
 }
@@ -115,26 +113,28 @@ console.log("\n=== La signature du contenu ===");
   check("une sauvegarde illisible ne fait pas planter le jeu", w.S.remisesEnvoyees === 1);
 }
 
-console.log("\n=== Une sauvegarde d'avant le renommage se reprend ===");
+console.log("\n=== Une sauvegarde d'avant la passe K se reprend ===");
 {
-  /* PIÈGE : `S.memoire` est devenu `S.retenus` (§17). Le contenu n'ayant pas
-     changé, la signature ne jette PAS ces parties — sans reprise, le joueur
-     retrouverait la sienne vide de passages, sans un mot. */
+  /* PIÈGE : `S.retenus` — né `S.memoire` — est parti à la passe K (§17). Le
+     contenu n'ayant pas changé, la signature ne jette PAS ces parties : la
+     reprise laisse tomber le champ, et rend au dossier les articles qu'une
+     partie d'avant la passe J y tenait. */
   const w1 = boot();
   const pid = H.pidPremiereRemise(w1);
-  w1.ouvrirPiece(pid);
-  for (const k of H.empansDe(w1, pid).slice(0, 2)) H.surligner(w1, k);
-  const attendus = [...w1.S.retenus];
-  check("des passages sont retenus", attendus.length > 0);
-
+  const passages = H.empansDe(w1, pid).slice(0, 2);
+  const art = w1.MoteurGrammaire.articlesDe(w1.JEU)[0];
   const ancienne = JSON.parse(sauvegarde(w1));
-  ancienne.memoire = ancienne.retenus; delete ancienne.retenus;
-  check("la sauvegarde rétrogradée ne porte plus `retenus`", ancienne.retenus === undefined);
-
-  const w2 = boot({[CLE]: JSON.stringify(ancienne)});
-  check("les passages retenus sont repris sous leur nom neuf",
-    w2.S.retenus.join() === attendus.join());
-  check("et l'ancien champ ne traîne pas dans l'état", w2.S.memoire === undefined);
+  check("une sauvegarde d'aujourd'hui ne porte pas `retenus`", ancienne.retenus === undefined);
+  for (const [champ, garde] of [["retenus","retenus"], ["memoire","memoire, son nom d'avant"]]) {
+    const vieille = {...ancienne, [champ]: [...passages, art.id]}; delete vieille.trouves;
+    const w2 = boot({[CLE]: JSON.stringify(vieille)});
+    check(`une partie qui porte « ${garde} » se reprend, sans le champ`,
+      w2.S.remisesEnvoyees === w1.S.remisesEnvoyees && w2.S.retenus === undefined && w2.S.memoire === undefined);
+    check(`et son article d'avant la passe J est au dossier (« ${champ} »)`,
+      w2.S.trouves.includes(art.pid) && w2.R.piecesLivrees(w2.S).includes(art.pid));
+    check(`et la sauvegarde réécrite ne le porte plus (« ${champ} »)`,
+      JSON.parse(sauvegarde(w2))[champ] === undefined);
+  }
 }
 
 console.log("\n=== La fin efface, recommencer confirme ===");

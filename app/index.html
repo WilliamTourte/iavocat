@@ -41,7 +41,7 @@
   <!-- Les croix ont un NOM, et Échap s'y lit (§4.10) : `title` n'était qu'une
        description, le lecteur d'écran annonçait « × ». -->
   <section class="col panneau" id="panCONTEXTE" hidden aria-labelledby="titreCONTEXTE">
-    <h2><span id="titreCONTEXTE" tabindex="-1">CONTEXTE</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer le CONTEXTE (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
+    <h2><span id="titreCONTEXTE" tabindex="-1">DOSSIER</span><button class="fermer" onclick="fermerPanneau()" aria-label="Fermer le DOSSIER (Échap)" aria-keyshortcuts="Escape"><span class="x" aria-hidden="true">×</span><kbd>Échap</kbd></button></h2>
     <div class="body" id="contexte"></div>
   </section>
   <section class="col panneau" id="panPLAIDOIRIE" hidden aria-labelledby="titrePLAIDOIRIE">
@@ -51,7 +51,7 @@
     <div class="body" id="plaidoirie"></div>
   </section>
   <!-- LA PIÈCE OUVERTE n'a plus de section à elle : elle s'ouvre DANS le
-       CONTEXTE, entre l'index et les passages retenus (§4.6) — `#panPiece` naît
+       CONTEXTE, sous l'index (§4.6) — `#panPiece` naît
        donc du rendu de `#contexte`, plus d'ici. -->
   <!-- On répond SOUS la question (§4.6). PIÈGE : `#composeur` est le FRÈRE de
        `#discussion`, jamais son enfant — le fil se recale en bas à chaque

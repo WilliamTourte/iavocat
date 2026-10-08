@@ -279,6 +279,149 @@ Le reste du document — §4.2, §4.4, §4.7, §4.8, §4.11, §11, §14 — vien
     (*« Non. Ce n'est pas ce que disent ces deux passages — relis-les. »*). **À voir en jeu** : les
     deux relations naissent au bas du composeur plafonné — `voirRelations` les amène dans le champ.
 
+## 0 ter. Les retours de l'auteur (7 octobre) — deux passes
+
+*Deux points, rangés en lisant le code ; le premier est commencé (`jeu.js`, non commité). Ordre
+conseillé : I, qui tient en une séance ; puis J, qui demande d'abord le document. Arbitrages de
+l'auteur, le 7 : la *phrase* reste le nom du code ; l'article livré (§3) et l'article retenu (passe
+F) se défont.*
+
+**Passe I — l'écran dit « ta RÉPONSE », jamais « ta phrase ».** *Le vocabulaire du joueur, sans
+arbitrage de fond : le composeur s'intitule déjà RÉPONSE (`renderCompo`, `aria-label` de
+`#composeur`), en capitales comme le CONTEXTE et la DISCUSSION. `npm test`, `npm run vue`, puis la
+relecture à l'œil.*
+
+- [x] **Harmoniser : partout où l'écran parle au joueur, « ta RÉPONSE ».** *auteur* — *Fait le 7 :
+      la ligne sous la pièce dit « ✓ Ajouté à ta RÉPONSE. » au premier
+      clic, « ✓ Ajouté à ta RÉPONSE » au reclic, et « Déjà dans ton CONTEXTE — « oublier », sur sa
+      fiche, pour l'en retirer » quand il n'a rien fait ; la bulle, les raisons du CONTEXTE, le badge
+      et le refus de `regles.js` suivent ; §4.3 et §4.6, §16 et `test_parcours` aussi. Restent hors
+      du geste, à voir : la voix d'Auber et de la Fin 1 (« la phrase était écrite… »), la répétition
+      (« Opposer une phrase »).*
+  - **Commencé** : `ECHO_POSE`, `ECHO_REPOSE`, `RAPPEL_PHRASE`, deux bulles de `tutoRetenir` et le
+    `ditLong` de `tutoIntrus`. **Avant tout commit** : `RAPPEL_RETRAIT` porte un « A CORRIGER. »
+    provisoire ; et `ECHO_POSE` / `ECHO_REPOSE` disent désormais la même chose, alors que la ligne
+    sous la pièce doit dire *lequel des deux a eu lieu* — retenu **et** posé, ou posé seul (§4.6,
+    passe H).
+  - **Reste** : le `dit` de `tutoIntrus` (*« Retire-le de ta phrase. »*), les quatre `RAISON_*`
+    (*« Ta phrase ne prend plus de passage… »*, *« Ta phrase est complète… »*), le badge *« dans ta
+    phrase »* des fiches (`renderRetenus`, classe `.dansPhrase`) ; et ce que `content.js` en dit au
+    joueur, s'il en dit.
+  - **Les suites** lisent ces chaînes (`test_parcours`, les contrôles de la passe H : *« posé dans ta
+    phrase »*, *« Déjà dans ta phrase »*, le badge) — elles tombent déjà avec le travail commencé : à
+    suivre, pas à affaiblir.
+  - *Tranché par l'auteur le 7 octobre* : **le code et le document gardent *la phrase*** pour l'objet
+    du composeur (§4.5 ; `dansPhrase`, `clorePhrase`, `RAISON_PLEINE`…) ; *ta RÉPONSE* ne vaut que
+    pour ce que l'écran dit au joueur.
+
+**Passe J — mettre en relation, en trois temps ; l'article, l'IA le cherche (le RAG).** *Tranché par
+l'auteur le 7 octobre : on défait l'article que l'avocat **livre** avec ses pièces (§3, *« PV +
+audition + article 3, d'un seul lot »*), et l'article qui **se retient** au CONTEXTE (passe F) ; la
+session 1 en deux questions (§3, passe E) tient. Document d'abord (§3, §4.5, §4.6, §4.8, §8, §11,
+§12), à faire relire ; puis contenu, moteur, règles, écran, atelier, suites.*
+
+- [x] **Séparer, dans le tutoriel, les trois apprentissages de *mettre en relation*** — **deux
+      passages** se sélectionnent, **la relation** qui les lie se choisit, **un article** la fonde.
+      Aujourd'hui le tutoriel les enchaîne en cinq temps sous une même bulle qui les mêle (§4.8,
+      *mettre en relation* 1 à 5) ; il en aura **trois, francs**, chacun attendant son geste. *auteur*
+  - *Tranché par l'auteur le 7 octobre* :
+    - **Une seule « grosse » demande de Maître Auber**, celle de la comparaison entière (§3) ; c'est
+      le **tutoriel** qui guide pas à pas. Sans le tutoriel (*« je sais faire »*), on n'a que la
+      demande. Le §4.8 tient : *la question de l'avocat porte tout ce que le geste demande, et le
+      bandeau ne dit que où*.
+    - **Un seul envoi**, que le tutoriel ne laisse pas partir tant que les trois étapes ne sont pas
+      faites — les deux passages, leur relation, la recherche d'article. La grammaire n'en change pas
+      pour autant : aucune phrase inachevée ne part, et *« une relation seule ne suffit pas »* (§4.5)
+      tient. La recherche devient l'état qu'elle attend après la relation.
+  - **Ce qui tient** : la demande **nomme les deux heures, jamais leur contradiction** (§3), et les
+    bulles pas davantage — *la relation jamais* (§4.8).
+- [x] **Le RAG : l'article ne vient plus de l'avocat, l'IA le cherche** dans une base de textes, à
+      la manière de Légifrance — *on augmente sa réponse par une recherche*. *auteur*
+  - **Le geste, proposé par l'auteur** : **la relation choisie**, le composeur offre ***« Chercher un
+    article correspondant »*** ; la recherche rend **trois** articles, un léger QCM, et le joueur
+    choisit le bon. Chercher devient un verbe neuf, entre *déclarer* (la relation) et *fonder*
+    (§4.5, §4.6). **Les trois résultats s'affichent dans le CONTEXTE** (*auteur*, le 7), pas au
+    composeur.
+  - **La recherche lit la dimension, en coulisses** (*tranché par l'auteur le 7*, après examen) :
+    elle rend les trois articles dont `porte` couvre la dimension des deux passages. Une recherche
+    sur les mots échoue — la paire de la session 1 et l'article 3 n'ont pas un mot en commun, et
+    une recherche sur le sens (des *embeddings*) n'existe pas sans serveur ni dépendance. L'écran
+    ne montre jamais la dimension : le joueur ne voit que des textes, et le risque du §5 a ne
+    revient pas. **Toute paire a ses trois résultats** — la recherche ne dit jamais quelles paires
+    comptent. Il faut donc **trois articles au moins par dimension comparée** (quand, qui, quoi,
+    combien) : six à huit à écrire. Une fonction pure dans `regles.js` ; la base, du contenu
+    (§9, §11).
+  - *Tranché par l'auteur le 7 octobre* :
+    - **Les deux leurres sont plausibles**, du même champ que le bon : sinon le choix se fait sans
+      lire. *Premier jet écrit le 7 — neuf articles (2, 4, 6, 8, 9, 10, 11, 13, 15), trois résultats
+      par dimension : **à réécrire par l'auteur**. Pièges voulus : l'article 8 contre le vice, les
+      articles 4 et 9 en session 1 — le 9 (*« sauf crime flagrant »*) est peut-être trop dur pour
+      une calibration.* Il faut donc une base plus large que l'affaire — **du contenu à écrire**, plusieurs
+      articles par dimension. Et l'**ordre** de l'écran ne trahit pas le score : la bonne réponse
+      n'est pas toujours la première.
+    - **Choisir, c'est lire** (*on n'invoque que ce qu'on a lu*, §4.5) : un résultat s'ouvre comme
+      une pièce, et **un clic sur son texte le met dans la RÉPONSE** — comme un passage. Les trois
+      montrent leur début de texte, jamais un titre qui suffise.
+    - **On ne retient plus un article** : il ne passe pas par le CONTEXTE, il va droit dans la
+      RÉPONSE. Ce que la passe F avait bâti s'en va — le groupe *ARTICLES* du CONTEXTE et sa fiche
+      qui prend la liaison (`prendreArticle`, `articleRefuse`, `#raisonArticle`), `articleRetenu`,
+      les temps 4 et 5 du tutoriel (la puce de l'article dans l'index, sa fiche), et le harnais
+      `H.prendreLiaison`. **Le passage `art` (`article:true`, §11) survit** : c'est lui que le clic
+      met dans la RÉPONSE.
+    - **Un article trouvé reste au dossier** : il rejoint l'index du CONTEXTE comme une pièce, et
+      la phrase suivante qui l'attend le prend là, d'un clic sur son texte, sans chercher de
+      nouveau. Il y entre quand il est **mis dans la RÉPONSE** — les leurres seulement ouverts
+      n'encombrent pas l'index ; un article **refusé** par l'avocat y reste, comme toute pièce. Le
+      tutoriel, qui exige la recherche à la session 1, ne l'exige plus quand l'article est déjà au
+      dossier.
+    - **Le mauvais article choisi, l'avocat le refuse**, avec une réplique et son escalade, comme
+      `rep_relation_fausse` (passe G).
+    - **Le vice (session 2)**, *reformulé le 7 avec l'auteur* : l'article 7 portant sur *qui* et
+      *quoi*, toute recherche depuis une paire de la scène ou de la référence le rend — comme
+      aujourd'hui, où il est livré, et le contenu y répond déjà (greffier, scellés, délai). Ce qui
+      doit tenir : **l'attente de la session 2 se sert sans l'article 7**, par le faux vice
+      (l'article 12, sur une paire de *combien*) — c'est ce qui garde le vice **hors du chemin
+      obligatoire** (§3).
+  - **Ce qui bouge** : §3, les livraisons ne portent plus d'article — le compte du message de remise
+    (*« N pièces disponibles »*) avec elles ; §11, la base est un objet neuf du contenu, que
+    l'atelier lit sans le recopier (§9) ; §4.8, le tutoriel apprend à chercher ; le refus *« Aucun
+    texte que tu as lu ne fonde ça… ouvre-les »* (validé en playtest, *À garder*) devient
+    *cherche-le*.
+  - **Le récit** y gagne peut-être : l'IA qui fouille seule est aussi celle qui pourrait taire ce
+    qu'elle trouve (§6 ci-dessous, *choix moraux*).
+  - *Fait le 7 octobre, document puis code* : `chercher`, `baseRecherche`, `articleOffert`,
+    `suivreRecherche` aux règles ; le bouton du composeur, la zone RECHERCHE, le tutoriel en trois
+    temps ; la comparaison nue retenue en session 1 ; diagnostic et pas-à-pas de l'atelier ;
+    `npm run vue` : `article-a-chercher`, `recherche`, `recherche-leurre`. **Reste** : réécrire les
+    leurres, et jouer (§3 et §4 de `docs/PASSATION.md`).
+
+## 0 quater. Les retours de l'auteur (8 octobre) — passe K
+
+**Passe K — plus de passages retenus ; le tutoriel montre « → Envoyer ».** *Document d'abord (§4.3,
+§4.6, §4.8, §4.11 ; §16 et §17), relu par l'auteur, puis le code, `npm test` et `npm run vue`.*
+
+- [x] **Arrêter la notion de « passages retenus ».** *« On clique sur les passages pour les mettre
+      dans la RÉPONSE, et c'est tout. On ne garde que la notion de DOSSIER. »* *auteur* — les fiches,
+      `S.retenus`, *retenir* et *oublier* s'en vont ; le clic pose, ou la ligne sous la pièce dit
+      pourquoi il ne pose pas ; la pièce prend toute la hauteur du CONTEXTE sous l'index ; la
+      reprise d'une partie d'avant laisse tomber le champ (ses articles passent au dossier).
+- [x] **Entourer « → Envoyer » dans le tutoriel**, une fois le bon passage posé (la question sur
+      l'identité du rédacteur), et à la fin de la comparaison. *auteur* — renverse *« il se tait là
+      où l'écran parle seul »* pour l'envoi (§4.8).
+- [x] **Au passage** : `npm test` était rouge depuis `da63f26` (« ✓ Ajouté à ta RÉPONSE.. », deux
+      contrôles de `test_parcours`). — *Fait le 8, document relu par l'auteur puis code : 646
+      contrôles, `npm run vue` relu (captures *piece-pris*, *comparaison*). Reste à jouer : §4
+      ci-dessous.*
+
+**Passe L — le CONTEXTE s'appelle DOSSIER.** *auteur*, le 8 octobre. *Document d'abord (§4.6,
+§17), puis l'écran ; le code garde `contexte`.*
+
+- [x] **Renommer le panneau** : CONTEXTE → DOSSIER partout où le joueur lit ou entend — titre,
+      porte de la barre, croix, bouton de pièces du message, tutoriel, voix, annonces — et
+      l'atelier (inspecteur, frise). L'index intérieur, qui s'intitulait DOSSIER, devient
+      **DOCUMENTS** (pièces et articles), sa colonne « Les règles » devient « Les articles ». L'historique des documents garde l'ancien nom. — *Fait le 8 : 647 contrôles,
+      `npm run vue` relu.*
+
 ## 1. Passe contenu — `app/content.js`, sans code
 
 *Une vérification commune : `npm run vue`, puis la relecture à l'œil des phrases composées.*
@@ -338,13 +481,16 @@ opposé, et la réplique `fin` devenue une question).*
 
 ## 4. Séance de jeu — sans code, mais il faut des joueurs et un téléphone
 
-**La passe H — le clic dans la pièce retient et prend** (§4.6, *auteur*, codée le 6 octobre)
+**Les passes H et K — le clic dans la pièce prend** (§4.6, *auteur*, codées le 6 et le 8 octobre)
 
 - [ ] **Des phrases involontaires ?** Qui rassemble en lisant voit ses deux premiers clics former une
       phrase — en session 2, souvent une juxtaposition. Le joueur le voit-il, et défait-il sans
       peine (*« ← retirer »*, *« tout effacer »*) ? *auteur*
-- [ ] **Les fiches se découvrent-elles** quand on en a besoin — après un *« ← retirer »*, ou pour
-      essayer des paires de `qui` ? Le tutoriel ne les montre plus sur le chemin direct. *auteur*
+- [ ] **Sans fiches, essayer des paires lasse-t-il ?** Depuis la passe K, essayer des paires de
+      `qui` se fait en rouvrant les pièces (‹ ›, un clic). *auteur* — *« Les fiches se
+      découvrent-elles » est sans objet.*
+- [ ] **La bulle sur « → Envoyer »** aide-t-elle, ou dit-elle trop que la phrase est la bonne ?
+      *auteur*
 
 **Avant, seul, avec `npm run vue`**
 
@@ -356,14 +502,14 @@ opposé, et la réplique `fin` devenue une question).*
 **Sur un vrai téléphone** — jamais joué : ni Jean ni Colas n'ont testé le mobile.
 
 - [ ] **La pièce reste à l'étroit** : à 390×800 le panneau entier ne fait que 353 px, la pièce n'y
-      montre que deux lignes, et le panneau redéfile d'un bloc. *Arbitré par l'auteur : le CONTEXTE y
-      reste entre la conversation et le composeur* — ni retenus repliés, ni pièce en pleine hauteur.
-      *Jean 1*
+      montre que deux lignes, et le panneau redéfile d'un bloc. *Arbitré par l'auteur : le DOSSIER y
+      reste entre la conversation et le composeur* — ni pièce en pleine hauteur. *Depuis la passe K,
+      plus de retenus : la pièce a tout le panneau sous l'index.* *Jean 1*
 - [ ] **La bulle ancrée**, à côté d'une zone longue (le texte de la pièce) : couvre-t-elle ce qu'on
       vient chercher ? Jouée seulement dans Chromium, 1280×800 et 390×800.
 - [ ] **Le code couleur au toucher** : sans légende ni survol, comprend-on ce que couleur et trait
-      veulent dire ? On ne les voit qu'une fois le passage retenu, rangé sous le nom de sa dimension.
-      *auteur*
+      veulent dire ? On ne les voit qu'une fois le passage pris — et depuis la passe K, le nom de la
+      dimension ne se lit plus qu'au survol, que le toucher n'a pas. *auteur*
 
 **En rendant la partie à Colas**, qui s'est proposé pour tester la suite
 
@@ -371,13 +517,13 @@ opposé, et la réplique `fin` devenue une question).*
 - [ ] La question se lit-elle **avant** les pièces ? Colas ouvrait les pièces sans avoir lu la question
       placée dessous. *Depuis, la remise porte sa question en un seul message, le bouton de pièces
       après elle (§4.6)* — à confirmer.
-- [ ] La première consigne (« Ouvre ton CONTEXTE », une bulle à côté du bouton de pièces) est-elle
-      encore trop abrupte sans contexte ?
+- [ ] La première consigne (« Ouvre ton DOSSIER », une bulle à côté du bouton de pièces) est-elle
+      encore trop abrupte sans explication ?
 - [ ] La colonne latérale (≥ 900 px) : ordre de tabulation en L, poids visuel du deux-colonnes.
 - [ ] Ce que personne n'a encore touché : « ⟲ recommencer ». *La croix × est réglée (Jean 3 l'a
-      confirmée) : la fiche dit « oublier », la croix du CONTEXTE perd Échap pièce ouverte — à
+      confirmée) : la fiche dit « oublier », la croix du DOSSIER perd Échap pièce ouverte — à
       confirmer avec lui.*
-- [ ] Le CONTEXTE qui reste ouvert d'un envoi à l'autre (même remise) : soulage-t-il, ou
+- [ ] Le DOSSIER qui reste ouvert d'un envoi à l'autre (même remise) : soulage-t-il, ou
       encombre-t-il la lecture de la réplique ? *Jean 3*
 
 **Jean, session 3** — la suite du vrai dossier
@@ -418,11 +564,16 @@ lourd.*
 
 ## 6. Plus tard — après validation de la boucle de base
 
-**Le CONTEXTE élargi**
+**Le DOSSIER élargi**
 
-- [ ] **RAG** : pouvoir retenir des passages des messages de l'avocat, et des infos qui ne viennent pas
-      que de lui.
-- [ ] **Regrouper les passages retenus en clusters** (idée d'un ami).
+- [ ] **Retenir hors des pièces** : des passages des messages de l'avocat, et des infos qui ne
+      viennent pas que de lui. *(S'appelait « RAG » ; le mot désigne désormais la recherche
+      d'articles, passe J.)*
+- [ ] **Des articles qui portent sur deux dimensions à la fois**, et des paires qui les croisent :
+      *où* et *qui* — un article sur « le lieu du crime » et « le technicien ». Aujourd'hui deux
+      dimensions différentes se juxtaposent sans relation (§4.11), et la recherche ne lit que celle
+      du premier passage (passe J, §4.5) : il faudrait une relation entre dimensions, et une
+      recherche qui lise les deux. *auteur*, le 7 octobre.
 
 **L'histoire** — à concevoir ensemble : le scénario porte les trois autres.
 
