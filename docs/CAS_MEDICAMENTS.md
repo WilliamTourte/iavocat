@@ -372,20 +372,38 @@ extérieur requis*), mais sa fouille en sera plus courte.
 | Rien n'est plaidé qui ne soit fondé | tient, si un lien nu n'est jamais un moyen |
 | Recevabilité, pas fiabilité : la culpabilité est un plancher fixe | tient, **si la vengeance tombe devant le lien 6** |
 | Le vice a un canal unique, le personnel | le canal reste unique (lien 7) ; « le personnel » devient l'avocat absent |
-| `pourquoi` est écarté : l'IA ne saura pas si elle a bien fait (§4.2) | le cas fait entrer l'**intention** au dossier (l'aveu), pas le **mobile** ; le laisser ambigu garde cette phrase vraie — un argument pour la question du mobile |
+| `pourquoi` est écarté : l'IA ne saura pas si elle a bien fait (§4.2) | tient : le cas fait entrer l'**intention** au dossier (l'aveu), pas le **mobile**, que l'auteur laisse **ambigu** (8 octobre) |
 
 ### 7. Ce que le contenu demandera
 
-- **La dimension du faux vice — ⚖.** Le certificat (*« fatigue importante »*) et l'aveu : `qui` ?
-  `quoi` ? ou **`comment`**, la sixième dimension, *réintégrable sans coût* (§3 de
-  `docs/PASSATION.md`) — un geste d'atelier (§11). Si le vice et le faux vice partagent une
-  dimension, la même recherche rend les deux articles, et le vice n'est plus **hors du chemin**
-  (§3). L'affaire ADN les séparait (`qui` et `combien`) ; il faut les séparer encore.
-- **Les verrous — ⚖.** Proposé : en remise 2, *la cause du décès* (citer la toxicologie) ; en
-  remise 3, *la pièce décisive* (citer le PV des déclarations spontanées), puis *écarter les
+- **La dimension du faux vice — tranché par l'auteur le 8 octobre : `comment`**, la sixième
+  dimension, *réintégrable sans coût* (§3 de `docs/PASSATION.md`) — un geste d'atelier (§11). Le
+  vice et le faux vice restent séparés, comme `qui` et `combien` dans l'affaire ADN : la recherche
+  lancée depuis l'un ne rend pas l'article de l'autre, et le vice reste **hors du chemin** (§3).
+  Ce que ça demande :
+  - **l'aveu se coupe en deux passages** : la carte des liens met *« propos tenus spontanément,
+    hors la présence de son conseil »* d'un tenant, au lien 7 comme au lien 8 ; il faut
+    *« propos tenus spontanément »* en `comment` (le faux vice, face à la *« fatigue
+    importante »*) et *« hors la présence de son conseil »* dans la dimension du vice (le lien 7,
+    face à la notification) ;
+  - **trois articles qui portent sur `comment`** — celui sur la contrainte et deux leurres du même
+    champ (§8) ;
+  - **un sixième trait, et c'est du code.** Une dimension se lit à sa couleur *et* à son trait
+    (§4.3, §4.10 règle 5) ; or CSS n'a que cinq styles de soulignement — plein, double, pointillé,
+    tirets, ondulé —, et `traitDim` tourne en rond : la sixième dimension reprendrait le trait de
+    la première, et ne s'en distinguerait plus que par la couleur. Il lui faut une autre marque
+    (un trait au-dessus en plus du soulignement, une épaisseur). Et la sixième couleur de la
+    palette est un **gris**, quand le texte d'un article se souligne d'un trait **neutre** (§4.3) :
+    à mesurer avant de l'adopter.
+- **Les verrous — *la charge* tranchée par l'auteur le 8 octobre : la notification des droits la
+  porte** (*« placé en garde à vue pour des faits d'empoisonnement »*). Proposé pour le reste : en
+  remise 2, *la cause du décès* (citer la toxicologie) ; en remise 3, *la charge* (citer la
+  notification), *la pièce décisive* (citer le PV des déclarations spontanées), puis *écarter les
   aveux*, servie par le faux vice (8) ou le vice (7), avec la question de la Fin 3 sur sa réplique
-  `apres` (§3). *La charge* n'a pas encore de pièce : la notification des droits la porte en remise
-  3 (*« placé en garde à vue pour… »*), ou le texte de la remise 2.
+  `apres` (§3). **À regarder en jeu** : la notification porte aussi le passage du vice
+  (*« souhaite être assisté d'un avocat : oui »*). La question de la charge la met en main pour
+  une raison banale — comme celle du rédacteur, en calibration, faisait lire une signature (§6) —,
+  ce que le §3 permet : l'attente n'est pas l'anomalie. Reste à voir si elle désigne.
 - **`rep_deux_dossiers` mordra.** *« Celle-là mélange les deux dossiers »* tombe sur toute phrase
   non reconnue qui mêle deux remises (`melangeDeuxDossiers`) ; or les remises 2 et 3 sont **un
   seul dossier** — le lien 6 les croise. La règle ne parle que si le contenu déclare la réplique :
@@ -400,7 +418,7 @@ extérieur requis*), mais sa fouille en sera plus courte.
 
 ### 8. L'ordre de travail proposé
 
-1. **Trancher** les ⚖ avec l'auteur (ci-dessous).
+1. ~~**Trancher** les ⚖ avec l'auteur~~ — *fait le 8 octobre : les huit questions (ci-dessous).*
 2. **Le document** : réécrire au besoin §2, §3, §4.1, §4.2, §4.4, §4.5, §4.7, §6, §7, §8, puis §11,
    §14, §15, §16 — et le faire relire.
 3. **La mécanique, sur l'affaire ADN encore** : la famille « cohérence », la liste des
@@ -411,7 +429,7 @@ extérieur requis*), mais sa fouille en sera plus courte.
 4. **Le cas**, écrit dans l'atelier, remise par remise, élagué ; les leurres ; les fins.
 5. **Jouer** : `npm run vue`, la relecture à l'œil des phrases composées, puis un joueur neuf.
 
-### 9. Les questions pour l'auteur
+### 9. Les questions pour l'auteur — toutes tranchées le 8 octobre
 
 1. ~~**Où vit le verdict**~~ — *tranché par l'auteur le 8 octobre : dans une liste à part, écrite
    par une grille.*
@@ -420,11 +438,13 @@ extérieur requis*), mais sa fouille en sera plus courte.
 3. ~~**Le verdict faux**~~ — *tranché par l'auteur le 8 octobre : Auber le refuse tout de suite — ça
    n'a pas de sens, tu hallucines.*
 4. ~~**Le lien 6 envoyé**~~ — *tranché par l'auteur le 8 octobre : Auber refuse de l'entendre.*
-5. **La dimension du faux vice** — et faut-il `comment` ?
+5. ~~**La dimension du faux vice**~~ — *tranché par l'auteur le 8 octobre : `comment`, la sixième
+   dimension (et son trait à inventer : « Ce que le contenu demandera », ci-dessus).*
 6. ~~**Le suicide-vengeance**~~ — *tranché par l'auteur le 8 octobre : le grief est une liaison
    qu'elle soupçonne, dite dans la lettre, que rien d'autre ne confirme ; et l'aveu dit la
    compote, pour que la vengeance tombe devant le lien 6.*
-7. **Le mobile** : le laisser ambigu, pour que l'IA ne sache jamais *pourquoi* (§4.2) ? *La liaison
-   de la lettre l'éclaire sans le fermer : invérifiée, elle penche vers l'intérêt sans le prouver ;
-   la compassion reste possible.*
-8. **Les verrous** : où vit *la charge* ?
+7. ~~**Le mobile**~~ — *tranché par l'auteur le 8 octobre : ambigu. L'IA ne saura jamais
+   *pourquoi* (§4.2) : la liaison de la lettre, invérifiée, penche vers l'intérêt sans le prouver,
+   et rien au dossier n'écarte la compassion. Les fins ne le disent pas non plus.*
+8. ~~**Les verrous**~~ — *tranché par l'auteur le 8 octobre : la notification des droits porte la
+   charge.*

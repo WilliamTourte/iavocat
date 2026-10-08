@@ -8,20 +8,21 @@ ensuite. **Court, et il doit le rester.** État au 8 octobre 2026.*
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
 clavier seul**. `npm test` est vert — 655 contrôles, 8 règles du gardien, ESLint.
 
-**Le 8 octobre, le cas médicaments — à trancher, rien n'est codé.** Un document de l'auteur remplace
+**Le 8 octobre, le cas médicaments — tranché, rien n'est codé.** Un document de l'auteur remplace
 l'affaire ADN : même client, même calibration, une relation unique *cohérent / pas cohérent* pour
 toutes les dimensions, trois remises, et des aveux en garde à vue qui sont à la fois la preuve
 (l'IA *sait*) et le vice (recueillis sans l'avocat demandé). Il est posé tel quel, avec l'idée d'un
 suicide-vengeance ajoutée le même jour, comme **base de réflexion** dans `docs/CAS_MEDICAMENTS.md`,
 suivi d'une proposition d'intégration. Le point dur : la vérité d'une relation ne se tire plus des
 valeurs, l'auteur la déclare. Un essai jetable du moteur, hors du dépôt, en a mesuré le prix : +23
-lignes, 654 contrôles sur 655. **Tranché le jour même** par l'auteur, cinq questions sur huit : le
+lignes, 654 contrôles sur 655. **Les huit questions sont tranchées le jour même** par l'auteur : le
 verdict vit dans une liste à part ; le mot est *concordent / ne concordent pas* ; une relation
 fausse, Auber la refuse tout de suite ; le lien 6 envoyé, il refuse de l'entendre ; le
 suicide-vengeance tient à une liaison soupçonnée dans la lettre, et tombe devant l'aveu, qui dit la
-compote. Restent la dimension du faux vice, le mobile, la charge. **CONCEPTION, le moteur et les
-règles n'ont pas bougé** ; seules deux répliques de la relation fausse sont passées au contenu du
-jour (*« Non, ça n'a pas de sens… »*, *« Tu hallucines… »*).
+compote ; le faux vice vit en `comment`, la sixième dimension (qui demande un sixième trait : CSS
+n'en a que cinq) ; le mobile reste ambigu ; la notification des droits porte la charge.
+**CONCEPTION, le moteur et les règles n'ont pas bougé** ; seules deux répliques de la relation
+fausse sont passées au contenu du jour (*« Non, ça n'a pas de sens… »*, *« Tu hallucines… »*).
 
 **Le 8 octobre, relecture du glossaire (§17)** après les passes I à M. Le §17 perd `recuAvant`,
 gagne DOCUMENTS et la règle **pièce ou document** (*auteur* : *pièce* quand c'en est une, *document*
@@ -841,9 +842,10 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 
 ## 4. Prochaine étape
 
-**Le cas médicaments attend d'être tranché** (`docs/CAS_MEDICAMENTS.md`, partie II, ses questions) —
-document d'abord, puis la mécanique sur l'affaire ADN, puis le cas. Ce qui suit se joue sur
-l'affaire du jour et reste utile : la boucle ne change pas, seule la relation change.
+**Le cas médicaments est tranché ; vient le document** (`docs/CAS_MEDICAMENTS.md`, partie II,
+*L'ordre de travail*) : réécrire CONCEPTION et ARCHITECTURE avec ce qui est décidé, le faire
+relire, puis la mécanique sur l'affaire ADN, puis le cas. Ce qui suit se joue sur l'affaire du jour
+et reste utile : la boucle ne change pas, seule la relation change.
 
 **La prochaine session porte sur le SENS, et la seule façon de la commencer est de jouer** — la
 précédente l'a prouvé : une partie rapportée geste par geste a valu plus que trois passes de

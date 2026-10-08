@@ -614,10 +614,9 @@ lourd.*
 **L'histoire** — à concevoir ensemble : le scénario porte les trois autres.
 
 - [ ] **Le nouveau scénario** : le cas médicaments, posé comme base de réflexion dans
-      `docs/CAS_MEDICAMENTS.md`, avec une proposition d'intégration et huit questions ⚖ — cinq
-      tranchées (le verdict dans une liste à part, le mot *concordent*, le verdict faux refusé, le
-      lien 6 qu'Auber refuse d'entendre, le suicide-vengeance), trois ouvertes : la dimension du
-      faux vice, le mobile, la charge. Document d'abord. *auteur*, le 8 octobre.
+      `docs/CAS_MEDICAMENTS.md`, avec une proposition d'intégration ; ses huit questions ⚖ sont
+      tranchées. Prochain geste : réécrire CONCEPTION et ARCHITECTURE, les faire relire, puis la
+      mécanique, puis le cas (partie II, *L'ordre de travail*). *auteur*, le 8 octobre.
 - [ ] **Scénario à choix moraux / alignement** (l'IA dissimulerait-elle un vice de procédure ?).
 - [ ] **Chain of thought** : une phase « nuit » après « Maître Auber s'est déconnecté », où l'IA se
       parle à elle-même, support des choix moraux.
