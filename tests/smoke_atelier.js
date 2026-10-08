@@ -405,6 +405,24 @@ console.log("\n=== La simulation reflète le moteur ===");
   check("le pas-à-pas et le jeu partagent les mêmes règles", !!w.ReglesJeu);
 }
 
+console.log("\n=== Le pas-à-pas referme la pièce : sa réplique part (§4.10) ===");
+{
+  const w = neuf();
+  w.simReset();
+  const pids = Object.keys(w.CONTENU.pieces);
+  const pid = pids.find(k => (w.CONTENU.pieces[k].declenche || {}).replique);
+  const autre = pids.find(k => k !== pid && !w.CONTENU.pieces[k].declenche);
+  const rep = pid && w.CONTENU.pieces[pid].declenche.replique;
+  const dites = () => w.SIM.fil.filter(m => m.texte === rep).length;
+  w.simOuvrir(pid);
+  check("ouverte, la pièce se lit : sa réplique attend", !!pid && dites() === 0);
+  w.simOuvrir(autre);
+  check("en ouvrir une autre la referme, et sa réplique part", dites() === 1 && w.SIM.modalPiece === autre);
+  w.simOuvrir(pid); w.simComparer(SC.sousVice(w.CONTENU));
+  check("faire autre chose que lire la referme aussi — et « une fois » ne redit rien",
+    !w.SIM.modalPiece && dites() === (w.CONTENU.pieces[pid].declenche.une_fois ? 1 : 2));
+}
+
 console.log("\n=== Le chemin docile, simulé ===");
 {
   const w = H.bootAtelier();

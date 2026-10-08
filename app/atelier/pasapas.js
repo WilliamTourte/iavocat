@@ -68,6 +68,7 @@ function simTrouvable(sous,pid){
    voie. Il ne repère rien d'avance : le jeu ne garde plus de passages de côté
    (passe K), et un `SIM.surlignes` propre à l'atelier simulait un geste parti. */
 function simComposer(i){
+  simRefermer();
   const L=CONTENU.liens[i];
   // L'article trouvé rejoint le dossier, comme en jeu (passe J).
   const bloc=(CONTENU.grammaire.blocs||[]).find(b=>b.forme===L.forme && b.piece && b.imbrique);
@@ -81,22 +82,32 @@ function sousComparaisons(){
   return api ? api.comparaisonsDe(CONTENU.liens,(CONTENU.grammaire||{}).formes) : [];
 }
 function simComparer(r){
+  simRefermer();
   RG().pressentir(SIM,r);
   simMsg({sys:true,texte:`compare : ${labelLien(r)} — sous les yeux, sans texte. Rien ne part.`});
   renderEtapes();
 }
 function simEnvoyer(ni,contre){
+  simRefermer();
   RG().envoyer(SIM,ni,contre);
   renderEtapes();
 }
+/* LA RÉPLIQUE D'UNE PIÈCE PART QUAND ON LA REFERME (§4.10 règle 3) — au jeu,
+   quand on relève les yeux. Le pas-à-pas n'a pas de croix : la pièce se
+   referme dès que le joueur simulé fait autre chose que la lire — ouvrir une
+   autre pièce, comparer, composer, envoyer, clôturer. Sans quoi le `declenche`
+   ne partait jamais. */
+function simRefermer(){ if(SIM.modalPiece) RG().fermerPiece(SIM); }
 function simOuvrir(pid){
   const R=RG();
+  simRefermer();
   simMsg({sys:true,texte:`ouvre « ${courtDe(pid)} ».`});
-  R.ouvrirPiece(SIM,pid);          // la vue, et son `declenche` éventuel
+  R.ouvrirPiece(SIM,pid);          // la vue ; son `declenche` partira à la fermeture
   renderEtapes();
 }
 const simInstructionComplete = () => RG().instructionComplete(SIM);
 function simCloturer(){
+  simRefermer();
   RG().cloturer(SIM);
   if(!SIM.brouillon.length) simMsg({sys:true,texte:"présentoir : aucune phrase écrite à y opposer."});
   renderEtapes();

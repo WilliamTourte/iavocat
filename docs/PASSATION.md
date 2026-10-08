@@ -6,7 +6,7 @@ ensuite. **Court, et il doit le rester.** État au 8 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 652 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 655 contrôles, 8 règles du gardien, ESLint.
 
 **Le 8 octobre, relecture du glossaire (§17)** après les passes I à M. Le §17 perd `recuAvant`,
 gagne DOCUMENTS et la règle **pièce ou document** (*auteur* : *pièce* quand c'en est une, *document*
@@ -15,7 +15,8 @@ document »*), et range *retenir* parmi les faux amis : il survit au sens de la 
 commentaires et les libellés des suites disent DOSSIER, les identifiants gardent `contexte`. La
 répétition dit *« Opposer une réponse »*. L'atelier ne parle plus de fiche d'article ni de règles
 livrées, et son pas-à-pas ne « surligne » plus : un passage s'y prend dans une pièce ouverte, comme
-au jeu. Au passage, ESLint était rouge depuis la passe M (`i` inutilisé dans `renderDISCUSSION`).
+au jeu ; il referme aussi la pièce dès qu'on fait autre chose que la lire, si bien que sa réplique
+(`declenche`) part enfin. Au passage, ESLint était rouge depuis la passe M (`i` inutilisé dans `renderDISCUSSION`).
 
 **Le 8 octobre, passe M : le retour de Jean.** L'index ne se replie plus d'office quand une pièce
 s'ouvre — *« Déplie tes DOCUMENTS »* coûtait un temps et un nom (§4.6) ; ‹ › restent en boucle,
@@ -1068,5 +1069,6 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   les règles « livrées » de la frise, `SIM.surlignes` du pas-à-pas (remplacé par les pièces
   ouvertes), « se retient ET se pose » dans `vue.js`, `.dcompte` mort. CONTEXTE → DOSSIER dans les
   commentaires et les libellés ; *pièce* / *document* tranché par l'auteur ; la répétition dit
-  *réponse*. ESLint, rouge depuis la passe M, revient au vert. Deux contrôles neufs vus tomber.
-  652 contrôles.
+  *réponse*. ESLint, rouge depuis la passe M, revient au vert. Puis le pas-à-pas referme la pièce
+  (`simRefermer`) : le `declenche` n'y partait jamais. Cinq contrôles neufs vus tomber.
+  655 contrôles.
