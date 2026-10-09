@@ -58,12 +58,12 @@ function passagesArticle(){
 let _mg=null, _mgSig=null;
 function MG(){
   if(!window.MoteurGrammaire) return null;
-  const sig=JSON.stringify([CONTENU.grammaire,CONTENU.pieces,CONTENU.liens]);
+  const sig=JSON.stringify([CONTENU.grammaire,CONTENU.pieces,CONTENU.liens,CONTENU.discordances]);
   if(sig!==_mgSig){
     _mgSig=sig;
     _mg=window.MoteurGrammaire.creerMoteur(
       CONTENU.grammaire||{depart:"S0",finaux:["FIN"],blocs:[],formes:{}},
-      empansPlats(), CONTENU.liens||[]);
+      empansPlats(), CONTENU.liens||[], CONTENU.discordances||[]);
   }
   return _mg;
 }
@@ -83,7 +83,7 @@ function memeLien(L,M){
 function courtDe(pid){ const p=CONTENU.pieces[pid]; return p?(p.court||pid):pid; }
 function texteForme(f){
   const b=((CONTENU.grammaire||{}).blocs||[]).find(x=>x.forme===f);
-  return b ? b.texte : (f||"?");
+  return b ? b.texte : ((formeDe(f)||{}).libelle || f || "?");
 }
 function labelLien(L){
   const t=(L.termes||[]).map(x=>typeof x==="string" ? cflabel(x) : "« "+labelLien(x)+" »");
@@ -96,6 +96,17 @@ function reecrireTermes(t,f){
   return Array.isArray(t) ? t.map(u=>reecrireTermes(u,f))
        : typeof t==="string" ? f(t)
        : {...t, termes:reecrireTermes(t.termes||[],f)};
+}
+/* LES DISCORDANCES SUIVENT (§11, passe N) : renommer ou supprimer un passage
+   doit les tenir à jour comme les liens — sans quoi le lien qui cite la paire
+   devient faux sans qu'on y ait touché. `f` rend la clé neuve, ou null pour
+   retirer la paire ; une liste vidée s'en va (l'export n'emporte rien de vide). */
+function reecrireDiscordances(f){
+  if(!Array.isArray(CONTENU.discordances)) return;
+  CONTENU.discordances=CONTENU.discordances
+    .map(p=>Array.isArray(p) ? p.map(f) : p)
+    .filter(p=>Array.isArray(p) && p.length===2 && p.every(k=>k!=null));
+  if(!CONTENU.discordances.length) delete CONTENU.discordances;
 }
 
 /* état d'interface */
@@ -178,14 +189,17 @@ function vue(v){
   $("main").classList.toggle("jsonmode",v==="json");
   $("main").classList.toggle("etapesmode",v==="etapes");
   $("main").classList.toggle("grammode",v==="grammaire");
+  $("main").classList.toggle("verdmode",v==="verdicts");
   $("tabJson").classList.toggle("on",v==="json");
   $("tabEtapes").classList.toggle("on",v==="etapes");
   $("tabGraphe").classList.toggle("on",v==="graphe");
   $("tabGrammaire").classList.toggle("on",v==="grammaire");
+  $("tabVerdicts").classList.toggle("on",v==="verdicts");
   if(v==="json") remplirJson();
   if(v==="graphe") render();      // recalcule les traits (le canevas était masqué)
   if(v==="etapes") renderEtapes();
   if(v==="grammaire") renderGrammaire();
+  if(v==="verdicts") renderVerdicts();
 }
 function remplirJson(){ $("jsonta").value=JSON.stringify(CONTENU,null,2); $("jsonmsg").textContent=""; }
 function appliquerJson(){

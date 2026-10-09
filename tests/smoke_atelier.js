@@ -302,7 +302,8 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
     m.liens[0].forme === "identite_non" && m.liens[0].termes[0] === "a.agent_x");
   check("le vice et sa réplique survivent", m.liens[0].vice === true && m.liens[0].rep === "Tiens.");
   check("une grammaire est fournie", Array.isArray(m.grammaire.blocs) && !!m.grammaire.formes);
-  check("les dimensions sont posées", Array.isArray(m.dimensions) && m.dimensions.length === 5);
+  check("les dimensions sont posées — celles du contenu livré",
+    Array.isArray(m.dimensions) && JSON.stringify(m.dimensions) === JSON.stringify(w.contenuLivre().dimensions));
   check("les cases et les relations disparaissent", m.cases === undefined && m.relations === undefined);
   const accuse = (w.attentesDeRemise(m.remises[0])[0]||{}).apres;
   check("l'accusé de réception d'une case migre sur l'attente de sa session",
@@ -423,6 +424,86 @@ console.log("\n=== Le pas-à-pas referme la pièce : sa réplique part (§4.10) 
     !w.SIM.modalPiece && dites() === (w.CONTENU.pieces[pid].declenche.une_fois ? 1 : 2));
 }
 
+console.log("\n=== Les discordances : le dossier les déclare, l'atelier les relit (passe N) ===");
+const cleP = (a, b) => [a, b].sort().join("|");
+const deducDans = (w, a, b) => ((w.CONTENU.grammaire.formes)[w.MG().deduire(a, b)] || {}).deduction;
+{
+  const w = neuf();
+  const D = w.CONTENU.discordances || [];
+  check("le contenu livré déclare ses discordances", D.length > 0);
+  const es = SC.empans(w.CONTENU), dec = new Set(D.map(([a, b]) => cleP(a, b)));
+  let p = null;
+  for (const a of es) for (const b of es)
+    if (!p && a.id < b.id && a.dim === b.dim && !dec.has(cleP(a.id, b.id))) p = [a.id, b.id];
+  check("une paire non déclarée concorde", deducDans(w, p[0], p[1]) === "concordance");
+  w.basculerDiscordance(p[0], p[1]);
+  check("cocher la paire l'écrit au dossier", (w.CONTENU.discordances || []).some(([a, b]) => cleP(a, b) === cleP(p[0], p[1])));
+  check("et le moteur suit : elle ne concorde plus", deducDans(w, p[0], p[1]) === "discordance");
+  w.basculerDiscordance(p[0], p[1]);
+  check("décocher la retire, et elle concorde de nouveau",
+    !(w.CONTENU.discordances || []).some(([a, b]) => cleP(a, b) === cleP(p[0], p[1])) && deducDans(w, p[0], p[1]) === "concordance");
+  w.vue("verdicts");
+  const pane = w.document.getElementById("verdpane");
+  const par = {}; for (const e of es) (par[e.dim] = par[e.dim] || []).push(e);
+  const nPaires = Object.values(par).reduce((n, l) => n + l.length * (l.length - 1) / 2, 0);
+  check("l'onglet Verdicts dessine une case par paire de même dimension",
+    pane.querySelectorAll("input[type=checkbox]").length === nPaires);
+  check("et coche celles que le dossier déclare", pane.querySelectorAll("input[type=checkbox]:checked").length === D.length);
+  w.vue("graphe");
+}
+{
+  const w = neuf();
+  w.CONTENU.discordances.push([w.CONTENU.discordances[0][0], "piece_absente.e_x"]);
+  check("une discordance qui nomme un passage inconnu est une erreur", err(w).some(i => i.msg.includes("passage inconnu")));
+}
+{
+  const w = neuf();
+  const [x, y] = SC.deuxEmpansDiff(w.CONTENU);
+  w.CONTENU.discordances.push([x.id, y.id]);
+  check("une discordance de deux dimensions est une erreur", err(w).some(i => i.msg.includes("deux dimensions")));
+}
+{
+  /* LA VÉRITÉ VIT À PART (l'essai du 8 octobre) : retirer la liste rend faux les
+     liens qui disaient « ne concordent pas » — et le diagnostic le voit. */
+  const w = neuf();
+  delete w.CONTENU.discordances;
+  check("sans la liste, les liens qui discordaient sont faux sur le dossier",
+    err(w).some(i => i.msg.includes("relation fausse sur le dossier")));
+}
+{
+  const w = neuf();
+  const comp = JSON.parse(JSON.stringify(SC.sousVice(w.CONTENU)));
+  w.CONTENU.liens.push({ forme: comp.forme, termes: comp.termes, tag: "un_tag_nu" });
+  check("un lien nu qui porte un tag est une erreur", err(w).some(i => i.msg.includes("un lien nu qui se plaiderait")));
+}
+{
+  const w = neuf();
+  const L = w.CONTENU.liens.find(x => !x.vice && !x.faux && typeof (x.termes || [])[0] === "object");
+  const comp = JSON.parse(JSON.stringify(L.termes[0]));
+  w.CONTENU.liens.push({ forme: comp.forme, termes: comp.termes, savoir: true });
+  for (const f of Object.values(w.CONTENU.fins || {})) delete f.variante_sait;
+  check("un savoir sans réplique est signalé", msgs(w).includes("un savoir sans réplique"));
+  check("un savoir qui ne change aucune fin aussi", msgs(w).includes("Le savoir ne change aucune fin"));
+}
+{
+  /* LA DISCORDANCE BANALE (§4.4) : un vice qui ne concorde pas, seul de sa dimension. */
+  const w = neuf();
+  const sous = SC.sousVice(w.CONTENU);
+  sous.forme = Object.keys(w.CONTENU.grammaire.formes).find(f => w.CONTENU.grammaire.formes[f].deduction === "discordance");
+  w.CONTENU.discordances = [[...sous.termes]];
+  check("un vice qui ne concorde pas, sans discordance banale à côté, est signalé", msgs(w).includes("discordance(s) banale(s)"));
+}
+{
+  const w = neuf();
+  const k = w.CONTENU.discordances[0][0], [pid, eid] = H.deK(k);
+  check("renommer un empan d'une discordance réussit", w.renommerEmpanId(pid, eid, eid + "_neuf") === null);
+  check("la discordance suit", JSON.stringify(w.CONTENU.discordances).includes('"' + pid + "." + eid + '_neuf"')
+    && !JSON.stringify(w.CONTENU.discordances).includes('"' + k + '"'));
+  check("et aucun lien n'en devient faux", !msgs(w).includes("relation fausse"));
+  w.demanderSupprChamp(pid, eid + "_neuf"); w.demanderSupprChamp(pid, eid + "_neuf");
+  check("supprimer l'empan retire ses discordances", !JSON.stringify(w.CONTENU.discordances || []).includes(pid + "." + eid + "_neuf"));
+}
+
 console.log("\n=== Le chemin docile, simulé ===");
 {
   const w = H.bootAtelier();
@@ -462,6 +543,36 @@ console.log("\n=== L'export, et le jeu qui l'adopte ===");
 /* L'ÉCRITURE SUR PLACE (§10) — on ne nomme aucun navigateur : on éprouve les
    DEUX chemins. Sous jsdom, `showSaveFilePicker` n'existe pas, donc le repli se
    donne gratuitement et le chemin d'écriture se pose à la main. */
+console.log("\n=== La mise en page : ce qui se détache ne se prend pas (passe P, §4.3, §15) ===");
+{
+  const w = neuf();
+  check("le contenu livré n'a ni passage détaché, ni gabarit inconnu, ni gras sur un passage",
+    !/Passage dans un|Gabarit inconnu|Un gras couvre/.test(msgs(w)));
+  const e = SC.unEmpan(w.CONTENU), p = w.CONTENU.pieces[e.pid], mk = "{{" + e.eid + "}}";
+  const texte = p.texte;
+  for (const [signe, nom] of [["#", "un titre"], ["^", "un en-tête"], ["_", "une signature"], ["~", "un tampon"]]) {
+    p.texte = signe + " " + mk + "\n" + texte.replace(mk, "");
+    check(`un passage dans ${nom} est une erreur`, err(w).some(i => i.msg.startsWith("Passage dans " + nom)));
+  }
+  p.texte = "> " + mk + "\n" + texte.replace(mk, "");
+  check("à droite, il reste un passage comme un autre", !msgs(w).includes("Passage dans"));
+  p.texte = texte.replace(mk, "**" + mk + "**");
+  check("un gras qui couvre un passage est une erreur", err(w).some(i => i.msg.startsWith("Un gras couvre")));
+  p.texte = texte;
+  p.gabarit = "inexistant";
+  check("un gabarit inconnu est signalé", msgs(w).includes("Gabarit inconnu"));
+}
+{
+  const w = neuf();
+  const pid = Object.keys(w.CONTENU.pieces)[0];
+  w.majGabarit(pid, "labo");
+  check("la feuille se choisit dans l'inspecteur", w.CONTENU.pieces[pid].gabarit === "labo");
+  w.majGabarit(pid, "");
+  check("et, vide, sa clé part — le papier d'avant", !("gabarit" in w.CONTENU.pieces[pid]));
+  check("l'inspecteur offre les gabarits du moteur, appelés, jamais recopiés",
+    w.MoteurGrammaire.GABARITS.every(g => w.optionsGabarit("").includes(`value="${g}"`)));
+}
+
 console.log("\n=== Écrire content.js : sur place, ou le repli ===");
 const guetTelecharger = w => { const vus=[]; w.telecharger=(nom,data)=>{ vus.push({nom,data}); return true; }; return vus; };
 const poigneeFeinte = () => { const ecrits=[]; return { ecrits, nom:"content.js",

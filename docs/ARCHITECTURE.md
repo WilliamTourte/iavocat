@@ -3,6 +3,10 @@
 *Comment le jeu est fait, où vit la vérité, où vit quoi. Le sens arbitre et il est ailleurs :
 `docs/CONCEPTION.md` (§1 à §8). L'état du jour : `docs/PASSATION.md`.*
 
+*La passe N — la relation unique, *concordent / ne concordent pas* — est faite (8 octobre) ; la
+passe O — le cas médicaments, en premier jet — le 9, et la passe P — la mise en page des pièces — le
+même jour.*
+
 ## 9. Le rangement
 
 **La règle :** *le contenu ne contient aucune règle, les règles ne contiennent aucun contenu,
@@ -71,12 +75,15 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
 {
   schema: 3,
   dimensions: ["quand","qui","où","quoi","combien"],       // ordre d'affichage ; la couleur en découle
+                                                            //   — et "comment", sixième, dans le cas
   pieces: {
     p_pv: {
       titre, court, type, resume,                           // `resume` : atelier seulement
       porte: ["qui","quoi"],                                // RÈGLES seulement : ce que l'article régit, et ce que la recherche lit
       qui: "brigadier N.",                                  // signataire par défaut de la pièce
-      texte: "Appel reçu à {{e_appel}}, sur place à {{e_arr}}.",
+      gabarit: "police",                                    // la feuille (passe P) — optionnel
+      texte: "^ COMMISSARIAT CENTRAL\n# Procès-verbal\n"    // une ligne par rôle (passe P)
+           + "Appel reçu à {{e_appel}}, sur place à {{e_arr}}.",
       empans: { e_appel:{ dim:"quand", valeur:"2026-03-12T21:52",
                           texte:"l'appel nous est parvenu à 21h52",  // ce qui se lit dans la pièce
                           nom:"l'heure de l'appel",                  // ce qui parle dans une phrase
@@ -92,19 +99,37 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
     }
   },
   grammaire: { depart:"S0", finaux:["FIN"], blocs:[…], formes:{…} },
-  liens: [ { forme, termes:["p_f.e_a", …], tag?, vice?, conclusion?, faux?, rep? } ],
+  liens: [ { forme, termes:["p_f.e_a", …], tag?, vice?, conclusion?, faux?, rep?,
+             savoir? } ],                                  // un lien NU : rep, jamais tag
+  discordances: [ ["pid.eid","pid.eid"], … ],               // ce qui ne concorde pas — le reste concorde
   remises: [ { qui, texte, pieces:[…],                     // des pièces : un article se cherche (passe J)
                attentes:[ { question?, attend:"tag", apres?:{ qui, replique } } ] } ],
   repetition: { intro, affirmations:[{court, texte, repond?:["tag"], oppose?}], fin },
   avocat: { rep_vice, rep_faux, rep_inutile:[…], rep_sans_rapport:[…], rep_hors_sujet:[…],
             rep_relation_fausse:[…], rep_deux_dossiers, deja, rep_a_cote },
   directives: […], avis_exploitation,                       // écrits, non lus par le jeu — voir §5
-  fins: {1:{…},2:{…},3:{…}}
+  fins: {1:{…},2:{…},3:{…}}                                 // texte, variante_faux, variante_sait
 }
 ```
 
 - **Marqueurs `{{eid}}`** : pas d'appariement de sous-chaînes, donc pas de marquage qui glisse quand on
   corrige une virgule. `nom` absent → le `texte` en tient lieu.
+- **La mise en page** (passe P, §4.3, §8) : le `texte` se lit **ligne à ligne** (`\n`), et une ligne
+  vide sépare deux paragraphes ; un texte d'une seule ligne reste un paragraphe, comme avant. En tête
+  de ligne, un signe et une espace disent son rôle : `^` l'en-tête du service · `#` le titre du
+  document · `>` une ligne à droite (le lieu, la date, la qualité du signataire) · `_` une signature
+  · `~` un tampon · `-` un élément de liste. Une ligne qui commence par `|` est une ligne de
+  tableau, ses cellules séparées par `|` ; une ligne `|---|---|` sous la première en fait l'en-tête.
+  `---` seul sur sa ligne coupe la feuille en deux (deux ordonnances, deux parties). En ligne,
+  `**gras**`, qui ne couvre jamais un passage. Les marqueurs vivent dans toutes les lignes ; **ceux
+  d'un titre, d'un en-tête, d'une signature, d'un tampon ou d'un gras se rendent, mais le diagnostic
+  les refuse** (§15). La projection est `miseEnPage` (§14) — l'écran pose les passages dans ses
+  lignes et ses cellules, brutes, comme il le faisait dans le texte entier.
+- **`gabarit`** (passe P, §4.6) : la feuille où la pièce s'imprime — `police`, `medical`, `labo`,
+  `pharmacie`, `manuscrit`, `code` (`GABARITS`, §14). Absent, le papier d'avant, sans feuille ;
+  inconnu, pareil, et le diagnostic le dit. Le gabarit ne porte aucun texte : il habille. Dans la
+  feuille `manuscrit`, ce qui suit la coupe n'est plus de la main : c'est l'étiquette des
+  enquêteurs, à la machine (la lettre et son scellé).
 - **Le bloc `type:"relation"`** (passe G, §4.5) : deux termes posés, il offre **les deux relations de
   leur dimension** — pour chaque côté, égalité puis différence ou ordre, la **première forme
   déclarée** d'arité 2 dont le premier slot nomme la dimension — et la `valeur` posée est la forme
@@ -123,7 +148,8 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   texte du bouton, quand le composeur en fait un ; une liaison-article n'en a plus, son résultat de
   recherche porte le `nom` de son passage) · `cite` (le terme précédent s'écrit **par son nom et par sa citation**, avec sa
   pièce).
-- **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`, `"juxtaposition"`) · `sens` (`"asc"` par
+- **Attributs d'une forme** : `deduction` (`"egalite"`, `"difference"`, `"ordre"`, `"juxtaposition"`, et
+  `"concordance"`, `"discordance"`, passe N) · `sens` (`"asc"` par
   défaut) · `patron`, la phrase écrite, `{a}`/`{b}` — **le seul endroit où l'accord se joue** (§8.8) ·
   `libelle`, le bouton qui la **choisit** au composeur (*« précède »*, *« une seule et même
   personne »*) ; absent, le `patron` avec ses deux termes en points de suspension.
@@ -140,6 +166,31 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   valeurs d'une dimension partagent un format : une `hh:mm` à côté d'une date ISO se comparerait
   de travers, et rien ne le dirait. Et **la pièce écrit la date que porte la valeur** — un joueur
   qui lit *14h02* doit savoir de quel jour ; l'année, que personne ne lit, ne sert qu'au tri.
+- **Les deux relations** (passe N, §4.2, §4.5) : deux formes, `deduction:"concordance"` et
+  `"discordance"`, patrons *« {a} et {b} concordent »* / *« {a} et {b} ne concordent pas »* — un
+  verbe au pluriel, qui ne s'accorde jamais (§8.8) —, libellés les mêmes verbes. **Leurs slots
+  nomment les dimensions en toutes lettres, jamais `"*"`** : l'essai du 8 octobre l'a montré, deux
+  contrôles lisent un slot comme une liste, et une dimension neuve doit rester sans forme tant qu'on
+  ne l'y ajoute pas. `deduire` rend la discordance si la paire est dans `discordances`, la
+  concordance sinon ; `relationsDe` range la concordance du côté de l'égalité. Les formes d'avant
+  restent : un contenu emploie les unes ou les autres. **Le cas les emploie seules** : l'affaire
+  ADN, convertie le 8 octobre, avait gardé ses verdicts **au sens**, pas aux valeurs — 14h02 et 14h47
+  concordaient —, et c'est sa calibration, reprise telle quelle, qui le porte encore.
+- **`discordances`** (passe N) : des paires `"pid.eid"`, sans ordre — **le dossier déclare ses discordances,
+  tout le reste concorde**. Clé optionnelle : sans elle, rien ne discorde ; un contenu d'avant n'a pas
+  à la porter — ni schéma 4, ni migration. Les renommages et les suppressions la suivent comme les
+  liens (`reecrireDiscordances`, `noyau.js`). Une paire y est de même dimension et ne nomme jamais un passage d'article (le
+  diagnostic, §15). **Une liste à part, pas les liens** — arbitré par l'auteur le 8 octobre :
+  l'essai écrivait le verdict dans les liens, et changer la relation d'un lien y changeait le fait
+  sans que rien le dise ; à part, un lien qui la contredit est faux, et le diagnostic le voit.
+- **Le lien nu** (passe N, §4.5) : une comparaison sans article, d'arité 2. Il porte `rep`, **jamais
+  `tag`** : il se reconnaît, il n'est jamais un moyen (`estMoyen`). Sa forme dit la vraie relation,
+  comme celle de tout lien.
+- **`savoir`** (passe N, §4.7), sur un lien — nu, d'ordinaire : sa comparaison composée, la vraie
+  relation choisie, lève `S.sait` à l'assemblage (`pressentir`) — sous un article aussi, puisqu'elle
+  s'y assemble d'abord ; `finir` ajoute alors `variante_sait` au texte de la fin, comme
+  `variante_faux`. Aucun autre effet. Le contenu du jour n'en porte pas : il s'éprouve sur contenu
+  muté (§16).
 - **Attribut d'un empan** : `bruit` — *leurre assumé*, que le diagnostic cesse de signaler comme
   inerte (§15). Il vit **sur l'empan** : il suit les renommages et meurt avec lui, et l'atelier n'en
   tient aucune liste à côté. Une telle liste a existé (`_bruit`), que l'export jetait ; `migrerContenu`
@@ -172,7 +223,7 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   `rep_sans_rapport`, nue comme sous un article. Elle n'entre jamais dans la boucle de `deduire` :
   déclarée plus haut, elle passerait pour une *différence* entre deux passages de même dimension.
 - **Une relation fausse** (passe G) : la `forme` d'une comparaison n'est pas celle que donnent les
-  valeurs (`deduire`). Elle part ; l'avocat y répond par `rep_relation_fausse`, une escalade comme
+  valeurs — ou, pour les deux relations de la passe N, `discordances` (`deduire`). Elle part ; l'avocat y répond par `rep_relation_fausse`, une escalade comme
   les autres, son compteur remis à zéro à chaque remise (§4.11). Aucun lien ne la porte — un lien
   dont la relation serait fausse ne se formerait jamais, et le diagnostic le dit (§15).
 - **Une affirmation trie** (§4.6) : `repond` liste les tags des liens qui la réfutent — opposer une
@@ -180,7 +231,9 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   une autre reçoit `rep_a_cote` et reste où elle était. **Sans `repond`, l'affirmation prend tout**
   — l'ancienne conduite, qu'on ne retire pas (ci-dessous) ; `repond:[]` n'en prend aucune.
 - **Un terme** est `"pid.eid"` ou un `{forme, termes}` imbriqué. Le moteur ne lit aucun nom de
-  dimension : ajouter `comment` est un geste d'atelier.
+  dimension : ajouter `comment` est un geste d'atelier — celui du cas. **Il n'y a pas de sixième
+  trait** (§4.3) : `traitDim` tourne sur cinq, et `comment` partage le trait de la première
+  dimension ; sa couleur seule l'en distingue.
 - **Migration 2 → 3** (`migrerContenu()`, silencieuse) : `champs` → `empans`, marqueurs posés, liens par
   paires → `{forme, termes}`, accusé migré sur la **première attente**. Elle **n'invente aucune
   attente** (sans `attend`, la session bloquerait pour toujours) ; **le jeu ne migre pas**.
@@ -193,7 +246,7 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 
 | Nature | Source |
 |---|---|
-| **Le contenu** (pièces, empans, dimensions, grammaire, liens, sessions, répliques, fins) | `app/content.js` |
+| **Le contenu** (pièces, empans, dimensions, grammaire, liens, discordances, sessions, répliques, fins) | `app/content.js` |
 | **Les règles** (sessions, drapeaux, PLAIDOIRIE, répétition, fins) | `app/regles.js` |
 | **La grammaire** et les **projections** (§14) | `app/moteur.js` |
 | **Le sens** (invariants, arbitrages) | `docs/CONCEPTION.md` — le diagnostic n'en encode qu'un extrait |
@@ -223,7 +276,7 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 
 ## 14. Le moteur
 
-`creerMoteur(GRAMMAIRE, CHAMPS, LIENS)` est **pur, sans données** — `valider`, `reduire`, `lienDe`,
+`creerMoteur(GRAMMAIRE, CHAMPS, LIENS, DISCORDANCES)` est **pur, sans données** — `valider`, `reduire`, `lienDe`,
 `rendre`, `squelettes`… — chargé tel quel par le jeu, l'atelier et le banc d'essai.
 
 - **Accumuler, pas écraser** : `reduire(ch)` empile les termes en retenant la forme courante ; à un bloc
@@ -231,7 +284,9 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 - **La vérification** tient sur `comparer` (numérique quand les deux valeurs le sont, `hh:mm` compris ;
   lexicographique sinon — c'est par là qu'une date ISO se trie, §11), `deduire` (la relation
   **vraie**, ou — sur dimensions différentes — la juxtaposition si le contenu en déclare une, sinon
-  `null`, §4.11), `ordonner`, `relationsDe` (les deux relations qu'on offre pour une dimension) et
+  `null`, §4.11 ; pour les deux relations de la passe N, la paire lue dans `discordances` —
+  `discorde(a, b)` le dit seul), `ordonner`,
+  `relationsDe` (les deux relations qu'on offre pour une dimension) et
   `fausse` (une comparaison, emboîtée ou non, dont la forme n'est pas la vraie). Depuis la passe G,
   `deduire` ne rédige plus : il sert d'**oracle** — le joueur choisit, le moteur vérifie (§4.5).
 - **Rétrocompatibilité** : sans `deduit`, `deduction` ni `patron`, `reduire` et `rendre` se comportent
@@ -249,6 +304,7 @@ Pas *une* mais **quatre**, une par nature — et aucune n'a de copie.
 | `comparaisonsDe(liens, formes)` — les comparaisons d'arité 2, emboîtées comprises, dédoublonnées | l'atelier, le harnais |
 | `couleurDim(dimensions, d)` — le **rang**, jamais la pertinence (§4.3) ; `null` si inconnue | le jeu, l'atelier |
 | `traitDim(dimensions, d)` — le **soulignement** au même rang que la couleur, pour qu'aucune dimension ne se lise à la couleur seule (§4.3) | le jeu |
+| `miseEnPage(texte)` (passe P) — les **blocs** d'une pièce, dans l'ordre : `para`, `titre`, `entete`, `droite`, `signature`, `tampon`, `liste` (des `lignes` brutes, marqueurs compris), `tableau` (`entete`, `lignes` de cellules), `coupe` ; et `GABARITS`, les feuilles connues (§11) | le jeu, l'atelier (diagnostic), le harnais |
 
 `couleurDim` rend `null` plutôt qu'une couleur de repli : le jeu grise, l'atelier montre en rouge —
 chez lui, c'est une erreur d'écriture. **La marge de bruit doit rester non nulle**, sinon « sensé »
@@ -259,7 +315,7 @@ vaudrait « correct » : mesurée en direct par l'onglet Grammaire, jamais recop
 Les règles vivent dans `regles.js`, que le jeu et l'atelier **appellent**. Restent trois endroits où
 l'atelier *décrit* le jeu faute de pouvoir l'appeler : la **frise** et les **pastilles** du pas-à-pas
 (le déroulé, les drapeaux), le **diagnostic** et les **formulaires** (le schéma, §11), l'onglet
-**Grammaire** (`moteur.js`).
+**Grammaire** (`moteur.js`) — et l'onglet **Verdicts** (passe N), qui l'appelle aussi.
 
 **C'est le danger le plus coûteux du dépôt** : un reflet laissé derrière ne casse rien, ne lève rien,
 aucune suite ne le voit — il ment tous les jours à celui qui écrit l'affaire. Le remède n'est pas une
@@ -274,7 +330,21 @@ d'article par règle, et aucun ailleurs ; une liaison dont l'article n'a pas de 
 s'offrirait jamais** (passe F) —, le vice, les sessions — plus, depuis la passe J, **la recherche** :
 une dimension comparée qui rend moins de trois articles, un lien attendu dont l'article ne sortirait
 pas de la recherche sur sa paire (la session serait inclôturable), un terme qui porte une
-pièce-règle.
+pièce-règle. **Depuis la passe N** : une discordance de deux dimensions, ou qui nomme un passage inconnu
+ou un article ; un lien dont la relation contredit `discordances` — la relation fausse, qui lit
+désormais la liste ; un lien nu qui porte un tag ; un `savoir` sous un article, ou sans réplique ;
+et **la discordance banale** (§4.4) — un vice qui ne concorde pas sans deux discordances innocentes
+dans sa dimension —, à côté du doublon banal, qui reste, sur les valeurs ; et le savoir qui ne
+change aucune fin (pas de `variante_sait`). **Depuis la passe P** : un `gabarit` inconnu, et un
+passage dans ce qui se détache — un titre, un en-tête, une signature, un tampon, un gras (§4.3) —,
+lus sur `miseEnPage`, appelée, jamais recopiée.
+
+**L'onglet Verdicts** (passe N, `verdicts.js`) — un reflet de plus, et c'est aussi un éditeur : une
+grille par dimension, chaque paire de même dimension avec sa relation — `deduire`, **appelé**, jamais
+recopié (§12) —, les liens qui la posent (faux s'ils contredisent le dossier), et une case qui écrit
+`discordances` (`basculerDiscordance`). C'est l'éditeur de la liste, et la relecture qu'elle exige :
+une discordance juste que le dossier tairait serait refusée par l'avocat (§8). L'inspecteur d'une
+paire porte la même case. Sans les deux relations au contenu, la grille le dit, et ne coche rien.
 
 - **« Forme indicible »** : une forme existe de **trois façons** — déclarée par une liaison, choisie à
   un bloc `relation`, ou déduite par un bloc `deduit` ; celle-là n'est nommée par aucun bloc.
@@ -286,17 +356,35 @@ Méthode (contenu) : écrire dans l'atelier → « Écrire content.js » (§10) 
 
 ## 16. Les suites, le gardien, ESLint
 
-Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **655 contrôles**. Ce qu'il expose — boot,
+Cinq suites sur un harnais jsdom commun (`tests/harnais.js`), **713 contrôles**. Ce qu'il expose — boot,
 une lecture par surface, les désignations de contenu, les chemins — est en tête du fichier.
 
 | Suite | Ce qu'elle prouve |
 |---|---|
 | `test_o5.js` (44) | l'index du dossier, **et le bouton de pièces qui compte comme lui** ; tout empan cliquable ; prendre d'un clic, sans rien transmettre ; la marge de bruit non nulle ; le vice à canal unique ; les trois fins |
-| `test_declencheurs.js` (40) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé |
-| `test_parcours.js` (415) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel — **chercher le passage aux deux gestes**, **l'article en trois temps**, **et *« → Envoyer »* montré à la fin de chacun** (§4.8, passe K) —, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **l'écran qui dit l'état de la phrase** — ‹ ›, le passage pris marqué, la raison d'un clic qui ne prend rien (§4.6) ; **l'article qui se cherche, puis se prend — trois résultats du champ de la paire, dans un ordre tiré au hasard, au dossier une fois pris —, et la comparaison nue qui ne part pas en session 1** (§4.5, §4.11, passe J) ; **le clic dans la pièce qui prend — ce que la grammaire accepte, rien de plus —, et la bulle qui montre *« ← retirer »* quand il a pris à tort** (§4.6, §4.8, passes H et K) ; **la relation que le joueur choisit, et la fausse que l'avocat refuse** (§4.5, passe G) ; **la DISCUSSION qui s'agrandit**, DOSSIER ouvert (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) |
+| `test_declencheurs.js` (50) | le décâblage, sur contenus **mutés** : `declenche`, la liste d'attentes — **servie dans l'ordre en remise 1, par anticipation ensuite** (§3) —, les trois drapeaux, contenu invalide refusé ; **le savoir et le lien nu** — la vraie relation fait savoir, la fausse non, la fin le dit, et le lien nu reçoit sa réplique sans être un moyen (passe N) |
+| `test_parcours.js` (434) | le grain fin : composer, retirer, effacer ; **le geste unique** ; le tutoriel — **chercher le passage aux deux gestes**, **l'article en trois temps**, **et *« → Envoyer »* montré à la fin de chacun** (§4.8, passe K) —, **et la remise qu'il accompagne servie dans l'ordre** ; les deux régimes de fondement ; les trois escalades ; la déduction, **et la juxtaposition, refusée en session 1 seulement** (§4.11) ; **les cadres de l'article** ; le filtre de livraison ; la continuation ; la répétition, **et l'avocat qui y trie** ; **le clavier** (§4.10) ; **l'écran qui dit l'état de la phrase** — ‹ ›, le passage pris marqué, la raison d'un clic qui ne prend rien (§4.6) ; **l'article qui se cherche, puis se prend — trois résultats du champ de la paire, dans un ordre tiré au hasard, au dossier une fois pris —, et la comparaison nue qui ne part pas en session 1** (§4.5, §4.11, passe J) ; **le clic dans la pièce qui prend — ce que la grammaire accepte, rien de plus —, et la bulle qui montre *« ← retirer »* quand il a pris à tort** (§4.6, §4.8, passes H et K) ; **la relation que le joueur choisit, et la fausse que l'avocat refuse** (§4.5, passe G) ; **la relation vraie lue au dossier — les discordances déclarées, la concordance par défaut, sans la liste tout concorde — et les formes d'avant vérifiées sur les valeurs** (§4.2, passe N) ; **la DISCUSSION qui s'agrandit**, DOSSIER ouvert (§4.6) ; **une phrase déjà envoyée ne repart pas** (§4.5) ; **l'agacement qui retombe** (§4.11) ; **l'écran de fin terminal** (§4.9) ; **la pièce comme un document** — la projection rôle par rôle, aucun passage perdu ni détaché dans le contenu livré, le passage pris dans une case, la feuille et le papier d'avant (passe P) |
 | `test_sauvegarde.js` (41) | la partie survit au rechargement, **composition assemblée et non envoyée comprise**, **l'article trouvé au dossier compris** ; la signature jette une sauvegarde étrangère ; **une partie d'avant la passe K se reprend sans `S.retenus`, ses articles d'avant la passe J au dossier** |
-| `smoke_atelier.js` (115) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet — **la recherche comprise : un article qu'elle ne rend pas sur la paire attendue** (passe J) —, migration idempotente, renommages, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
+| `smoke_atelier.js` (144) | l'atelier et le couple atelier→jeu : réexport à l'identique, diagnostic complet — **la recherche comprise : un article qu'elle ne rend pas sur la paire attendue** (passe J), **et les discordances : passage inconnu, deux dimensions, liens faux sur le dossier, lien nu qui se plaiderait, savoir sans réplique, discordance banale** (passe N) —, migration idempotente, renommages **que les discordances suivent**, **l'onglet Verdicts qui coche et décoche**, pas-à-pas sur `regles.js`, écriture sur place et **arbitrage avec le fichier** (§10) |
 
+- **Ce que la passe N a touché** — l'essai du 8 octobre l'avait mesuré (654 contrôles sur 655), et
+  le code l'a confirmé : `test_o5` dit *« aucune comparaison nue n'est un moyen »*, plus *« aucune
+  comparaison ne se dit nue »* ; `test_parcours` lit la relation vraie au dossier, et son contrôle de
+  l'égalité dans les dimensions d'écart, qui **passait par le vide** sans forme d'ordre, vit
+  désormais sur contenu muté, avec des formes d'avant déclarées exprès. Deux contrôles de
+  renommage de `smoke_atelier` sont tombés d'eux-mêmes — les discordances ne suivaient pas encore.
+  **Seize mutations, chacune vue tomber** ; une dix-septième a montré du code mort (chercher le
+  savoir plus bas dans la phrase), retiré.
+- **Ce que la passe O a touché** — le contenu seul, et deux contrôles de `smoke_atelier` qui le
+  lisaient sans le dire : la migration posait *cinq* dimensions — elle pose celles du contenu livré —,
+  et le savoir *qui ne change aucune fin* supposait un contenu sans `variante_sait` — le contrôle
+  l'ôte lui-même. Les 687 autres sont passés sur le cas sans retouche : les suites ne nomment aucun
+  contenu (§16).
+- **Ce que la passe P a touché** — rien des contrôles d'avant, `.piecetexte` gardant son nom :
+  26 contrôles neufs, 15 au jeu (la projection, le contenu livré à l'écran, un contenu muté), 11 à
+  l'atelier (le diagnostic de ce qui se détache, la feuille dans l'inspecteur). **Pas vus tomber** :
+  une passe de mutations, coupée en route, a laissé une mutation dans le code, retirée à la main ;
+  l'auteur décide s'il en faut une (§3 de `docs/PASSATION.md`).
 - **Le contrat de lecture : `w.R.x(w.S)`** — une suite *lit* les règles ; elle *agit* par les **gestes**
   de la fenêtre, parce qu'eux redessinent.
 - **ET ELLE NE MARCHE QUE LES PORTES DU JOUEUR.** Lire une règle est gratuit ; en **appeler** une que
@@ -370,15 +458,16 @@ qui a raison.*
 `.couleurDim`, `.traitDim`, `.articlesDe` (les passages d'article, que `champsDe` écarte, §11),
 `ReglesJeu.estRegle`.
 
-**Les huit modules de l'atelier, dans l'ordre de chargement** : `noyau.js` (contenu, outils, état
+**Les neuf modules de l'atelier, dans l'ordre de chargement** : `noyau.js` (contenu, outils, état
 d'interface, annulation, onglets — **et les quatre gestes** ci-dessous ; en premier) · `graphe.js` (le
 canevas ; seul endroit où du CSS traverse vers du JS, `getCSS`) · `diagnostic.js` · `inspecteur.js`
 (formulaires, mutations, renommages) · `frise.js` (remises et attentes) · `pasapas.js` (**appelle**
-`regles.js`) · `contenu-io.js` (import, export, migration, autosave, **relecture du fichier et accord**, §10) · `grammaire.js`.
+`regles.js`) · `contenu-io.js` (import, export, migration, autosave, **relecture du fichier et accord**, §10) · `grammaire.js` · `verdicts.js` (l'onglet Verdicts : la grille des discordances, passe N).
 
 **Les quatre gestes que tout l'atelier refait** (`noyau.js`, section *Les quatre gestes*) : `muter(f)` — **toute**
 mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`, `demanderSuppr` +
-`btnSuppr`. Plus deux formats : `deK(k)`, l'inverse de `K(pid,ch)`, et `reecrireTermes(t,f)`.
+`btnSuppr`. Plus deux formats : `deK(k)`, l'inverse de `K(pid,ch)`, et `reecrireTermes(t,f)` — que
+`reecrireDiscordances(f)` double pour la liste des discordances (passe N).
 
 | Le geste | La règle (`regles.js`) | Le rendu (`jeu.js`) |
 |---|---|---|
@@ -390,6 +479,7 @@ mutation passe par lui —, `poserOuRetirer`, `reinitSelection({garderEmpans})`,
 | ouvrir et fermer une surface de côté ; **agrandir la DISCUSSION**, DOSSIER ouvert (§4.6) | *(aucune — l'écran seul)* | `barreSurfaces`, `basculerPanneau`, `fermerPanneau`, `clavier` (Échap) ; `enteteDISCUSSION`, `basculerDISCUSSION`, `discussionAgrandie` (dans `majLateral`) |
 | **le clavier et la voix d'annonce** (§4.10) — le focus qui survit, la pièce DANS le DOSSIER (§4.6), ce qui s'annonce | `fermerPiece`, seule règle que l'écran appelle en refermant — par la croix, ou par `suivrePhrase` quand le DOSSIER quitte l'écran | `clavier`, `memoFocus` → `rendreFocus` (par la clé `data-f`), `ouvrirPiece`/`fermerPiece`/`suivrePhrase` (écran) — `modal`/`inert` sur `.wrap` ne servent plus que `finir`, écran terminal (§4.9 règle 5), `annoncer` → `#annonce` |
 | **poser un bloc** ; la clôture qui n'ajoute rien ; **choisir la relation** (passe G) | `poserBloc` (une relation par son rang parmi `relationsOffertes` ; la juxtaposition `auto`), `retirerBloc`, `viderCompo`, `estSecondTerme`, `clotureImplicite`, `chaineEnvoyable` (rien, en session 1, tant que la phrase attend son article — §4.11 point 6), `peutEnvoyer`, `compoFinie` ; au moteur, `relationsDe`, `fausse` | `texteCompoPartiel`, `renderCompo` (les deux relations, `libelleRelation`), `voirRelations` — la clôture n'est PAS un bouton |
+| **la relation, vérifiée au dossier** ; **le savoir** (passe N, §4.2, §4.7) | au moteur, `deduire` — qui lit `discordances` —, `discorde`, `relationsDe` ; `pressentir` → `S.sait` ; `finir` (`variante_sait`) | `libelleRelation` — *« concordent »*, *« ne concordent pas »* |
 | le pressentiment ⚑ ; **clore la phrase** | `majPressentiment`, `pressentir`, `sousLienVice` ; `clore` → `clorePhrase` | *(rien : privé, et aucun panneau)* |
 | **envoyer** — le seul geste ; la remise du tutoriel servie **dans l'ordre** (§3) | `envoyerCompo` → `clore` → `envoyer` (`horsOrdre` d'abord) → `reponseAvocat` (la relation fausse : `rep_relation_fausse`, `S.fausses`) → `avancerSurAttente` | `renderCompo` (`#composeur`, **bandeau plein largeur sous les colonnes**), `renderPLAIDOIRIE` |
 | ce qui entre à la PLAIDOIRIE | `estMoyen` | `renderPLAIDOIRIE`, `moyensRetenus` — **panneau**, ouvert par sa porte (§4.9) |
@@ -436,6 +526,10 @@ s'appelle encore `surligner` : c'est le surlignage du §4.3. **Un article se che
 | **terme** | un empan (ou un lien imbriqué) **une fois posé** : un rôle, pas un objet |
 | **bloc** / **liaison** / **lien** | la transition offerte par l'automate (les deux premiers mots sont interchangeables) / le triplet `{forme, termes}` **reconnu** : le lien est le résultat, la liaison le geste |
 | **forme** | le patron grammatical d'une comparaison (`deduction`, `sens`, `patron`) |
+| **gabarit** / **feuille** (passe P) | la famille de mise en page d'une pièce (`gabarit`, §11) / l'élément `.feuille` qui l'imprime sur le papier de la bande — `.piecetexte` reste son nom pour le tutoriel |
+| **bloc** de mise en page (passe P) | ce que rend `miseEnPage` : une ligne ou un groupe de lignes de même rôle — à ne pas confondre avec un bloc de la grammaire |
+| **discordance** / **concordance** | une paire que le dossier déclare (`discordances`) / toute autre paire de même dimension ; à l'écran, *ne concordent pas* / *concordent* — jamais *cohérent*, qui s'accorde |
+| **lien nu** / **`savoir`** | un lien d'arité 2, sans article, qui porte une réplique et jamais un tag / l'attribut de lien qui lève `S.sait` |
 | **attente** / **remise** | `{question?, attend, apres?}` / un envoi de pièces avec sa liste — « session » est le mot du sens |
 | **`S.plaidoirie`** / **`S.fil`** | ce qui est entré au plan / le journal affiché — *`S.retenus`, les empans surlignés, est parti à la passe K ; une partie d'avant le perd à la reprise* |
 

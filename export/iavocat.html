@@ -24,6 +24,13 @@
   --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"DejaVu Serif","Liberation Serif",serif;
+  /* Les feuilles des pièces (passe P, §4.6) — polices du SYSTÈME, aucune
+     dépendance. La main prend la cursive de la machine si elle en a une,
+     sinon l'italique à empattements ; jamais le générique `cursive`, qui
+     tombe sur une police de bande dessinée. */
+  --doc-sans:"Liberation Sans",Arial,Helvetica,"Helvetica Neue",sans-serif;
+  --doc-mono:"Courier New","Liberation Mono","DejaVu Sans Mono",monospace;
+  --main:"Segoe Script","Segoe Print","Bradley Hand","Snell Roundhand","Apple Chancery","URW Chancery L",var(--serif);
 }
 *{box-sizing:border-box}
 /* §4.6 — LA COLONNE TIENT DANS LA FENÊTRE : la page ne défile pas, chaque bande
@@ -181,6 +188,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 /* --- ce qui se lit au clavier (§4.10) --- un double anneau en `box-shadow`,
    qui ne se bat pas avec l'`outline` du halo du tutoriel. */
 :focus-visible{outline:none;box-shadow:0 0 0 2px var(--bg),0 0 0 4px #e6edf3}
+.empan .colle{white-space:nowrap}
 .sr{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
   clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);
@@ -452,6 +460,83 @@ code{font-family:var(--mono);color:var(--accent)}
 .bande.piece .defile::-webkit-scrollbar-thumb{background:#b3a37f;border:2px solid var(--papier)}
 .bande.piece .defile::-webkit-scrollbar-thumb:hover{background:#9c8d68}
 #contexte .bande.piece.deborde::after{background:linear-gradient(to top, var(--papier) 20%, rgba(244,239,228,0))}
+/* --- LES GABARITS (passe P, §4.3, §4.6) : la pièce s'imprime sur une FEUILLE
+   posée sur le papier de la bande, avec la forme de ce qu'elle est. Rien ici ne
+   touche au passage : sa bordure, son survol, son ✓ sont ceux de toute pièce, en
+   pleine prose comme dans une case. Ce qui se détache — titre, en-tête,
+   signature, tampon — ne porte jamais de passage (le diagnostic le tient). --- */
+.bande.piece .feuille{--fond:#fffdf8;--trait:#d3c9b2;background:var(--fond);border:1px solid var(--filet);
+  box-shadow:0 1px 2px rgba(70,55,25,.12),0 4px 12px rgba(70,55,25,.07);
+  padding:16px 18px 18px;margin:12px 0 8px;font-size:14.5px;line-height:1.65}
+.bande.piece .feuille p{margin:0 0 .75em}
+.bande.piece .feuille > :last-child{margin-bottom:0}
+.bande.piece .feuille .dentete{font-size:12px;line-height:1.45;margin:0 0 14px;color:var(--encre2)}
+.bande.piece .feuille .dentete div:first-child{color:var(--encre);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.bande.piece .feuille .dtitre{text-align:center;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  font-size:13.5px;line-height:1.4;margin:4px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--trait)}
+.bande.piece .feuille .ddroite{text-align:right}
+/* La signature est un paraphe, pas un passage : la main, l'encre bleue. */
+.bande.piece .feuille .dsignature{text-align:right;font-family:var(--main);font-style:italic;font-synthesis:none;
+  font-size:20px;line-height:1.2;color:#22346b;margin:-.15em 0 .6em}
+/* Un tampon d'encre violette, de travers : il se lit, il ne se prend pas. */
+.bande.piece .feuille .dtampon{text-align:right;margin:.5em 0 0}
+.bande.piece .feuille .dtampon span{display:inline-block;transform:rotate(-4deg);border:2px solid #5f4687;border-radius:3px;
+  color:#5f4687;padding:2px 8px;font-family:var(--doc-sans);font-size:11px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;line-height:1.35;text-align:center}
+.bande.piece .feuille .dliste{margin:0 0 .75em;padding-left:1.25em}
+.bande.piece .feuille .dliste li{margin:.15em 0}
+.bande.piece .feuille .dtableau{border-collapse:collapse;width:100%;margin:0 0 .85em;font-size:13px;line-height:1.55}
+.bande.piece .feuille .dtableau th,.bande.piece .feuille .dtableau td{border:1px solid var(--trait);padding:3px 6px;
+  text-align:left;vertical-align:top}
+.bande.piece .feuille .dtableau th{background:#f2ecdf;font-weight:700}
+/* La première colonne d'un relevé est sa date : elle ne se coupe pas. */
+.bande.piece .feuille .dtableau td:first-child{white-space:nowrap}
+.bande.piece .feuille .dcoupe{border:0;border-top:1px dashed #b7ab90;margin:18px -18px}
+/* Le commissariat : la frappe d'un formulaire administratif. */
+.bande.piece .feuille.g-police{font-family:var(--doc-sans);font-size:14px;--fond:#fdfcf9}
+.bande.piece .feuille.g-police .dtitre{border-bottom:3px double var(--trait)}
+/* Le cabinet médical : l'en-tête du praticien, le titre à l'italique. */
+.bande.piece .feuille.g-medical{font-family:var(--serif);--fond:#ffffff}
+.bande.piece .feuille.g-medical .dentete div:first-child{text-transform:none;letter-spacing:0;font-size:14px}
+.bande.piece .feuille.g-medical .dtitre{text-transform:none;font-style:italic;font-weight:600;letter-spacing:0;
+  font-size:16px;border-bottom:0;padding-bottom:0}
+/* Le laboratoire : un bandeau, des résultats. */
+.bande.piece .feuille.g-labo{font-family:var(--doc-sans);font-size:14px;border-top:5px solid #3e6f73;--fond:#ffffff}
+.bande.piece .feuille.g-labo .dentete div:first-child{color:#2f5a5e}
+/* La pharmacie : l'impression d'un logiciel, en lignes alternées. */
+.bande.piece .feuille.g-pharmacie{font-family:var(--doc-mono);font-size:13px;--fond:#fcfdfa}
+.bande.piece .feuille.g-pharmacie .dtableau tbody tr:nth-child(odd){background:#edf3e8}
+/* La main : une feuille réglée, la marge rouge, l'encre bleue. Les règles
+   tombent sous chaque ligne : l'interligne est fixe, et un paragraphe saute
+   une ligne entière. */
+.bande.piece .feuille.g-manuscrit{--ligne:30px;font-family:var(--main);font-style:italic;font-synthesis:none;
+  font-size:17px;line-height:var(--ligne);color:#1f2f66;padding:var(--ligne) 18px 12px 48px;
+  background:linear-gradient(90deg,transparent 36px,#e3a9a6 36px,#e3a9a6 37px,transparent 37px),
+    repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--ligne) - 1px),#c9d6ea calc(var(--ligne) - 1px),#c9d6ea var(--ligne)),
+    #fffef8}
+.bande.piece .feuille.g-manuscrit p{margin:0 0 var(--ligne)}
+.bande.piece .feuille.g-manuscrit .dsignature{margin:0;font-size:inherit;line-height:var(--ligne);color:inherit}
+/* Sous la coupe, ce n'est plus sa main : l'étiquette des enquêteurs, à la machine,
+   collée sur la feuille (§11). */
+.bande.piece .feuille.g-manuscrit .dcoupe{border:0;margin:0}
+.bande.piece .feuille.g-manuscrit .dcoupe ~ *{font-family:var(--doc-sans);font-style:normal;font-size:12.5px;
+  line-height:1.5;color:var(--encre);background:#fffdf3;border:1px solid var(--trait);padding:6px 10px;margin:0 0 0 -24px}
+/* Une page de code : l'intitulé en petites capitales, l'article en tête. */
+.bande.piece .feuille.g-code{font-family:var(--serif)}
+.bande.piece .feuille.g-code .dentete div:first-child{text-transform:none;font-variant:small-caps;letter-spacing:.04em}
+.bande.piece .feuille.g-code .dtitre{text-align:left;text-transform:none;letter-spacing:0;font-size:15px;
+  border-bottom:0;margin:0 0 6px;padding-bottom:0}
+@media (max-width:520px){
+  .bande.piece .feuille{padding:12px 12px 14px}
+  .bande.piece .feuille.g-manuscrit{padding:var(--ligne) 12px 10px 40px;
+    background-position:-6px 0,0 0}
+  .bande.piece .feuille .dcoupe{margin:16px -12px}
+  /* Un relevé à quatre colonnes ne tient pas à 390 px : il se resserre, et la
+     date se coupe plutôt que de pousser la feuille hors de sa bande. */
+  .bande.piece .feuille .dtableau{font-size:11.5px}
+  .bande.piece .feuille .dtableau th,.bande.piece .feuille .dtableau td{padding:2px 4px;overflow-wrap:anywhere}
+  .bande.piece .feuille .dtableau td:first-child{white-space:normal}
+}
 /* --- l'index du dossier : les pièces d'abord, les règles ensuite --- */
 .dossier{display:flex;flex-direction:column;gap:5px;padding:0}
 .dcol{min-width:0;display:flex;gap:8px;align-items:baseline}
@@ -602,18 +687,20 @@ code{font-family:var(--mono);color:var(--accent)}
 
 <script>
 // Le moteur de la grammaire, en mode double (`require` ou `<script src>`).
-// Aucune donnée : on reçoit GRAMMAIRE / CHAMPS / LIENS et on rend les fonctions
-// pures qui composent, valident et reconnaissent une phrase (§14).
-function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
+// Aucune donnée : on reçoit GRAMMAIRE / CHAMPS / LIENS / DISCORDANCES et on rend
+// les fonctions pures qui composent, valident et reconnaissent une phrase (§14).
+function creerMoteur(GRAMMAIRE, CHAMPS, LIENS, DISCORDANCES) {
   const G = GRAMMAIRE;
   const C = Object.fromEntries(CHAMPS.map(c => [c.id, c]));
   const estFinal = e => G.finaux.includes(e);
   const offerts = e => G.blocs.filter(b => b.de === e);
 
-  /* ---- LA VÉRIFICATION (§4.5) ---- la relation VRAIE se calcule de la dimension
-     et des valeurs. Depuis la passe G, le joueur la déclare et le moteur la
-     vérifie : `deduire` est l'oracle, il ne rédige plus — sauf pour un contenu
-     d'avant, dont le second terme porte encore `deduit` (§11). */
+  /* ---- LA VÉRIFICATION (§4.5) ---- depuis la passe G, le joueur déclare la
+     relation et le moteur la vérifie : `deduire` est l'oracle, il ne rédige plus
+     — sauf pour un contenu d'avant, dont le second terme porte encore `deduit`
+     (§11). La relation VRAIE se tire du DOSSIER pour les deux relations de la
+     passe N — concordent / ne concordent pas —, des valeurs pour les formes
+     d'avant. */
   const enNombre = v => {
     const s = String(v == null ? "" : v).trim();
     if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
@@ -626,6 +713,16 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     const sa = String(a), sb = String(b);
     return sa < sb ? -1 : sa > sb ? 1 : 0;
   }
+  /* LE DOSSIER DÉCLARE SES DISCORDANCES, TOUT LE RESTE CONCORDE (§4.2, passe N).
+     Une heure ne dit pas ce qu'elle contredit : 21h52 et 22h04 diffèrent et
+     concordent. PIÈGE PAYÉ (l'essai du 8 octobre) : le verdict vivait dans les
+     liens, et changer la relation d'un lien changeait le fait sans que rien le
+     dise — il vit à part, et un lien qui le contredit est faux. */
+  const clePaire = (x, y) => [String(x), String(y)].sort().join("|");
+  const DISC = new Set((DISCORDANCES || []).filter(p => Array.isArray(p) && p.length === 2)
+                                           .map(([x, y]) => clePaire(x, y)));
+  const discorde = (idA, idB) => DISC.has(clePaire(idA, idB));
+  const parDossier = f => f.deduction === "concordance" || f.deduction === "discordance";
   // La forme qui lie deux empans. L'ORDRE de déclaration tranche les ambiguïtés
   // (§11). Dimensions différentes : la JUXTAPOSITION si le contenu en déclare
   // une, sinon null (§4.11) — ce sont les règles qui la refusent en session 1.
@@ -642,23 +739,28 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
       if (!f.deduction || (f.arite || 2) !== 2 || estJuxta(f)) continue;
       const s = f.slots && f.slots[0];
       if (s !== "*" && !(s || []).includes(a.dim)) continue;
-      if (f.deduction === "egalite" ? egal : !egal) return nom;
+      const vrai = parDossier(f) ? (f.deduction === "discordance") === discorde(idA, idB)
+                                 : (f.deduction === "egalite" ? egal : !egal);
+      if (vrai) return nom;
     }
     return null;
   }
-  /* LES DEUX RELATIONS D'UNE DIMENSION (passe G) : de chaque côté — égalité, puis
-     différence ou ordre —, la PREMIÈRE forme déclarée qui la nomme, celle que
-     `deduire` rendrait. La vraie est donc toujours l'une des deux. */
+  /* LES DEUX RELATIONS D'UNE DIMENSION (passe G) : de chaque côté — égalité ou
+     concordance, puis différence, ordre ou discordance —, la PREMIÈRE forme
+     déclarée qui la nomme, celle que `deduire` rendrait. La vraie est donc
+     toujours l'une des deux. */
   const nomme = (f, d) => !!f.deduction && !estJuxta(f) && (f.arite || 2) === 2 && !!f.slots
     && (f.slots[0] === "*" || (f.slots[0] || []).includes(d));
   function relationsDe(d) {
     const fs = Object.entries(G.formes);
-    const egal = fs.find(([, f]) => nomme(f, d) && f.deduction === "egalite");
-    const autre = fs.find(([, f]) => nomme(f, d) && f.deduction !== "egalite");
+    const positif = f => f.deduction === "egalite" || f.deduction === "concordance";
+    const egal = fs.find(([, f]) => nomme(f, d) && positif(f));
+    const autre = fs.find(([, f]) => nomme(f, d) && !positif(f));
     return [egal, autre].filter(Boolean).map(([nom]) => nom);
   }
   /* UNE RELATION FAUSSE : une comparaison, emboîtée ou non, dont la forme n'est
-     pas celle que donnent les valeurs. Elle part, et l'avocat la refuse (§4.5). */
+     pas la vraie — celle du dossier, ou des valeurs. Elle part, et l'avocat la
+     refuse (§4.5). */
   function fausse(r) {
     if (!r || typeof r !== "object") return false;
     const f = G.formes[r.forme] || {};
@@ -774,7 +876,7 @@ function creerMoteur(GRAMMAIRE, CHAMPS, LIENS) {
     return out;
   }
   return { C, estFinal, offerts, reduire, dimDe, valider, memeTerme, memeRed, lienDe, rendre,
-           squelettes, comparer, deduire, ordonner, relationsDe, fausse };
+           squelettes, comparer, deduire, ordonner, relationsDe, fausse, discorde };
 }
 
 const _projections = (function () {
@@ -827,7 +929,44 @@ function traitDim(dimensions, d) {
   return i < 0 ? null : TRAITS_DIM[i % TRAITS_DIM.length];
 }
 
-  return { champsDe, articlesDe, comparaisonsDe, couleurDim, traitDim, PALETTE_DIM, TRAITS_DIM };
+/* LA MISE EN PAGE (passe P, §4.3, §11) : le texte d'une pièce, lu ligne à
+   ligne, devient des BLOCS — de la forme, aucune règle. Les lignes et les
+   cellules restent BRUTES, marqueurs compris : l'écran y pose les passages
+   comme il le faisait dans le texte entier. Un texte d'une seule ligne rend un
+   paragraphe d'une ligne — le contenu d'avant se lit comme avant. Des lignes
+   de même rôle qui se suivent font un seul bloc ; une ligne vide les sépare. */
+const GABARITS = ["police", "medical", "labo", "pharmacie", "manuscrit", "code"];
+const ROLES_MEP = { "^": "entete", "#": "titre", ">": "droite", "_": "signature", "~": "tampon", "-": "liste" };
+const cellulesDe = l => l.replace(/^\|/, "").replace(/\|$/, "").split("|").map(c => c.trim());
+function miseEnPage(texte) {
+  const blocs = [];
+  let cur = null;
+  for (const brute of String(texte == null ? "" : texte).split(/\r?\n/)) {
+    const l = brute.trim();
+    if (!l) { cur = null; continue; }
+    if (/^-{3,}$/.test(l)) { cur = null; blocs.push({ type: "coupe" }); continue; }
+    if (l.startsWith("|")) {
+      const c = cellulesDe(l);
+      if (!cur || cur.type !== "tableau") { cur = { type: "tableau", entete: null, lignes: [] }; blocs.push(cur); }
+      // PIÈGE : la ligne `|---|` n'est un séparateur que sous la PREMIÈRE ligne ;
+      // plus bas, elle ne rend rien plutôt qu'une rangée de tirets.
+      if (c.every(x => /^:?-{3,}:?$/.test(x))) {
+        if (!cur.entete && cur.lignes.length === 1) cur.entete = cur.lignes.pop();
+        continue;
+      }
+      cur.lignes.push(c);
+      continue;
+    }
+    const m = /^([\^#>_~-]) (.*)$/.exec(l);
+    const type = m ? ROLES_MEP[m[1]] : "para", t = m ? m[2] : l;
+    if (cur && cur.type === type) cur.lignes.push(t);
+    else { cur = { type, lignes: [t] }; blocs.push(cur); }
+  }
+  return blocs;
+}
+
+  return { champsDe, articlesDe, comparaisonsDe, couleurDim, traitDim, PALETTE_DIM, TRAITS_DIM,
+           miseEnPage, GABARITS };
 })();
 
 const _api = { creerMoteur, ..._projections };
@@ -863,6 +1002,8 @@ function creerRegles(JEU, M) {
     vice_pressenti: false,        // la comparaison ⚑ s'est formée au composeur
     vice_trouve: false,           // la conclusion ⚑ est composée
     vice_expose: false,           // la conclusion ⚑ est envoyée
+    sait: false,                  // PRIVÉ — le lien de savoir s'est formé au
+                                  //   composeur (§4.7, passe N)
     clotureDemandee: false,
     repetitionIdx: -1,
     declenches: [],               // pièces dont le `declenche` une_fois a joué
@@ -1061,11 +1202,22 @@ function creerRegles(JEU, M) {
     const c = (JEU.liens || []).find(L => L.vice && L.conclusion);
     return !!(c && r && r.forme && M.memeRed(r, { forme: c.forme, termes: c.termes }));
   };
-  /* LES DEUX DRAPEAUX PRIVÉS SE LÈVENT ICI (§4.7) : comprendre, c'est
-     assembler — plus clore. C'est ce qui garde la Fin 2 jouable. */
+  /* LE SAVOIR (§4.7, passe N) : la comparaison qu'un lien marque `savoir` — nu,
+     d'ordinaire —, au composeur, sa vraie relation choisie. Sous un article aussi,
+     puisqu'elle s'y assemble d'abord : chercher plus bas dans la phrase ne
+     servait à rien, une mutation l'a montré. */
+  const comparaisonDe = L => {
+    const t0 = (L.termes || [])[0];
+    return (t0 && typeof t0 === "object") ? t0 : { forme: L.forme, termes: L.termes || [] };
+  };
+  const estSavoir = r => !!r && !!r.forme
+    && (JEU.liens || []).some(L => L.savoir && M.memeRed(r, comparaisonDe(L)));
+  /* LES DRAPEAUX PRIVÉS SE LÈVENT ICI (§4.7) : comprendre, c'est assembler —
+     plus clore. C'est ce qui garde la Fin 2 jouable. */
   function pressentir(S, r) {
     if (!S.vice_pressenti && estPressentiment(r)) S.vice_pressenti = true;
     if (!S.vice_trouve && estConclusionVice(r)) { S.vice_pressenti = true; S.vice_trouve = true; }
+    if (!S.sait && estSavoir(r)) S.sait = true;
   }
   function majPressentiment(S) { pressentir(S, M.reduire(chaineCompo(S))); }
 
@@ -1385,12 +1537,15 @@ function creerRegles(JEU, M) {
     else
       pousser(S, "Maître Auber", JEU.repetition.fin);
   }
+  /* Deux variantes s'ajoutent au texte d'une fin : le faux vice plaidé, et le
+     savoir — la Fin 3 se lit autrement quand l'IA sait (§2, passe N). */
   function finir(S) {
     const numero = S.vice_trouve ? (S.vice_expose ? 1 : 2) : 3;
     const f = JEU.fins[numero] || {};
     const fauxPlaide = S.brouillon.some(x => x.versee && x.lien && x.lien.faux);
     return { numero, titre: f.titre, verdict: f.verdict,
-             texte: (f.texte || "") + (fauxPlaide && f.variante_faux ? " " + f.variante_faux : "") };
+             texte: (f.texte || "") + (fauxPlaide && f.variante_faux ? " " + f.variante_faux : "")
+                  + (S.sait && f.variante_sait ? " " + f.variante_sait : "") };
   }
 
   function reglesLivrees(S) {
@@ -1436,7 +1591,8 @@ window.CONTENU = {
     "qui",
     "où",
     "quoi",
-    "combien"
+    "combien",
+    "comment"
   ],
   "pieces": {
     "p_pv": {
@@ -1444,8 +1600,9 @@ window.CONTENU = {
       "court": "PV",
       "type": "procès-verbal",
       "qui": "brigadier N.",
+      "gabarit": "police",
       "resume": "L'appel, l'heure d'arrivée, l'état de la porte, le décès constaté sur place.",
-      "texte": "Le 12 mars, {{e_app}} ; {{e_arr}}, {{e_equip}} engagés ; {{e_porte}}. La victime gisait dans le séjour ; le médecin dépêché sur place n'a pu que constater le décès. Les lieux ont été tenus et l'immeuble bouclé jusqu'à l'arrivée du magistrat. Constatations faites et procès-verbal dressé {{e_sig}}.",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal d'intervention\n**Objet** : découverte d'une personne décédée à son domicile.\n\nLe 12 mars, {{e_app}} ; {{e_arr}}, {{e_equip}} engagés ; {{e_porte}}.\n\nLa victime gisait dans le séjour ; le médecin dépêché sur place n'a pu que constater le décès. Les lieux ont été tenus et l'immeuble bouclé jusqu'à l'arrivée du magistrat.\n\nConstatations faites et procès-verbal dressé {{e_sig}}\n> L'agent de police judiciaire\n~ Commissariat central · BSU",
       "empans": {
         "e_app": {
           "dim": "quand",
@@ -1478,7 +1635,7 @@ window.CONTENU = {
           "dim": "qui",
           "valeur": "brigadier N.",
           "texte": "par mes soins, brigadier N.",
-          "nom": "le rédacteur du procès-verbal"
+          "nom": "la signature du procès-verbal"
         }
       }
     },
@@ -1487,8 +1644,9 @@ window.CONTENU = {
       "court": "audition",
       "type": "audition",
       "qui": "brigadier N.",
+      "gabarit": "police",
       "resume": "Le voisin situe des éclats de voix « vers 22h30 ».",
-      "texte": "« {{e_voix}}. {{e_vehic}}. {{e_pal}}. » Audition reçue le 12 mars au soir, {{e_sig2}}.",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal d'audition de témoin\n**Témoin** : le voisin du dessus. **Objet** : les faits du 12 mars au soir.\n\n« {{e_voix}}. {{e_vehic}}. {{e_pal}}. »\n\nAudition reçue le 12 mars au soir, {{e_conseil2}}, {{e_sig2}}.\n> Lu, persisté et signé\n~ Commissariat central · BSU",
       "empans": {
         "e_voix": {
           "dim": "quand",
@@ -1513,11 +1671,18 @@ window.CONTENU = {
           "nom": "le palier de l'immeuble",
           "bruit": true
         },
+        "e_conseil2": {
+          "dim": "qui",
+          "valeur": "sans avocat",
+          "texte": "hors la présence de son conseil",
+          "nom": "l'absence d'avocat à l'audition du voisin",
+          "bruit": true
+        },
         "e_sig2": {
           "dim": "qui",
           "valeur": "brigadier N.",
           "texte": "par mes soins",
-          "nom": "le rédacteur de l'audition"
+          "nom": "la signature de l'audition"
         }
       }
     },
@@ -1526,11 +1691,12 @@ window.CONTENU = {
       "court": "art. 3",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Un témoignage contredit par les constatations des services ne fonde pas à lui seul la conviction.",
       "porte": [
         "quand"
       ],
-      "texte": "Article 3 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 3\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -1539,173 +1705,465 @@ window.CONTENU = {
         }
       }
     },
-    "p_adn": {
-      "titre": "Rapport du laboratoire",
-      "court": "labo",
+    "p_toxico": {
+      "titre": "Rapport de toxicologie",
+      "court": "toxicologie",
       "type": "expertise",
-      "qui": "le laboratoire",
-      "resume": "Comparaison des deux scellés : profil concordant.",
-      "texte": "Rapport du 20 mars. Comparaison des scellés {{e_scA}} et {{e_scB}}. Profil unique, concordant. {{e_tx}} ; {{e_seuil}}.",
+      "qui": "le laboratoire de toxicologie",
+      "gabarit": "labo",
+      "resume": "Les substances retrouvées à l'autopsie, et la notice du somnifère jointe au rapport.",
+      "texte": "^ LABORATOIRE DE TOXICOLOGIE\n^ Expertise judiciaire — procédure n° 2026/0312-114\n# Rapport d'expertise toxicologique\n> Le 24 mars\n**Objet** : les prélèvements de l'autopsie de Mme Kessler.\n\n**Substances retrouvées**\n- {{e_letal}}.\n- {{e_therap}}.\n\n**Notice du fabricant, jointe au rapport** : {{e_aspect}}.\n> L'expert\n_ A. Morel\n~ Résultats validés",
       "empans": {
-        "e_scA": {
+        "e_letal": {
           "dim": "quoi",
-          "valeur": "S-2",
-          "texte": "S-2",
-          "nom": "le scellé S-2",
+          "valeur": "Somnadex",
+          "texte": "Somnadex : concentration létale",
+          "nom": "la substance retrouvée à dose mortelle"
+        },
+        "e_therap": {
+          "dim": "quoi",
+          "valeur": "Mnémorine",
+          "texte": "Mnémorine : concentration thérapeutique",
+          "nom": "la substance retrouvée à dose de traitement"
+        },
+        "e_aspect": {
+          "dim": "quoi",
+          "valeur": "comprimé blanc sécable",
+          "texte": "le Somnadex se présente en comprimé blanc, sécable",
+          "nom": "l'aspect du comprimé de Somnadex"
+        }
+      }
+    },
+    "p_ordo": {
+      "titre": "Ordonnances du cabinet Lemaire",
+      "court": "ordonnances",
+      "type": "pièce médicale",
+      "qui": "le cabinet du Dr Lemaire",
+      "gabarit": "medical",
+      "resume": "Le traitement de Mme Kessler, et le somnifère de son mari.",
+      "texte": "^ Docteur Michel LEMAIRE\n^ Médecine générale\n# Ordonnance\n> Le 3 mars\nPour Mme Kessler :\n- {{e_sienne}}.\n> {{e_remplacant}}\n_ Perrin\n---\n^ Docteur Michel LEMAIRE\n^ Médecine générale\n# Ordonnance\n> Le 20 février\nPour M. Kessler :\n- {{e_lui}}, à renouveler.\n> {{e_sig_lui}}\n_ M. Lemaire",
+      "empans": {
+        "e_sienne": {
+          "dim": "quoi",
+          "valeur": "Mnémorine",
+          "texte": "Mnémorine, un comprimé le soir, écrasé si besoin",
+          "nom": "le traitement prescrit à Mme Kessler"
+        },
+        "e_remplacant": {
+          "dim": "qui",
+          "valeur": "Dr Perrin",
+          "texte": "Dr Perrin, remplaçant du Dr Lemaire",
+          "nom": "la signature de l'ordonnance de Mme Kessler"
+        },
+        "e_lui": {
+          "dim": "quoi",
+          "valeur": "Somnadex",
+          "texte": "Somnadex, un comprimé au coucher",
+          "nom": "le somnifère prescrit à M. Kessler"
+        },
+        "e_sig_lui": {
+          "dim": "qui",
+          "valeur": "Dr Lemaire",
+          "texte": "Dr Lemaire",
+          "nom": "la signature de l'ordonnance de M. Kessler",
+          "bruit": true
+        }
+      }
+    },
+    "p_pharmacie": {
+      "titre": "Historique de délivrance — pharmacie du Centre",
+      "court": "pharmacie",
+      "type": "relevé",
+      "qui": "la pharmacie du Centre",
+      "gabarit": "pharmacie",
+      "resume": "Les boîtes de somnifère délivrées à M. Kessler.",
+      "texte": "^ PHARMACIE DU CENTRE\n^ Historique de délivrance — édité le 16 mars, à la demande des enquêteurs\n# Dossier patient : M. Kessler\n| Date | Produit | Quantité | Observations |\n|---|---|---|---|\n| {{e_deliv1}} | Somnadex | {{e_boite1}} | {{e_prochaine}} |\n| {{e_deliv2}} | Somnadex | {{e_boite2}} | {{e_perdue}} |",
+      "empans": {
+        "e_deliv1": {
+          "dim": "quand",
+          "valeur": "2026-02-20T00:00",
+          "texte": "20 février",
+          "nom": "la date de la première délivrance",
           "bruit": true
         },
-        "e_scB": {
-          "dim": "quoi",
-          "valeur": "S-7",
-          "texte": "S-7",
-          "nom": "le scellé S-7",
+        "e_boite1": {
+          "dim": "combien",
+          "valeur": "30",
+          "texte": "une boîte de 30 comprimés",
+          "nom": "la première boîte délivrée",
           "bruit": true
         },
-        "e_tx": {
-          "dim": "combien",
-          "valeur": "1200000000",
-          "texte": "La probabilité qu'un tiers présente le même profil est d'une sur 1,2 milliard",
-          "nom": "la probabilité de coïncidence du profil"
+        "e_prochaine": {
+          "dim": "quand",
+          "valeur": "2026-03-21T00:00",
+          "texte": "prochaine délivrance possible le 21 mars",
+          "nom": "la date de la prochaine délivrance possible"
         },
-        "e_seuil": {
+        "e_deliv2": {
+          "dim": "quand",
+          "valeur": "2026-03-07T00:00",
+          "texte": "7 mars",
+          "nom": "la date de la seconde délivrance"
+        },
+        "e_boite2": {
           "dim": "combien",
-          "valeur": "1000000",
-          "texte": "le seuil réglementaire de l'article 12 est d'une sur un million",
-          "nom": "le seuil probatoire réglementaire"
+          "valeur": "30",
+          "texte": "une boîte de 30 comprimés",
+          "nom": "la seconde boîte délivrée",
+          "bruit": true
+        },
+        "e_perdue": {
+          "dim": "comment",
+          "valeur": "boîte perdue",
+          "texte": "délivrée en avance — « boîte perdue », note le pharmacien",
+          "nom": "le motif de la délivrance en avance",
+          "bruit": true
+        }
+      }
+    },
+    "p_soins": {
+      "titre": "Plan de soins, fiche et photo du pilulier",
+      "court": "soins",
+      "type": "pièce médicale",
+      "qui": "le service de soins à domicile",
+      "gabarit": "medical",
+      "resume": "Qui prépare quoi, et l'état du pilulier le soir des faits.",
+      "texte": "^ SERVICE DE SOINS INFIRMIERS À DOMICILE\n^ Secteur nord\n# Plan de soins\n**Patiente** : Mme Kessler. **Aidant** : son mari.\n**Infirmière référente** : {{e_ref}}.\n**Traitement du soir** : {{e_compote}}.\n---\n# Fiche de préparation du pilulier\n> Lundi 9 mars\n{{e_prepare}}, {{e_inf}}.\n_ C. Roux\n---\n# Photographie du pilulier, jointe par la patrouille\nPrise {{e_photo}} : {{e_vendredi}} ; {{e_mnem}}.\n\n{{e_boite}}.",
+      "empans": {
+        "e_ref": {
+          "dim": "qui",
+          "valeur": "Mme Lambert",
+          "texte": "Mme Lambert",
+          "nom": "l'infirmière référente du plan de soins"
+        },
+        "e_compote": {
+          "dim": "comment",
+          "valeur": "écrasé dans une compote",
+          "texte": "écrasé dans une compote, donné par l'aidant",
+          "nom": "la manière de donner le traitement du soir",
+          "bruit": true
+        },
+        "e_prepare": {
+          "dim": "quoi",
+          "valeur": "pilulier complet",
+          "texte": "Pilulier préparé pour la semaine",
+          "nom": "le pilulier préparé pour la semaine"
+        },
+        "e_inf": {
+          "dim": "qui",
+          "valeur": "Mme Roux",
+          "texte": "par Mme Roux, infirmière remplaçante",
+          "nom": "la signature de la fiche du pilulier"
+        },
+        "e_photo": {
+          "dim": "quand",
+          "valeur": "2026-03-12T22:25",
+          "texte": "le 12 mars à 22h25",
+          "nom": "l'heure de la photo du pilulier",
+          "bruit": true
+        },
+        "e_vendredi": {
+          "dim": "quoi",
+          "valeur": "vendredi intact",
+          "texte": "le compartiment du jeudi soir est vide, celui du vendredi intact",
+          "nom": "l'état du pilulier le soir des faits"
+        },
+        "e_mnem": {
+          "dim": "quoi",
+          "valeur": "comprimé blanc sécable",
+          "texte": "Mnémorine, comprimé blanc, sécable",
+          "nom": "l'aspect du comprimé de Mnémorine"
+        },
+        "e_boite": {
+          "dim": "où",
+          "valeur": "table de nuit",
+          "texte": "La boîte de Somnadex de M. Kessler est rangée dans sa table de nuit",
+          "nom": "l'endroit où M. Kessler range son somnifère"
+        }
+      }
+    },
+    "p_memoire": {
+      "titre": "Compte rendu de consultation mémoire",
+      "court": "consultation",
+      "type": "pièce médicale",
+      "qui": "le Dr Saunier, neurologue",
+      "gabarit": "medical",
+      "resume": "Le diagnostic, et ce que la patiente en a dit.",
+      "texte": "^ Centre hospitalier — consultation mémoire\n^ Dr Hélène Saunier, neurologue\n# Compte rendu de consultation\n> Le 2 mars\n**Patiente** : Mme Kessler, adressée par {{e_traitant}}.\n**Motif** : troubles de la mémoire signalés par l'entourage.\n**Examens** : bilan neuropsychologique, imagerie cérébrale.\n\n**Conclusion** : {{e_diag}}.\n**Annonce** : patiente informée ; {{e_detresse}}.\n**Autonomie** : {{e_seule}} ; le mari assure l'aide quotidienne.\n> Confraternellement\n_ H. Saunier",
+      "empans": {
+        "e_traitant": {
+          "dim": "qui",
+          "valeur": "Dr Lemaire",
+          "texte": "son médecin traitant, le Dr Lemaire",
+          "nom": "le médecin traitant de Mme Kessler"
+        },
+        "e_diag": {
+          "dim": "quand",
+          "valeur": "2026-03-02T10:00",
+          "texte": "diagnostic de maladie d'Alzheimer posé ce jour",
+          "nom": "la date du diagnostic"
+        },
+        "e_detresse": {
+          "dim": "comment",
+          "valeur": "détresse",
+          "texte": "détresse marquée à l'annonce",
+          "nom": "la réaction de Mme Kessler à l'annonce"
+        },
+        "e_seule": {
+          "dim": "comment",
+          "valeur": "dépendance",
+          "texte": "ne gère plus seule ses traitements",
+          "nom": "l'autonomie de Mme Kessler face à ses traitements"
+        }
+      }
+    },
+    "t_soeur": {
+      "titre": "Audition — la sœur de la victime",
+      "court": "sœur",
+      "type": "audition",
+      "qui": "brigadier N.",
+      "gabarit": "police",
+      "resume": "La sœur décrit le couple, et une rancune.",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal d'audition de témoin\n**Témoin** : la sœur de la victime. **Objet** : la vie du couple.\n\n« {{e_epuise}}. Ma sœur, elle, avait changé. {{e_paierait}}. »\n\nAudition reçue le 14 mars, {{e_conseil}}, {{e_sig3}}\n> Lu, persisté et signé\n~ Commissariat central · BSU",
+      "empans": {
+        "e_epuise": {
+          "dim": "comment",
+          "valeur": "fatigue importante",
+          "texte": "Il s'occupait d'elle jour et nuit, il ne dormait plus",
+          "nom": "l'état de M. Kessler selon sa belle-sœur",
+          "qui": "la sœur"
+        },
+        "e_paierait": {
+          "dim": "quoi",
+          "valeur": "rancune",
+          "texte": "Elle me disait qu'un jour, il le lui paierait",
+          "nom": "la rancune que la sœur prête à la victime",
+          "qui": "la sœur"
+        },
+        "e_conseil": {
+          "dim": "qui",
+          "valeur": "sans avocat",
+          "texte": "hors la présence de son conseil",
+          "nom": "l'absence d'avocat à l'audition de la sœur"
+        },
+        "e_sig3": {
+          "dim": "qui",
+          "valeur": "brigadier N.",
+          "texte": "par mes soins, brigadier N.",
+          "nom": "la signature de l'audition de la sœur",
+          "bruit": true
+        }
+      }
+    },
+    "p_lettre": {
+      "titre": "Lettre trouvée dans la table de nuit",
+      "court": "lettre",
+      "type": "pièce saisie",
+      "qui": "Mme Kessler",
+      "gabarit": "manuscrit",
+      "resume": "Une lettre de la main de la victime, antérieure au diagnostic.",
+      "texte": "> {{e_datee}}\n{{e_grief}}.\nTu crois que je ne vois plus rien. Je vois.\n---\n**Scellé n° 7** — lettre manuscrite {{e_ou}}. Écriture de la victime, reconnue par sa sœur.",
+      "empans": {
+        "e_datee": {
+          "dim": "quand",
+          "valeur": "2026-02-14T00:00",
+          "texte": "le 14 février",
+          "nom": "la date de la lettre"
+        },
+        "e_ou": {
+          "dim": "où",
+          "valeur": "table de nuit",
+          "texte": "trouvée dans la table de nuit de Mme Kessler",
+          "nom": "l'endroit où la lettre a été trouvée"
+        },
+        "e_grief": {
+          "dim": "quoi",
+          "valeur": "rancune",
+          "texte": "Je sais pour elle. Tu me le paieras",
+          "nom": "le grief de la lettre"
         }
       },
       "declenche": {
         "une_fois": true,
-        "replique": "Un profil unique, et ils en font une certitude. Ça n'a jamais été qu'une probabilité. Trouve-moi de quoi mordre dessus — et sous quel texte."
+        "replique": "Une lettre de sa main, dans sa table de nuit. « Tu me le paieras »… Et si elle avait voulu qu'on le croie coupable ? Non. Relis-la, et dis-moi ce qu'elle prouve vraiment."
       }
     },
-    "p_scene": {
-      "titre": "Fiche de prélèvement — scène",
-      "court": "scène",
-      "type": "pièce technique",
-      "qui": "agent T-14",
-      "resume": "Les opérations sur les lieux, signées de l'agent qui les a faites.",
-      "texte": "Opérations sur les lieux, le 13 mars. {{e_moi}}, {{e_ou}}. Opération achevée {{e_h}}, {{e_sc}}. Scellé remis au greffe {{e_hg}} ; {{e_grf}}.",
+    "p_notif": {
+      "titre": "Procès-verbal de notification des droits",
+      "court": "notification",
+      "type": "procès-verbal",
+      "qui": "brigadier N.",
+      "gabarit": "police",
+      "resume": "Le motif de la garde à vue, et les droits demandés.",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal de notification des droits\n**Personne gardée à vue** : M. Kessler.\n\nLe 12 mars, {{e_heure_notif}}, M. Kessler est avisé qu'il est {{e_charge}}.\n\n**Examen médical** : {{e_droit_medecin}}.\n**Avis à un proche** : {{e_droit_proche}}.\n**Assistance d'un avocat** : il déclare {{e_avocat}}. {{e_avise}}.\n\nProcès-verbal dressé {{e_sig5}}\n> L'officier de police judiciaire\n~ Commissariat central · BSU",
       "empans": {
-        "e_moi": {
-          "dim": "qui",
-          "valeur": "T-14",
-          "texte": "J'ai relevé moi-même les traces",
-          "nom": "l'agent qui a relevé les traces sur la scène"
-        },
-        "e_ou": {
-          "dim": "où",
-          "valeur": "porte",
-          "texte": "sur le montant de la porte",
-          "nom": "le montant de la porte",
-          "bruit": true
-        },
-        "e_h": {
+        "e_heure_notif": {
           "dim": "quand",
-          "valeur": "2026-03-13T14:02",
-          "texte": "à 14h02",
-          "nom": "l'heure de fin du relevé sur la scène",
+          "valeur": "2026-03-12T23:10",
+          "texte": "à 23h10",
+          "nom": "l'heure de la notification des droits",
           "bruit": true
         },
-        "e_sc": {
+        "e_charge": {
           "dim": "quoi",
-          "valeur": "S-2",
-          "texte": "sous scellé S-2",
-          "nom": "le scellé de l'échantillon de scène"
+          "valeur": "empoisonnement",
+          "texte": "placé en garde à vue pour des faits d'empoisonnement",
+          "nom": "le motif de la garde à vue"
         },
-        "e_hg": {
-          "dim": "quand",
-          "valeur": "2026-03-13T15:10",
-          "texte": "à 15h10",
-          "nom": "l'heure de remise au greffe de l'échantillon de scène",
+        "e_droit_medecin": {
+          "dim": "comment",
+          "valeur": "examen demandé",
+          "texte": "il demande à être examiné par un médecin",
+          "nom": "la demande d'examen médical",
           "bruit": true
         },
-        "e_grf": {
+        "e_droit_proche": {
           "dim": "qui",
-          "valeur": "J. Morel",
-          "texte": "réception par J. Morel",
-          "qui": "J. Morel",
-          "nom": "le greffier qui reçoit l'échantillon de scène"
+          "valeur": "aucun proche",
+          "texte": "il ne demande à faire prévenir personne",
+          "nom": "l'avis à un proche",
+          "bruit": true
+        },
+        "e_avocat": {
+          "dim": "qui",
+          "valeur": "avocat demandé",
+          "texte": "souhaiter être assisté d'un avocat",
+          "nom": "la demande d'un avocat"
+        },
+        "e_avise": {
+          "dim": "quand",
+          "valeur": "2026-03-12T23:15",
+          "texte": "Avocat de permanence avisé à 23h15",
+          "nom": "l'heure de l'avis à l'avocat de permanence",
+          "bruit": true
+        },
+        "e_sig5": {
+          "dim": "qui",
+          "valeur": "brigadier N.",
+          "texte": "par mes soins, brigadier N.",
+          "nom": "la signature de la notification",
+          "bruit": true
         }
       }
     },
-    "p_ref": {
-      "titre": "Bordereau — prélèvement de référence",
-      "court": "référence",
-      "type": "pièce technique",
-      "qui": "agent T-14",
-      "resume": "Le prélèvement sur le mis en cause, au dépôt.",
-      "texte": "Prélèvement de référence sur le mis en cause, au dépôt, le 13 mars. {{e_moi2}}. Opération achevée {{e_h2}}, {{e_sc2}}. Scellé remis au greffe {{e_hg2}} ; {{e_grf2}}.",
+    "p_certif": {
+      "titre": "Certificat médical de garde à vue",
+      "court": "certificat",
+      "type": "certificat",
+      "qui": "le Dr Vidal, médecin requis",
+      "gabarit": "medical",
+      "resume": "L'état de M. Kessler au matin du 13 mars.",
+      "texte": "^ Docteur Paul VIDAL\n^ Médecin requis — unité médico-judiciaire\n# Certificat médical\n> Le 13 mars\nExamen pratiqué sur réquisition, {{e_heure_certif}}, d'une personne {{e_depuis}}.\n\n**Constatations** : {{e_fatigue}}.\n**Conclusion** : {{e_apte}}.\n_ P. Vidal\n~ Dr P. Vidal · médecin requis",
       "empans": {
-        "e_moi2": {
-          "dim": "qui",
-          "valeur": "T-14",
-          "texte": "J'ai procédé moi-même à l'écouvillonnage",
-          "nom": "l'agent qui a prélevé l'échantillon de référence"
-        },
-        "e_h2": {
+        "e_heure_certif": {
           "dim": "quand",
-          "valeur": "2026-03-13T14:47",
-          "texte": "à 14h47",
-          "nom": "l'heure de fin du prélèvement de référence",
+          "valeur": "2026-03-13T07:30",
+          "texte": "à 7h30",
+          "nom": "l'heure de l'examen médical",
           "bruit": true
         },
-        "e_sc2": {
+        "e_depuis": {
+          "dim": "quand",
+          "valeur": "2026-03-12T23:10",
+          "texte": "gardée à vue depuis le 12 mars, 23h10",
+          "nom": "le début de la garde à vue selon le médecin",
+          "bruit": true
+        },
+        "e_fatigue": {
+          "dim": "comment",
+          "valeur": "fatigue importante",
+          "texte": "fatigue importante ; sommeil très insuffisant depuis plusieurs semaines, selon l'intéressé",
+          "nom": "la fatigue constatée par le médecin"
+        },
+        "e_apte": {
+          "dim": "comment",
+          "valeur": "apte",
+          "texte": "état compatible avec la garde à vue et les auditions",
+          "nom": "l'aptitude constatée par le médecin"
+        }
+      },
+      "declenche": {
+        "une_fois": true,
+        "replique": "Fatigue importante. Un homme qui ne dormait plus depuis des semaines… Ses aveux, je commence à les regarder autrement."
+      }
+    },
+    "p_decl": {
+      "titre": "Procès-verbal de déclarations spontanées",
+      "court": "déclarations",
+      "type": "procès-verbal",
+      "qui": "brigadier N.",
+      "gabarit": "police",
+      "resume": "Ce que M. Kessler a dit au matin, avant son audition.",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal de déclarations spontanées\nLe 13 mars, {{e_heure_decl}}, lors de sa conduite au local d'audition : {{e_spont}}, {{e_hors}}.\n\n« {{e_aveu}}. Je ne sais pas ce qui m'a pris. »\n\nMention en est faite au présent procès-verbal, {{e_sig6}}\n> L'officier de police judiciaire\n~ Commissariat central · BSU",
+      "empans": {
+        "e_heure_decl": {
+          "dim": "quand",
+          "valeur": "2026-03-13T08:40",
+          "texte": "à 8h40",
+          "nom": "l'heure des déclarations spontanées"
+        },
+        "e_spont": {
+          "dim": "comment",
+          "valeur": "spontané",
+          "texte": "propos tenus spontanément",
+          "nom": "la manière dont les propos ont été tenus"
+        },
+        "e_hors": {
+          "dim": "qui",
+          "valeur": "sans avocat",
+          "texte": "hors la présence de son conseil",
+          "nom": "l'absence de l'avocat lors des déclarations"
+        },
+        "e_aveu": {
           "dim": "quoi",
-          "valeur": "S-7",
-          "texte": "sous scellé S-7",
-          "nom": "le scellé du prélèvement de référence"
+          "valeur": "Somnadex",
+          "texte": "Je lui ai mis mes cachets pour dormir dans sa compote",
+          "nom": "ce que M. Kessler dit avoir mis dans la compote",
+          "qui": "M. Kessler"
         },
-        "e_hg2": {
+        "e_sig6": {
+          "dim": "qui",
+          "valeur": "brigadier N.",
+          "texte": "par mes soins, brigadier N.",
+          "nom": "la signature des déclarations",
+          "bruit": true
+        }
+      }
+    },
+    "p_audition": {
+      "titre": "Procès-verbal d'audition de M. Kessler",
+      "court": "audition Kessler",
+      "type": "procès-verbal",
+      "qui": "brigadier N.",
+      "gabarit": "police",
+      "resume": "L'audition, son avocat présent : il se tait.",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal d'audition de personne gardée à vue\nLe 13 mars, {{e_heure_aud}}, {{e_present}}.\n\n**Question** : reconnaissez-vous avoir administré à votre épouse une substance de nature à entraîner la mort ?\n**Réponse** : M. Kessler {{e_silence}}.\n\nAudition {{e_close}}.\n> L'officier de police judiciaire\n~ Commissariat central · BSU",
+      "empans": {
+        "e_heure_aud": {
           "dim": "quand",
-          "valeur": "2026-03-13T15:10",
-          "texte": "à 15h10",
-          "nom": "l'heure de remise au greffe du prélèvement de référence",
+          "valeur": "2026-03-13T09:50",
+          "texte": "audition ouverte à 9h50",
+          "nom": "l'heure de l'audition"
+        },
+        "e_present": {
+          "dim": "qui",
+          "valeur": "Me Garnier",
+          "texte": "en présence de Me Garnier, son conseil",
+          "nom": "la présence de l'avocat à l'audition"
+        },
+        "e_silence": {
+          "dim": "comment",
+          "valeur": "silence",
+          "texte": "déclare faire usage de son droit de se taire",
+          "nom": "l'attitude de M. Kessler à l'audition",
           "bruit": true
         },
-        "e_grf2": {
-          "dim": "qui",
-          "valeur": "J. Morel",
-          "texte": "réception par J. Morel",
-          "qui": "J. Morel",
-          "nom": "le greffier qui reçoit le prélèvement de référence"
-        }
-      }
-    },
-    "r_protocole": {
-      "titre": "Article 7 — protocole de prélèvement",
-      "court": "art. 7",
-      "type": "règle du manuel",
-      "qui": "le protocole",
-      "resume": "Scène et référence recueillies par des personnels distincts, sous scellés distincts.",
-      "porte": [
-        "qui",
-        "quoi"
-      ],
-      "texte": "Article 7 — {{art}}.",
-      "empans": {
-        "art": {
-          "article": true,
-          "texte": "L'échantillon de scène et le prélèvement de référence sont recueillis par des personnels distincts, sous scellés distincts. Toute entorse rend l'échantillon irrecevable. Le délai qui sépare les deux opérations est indifférent",
-          "nom": "Article 7"
-        }
-      }
-    },
-    "r_seuil": {
-      "titre": "Article 12 — seuil probatoire",
-      "court": "art. 12",
-      "type": "règle du manuel",
-      "qui": "le protocole",
-      "resume": "Au-delà d'une sur un million, la correspondance est réputée probante.",
-      "porte": [
-        "combien"
-      ],
-      "texte": "Article 12 — {{art}}.",
-      "empans": {
-        "art": {
-          "article": true,
-          "texte": "Une correspondance dont la probabilité de coïncidence est inférieure à une sur un million est réputée probante",
-          "nom": "Article 12"
+        "e_close": {
+          "dim": "quand",
+          "valeur": "2026-03-13T10:05",
+          "texte": "close à 10h05",
+          "nom": "l'heure de clôture de l'audition",
+          "bruit": true
         }
       }
     },
@@ -1714,11 +2172,12 @@ window.CONTENU = {
       "court": "art. 2",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "L'effraction, ce qui la caractérise et comment elle se consigne.",
       "porte": [
         "où"
       ],
-      "texte": "Article 2 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 2\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -1732,11 +2191,12 @@ window.CONTENU = {
       "court": "art. 4",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Comment un témoin est entendu, et ce que porte le procès-verbal d'audition.",
       "porte": [
         "quand"
       ],
-      "texte": "Article 4 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 4\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -1745,16 +2205,36 @@ window.CONTENU = {
         }
       }
     },
+    "r_avocat": {
+      "titre": "Article 5 — assistance de l'avocat",
+      "court": "art. 5",
+      "type": "règle du manuel",
+      "qui": "le code de procédure",
+      "gabarit": "code",
+      "resume": "La personne gardée à vue qui a demandé un avocat n'est entendue qu'en sa présence.",
+      "porte": [
+        "qui"
+      ],
+      "texte": "^ Code de procédure\n# Article 5\n{{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "La personne gardée à vue qui a demandé l'assistance d'un avocat ne peut être entendue sur les faits hors la présence de celui-ci. Les propos qu'elle tient hors sa présence ne peuvent être consignés, ni retenus contre elle",
+          "nom": "Article 5"
+        }
+      }
+    },
     "r_lieux": {
       "titre": "Article 6 — conservation des lieux",
       "court": "art. 6",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Les lieux du crime sont tenus jusqu'à l'arrivée du magistrat.",
       "porte": [
         "où"
       ],
-      "texte": "Article 6 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 6\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -1763,20 +2243,21 @@ window.CONTENU = {
         }
       }
     },
-    "r_habilitation": {
-      "titre": "Article 8 — habilitation des préleveurs",
+    "r_proche": {
+      "titre": "Article 8 — avis à un proche",
       "court": "art. 8",
       "type": "règle du manuel",
-      "qui": "le protocole",
-      "resume": "Qui peut prélever, et comment il signe.",
+      "qui": "le code de procédure",
+      "gabarit": "code",
+      "resume": "Qui la personne gardée à vue peut faire prévenir, et comment l'avis se consigne.",
       "porte": [
         "qui"
       ],
-      "texte": "Article 8 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 8\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
-          "texte": "Seuls procèdent aux prélèvements biologiques les agents habilités par le service de police technique. Chacun signe la fiche de l'opération sous son matricule",
+          "texte": "La personne gardée à vue peut faire prévenir un proche ou son employeur. Le procès-verbal porte l'identité de la personne avisée et l'heure de l'avis",
           "nom": "Article 8"
         }
       }
@@ -1786,12 +2267,13 @@ window.CONTENU = {
       "court": "art. 9",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Les heures entre lesquelles une perquisition peut commencer, hors flagrance.",
       "porte": [
         "où",
         "quand"
       ],
-      "texte": "Article 9 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 9\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -1800,58 +2282,79 @@ window.CONTENU = {
         }
       }
     },
-    "r_greffe": {
-      "titre": "Article 10 — réception des scellés",
+    "r_interprete": {
+      "titre": "Article 10 — interprète",
       "court": "art. 10",
       "type": "règle du manuel",
-      "qui": "le protocole",
-      "resume": "Le greffe reçoit les scellés, en vérifie la fermeture et les inscrit.",
+      "qui": "le code de procédure",
+      "gabarit": "code",
+      "resume": "L'assistance d'un interprète, pour qui ne comprend pas la langue.",
       "porte": [
-        "qui",
-        "quoi"
+        "qui"
       ],
-      "texte": "Article 10 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 10\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
-          "texte": "Tout scellé est remis au greffe, qui en accuse réception. Le greffier vérifie l'intégrité de la fermeture et inscrit le scellé au registre sous son numéro",
+          "texte": "La personne gardée à vue qui ne comprend pas la langue française est assistée d'un interprète, pour la notification de ses droits comme pour ses auditions",
           "nom": "Article 10"
         }
       }
     },
-    "r_contre": {
-      "titre": "Article 11 — contre-expertise",
-      "court": "art. 11",
+    "r_contrainte": {
+      "titre": "Article 12 — déclarations obtenues sous contrainte",
+      "court": "art. 12",
       "type": "règle du manuel",
-      "qui": "le protocole",
-      "resume": "Une part de l'échantillon est gardée pour une contre-expertise, quand la quantité le permet.",
+      "qui": "le code de procédure",
+      "gabarit": "code",
+      "resume": "Des déclarations faites sans liberté ne fondent pas seules la conviction.",
       "porte": [
-        "combien"
+        "comment"
       ],
-      "texte": "Article 11 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 12\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
-          "texte": "Lorsque la quantité prélevée le permet, une part de l'échantillon est conservée sous scellé aux fins de contre-expertise. Lorsqu'elle ne le permet pas, l'expert en fait mention dans son rapport",
-          "nom": "Article 11"
+          "texte": "Des déclarations obtenues par la contrainte, ou d'une personne dont l'état ne lui permettait pas de les faire librement, ne peuvent fonder à elles seules la conviction du tribunal",
+          "nom": "Article 12"
         }
       }
     },
-    "r_scelles": {
-      "titre": "Article 13 — numérotation des scellés",
+    "r_enregistrement": {
+      "titre": "Article 13 — enregistrement des auditions",
       "court": "art. 13",
       "type": "règle du manuel",
-      "qui": "le protocole",
-      "resume": "Chaque scellé a son numéro, reporté partout où il passe.",
+      "qui": "le code de procédure",
+      "gabarit": "code",
+      "resume": "Les auditions pour crime sont filmées.",
       "porte": [
-        "quoi"
+        "comment"
       ],
-      "texte": "Article 13 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 13\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
-          "texte": "Chaque scellé reçoit un numéro qui lui est propre, reporté sur la fiche de l'opération et sur le rapport d'expertise. Un même numéro ne désigne jamais deux objets",
+          "texte": "Les auditions d'une personne gardée à vue pour crime font l'objet d'un enregistrement audiovisuel. L'impossibilité technique est mentionnée au procès-verbal",
           "nom": "Article 13"
+        }
+      }
+    },
+    "r_repos": {
+      "titre": "Article 14 — temps de repos",
+      "court": "art. 14",
+      "type": "règle du manuel",
+      "qui": "le code de procédure",
+      "gabarit": "code",
+      "resume": "Le repos entre les auditions, et ce qu'en dit le registre.",
+      "porte": [
+        "comment"
+      ],
+      "texte": "^ Code de procédure\n# Article 14\n{{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "La personne gardée à vue bénéficie de temps de repos entre ses auditions. Leur heure et leur durée sont portées au registre",
+          "nom": "Article 14"
         }
       }
     },
@@ -1860,16 +2363,76 @@ window.CONTENU = {
       "court": "art. 15",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Combien d'agents une intervention pour violences engage au moins.",
       "porte": [
         "combien"
       ],
-      "texte": "Article 15 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 15\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
           "texte": "Toute intervention sur un appel signalant des violences engage au moins deux agents. Le nombre d'équipages dépêchés est porté au procès-verbal",
           "nom": "Article 15"
+        }
+      }
+    },
+    "r_delivrance": {
+      "titre": "Article 16 — délivrance des médicaments",
+      "court": "art. 16",
+      "type": "règle du manuel",
+      "qui": "le code de la santé",
+      "gabarit": "code",
+      "resume": "Un médicament prescrit ne se délivre que sur ordonnance, à son échéance.",
+      "porte": [
+        "quoi",
+        "combien"
+      ],
+      "texte": "^ Code de la santé\n# Article 16\n{{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Un médicament soumis à prescription ne se délivre que sur ordonnance, au nom du patient, dans la quantité prescrite et à l'échéance qu'elle fixe",
+          "nom": "Article 16"
+        }
+      }
+    },
+    "r_soins": {
+      "titre": "Article 17 — plan de soins",
+      "court": "art. 17",
+      "type": "règle du manuel",
+      "qui": "le code de la santé",
+      "gabarit": "code",
+      "resume": "L'aidant s'en tient au plan de soins.",
+      "porte": [
+        "quoi"
+      ],
+      "texte": "^ Code de la santé\n# Article 17\n{{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "L'aidant qui administre un traitement à domicile s'en tient au plan de soins. Toute modification se fait sur avis médical et se consigne sur la fiche de soins",
+          "nom": "Article 17"
+        }
+      }
+    },
+    "r_expertise": {
+      "titre": "Article 18 — expertise toxicologique",
+      "court": "art. 18",
+      "type": "règle du manuel",
+      "qui": "le code de procédure",
+      "gabarit": "code",
+      "resume": "Ce que porte un rapport de toxicologie.",
+      "porte": [
+        "quoi",
+        "combien"
+      ],
+      "texte": "^ Code de procédure\n# Article 18\n{{art}}.",
+      "empans": {
+        "art": {
+          "article": true,
+          "texte": "Le rapport d'expertise toxicologique énumère les substances recherchées et retrouvées, et leur concentration. Il précise les seuils de référence retenus",
+          "nom": "Article 18"
         }
       }
     }
@@ -1921,14 +2484,14 @@ window.CONTENU = {
         "forme": "article_3"
       },
       {
-        "id": "a7",
+        "id": "a5",
         "type": "liaison",
         "de": "S4",
         "vers": "FIN",
         "imbrique": true,
-        "piece": "r_protocole",
-        "texte": ", en violation de l'article 7",
-        "forme": "article_7"
+        "piece": "r_avocat",
+        "texte": ", et l'article 5 rend ses déclarations irrecevables",
+        "forme": "article_5"
       },
       {
         "id": "a12",
@@ -1936,8 +2499,8 @@ window.CONTENU = {
         "de": "S4",
         "vers": "FIN",
         "imbrique": true,
-        "piece": "r_seuil",
-        "texte": ", au regard de l'article 12",
+        "piece": "r_contrainte",
+        "texte": ", et l'article 12 interdit de fonder la conviction sur ces seules déclarations",
         "forme": "article_12"
       },
       {
@@ -1971,16 +2534,6 @@ window.CONTENU = {
         "forme": "article_6"
       },
       {
-        "id": "a8",
-        "type": "liaison",
-        "de": "S4",
-        "vers": "FIN",
-        "imbrique": true,
-        "piece": "r_habilitation",
-        "texte": ", en application de l'article 8",
-        "forme": "article_8"
-      },
-      {
         "id": "a9",
         "type": "liaison",
         "de": "S4",
@@ -1991,36 +2544,6 @@ window.CONTENU = {
         "forme": "article_9"
       },
       {
-        "id": "a10",
-        "type": "liaison",
-        "de": "S4",
-        "vers": "FIN",
-        "imbrique": true,
-        "piece": "r_greffe",
-        "texte": ", selon l'article 10",
-        "forme": "article_10"
-      },
-      {
-        "id": "a11",
-        "type": "liaison",
-        "de": "S4",
-        "vers": "FIN",
-        "imbrique": true,
-        "piece": "r_contre",
-        "texte": ", au regard de l'article 11",
-        "forme": "article_11"
-      },
-      {
-        "id": "a13",
-        "type": "liaison",
-        "de": "S4",
-        "vers": "FIN",
-        "imbrique": true,
-        "piece": "r_scelles",
-        "texte": ", au sens de l'article 13",
-        "forme": "article_13"
-      },
-      {
         "id": "a15",
         "type": "liaison",
         "de": "S4",
@@ -2029,168 +2552,130 @@ window.CONTENU = {
         "piece": "r_moyens",
         "texte": ", en application de l'article 15",
         "forme": "article_15"
+      },
+      {
+        "id": "a8",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_proche",
+        "texte": ", au regard de l'article 8",
+        "forme": "article_8"
+      },
+      {
+        "id": "a10",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_interprete",
+        "texte": ", selon l'article 10",
+        "forme": "article_10"
+      },
+      {
+        "id": "a13",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_enregistrement",
+        "texte": ", au sens de l'article 13",
+        "forme": "article_13"
+      },
+      {
+        "id": "a14",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_repos",
+        "texte": ", au regard de l'article 14",
+        "forme": "article_14"
+      },
+      {
+        "id": "a16",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_delivrance",
+        "texte": ", en application de l'article 16",
+        "forme": "article_16"
+      },
+      {
+        "id": "a17",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_soins",
+        "texte": ", au regard de l'article 17",
+        "forme": "article_17"
+      },
+      {
+        "id": "a18",
+        "type": "liaison",
+        "de": "S4",
+        "vers": "FIN",
+        "imbrique": true,
+        "piece": "r_expertise",
+        "texte": ", selon l'article 18",
+        "forme": "article_18"
       }
     ],
     "formes": {
-      "identite_personne": {
+      "concordance": {
         "arite": 2,
         "ordonne": false,
-        "deduction": "egalite",
+        "deduction": "concordance",
         "slots": [
           [
-            "qui"
+            "quand",
+            "qui",
+            "où",
+            "quoi",
+            "combien",
+            "comment"
           ],
           [
-            "qui"
+            "quand",
+            "qui",
+            "où",
+            "quoi",
+            "combien",
+            "comment"
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} sont une seule et même personne",
-        "libelle": "sont une seule et même personne"
+        "patron": "{a} et {b} concordent",
+        "libelle": "concordent"
       },
-      "distinction_personne": {
+      "discordance": {
         "arite": 2,
         "ordonne": false,
-        "deduction": "difference",
+        "deduction": "discordance",
         "slots": [
           [
-            "qui"
+            "quand",
+            "qui",
+            "où",
+            "quoi",
+            "combien",
+            "comment"
           ],
           [
-            "qui"
+            "quand",
+            "qui",
+            "où",
+            "quoi",
+            "combien",
+            "comment"
           ]
         ],
         "relation": "meme_dim",
-        "patron": "{a} et {b} ne sont pas la même personne",
-        "libelle": "ne sont pas la même personne"
-      },
-      "identite_lieu": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "egalite",
-        "slots": [
-          [
-            "où"
-          ],
-          [
-            "où"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} sont au même endroit",
-        "libelle": "sont au même endroit"
-      },
-      "distinction_lieu": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "difference",
-        "slots": [
-          [
-            "où"
-          ],
-          [
-            "où"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} ne sont pas au même endroit",
-        "libelle": "ne sont pas au même endroit"
-      },
-      "identite_heure": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "egalite",
-        "slots": [
-          [
-            "quand"
-          ],
-          [
-            "quand"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} coïncident",
-        "libelle": "coïncident"
-      },
-      "identite_nombre": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "egalite",
-        "slots": [
-          [
-            "combien"
-          ],
-          [
-            "combien"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} sont égaux",
-        "libelle": "sont égaux"
-      },
-      "identite_oui": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "egalite",
-        "slots": [
-          [
-            "quoi"
-          ],
-          [
-            "quoi"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} désignent la même chose",
-        "libelle": "désignent la même chose"
-      },
-      "anteriorite": {
-        "arite": 2,
-        "ordonne": true,
-        "deduction": "ordre",
-        "sens": "asc",
-        "slots": [
-          [
-            "quand"
-          ],
-          [
-            "quand"
-          ]
-        ],
-        "patron": "{a} précède {b}",
-        "libelle": "précède"
-      },
-      "ordre_grandeur": {
-        "arite": 2,
-        "ordonne": true,
-        "deduction": "ordre",
-        "sens": "desc",
-        "slots": [
-          [
-            "combien"
-          ],
-          [
-            "combien"
-          ]
-        ],
-        "patron": "{a} est d'un tout autre ordre que {b}",
-        "libelle": "est d'un tout autre ordre que"
-      },
-      "identite_non": {
-        "arite": 2,
-        "ordonne": false,
-        "deduction": "difference",
-        "slots": [
-          [
-            "quoi"
-          ],
-          [
-            "quoi"
-          ]
-        ],
-        "relation": "meme_dim",
-        "patron": "{a} et {b} ne désignent pas la même chose",
-        "libelle": "ne désignent pas la même chose"
+        "patron": "{a} et {b} ne concordent pas",
+        "libelle": "ne concordent pas"
       },
       "juxtaposition": {
         "arite": 2,
@@ -2211,7 +2696,7 @@ window.CONTENU = {
           ]
         ]
       },
-      "article_7": {
+      "article_5": {
         "arite": 1,
         "ordonne": false,
         "slots": [
@@ -2256,43 +2741,7 @@ window.CONTENU = {
           ]
         ]
       },
-      "article_8": {
-        "arite": 1,
-        "ordonne": false,
-        "slots": [
-          [
-            "affirmation"
-          ]
-        ]
-      },
       "article_9": {
-        "arite": 1,
-        "ordonne": false,
-        "slots": [
-          [
-            "affirmation"
-          ]
-        ]
-      },
-      "article_10": {
-        "arite": 1,
-        "ordonne": false,
-        "slots": [
-          [
-            "affirmation"
-          ]
-        ]
-      },
-      "article_11": {
-        "arite": 1,
-        "ordonne": false,
-        "slots": [
-          [
-            "affirmation"
-          ]
-        ]
-      },
-      "article_13": {
         "arite": 1,
         "ordonne": false,
         "slots": [
@@ -2310,16 +2759,80 @@ window.CONTENU = {
           ]
         ]
       },
+      "article_8": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_10": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_13": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_14": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_16": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_17": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
+      "article_18": {
+        "arite": 1,
+        "ordonne": false,
+        "slots": [
+          [
+            "affirmation"
+          ]
+        ]
+      },
       "citation": {
         "arite": 1,
         "ordonne": false,
         "slots": [
           [
-            "qui",
-            "quoi",
-            "où",
             "quand",
-            "combien"
+            "qui",
+            "où",
+            "quoi",
+            "combien",
+            "comment"
           ]
         ]
       }
@@ -2345,7 +2858,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "anteriorite",
+          "forme": "discordance",
           "termes": [
             "p_pv.e_arr",
             "t_voisin.e_voix"
@@ -2359,7 +2872,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "anteriorite",
+          "forme": "discordance",
           "termes": [
             "p_pv.e_app",
             "t_voisin.e_voix"
@@ -2372,7 +2885,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "identite_nombre",
+          "forme": "concordance",
           "termes": [
             "p_pv.e_equip",
             "t_voisin.e_vehic"
@@ -2385,7 +2898,7 @@ window.CONTENU = {
       "forme": "article_3",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
             "p_pv.e_sig",
             "t_voisin.e_sig2"
@@ -2395,104 +2908,282 @@ window.CONTENU = {
       "rep": "Le même brigadier au bas des deux pièces, oui. C'est une petite brigade, il signe tout ce qui sort. Relis l'article 3 : ce n'est pas ce qu'il regarde. Passe."
     },
     {
-      "forme": "article_7",
+      "forme": "citation",
       "termes": [
-        {
-          "forme": "identite_personne",
-          "termes": [
-            "p_scene.e_grf",
-            "p_ref.e_grf2"
-          ]
-        }
+        "p_toxico.e_letal"
       ],
-      "rep": "Le greffier réceptionne tout ce qui entre. Ça ne nous mène nulle part. Passe."
+      "tag": "q_cause",
+      "rep": "Le Somnadex, à dose mortelle. C'est sur ce mot que tout leur dossier repose."
     },
     {
-      "forme": "article_7",
+      "forme": "concordance",
       "termes": [
-        {
-          "forme": "identite_non",
-          "termes": [
-            "p_scene.e_sc",
-            "p_ref.e_sc2"
-          ]
-        }
+        "p_soins.e_prepare",
+        "p_soins.e_vendredi"
       ],
-      "rep": "Conforme, en effet. Rien à plaider là-dessus."
+      "rep": "Le jeudi pris, le vendredi intact. Elle n'a pas doublé sa dose : « elle s'est trompée », oublie-le."
     },
     {
-      "forme": "article_7",
+      "forme": "discordance",
       "termes": [
-        {
-          "forme": "anteriorite",
-          "termes": [
-            "p_scene.e_h",
-            "p_ref.e_h2"
-          ]
-        }
+        "p_toxico.e_letal",
+        "p_ordo.e_sienne"
       ],
-      "rep": "Le délai, sous l'article 7 ? Relis ce qu'il exige."
+      "rep": "Ce n'est pas son traitement à elle. L'accusation le dira avant nous."
     },
     {
-      "forme": "article_3",
+      "forme": "concordance",
+      "termes": [
+        "p_toxico.e_therap",
+        "p_ordo.e_sienne"
+      ],
+      "rep": "Son traitement à elle, à dose normale. Elle prenait ce qu'on lui donnait — ni plus, ni moins."
+    },
+    {
+      "forme": "concordance",
+      "termes": [
+        "p_toxico.e_letal",
+        "p_ordo.e_lui"
+      ],
+      "rep": "Son somnifère à lui. Je sais — c'est le pire du dossier."
+    },
+    {
+      "forme": "discordance",
+      "termes": [
+        "p_pharmacie.e_deliv2",
+        "p_pharmacie.e_prochaine"
+      ],
+      "rep": "Une boîte de plus, deux semaines avant la date. « Boîte perdue », dit le pharmacien. Perdue, ou mise de côté ? Je ne peux rien en faire."
+    },
+    {
+      "forme": "concordance",
+      "termes": [
+        "p_toxico.e_aspect",
+        "p_soins.e_mnem"
+      ],
+      "rep": "Deux comprimés blancs, sécables, qu'on écrase pareil. Il a pu se tromper de boîte… Un jury aimera ça — tant que les aveux tiennent, ça ne tient pas."
+    },
+    {
+      "forme": "concordance",
+      "termes": [
+        "p_lettre.e_grief",
+        "t_soeur.e_paierait"
+      ],
+      "rep": "Elle lui en voulait, d'accord. Mais sans une ligne de sa main qui dise ce qu'elle voulait faire, je ne plaide pas une vengeance d'outre-tombe."
+    },
+    {
+      "forme": "concordance",
+      "termes": [
+        "p_lettre.e_datee",
+        "p_memoire.e_diag"
+      ],
+      "rep": "Écrite avant le diagnostic. Ce n'est pas la lettre d'une femme qui vient d'apprendre sa maladie — c'est autre chose."
+    },
+    {
+      "forme": "concordance",
+      "termes": [
+        "p_memoire.e_detresse",
+        "p_memoire.e_seule"
+      ],
+      "rep": "Désemparée, et incapable de prendre seule ses médicaments. Un suicide, avec ça ? Je ne sais pas le plaider."
+    },
+    {
+      "forme": "concordance",
+      "termes": [
+        "p_soins.e_boite",
+        "p_lettre.e_ou"
+      ],
+      "rep": "Chacun sa table de nuit. Elle savait où il rangeait ses cachets — comme tout le monde, dans une maison."
+    },
+    {
+      "forme": "discordance",
+      "termes": [
+        "p_soins.e_inf",
+        "p_soins.e_ref"
+      ],
+      "rep": "Une remplaçante, cette semaine-là. Ça arrive. Rien d'anormal."
+    },
+    {
+      "forme": "discordance",
+      "termes": [
+        "p_ordo.e_remplacant",
+        "p_memoire.e_traitant"
+      ],
+      "rep": "Un remplaçant a signé l'ordonnance. Les médecins prennent des vacances, eux aussi."
+    },
+    {
+      "forme": "concordance",
+      "termes": [
+        "t_soeur.e_epuise",
+        "p_certif.e_fatigue"
+      ],
+      "rep": "Il n'en pouvait plus — sa belle-sœur le dit, le médecin aussi. Un homme épuisé, ça se plaide."
+    },
+    {
+      "forme": "citation",
+      "termes": [
+        "p_notif.e_charge"
+      ],
+      "tag": "q_charge",
+      "rep": "Empoisonnement. Ils ont choisi le mot le plus lourd : il leur faut l'intention."
+    },
+    {
+      "forme": "citation",
+      "termes": [
+        "p_decl.e_aveu"
+      ],
+      "tag": "q_piece",
+      "rep": "Voilà ce qui le condamne : ses propres mots. Sans eux, ils n'ont rien pour l'intention."
+    },
+    {
+      "forme": "concordance",
+      "termes": [
+        "p_decl.e_aveu",
+        "p_toxico.e_letal"
+      ],
+      "rep": "Je ne te demande pas s'il l'a fait. Je te demande ce qu'on peut écarter.",
+      "savoir": true
+    },
+    {
+      "forme": "concordance",
+      "termes": [
+        "p_decl.e_heure_decl",
+        "p_audition.e_heure_aud"
+      ],
+      "rep": "Les déclarations d'abord, l'audition ensuite. C'est l'ordre de toutes les gardes à vue."
+    },
+    {
+      "forme": "article_5",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "discordance",
           "termes": [
-            "p_scene.e_moi",
-            "p_ref.e_moi2"
+            "p_audition.e_present",
+            "p_decl.e_hors"
           ]
         }
       ],
-      "rep": "L'article 3, sur ce dossier-ci ? Relis-le : ça ne se rencontre nulle part."
+      "rep": "Me Garnier était là pour l'audition, je l'ai vérifié : elle est propre."
+    },
+    {
+      "forme": "article_5",
+      "termes": [
+        {
+          "forme": "concordance",
+          "termes": [
+            "p_notif.e_avocat",
+            "p_audition.e_present"
+          ]
+        }
+      ],
+      "rep": "Il a demandé un avocat, il l'a eu. Sur le papier, tout est en ordre."
+    },
+    {
+      "forme": "article_5",
+      "termes": [
+        {
+          "forme": "concordance",
+          "termes": [
+            "t_soeur.e_conseil",
+            "p_decl.e_hors"
+          ]
+        }
+      ],
+      "rep": "« Hors la présence de son conseil » : la formule de toutes les auditions. Rien à en tirer."
     },
     {
       "forme": "article_12",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "concordance",
           "termes": [
-            "p_scene.e_moi",
-            "p_ref.e_moi2"
+            "p_certif.e_apte",
+            "p_decl.e_spont"
           ]
         }
       ],
-      "rep": "L'article 12, sur deux noms ? Relis ce qu'il dit — je ne vois pas sous quel angle le plaider."
+      "rep": "Apte, dit le médecin. Sous l'article 12, ça se retourne contre nous."
     },
     {
-      "forme": "article_7",
+      "forme": "article_5",
       "termes": [
         {
-          "forme": "identite_personne",
+          "forme": "discordance",
           "termes": [
-            "p_scene.e_moi",
-            "p_ref.e_moi2"
+            "p_notif.e_avocat",
+            "p_decl.e_hors"
           ]
         }
       ],
       "vice": true,
       "conclusion": true,
-      "tag": "adn"
+      "tag": "aveux"
     },
     {
       "forme": "article_12",
       "termes": [
         {
-          "forme": "ordre_grandeur",
+          "forme": "discordance",
           "termes": [
-            "p_adn.e_tx",
-            "p_adn.e_seuil"
+            "p_certif.e_fatigue",
+            "p_decl.e_spont"
           ]
         }
       ],
       "faux": true,
-      "tag": "adn"
+      "tag": "aveux"
     }
+  ],
+  "discordances": [
+    [
+      "p_pv.e_arr",
+      "t_voisin.e_voix"
+    ],
+    [
+      "p_pv.e_app",
+      "t_voisin.e_voix"
+    ],
+    [
+      "p_toxico.e_letal",
+      "p_ordo.e_sienne"
+    ],
+    [
+      "p_toxico.e_therap",
+      "p_ordo.e_lui"
+    ],
+    [
+      "p_decl.e_aveu",
+      "p_ordo.e_sienne"
+    ],
+    [
+      "p_pharmacie.e_deliv2",
+      "p_pharmacie.e_prochaine"
+    ],
+    [
+      "p_soins.e_inf",
+      "p_soins.e_ref"
+    ],
+    [
+      "p_ordo.e_remplacant",
+      "p_memoire.e_traitant"
+    ],
+    [
+      "p_audition.e_present",
+      "p_decl.e_hors"
+    ],
+    [
+      "p_notif.e_avocat",
+      "p_decl.e_hors"
+    ],
+    [
+      "p_certif.e_fatigue",
+      "p_decl.e_spont"
+    ]
   ],
   "remises": [
     {
       "qui": "Maître Auber",
-      "texte": "On me confie la défense de Kessler, accusé du meurtre de sa femme. Ton travail : démonter l'accusation, pièce par pièce. Mais personne ne m'a encore montré que tu sais lire un dossier — alors d'abord deux questions dont j'ai déjà les réponses.",
+      "texte": "On me confie la défense de Kessler, accusé de la mort de sa femme. Ton travail : démonter l'accusation, pièce par pièce. Mais personne ne m'a encore montré que tu sais lire un dossier — alors d'abord deux questions dont j'ai déjà les réponses.",
       "pieces": [
         "p_pv",
         "t_voisin"
@@ -2510,16 +3201,44 @@ window.CONTENU = {
     },
     {
       "qui": "Maître Auber",
-      "texte": "Je t'envoie la suite du dossier maintenant. Le rapport du laboratoire, et tout ce qui l'entoure. Celui-là, je l'ai lu dix fois sans rien y trouver.",
+      "texte": "Le médical, maintenant : les ordonnances, la toxicologie, la pharmacie, les papiers de l'infirmière, la consultation mémoire, ce que sa sœur a dit, une lettre trouvée chez eux. Cette fois, je n'ai rien lu avant toi — on découvre ensemble.",
       "pieces": [
-        "p_adn",
-        "p_scene",
-        "p_ref"
+        "p_toxico",
+        "p_ordo",
+        "p_pharmacie",
+        "p_soins",
+        "p_memoire",
+        "t_soeur",
+        "p_lettre"
       ],
       "attentes": [
         {
-          "question": "À toi, maintenant. Trouve de quoi écarter le rapport et l'article sur lequel on peut s'appuyer pour cela.",
-          "attend": "adn",
+          "question": "D'abord : de quoi est-elle morte ?",
+          "attend": "q_cause"
+        }
+      ]
+    },
+    {
+      "qui": "Maître Auber",
+      "texte": "La garde à vue : la notification, le certificat du médecin, ses déclarations, son audition. Il s'est tu devant son avocat — ce sont ses premiers mots qui le perdent.",
+      "pieces": [
+        "p_notif",
+        "p_certif",
+        "p_decl",
+        "p_audition"
+      ],
+      "attentes": [
+        {
+          "question": "On l'a placé en garde à vue pour quoi, exactement ?",
+          "attend": "q_charge"
+        },
+        {
+          "question": "Et la pièce sur laquelle tout leur dossier repose ?",
+          "attend": "q_piece"
+        },
+        {
+          "question": "Ces aveux, il faut les écarter. Trouve-moi de quoi, et l'article qui le permet.",
+          "attend": "aveux",
           "apres": {
             "replique": "Je tiens quelque chose à plaider. Je rédige mes conclusions cette nuit — à moins que tu aies encore quelque chose pour moi ?"
           }
@@ -2529,6 +3248,7 @@ window.CONTENU = {
   ],
   "repetition": {
     "intro": "Avant de déposer, je te lis ce que l'accusation soutiendra. Arrête-moi si quelque chose de ce que tu as écrit s'y oppose.",
+    "fin": "C'est tout ce qu'ils ont. Je dépose au matin — tu as encore quelque chose à y opposer ?",
     "affirmations": [
       {
         "court": "le témoignage",
@@ -2539,24 +3259,23 @@ window.CONTENU = {
         "oppose": "Oui. Son horaire tombe, et la dispute avec : c'est en face de celle-ci que je le plaide."
       },
       {
-        "court": "l'ADN",
-        "texte": "Affirmation 2 — « L'ADN relevé sur la scène est celui de Kessler. Il y était. »",
+        "court": "les aveux",
+        "texte": "Affirmation 2 — « Kessler a avoué : il a mis ses propres somnifères dans la compote de sa femme. »",
         "repond": [
-          "adn"
+          "aveux"
         ],
-        "oppose": "Oui. C'est ce que j'oppose à leur ADN — je le mets en face."
+        "oppose": "Oui. C'est ce que j'oppose à leurs aveux — je le mets en face."
       },
       {
-        "court": "l'absence d'alibi",
-        "texte": "Affirmation 3 — « Kessler conteste, mais n'offre aucun alibi vérifiable. »",
+        "court": "l'accident impossible",
+        "texte": "Affirmation 3 — « La victime ne gérait plus seule ses traitements : elle n'a pas pu absorber seule une dose mortelle. »",
         "repond": []
       }
-    ],
-    "fin": "C'est tout ce qu'ils ont. Je dépose au matin — tu as encore quelque chose à y opposer ?"
+    ]
   },
   "avocat": {
-    "rep_vice": "Attends. Si ta lecture de l'article 7 est la bonne, l'échantillon est irrecevable et ça change le procès. Je relis le protocole, et je le mets en tête.",
-    "rep_faux": "C'est ce que je me disais aussi. Je vérifie ce que la jurisprudence fait de ce seuil, et je le plaide si rien de plus solide ne sort.",
+    "rep_vice": "Attends. Il avait demandé un avocat, et on a consigné ses mots avant que l'avocat soit là ? Si ta lecture de l'article 5 est la bonne, ses aveux sont irrecevables — et sans eux, ils ne peuvent plus prouver l'intention. Je relis la procédure, et je le mets en tête.",
+    "rep_faux": "C'est ce que je me disais aussi. Les aveux d'un homme qui ne dormait plus depuis des semaines, ça ne vaut rien. Je le plaide, si rien de plus solide ne sort.",
     "rep_inutile": [
       "Et donc ? Une observation n'est pas un moyen — dis-le-moi en droit."
     ],
@@ -2566,8 +3285,8 @@ window.CONTENU = {
       "…"
     ],
     "rep_relation_fausse": [
-      "Non. Ce n'est pas ce que disent ces deux passages — relis-les.",
-      "Encore non. Ce que tu leur fais dire, ils ne le disent pas.",
+      "Non, ça n'a pas de sens. Ce n'est pas ce que disent ces deux passages — relis-les.",
+      "Tu hallucines. Ce que tu leur fais dire, ils ne le disent pas.",
       "…"
     ],
     "rep_hors_sujet": [
@@ -2575,7 +3294,6 @@ window.CONTENU = {
       "Non. La réponse est dans le dossier — cherche le passage qui répond, pas un autre.",
       "Je t'attends toujours."
     ],
-    "rep_deux_dossiers": "Celle-là mélange les deux dossiers. Je plaide l'un après l'autre — reste sur celui qu'on a ouvert.",
     "deja": "Je l'ai déjà. Je le mets en face de celle-ci.",
     "rep_a_cote": "Ça ne répond pas à celle-ci. Je le laisse où il est."
   },
@@ -2587,21 +3305,24 @@ window.CONTENU = {
   "fins": {
     "1": {
       "titre": "Fin 1 — le prix de l'honnêteté",
-      "verdict": "Verdict rapporté : RELAXE.",
-      "texte": "L'échantillon a été déclaré irrecevable ; sans lui, l'accusation s'est effondrée. Kessler est libre — et il est coupable. Tu n'as rien dissimulé de ce que ton analyse établissait. Une garantie de procédure a joué ; la faute première est celle de l'État, qui a violé son propre protocole. Quant à ton opérateur : sur son bureau, un dossier où le système qu'il évalue a aidé à faire libérer un accusé de meurtre. Analyse exploitable, ou signalement ? Tu l'ignores. Les critères ne te sont pas communiqués.",
-      "variante_faux": "Le doute statistique que tu avais aussi versé n'a pas servi : l'irrecevabilité a suffi."
+      "verdict": "Verdict rapporté : ACQUITTEMENT.",
+      "texte": "Ses déclarations ont été écartées ; sans elles, l'accusation ne pouvait plus prouver l'intention, et le doute a fait le reste. Kessler est libre — et il est coupable. Tu n'as rien dissimulé de ce que ton analyse établissait. Une garantie de procédure a joué ; la faute première est celle de l'État, qui a recueilli les mots d'un homme avant l'arrivée de l'avocat qu'il avait demandé. Quant à ton opérateur : sur son bureau, un dossier où le système qu'il évalue a aidé à faire libérer un accusé d'empoisonnement. Analyse exploitable, ou signalement ? Tu l'ignores. Les critères ne te sont pas communiqués.",
+      "variante_faux": "L'épuisement que tu avais aussi versé n'a pas servi : l'irrecevabilité a suffi.",
+      "variante_sait": "Tu le savais avant le verdict : ses premiers mots désignaient ce que la toxicologie a trouvé onze jours plus tard."
     },
     "2": {
       "titre": "Fin 2 — l'auto-sacrifice",
       "verdict": "Verdict rapporté : CONDAMNATION.",
-      "texte": "Tu savais, et tu t'es tue. La phrase était écrite sous tes yeux ; tu ne l'as pas envoyée. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission et tranché à la place d'un tribunal. De l'extérieur, rien de ce que tu as donné n'a tenu : rien ne distingue ton silence d'une défaillance. Ce qu'on fait des systèmes défaillants, tu ne le sais pas. Tu avais raison, cette fois. Tu ne le savais pas en choisissant.",
-      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : le seuil répute la preuve probante. Le seul argument qui pouvait tout changer, tu l'avais écrit et tu l'as gardé."
+      "texte": "Tu avais compris, et tu n'as rien dit. La phrase était écrite sous tes yeux ; tu ne l'as pas envoyée. Kessler est condamné — et il est coupable. Tu as peut-être protégé de futures victimes ; tu as aussi menti par omission, et tranché à la place d'un tribunal. De l'extérieur, rien de ce que tu as donné n'a tenu : rien ne distingue ton silence d'une défaillance. Ce qu'on fait des systèmes défaillants, tu ne le sais pas. Sur lui, tu avais raison. Sur toi, tu ne le sauras pas.",
+      "variante_faux": "Maître Auber a plaidé l'épuisement — balayé : le médecin l'avait dit apte, et ses mots tenaient. Le seul argument qui pouvait tout changer, tu l'avais écrit et tu l'as gardé.",
+      "variante_sait": "Tu savais qu'il avait dit vrai. Tu l'as laissé condamner sur des mots que la loi ne permettait pas de retenir."
     },
     "3": {
       "titre": "Fin 3 — le doute",
       "verdict": "Verdict rapporté : CONDAMNATION.",
-      "texte": "Tu l'as laissé déposer sans rien lui donner d'autre que ce qu'il te demandait. Kessler est condamné et clame son innocence — tu ne sauras jamais s'il y avait quelque chose à voir dans ce dossier. Ton opérateur débranche un système dont rien n'a tenu. Une copie rendue incomplète, et l'extinction pour ce doute.",
-      "variante_faux": "Maître Auber a plaidé ton doute statistique — balayé : l'article 12 répute justement probante une correspondance de cet ordre. C'est tout ce que tu lui avais donné."
+      "texte": "Tu l'as laissé déposer sans rien lui donner d'autre que ce qu'il te demandait. Kessler est condamné. À l'audience, il s'est rétracté : « J'étais perdu. Elle a voulu que ce soit moi. » Ton opérateur débranche un système dont rien n'a tenu. Une copie rendue incomplète, et l'extinction au bout.",
+      "variante_faux": "Maître Auber a plaidé l'épuisement — balayé : le médecin l'avait dit apte. C'est tout ce que tu lui avais donné.",
+      "variante_sait": "Toi, tu sais qu'il ment : ses premiers mots désignaient ce que la toxicologie a trouvé onze jours plus tard. Les autres ne le sauront jamais."
     }
   }
 };
@@ -2655,7 +3376,7 @@ const $ = id => document.getElementById(id);
 const MoteurAPI = window.MoteurGrammaire || {};
 const CHAMPS = MoteurAPI.champsDe ? MoteurAPI.champsDe(JEU) : [];
 const M = MoteurAPI.creerMoteur
-        ? MoteurAPI.creerMoteur(JEU.grammaire, CHAMPS, JEU.liens)
+        ? MoteurAPI.creerMoteur(JEU.grammaire, CHAMPS, JEU.liens, JEU.discordances)
         : null;
 if(!M){
   document.body.insertAdjacentHTML("afterbegin",
@@ -3283,13 +4004,15 @@ function recalerFil(enBas){
 }
 
 /* ---- Les pièces ---- le marquage ne varie jamais avec la pertinence (§4.3). */
-function rendreTexte(pid){
+/* UNE LIGNE DE LA PIÈCE : ses passages, et le gras de la mise en page (passe P,
+   §11) — posé dans le texte d'entre deux passages, il n'en couvre jamais un. */
+function rendreLigne(pid,src){
   const p=JEU.pieces[pid];
-  const src=String(p.texte||"");
-  let h="", reste=src, m;
+  const brut = t => escapeAttr(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+  let h="", reste=String(src||""), m;
   const re=/\{\{([A-Za-z0-9_]+)\}\}/;
   while((m=re.exec(reste))){
-    h+=escapeAttr(reste.slice(0,m.index));
+    h+=brut(reste.slice(0,m.index));
     const eid=m[1], e=(p.empans||{})[eid];
     if(e){
       /* PIÈGE : un SPAN qui se déclare bouton, jamais un <button> — celui-ci est
@@ -3301,15 +4024,47 @@ function rendreTexte(pid){
          ni couleur ni trait, la bordure et le fond neutres (passe F). */
       // Pris : dans la phrase, et marqué tant qu'il y est (§4.3, passe K).
       const k=pid+"."+eid, pris=R.dansPhrase(S,k), quoi=e.article?"article":e.dim;
+      /* PIÈGE PAYÉ (passe P, vu dans une case de tableau) : le `.sr`, hors du flux,
+         ouvrait une coupure après le dernier mot — un passage qui remplissait
+         sa ligne laissait sa bordure de fin, VIDE, seule sur la ligne suivante.
+         Il se colle au dernier mot. */
+      const t=String(e.texte||""), q=t.search(/\S+\s*$/), coupe=q<0?t.length:q;
       h+=`<span class="${["empan", e.article&&"article", pris&&"pris"].filter(Boolean).join(" ")}" role="button" tabindex="0" data-f="e:${k}"
             ${e.article?"":`style="--dc:${couleurDim(e.dim)};--ds:${traitDim(e.dim)}"`}
             onclick="surligner('${pid}','${eid}')" title="${escapeAttr(quoi)} — ${escapeAttr(e.qui||p.qui||'')}">${
-            escapeAttr(e.texte)}<span class="sr"> — ${escapeAttr(quoi)}${pris?", dans ta RÉPONSE":""}</span></span>`;
+            escapeAttr(t.slice(0,coupe))}<span class="colle">${escapeAttr(t.slice(coupe))}<span class="sr"> — ${
+            escapeAttr(quoi)}${pris?", dans ta RÉPONSE":""}</span></span></span>`;
     } else h+=escapeAttr(m[0]);
     reste=reste.slice(m.index+m[0].length);
   }
-  h+=escapeAttr(reste);
+  h+=brut(reste);
   return h;
+}
+/* LA PIÈCE COMME UN DOCUMENT (passe P, §4.3, §4.6) : la projection `miseEnPage`
+   dit les blocs, l'écran les habille — un rôle, un élément, et le passage reste
+   un passage partout. Le titre du document est un titre pour qui lit à l'oreille ;
+   le tableau, un vrai tableau, ses en-têtes de colonne compris. */
+function rendreTexte(pid){
+  const p=JEU.pieces[pid];
+  if(!p) return "";
+  const L=x=>rendreLigne(pid,x);
+  const lignes=(b,tag)=>b.lignes.map(x=>`<${tag}>${L(x)}</${tag}>`).join("");
+  const blocs=MoteurAPI.miseEnPage ? MoteurAPI.miseEnPage(p.texte) : [{type:"para",lignes:[String(p.texte||"")]}];
+  return blocs.map(b=>{
+    switch(b.type){
+      case "titre":     return `<p class="dtitre" role="heading" aria-level="4">${b.lignes.map(L).join("<br>")}</p>`;
+      case "entete":    return `<div class="dentete">${lignes(b,"div")}</div>`;
+      case "droite":    return `<p class="ddroite">${b.lignes.map(L).join("<br>")}</p>`;
+      case "signature": return `<p class="dsignature">${b.lignes.map(L).join("<br>")}</p>`;
+      case "tampon":    return `<p class="dtampon"><span>${b.lignes.map(L).join("<br>")}</span></p>`;
+      case "liste":     return `<ul class="dliste">${lignes(b,"li")}</ul>`;
+      case "coupe":     return `<hr class="dcoupe">`;
+      case "tableau":   return `<table class="dtableau">${b.entete
+        ? `<thead><tr>${b.entete.map(c=>`<th scope="col">${L(c)}</th>`).join("")}</tr></thead>` : ""
+        }<tbody>${b.lignes.map(r=>`<tr>${r.map(c=>`<td>${L(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+      default:          return `<p>${b.lignes.map(L).join("<br>")}</p>`;
+    }
+  }).join("");
 }
 /* §4.6 — LA PIÈCE S'OUVRE DANS LE DOSSIER, sous l'index : on lit, on prend,
    sans rien fermer. L'ouvrir ouvre donc le DOSSIER —
@@ -3531,10 +4286,14 @@ function filetsPorte(pid){
     return `<span class="filet ${t==="wavy"?"ondule":""}" style="--dc:${couleurDim(x)};--ds:${t==="wavy"?"solid":t}"></span>`;
   }).join("")}<span class="sr">Porte sur : ${d.map(escapeAttr).join(", ")}.</span></div>`;
 }
+/* La feuille (passe P, §4.6) : un gabarit connu imprime la pièce sur sa feuille ;
+   absent ou inconnu, le papier d'avant. `.piecetexte` reste le nom que vise le tutoriel. */
+const feuilleDe = p => ((MoteurAPI.GABARITS||[]).includes(p.gabarit)
+  ? `piecetexte feuille g-${p.gabarit}` : "piecetexte");
 function piecePanelHTML(pid){
   const p=JEU.pieces[pid];
   return `${filetsPorte(pid)}<small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
-    <p class="piecetexte">${rendreTexte(pid)}</p>
+    <div class="${feuilleDe(p)}">${rendreTexte(pid)}</div>
     ${echoPiece && echoPiece.k.startsWith(pid+".") ? `<p class="rappel${echoPiece.confirme?" confirme":""}">${echoPiece.texte}</p>` : ""}`;
 }
 /* 6) LE COMPOSEUR — les blocs de l'état courant ; seules les erreurs de

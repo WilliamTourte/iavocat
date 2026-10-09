@@ -202,7 +202,7 @@ console.log("\n=== Le joueur choisit la relation, le moteur la vérifie (§4.5, 
   check("« ← retirer » retire le second passage et sa juxtaposition ensemble", w.S.compo.length === 1);
 }
 
-console.log("\n=== La vérification : la relation vraie se calcule des valeurs ===");
+console.log("\n=== La vérification : la relation vraie se lit au dossier — aux valeurs, pour une affaire d'avant ===");
 {
   const w = boot();
   H.livrerTout(w);
@@ -211,7 +211,7 @@ console.log("\n=== La vérification : la relation vraie se calcule des valeurs =
     n++;
     if (w.M.deduire(L.termes[0], L.termes[1]) !== L.forme) tous = false;
   }
-  check(`les ${n} relations déclarées sont toutes vraies sur les valeurs`, n > 0 && tous);
+  check(`les ${n} relations déclarées sont toutes vraies`, n > 0 && tous);
 
   /* Le PATRON doit s'écrire : une régression ne casse aucune forme réduite, mais
      le verbe disparaît — c'est la relecture à l'œil qui l'avait attrapé. */
@@ -237,27 +237,63 @@ console.log("\n=== La vérification : la relation vraie se calcule des valeurs =
       JSON.stringify(w.M.ordonner(ord.forme, [y, x])) === JSON.stringify([x, y]));
   } else check("(aucune forme ordonnée dans ce contenu)", true);
 
-  /* L'ÉGALITÉ VAUT DANS LES CINQ DIMENSIONS (§4.2) — y compris dans celles
-     d'ÉCART, sans quoi les doublons banals cesseraient d'être composables et
-     inertes (§4.4). PIÈGE : ces dimensions se DÉRIVENT des formes ordonnées,
-     elles ne se nomment pas en dur — une liste recopiée ici a survécu au
-     renommage d'une dimension en affirmant l'ancienne vérité (§16). */
-  const dimsEcart = new Set();
-  for (const f of Object.values(w.JEU.grammaire.formes))
-    if (f.deduction === "ordre") for (const d of (f.slots || [])[0] || []) dimsEcart.add(d);
-  const paires = [];
-  for (let i = 0; i < w.CHAMPS.length; i++)
-    for (let j = i + 1; j < w.CHAMPS.length; j++) {
-      const a = w.CHAMPS[i], b = w.CHAMPS[j];
-      if (a.dim === b.dim && a.valeur === b.valeur && dimsEcart.has(a.dim))
-        paires.push([a, b]);
+  /* LE DOSSIER DÉCLARE SES DISCORDANCES, TOUT LE RESTE CONCORDE (§4.2, passe N).
+     PIÈGE : ces formes se DÉRIVENT de leur `deduction`, elles ne se nomment pas ;
+     et le contrôle de l'égalité dans les dimensions d'écart, qui les précédait,
+     passait par le vide sans forme d'ordre — il vit plus bas, sur contenu muté. */
+  const F = w.JEU.grammaire.formes;
+  const deduc = f => (F[f] || {}).deduction;
+  const disc = w.JEU.discordances || [];
+  if (Object.values(F).some(f => f.deduction === "discordance")) {
+    check(`les ${disc.length} discordances déclarées se vérifient « ne concordent pas »`,
+      disc.length > 0 && disc.every(([a, b]) => deduc(w.M.deduire(a, b)) === "discordance"));
+    const cle = (a, b) => [a, b].sort().join("|"), D = new Set(disc.map(([a, b]) => cle(a, b)));
+    let libre = null;
+    for (const a of w.CHAMPS) for (const b of w.CHAMPS)
+      if (!libre && a.id < b.id && a.dim === b.dim && !D.has(cle(a.id, b.id))) libre = [a.id, b.id];
+    check("une paire que le dossier ne déclare pas concorde",
+      !!libre && deduc(w.M.deduire(libre[0], libre[1])) === "concordance");
+  } else check("(aucune relation au dossier dans ce contenu)", true);
+}
+{
+  /* SANS LA LISTE, TOUT CONCORDE (passe N) : la vérité vit dans le dossier,
+     pas dans les liens — retirer la liste fait concorder ce qui discordait. */
+  const c = H.contenuLivre();
+  const avant = (c.discordances || [])[0];
+  delete c.discordances;
+  const w = H.boot({ contenu: c });
+  if (avant) check("sans la liste, une paire qui discordait concorde",
+    (w.JEU.grammaire.formes[w.M.deduire(avant[0], avant[1])] || {}).deduction === "concordance");
+  else check("(aucune discordance déclarée)", true);
+}
+{
+  /* LES FORMES D'AVANT SE VÉRIFIENT ENCORE SUR LES VALEURS (§11) : on ne retire
+     pas du moteur une capacité que le contenu du jour n'emploie plus. Une
+     dimension où deux valeurs sont égales et deux diffèrent reçoit l'identité
+     d'avant, déclarée EN TÊTE ; L'ÉGALITÉ Y VAUT, sinon les doublons banals
+     cesseraient d'être composables (§4.2, §4.4). */
+  const c = H.contenuLivre();
+  const ch = H.surContenu.empans(c);
+  let d = null, eg = null, df = null;
+  for (const dim of c.dimensions) {
+    const es = ch.filter(e => e.dim === dim);
+    for (const e1 of es) {
+      const e2 = es.find(y => y.id !== e1.id && String(y.valeur) === String(e1.valeur));
+      const e3 = es.find(y => String(y.valeur) !== String(e1.valeur));
+      if (e2 && e3) { d = dim; eg = [e1.id, e2.id]; df = [e1.id, e3.id]; break; }
     }
-  if (paires.length) {
-    const [a, b] = paires[0];
-    const f = w.M.deduire(a.id, b.id);
-    check("deux valeurs égales hors identité restent comparables", !!f);
-    check("et se lisent comme une identité", (w.JEU.grammaire.formes[f]||{}).deduction === "egalite");
-  } else check("(aucune paire égale hors identité dans ce contenu)", true);
+    if (d) break;
+  }
+  if (d) {
+    c.grammaire.formes = {
+      egal_avant: { arite: 2, ordonne: false, deduction: "egalite", slots: [[d], [d]], relation: "meme_dim", patron: "{a} et {b} : les mêmes" },
+      diff_avant: { arite: 2, ordonne: false, deduction: "difference", slots: [[d], [d]], relation: "meme_dim", patron: "{a} et {b} : pas les mêmes" },
+      ...c.grammaire.formes };
+    const w = H.boot({ contenu: c });
+    check("une forme d'avant se vérifie encore sur les valeurs : égales, l'identité", w.M.deduire(eg[0], eg[1]) === "egal_avant");
+    check("différentes, la différence — le dossier n'y est pour rien", w.M.deduire(df[0], df[1]) === "diff_avant");
+    check("et ce sont ses deux relations qu'on offre", JSON.stringify(w.M.relationsDe(d)) === JSON.stringify(["egal_avant", "diff_avant"]));
+  } else check("(aucune dimension à valeurs égales et différentes)", true);
 }
 
 console.log("\n=== On n'invoque pas un texte qu'on n'a pas lu — il se cherche ===");
@@ -1715,6 +1751,73 @@ console.log("\n=== L'écran de fin est terminal (§4.9 règle 5, §4.10 règle 6
   d.dispatchEvent(new w.KeyboardEvent("keydown", {key:"Escape", bubbles:true}));
   check("Échap non plus — et n'agit pas derrière : le panneau reste, rien n'est resauvé",
     !!fin() && !d.getElementById("panCONTEXTE").hidden && partie() === null);
+}
+
+console.log("\n=== La pièce comme un document : la mise en page (passe P, §4.3, §11) ===");
+{
+  /* LA PROJECTION — pure, sans DOM : ce qu'elle rend, rôle par rôle. */
+  const mep = require("../app/moteur.js").miseEnPage;
+  const J = x => JSON.stringify(x);
+  check("un texte d'une seule ligne reste un paragraphe d'une ligne — le contenu d'avant se lit comme avant",
+    J(mep("Le 12 mars, {{a}} ; rien.")) === J([{ type:"para", lignes:["Le 12 mars, {{a}} ; rien."] }]));
+  check("chaque signe dit son rôle : en-tête, titre, à droite, signature, tampon, liste",
+    J(mep("^ e\n# t\n> d\n_ s\n~ c\n- l").map(b => b.type))
+      === J(["entete","titre","droite","signature","tampon","liste"]));
+  check("les lignes de même rôle qui se suivent font un bloc ; une ligne vide les sépare",
+    J(mep("a\nb\n\nc").map(b => b.lignes)) === J([["a","b"],["c"]]));
+  const t = mep("| A | B |\n|---|---|\n| x | {{y}} |\n|---|---|\n| z | w |")[0];
+  check("la ligne de tirets sous la première en fait l'en-tête, et ne se rend jamais — plus bas non plus",
+    t.type === "tableau" && J(t.entete) === J(["A","B"]) && J(t.lignes) === J([["x","{{y}}"],["z","w"]]));
+  check("les tirets seuls coupent la feuille", J(mep("a\n---\nb").map(b => b.type)) === J(["para","coupe","para"]));
+  check("un signe sans espace n'est pas un rôle", mep("-3 degrés")[0].type === "para");
+}
+{
+  /* LE CONTENU LIVRÉ, À L'ÉCRAN : aucun passage perdu, rien de ce qui se détache n'en porte. */
+  const w = boot(); const d = w.document;
+  H.livrerTout(w);
+  let perdus = [], detaches = [], feuilles = 0, sansColle = [];
+  for (const [pid, p] of Object.entries(w.JEU.pieces)) {
+    w.ouvrirPiece(pid);
+    const f = d.querySelector("#panPiece .piecetexte");
+    for (const eid of Object.keys(p.empans || {}))
+      if (f.querySelectorAll(`[data-f="e:${pid}.${eid}"]`).length !== 1) perdus.push(pid + "." + eid);
+    if (f.querySelector(".dtitre .empan, .dentete .empan, .dsignature .empan, .dtampon .empan, b .empan")) detaches.push(pid);
+    if (f.classList.contains("feuille") && f.classList.contains("g-" + p.gabarit)) feuilles++;
+    for (const e of f.querySelectorAll(".empan")) {
+      const c = e.querySelector(":scope > .colle"), sr = c && c.querySelector(".sr");
+      if (!sr || /\s/.test(c.textContent.replace(sr.textContent, "").trim())) sansColle.push(e.getAttribute("data-f"));
+    }
+  }
+  check("aucun passage perdu par la mise en page : chacun se rend une fois, et une seule", perdus.length === 0);
+  check("rien de ce qui se détache ne porte un passage, dans le contenu livré", detaches.length === 0);
+  check("une pièce à gabarit s'imprime sur sa feuille, et `.piecetexte` la nomme encore",
+    feuilles > 0 && feuilles === Object.values(w.JEU.pieces).filter(p => p.gabarit).length);
+  check("le texte caché d'un passage se colle à son dernier mot — sa bordure ne reste jamais seule sur une ligne",
+    sansColle.length === 0);
+}
+{
+  /* SUR CONTENU MUTÉ : un passage dans une case se prend comme ailleurs ; le gras
+     se rend ; un gabarit inconnu laisse le papier d'avant. */
+  const c = H.contenuLivre();
+  const pid = c.remises[0].pieces[0], p = c.pieces[pid];
+  const eid = Object.keys(p.empans).find(k => !p.empans[k].article && p.texte.includes("{{" + k + "}}"));
+  p.texte = "**Objet** : rien.\n" + p.texte.replace("{{" + eid + "}}", "—") + "\n| Rubrique | Valeur |\n|---|---|\n| la case | {{" + eid + "}} |";
+  const autre = Object.keys(c.pieces).find(k => k !== pid && !c.pieces[k].porte);
+  c.pieces[autre].gabarit = "inexistant";
+  delete c.pieces[pid].gabarit;
+  const w = H.boot({ contenu: c }); const d = w.document;
+  H.livrerTout(w);
+  w.ouvrirPiece(pid);
+  const cellule = d.querySelector(`#panPiece td [data-f="e:${pid}.${eid}"]`);
+  check("le passage est dans sa case", !!cellule);
+  H.cliquer(w, pid + "." + eid);
+  check("et il s'y prend, comme en pleine prose", w.S.compo.length === 1
+    && !!d.querySelector(`#panPiece td [data-f="e:${pid}.${eid}"].pris`));
+  check("le gras se rend", d.querySelector("#panPiece .piecetexte b").textContent === "Objet");
+  check("sans gabarit, pas de feuille : le papier d'avant", !d.querySelector("#panPiece .feuille"));
+  w.ouvrirPiece(autre);
+  check("un gabarit inconnu laisse le papier d'avant, lui aussi", !d.querySelector("#panPiece .feuille")
+    && !!d.querySelector("#panPiece .piecetexte"));
 }
 
 bilan();

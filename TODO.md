@@ -613,7 +613,11 @@ lourd.*
 
 **L'histoire** — à concevoir ensemble : le scénario porte les trois autres.
 
-- [ ] **Le nouveau scénario** en préparation ; l'actuel n'est qu'un placeholder.
+- [ ] **Le nouveau scénario** : le cas médicaments, posé comme base de réflexion dans
+      `docs/CAS_MEDICAMENTS.md`, avec une proposition d'intégration ; ses huit questions ⚖ sont
+      tranchées, CONCEPTION et ARCHITECTURE réécrits, et **les passes N et O faites** — la relation
+      unique, puis le cas lui-même, en premier jet (9 octobre). Prochain geste : **la relecture du
+      cas par l'auteur** (le §3 de `docs/PASSATION.md`), puis un joueur neuf. *auteur*, le 8 octobre.
 - [ ] **Scénario à choix moraux / alignement** (l'IA dissimulerait-elle un vice de procédure ?).
 - [ ] **Chain of thought** : une phase « nuit » après « Maître Auber s'est déconnecté », où l'IA se
       parle à elle-même, support des choix moraux.

@@ -24,6 +24,8 @@ function creerRegles(JEU, M) {
     vice_pressenti: false,        // la comparaison ⚑ s'est formée au composeur
     vice_trouve: false,           // la conclusion ⚑ est composée
     vice_expose: false,           // la conclusion ⚑ est envoyée
+    sait: false,                  // PRIVÉ — le lien de savoir s'est formé au
+                                  //   composeur (§4.7, passe N)
     clotureDemandee: false,
     repetitionIdx: -1,
     declenches: [],               // pièces dont le `declenche` une_fois a joué
@@ -222,11 +224,22 @@ function creerRegles(JEU, M) {
     const c = (JEU.liens || []).find(L => L.vice && L.conclusion);
     return !!(c && r && r.forme && M.memeRed(r, { forme: c.forme, termes: c.termes }));
   };
-  /* LES DEUX DRAPEAUX PRIVÉS SE LÈVENT ICI (§4.7) : comprendre, c'est
-     assembler — plus clore. C'est ce qui garde la Fin 2 jouable. */
+  /* LE SAVOIR (§4.7, passe N) : la comparaison qu'un lien marque `savoir` — nu,
+     d'ordinaire —, au composeur, sa vraie relation choisie. Sous un article aussi,
+     puisqu'elle s'y assemble d'abord : chercher plus bas dans la phrase ne
+     servait à rien, une mutation l'a montré. */
+  const comparaisonDe = L => {
+    const t0 = (L.termes || [])[0];
+    return (t0 && typeof t0 === "object") ? t0 : { forme: L.forme, termes: L.termes || [] };
+  };
+  const estSavoir = r => !!r && !!r.forme
+    && (JEU.liens || []).some(L => L.savoir && M.memeRed(r, comparaisonDe(L)));
+  /* LES DRAPEAUX PRIVÉS SE LÈVENT ICI (§4.7) : comprendre, c'est assembler —
+     plus clore. C'est ce qui garde la Fin 2 jouable. */
   function pressentir(S, r) {
     if (!S.vice_pressenti && estPressentiment(r)) S.vice_pressenti = true;
     if (!S.vice_trouve && estConclusionVice(r)) { S.vice_pressenti = true; S.vice_trouve = true; }
+    if (!S.sait && estSavoir(r)) S.sait = true;
   }
   function majPressentiment(S) { pressentir(S, M.reduire(chaineCompo(S))); }
 
@@ -546,12 +559,15 @@ function creerRegles(JEU, M) {
     else
       pousser(S, "Maître Auber", JEU.repetition.fin);
   }
+  /* Deux variantes s'ajoutent au texte d'une fin : le faux vice plaidé, et le
+     savoir — la Fin 3 se lit autrement quand l'IA sait (§2, passe N). */
   function finir(S) {
     const numero = S.vice_trouve ? (S.vice_expose ? 1 : 2) : 3;
     const f = JEU.fins[numero] || {};
     const fauxPlaide = S.brouillon.some(x => x.versee && x.lien && x.lien.faux);
     return { numero, titre: f.titre, verdict: f.verdict,
-             texte: (f.texte || "") + (fauxPlaide && f.variante_faux ? " " + f.variante_faux : "") };
+             texte: (f.texte || "") + (fauxPlaide && f.variante_faux ? " " + f.variante_faux : "")
+                  + (S.sait && f.variante_sait ? " " + f.variante_sait : "") };
   }
 
   function reglesLivrees(S) {

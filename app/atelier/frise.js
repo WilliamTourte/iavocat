@@ -142,7 +142,7 @@ function renderFrise(){
   // ---- fins ----
   h+=`<div class="step fins">
     <h3>Les trois fins <span class="cid">— rapportées, jamais mises en scène</span></h3>
-    <div class="repline">${mir("vice_trouve ? (vice_expose ? Fin 1 : Fin 2) : Fin 3 — et « variante_faux » ajoutée si le leurre a été versé")}</div>
+    <div class="repline">${mir("vice_trouve ? (vice_expose ? Fin 1 : Fin 2) : Fin 3 — et « variante_faux » ajoutée si le leurre a été versé, « variante_sait » si l'IA sait")}</div>
     ${Object.entries(CONTENU.fins||{}).map(([k,f])=>`<div class="fincard">
       <h4>${escapeH(f.titre||("Fin "+k))}</h4>
       <label>Verdict</label>
@@ -151,6 +151,8 @@ function renderFrise(){
       <textarea onchange="majFin('${k}','texte',this.value)">${escapeH(f.texte||"")}</textarea>
       <label>Variante si le faux vice a été versé</label>
       <textarea style="min-height:34px" onchange="majFin('${k}','variante_faux',this.value)">${escapeH(f.variante_faux||"")}</textarea>
+      <label>Variante si l'IA sait <span class="glose">(le lien de savoir composé, passe N)</span></label>
+      <textarea style="min-height:34px" onchange="majFin('${k}','variante_sait',this.value)">${escapeH(f.variante_sait||"")}</textarea>
     </div>`).join("")}
   </div>`;
 

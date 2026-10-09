@@ -2,7 +2,7 @@
   "name": "iavocat",
   "version": "1.0.0",
   "private": true,
-  "description": "IAvocat — atelier d'écriture et moteur de jeu d'enquête (tranche verticale : l'affaire ADN)",
+  "description": "IAvocat — atelier d'écriture et moteur de jeu d'enquête (tranche verticale : le cas médicaments)",
   "scripts": {
     "test": "npm run suites && npm run gardien && npm run lint",
     "suites": "node tests/test_o5.js && node tests/test_declencheurs.js && node tests/test_parcours.js && node tests/test_sauvegarde.js && node tests/smoke_atelier.js",

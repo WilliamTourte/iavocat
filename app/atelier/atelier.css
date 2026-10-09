@@ -143,6 +143,25 @@ main.jsonmode #jsonpane{display:block}
 main.grammode{grid-template-columns:1fr}
 main.grammode #stage, main.grammode #right{display:none}
 main.grammode #grampane{display:block}
+/* L'onglet Verdicts (passe N) : la grille des paires, une dimension par volet. */
+#verdpane{display:none;padding:16px 20px;overflow:auto;min-height:0;max-width:1100px}
+main.verdmode{grid-template-columns:1fr}
+main.verdmode #stage, main.verdmode #right{display:none}
+main.verdmode #verdpane{display:block}
+#verdpane h2{font-size:15px;margin:0 0 4px}
+#verdpane .lead{color:var(--muted);font-size:12.5px;max-width:78ch;margin:0 0 12px}
+#verdpane .warnbox{border:1px solid #5a4a30;background:#20180c;color:var(--warn);padding:8px 12px;margin:0 0 12px;font-size:12.5px}
+#verdpane .gstat{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.vdim{margin:0 0 8px}
+.vdim summary{cursor:pointer;font-size:13px;padding:4px 0}
+.vgrille{border-collapse:collapse;font-size:12.5px;width:100%}
+.vgrille td{border-top:1px solid var(--line);padding:4px 8px;vertical-align:top}
+.vgrille tr.disc td{background:rgba(220,120,40,.12)}
+.vgrille tr.horsjeu td{opacity:.55}
+.vgrille td:first-child,.vgrille .vrel{white-space:nowrap}
+.vgrille .vrel{color:var(--muted)}
+.vlien{font-size:11.5px;color:var(--muted)}
+.vlien.faux{color:var(--err)}
 #grampane h2{font-size:15px;margin:0 0 4px}
 #grampane .lead{color:var(--muted);font-size:12.5px;max-width:72ch;margin:0 0 16px}
 #grampane .warnbox{border:1px solid #5a4a30;background:#20180c;color:var(--warn);
