@@ -302,7 +302,8 @@ console.log("\n=== Migration du schéma 2 vers le schéma 3 ===");
     m.liens[0].forme === "identite_non" && m.liens[0].termes[0] === "a.agent_x");
   check("le vice et sa réplique survivent", m.liens[0].vice === true && m.liens[0].rep === "Tiens.");
   check("une grammaire est fournie", Array.isArray(m.grammaire.blocs) && !!m.grammaire.formes);
-  check("les dimensions sont posées", Array.isArray(m.dimensions) && m.dimensions.length === 5);
+  check("les dimensions sont posées — celles du contenu livré",
+    Array.isArray(m.dimensions) && JSON.stringify(m.dimensions) === JSON.stringify(w.contenuLivre().dimensions));
   check("les cases et les relations disparaissent", m.cases === undefined && m.relations === undefined);
   const accuse = (w.attentesDeRemise(m.remises[0])[0]||{}).apres;
   check("l'accusé de réception d'une case migre sur l'attente de sa session",
@@ -480,6 +481,7 @@ const deducDans = (w, a, b) => ((w.CONTENU.grammaire.formes)[w.MG().deduire(a, b
   const L = w.CONTENU.liens.find(x => !x.vice && !x.faux && typeof (x.termes || [])[0] === "object");
   const comp = JSON.parse(JSON.stringify(L.termes[0]));
   w.CONTENU.liens.push({ forme: comp.forme, termes: comp.termes, savoir: true });
+  for (const f of Object.values(w.CONTENU.fins || {})) delete f.variante_sait;
   check("un savoir sans réplique est signalé", msgs(w).includes("un savoir sans réplique"));
   check("un savoir qui ne change aucune fin aussi", msgs(w).includes("Le savoir ne change aucune fin"));
 }

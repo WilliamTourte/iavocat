@@ -425,14 +425,18 @@ extérieur requis*), mais sa fouille en sera plus courte.
 1. ~~**Trancher** les ⚖ avec l'auteur~~ — *fait le 8 octobre : les huit questions (ci-dessous).*
 2. **Le document** : réécrire au besoin §2, §3, §4.1, §4.2, §4.4, §4.5, §4.7, §6, §7, §8, puis §11,
    §14, §15, §16 — et le faire relire. *Écrit le 8 octobre — avec aussi §1, §4.3, §4.10, §4.11, §5,
-   §12 et §17 —, les marques [N] et [O] pour ce que le code ne fait pas encore : à relire.*
+   §12 et §17 —, les marques [N] et [O] pour ce que le code ne fait pas encore : à relire. Les
+   passes N et O les ont levées.*
 3. **La mécanique, sur l'affaire ADN encore** : la famille « cohérence », la liste des
    incohérences, la grille et le diagnostic dans l'atelier, le lien nu et le drapeau du savoir ;
    les suites suivent, chaque contrôle neuf vu tomber. L'affaire ADN convertie sert de banc —
    l'essai montre qu'elle passe. *Les suites ne nomment aucun contenu (§16) : la mécanique se prouve
    sans le cas.* **Fait le 8 octobre** (la passe N) — la liste s'appelle `discordances`, la grille est
    l'onglet Verdicts de l'atelier.
-4. **Le cas**, écrit dans l'atelier, remise par remise, élagué ; les leurres ; les fins.
+4. **Le cas**, écrit dans l'atelier, remise par remise, élagué ; les leurres ; les fins. **Fait le
+   9 octobre** (la passe O), en premier jet : onze pièces hors calibration, la notice et l'autopsie
+   fondues dans la toxicologie, l'inventaire et le registre de garde à vue laissés de côté — à
+   relire par l'auteur.
 5. **Jouer** : `npm run vue`, la relecture à l'œil des phrases composées, puis un joueur neuf.
 
 ### 9. Les questions pour l'auteur — toutes tranchées le 8 octobre

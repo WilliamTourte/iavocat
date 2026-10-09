@@ -3,9 +3,8 @@
 *Comment le jeu est fait, où vit la vérité, où vit quoi. Le sens arbitre et il est ailleurs :
 `docs/CONCEPTION.md` (§1 à §8). L'état du jour : `docs/PASSATION.md`.*
 
-*La passe N — la relation unique, *concordent / ne concordent pas* — est faite (8 octobre). La
-marque **[O]** est celle de CONCEPTION (son en-tête) : ce qui ne vaut qu'avec la passe O — le cas
-médicaments. Sans marque, le code le fait déjà.*
+*La passe N — la relation unique, *concordent / ne concordent pas* — est faite (8 octobre) ; la
+passe O — le cas médicaments, en premier jet — le 9.*
 
 ## 9. Le rangement
 
@@ -75,7 +74,7 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
 {
   schema: 3,
   dimensions: ["quand","qui","où","quoi","combien"],       // ordre d'affichage ; la couleur en découle
-                                                            //   — et "comment", sixième, dans le cas [O]
+                                                            //   — et "comment", sixième, dans le cas
   pieces: {
     p_pv: {
       titre, court, type, resume,                           // `resume` : atelier seulement
@@ -155,10 +154,9 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   contrôles lisent un slot comme une liste, et une dimension neuve doit rester sans forme tant qu'on
   ne l'y ajoute pas. `deduire` rend la discordance si la paire est dans `discordances`, la
   concordance sinon ; `relationsDe` range la concordance du côté de l'égalité. Les formes d'avant
-  restent : un contenu emploie les unes ou les autres. **L'affaire ADN les emploie depuis le 8
-  octobre** : ses dix formes d'avant sont parties, ses liens ont gardé leur verdict **au sens**, pas
-  aux valeurs — 14h02 et 14h47 concordent, la probabilité et le seuil ne concordent pas —, et six
-  `nom` de `qui` disent un énoncé (*« la signature du procès-verbal »*).
+  restent : un contenu emploie les unes ou les autres. **Le cas les emploie seules** : l'affaire
+  ADN, convertie le 8 octobre, avait gardé ses verdicts **au sens**, pas aux valeurs — 14h02 et 14h47
+  concordaient —, et c'est sa calibration, reprise telle quelle, qui le porte encore.
 - **`discordances`** (passe N) : des paires `"pid.eid"`, sans ordre — **le dossier déclare ses discordances,
   tout le reste concorde**. Clé optionnelle : sans elle, rien ne discorde ; un contenu d'avant n'a pas
   à la porter — ni schéma 4, ni migration. Les renommages et les suppressions la suivent comme les
@@ -214,7 +212,7 @@ l'atelier ; on le met de côté le temps de l'injection et on le remet **dans le
   une autre reçoit `rep_a_cote` et reste où elle était. **Sans `repond`, l'affirmation prend tout**
   — l'ancienne conduite, qu'on ne retire pas (ci-dessous) ; `repond:[]` n'en prend aucune.
 - **Un terme** est `"pid.eid"` ou un `{forme, termes}` imbriqué. Le moteur ne lit aucun nom de
-  dimension : ajouter `comment` est un geste d'atelier — celui du cas [O]. **Il n'y a pas de sixième
+  dimension : ajouter `comment` est un geste d'atelier — celui du cas. **Il n'y a pas de sixième
   trait** (§4.3) : `traitDim` tourne sur cinq, et `comment` partage le trait de la première
   dimension ; sa couleur seule l'en distingue.
 - **Migration 2 → 3** (`migrerContenu()`, silencieuse) : `champs` → `empans`, marqueurs posés, liens par
@@ -355,6 +353,11 @@ une lecture par surface, les désignations de contenu, les chemins — est en t�
   renommage de `smoke_atelier` sont tombés d'eux-mêmes — les discordances ne suivaient pas encore.
   **Seize mutations, chacune vue tomber** ; une dix-septième a montré du code mort (chercher le
   savoir plus bas dans la phrase), retiré.
+- **Ce que la passe O a touché** — le contenu seul, et deux contrôles de `smoke_atelier` qui le
+  lisaient sans le dire : la migration posait *cinq* dimensions — elle pose celles du contenu livré —,
+  et le savoir *qui ne change aucune fin* supposait un contenu sans `variante_sait` — le contrôle
+  l'ôte lui-même. Les 687 autres sont passés sur le cas sans retouche : les suites ne nomment aucun
+  contenu (§16).
 - **Le contrat de lecture : `w.R.x(w.S)`** — une suite *lit* les règles ; elle *agit* par les **gestes**
   de la fenêtre, parce qu'eux redessinent.
 - **ET ELLE NE MARCHE QUE LES PORTES DU JOUEUR.** Lire une règle est gratuit ; en **appeler** une que

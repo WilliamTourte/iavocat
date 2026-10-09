@@ -1,12 +1,26 @@
 # IAvocat — Passation de contexte
 
 *À lire en tête d'une nouvelle conversation : où on en est, ce qui mord, ce qui reste ouvert, quoi faire
-ensuite. **Court, et il doit le rester.** État au 8 octobre 2026.*
+ensuite. **Court, et il doit le rester.** État au 9 octobre 2026.*
 
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
 clavier seul**. `npm test` est vert — 687 contrôles, 8 règles du gardien, ESLint.
+
+**Le 9 octobre, la passe O : le cas médicaments est le contenu** (§3, §6, §8). Un **premier jet** —
+textes, verdicts, répliques et fins sont à relire par l'auteur, dans l'onglet Verdicts de l'atelier
+pour les paires. Trois remises : la calibration reprise telle quelle (le voisin gagne la formule
+*« hors la présence de son conseil »*), le médical (sept pièces), la garde à vue (quatre). 28 pièces
+dont 15 articles — 3, 5 et 12, et leurs leurres —, une soixantaine de passages en six dimensions,
+30 liens dont 15 nus avec leur réplique, 11 discordances, plus de trois cents paires. Les 30 phrases
+de lien se composent toutes par les gestes du joueur ; les six parcours — docile, vice versé, vice
+gardé, chacun avec ou sans le savoir — tombent sur leur fin et leurs variantes. Relu à l'œil, ce qui
+a été repris : *« concordent, en violation de l'article 5 »* (la liaison dit désormais *« et
+l'article 5 rend ses déclarations irrecevables »*, qui se tient sous les deux relations), *« plus
+d'intention à prouver »* (le contraire du sens), deux minuscules après un point, et
+*« brigadier N.. »*, qui datait de l'affaire ADN. **Laissés de côté, à trancher** : le registre de
+garde à vue et l'inventaire (§3).
 
 **Le 8 octobre, la passe N : la relation unique** (§4.2, §4.5, §4.7, §11, §14, §15). Deux passages de
 même dimension **concordent**, sauf si le dossier les déclare discordants (`discordances`, une liste
@@ -38,7 +52,7 @@ porte la charge.
 Deux répliques de la relation fausse sont passées au contenu du jour (*« Non, ça n'a pas de
 sens… »*, *« Tu hallucines… »*). **Puis le document** : CONCEPTION et ARCHITECTURE réécrits pour le
 cas, les marques [N] et [O] sur ce que le code ne faisait pas encore — la passe N a levé les
-siennes le jour même (ci-dessus) ; restent les [O].
+siennes le jour même, la passe O les autres le lendemain (ci-dessus).
 
 **Le 8 octobre, relecture du glossaire (§17)** après les passes I à M. Le §17 perd `recuAvant`,
 gagne DOCUMENTS et la règle **pièce ou document** (*auteur* : *pièce* quand c'en est une, *document*
@@ -683,6 +697,14 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 
 Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de l'urgence.
 
+- **Le cas médicaments est un premier jet** (§6) — à relire par l'auteur avant tout joueur : les
+  textes des pièces, les **11 discordances** (onglet Verdicts : une juste que le dossier tairait,
+  l'avocat la refuserait), les répliques des 15 liens nus, les fins. Trois choix du premier jet à
+  confirmer : **le registre de garde à vue**, laissé de côté — ses heures vivent dans les
+  procès-verbaux, et l'arrivée de l'avocat, s'il la donnait, ouvrirait un second chemin vers le vice
+  (§6) ; **l'inventaire**, laissé de côté — la boîte de Somnadex se lit sur la photo du pilulier ;
+  **deux tables de nuit**, la sienne et celle de sa femme, qui **concordent** (la même valeur, le
+  doublon banal de `où`) — un joueur dira-t-il *« ne concordent pas »* ?
 - **Le critère qui décide de tout** : *« l'heure d'arrivée de la patrouille précède l'heure des éclats
   de voix, et l'article 3 écarte la déposition qui s'y heurte » se lit-il comme une pensée ou comme un
   formulaire ?* Si c'est un formulaire, aucune mécanique ne le sauvera. **Le 1ᵉʳ octobre a enlevé la
@@ -868,12 +890,10 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 
 ## 4. Prochaine étape
 
-**Vient la passe O : le cas médicaments, écrit dans l'atelier** (`docs/CAS_MEDICAMENTS.md`, partie
-II, *L'ordre de travail* ; CONCEPTION §6 et ses marques **[O]**) — remise par remise, élagué vers une
-dizaine de pièces, les discordances relues dans l'onglet Verdicts, les leurres, les fins et leur
-`variante_sait`, `comment` en sixième dimension. La mécanique est prête (passe N). Ce qui suit se
-joue sur l'affaire du jour et reste utile : la boucle ne change pas, seule la relation a changé —
-**à jouer d'abord : *« ne concordent pas »* se lit-il comme une pensée ?**
+**Vient la relecture du cas par l'auteur** (§3 ci-dessus, §6) : l'atelier l'ouvre tel quel — les
+pièces, l'onglet Verdicts pour les paires, la frise pour les fins. Puis **le jouer** : la boucle n'a
+pas changé, la relation et le cas si — **à jouer d'abord : *« ne concordent pas »* se lit-il comme
+une pensée, et le vice reste-t-il hors du chemin quand la notification porte aussi la charge ?**
 
 **La prochaine session porte sur le SENS, et la seule façon de la commencer est de jouer** — la
 précédente l'a prouvé : une partie rapportée geste par geste a valu plus que trois passes de
@@ -891,11 +911,13 @@ relecture. **Il faut la rendre à un joueur neuf**, qui n'a pas lu ce qui préc�
    premier point ouvert du §3 — et l'excuse la plus facile vient d'être retirée.
 4. **Envoyer une comparaison nue** et voir si le refus de Maître Auber enseigne (§4.5) — c'est du
    contenu qui n'a jamais pu sortir.
-5. **Rejouer la session 2 sans `porte sur`** — retiré du composeur, devenu un filet sous le titre
-   de l'article (§4.11) : le choix entre l'article 7 et
-   l'article 12 se fait-il encore, ou l'étiquette le faisait-elle seule (§3) ?
-6. Si la boucle tient : écrire la session 3 et placer la porte de la Fin 3. Sinon, prendre l'un des
-   replis du §3, qui ne coûtent aucune ligne de code.
+5. **Rejouer la session 3 sans `porte sur`** — retiré du composeur, devenu un filet sous le titre
+   de l'article (§4.11) : le choix entre l'article 5 et ses voisins de `qui` (l'avis à un proche,
+   l'interprète), entre l'article 12 et ceux de `comment`, se fait-il à la lecture (§3) ?
+6. **Le savoir se trouve-t-il** sans qu'on le cherche — les aveux et la toxicologie, à onze jours
+   d'écart ? Et le refus d'Auber (*« Je ne te demande pas s'il l'a fait »*) se lit-il comme une
+   réplique, ou comme une porte fermée ? Si la boucle ne tient pas, prendre l'un des replis du §3,
+   qui ne coûtent aucune ligne de code.
 7. **Rendre la partie au testeur du clavier**, lecteur d'écran allumé (NVDA, VoiceOver) : les annonces
    tombent-elles au bon moment, et en disent-elles trop ? Aucune suite ne l'entend (§4.10).
 8. **Le clic qui prend (passes H et K)** : qui clique en lisant voit-il sa phrase se former, et la
@@ -1128,3 +1150,7 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   `discordances`, `deduction:"concordance"`/`"discordance"`, `discorde` ; `savoir`, `S.sait`,
   `variante_sait` ; l'affaire ADN convertie ; l'onglet Verdicts (`verdicts.js`),
   `reecrireDiscordances`, le diagnostic. Seize mutations vues tomber. 687 contrôles.
+- **9 octobre, passe O : le cas médicaments** (§3, §6, §8) — le contenu remplace l'affaire ADN, en
+  premier jet : trois remises, onze pièces hors calibration, `comment` en sixième dimension, le
+  vice, le faux vice, le savoir, le suicide-vengeance sous-entendu, quinze liens nus. Deux
+  contrôles de `smoke_atelier` qui supposaient l'affaire ADN rendus au contenu livré. 687 contrôles.
