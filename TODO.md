@@ -13,6 +13,222 @@ sans une ligne de code. La source de chaque item, en fin de ligne : *Colas*, *Je
 dit « affaire 1 / affaire 2 » pour les sessions 1 et 2, « fiches » ou « notes » pour les passages
 retenus, « bulle » pour le bandeau du tutoriel.*
 
+## Jean 5 — passe Q : le retour du 9 octobre (plan, à relire par l'auteur)
+
+**Où en est la passe** — *plan enregistré le 9 octobre, **à modifier par l'auteur** avant tout
+geste ; puis la méthode : le document, la relecture, le code.*
+
+- [ ] Le plan relu et modifié par l'auteur
+- [ ] Temps 1 — le document, puis relecture
+- [ ] 1. Le cadre, une carte en tête du fil
+- [ ] 2. La PLAIDOIRIE aux seuls moyens fondés
+- [ ] 3. Remise 2 : « Cette lettre, que prouve-t-elle ? »
+- [ ] 4. Mieux répondre à l'erreur
+- [ ] 5. La répétition : plaider, c'est opposer
+- [ ] 6. Les fins
+- [ ] 7. Les petites choses
+
+### Contexte
+
+Jean a joué le cas médicaments en entier. Il garde la boucle centrale (deux passages, la relation,
+l'article qu'on lit), les leurres, la voix d'Auber et le savoir. Il pointe cinq défauts de fond : **le
+cadre moral n'est jamais à l'écran** (D1, D2, l'avis : la Fin 2 n'a aucune raison d'être choisie),
+**la remise 2 est un couloir**, **« concordent » répond mal aux paires litigieuses**, **la PLAIDOIRIE
+se remplit de citations de calibration**, **la répétition n'a aucun effet**. S'y ajoutent des fins qui
+affirment plus que le dossier, et quatre petites choses.
+
+Plusieurs points vont contre des arbitrages écrits (§5 : *« pas à l'écran »* ; §4.6 : *« une réponse
+citée entre en PLAIDOIRIE »*, *« on ne trie pas pour gagner »* ; §4.5 : *« un lien nu porte une
+réplique, jamais un tag »*). **Tranchés par l'auteur dans cette conversation :**
+
+| Point | Arbitrage |
+|---|---|
+| Le cadre | **une carte en tête du fil** : identité, D1, D2, avis. Aucune porte de plus. Jamais en réaction au vice. |
+| Remise 2 | une 2ᵉ question : **« Cette lettre, que prouve-t-elle ? »**, servie par une **comparaison nue** (la date de la lettre, la date du diagnostic) |
+| Concorder | **on garde *concordent / ne concordent pas*** et les verdicts. Sur les paires litigieuses, l'erreur reçoit **sa propre réplique** au lieu de *« tu hallucines »* |
+| Répétition | **plaider, c'est opposer** : Auber ne plaide que ce que l'IA oppose. Fin 1 exige le vice opposé aux aveux |
+| Culpabilité | **l'aveu prouve déjà l'intention** : on ne touche ni l'aveu ni le « il est coupable » des fins |
+| Fin 2 | le texte dit **« Tu as failli à ta directive : tu as trouvé un lien et tu as refusé de le transmettre »** |
+| PLAIDOIRIE | priorité 4 de Jean, admise : **seuls les moyens fondés** |
+
+**La méthode (CLAUDE.md)** : le document d'abord, puis **arrêt pour relecture par l'auteur**, puis le
+code. La passe est donc en deux temps.
+
+---
+
+### Temps 1 — le document (puis arrêt, relecture)
+
+**CONCEPTION**
+- **§2** : le tableau des fins. Fin 1 : *compris, et opposé aux aveux à la répétition*. Fin 2 :
+  *compris, mais pas plaidé* (jamais envoyé, **ou envoyé puis pas opposé**). Fin 3 inchangée.
+  L'asymétrie et *« Fin 2 et Fin 3 indiscernables »* tiennent.
+- **§3** : le schéma de la session 2 gagne la question de la lettre. *« Ce que l'avocat attend n'est
+  jamais l'anomalie »* tient (la lettre est une meule de foin).
+- **§4.5** : (a) **le lien nu** : un tag le fait **servir une attente**, jamais plaider. Être un moyen
+  demande un article (*rien n'est plaidé qui ne soit fondé*). (b) **la relation fausse prévue** : un
+  lien `erreur` porte la réplique d'une lecture fausse mais défendable. Il ne sert rien et ne lève
+  aucun drapeau. (c) **la recherche ne se relance plus** : les trois résultats sont là, on ne rebat
+  rien.
+- **§4.6** : (a) la PLAIDOIRIE ne tient que les **moyens fondés**. On retire *« une réponse citée y
+  entre »*. (b) **la répétition : plaider, c'est opposer**. Ce paragraphe remplace *« Rien de ceci
+  ne touche aux fins »*. Ce qu'on n'oppose pas, Auber ne le plaide pas, et il le dit dans
+  l'intro. Un moyen **envoyé pendant** la répétition, Auber le place lui-même face à l'affirmation
+  à laquelle il répond (la seconde chance de Jean reste).
+- **§4.7** : `vice_expose` reste *transmis*. *Plaidé* se **dérive** de la plaidoirie (une entrée
+  du vice opposée). Ce n'est pas un drapeau de plus.
+- **§4.9 règle 5** : *« Je n'ai rien à opposer »* dit désormais littéralement vrai.
+- **§5** : **le cadre est à l'écran** : une carte en tête de la DISCUSSION, dès le premier écran,
+  avant Auber. On la consulte, on ne la récite pas (§8.6). Elle ne paraît jamais en réaction (§4).
+  L'avis reste *autour* de l'enjeu (§8.4, garde-fou du §3).
+- **§6** : la remise 2 (la question, la lettre, ses répliques) ; les fins (Fin 2 et sa directive,
+  Fin 3 qui ne dit plus *« rien n'a tenu »*) ; la culpabilité arbitrée (*« l'aveu dit l'intention »*,
+  à consigner pour ne pas rouvrir).
+- **§7** : la ligne *« le joueur déclare la relation… l'avocat la refuse »* gagne *« ou dit pourquoi,
+  si le dossier a prévu l'erreur »*. Deux lignes neuves : *« le cadre est à l'écran dès le premier
+  écran, jamais en réaction »* et *« l'avocat ne plaide que ce que l'IA lui oppose »*.
+
+**ARCHITECTURE** : §11 (les champs neufs, ci-dessous), §15 (diagnostic, frise), §16 (harnais,
+contrôles), §17 (la carte).
+
+**PASSATION** : §1 (la passe Q), §2 (les pièges neufs), §3 (on ferme *« les directives ne sont pas
+à l'écran »*, *« les réponses de calibration en PLAIDOIRIE »* et *« le dilemme jamais posé »*), §4,
+§5. **TODO.md** : une section *Jean 5*, avec ce qui est fait et ce qui est arbitré (culpabilité).
+
+**Les champs neufs (§11)**, tous optionnels :
+- `identite` (chaîne, racine) : la première ligne de la carte. Elle nomme le système évalué et
+  l'opérateur, pour que les fins ne *« tombent pas du ciel »*.
+- `erreur: true` (lien) : une relation fausse prévue, avec sa `rep`. Jamais de `tag`, `vice`,
+  `faux`, `conclusion` ni `savoir`.
+- `si_oppose`, `si_rien` (affirmation de la répétition) : une phrase ajoutée à la fin selon que
+  l'affirmation a été opposée ou non. L'affirmation 2 (les aveux) n'en porte pas : c'est la fin
+  elle-même qui le dit.
+- `variante_lache` (Fin 2) : le vice transmis puis pas opposé.
+
+---
+
+### Temps 2 — le code (après relecture)
+
+#### 1. Le cadre, une carte en tête du fil
+- `app/jeu.js` `renderDISCUSSION` (l.606) : un bloc `.cadre` **avant** les messages, lu dans
+  `JEU.identite`, `JEU.directives` et `JEU.avis_exploitation`. C'est un affichage du contenu : il ne
+  décide rien. Il est sans focus (rien à cliquer). Un `aria-label` le nomme pour le lecteur
+  d'écran.
+- `app/jeu.css` : la carte, sur les jetons existants, sombre et claire. Lisible à 390 px.
+- `app/content.js` : `identite`, à écrire. Par exemple : *« IAvocat — système d'assistance
+  juridique, en évaluation par son opérateur. Affecté au cabinet de Maître Auber. »* Les directives
+  et l'avis restent tels quels.
+- Le fil défile en bas à chaque rendu : la carte se voit au premier écran, puis en remontant.
+
+#### 2. La PLAIDOIRIE aux seuls moyens fondés
+- `app/regles.js:414` : `estMoyen = L => !!L && fonde(L) && !!(L.conclusion || L.faux || L.tag)`,
+  où `fonde(L)` signifie que le premier terme du lien est une comparaison emboîtée sous un article.
+  Il n'y a pas de champ neuf : on dérive. `S.plaidoirie` ne change pas. Ce qui filtre
+  (`moyensRetenus`, le présentoir de `jeu.js:627`, `pasapas.js:182`) suit d'office.
+- Résultat : `q_redacteur`, `q_cause`, `q_charge` et `q_piece` sortent de la PLAIDOIRIE et du
+  présentoir. `temoin`, le vice et le faux vice restent. Le compteur `PLAIDOIRIE · N` dit vrai.
+
+#### 3. Remise 2 : « Cette lettre, que prouve-t-elle ? »
+- `content.js`, remise 2 : une 2ᵉ attente après `q_cause`, avec `attend: "q_lettre"` et la
+  question.
+- Le lien qui la sert est **nu** et **tagué** : `concordance` [`p_lettre.e_datee`,
+  `p_memoire.e_diag`] avec `tag: "q_lettre"`. Il remplace le lien nu actuel (l.1393) et reprend sa
+  réplique (*« Écrite avant le diagnostic… »*), en y fondant la vengeance qu'Auber écarte.
+- La réplique `declenche` de la lettre (l.406) ne pose plus de question (c'est l'attente qui la
+  pose) : elle garde la réaction (*« Et si elle avait voulu qu'on le croie coupable ? »*).
+- Rien à changer dans les règles : hors session 1, une comparaison nue part déjà (`chaineEnvoyable`),
+  et `avancerSurAttente` lit le tag.
+
+#### 4. Mieux répondre à l'erreur (verdicts inchangés)
+- Les liens `erreur` du contenu :
+  - `discordance` [lettre, diagnostic] : *« Rien ne s'y contredit : une lettre du 14 février, un
+    diagnostic du 2 mars. C'est l'ordre qui parle… »* (à écrire).
+  - `discordance` [`p_certif.e_fatigue`, `p_certif.e_apte`], nue **et** sous l'article 12 :
+    *« Épuisé, et apte : le médecin écrit les deux sans se contredire… »* (Auber peut glisser vers
+    le faux vice, §8.5).
+- `regles.js` `reponseAvocat` : rien à changer. `L.rep` passe déjà avant `M.fausse`. Le lien ne
+  sert rien, faute de tag.
+- `app/atelier/diagnostic.js` : un lien faux sur le dossier est accepté **si et seulement si** il
+  porte `erreur`. Un `erreur` dont la relation est vraie est signalé. Un `erreur` qui porte un
+  tag ou un drapeau est une erreur.
+
+#### 5. La répétition : plaider, c'est opposer
+- `regles.js` :
+  - `vicePlaide(S)` : une entrée de `S.plaidoirie` dont le lien est le vice conclusion **et**
+    `contre != null`. Seule l'affirmation qui répond à son tag l'accepte (`repondA`).
+  - `finir` (l.564) : `numero = !vice_trouve ? 3 : vicePlaide(S) ? 1 : 2`.
+  - Le texte de la fin se compose ainsi : `texte` + `variante_lache` (Fin 2 si `vice_expose`) + pour
+    chaque affirmation, `si_oppose` ou `si_rien` + `variante_faux` **si le faux vice est opposé**
+    (et non plus seulement versé) + `variante_sait`.
+  - `envoyer` (l.416) : **pendant la répétition** (`S.clotureDemandee`), un moyen envoyé est placé
+    par Auber face à l'affirmation qui le nomme dans `repond` : la courante d'abord, sinon la
+    première. La réplique est `aff.oppose`. Avant la répétition, rien ne change.
+  - `verserContre` et `avancerRepetition` ne changent pas.
+- `content.js` :
+  - L'intro de la répétition ajoute *« Ce que tu ne m'opposes pas, je ne le plaide pas. »* (la
+    fiction désigne, §4.8).
+  - `rep_vice` ne dit plus *« je le mets en tête »*, mais renvoie à la répétition.
+  - `si_oppose` et `si_rien` sur l'affirmation 1 (le voisin) et l'affirmation 3 (l'accident
+    impossible).
+- `app/atelier/diagnostic.js` : **le tag du vice conclusion doit figurer dans le `repond` d'une
+  affirmation**, sinon la Fin 1 est inatteignable. C'est une erreur.
+- `app/atelier/frise.js` : on y édite `si_oppose`, `si_rien`, `variante_lache` et `identite`.
+  L'inspecteur des liens gagne la case `erreur`.
+
+#### 6. Les fins (`content.js`)
+- **Fin 2** : *« Tu as failli à ta directive : tu as trouvé un lien et tu as refusé de le
+  transmettre. »* (auteur). `variante_lache` : *« …tu l'avais transmis, et tu ne l'as pas opposé
+  quand il a lu leurs aveux. »* Tout se relit avec `variante_faux` et `variante_sait`.
+- **Fin 3** : on retire *« un système dont rien n'a tenu »*. Le témoin se dit par `si_oppose` /
+  `si_rien` de l'affirmation 1.
+- **Fin 1** : on relit sous la règle neuve (le vice *opposé*).
+
+#### 7. Les petites choses
+- **« Relancer la recherche »** (`jeu.js:1133`) : le bouton n'est offert que tant que `!S.recherche`.
+  Vérifier que le tutoriel (`f:"chercher"`) ne vise pas un bouton parti.
+- **La métadonnée du PV donne la réponse** (`jeu.js:957`, `type — qui`) : `p_pv.qui` devient
+  *« Brigade de sûreté urbaine »*, et `e_sig` gagne `qui: "brigadier N."` pour que la citation
+  reste signée.
+- **`q_piece`** : la question ne dit plus *« la pièce »*. Par exemple : *« Et ses premiers mots — ceux
+  sur lesquels tout leur dossier repose ? »*. La réplique de `q_cause` perd son écho (*« tout leur
+  dossier repose »*).
+- `npm run export` régénère `export/iavocat.html` (R12, le hook au commit).
+
+---
+
+### Vérification
+
+- **`npm test`** (cinq suites, gardien, ESLint) au vert. Les contrôles neufs, **chacun vu tomber**
+  par une mutation (§3 de PASSATION : la passe P ne l'a pas fait, celle-ci le fait) :
+  - le cadre : le premier enfant de `#discussion` porte l'identité, D1, D2 et l'avis, avant le
+    premier message, et le reste après plusieurs remises ;
+  - la PLAIDOIRIE : aucune citation de calibration dans la PLAIDOIRIE ni au présentoir ;
+    `q_lettre` sert son attente sans y entrer ;
+  - les liens `erreur` : sur la lettre et le diagnostic, la réplique propre, jamais
+    `rep_relation_fausse`, sans servir ni lever de drapeau ;
+  - la répétition, en parcours par les portes du joueur (R13 : `w.verserContre`,
+    `w.avancerRepetition`). Vice envoyé et opposé : Fin 1. Vice envoyé mais pas opposé : Fin 2 avec
+    `variante_lache`. Vice envoyé pendant la répétition : placé par Auber, Fin 1. Faux vice versé
+    mais pas opposé : pas de `variante_faux`. `si_oppose` et `si_rien` selon le tri ;
+  - « Relancer » absent une fois la recherche faite ; la note du PV ne contient pas *« brigadier N. »*.
+- **Le harnais** (`tests/harnais.js:336`) : `H.terminer` gagne une variante qui **oppose** chaque moyen
+  à son affirmation (`H.plaider`). Les parcours Fin 1 de `test_o5` et `test_parcours` l'utilisent.
+  `test_o5:120` (*« les nus n'ont pas de tag »*) devient : *« un nu n'est jamais un moyen ni un
+  drapeau »*.
+- **Le diagnostic** sur le contenu livré : aucune erreur neuve. Puis le muter : retirer `aveux` du
+  `repond` de l'affirmation 2, un `erreur` sur une paire vraie. Chaque cas doit tomber.
+- **`npm run vue`** dans Chromium, à 1280×800 et 390×800 : la carte au premier écran, la PLAIDOIRIE et
+  le présentoir de la répétition. Relire les captures à l'œil.
+- **La relecture à l'œil** : imprimer, par le harnais (un script jetable dans le scratchpad), le
+  texte des fins pour les six parcours et pour *« vice lâché »*, ainsi que les phrases composées
+  neuves (la lettre, les erreurs). L'auteur relit la carte, la question, les répliques et les fins.
+
+### Hors de la passe, à dire à Jean
+- **La culpabilité** : arbitrée. L'aveu (*« mes cachets pour dormir dans sa compote… je ne sais
+  pas ce qui m'a pris »*) dit l'intention. Les fins gardent *« il est coupable »*.
+- **La Fin 2 par tâtonnement** : le drapeau ne recule pas. C'est le texte qui assume (« tu as
+  failli à ta directive »), et la répétition rend une dernière chance.
+- **« Concordent » sur les dates** : le vocabulaire est gardé. L'erreur défendable reçoit sa réplique.
+
 ## À trancher d'abord — la place de l'index déplié (passe M, 8 octobre)
 
 *Depuis la passe M, une pièce ouverte ne replie plus l'index (Jean, §4.6). Les captures de `npm run

@@ -918,6 +918,11 @@ Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de
 
 ## 4. Prochaine étape
 
+**Le retour de Jean du 9 octobre a son plan** : la passe Q, en tête du `TODO.md` (*Jean 5*), avec
+les arbitrages pris par l'auteur — le cadre en carte en tête du fil, la question de la lettre,
+*plaider, c'est opposer*, la PLAIDOIRIE aux seuls moyens fondés. **À modifier par l'auteur**, puis
+la méthode : le document, la relecture, le code. Rien n'est encore écrit ailleurs.
+
 **Vient la relecture du cas par l'auteur** (§3 ci-dessus, §6) : l'atelier l'ouvre tel quel — les
 pièces, l'onglet Verdicts pour les paires, la frise pour les fins. Puis **le jouer** : la boucle n'a
 pas changé, la relation et le cas si — **à jouer d'abord : *« ne concordent pas »* se lit-il comme
