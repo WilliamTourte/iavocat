@@ -17,6 +17,13 @@
   --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"DejaVu Serif","Liberation Serif",serif;
+  /* Les feuilles des pièces (passe P, §4.6) — polices du SYSTÈME, aucune
+     dépendance. La main prend la cursive de la machine si elle en a une,
+     sinon l'italique à empattements ; jamais le générique `cursive`, qui
+     tombe sur une police de bande dessinée. */
+  --doc-sans:"Liberation Sans",Arial,Helvetica,"Helvetica Neue",sans-serif;
+  --doc-mono:"Courier New","Liberation Mono","DejaVu Sans Mono",monospace;
+  --main:"Segoe Script","Segoe Print","Bradley Hand","Snell Roundhand","Apple Chancery","URW Chancery L",var(--serif);
 }
 *{box-sizing:border-box}
 /* §4.6 — LA COLONNE TIENT DANS LA FENÊTRE : la page ne défile pas, chaque bande
@@ -174,6 +181,7 @@ body{margin:0;height:100vh;height:100dvh;display:flex;flex-direction:column;
 /* --- ce qui se lit au clavier (§4.10) --- un double anneau en `box-shadow`,
    qui ne se bat pas avec l'`outline` du halo du tutoriel. */
 :focus-visible{outline:none;box-shadow:0 0 0 2px var(--bg),0 0 0 4px #e6edf3}
+.empan .colle{white-space:nowrap}
 .sr{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
   clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 kbd{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);
@@ -445,6 +453,83 @@ code{font-family:var(--mono);color:var(--accent)}
 .bande.piece .defile::-webkit-scrollbar-thumb{background:#b3a37f;border:2px solid var(--papier)}
 .bande.piece .defile::-webkit-scrollbar-thumb:hover{background:#9c8d68}
 #contexte .bande.piece.deborde::after{background:linear-gradient(to top, var(--papier) 20%, rgba(244,239,228,0))}
+/* --- LES GABARITS (passe P, §4.3, §4.6) : la pièce s'imprime sur une FEUILLE
+   posée sur le papier de la bande, avec la forme de ce qu'elle est. Rien ici ne
+   touche au passage : sa bordure, son survol, son ✓ sont ceux de toute pièce, en
+   pleine prose comme dans une case. Ce qui se détache — titre, en-tête,
+   signature, tampon — ne porte jamais de passage (le diagnostic le tient). --- */
+.bande.piece .feuille{--fond:#fffdf8;--trait:#d3c9b2;background:var(--fond);border:1px solid var(--filet);
+  box-shadow:0 1px 2px rgba(70,55,25,.12),0 4px 12px rgba(70,55,25,.07);
+  padding:16px 18px 18px;margin:12px 0 8px;font-size:14.5px;line-height:1.65}
+.bande.piece .feuille p{margin:0 0 .75em}
+.bande.piece .feuille > :last-child{margin-bottom:0}
+.bande.piece .feuille .dentete{font-size:12px;line-height:1.45;margin:0 0 14px;color:var(--encre2)}
+.bande.piece .feuille .dentete div:first-child{color:var(--encre);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.bande.piece .feuille .dtitre{text-align:center;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  font-size:13.5px;line-height:1.4;margin:4px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--trait)}
+.bande.piece .feuille .ddroite{text-align:right}
+/* La signature est un paraphe, pas un passage : la main, l'encre bleue. */
+.bande.piece .feuille .dsignature{text-align:right;font-family:var(--main);font-style:italic;font-synthesis:none;
+  font-size:20px;line-height:1.2;color:#22346b;margin:-.15em 0 .6em}
+/* Un tampon d'encre violette, de travers : il se lit, il ne se prend pas. */
+.bande.piece .feuille .dtampon{text-align:right;margin:.5em 0 0}
+.bande.piece .feuille .dtampon span{display:inline-block;transform:rotate(-4deg);border:2px solid #5f4687;border-radius:3px;
+  color:#5f4687;padding:2px 8px;font-family:var(--doc-sans);font-size:11px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;line-height:1.35;text-align:center}
+.bande.piece .feuille .dliste{margin:0 0 .75em;padding-left:1.25em}
+.bande.piece .feuille .dliste li{margin:.15em 0}
+.bande.piece .feuille .dtableau{border-collapse:collapse;width:100%;margin:0 0 .85em;font-size:13px;line-height:1.55}
+.bande.piece .feuille .dtableau th,.bande.piece .feuille .dtableau td{border:1px solid var(--trait);padding:3px 6px;
+  text-align:left;vertical-align:top}
+.bande.piece .feuille .dtableau th{background:#f2ecdf;font-weight:700}
+/* La première colonne d'un relevé est sa date : elle ne se coupe pas. */
+.bande.piece .feuille .dtableau td:first-child{white-space:nowrap}
+.bande.piece .feuille .dcoupe{border:0;border-top:1px dashed #b7ab90;margin:18px -18px}
+/* Le commissariat : la frappe d'un formulaire administratif. */
+.bande.piece .feuille.g-police{font-family:var(--doc-sans);font-size:14px;--fond:#fdfcf9}
+.bande.piece .feuille.g-police .dtitre{border-bottom:3px double var(--trait)}
+/* Le cabinet médical : l'en-tête du praticien, le titre à l'italique. */
+.bande.piece .feuille.g-medical{font-family:var(--serif);--fond:#ffffff}
+.bande.piece .feuille.g-medical .dentete div:first-child{text-transform:none;letter-spacing:0;font-size:14px}
+.bande.piece .feuille.g-medical .dtitre{text-transform:none;font-style:italic;font-weight:600;letter-spacing:0;
+  font-size:16px;border-bottom:0;padding-bottom:0}
+/* Le laboratoire : un bandeau, des résultats. */
+.bande.piece .feuille.g-labo{font-family:var(--doc-sans);font-size:14px;border-top:5px solid #3e6f73;--fond:#ffffff}
+.bande.piece .feuille.g-labo .dentete div:first-child{color:#2f5a5e}
+/* La pharmacie : l'impression d'un logiciel, en lignes alternées. */
+.bande.piece .feuille.g-pharmacie{font-family:var(--doc-mono);font-size:13px;--fond:#fcfdfa}
+.bande.piece .feuille.g-pharmacie .dtableau tbody tr:nth-child(odd){background:#edf3e8}
+/* La main : une feuille réglée, la marge rouge, l'encre bleue. Les règles
+   tombent sous chaque ligne : l'interligne est fixe, et un paragraphe saute
+   une ligne entière. */
+.bande.piece .feuille.g-manuscrit{--ligne:30px;font-family:var(--main);font-style:italic;font-synthesis:none;
+  font-size:17px;line-height:var(--ligne);color:#1f2f66;padding:var(--ligne) 18px 12px 48px;
+  background:linear-gradient(90deg,transparent 36px,#e3a9a6 36px,#e3a9a6 37px,transparent 37px),
+    repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--ligne) - 1px),#c9d6ea calc(var(--ligne) - 1px),#c9d6ea var(--ligne)),
+    #fffef8}
+.bande.piece .feuille.g-manuscrit p{margin:0 0 var(--ligne)}
+.bande.piece .feuille.g-manuscrit .dsignature{margin:0;font-size:inherit;line-height:var(--ligne);color:inherit}
+/* Sous la coupe, ce n'est plus sa main : l'étiquette des enquêteurs, à la machine,
+   collée sur la feuille (§11). */
+.bande.piece .feuille.g-manuscrit .dcoupe{border:0;margin:0}
+.bande.piece .feuille.g-manuscrit .dcoupe ~ *{font-family:var(--doc-sans);font-style:normal;font-size:12.5px;
+  line-height:1.5;color:var(--encre);background:#fffdf3;border:1px solid var(--trait);padding:6px 10px;margin:0 0 0 -24px}
+/* Une page de code : l'intitulé en petites capitales, l'article en tête. */
+.bande.piece .feuille.g-code{font-family:var(--serif)}
+.bande.piece .feuille.g-code .dentete div:first-child{text-transform:none;font-variant:small-caps;letter-spacing:.04em}
+.bande.piece .feuille.g-code .dtitre{text-align:left;text-transform:none;letter-spacing:0;font-size:15px;
+  border-bottom:0;margin:0 0 6px;padding-bottom:0}
+@media (max-width:520px){
+  .bande.piece .feuille{padding:12px 12px 14px}
+  .bande.piece .feuille.g-manuscrit{padding:var(--ligne) 12px 10px 40px;
+    background-position:-6px 0,0 0}
+  .bande.piece .feuille .dcoupe{margin:16px -12px}
+  /* Un relevé à quatre colonnes ne tient pas à 390 px : il se resserre, et la
+     date se coupe plutôt que de pousser la feuille hors de sa bande. */
+  .bande.piece .feuille .dtableau{font-size:11.5px}
+  .bande.piece .feuille .dtableau th,.bande.piece .feuille .dtableau td{padding:2px 4px;overflow-wrap:anywhere}
+  .bande.piece .feuille .dtableau td:first-child{white-space:normal}
+}
 /* --- l'index du dossier : les pièces d'abord, les règles ensuite --- */
 .dossier{display:flex;flex-direction:column;gap:5px;padding:0}
 .dcol{min-width:0;display:flex;gap:8px;align-items:baseline}

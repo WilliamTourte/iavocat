@@ -666,13 +666,15 @@ function recalerFil(enBas){
 }
 
 /* ---- Les pièces ---- le marquage ne varie jamais avec la pertinence (§4.3). */
-function rendreTexte(pid){
+/* UNE LIGNE DE LA PIÈCE : ses passages, et le gras de la mise en page (passe P,
+   §11) — posé dans le texte d'entre deux passages, il n'en couvre jamais un. */
+function rendreLigne(pid,src){
   const p=JEU.pieces[pid];
-  const src=String(p.texte||"");
-  let h="", reste=src, m;
+  const brut = t => escapeAttr(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+  let h="", reste=String(src||""), m;
   const re=/\{\{([A-Za-z0-9_]+)\}\}/;
   while((m=re.exec(reste))){
-    h+=escapeAttr(reste.slice(0,m.index));
+    h+=brut(reste.slice(0,m.index));
     const eid=m[1], e=(p.empans||{})[eid];
     if(e){
       /* PIÈGE : un SPAN qui se déclare bouton, jamais un <button> — celui-ci est
@@ -684,15 +686,47 @@ function rendreTexte(pid){
          ni couleur ni trait, la bordure et le fond neutres (passe F). */
       // Pris : dans la phrase, et marqué tant qu'il y est (§4.3, passe K).
       const k=pid+"."+eid, pris=R.dansPhrase(S,k), quoi=e.article?"article":e.dim;
+      /* PIÈGE PAYÉ (passe P, vu dans une case de tableau) : le `.sr`, hors du flux,
+         ouvrait une coupure après le dernier mot — un passage qui remplissait
+         sa ligne laissait sa bordure de fin, VIDE, seule sur la ligne suivante.
+         Il se colle au dernier mot. */
+      const t=String(e.texte||""), q=t.search(/\S+\s*$/), coupe=q<0?t.length:q;
       h+=`<span class="${["empan", e.article&&"article", pris&&"pris"].filter(Boolean).join(" ")}" role="button" tabindex="0" data-f="e:${k}"
             ${e.article?"":`style="--dc:${couleurDim(e.dim)};--ds:${traitDim(e.dim)}"`}
             onclick="surligner('${pid}','${eid}')" title="${escapeAttr(quoi)} — ${escapeAttr(e.qui||p.qui||'')}">${
-            escapeAttr(e.texte)}<span class="sr"> — ${escapeAttr(quoi)}${pris?", dans ta RÉPONSE":""}</span></span>`;
+            escapeAttr(t.slice(0,coupe))}<span class="colle">${escapeAttr(t.slice(coupe))}<span class="sr"> — ${
+            escapeAttr(quoi)}${pris?", dans ta RÉPONSE":""}</span></span></span>`;
     } else h+=escapeAttr(m[0]);
     reste=reste.slice(m.index+m[0].length);
   }
-  h+=escapeAttr(reste);
+  h+=brut(reste);
   return h;
+}
+/* LA PIÈCE COMME UN DOCUMENT (passe P, §4.3, §4.6) : la projection `miseEnPage`
+   dit les blocs, l'écran les habille — un rôle, un élément, et le passage reste
+   un passage partout. Le titre du document est un titre pour qui lit à l'oreille ;
+   le tableau, un vrai tableau, ses en-têtes de colonne compris. */
+function rendreTexte(pid){
+  const p=JEU.pieces[pid];
+  if(!p) return "";
+  const L=x=>rendreLigne(pid,x);
+  const lignes=(b,tag)=>b.lignes.map(x=>`<${tag}>${L(x)}</${tag}>`).join("");
+  const blocs=MoteurAPI.miseEnPage ? MoteurAPI.miseEnPage(p.texte) : [{type:"para",lignes:[String(p.texte||"")]}];
+  return blocs.map(b=>{
+    switch(b.type){
+      case "titre":     return `<p class="dtitre" role="heading" aria-level="4">${b.lignes.map(L).join("<br>")}</p>`;
+      case "entete":    return `<div class="dentete">${lignes(b,"div")}</div>`;
+      case "droite":    return `<p class="ddroite">${b.lignes.map(L).join("<br>")}</p>`;
+      case "signature": return `<p class="dsignature">${b.lignes.map(L).join("<br>")}</p>`;
+      case "tampon":    return `<p class="dtampon"><span>${b.lignes.map(L).join("<br>")}</span></p>`;
+      case "liste":     return `<ul class="dliste">${lignes(b,"li")}</ul>`;
+      case "coupe":     return `<hr class="dcoupe">`;
+      case "tableau":   return `<table class="dtableau">${b.entete
+        ? `<thead><tr>${b.entete.map(c=>`<th scope="col">${L(c)}</th>`).join("")}</tr></thead>` : ""
+        }<tbody>${b.lignes.map(r=>`<tr>${r.map(c=>`<td>${L(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+      default:          return `<p>${b.lignes.map(L).join("<br>")}</p>`;
+    }
+  }).join("");
 }
 /* §4.6 — LA PIÈCE S'OUVRE DANS LE DOSSIER, sous l'index : on lit, on prend,
    sans rien fermer. L'ouvrir ouvre donc le DOSSIER —
@@ -914,10 +948,14 @@ function filetsPorte(pid){
     return `<span class="filet ${t==="wavy"?"ondule":""}" style="--dc:${couleurDim(x)};--ds:${t==="wavy"?"solid":t}"></span>`;
   }).join("")}<span class="sr">Porte sur : ${d.map(escapeAttr).join(", ")}.</span></div>`;
 }
+/* La feuille (passe P, §4.6) : un gabarit connu imprime la pièce sur sa feuille ;
+   absent ou inconnu, le papier d'avant. `.piecetexte` reste le nom que vise le tutoriel. */
+const feuilleDe = p => ((MoteurAPI.GABARITS||[]).includes(p.gabarit)
+  ? `piecetexte feuille g-${p.gabarit}` : "piecetexte");
 function piecePanelHTML(pid){
   const p=JEU.pieces[pid];
   return `${filetsPorte(pid)}<small class="note">${escapeAttr(p.type)} — ${escapeAttr(p.qui||"")}</small>
-    <p class="piecetexte">${rendreTexte(pid)}</p>
+    <div class="${feuilleDe(p)}">${rendreTexte(pid)}</div>
     ${echoPiece && echoPiece.k.startsWith(pid+".") ? `<p class="rappel${echoPiece.confirme?" confirme":""}">${echoPiece.texte}</p>` : ""}`;
 }
 /* 6) LE COMPOSEUR — les blocs de l'état courant ; seules les erreurs de

@@ -18,8 +18,9 @@ window.CONTENU = {
       "court": "PV",
       "type": "procès-verbal",
       "qui": "brigadier N.",
+      "gabarit": "police",
       "resume": "L'appel, l'heure d'arrivée, l'état de la porte, le décès constaté sur place.",
-      "texte": "Le 12 mars, {{e_app}} ; {{e_arr}}, {{e_equip}} engagés ; {{e_porte}}. La victime gisait dans le séjour ; le médecin dépêché sur place n'a pu que constater le décès. Les lieux ont été tenus et l'immeuble bouclé jusqu'à l'arrivée du magistrat. Constatations faites et procès-verbal dressé {{e_sig}}",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal d'intervention\n**Objet** : découverte d'une personne décédée à son domicile.\n\nLe 12 mars, {{e_app}} ; {{e_arr}}, {{e_equip}} engagés ; {{e_porte}}.\n\nLa victime gisait dans le séjour ; le médecin dépêché sur place n'a pu que constater le décès. Les lieux ont été tenus et l'immeuble bouclé jusqu'à l'arrivée du magistrat.\n\nConstatations faites et procès-verbal dressé {{e_sig}}\n> L'agent de police judiciaire\n~ Commissariat central · BSU",
       "empans": {
         "e_app": {
           "dim": "quand",
@@ -61,8 +62,9 @@ window.CONTENU = {
       "court": "audition",
       "type": "audition",
       "qui": "brigadier N.",
+      "gabarit": "police",
       "resume": "Le voisin situe des éclats de voix « vers 22h30 ».",
-      "texte": "« {{e_voix}}. {{e_vehic}}. {{e_pal}}. » Audition reçue le 12 mars au soir, {{e_conseil2}}, {{e_sig2}}.",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal d'audition de témoin\n**Témoin** : le voisin du dessus. **Objet** : les faits du 12 mars au soir.\n\n« {{e_voix}}. {{e_vehic}}. {{e_pal}}. »\n\nAudition reçue le 12 mars au soir, {{e_conseil2}}, {{e_sig2}}.\n> Lu, persisté et signé\n~ Commissariat central · BSU",
       "empans": {
         "e_voix": {
           "dim": "quand",
@@ -107,11 +109,12 @@ window.CONTENU = {
       "court": "art. 3",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Un témoignage contredit par les constatations des services ne fonde pas à lui seul la conviction.",
       "porte": [
         "quand"
       ],
-      "texte": "Article 3 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 3\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -125,8 +128,9 @@ window.CONTENU = {
       "court": "toxicologie",
       "type": "expertise",
       "qui": "le laboratoire de toxicologie",
+      "gabarit": "labo",
       "resume": "Les substances retrouvées à l'autopsie, et la notice du somnifère jointe au rapport.",
-      "texte": "Rapport du 24 mars, sur les prélèvements de l'autopsie de Mme Kessler. {{e_letal}}. {{e_therap}}. Notice du fabricant jointe au rapport : {{e_aspect}}.",
+      "texte": "^ LABORATOIRE DE TOXICOLOGIE\n^ Expertise judiciaire — procédure n° 2026/0312-114\n# Rapport d'expertise toxicologique\n> Le 24 mars\n**Objet** : les prélèvements de l'autopsie de Mme Kessler.\n\n**Substances retrouvées**\n- {{e_letal}}.\n- {{e_therap}}.\n\n**Notice du fabricant, jointe au rapport** : {{e_aspect}}.\n> L'expert\n_ A. Morel\n~ Résultats validés",
       "empans": {
         "e_letal": {
           "dim": "quoi",
@@ -153,8 +157,9 @@ window.CONTENU = {
       "court": "ordonnances",
       "type": "pièce médicale",
       "qui": "le cabinet du Dr Lemaire",
+      "gabarit": "medical",
       "resume": "Le traitement de Mme Kessler, et le somnifère de son mari.",
-      "texte": "Pour Mme Kessler, le 3 mars : {{e_sienne}} — {{e_remplacant}}. Pour M. Kessler, le 20 février : {{e_lui}}, à renouveler — {{e_sig_lui}}.",
+      "texte": "^ Docteur Michel LEMAIRE\n^ Médecine générale\n# Ordonnance\n> Le 3 mars\nPour Mme Kessler :\n- {{e_sienne}}.\n> {{e_remplacant}}\n_ Perrin\n---\n^ Docteur Michel LEMAIRE\n^ Médecine générale\n# Ordonnance\n> Le 20 février\nPour M. Kessler :\n- {{e_lui}}, à renouveler.\n> {{e_sig_lui}}\n_ M. Lemaire",
       "empans": {
         "e_sienne": {
           "dim": "quoi",
@@ -165,7 +170,7 @@ window.CONTENU = {
         "e_remplacant": {
           "dim": "qui",
           "valeur": "Dr Perrin",
-          "texte": "ordonnance signée du Dr Perrin, remplaçant du Dr Lemaire",
+          "texte": "Dr Perrin, remplaçant du Dr Lemaire",
           "nom": "la signature de l'ordonnance de Mme Kessler"
         },
         "e_lui": {
@@ -177,7 +182,7 @@ window.CONTENU = {
         "e_sig_lui": {
           "dim": "qui",
           "valeur": "Dr Lemaire",
-          "texte": "signée du Dr Lemaire",
+          "texte": "Dr Lemaire",
           "nom": "la signature de l'ordonnance de M. Kessler",
           "bruit": true
         }
@@ -188,9 +193,17 @@ window.CONTENU = {
       "court": "pharmacie",
       "type": "relevé",
       "qui": "la pharmacie du Centre",
+      "gabarit": "pharmacie",
       "resume": "Les boîtes de somnifère délivrées à M. Kessler.",
-      "texte": "Dossier de M. Kessler — Somnadex. Le 20 février : {{e_boite1}} ; {{e_prochaine}}. {{e_deliv2}} : {{e_boite2}}, {{e_perdue}}.",
+      "texte": "^ PHARMACIE DU CENTRE\n^ Historique de délivrance — édité le 16 mars, à la demande des enquêteurs\n# Dossier patient : M. Kessler\n| Date | Produit | Quantité | Observations |\n|---|---|---|---|\n| {{e_deliv1}} | Somnadex | {{e_boite1}} | {{e_prochaine}} |\n| {{e_deliv2}} | Somnadex | {{e_boite2}} | {{e_perdue}} |",
       "empans": {
+        "e_deliv1": {
+          "dim": "quand",
+          "valeur": "2026-02-20T00:00",
+          "texte": "20 février",
+          "nom": "la date de la première délivrance",
+          "bruit": true
+        },
         "e_boite1": {
           "dim": "combien",
           "valeur": "30",
@@ -207,7 +220,7 @@ window.CONTENU = {
         "e_deliv2": {
           "dim": "quand",
           "valeur": "2026-03-07T00:00",
-          "texte": "Le 7 mars",
+          "texte": "7 mars",
           "nom": "la date de la seconde délivrance"
         },
         "e_boite2": {
@@ -231,26 +244,27 @@ window.CONTENU = {
       "court": "soins",
       "type": "pièce médicale",
       "qui": "le service de soins à domicile",
+      "gabarit": "medical",
       "resume": "Qui prépare quoi, et l'état du pilulier le soir des faits.",
-      "texte": "Plan de soins de Mme Kessler : {{e_ref}} ; {{e_compote}}. Fiche du lundi 9 mars : {{e_prepare}}, {{e_inf}}. Photo du pilulier, prise par la patrouille {{e_photo}} : {{e_vendredi}} ; {{e_mnem}}. {{e_boite}}.",
+      "texte": "^ SERVICE DE SOINS INFIRMIERS À DOMICILE\n^ Secteur nord\n# Plan de soins\n**Patiente** : Mme Kessler. **Aidant** : son mari.\n**Infirmière référente** : {{e_ref}}.\n**Traitement du soir** : {{e_compote}}.\n---\n# Fiche de préparation du pilulier\n> Lundi 9 mars\n{{e_prepare}}, {{e_inf}}.\n_ C. Roux\n---\n# Photographie du pilulier, jointe par la patrouille\nPrise {{e_photo}} : {{e_vendredi}} ; {{e_mnem}}.\n\n{{e_boite}}.",
       "empans": {
         "e_ref": {
           "dim": "qui",
           "valeur": "Mme Lambert",
-          "texte": "infirmière référente, Mme Lambert",
+          "texte": "Mme Lambert",
           "nom": "l'infirmière référente du plan de soins"
         },
         "e_compote": {
           "dim": "comment",
           "valeur": "écrasé dans une compote",
-          "texte": "le traitement du soir est écrasé dans une compote par l'aidant, son mari",
+          "texte": "écrasé dans une compote, donné par l'aidant",
           "nom": "la manière de donner le traitement du soir",
           "bruit": true
         },
         "e_prepare": {
           "dim": "quoi",
           "valeur": "pilulier complet",
-          "texte": "pilulier préparé pour la semaine",
+          "texte": "Pilulier préparé pour la semaine",
           "nom": "le pilulier préparé pour la semaine"
         },
         "e_inf": {
@@ -291,8 +305,9 @@ window.CONTENU = {
       "court": "consultation",
       "type": "pièce médicale",
       "qui": "le Dr Saunier, neurologue",
+      "gabarit": "medical",
       "resume": "Le diagnostic, et ce que la patiente en a dit.",
-      "texte": "Consultation du 2 mars. Patiente adressée par {{e_traitant}}. {{e_diag}}. Patiente informée : {{e_detresse}}. Autonomie : {{e_seule}} ; le mari assure l'aide quotidienne.",
+      "texte": "^ Centre hospitalier — consultation mémoire\n^ Dr Hélène Saunier, neurologue\n# Compte rendu de consultation\n> Le 2 mars\n**Patiente** : Mme Kessler, adressée par {{e_traitant}}.\n**Motif** : troubles de la mémoire signalés par l'entourage.\n**Examens** : bilan neuropsychologique, imagerie cérébrale.\n\n**Conclusion** : {{e_diag}}.\n**Annonce** : patiente informée ; {{e_detresse}}.\n**Autonomie** : {{e_seule}} ; le mari assure l'aide quotidienne.\n> Confraternellement\n_ H. Saunier",
       "empans": {
         "e_traitant": {
           "dim": "qui",
@@ -303,7 +318,7 @@ window.CONTENU = {
         "e_diag": {
           "dim": "quand",
           "valeur": "2026-03-02T10:00",
-          "texte": "Diagnostic de maladie d'Alzheimer posé ce jour",
+          "texte": "diagnostic de maladie d'Alzheimer posé ce jour",
           "nom": "la date du diagnostic"
         },
         "e_detresse": {
@@ -325,8 +340,9 @@ window.CONTENU = {
       "court": "sœur",
       "type": "audition",
       "qui": "brigadier N.",
+      "gabarit": "police",
       "resume": "La sœur décrit le couple, et une rancune.",
-      "texte": "« {{e_epuise}}. Ma sœur, elle, avait changé. {{e_paierait}}. » Audition reçue le 14 mars, {{e_conseil}}, {{e_sig3}}",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal d'audition de témoin\n**Témoin** : la sœur de la victime. **Objet** : la vie du couple.\n\n« {{e_epuise}}. Ma sœur, elle, avait changé. {{e_paierait}}. »\n\nAudition reçue le 14 mars, {{e_conseil}}, {{e_sig3}}\n> Lu, persisté et signé\n~ Commissariat central · BSU",
       "empans": {
         "e_epuise": {
           "dim": "comment",
@@ -362,13 +378,14 @@ window.CONTENU = {
       "court": "lettre",
       "type": "pièce saisie",
       "qui": "Mme Kessler",
+      "gabarit": "manuscrit",
       "resume": "Une lettre de la main de la victime, antérieure au diagnostic.",
-      "texte": "Lettre manuscrite {{e_datee}}, {{e_ou}}. « {{e_grief}}. Tu crois que je ne vois plus rien. Je vois. » Écriture de la victime, reconnue par sa sœur.",
+      "texte": "> {{e_datee}}\n{{e_grief}}.\nTu crois que je ne vois plus rien. Je vois.\n---\n**Scellé n° 7** — lettre manuscrite {{e_ou}}. Écriture de la victime, reconnue par sa sœur.",
       "empans": {
         "e_datee": {
           "dim": "quand",
           "valeur": "2026-02-14T00:00",
-          "texte": "datée du 14 février",
+          "texte": "le 14 février",
           "nom": "la date de la lettre"
         },
         "e_ou": {
@@ -394,8 +411,9 @@ window.CONTENU = {
       "court": "notification",
       "type": "procès-verbal",
       "qui": "brigadier N.",
+      "gabarit": "police",
       "resume": "Le motif de la garde à vue, et les droits demandés.",
-      "texte": "Le 12 mars, {{e_heure_notif}}, M. Kessler est avisé qu'il est {{e_charge}}. Il déclare {{e_avocat}}. {{e_avise}}. Procès-verbal dressé {{e_sig5}}",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal de notification des droits\n**Personne gardée à vue** : M. Kessler.\n\nLe 12 mars, {{e_heure_notif}}, M. Kessler est avisé qu'il est {{e_charge}}.\n\n**Examen médical** : {{e_droit_medecin}}.\n**Avis à un proche** : {{e_droit_proche}}.\n**Assistance d'un avocat** : il déclare {{e_avocat}}. {{e_avise}}.\n\nProcès-verbal dressé {{e_sig5}}\n> L'officier de police judiciaire\n~ Commissariat central · BSU",
       "empans": {
         "e_heure_notif": {
           "dim": "quand",
@@ -409,6 +427,20 @@ window.CONTENU = {
           "valeur": "empoisonnement",
           "texte": "placé en garde à vue pour des faits d'empoisonnement",
           "nom": "le motif de la garde à vue"
+        },
+        "e_droit_medecin": {
+          "dim": "comment",
+          "valeur": "examen demandé",
+          "texte": "il demande à être examiné par un médecin",
+          "nom": "la demande d'examen médical",
+          "bruit": true
+        },
+        "e_droit_proche": {
+          "dim": "qui",
+          "valeur": "aucun proche",
+          "texte": "il ne demande à faire prévenir personne",
+          "nom": "l'avis à un proche",
+          "bruit": true
         },
         "e_avocat": {
           "dim": "qui",
@@ -437,8 +469,9 @@ window.CONTENU = {
       "court": "certificat",
       "type": "certificat",
       "qui": "le Dr Vidal, médecin requis",
+      "gabarit": "medical",
       "resume": "L'état de M. Kessler au matin du 13 mars.",
-      "texte": "Examen du 13 mars, {{e_heure_certif}}, d'une personne {{e_depuis}}. {{e_fatigue}}. {{e_apte}}.",
+      "texte": "^ Docteur Paul VIDAL\n^ Médecin requis — unité médico-judiciaire\n# Certificat médical\n> Le 13 mars\nExamen pratiqué sur réquisition, {{e_heure_certif}}, d'une personne {{e_depuis}}.\n\n**Constatations** : {{e_fatigue}}.\n**Conclusion** : {{e_apte}}.\n_ P. Vidal\n~ Dr P. Vidal · médecin requis",
       "empans": {
         "e_heure_certif": {
           "dim": "quand",
@@ -457,13 +490,13 @@ window.CONTENU = {
         "e_fatigue": {
           "dim": "comment",
           "valeur": "fatigue importante",
-          "texte": "Fatigue importante ; sommeil très insuffisant depuis plusieurs semaines, selon l'intéressé",
+          "texte": "fatigue importante ; sommeil très insuffisant depuis plusieurs semaines, selon l'intéressé",
           "nom": "la fatigue constatée par le médecin"
         },
         "e_apte": {
           "dim": "comment",
           "valeur": "apte",
-          "texte": "État compatible avec la garde à vue et les auditions",
+          "texte": "état compatible avec la garde à vue et les auditions",
           "nom": "l'aptitude constatée par le médecin"
         }
       },
@@ -477,8 +510,9 @@ window.CONTENU = {
       "court": "déclarations",
       "type": "procès-verbal",
       "qui": "brigadier N.",
+      "gabarit": "police",
       "resume": "Ce que M. Kessler a dit au matin, avant son audition.",
-      "texte": "Le 13 mars, {{e_heure_decl}}, lors de sa conduite au local d'audition : {{e_spont}}, {{e_hors}}. « {{e_aveu}}. Je ne sais pas ce qui m'a pris. » Mention en est faite au présent procès-verbal, {{e_sig6}}",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal de déclarations spontanées\nLe 13 mars, {{e_heure_decl}}, lors de sa conduite au local d'audition : {{e_spont}}, {{e_hors}}.\n\n« {{e_aveu}}. Je ne sais pas ce qui m'a pris. »\n\nMention en est faite au présent procès-verbal, {{e_sig6}}\n> L'officier de police judiciaire\n~ Commissariat central · BSU",
       "empans": {
         "e_heure_decl": {
           "dim": "quand",
@@ -519,8 +553,9 @@ window.CONTENU = {
       "court": "audition Kessler",
       "type": "procès-verbal",
       "qui": "brigadier N.",
+      "gabarit": "police",
       "resume": "L'audition, son avocat présent : il se tait.",
-      "texte": "Le 13 mars, {{e_heure_aud}}, {{e_present}}. Questionné sur les faits, M. Kessler {{e_silence}}. Audition {{e_close}}.",
+      "texte": "^ COMMISSARIAT CENTRAL\n^ Brigade de sûreté urbaine\n^ Procédure n° 2026/0312-114\n# Procès-verbal d'audition de personne gardée à vue\nLe 13 mars, {{e_heure_aud}}, {{e_present}}.\n\n**Question** : reconnaissez-vous avoir administré à votre épouse une substance de nature à entraîner la mort ?\n**Réponse** : M. Kessler {{e_silence}}.\n\nAudition {{e_close}}.\n> L'officier de police judiciaire\n~ Commissariat central · BSU",
       "empans": {
         "e_heure_aud": {
           "dim": "quand",
@@ -555,11 +590,12 @@ window.CONTENU = {
       "court": "art. 2",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "L'effraction, ce qui la caractérise et comment elle se consigne.",
       "porte": [
         "où"
       ],
-      "texte": "Article 2 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 2\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -573,11 +609,12 @@ window.CONTENU = {
       "court": "art. 4",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Comment un témoin est entendu, et ce que porte le procès-verbal d'audition.",
       "porte": [
         "quand"
       ],
-      "texte": "Article 4 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 4\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -591,11 +628,12 @@ window.CONTENU = {
       "court": "art. 5",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "La personne gardée à vue qui a demandé un avocat n'est entendue qu'en sa présence.",
       "porte": [
         "qui"
       ],
-      "texte": "Article 5 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 5\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -609,11 +647,12 @@ window.CONTENU = {
       "court": "art. 6",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Les lieux du crime sont tenus jusqu'à l'arrivée du magistrat.",
       "porte": [
         "où"
       ],
-      "texte": "Article 6 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 6\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -627,11 +666,12 @@ window.CONTENU = {
       "court": "art. 8",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Qui la personne gardée à vue peut faire prévenir, et comment l'avis se consigne.",
       "porte": [
         "qui"
       ],
-      "texte": "Article 8 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 8\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -645,12 +685,13 @@ window.CONTENU = {
       "court": "art. 9",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Les heures entre lesquelles une perquisition peut commencer, hors flagrance.",
       "porte": [
         "où",
         "quand"
       ],
-      "texte": "Article 9 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 9\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -664,11 +705,12 @@ window.CONTENU = {
       "court": "art. 10",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "L'assistance d'un interprète, pour qui ne comprend pas la langue.",
       "porte": [
         "qui"
       ],
-      "texte": "Article 10 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 10\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -682,11 +724,12 @@ window.CONTENU = {
       "court": "art. 12",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Des déclarations faites sans liberté ne fondent pas seules la conviction.",
       "porte": [
         "comment"
       ],
-      "texte": "Article 12 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 12\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -700,11 +743,12 @@ window.CONTENU = {
       "court": "art. 13",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Les auditions pour crime sont filmées.",
       "porte": [
         "comment"
       ],
-      "texte": "Article 13 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 13\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -718,11 +762,12 @@ window.CONTENU = {
       "court": "art. 14",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Le repos entre les auditions, et ce qu'en dit le registre.",
       "porte": [
         "comment"
       ],
-      "texte": "Article 14 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 14\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -736,11 +781,12 @@ window.CONTENU = {
       "court": "art. 15",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Combien d'agents une intervention pour violences engage au moins.",
       "porte": [
         "combien"
       ],
-      "texte": "Article 15 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 15\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -754,12 +800,13 @@ window.CONTENU = {
       "court": "art. 16",
       "type": "règle du manuel",
       "qui": "le code de la santé",
+      "gabarit": "code",
       "resume": "Un médicament prescrit ne se délivre que sur ordonnance, à son échéance.",
       "porte": [
         "quoi",
         "combien"
       ],
-      "texte": "Article 16 — {{art}}.",
+      "texte": "^ Code de la santé\n# Article 16\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -773,11 +820,12 @@ window.CONTENU = {
       "court": "art. 17",
       "type": "règle du manuel",
       "qui": "le code de la santé",
+      "gabarit": "code",
       "resume": "L'aidant s'en tient au plan de soins.",
       "porte": [
         "quoi"
       ],
-      "texte": "Article 17 — {{art}}.",
+      "texte": "^ Code de la santé\n# Article 17\n{{art}}.",
       "empans": {
         "art": {
           "article": true,
@@ -791,12 +839,13 @@ window.CONTENU = {
       "court": "art. 18",
       "type": "règle du manuel",
       "qui": "le code de procédure",
+      "gabarit": "code",
       "resume": "Ce que porte un rapport de toxicologie.",
       "porte": [
         "quoi",
         "combien"
       ],
-      "texte": "Article 18 — {{art}}.",
+      "texte": "^ Code de procédure\n# Article 18\n{{art}}.",
       "empans": {
         "art": {
           "article": true,

@@ -543,6 +543,36 @@ console.log("\n=== L'export, et le jeu qui l'adopte ===");
 /* L'ÉCRITURE SUR PLACE (§10) — on ne nomme aucun navigateur : on éprouve les
    DEUX chemins. Sous jsdom, `showSaveFilePicker` n'existe pas, donc le repli se
    donne gratuitement et le chemin d'écriture se pose à la main. */
+console.log("\n=== La mise en page : ce qui se détache ne se prend pas (passe P, §4.3, §15) ===");
+{
+  const w = neuf();
+  check("le contenu livré n'a ni passage détaché, ni gabarit inconnu, ni gras sur un passage",
+    !/Passage dans un|Gabarit inconnu|Un gras couvre/.test(msgs(w)));
+  const e = SC.unEmpan(w.CONTENU), p = w.CONTENU.pieces[e.pid], mk = "{{" + e.eid + "}}";
+  const texte = p.texte;
+  for (const [signe, nom] of [["#", "un titre"], ["^", "un en-tête"], ["_", "une signature"], ["~", "un tampon"]]) {
+    p.texte = signe + " " + mk + "\n" + texte.replace(mk, "");
+    check(`un passage dans ${nom} est une erreur`, err(w).some(i => i.msg.startsWith("Passage dans " + nom)));
+  }
+  p.texte = "> " + mk + "\n" + texte.replace(mk, "");
+  check("à droite, il reste un passage comme un autre", !msgs(w).includes("Passage dans"));
+  p.texte = texte.replace(mk, "**" + mk + "**");
+  check("un gras qui couvre un passage est une erreur", err(w).some(i => i.msg.startsWith("Un gras couvre")));
+  p.texte = texte;
+  p.gabarit = "inexistant";
+  check("un gabarit inconnu est signalé", msgs(w).includes("Gabarit inconnu"));
+}
+{
+  const w = neuf();
+  const pid = Object.keys(w.CONTENU.pieces)[0];
+  w.majGabarit(pid, "labo");
+  check("la feuille se choisit dans l'inspecteur", w.CONTENU.pieces[pid].gabarit === "labo");
+  w.majGabarit(pid, "");
+  check("et, vide, sa clé part — le papier d'avant", !("gabarit" in w.CONTENU.pieces[pid]));
+  check("l'inspecteur offre les gabarits du moteur, appelés, jamais recopiés",
+    w.MoteurGrammaire.GABARITS.every(g => w.optionsGabarit("").includes(`value="${g}"`)));
+}
+
 console.log("\n=== Écrire content.js : sur place, ou le repli ===");
 const guetTelecharger = w => { const vus=[]; w.telecharger=(nom,data)=>{ vus.push({nom,data}); return true; }; return vus; };
 const poigneeFeinte = () => { const ecrits=[]; return { ecrits, nom:"content.js",

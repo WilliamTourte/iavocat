@@ -6,7 +6,21 @@ ensuite. **Court, et il doit le rester.** État au 9 octobre 2026.*
 ## 1. Où en est le jeu
 
 `app/index.html` s'ouvre en `file://` et se joue jusqu'à l'une des trois fins — **à la souris comme au
-clavier seul**. `npm test` est vert — 687 contrôles, 8 règles du gardien, ESLint.
+clavier seul**. `npm test` est vert — 713 contrôles, 8 règles du gardien, ESLint.
+
+**Le 9 octobre, la passe P : les pièces ont l'air de vrais documents** (§4.3, §4.6, §8, §11, §14,
+§15) — demande de l'auteur, qui a choisi *gabarit et texte mis en forme*, les polices du système,
+et *tout d'un coup*. Le `texte` d'une pièce se lit ligne à ligne : un signe en tête dit le rôle
+(`^` en-tête, `#` titre, `>` à droite, `_` signature, `~` tampon, `-` liste, `|` tableau, `---`
+coupe), `**gras**` en ligne ; la projection pure `miseEnPage` le rend en blocs, que le jeu habille
+et que le diagnostic lit. `gabarit` choisit la feuille : commissariat, cabinet médical,
+laboratoire, pharmacie (un relevé en tableau), la main (une feuille réglée, et l'étiquette du
+scellé sous la coupe), page de code. **La règle : la mise en page ne suit jamais les passages** —
+rien de ce qui se détache n'en porte, et une rubrique qui porte une valeur a son passage, au besoin
+un leurre (trois neufs : la première délivrance, l'examen médical, l'avis à un proche). Les PV
+n'ont pas de paraphe dessiné : à la première question, un paraphe qu'on ne prend pas serait un
+piège. Relu en vrai Chromium, à 1280 et 390 px : aucune feuille ne déborde. 26 contrôles neufs,
+**pas vus tomber** (§3).
 
 **Le 9 octobre, la passe O : le cas médicaments est le contenu** (§3, §6, §8). Un **premier jet** —
 textes, verdicts, répliques et fins sont à relire par l'auteur, dans l'onglet Verdicts de l'atelier
@@ -467,6 +481,11 @@ point est argumenté là où il mord — un § du système, ou un PIÈGE dans le
 remplace pas, elle les rappelle d'un trait.* Les **[Rn]** sont tenus par une règle du gardien — ils
 tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenus par rien.
 
+- **Le texte caché d'un passage se colle à son dernier mot** (passe P, PIÈGE dans `rendreLigne`) :
+  le `.sr`, hors du flux, ouvrait une coupure — un passage qui remplissait sa ligne laissait sa
+  bordure de fin, vide, seule sur la ligne suivante. Vu dans une case de tableau ; possible en prose.
+- **Un passage dans ce qui se détache se rend, mais le diagnostic le refuse** (passe P, §4.3) : un
+  titre, un en-tête, une signature, un tampon, un gras. `> ` (à droite) n'en est pas.
 - **Le verdict vit dans `discordances`, à part des liens** (passe N, §11) : renommer ou supprimer un
   passage passe par `reecrireDiscordances` — oublié, le lien qui cite la paire devient faux sans
   qu'on y ait touché (deux contrôles de renommage l'ont attrapé). Dans les liens, c'eût été pire :
@@ -697,6 +716,15 @@ tiennent en une ligne parce qu'on n'a plus à y penser ; les autres ne sont tenu
 
 Tout est **non éprouvé** ou **non tranché** ; l'ordre ci-dessous est celui de l'urgence.
 
+- **Les contrôles de la passe P n'ont pas été vus tomber** — l'auteur a demandé s'il fallait
+  « muter » ; trois réponses proposées : s'en passer, une version légère sur les 3 ou 4 contrôles
+  qui pourraient rester verts sans rien vérifier (ceux qui cherchent une classe dans les pièces),
+  ou les 17 mutations prévues. **Non tranché.** Une passe coupée en route a laissé une mutation
+  dans `diagnostic.js` (`if(false && …` sur le gras) ; retirée, et toutes les ancres vérifiées.
+- **La main, sans cursive** : sous Linux sans police manuscrite, la lettre et les paraphes tombent
+  sur l'empattement droit (`font-synthesis:none` refuse la fausse italique, voulue pour ne pas
+  pencher une cursive). Sous Windows et macOS, la cursive du système. À voir sur la machine d'un
+  joueur.
 - **Le cas médicaments est un premier jet** (§6) — à relire par l'auteur avant tout joueur : les
   textes des pièces, les **11 discordances** (onglet Verdicts : une juste que le dossier tairait,
   l'avocat la refuserait), les répliques des 15 liens nus, les fins. Trois choix du premier jet à
@@ -1154,3 +1182,6 @@ qu'elle a fait évoluer. Les dates sont des sessions de travail.*
   premier jet : trois remises, onze pièces hors calibration, `comment` en sixième dimension, le
   vice, le faux vice, le savoir, le suicide-vengeance sous-entendu, quinze liens nus. Deux
   contrôles de `smoke_atelier` qui supposaient l'affaire ADN rendus au contenu livré. 687 contrôles.
+- **9 octobre, passe P : la pièce comme un document** (§4.3, §4.6, §8, §11, §14, §15, §16, §17) —
+  `miseEnPage` et `GABARITS` au moteur, `gabarit` au schéma, six feuilles en CSS, le diagnostic de
+  ce qui se détache, la feuille dans l'inspecteur ; les 28 pièces mises en page. 713 contrôles.

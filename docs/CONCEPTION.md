@@ -220,6 +220,17 @@ l'auteur : nu, le texte ne disait plus où cliquer ; franche, elle le disait tro
 qu'elle ne se voit. Elle est **la même pour tous** et **ne dit ni la dimension ni la
 pertinence** : seulement *ici, quelque chose se prend*. Le trait et la couleur restent au survol.
 
+**La mise en page ne suit jamais les passages** (passe P) — demande de l'auteur, le 9 octobre : que
+les pièces *« ressemblent plus à des vrais documents qu'à du texte »*. Une pièce a la forme de ce
+qu'elle est : un procès-verbal son en-tête, son objet et sa signature, une ordonnance la sienne, un
+relevé ses colonnes, une lettre l'écriture d'une main. Le passage y reste un passage — même bordure,
+même survol, en pleine prose comme dans une case. Le danger est celui qui a fait retirer le
+soulignement d'office : **le formulaire déjà rempli**. Si chaque rubrique tombait sur un passage, la
+forme désignerait ce qui se prend. Une rubrique n'est donc jamais là *pour* un passage — il y a des
+rubriques sans passage, des passages en pleine prose — et **rien de ce qui se détache ne se prend** :
+ni un titre, ni un en-tête, ni un tampon, ni une signature, ni un mot en gras. Ce qui saute aux yeux
+est de la forme ; le diagnostic le tient (§15).
+
 **Le code s'apprend en cherchant : plus de légende.** Posée le 2 octobre — deux playtests demandaient
 que couleur et trait *signifient* quelque chose sans survol, et le `title` qui le disait n'existait ni
 au clavier ni au toucher —, elle nommait sous chaque pièce les dimensions qu'elle portait. **L'auteur
@@ -620,7 +631,12 @@ croix replie (*« Ouvre un document »*, *« Document suivant »*, *« Replier l
 - **Deux matières** : les pièces ont celle du **papier** — fond clair, caractères à empattements, en
   corps de lecture et non d'affiche (demande de l'auteur : à 17 px, une pièce ne tenait pas dans son
   cadre) —, la machine celle de l'**écran**. Ce qu'on lit vient du monde, ce qu'on écrit sort de l'IA ; la chasse
-  fixe de ses messages dans la DISCUSSION est le même contraste, pris dans l'autre sens.
+  fixe de ses messages dans la DISCUSSION est le même contraste, pris dans l'autre sens. **Le papier
+  se décline en gabarits** (passe P, §4.3) : la feuille d'un commissariat, d'un cabinet médical,
+  d'un laboratoire, d'une pharmacie, une feuille écrite à la main, une page de code — posée sur le
+  papier de la bande, en **polices du système** (§9 : aucune dépendance). La lettre prend la cursive
+  de la machine quand elle en a une, sinon une italique à empattements — jamais une police de bande
+  dessinée. Le gabarit habille et ne décide rien : son texte, l'en-tête compris, est du contenu.
 - **Un panneau ne s'ouvre jamais tout seul**, et deux fermetures coexistent, selon la porte par
   laquelle il est venu. **Ouvert pour ÉCRIRE** (par la voix), il suit la phrase : il se referme dès
   qu'elle n'a **plus rien à y prendre** — ni passage, ni article — **et que le composeur offre de quoi
@@ -1170,7 +1186,7 @@ au §3 de `docs/PASSATION.md`.*
 | Recevabilité, pas fiabilité : la culpabilité est un plancher fixe — un doute ne survit qu'à qui ne sait pas | §6, §8 |
 | Le vice est un déblocage, jamais un verrou ; comprendre précède choisir | §2, §3 |
 | La compréhension doit être *exprimée* ; saisie structurée, pas texte libre | §3, §4.5 |
-| Un empan se lit deux fois ; le marquage ne varie jamais avec la pertinence | §4.1, §4.3 |
+| Un empan se lit deux fois ; le marquage ne varie jamais avec la pertinence ; la mise en page ne suit jamais les passages | §4.1, §4.3 |
 | Une relation rare désigne sa réponse : le vice a ses discordances — ou ses doublons — banales à côté ; la marge de bruit reste non nulle | §4.4, §14 |
 | Rien n'est *plaidé* qui ne soit fondé ; un lien nu n'est jamais un moyen ; on n'invoque pas un texte qu'on n'a pas lu | §4.5 |
 | La recherche montre trois articles du champ de la paire — toute paire a les siens —, et ne trie rien de ce que la phrase accepte | §4.5 |
@@ -1225,6 +1241,14 @@ vice en sont, les innocentes aussi — un médecin remplaçant, une infirmière 
 apprennent que *ne concordent pas* ne veut pas dire suspect (§4.4). **Chaque paire de même dimension se relit**,
 dans une grille de l'atelier (§15) : une discordance juste que le dossier tairait serait refusée par
 l'avocat. Le volume se paie là — le cas, à onze pièces, en compte plus de trois cents.
+
+**Écrire une pièce comme un document** (passe P, §4.3) : la forme d'abord, d'après le vrai document —
+l'en-tête du service, l'objet, le corps, la signature, le tampon (§8.2 : le formulaire plausible
+d'abord, le vice après) —, puis les passages, là où le monde les met : dans le corps, une liste ou un
+tableau, **jamais dans ce qui se détache**. Une rubrique se justifie par le document, pas par un
+passage, et la plupart n'en portent aucun. **La juridiction reste fictive** (§6) : aucune institution
+réelle nommée, ni emblème ; *« Commissariat central »* suffit. La syntaxe — une ligne par rôle — est
+au §11 ; le diagnostic dit ce qui se détache avec un passage dedans (§15).
 
 **Un doute tombe devant le savoir** (§6) : une piste qui innocente le client — un suicide, une
 vengeance — peut vivre pour l'IA qui n'a pas su, jamais pour celle qui sait. Sinon la culpabilité

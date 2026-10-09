@@ -1753,4 +1753,71 @@ console.log("\n=== L'écran de fin est terminal (§4.9 règle 5, §4.10 règle 6
     !!fin() && !d.getElementById("panCONTEXTE").hidden && partie() === null);
 }
 
+console.log("\n=== La pièce comme un document : la mise en page (passe P, §4.3, §11) ===");
+{
+  /* LA PROJECTION — pure, sans DOM : ce qu'elle rend, rôle par rôle. */
+  const mep = require("../app/moteur.js").miseEnPage;
+  const J = x => JSON.stringify(x);
+  check("un texte d'une seule ligne reste un paragraphe d'une ligne — le contenu d'avant se lit comme avant",
+    J(mep("Le 12 mars, {{a}} ; rien.")) === J([{ type:"para", lignes:["Le 12 mars, {{a}} ; rien."] }]));
+  check("chaque signe dit son rôle : en-tête, titre, à droite, signature, tampon, liste",
+    J(mep("^ e\n# t\n> d\n_ s\n~ c\n- l").map(b => b.type))
+      === J(["entete","titre","droite","signature","tampon","liste"]));
+  check("les lignes de même rôle qui se suivent font un bloc ; une ligne vide les sépare",
+    J(mep("a\nb\n\nc").map(b => b.lignes)) === J([["a","b"],["c"]]));
+  const t = mep("| A | B |\n|---|---|\n| x | {{y}} |\n|---|---|\n| z | w |")[0];
+  check("la ligne de tirets sous la première en fait l'en-tête, et ne se rend jamais — plus bas non plus",
+    t.type === "tableau" && J(t.entete) === J(["A","B"]) && J(t.lignes) === J([["x","{{y}}"],["z","w"]]));
+  check("les tirets seuls coupent la feuille", J(mep("a\n---\nb").map(b => b.type)) === J(["para","coupe","para"]));
+  check("un signe sans espace n'est pas un rôle", mep("-3 degrés")[0].type === "para");
+}
+{
+  /* LE CONTENU LIVRÉ, À L'ÉCRAN : aucun passage perdu, rien de ce qui se détache n'en porte. */
+  const w = boot(); const d = w.document;
+  H.livrerTout(w);
+  let perdus = [], detaches = [], feuilles = 0, sansColle = [];
+  for (const [pid, p] of Object.entries(w.JEU.pieces)) {
+    w.ouvrirPiece(pid);
+    const f = d.querySelector("#panPiece .piecetexte");
+    for (const eid of Object.keys(p.empans || {}))
+      if (f.querySelectorAll(`[data-f="e:${pid}.${eid}"]`).length !== 1) perdus.push(pid + "." + eid);
+    if (f.querySelector(".dtitre .empan, .dentete .empan, .dsignature .empan, .dtampon .empan, b .empan")) detaches.push(pid);
+    if (f.classList.contains("feuille") && f.classList.contains("g-" + p.gabarit)) feuilles++;
+    for (const e of f.querySelectorAll(".empan")) {
+      const c = e.querySelector(":scope > .colle"), sr = c && c.querySelector(".sr");
+      if (!sr || /\s/.test(c.textContent.replace(sr.textContent, "").trim())) sansColle.push(e.getAttribute("data-f"));
+    }
+  }
+  check("aucun passage perdu par la mise en page : chacun se rend une fois, et une seule", perdus.length === 0);
+  check("rien de ce qui se détache ne porte un passage, dans le contenu livré", detaches.length === 0);
+  check("une pièce à gabarit s'imprime sur sa feuille, et `.piecetexte` la nomme encore",
+    feuilles > 0 && feuilles === Object.values(w.JEU.pieces).filter(p => p.gabarit).length);
+  check("le texte caché d'un passage se colle à son dernier mot — sa bordure ne reste jamais seule sur une ligne",
+    sansColle.length === 0);
+}
+{
+  /* SUR CONTENU MUTÉ : un passage dans une case se prend comme ailleurs ; le gras
+     se rend ; un gabarit inconnu laisse le papier d'avant. */
+  const c = H.contenuLivre();
+  const pid = c.remises[0].pieces[0], p = c.pieces[pid];
+  const eid = Object.keys(p.empans).find(k => !p.empans[k].article && p.texte.includes("{{" + k + "}}"));
+  p.texte = "**Objet** : rien.\n" + p.texte.replace("{{" + eid + "}}", "—") + "\n| Rubrique | Valeur |\n|---|---|\n| la case | {{" + eid + "}} |";
+  const autre = Object.keys(c.pieces).find(k => k !== pid && !c.pieces[k].porte);
+  c.pieces[autre].gabarit = "inexistant";
+  delete c.pieces[pid].gabarit;
+  const w = H.boot({ contenu: c }); const d = w.document;
+  H.livrerTout(w);
+  w.ouvrirPiece(pid);
+  const cellule = d.querySelector(`#panPiece td [data-f="e:${pid}.${eid}"]`);
+  check("le passage est dans sa case", !!cellule);
+  H.cliquer(w, pid + "." + eid);
+  check("et il s'y prend, comme en pleine prose", w.S.compo.length === 1
+    && !!d.querySelector(`#panPiece td [data-f="e:${pid}.${eid}"].pris`));
+  check("le gras se rend", d.querySelector("#panPiece .piecetexte b").textContent === "Objet");
+  check("sans gabarit, pas de feuille : le papier d'avant", !d.querySelector("#panPiece .feuille"));
+  w.ouvrirPiece(autre);
+  check("un gabarit inconnu laisse le papier d'avant, lui aussi", !d.querySelector("#panPiece .feuille")
+    && !!d.querySelector("#panPiece .piecetexte"));
+}
+
 bilan();

@@ -62,11 +62,15 @@ function inspPiece(pid){
     <input type="text" value="${escapeAttr(p.court||"")}" onchange="majPiece('${pid}','court',this.value)">
     <label>Type <span class="glose">(« règle… » ⇒ va au Manuel du cas)</span></label>
     <input type="text" value="${escapeAttr(p.type||"")}" onchange="majPiece('${pid}','type',this.value)">
+    <label>Feuille <span class="glose">— le gabarit où la pièce s'imprime (§4.6)</span></label>
+    <select onchange="majGabarit('${pid}',this.value)">${optionsGabarit(p.gabarit)}</select>
     <label>Signataire par défaut <span class="glose">(qui parle)</span></label>
     <input type="text" value="${escapeAttr(p.qui||"")}" onchange="majPiece('${pid}','qui',this.value)">
     <label>Résumé <span class="glose">(hors jeu — mémo d'atelier)</span></label>
     <textarea style="min-height:34px" onchange="majPiece('${pid}','resume',this.value)">${escapeH(p.resume||"")}</textarea>
-    <label>Texte de la pièce <span class="glose">— place {{id}} là où chaque empan se lit</span></label>
+    <label>Texte de la pièce <span class="glose">— place {{id}} là où chaque empan se lit ; une ligne par rôle (§11) :
+      <code>^</code> en-tête · <code>#</code> titre · <code>&gt;</code> à droite · <code>_</code> signature · <code>~</code> tampon ·
+      <code>-</code> liste · <code>| a | b |</code> tableau · <code>---</code> coupe · <code>**gras**</code> — jamais un passage dans ce qui se détache</span></label>
     <textarea class="mono" style="min-height:120px" onchange="majPiece('${pid}','texte',this.value)">${escapeH(txt)}</textarea>
     <div style="font-size:11.5px;color:var(--dim);margin-top:6px">empans : ${
       eids.length ? eids.map(e=>`<code style="color:${txt.includes("{{"+e+"}}")?"var(--ok)":"var(--err)"}">{{${escapeH(e)}}}</code>`).join(" ")
@@ -209,6 +213,15 @@ function majEmpan(pid,eid,prop,v){ muter(()=>{
   if(prop==="qui") poserOuRetirer(e,prop,v); else e[prop]=v;
 }); }
 function majPiece(pid,prop,v){ muter(()=>{ CONTENU.pieces[pid][prop]=v; }); }
+/* La feuille (passe P) : vide, la clé part — le papier, sans feuille. Un gabarit
+   inconnu reste offert, tel quel, pour que le diagnostic ait de quoi le dire. */
+function majGabarit(pid,v){ muter(()=>{ poserOuRetirer(CONTENU.pieces[pid],"gabarit",v,{trim:true}); }); }
+function optionsGabarit(g){
+  const connus=(window.MoteurGrammaire||{}).GABARITS||[];
+  const tous=[...connus, ...(g && !connus.includes(g) ? [g] : [])];
+  return `<option value="">— le papier, sans feuille —</option>`
+    + tous.map(x=>`<option value="${escapeAttr(x)}" ${x===g?"selected":""}>${escapeH(x)}${connus.includes(x)?"":" (inconnu)"}</option>`).join("");
+}
 function majBruit(pid,ch,on){ muter(()=>{ poserOuRetirer(empanDe(pid,ch),"bruit",on); }); }
 function majLien(i,prop,val){ muter(()=>{
   poserOuRetirer(CONTENU.liens[i],prop,val,{trim:true});

@@ -106,6 +106,7 @@ function diagnostiquer(){
     const susp=[...hors.matchAll(/\b\d{1,2}\s?h\s?\d{2}\b|\b\d{2}:\d{2}\b/g)].map(x=>x[0]);
     if(susp.length) add("avert",`Valeur non marquée dans « ${p.court} » : ${susp.join(", ")}`,
       "Tout empan portant une valeur d'une des dimensions doit être marqué et cliquable — sinon l'interface trie à la place du joueur (§4.3).",{piece:pid});
+    diagMiseEnPage(pid,p,txt,add);
   }
 
   /* ---- les liens ---- */
@@ -459,4 +460,25 @@ function comparaisonDu(L){
 function parLeDossier(L){
   const d=(formeDe(comparaisonDu(L).forme)||{}).deduction;
   return d==="concordance" || d==="discordance";
+}
+/* LA MISE EN PAGE (passe P, §4.3, §11) — lue sur `miseEnPage`, APPELÉE, jamais
+   recopiée (§15). Ce qui se détache ne se prend pas : un passage dans un titre,
+   un en-tête, une signature ou un tampon, la forme le désignerait. */
+const MEP_DETACHE = { titre:"un titre", entete:"un en-tête", signature:"une signature", tampon:"un tampon" };
+function diagMiseEnPage(pid,p,txt,add){
+  const api=window.MoteurGrammaire||{};
+  if(p.gabarit!=null && !(api.GABARITS||[]).includes(p.gabarit))
+    add("avert",`Gabarit inconnu dans « ${p.court} » : ${p.gabarit}`,
+      `La pièce s'imprimera sur le papier, sans feuille. Les gabarits : ${(api.GABARITS||[]).join(", ")}.`,{piece:pid});
+  if(!api.miseEnPage) return;
+  const marquesDe = l => [...String(l).matchAll(/\{\{([A-Za-z0-9_]+)\}\}/g)].map(x=>x[1]);
+  for(const b of api.miseEnPage(txt)){
+    const lignes = b.type==="tableau" ? [...(b.entete||[]), ...b.lignes.flat()] : (b.lignes||[]);
+    if(MEP_DETACHE[b.type]) for(const l of lignes) for(const mk of marquesDe(l))
+      add("erreur",`Passage dans ${MEP_DETACHE[b.type]} : ${p.court}·${joli(mk)}`,
+        "Ce qui se détache ne se prend pas : la forme désignerait le passage (§4.3). Mets-le dans le corps du document.",{champ:[pid,mk]});
+    for(const l of lignes) if(/\*\*[^*]*\{\{[A-Za-z0-9_]+\}\}[^*]*\*\*/.test(l))
+      add("erreur",`Un gras couvre un passage : ${p.court}`,
+        "Le gras se détache, et ne couvre jamais un passage (§4.3) : il s'afficherait tel quel, astérisques comprises.",{piece:pid});
+  }
 }

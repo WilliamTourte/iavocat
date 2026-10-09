@@ -241,7 +241,44 @@ function traitDim(dimensions, d) {
   return i < 0 ? null : TRAITS_DIM[i % TRAITS_DIM.length];
 }
 
-  return { champsDe, articlesDe, comparaisonsDe, couleurDim, traitDim, PALETTE_DIM, TRAITS_DIM };
+/* LA MISE EN PAGE (passe P, §4.3, §11) : le texte d'une pièce, lu ligne à
+   ligne, devient des BLOCS — de la forme, aucune règle. Les lignes et les
+   cellules restent BRUTES, marqueurs compris : l'écran y pose les passages
+   comme il le faisait dans le texte entier. Un texte d'une seule ligne rend un
+   paragraphe d'une ligne — le contenu d'avant se lit comme avant. Des lignes
+   de même rôle qui se suivent font un seul bloc ; une ligne vide les sépare. */
+const GABARITS = ["police", "medical", "labo", "pharmacie", "manuscrit", "code"];
+const ROLES_MEP = { "^": "entete", "#": "titre", ">": "droite", "_": "signature", "~": "tampon", "-": "liste" };
+const cellulesDe = l => l.replace(/^\|/, "").replace(/\|$/, "").split("|").map(c => c.trim());
+function miseEnPage(texte) {
+  const blocs = [];
+  let cur = null;
+  for (const brute of String(texte == null ? "" : texte).split(/\r?\n/)) {
+    const l = brute.trim();
+    if (!l) { cur = null; continue; }
+    if (/^-{3,}$/.test(l)) { cur = null; blocs.push({ type: "coupe" }); continue; }
+    if (l.startsWith("|")) {
+      const c = cellulesDe(l);
+      if (!cur || cur.type !== "tableau") { cur = { type: "tableau", entete: null, lignes: [] }; blocs.push(cur); }
+      // PIÈGE : la ligne `|---|` n'est un séparateur que sous la PREMIÈRE ligne ;
+      // plus bas, elle ne rend rien plutôt qu'une rangée de tirets.
+      if (c.every(x => /^:?-{3,}:?$/.test(x))) {
+        if (!cur.entete && cur.lignes.length === 1) cur.entete = cur.lignes.pop();
+        continue;
+      }
+      cur.lignes.push(c);
+      continue;
+    }
+    const m = /^([\^#>_~-]) (.*)$/.exec(l);
+    const type = m ? ROLES_MEP[m[1]] : "para", t = m ? m[2] : l;
+    if (cur && cur.type === type) cur.lignes.push(t);
+    else { cur = { type, lignes: [t] }; blocs.push(cur); }
+  }
+  return blocs;
+}
+
+  return { champsDe, articlesDe, comparaisonsDe, couleurDim, traitDim, PALETTE_DIM, TRAITS_DIM,
+           miseEnPage, GABARITS };
 })();
 
 const _api = { creerMoteur, ..._projections };
