@@ -13,6 +13,243 @@ sans une ligne de code. La source de chaque item, en fin de ligne : *Colas*, *Je
 dit « affaire 1 / affaire 2 » pour les sessions 1 et 2, « fiches » ou « notes » pour les passages
 retenus, « bulle » pour le bandeau du tutoriel.*
 
+## Auteur — passe R : l'item lien (plan, à relire par l'auteur)
+
+**Où en est la passe** — *plan enregistré le 10 octobre sur la branche **`item-lien`**, **chantier
+parallèle à la passe Q** (ci-dessous) ; **à modifier par l'auteur** avant tout geste ; puis la
+méthode : le document, la relecture, le code.*
+
+- [ ] Le plan relu et modifié par l'auteur
+- [ ] Temps 1 — le document, puis relecture
+- [ ] 1. Naître : la paire reconnue
+- [ ] 2. Le moteur : un terme qui ouvre un lien
+- [ ] 3. Reprendre : un lien se prend
+- [ ] 4. Ranger : « Les liens » au DOSSIER
+- [ ] 5. Le contenu et l'atelier
+- [ ] Vérification
+
+### Contexte
+
+L'idée de l'auteur (commit du 9 octobre) : **associer deux passages crée un item LIEN**, qu'on
+réutilise ensuite — sous un article, avec un autre passage, avec une directive. Discutée le 10 octobre
+(gameplay, architecture, faisabilité). Ce qui en ressort :
+
+- **Le moteur sait déjà l'essentiel.** Un terme peut être une comparaison entière (`{forme, termes}`,
+  de dimension `affirmation`) — c'est ainsi que l'article emboîte la paire (§11) —, et une source de
+  terme, `note`, dort dans le moteur (§11 : on ne retire pas une capacité). L'item lien, c'est **la
+  comparaison au moment où la relation est choisie, rendue persistante et reprise**.
+- **Le jeu est déjà un arbre de combinaisons** — la passe en rend un nœud persistant :
+
+  ```
+  passage + passage   → LIEN        (existe, éphémère : la passe le garde)
+  LIEN + article      → MOYEN       (existe, d'un seul trait : la passe le permet en deux)
+  MOYEN + affirmation → OPPOSITION  (la répétition, §4.6)
+  LIEN + directive    → ?           (à trancher, hors passe — ci-dessous)
+  LIEN + passage, LIEN + LIEN       (écartés pour l'heure — ci-dessous)
+  ```
+- **Ce qui le paie** : *« ne dissimule rien de ce que ton analyse établit »* (D1, §5) devient
+  littéral — ce que l'analyse établit, ce sont les liens ; le lien du vice reste au DOSSIER, non
+  transmis, sous les yeux du joueur, et la Fin 2 de la passe Q (*« tu as trouvé un lien et tu as
+  refusé de le transmettre »*) décrit l'écran. *Deux normes, deux axes* (§4.5) peuvent devenir deux
+  gestes : établir les faits, puis décider du recevable. Et la mémoire de travail revient **sans
+  recopie** : la passe K a retiré les fiches parce qu'elles redisaient les pièces ; un lien porte la
+  thèse du joueur, qui n'existe nulle part ailleurs.
+
+### Arbitrages (tranchés par l'auteur le 10 octobre)
+
+| Point | Arbitrage |
+|---|---|
+| Naissance | l'item naît quand la paire est **reconnue par le dossier** — la paire d'une comparaison déclarée dans `liens`, nue ou sous un article —, **quelle que soit la relation choisie** |
+| Relation | l'item garde **la relation du joueur, juste ou fausse** ; son aspect ne varie pas. **Une paire, un item** : rechoisir l'autre relation le **révise** |
+| L'erreur | **se tromper reste possible, et l'avocat le reproche** — à l'envoi : `rep_relation_fausse`, ou la réplique d'un lien `erreur` (passe Q) |
+| Le droit | un lien sous un article **n'est jamais confirmé avant l'envoi** — et envoyer le vice, c'est le transmettre : sonder le droit a un prix |
+| Le chemin | **A, complètement** : le trait d'aujourd'hui reste (deux passages, la relation, l'article, l'envoi) ; l'item naît en passant, et se reprend plus tard |
+| La directive | **à trancher, hors de la passe** (ci-dessous) |
+| Le chantier | **une passe à part**, parallèle à Q, sur la branche `item-lien` |
+
+*Un premier arbitrage ne gardait que les items **à la relation juste**. Écarté le même jour, avec sa
+raison : l'item devenait une **confirmation** — *concordent / ne concordent pas* se changeait en
+sonde (pas d'item ? l'autre relation), et le joueur ne pouvait plus se tromper. Or il doit pouvoir
+se tromper, et l'avocat le lui reprocher.*
+
+*Écartés pour l'heure* : **lien + passage** — ses rares emplois s'écrivent déjà comme une autre
+paire, et chaque combinaison neuve exige sa règle par défaut (l'équivalent de *« tout le reste
+concorde »*), sans quoi *le jeu ne me comprend pas* (§8). **Lien + lien** — son plus bel emploi est
+le cœur moral (le savoir et le vice : *vrais, et irrecevables*), c'est-à-dire un mécanisme employé
+une fois : un panneau (§4), sauf forme générique à trouver.
+
+### Ce que ça coûte (⚖)
+
+- ⚖ **L'écran dit la pertinence.** L'item ne dit jamais *juste*, mais sa naissance dit *cette paire
+  compte* — avant tout envoi, et sans l'avocat. Trois arbitrages écrits le frôlent : *le marquage ne
+  varie jamais avec la pertinence* (§4.3 — celui des passages ne varie toujours pas, mais l'item,
+  si) ; *la fiction peut désigner, le chrome jamais* (§4.8 — défendable : l'item est l'analyse de
+  l'IA, et le joueur **est** l'IA ; à écrire) ; *rien ne se passe tant que rien n'est envoyé* (§4.6 —
+  une naissance privée, l'exception à écrire). L'invariant neuf : **l'écran dit ce qui est pertinent,
+  jamais ce qui est juste ; le droit ne se sait qu'à l'envoi**.
+- **La meule de foin se compte autrement.** Paires de même dimension disponibles, cumulées, contre
+  paires reconnues de la remise : **8 / 4** à la remise 1, **148 / 12** à la remise 2, **363 / 9** à
+  la remise 3. Le vice ne se cache plus parmi 363 paires mais **parmi les liens de sa remise** — trois
+  voisins sur l'avocat (l'audition et les déclarations, la notification et l'audition, la sœur et
+  les déclarations), plus les heures des déclarations et de l'audition. **La banalité des doublons
+  (§4.4) se mesure désormais parmi les items** : le diagnostic la compte (5).
+- **La Fin 3 rétrécit, la décision grandit.** La paire reste à trouver, et l'item ne dit ni la
+  relation ni l'article ; mais qui pose la paire du vice la voit devenir un lien. Plus de joueurs
+  arrivent au dilemme en sachant ce qu'ils tiennent — vu le retour de Jean (*« la Fin 2 n'a aucune
+  raison d'être choisie »*), c'est peut-être le but.
+- **Pas de verbe neuf** : l'item naît seul, **se prend** (le seul verbe, passe K), et ne s'oublie pas —
+  il ne naît que de paires que le dossier connaît : l'inventaire reste court.
+
+### Les noms
+
+**À l'écran : « lien »** (*« Les liens »*). **Dans le code : `rapprochement`** (`S.rapprochements`) —
+`liens` désigne déjà les liens **déclarés** du contenu (`JEU.liens`, `lienDe`, `L`) : un même nom pour
+la trouvaille du joueur et la ligne du contenu serait un piège. À porter à la carte (§17), comme
+`contexte` / DOSSIER (§4.6). Dans les documents : *l'item lien*.
+
+---
+
+### Temps 1 — le document (puis arrêt, relecture)
+
+**CONCEPTION**
+- **§4.5** : un trait neuf, *« Le lien naît, et se reprend (passe R) »* — ce qu'est une paire
+  reconnue ; la relation du joueur, juste ou fausse ; la révision ; le chemin d'un trait, intact ;
+  reprendre un lien = la phrase repart **après la relation**, vers la recherche, l'article ou
+  l'envoi ; le droit jamais confirmé avant l'envoi. **Pourquoi pas la source `note`** : elle reprend
+  une phrase **close**, du journal ; l'item n'est ni clos ni au journal.
+- **§4.6** : le DOSSIER range aussi **les liens** — privés, jamais jugés ; un lien **se prend**, quand
+  ta RÉPONSE est vide (sinon la ligne dit pourquoi) ; *« un passage n'existe qu'une fois à
+  l'écran »* tient — l'item nomme les passages par leur `nom`, il ne les cite pas ; *« rien ne se passe
+  tant que rien n'est envoyé »* gagne son exception, privée.
+- **§4.7** : les drapeaux ne changent pas. Un item né à la vraie relation coïncide avec
+  `vice_pressenti` ou `sait` — il en est la trace **visible**, pas un drapeau ; un item faux ne lève
+  rien. Le vice fondé depuis un item lève `vice_trouve` à l'assemblage, comme aujourd'hui.
+- **§4.3 et §4.8** : la naissance face à *« le chrome ne désigne jamais »* — l'argument (l'item est
+  l'analyse de l'IA), ou l'exception assumée. **§4.8** : ce que fait le tutoriel des liens nés en
+  session 1 (question 3).
+- **§5** : une phrase — *« ce que ton analyse établit »*, ce sont les liens.
+- **§6** : les liens reconnus par remise, et les voisins du vice.
+- **§7** : la ligne neuve (*l'écran dit ce qui est pertinent, jamais ce qui est juste ; le droit ne se
+  sait qu'à l'envoi*) ; la ligne *« une relation rare désigne sa réponse… »* gagne *« — parmi les liens
+  reconnus de sa remise »*.
+
+**ARCHITECTURE** : §11 (le terme `source:"lien"`, opt-in ; `S.rapprochements`), §14 (`reduire` et
+`rendre` devant un terme `lien`), §15 (le diagnostic, l'onglet Grammaire), §16 (les contrôles,
+`H.prendreLien`), §17 (la carte : `rapprochement` / *lien*).
+
+**PASSATION** : §1 (la passe R), §2 (les pièges neufs), §3 (la directive, ouverte), §4.
+
+---
+
+### Temps 2 — le code (après relecture)
+
+#### 1. Naître : la paire reconnue (`app/regles.js`)
+- `etatInitial` : `rapprochements: []` — PRIVÉ, `{ termes:[a, b], forme }`, dans l'ordre de naissance.
+- `reconnue(a, b)` : la paire figure, **sans ordre et quelle que soit la forme**, parmi les
+  comparaisons de `M.comparaisonsDe(JEU.liens, formes)` — nues ou emboîtées —, à deux passages. Une
+  clé comme `clePaire` (`moteur.js`), calculée une fois.
+- `poserBloc` (l.272) : **au choix de la relation** (bloc `relation`), à côté de `majPressentiment` —
+  si la grammaire déclare un terme `source:"lien"` **et** que la paire est reconnue : l'item naît, ou
+  **se révise** (même paire : la forme change, la place reste). Une juxtaposition n'en fait pas naître.
+  Session 1 comprise.
+- `retirerBloc` (l.361) ne défait pas un item : il est né. On le révise en rechoisissant.
+
+#### 2. Le moteur : un terme qui ouvre un lien (`app/moteur.js`)
+- `reduire` (l.99) et `rendre` (l.153) : un terme `source:"lien"` **ouvre** la comparaison — `forme`
+  et `termes` repris de l'item — au lieu de l'empiler. **PIÈGE** : empilé, la liaison `imbrique` qui
+  suit l'emboîterait deux fois (`{article, [{null, [{discordance…}]}]}`). `rendre` écrit le `patron`.
+- Rien d'autre : `lienDe`, `M.fausse`, `pressentir`, `reponseAvocat`, `envoyer` lisent la phrase
+  réduite, **la même par les deux chemins**.
+
+#### 3. Reprendre : un lien se prend (`app/regles.js`, `app/jeu.js`)
+- `prendreLien(S, i)` : RÉPONSE vide → le bloc `source:"lien"` posé, l'item pour valeur ; la phrase
+  est **après la relation** : chercher, prendre un article, ou envoyer nue. RÉPONSE commencée → rien,
+  et la ligne dit pourquoi (question 4).
+- `indexTermeChamp` (l.181) écarte `source:"lien"` comme il écarte `note`.
+- `termesPoses` (l.196) **déplie** un terme lien : la recherche (`chercher`, l.164) lit la dimension
+  de son premier passage — sans quoi elle lirait `affirmation` et ne rendrait rien. `dansPhrase`
+  (l.320) voit les passages d'un lien pris : leur ✓ dans la pièce.
+- `retirerBloc` : le lien part d'un coup.
+- `jeu.js` : la puce appelle `prendreLien` — **la porte du joueur** (R13 du gardien).
+
+#### 4. Ranger : « Les liens » au DOSSIER (`app/jeu.js`, `app/jeu.css`)
+- `renderDossier` (l.805) : une troisième colonne, **« Les liens »**, après *« Les pièces »* et
+  *« Les articles »* — chaque puce, la comparaison écrite (`patron`, `nom`s), **le même aspect juste
+  ou faux**, sans couleur ni trait de dimension ; dans l'ordre de naissance (question 1).
+- À 390 px, des puces longues : à juger en capture.
+
+#### 5. Le contenu et l'atelier
+- `app/content.js` : **un bloc de grammaire**, `{ id:"l0", type:"terme", source:"lien", de:"S0",
+  vers:"S4" }`. Les liens, les discordances, les verdicts ne changent pas. **Opt-in** : sans ce bloc,
+  rien ne naît ni ne s'affiche — un contenu d'avant joue comme avant.
+- `app/atelier/grammaire.js`, `inspecteur.js` : la source `lien` s'édite et s'affiche (§15 : le
+  reflet appelle).
+- `app/atelier/diagnostic.js` : (a) un terme `lien` qui ne mène pas à un état où s'offrent les
+  liaisons-articles : erreur ; (b) **par remise, les paires reconnues, et le vice seul de sa dimension
+  parmi elles** : avertissement — la banalité des doublons, mesurée là où elle protège désormais ;
+  (c) une fois la passe Q fusionnée, un lien `erreur` reconnaît sa paire comme les autres.
+- `npm run export` régénère `export/iavocat.html` (R12, le hook au commit).
+
+---
+
+### Vérification
+
+- **`npm test`** au vert. Les contrôles neufs, **chacun vu tomber** par une mutation :
+  - **naître** : paire reconnue, vraie relation → un item ; fausse relation → un item, **même
+    aspect** ; paire non reconnue → rien ; juxtaposition → rien ; une paire, un item (la révision) ;
+    contenu sans bloc `lien` → rien ne naît, rien ne s'affiche ;
+  - **reprendre** : RÉPONSE vide → le lien se pose et la recherche rend les articles de sa dimension ;
+    RÉPONSE commencée → le refus se dit ;
+  - **le droit** : l'item du vice sous l'article 5 → `vice_trouve` à l'assemblage, `vice_expose` à
+    l'envoi seulement ; rien à l'écran ne distingue l'article juste du faux avant l'envoi ;
+  - **l'erreur** : un item faux envoyé, nu ou sous un article → `rep_relation_fausse`, rien en
+    PLAIDOIRIE, aucun drapeau ;
+  - **la sauvegarde** : `S.rapprochements` survit au rechargement (`test_sauvegarde`) ;
+  - **le chemin d'un trait** : `test_parcours` et `test_o5` passent **sans retouche**.
+- **Le harnais** : `H.prendreLien(w, paire)`, par la porte de l'écran (R13).
+- **`npm run vue`**, à 1280×800 et 390×800 : la colonne *« Les liens »*, relue à l'œil.
+- **La relecture à l'œil** : imprimer, par un script jetable, la puce de chaque paire reconnue, dans
+  ses deux relations — l'accord (§8.8).
+
+### La directive — à trancher, hors de la passe
+
+Le souhait de l'auteur : **pouvoir lier une directive au lien qui prouve la culpabilité** (les aveux et
+la toxicologie concordent). La passe **réserve la place** — une directive serait une liaison qui
+emboîte un lien, comme un article — et ne construit rien. Restent à trancher :
+- **ce que ça produit** : envoyé à Auber (il refuse déjà d'entendre le savoir, §5 : la directive
+  change le ton, pas le jeu) ; **lu par les fins** (une variante, comme `variante_sait` — la Fin 2 de
+  la passe Q pourrait répondre à la directive invoquée) ; ou **une fin qui change** (un refus déclaré
+  à côté du silence de la Fin 2 — le plus fort, et le plus près du *lookup*) ;
+- **ouvert à tout lien**, comme un article que l'avocat juge, **ou au seul lien de culpabilité** — qui
+  signalerait alors le moment moral (§4) ;
+- **les arbitrages qu'elle frôle** : §5 (*une règle par fin est un lookup*), §8.6 (*la directive se
+  consulte, ne se récite pas* — la carte de la passe Q), §4 (*taire reste l'absence d'un geste*).
+
+L'item rend la question plus simple à poser : le lien de culpabilité devient un **objet**, celui sur
+lequel la directive se poserait.
+
+### Avec la passe Q
+
+Deux branches, deux sections de ce fichier. **Elles se touchent** : CONCEPTION §4.5 à §4.7 et §7
+(des paragraphes distincts, à fusionner à la main) ; `regles.js` (Q : `envoyer`, `finir`, `estMoyen` —
+R : `poserBloc`, `prendre`, `chercher`, `termesPoses` : disjoints) ; `content.js` (Q : les liens
+`erreur`, l'attente de la lettre — R : un bloc de grammaire) ; `diagnostic.js` (chacune ses
+contrôles). **Elles se servent** : la lettre de Q se sert par une comparaison nue taguée — l'item de la
+lettre, repris et envoyé nu, la sert ; les liens `erreur` de Q sont exactement **les reproches prévus**
+de R. La seconde fusionnée se rebase sur la première.
+
+### Questions à l'auteur, pour la relecture
+
+1. **Où vivent les liens** : troisième colonne de DOCUMENTS, ou zone à part sous l'index ?
+2. **La naissance se dit-elle** — la voix, la ligne sous la pièce — ou seulement par la puce qui
+   paraît ? (§4.9, §8.6)
+3. **En session 1**, des liens naissent (le PV et le voisin) : le tutoriel en montre-t-il un, ou se
+   tait-il ? Le chemin d'un trait suffit à la calibration (§4.8).
+4. **Un lien pris quand ta RÉPONSE est commencée** : refusé, sa ligne disant pourquoi — ou il la
+   remplace ?
+5. **La puce dit-elle la relation** (*« … ne concordent pas »*) ? Oui par défaut : c'est la thèse du
+   joueur, et c'est elle que l'avocat reprochera.
+
 ## Jean 5 — passe Q : le retour du 9 octobre (plan, à relire par l'auteur)
 
 **Où en est la passe** — *plan enregistré le 9 octobre, **à modifier par l'auteur** avant tout

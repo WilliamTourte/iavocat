@@ -923,6 +923,14 @@ les arbitrages pris par l'auteur — le cadre en carte en tête du fil, la quest
 *plaider, c'est opposer*, la PLAIDOIRIE aux seuls moyens fondés. **À modifier par l'auteur**, puis
 la méthode : le document, la relecture, le code. Rien n'est encore écrit ailleurs.
 
+**En parallèle, la passe R — l'item lien** (branche `item-lien`, 10 octobre) : associer deux passages
+que le dossier reconnaît fait naître un **lien**, privé, qui garde la relation du joueur — juste ou
+fausse — et se reprend plus tard, sous un article ou envoyé nu ; l'avocat reproche l'erreur à
+l'envoi, et le droit ne se sait qu'à l'envoi. Le chemin d'un trait reste. **Le prix, à relire** :
+l'écran dit désormais *ce qui est pertinent* — jamais *ce qui est juste*. La directive liée au lien
+de culpabilité reste **à trancher**. Plan, arbitrages et questions en tête du `TODO.md` (*Auteur —
+passe R*) : **à modifier par l'auteur**, puis la méthode. Rien n'est encore écrit ailleurs.
+
 **Vient la relecture du cas par l'auteur** (§3 ci-dessus, §6) : l'atelier l'ouvre tel quel — les
 pièces, l'onglet Verdicts pour les paires, la frise pour les fins. Puis **le jouer** : la boucle n'a
 pas changé, la relation et le cas si — **à jouer d'abord : *« ne concordent pas »* se lit-il comme
