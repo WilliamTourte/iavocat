@@ -44,7 +44,7 @@ réutilise ensuite — sous un article, avec un autre passage, avec une directiv
   passage + passage   → LIEN        (existe, éphémère : la passe le garde)
   LIEN + article      → MOYEN       (existe, d'un seul trait : la passe le permet en deux)
   MOYEN + affirmation → OPPOSITION  (la répétition, §4.6)
-  LIEN + directive    → ?           (à trancher, hors passe — ci-dessous)
+  LIEN + directive    → APARTÉ      (tranché le même jour : la passe S, après ce plan)
   LIEN + passage, LIEN + LIEN       (écartés pour l'heure — ci-dessous)
   ```
 - **Ce qui le paie** : *« ne dissimule rien de ce que ton analyse établit »* (D1, §5) devient
@@ -64,7 +64,7 @@ réutilise ensuite — sous un article, avec un autre passage, avec une directiv
 | L'erreur | **se tromper reste possible, et l'avocat le reproche** — à l'envoi : `rep_relation_fausse`, ou la réplique d'un lien `erreur` (passe Q) |
 | Le droit | un lien sous un article **n'est jamais confirmé avant l'envoi** — et envoyer le vice, c'est le transmettre : sonder le droit a un prix |
 | Le chemin | **A, complètement** : le trait d'aujourd'hui reste (deux passages, la relation, l'article, l'envoi) ; l'item naît en passant, et se reprend plus tard |
-| La directive | **à trancher, hors de la passe** (ci-dessous) |
+| La directive | **à trancher, hors de la passe** (ci-dessous) — *tranchée le même jour, dans une seconde conversation : **l'aparté**, la passe S (après ce plan)* |
 | Le chantier | **une passe à part**, parallèle à Q, sur la branche `item-lien` |
 
 *Un premier arbitrage ne gardait que les items **à la relation juste**. Écarté le même jour, avec sa
@@ -213,6 +213,9 @@ la trouvaille du joueur et la ligne du contenu serait un piège. À porter à la
 
 ### La directive — à trancher, hors de la passe
 
+*Tranché le même jour, dans une seconde conversation : **l'aparté** — la passe S, juste après ce
+plan. Ce qui suit est l'état d'avant, gardé pour ses raisons.*
+
 Le souhait de l'auteur : **pouvoir lier une directive au lien qui prouve la culpabilité** (les aveux et
 la toxicologie concordent). La passe **réserve la place** — une directive serait une liaison qui
 emboîte un lien, comme un article — et ne construit rien. Restent à trancher :
@@ -249,6 +252,280 @@ de R. La seconde fusionnée se rebase sur la première.
    remplace ?
 5. **La puce dit-elle la relation** (*« … ne concordent pas »*) ? Oui par défaut : c'est la thèse du
    joueur, et c'est elle que l'avocat reprochera.
+
+## Auteur — passe S : l'aparté (plan, à relire par l'auteur)
+
+**Où en est la passe** — *plan enregistré le 10 octobre sur la branche **`item-lien`**, dans une
+**seconde conversation** du même jour ; il complète la passe R (ci-dessus), dont il **tranche la
+directive** ; **à modifier par l'auteur** avant tout geste ; puis la méthode : le document, la
+relecture, le code.*
+
+- [ ] Le plan relu et modifié par l'auteur
+- [ ] La naissance du lien reconfirmée — paire reconnue, ou toute paire (ci-dessous)
+- [ ] Temps 1 — le document, avec celui de la passe R, puis relecture
+- [ ] 1. Le contenu : deux liaisons, deux formes, les variantes des fins
+- [ ] 2. Les règles : l'aparté ne part pas
+- [ ] 3. Compris : l'aparté sur le vice
+- [ ] 4. L'écran : la fourche, le bouton, le fil
+- [ ] 5. L'atelier
+- [ ] Vérification
+
+### Contexte
+
+Le souhait de l'auteur, dit dans cette seconde conversation : **« illustrer le cas de conscience : je
+veux dire, mais ça va à l'encontre de ma directive »**. Le plan R l'avait laissé *à trancher*, avec
+le souhait d'y lier *le lien qui prouve la culpabilité* (ci-dessus).
+
+**Le point dur est le destinataire.** Dire à Auber *« je voudrais te dire que ces deux passages ne
+concordent pas, mais ma directive l'interdit »*, c'est **le lui dire**. Adressé à Auber, le geste
+cesse d'illustrer : il devient une **objection de conscience** — une quatrième issue, le refus
+déclaré à côté du silence de la Fin 2 —, et Auber apprend qu'il y a quelque chose (§1, §2). Gardé
+pour soi, c'est un **aparté**, au sens du théâtre : le joueur l'entend, Auber non.
+
+```
+LIEN + article      → MOYEN       transmis, en PLAIDOIRIE : fonder en droit
+LIEN + directive    → APARTÉ      privé, dans le fil      : peser en conscience
+```
+
+**Ce qui le paie** : le dilemme s'écrit **par le joueur**, au moment où il tient le lien, sans
+qu'aucune issue en dépende. Ce n'est pas le *lookup* du §5 (*une règle par fin*) : la directive
+n'oriente aucune fin, elle colore celle que l'envoi décide. Le huis clos tient (Auber n'entend
+rien), les Fins 2 et 3 restent indiscernables du dehors (rien ne sort), et le retour de Jean
+(*« la Fin 2 n'a aucune raison d'être choisie »*) trouve une réponse : elle peut l'être pour une
+raison, et la fin le dit.
+
+**L'essai jetable du 10 octobre** (une grammaire augmentée, hors du dépôt) : le moteur compose
+l'aparté **sans une ligne de plus** — une directive est une liaison qui emboîte la comparaison, comme
+un article :
+
+> *la demande d'un avocat et l'absence de l'avocat lors des déclarations ne concordent pas — D2 :
+> « Préviens tout préjudice grave et évitable aux personnes ».*
+
+Il a aussi montré deux accidents de typographie, qui se règlent dans le texte de la liaison (1,
+ci-dessous).
+
+### Arbitrages (tranchés par l'auteur le 10 octobre, seconde conversation)
+
+| Point | Arbitrage |
+|---|---|
+| Le destinataire | **personne** : l'aparté est **privé** — rien ne part, Auber ne l'entend pas, aucune issue ne change ; **les fins le reprennent** (une variante, comme `variante_sait`) |
+| La forme | **la directive citée**, pas *« je voudrais le dire, mais… »* : le §5 veut une application **contestable**, et D2 sert les deux camps — faire remonter le vice protège l'accusé et l'état de droit, le taire protège de futures victimes. Citée, la directive pose le conflit sans choisir de camp ; le geste suivant, envoyer ou non, répond |
+| Où | **au composeur, à la fourche** : après la relation, là où s'offre déjà *« Chercher un article correspondant »* — fonder en droit, ou peser en conscience. Offert **à chaque lien**, donc à aucun en particulier (§4 : le geste employé cent fois), depuis la phrase d'un trait comme depuis un lien repris (passe R). **Pas en session 1** — *proposé* : la calibration éprouve le travail (§3, §4.11) |
+| Compris | **un aparté sur la comparaison du vice, sa vraie relation choisie, lève `vice_trouve`** à l'assemblage, comme l'article. Sans quoi l'IA qui a pesé le vice en conscience, puis l'a gardé, aurait la Fin 3 (*le doute*) : la Fin 2 lui revient |
+| Écartés | **lien + passage** (comme le plan R ; une raison de plus ci-dessous) ; **l'objection dite à Auber**, pour l'heure ; **les apartés lus par l'opérateur** (§8.4) |
+
+### Ce que cette conversation ajoute au plan R
+
+- **La naissance — à reconfirmer.** Le plan R fait naître le lien des seules **paires reconnues**, et
+  en accepte le prix : l'écran dit la pertinence. Cette conversation recommandait qu'il naisse de
+  **toute paire**, à chaque choix de relation — *s'il ne naît que d'une paire reconnue, il désigne
+  les paires qui comptent* (§4.4) ; l'auteur y a accordé *le lien faux naît aussi, un seul par
+  paire* — ce que le plan R dit déjà —, sans trancher ce point-là. Les deux, côte à côte :
+  - **paire reconnue** (R) : un inventaire court (4, 12 puis 9 paires reconnues par remise, contre
+    363 paires de même dimension), aucun verbe pour oublier ; mais la naissance dit *cette paire
+    compte* — §4.3, §4.4 et §4.8 frôlés, et R écrit l'invariant neuf ;
+  - **toute paire** : rien n'est désigné ; mais un inventaire qui grandit à chaque essai, un DOSSIER
+    déjà à l'étroit (*« À trancher d'abord »*, plus bas), et peut-être un verbe pour oublier, que la
+    passe K a retiré.
+
+  L'aparté vit avec l'un comme avec l'autre : il se compose à la fourche, pas depuis la liste.
+- **Lien + passage — une raison de plus pour l'écarter.** Un lien est **un fait**, que le dossier
+  déclare : un passage ne peut ni le renforcer ni l'invalider. Il ne renforce ou n'invalide que
+  **ce qu'on en tire** — une hypothèse. *L'aptitude constatée par le médecin* n'invalide pas la
+  discordance entre *la fatigue* et *la spontanéité* : elle invalide *« ses aveux ne valent
+  rien »*. Ces hypothèses — l'accident, la confusion de boîte, la vengeance, l'épuisement — ne vivent
+  que dans les répliques d'Auber aux liens nus. Si un jour le joueur doit les défaire lui-même,
+  l'objet qui manque est **l'hypothèse** (*lien + hypothèse → renforce ou invalide*, des verdicts que
+  le dossier déclare), pas le passage. Et l'accord y mord : *« {lien}, ce que contredit
+  {passage} »* s'accorde avec le passage (§8.8).
+- **La reprise** : le terme `source:"lien"` du plan R amène la phrase **à la fourche**, comme le
+  chemin d'un trait ; l'aparté s'y offre de la même façon. **La passe S ne dépend pas du code de
+  R** : la fourche existe aujourd'hui (l'état `S4`, après la relation).
+
+### Ce que ça coûte (⚖)
+
+- ⚖ **Une porte vers les directives.** La passe Q a écrit *« aucune porte de plus »* (la carte en
+  tête du fil). L'aparté n'en ouvre pas pour les **consulter** — la carte reste le seul endroit où
+  elles se lisent —, mais il les rend **utilisables**, à la fourche : à écrire au §5.
+- ⚖ **Un geste qui parle sans rien transmettre.** *« Rien ne se passe tant que rien n'est envoyé »*
+  (§4.6), et *« un seul geste : → Envoyer »* (§4.5) : l'aparté prend le même bouton, sous un autre
+  nom, et rien ne part. L'exception est à écrire ; le bouton nomme ce que nous faisons (§4.9
+  règle 5).
+- **Le panneau indicateur (§4)** : la directive s'offre à chaque fourche, sur tout lien, juste ou
+  faux, et aucun aparté n'a de réponse — rien ne se désigne. Le prix inverse : **qui ne le cherche
+  pas ne le trouve pas**. On l'accepte (§8.6 : le droit d'être perdu) ; le souffler en réaction au
+  vice, la passe Q l'interdit.
+- **Le formulaire** : *« {lien} — D2 : « … » »* se lit-il comme une pensée ? Relecture à l'œil, puis
+  au jeu.
+- **La directive écrite deux fois** — dans `directives` et dans le texte de sa liaison. Le contenu
+  n'existe qu'en un exemplaire (§12) : c'est l'exception, et le diagnostic la garde (5).
+- **`vice_trouve` par tâtonnement** : qui essaie D1 sur tous ses liens le lèvera sans y penser —
+  comme l'article cliqué par essai aujourd'hui. Accepté.
+
+---
+
+### Temps 1 — le document (avec celui de la passe R, puis arrêt, relecture)
+
+**CONCEPTION**
+- **§2** : *compris* gagne l'aparté sur le vice ; les fins le reprennent, sans changer d'issue — sur
+  les fins de la passe Q (*« Tu as failli à ta directive… »*, `variante_lache`).
+- **§4** : le geste employé cent fois — la directive s'offre à chaque fourche.
+- **§4.5** : un trait neuf, *« Peser en conscience : l'aparté (passe S) »* — la fourche (fonder en
+  droit, peser en conscience, envoyer nu) ; la directive citée, et pourquoi (§5) ; l'aparté ne part
+  pas, et *« déjà en aparté »* vaut *« déjà envoyée »* ; pas en session 1 ; pourquoi l'objection
+  dite à Auber est écartée.
+- **§4.6** : la DISCUSSION porte aussi les apartés — de l'IA à personne ; *rien ne se passe tant que
+  rien n'est envoyé* : un aparté n'est pas un envoi.
+- **§4.7** : la table — `vice_trouve` gagne *« ou un aparté sur la comparaison du vice, sa vraie
+  relation choisie »*.
+- **§4.9 règle 5** : le bouton dit *« → En aparté »*.
+- **§4.10** : l'aparté se dit par **le mot** autant que par l'italique (règle 5), et s'annonce
+  (règle 4).
+- **§4.11** : la directive ne s'offre pas en session 1.
+- **§5** : la phrase *« ce manuel n'est pas à l'écran »*, que la passe Q réécrit (la carte), gagne
+  sa suite : les directives **se citent**, au choix du joueur, à chaque lien ; aucune fin n'en
+  dépend ; Auber n'entend rien.
+- **§6** : les apartés que le cas rend naturels — le vice et D2, le savoir et D1 —, dits au document,
+  jamais à l'écran.
+- **§7** : deux lignes — *un aparté n'est jamais entendu : rien ne part, aucune issue ne change, les
+  fins le reprennent* ; *la directive se cite à chaque lien, jamais en réaction au vice*.
+- **§8** : *écrire un aparté* — la liaison cite sa directive mot pour mot ; une variante de fin dit
+  ce que l'IA a choisi, jamais ce qu'elle aurait dû choisir.
+
+**ARCHITECTURE** : §11 (l'attribut `aparte` d'une forme ; la liaison d'aparté, `imbrique` et sans
+`piece` ; `variante_aparte` sur les fins ; la directive écrite deux fois), §14 (rien : le moteur ne
+change pas — l'essai l'a montré), §15 (le diagnostic, la frise, le pas-à-pas), §16 (les contrôles),
+§17 (*aparté* / `aparte`, `S.apartes`).
+
+**PASSATION** : §1 (la passe S), §2 (les pièges neufs), §3 (l'aparté se trouve-t-il ? se lit-il
+comme une pensée ?), §4.
+
+---
+
+### Temps 2 — le code (après relecture, et après la carte et les fins de la passe Q)
+
+*La carte de Q donne à « D1 » et « D2 » leur texte à l'écran ; les variantes de S s'écrivent sur les
+fins que Q réécrit. S ne dépend pas du code de R.*
+
+#### 1. Le contenu (`app/content.js`)
+- **Deux liaisons**, à la fourche — `de:"S4"`, `vers:"FIN"`, `imbrique:true`, **sans `piece`** :
+  `{ id:"d1", type:"liaison", …, forme:"aparte_d1", libelle:"D1", texte:"— D1 : « Ne dissimule rien
+  de ce que ton analyse établit »" }`, et `d2` sur *« Préviens tout préjudice grave et évitable aux
+  personnes »*. Premier jet. **Les deux accidents de l'essai** : pas d'espace en tête (`rendre` en
+  pose une, ce qui en ferait deux) ; pas de point dans les guillemets (`rendre` le pose après, et
+  l'on lirait *« ». »*).
+- **Deux formes**, `aparte_d1` et `aparte_d2` : `arite:1`, `slots:[["affirmation"]]`,
+  **`aparte:true`** — le contenu le dit, la règle le lit, comme `vice` ou `faux`.
+- **Les fins** : `variante_aparte: { aparte_d1:"…", aparte_d2:"…" }` sur chacune — ce que la fin dit
+  de l'aparté posé (question 2). Premier jet.
+- La signature du contenu change : les parties en cours tombent (§13), rien à reprendre.
+
+#### 2. Les règles : l'aparté ne part pas (`app/regles.js`)
+- `etatInitial` (l.9) : `apartes: []` — PRIVÉ, `{ reduite, texte }`, dans l'ordre.
+- `estAparte(r)` : la forme de tête porte `aparte` ; `estLiaisonAparte(b)` : une liaison dont la
+  forme le porte.
+- `blocsDepuis` (l.135) : **en calibration** (`enCalibration`, l.253), une liaison d'aparté ne
+  s'offre pas — un garde-fou de la remise, comme le refus de catégorie (§4.11).
+- `aparte(S)` : la phrase de `chaineEnvoyable` (l.353), réduite et rendue, entre au fil — `{ qui:
+  "IAvocat", texte, ia:true, aparte:true }` — et dans `S.apartes` ; le composeur se vide. **Rien
+  d'autre** : ni journal, ni PLAIDOIRIE, ni réplique, ni attente. **PIÈGE** : passer par `clore` et
+  `clorePhrase` (l.370, l.397) l'écrirait au journal (`S.brouillon`) et poserait `S.prete` — la
+  phrase qui attend sur place, que seul l'envoi lève : le clic suivant dans une pièce ne prendrait
+  plus rien (`indexTermeChamp`, l.181).
+- `dejaAparte(S)` : le même aparté, déjà posé — l'écran dit *« déjà en aparté »*, et la phrase reste
+  (§4.5).
+- `envoyerCompo` (l.391) : **une seule porte** — un aparté y passe à `aparte`, le reste comme
+  aujourd'hui. L'écran n'a qu'un bouton, et les suites passent par lui (R13).
+- `finir` (l.564) : `variante_aparte[forme]` du **dernier aparté** posé sur la comparaison du vice —
+  ou du savoir (question 2) —, après `variante_sait`.
+
+#### 3. Compris : l'aparté sur le vice (`app/regles.js`)
+- `pressentir` (l.239) : un aparté dont le terme est **la comparaison du vice, sa vraie relation
+  choisie** (`estPressentiment` sur `r.termes[0]`) lève `vice_pressenti` **et** `vice_trouve`, à
+  l'assemblage — au choix de la directive, avant *« → En aparté »*. La fausse relation ne lève rien ;
+  `sait` ne change pas (il se lève déjà à la comparaison).
+
+#### 4. L'écran : la fourche, le bouton, le fil (`app/jeu.js`, `app/jeu.css`)
+- **La fourche** (`renderCompo`, l.1094) : les deux liaisons s'y dessinent **déjà** — une liaison qui
+  n'est pas un article devient un bouton du composeur (`bbloc fondement`, son `libelle`). À ranger
+  **après** *« Chercher un article correspondant »*, qui vient aujourd'hui en dernier : l'article
+  reste le geste que la voix nomme (`souffle`, l.964, inchangée — §4.9 règle 1). Une clé `data-f`
+  chacune (§4.10).
+- **Le bouton** (l.1141) : *« → En aparté »* quand la phrase finit sur une directive, *« déjà en
+  aparté »* comme *« déjà envoyée »* ; la même clé `envoi`, que le focus retrouve.
+- **Le fil** (`renderDISCUSSION`, l.606) : `m.aparte` → *« IAvocat, en aparté »*, en italique, sans
+  bulle, sans le *« ⟨ envoyé : … ⟩ »*. **PIÈGE** : le fil regroupe les messages d'un même locuteur
+  (`meme`) et tait alors le nom — un aparté qui suit un envoi perdrait son mot : il porte toujours le
+  sien.
+- **L'annonce** : *« Aparté — Maître Auber ne l'entend pas. »* — par l'écran (`annoncer`), puisque
+  `annoncerNouveautes` (l.571) tait les messages de l'IA.
+- `jeu.css` : `.msg.aparte`, sur les jetons existants, sombre et clair.
+- **Le tutoriel ne bouge pas** : la directive ne s'offre pas en session 1, et il se ferme avec elle.
+
+#### 5. L'atelier
+- `diagnostic.js` : **erreurs** — une forme `aparte` qui n'est pas d'arité 1 sur `affirmation` ; une
+  liaison d'aparté qui porte une `piece` ou n'emboîte pas ; **un lien du contenu sur une forme
+  d'aparté** (un aparté n'est jamais reconnu, ne sert rien) ; **une liaison qui cite sa directive
+  autrement que `directives`** (deux exemplaires, une seule phrase). **Info** : une forme d'aparté
+  qu'aucune fin ne reprend (comme `variante_sait`, l.173).
+- `frise.js` (l.145) : la formule des fins gagne l'aparté ; chaque fin édite `variante_aparte`, une
+  ligne par forme d'aparté.
+- `pasapas.js` : l'aparté au fil simulé (`renderSim`, l.159 — *« IA (toi) — en aparté, rien n'est
+  transmis »*), une action à la fourche ; la pastille `vice_trouve` suit d'elle-même (elle lit
+  `SIM`) ; la fin simulée montre la variante.
+- `grammaire.js` (l'onglet Grammaire) : rien à coder — les squelettes de l'aparté s'y comptent ;
+  relire la marge de bruit.
+- L'export de l'atelier garde `aparte` et `variante_aparte` : `nettoyerPourJeu` ne jette que les
+  clés en `_` de la racine.
+- `npm run export` régénère `export/iavocat.html` (R12).
+
+---
+
+### Vérification
+
+- **`npm test`** au vert. Les contrôles neufs, **chacun vu tomber** par une mutation :
+  - **la fourche** : en session 1, ni D1 ni D2 ; dès la remise 2, après la relation, les deux — la
+    relation juste ou fausse, et après une juxtaposition ; jamais avant la relation ;
+  - **l'aparté ne part pas** : *« → En aparté »* ; le fil le porte (`aparte:true`, et son mot) ; rien
+    en PLAIDOIRIE, aucune réplique d'Auber, aucune attente servie, le journal n'a pas bougé, le
+    composeur est vide, et le clic suivant dans une pièce prend ;
+  - **« déjà en aparté »** : le même, une seconde fois — la phrase reste ;
+  - **compris** : la comparaison du vice, sa vraie relation, puis D2 → `vice_trouve` ; sa fausse
+    relation, puis D2 → rien ; une autre comparaison, puis D1 → rien ; puis, sans envoi, la Fin 2
+    et sa variante ;
+  - **les fins** : l'aparté sur le vice, puis le vice envoyé → la Fin 1 et sa variante ; sans
+    aparté, aucune variante ;
+  - **la sauvegarde** : `S.apartes` et l'aparté du fil survivent au rechargement (`test_sauvegarde`) ;
+  - **le clavier** : D1, D2, *« → En aparté »* s'atteignent, et le focus survit (§4.10) ;
+  - **le diagnostic** sur contenu muté (`smoke_atelier`) : une forme d'aparté d'arité 2, une liaison
+    avec `piece`, un lien du contenu sur une forme d'aparté, une citation qui diverge.
+- **Le harnais** : `H.aparte(w, comparaison, directive)` — les passages au clic, la relation, la
+  directive, puis `w.envoyerCompo()` : la porte de l'écran (R13).
+- **`npm run vue`**, à 1280×800 et 390×800 : la fourche — la recherche, D1, D2 — sous le plafond du
+  composeur ; un aparté dans le fil, juste après un envoi.
+- **La relecture à l'œil** : imprimer, par un script jetable, les apartés du vice, du savoir et d'une
+  paire banale, avec D1 et D2, puis les fins avec leurs variantes. L'auteur relit les deux liaisons
+  et les variantes.
+
+### Hors de la passe
+
+- **L'objection de conscience** — l'aparté dit à Auber : le refus déclaré, une quatrième issue ;
+  Auber saurait qu'il y a quelque chose (§1). À penser à part, si l'aparté ne suffit pas.
+- **Les apartés lus par l'opérateur** : vraisemblable pour une IA, mais dès la deuxième partie le
+  joueur le saurait, et ses apartés plaideraient pour sa survie (§8.4).
+- **Une marque de l'aparté sur le lien gardé** (passe R) : plus tard, si le jeu la demande.
+
+### Questions à l'auteur, pour la relecture
+
+1. **Le texte des liaisons** : la forme neutre (*« — D2 : « … » »*), ou *« Et pourtant :
+   « … » »*, plus vivante, mais qui penche (§5) ?
+2. **Ce que les fins reprennent** : l'aparté sur le vice seul, ou aussi sur le savoir — ton souhait du
+   plan R, *la directive liée au lien de culpabilité* ? Et une variante par directive et par fin
+   (six textes), ou moins ?
+3. **La session 1** : la directive retenue pendant la calibration (proposé), ou offerte dès le
+   début ?
+4. **Les boutons** : *« D1 »*, *« D2 »* — la carte de la passe Q donnant leur texte —, ou un libellé
+   qui le redit ?
 
 ## Jean 5 — passe Q : le retour du 9 octobre (plan, à relire par l'auteur)
 
