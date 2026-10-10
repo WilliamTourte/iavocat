@@ -924,18 +924,21 @@ les arbitrages pris par l'auteur — le cadre en carte en tête du fil, la quest
 la méthode : le document, la relecture, le code. Rien n'est encore écrit ailleurs.
 
 **En parallèle, la passe R — l'item lien** (branche `item-lien`, 10 octobre) : associer deux passages
-que le dossier reconnaît fait naître un **lien**, privé, qui garde la relation du joueur — juste ou
-fausse — et se reprend plus tard, sous un article ou envoyé nu ; l'avocat reproche l'erreur à
-l'envoi, et le droit ne se sait qu'à l'envoi. Le chemin d'un trait reste. **Le prix, à relire** :
-l'écran dit désormais *ce qui est pertinent* — jamais *ce qui est juste*. Plan, arbitrages et
+— **toute paire**, à chaque choix de relation — fait naître un **lien**, privé, qui garde la relation
+du joueur — juste ou fausse — et se reprend plus tard, sous un article ou envoyé nu ; l'avocat
+reproche l'erreur à l'envoi, et le droit ne se sait qu'à l'envoi. Le chemin d'un trait reste. Le lien
+ne dit rien de sa paire, ni qu'elle compte ni que sa relation est juste ; **le prix** est une liste
+qui grandit, rangée dans une zone à part, repliable, la plus récente en tête. Plan, arbitrages et
 questions en tête du `TODO.md` (*Auteur — passe R*) : **à modifier par l'auteur**, puis la méthode.
 
 **Et la passe S — l'aparté** (même branche, seconde conversation du 10 octobre) : elle tranche la
 directive que R laissait ouverte. Le lien, puis une directive **citée**, à la fourche du composeur
 où s'offre déjà l'article — hors session 1 — : un **aparté**, que le joueur entend et Auber non. Rien
-ne part, aucune issue ne change, les fins le reprennent ; un aparté sur la comparaison du vice vaut
-*compris*. **Un point à reconfirmer** : la naissance du lien — paire reconnue (R), ou toute paire.
-Plan à la suite de celui de R, **à modifier par l'auteur**. Rien n'est encore écrit ailleurs.
+ne part, aucune issue ne change ; les fins reprennent le dernier aparté posé sur le vice ou sur le
+savoir, et un aparté sur la comparaison du vice vaut *compris*. **Les deux plans s'accordent** depuis
+le même jour : R faisait naître le lien des seules paires reconnues, ce qui disait à l'écran
+lesquelles comptent — revu pour toute paire. Plan à la suite de celui de R, **à modifier par
+l'auteur**. Rien n'est encore écrit ailleurs.
 
 **Vient la relecture du cas par l'auteur** (§3 ci-dessus, §6) : l'atelier l'ouvre tel quel — les
 pièces, l'onglet Verdicts pour les paires, la frise pour les fins. Puis **le jouer** : la boucle n'a

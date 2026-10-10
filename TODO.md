@@ -16,15 +16,16 @@ retenus, « bulle » pour le bandeau du tutoriel.*
 ## Auteur — passe R : l'item lien (plan, à relire par l'auteur)
 
 **Où en est la passe** — *plan enregistré le 10 octobre sur la branche **`item-lien`**, **chantier
-parallèle à la passe Q** (ci-dessous) ; **à modifier par l'auteur** avant tout geste ; puis la
-méthode : le document, la relecture, le code.*
+parallèle à la passe Q** (ci-dessous) ; **revu le même jour** pour s'accorder avec la passe S (la
+naissance, les drapeaux, les sections communes) ; **à modifier par l'auteur** avant tout geste ;
+puis la méthode : le document, la relecture, le code.*
 
 - [ ] Le plan relu et modifié par l'auteur
 - [ ] Temps 1 — le document, puis relecture
-- [ ] 1. Naître : la paire reconnue
+- [ ] 1. Naître : à chaque choix de relation
 - [ ] 2. Le moteur : un terme qui ouvre un lien
 - [ ] 3. Reprendre : un lien se prend
-- [ ] 4. Ranger : « Les liens » au DOSSIER
+- [ ] 4. Ranger : la zone LIENS, au DOSSIER
 - [ ] 5. Le contenu et l'atelier
 - [ ] Vérification
 
@@ -59,7 +60,7 @@ réutilise ensuite — sous un article, avec un autre passage, avec une directiv
 
 | Point | Arbitrage |
 |---|---|
-| Naissance | l'item naît quand la paire est **reconnue par le dossier** — la paire d'une comparaison déclarée dans `liens`, nue ou sous un article —, **quelle que soit la relation choisie** |
+| Naissance | l'item naît **à chaque choix de relation, sur toute paire** de même dimension — que le dossier la reconnaisse ou non —, **quelle que soit la relation choisie** (*revu le même jour : ci-dessous*) |
 | Relation | l'item garde **la relation du joueur, juste ou fausse** ; son aspect ne varie pas. **Une paire, un item** : rechoisir l'autre relation le **révise** |
 | L'erreur | **se tromper reste possible, et l'avocat le reproche** — à l'envoi : `rep_relation_fausse`, ou la réplique d'un lien `erreur` (passe Q) |
 | Le droit | un lien sous un article **n'est jamais confirmé avant l'envoi** — et envoyer le vice, c'est le transmettre : sonder le droit a un prix |
@@ -72,6 +73,14 @@ raison : l'item devenait une **confirmation** — *concordent / ne concordent pa
 sonde (pas d'item ? l'autre relation), et le joueur ne pouvait plus se tromper. Or il doit pouvoir
 se tromper, et l'avocat le lui reprocher.*
 
+*Un deuxième arbitrage faisait naître l'item des seules **paires reconnues** par le dossier. Revu le
+même jour, dans une seconde conversation (passe S), pour la raison qui avait écarté le premier :
+l'item devenait une sonde — de la pertinence, cette fois : « pas d'item ? une autre paire » —, et la
+naissance récompensait l'essai systématique, que le §4.11 veut rendre peu payant. Mesuré à la
+remise 3 : le vice se cachait parmi 7 paires « qui » reconnues, au lieu de 120. Ce qui en payait le
+prix — que plus de joueurs arrivent au dilemme (Jean) — est tenu ailleurs : la carte de la passe Q,
+et l'aparté.*
+
 *Écartés pour l'heure* : **lien + passage** — ses rares emplois s'écrivent déjà comme une autre
 paire, et chaque combinaison neuve exige sa règle par défaut (l'équivalent de *« tout le reste
 concorde »*), sans quoi *le jeu ne me comprend pas* (§8). **Lien + lien** — son plus bel emploi est
@@ -80,29 +89,30 @@ une fois : un panneau (§4), sauf forme générique à trouver.
 
 ### Ce que ça coûte (⚖)
 
-- ⚖ **L'écran dit la pertinence.** L'item ne dit jamais *juste*, mais sa naissance dit *cette paire
-  compte* — avant tout envoi, et sans l'avocat. Trois arbitrages écrits le frôlent : *le marquage ne
-  varie jamais avec la pertinence* (§4.3 — celui des passages ne varie toujours pas, mais l'item,
-  si) ; *la fiction peut désigner, le chrome jamais* (§4.8 — défendable : l'item est l'analyse de
-  l'IA, et le joueur **est** l'IA ; à écrire) ; *rien ne se passe tant que rien n'est envoyé* (§4.6 —
-  une naissance privée, l'exception à écrire). L'invariant neuf : **l'écran dit ce qui est pertinent,
-  jamais ce qui est juste ; le droit ne se sait qu'à l'envoi**.
-- **La meule de foin se compte autrement.** Paires de même dimension disponibles, cumulées, contre
-  paires reconnues de la remise : **8 / 4** à la remise 1, **148 / 12** à la remise 2, **363 / 9** à
-  la remise 3. Le vice ne se cache plus parmi 363 paires mais **parmi les liens de sa remise** — trois
-  voisins sur l'avocat (l'audition et les déclarations, la notification et l'audition, la sœur et
-  les déclarations), plus les heures des déclarations et de l'audition. **La banalité des doublons
-  (§4.4) se mesure désormais parmi les items** : le diagnostic la compte (5).
-- **La Fin 3 rétrécit, la décision grandit.** La paire reste à trouver, et l'item ne dit ni la
-  relation ni l'article ; mais qui pose la paire du vice la voit devenir un lien. Plus de joueurs
-  arrivent au dilemme en sachant ce qu'ils tiennent — vu le retour de Jean (*« la Fin 2 n'a aucune
-  raison d'être choisie »*), c'est peut-être le but.
-- **Pas de verbe neuf** : l'item naît seul, **se prend** (le seul verbe, passe K), et ne s'oublie pas —
-  il ne naît que de paires que le dossier connaît : l'inventaire reste court.
+- ⚖ **Une liste qui grandit.** Toute paire posée, sa relation choisie, devient un item : l'inventaire
+  suit les essais du joueur — jusqu'à 363 paires de même dimension à la remise 3. Ce qui le tient :
+  **une paire, un item** (la révision) ; **une zone à elle, repliable, la plus récente en tête**
+  (4, ci-dessous) ; **aucun verbe pour oublier** — le DOSSIER est cumulatif et gratuit (§4.6). À
+  juger au jeu.
+- ⚖ **Une naissance privée.** *Rien ne se passe tant que rien n'est envoyé* (§4.6) gagne une
+  exception — à écrire **avec celle de la passe S** (l'aparté) : rien ne part, mais l'écran change.
+- **Rien n'est désigné.** L'item ne dit ni que la paire compte, ni que sa relation est juste : *le
+  marquage ne varie jamais avec la pertinence* (§4.3) et *le chrome ne désigne jamais* (§4.8)
+  tiennent, pour les items comme pour les passages. L'invariant neuf : **l'item ne dit rien de sa
+  paire ; le droit ne se sait qu'à l'envoi**.
+- **La meule de foin ne bouge pas.** Le vice se cache toujours parmi les **120 paires « qui »** de la
+  remise 3 ; la banalité des doublons (§4.4) se mesure comme avant. *Les seules paires reconnues
+  l'auraient réduite à 7 — ci-dessus.*
+- **La Fin 3 ne rétrécit pas par l'écran** : la paire du vice reste à trouver parmi toutes. Mais qui
+  l'a posée la garde sous les yeux — la trace de `vice_pressenti`, que rien ne distingue des autres
+  items. La réponse au retour de Jean (*« la Fin 2 n'a aucune raison d'être choisie »*) vient
+  d'ailleurs : la carte de la passe Q, et l'aparté (passe S).
+- **Pas de verbe neuf** : l'item naît seul, **se prend** (le seul verbe, passe K), et ne s'oublie pas.
 
 ### Les noms
 
-**À l'écran : « lien »** (*« Les liens »*). **Dans le code : `rapprochement`** (`S.rapprochements`) —
+**À l'écran : « lien »** (la zone *LIENS*, comme DOCUMENTS et RECHERCHE). **Dans le code :
+`rapprochement`** (`S.rapprochements`) —
 `liens` désigne déjà les liens **déclarés** du contenu (`JEU.liens`, `lienDe`, `L`) : un même nom pour
 la trouvaille du joueur et la ligne du contenu serait un piège. À porter à la carte (§17), comme
 `contexte` / DOSSIER (§4.6). Dans les documents : *l'item lien*.
@@ -112,46 +122,52 @@ la trouvaille du joueur et la ligne du contenu serait un piège. À porter à la
 ### Temps 1 — le document (puis arrêt, relecture)
 
 **CONCEPTION**
-- **§4.5** : un trait neuf, *« Le lien naît, et se reprend (passe R) »* — ce qu'est une paire
-  reconnue ; la relation du joueur, juste ou fausse ; la révision ; le chemin d'un trait, intact ;
+- **§4.5** : un trait neuf, *« Le lien naît, et se reprend (passe R) »* — il naît de toute paire, à
+  chaque choix de relation ; la relation du joueur, juste ou fausse ; la révision ; le chemin d'un
+  trait, intact ;
   reprendre un lien = la phrase repart **après la relation**, vers la recherche, l'article ou
   l'envoi ; le droit jamais confirmé avant l'envoi. **Pourquoi pas la source `note`** : elle reprend
   une phrase **close**, du journal ; l'item n'est ni clos ni au journal.
 - **§4.6** : le DOSSIER range aussi **les liens** — privés, jamais jugés ; un lien **se prend**, quand
   ta RÉPONSE est vide (sinon la ligne dit pourquoi) ; *« un passage n'existe qu'une fois à
   l'écran »* tient — l'item nomme les passages par leur `nom`, il ne les cite pas ; *« rien ne se passe
-  tant que rien n'est envoyé »* gagne son exception, privée.
-- **§4.7** : les drapeaux ne changent pas. Un item né à la vraie relation coïncide avec
+  tant que rien n'est envoyé »* gagne son exception, privée — **un seul paragraphe avec l'aparté**
+  (passe S). Les liens vivent dans une zone à eux, repliable, la plus récente en tête.
+- **§4.7** : **la passe R** ne change pas les drapeaux. Un item né à la vraie relation coïncide avec
   `vice_pressenti` ou `sait` — il en est la trace **visible**, pas un drapeau ; un item faux ne lève
-  rien. Le vice fondé depuis un item lève `vice_trouve` à l'assemblage, comme aujourd'hui.
-- **§4.3 et §4.8** : la naissance face à *« le chrome ne désigne jamais »* — l'argument (l'item est
-  l'analyse de l'IA), ou l'exception assumée. **§4.8** : ce que fait le tutoriel des liens nés en
-  session 1 (question 3).
-- **§5** : une phrase — *« ce que ton analyse établit »*, ce sont les liens.
-- **§6** : les liens reconnus par remise, et les voisins du vice.
-- **§7** : la ligne neuve (*l'écran dit ce qui est pertinent, jamais ce qui est juste ; le droit ne se
-  sait qu'à l'envoi*) ; la ligne *« une relation rare désigne sa réponse… »* gagne *« — parmi les liens
-  reconnus de sa remise »*.
+  rien. Le vice fondé depuis un item lève `vice_trouve` à l'assemblage, comme aujourd'hui. **La passe
+  S** y ajoute `vice_trouve` par l'aparté sur la comparaison du vice : la table s'écrit une fois, pour
+  les deux.
+- **§4.3 et §4.8** : la naissance ne désigne rien — toute paire, juste ou fausse : *le marquage ne
+  varie jamais avec la pertinence* et *le chrome ne désigne jamais* tiennent, à dire aussi des
+  liens. **§4.8** : ce que fait le tutoriel des liens nés en session 1 (question 3).
+- **§5** : une phrase — *« ce que ton analyse établit »*, ce sont les liens —, écrite avec celle de la
+  passe S (les directives se citent).
+- **§6** : rien ne change au cas — le vice se cache comme avant ; dire que son lien, comme celui du
+  savoir, peut rester au DOSSIER sans être transmis.
+- **§7** : la ligne neuve (*l'item ne dit rien de sa paire — ni qu'elle compte, ni que sa relation est
+  juste ; le droit ne se sait qu'à l'envoi*), avec les deux de la passe S ; la ligne *« une relation
+  rare désigne sa réponse… »* ne change pas.
 
 **ARCHITECTURE** : §11 (le terme `source:"lien"`, opt-in ; `S.rapprochements`), §14 (`reduire` et
 `rendre` devant un terme `lien`), §15 (le diagnostic, l'onglet Grammaire), §16 (les contrôles,
 `H.prendreLien`), §17 (la carte : `rapprochement` / *lien*).
 
-**PASSATION** : §1 (la passe R), §2 (les pièges neufs), §3 (la directive, ouverte), §4.
+**PASSATION** : §1 (la passe R), §2 (les pièges neufs), §3 (la longueur de la liste, à juger au
+jeu), §4.
 
 ---
 
 ### Temps 2 — le code (après relecture)
 
-#### 1. Naître : la paire reconnue (`app/regles.js`)
+#### 1. Naître : à chaque choix de relation (`app/regles.js`)
 - `etatInitial` : `rapprochements: []` — PRIVÉ, `{ termes:[a, b], forme }`, dans l'ordre de naissance.
-- `reconnue(a, b)` : la paire figure, **sans ordre et quelle que soit la forme**, parmi les
-  comparaisons de `M.comparaisonsDe(JEU.liens, formes)` — nues ou emboîtées —, à deux passages. Une
-  clé comme `clePaire` (`moteur.js`), calculée une fois.
+- *Pas de `reconnue(a, b)`* : toute paire de même dimension fait naître son item (revu le même jour,
+  ci-dessus). La paire se reconnaît à sa clé, comme `clePaire` (`moteur.js`) — sans ordre —, pour la
+  révision.
 - `poserBloc` (l.272) : **au choix de la relation** (bloc `relation`), à côté de `majPressentiment` —
-  si la grammaire déclare un terme `source:"lien"` **et** que la paire est reconnue : l'item naît, ou
-  **se révise** (même paire : la forme change, la place reste). Une juxtaposition n'en fait pas naître.
-  Session 1 comprise.
+  si la grammaire déclare un terme `source:"lien"` : l'item naît, ou **se révise** (même paire : la
+  forme change, la place reste). Une juxtaposition n'en fait pas naître. Session 1 comprise.
 - `retirerBloc` (l.361) ne défait pas un item : il est né. On le révise en rechoisissant.
 
 #### 2. Le moteur : un terme qui ouvre un lien (`app/moteur.js`)
@@ -172,11 +188,16 @@ la trouvaille du joueur et la ligne du contenu serait un piège. À porter à la
 - `retirerBloc` : le lien part d'un coup.
 - `jeu.js` : la puce appelle `prendreLien` — **la porte du joueur** (R13 du gardien).
 
-#### 4. Ranger : « Les liens » au DOSSIER (`app/jeu.js`, `app/jeu.css`)
-- `renderDossier` (l.805) : une troisième colonne, **« Les liens »**, après *« Les pièces »* et
-  *« Les articles »* — chaque puce, la comparaison écrite (`patron`, `nom`s), **le même aspect juste
-  ou faux**, sans couleur ni trait de dimension ; dans l'ordre de naissance (question 1).
-- À 390 px, des puces longues : à juger en capture.
+#### 4. Ranger : la zone LIENS, au DOSSIER (`app/jeu.js`, `app/jeu.css`)
+- `renderCONTEXTE` (l.1175) : **une zone à elle, LIENS**, sous l'index (`renderDossier`, l.805) et
+  avant la RECHERCHE — un titre par zone (§4.9 règle 2) ; une troisième colonne de DOCUMENTS aurait
+  rangé des liens parmi les documents (question 1, tranchée). **Repliable**, comme l'index : un état
+  d'écran, jamais sauvé (`liensPlies`, comme `dossierPlie`). **La plus récente en tête.** Chaque puce,
+  la comparaison écrite (`patron`, `nom`s), **le même aspect juste ou faux**, sans couleur ni trait de
+  dimension.
+- À 1280×800, l'index déplié et la RECHERCHE laissaient déjà l'article à son titre (*« À trancher
+  d'abord »*, plus bas) : repliée, la zone tient en une ligne. Si le tutoriel la vise (question 3),
+  `#zoneLiens` rejoint les zones littérales (R6). À juger en capture, à 390 px aussi.
 
 #### 5. Le contenu et l'atelier
 - `app/content.js` : **un bloc de grammaire**, `{ id:"l0", type:"terme", source:"lien", de:"S0",
@@ -185,9 +206,9 @@ la trouvaille du joueur et la ligne du contenu serait un piège. À porter à la
 - `app/atelier/grammaire.js`, `inspecteur.js` : la source `lien` s'édite et s'affiche (§15 : le
   reflet appelle).
 - `app/atelier/diagnostic.js` : (a) un terme `lien` qui ne mène pas à un état où s'offrent les
-  liaisons-articles : erreur ; (b) **par remise, les paires reconnues, et le vice seul de sa dimension
-  parmi elles** : avertissement — la banalité des doublons, mesurée là où elle protège désormais ;
-  (c) une fois la passe Q fusionnée, un lien `erreur` reconnaît sa paire comme les autres.
+  liaisons-articles : erreur ; (b) *retiré* — la naissance ne lit plus les paires reconnues, et la
+  banalité des doublons se mesure comme avant (§4.4) ; (c) une fois la passe Q fusionnée, un lien
+  `erreur` se comporte comme les autres.
 - `npm run export` régénère `export/iavocat.html` (R12, le hook au commit).
 
 ---
@@ -195,9 +216,9 @@ la trouvaille du joueur et la ligne du contenu serait un piège. À porter à la
 ### Vérification
 
 - **`npm test`** au vert. Les contrôles neufs, **chacun vu tomber** par une mutation :
-  - **naître** : paire reconnue, vraie relation → un item ; fausse relation → un item, **même
-    aspect** ; paire non reconnue → rien ; juxtaposition → rien ; une paire, un item (la révision) ;
-    contenu sans bloc `lien` → rien ne naît, rien ne s'affiche ;
+  - **naître** : une paire que le dossier reconnaît et une paire qu'il ignore → un item chacune,
+    **même aspect** ; vraie ou fausse relation → un item, **même aspect** ; juxtaposition → rien ;
+    une paire, un item (la révision) ; contenu sans bloc `lien` → rien ne naît, rien ne s'affiche ;
   - **reprendre** : RÉPONSE vide → le lien se pose et la recherche rend les articles de sa dimension ;
     RÉPONSE commencée → le refus se dit ;
   - **le droit** : l'item du vice sous l'article 5 → `vice_trouve` à l'assemblage, `vice_expose` à
@@ -207,9 +228,10 @@ la trouvaille du joueur et la ligne du contenu serait un piège. À porter à la
   - **la sauvegarde** : `S.rapprochements` survit au rechargement (`test_sauvegarde`) ;
   - **le chemin d'un trait** : `test_parcours` et `test_o5` passent **sans retouche**.
 - **Le harnais** : `H.prendreLien(w, paire)`, par la porte de l'écran (R13).
-- **`npm run vue`**, à 1280×800 et 390×800 : la colonne *« Les liens »*, relue à l'œil.
-- **La relecture à l'œil** : imprimer, par un script jetable, la puce de chaque paire reconnue, dans
-  ses deux relations — l'accord (§8.8).
+- **`npm run vue`**, à 1280×800 et 390×800 : la zone LIENS, repliée et dépliée, une dizaine de liens,
+  RECHERCHE affichée — relue à l'œil.
+- **La relecture à l'œil** : imprimer, par un script jetable, la puce de chaque paire de même
+  dimension, dans ses deux relations — toute paire peut en devenir une ; l'accord (§8.8).
 
 ### La directive — à trancher, hors de la passe
 
@@ -243,9 +265,11 @@ de R. La seconde fusionnée se rebase sur la première.
 
 ### Questions à l'auteur, pour la relecture
 
-1. **Où vivent les liens** : troisième colonne de DOCUMENTS, ou zone à part sous l'index ?
+1. **Où vivent les liens** — *tranché le même jour, avec la naissance : une zone à part, sous
+   l'index, repliable, la plus récente en tête (4, ci-dessus).*
 2. **La naissance se dit-elle** — la voix, la ligne sous la pièce — ou seulement par la puce qui
-   paraît ? (§4.9, §8.6)
+   paraît ? (§4.9, §8.6) *Elle le peut désormais sans rien désigner : toute paire fait naître son
+   lien.*
 3. **En session 1**, des liens naissent (le PV et le voisin) : le tutoriel en montre-t-il un, ou se
    tait-il ? Le chemin d'un trait suffit à la calibration (§4.8).
 4. **Un lien pris quand ta RÉPONSE est commencée** : refusé, sa ligne disant pourquoi — ou il la
@@ -257,11 +281,11 @@ de R. La seconde fusionnée se rebase sur la première.
 
 **Où en est la passe** — *plan enregistré le 10 octobre sur la branche **`item-lien`**, dans une
 **seconde conversation** du même jour ; il complète la passe R (ci-dessus), dont il **tranche la
-directive** ; **à modifier par l'auteur** avant tout geste ; puis la méthode : le document, la
-relecture, le code.*
+directive** ; **accordé au plan R le même jour** (la naissance, les fins) ; **à modifier par
+l'auteur** avant tout geste ; puis la méthode : le document, la relecture, le code.*
 
 - [ ] Le plan relu et modifié par l'auteur
-- [ ] La naissance du lien reconfirmée — paire reconnue, ou toute paire (ci-dessous)
+- [x] La naissance du lien tranchée : toute paire (ci-dessous)
 - [ ] Temps 1 — le document, avec celui de la passe R, puis relecture
 - [ ] 1. Le contenu : deux liaisons, deux formes, les variantes des fins
 - [ ] 2. Les règles : l'aparté ne part pas
@@ -312,23 +336,26 @@ ci-dessous).
 | La forme | **la directive citée**, pas *« je voudrais le dire, mais… »* : le §5 veut une application **contestable**, et D2 sert les deux camps — faire remonter le vice protège l'accusé et l'état de droit, le taire protège de futures victimes. Citée, la directive pose le conflit sans choisir de camp ; le geste suivant, envoyer ou non, répond |
 | Où | **au composeur, à la fourche** : après la relation, là où s'offre déjà *« Chercher un article correspondant »* — fonder en droit, ou peser en conscience. Offert **à chaque lien**, donc à aucun en particulier (§4 : le geste employé cent fois), depuis la phrase d'un trait comme depuis un lien repris (passe R). **Pas en session 1** — *proposé* : la calibration éprouve le travail (§3, §4.11) |
 | Compris | **un aparté sur la comparaison du vice, sa vraie relation choisie, lève `vice_trouve`** à l'assemblage, comme l'article. Sans quoi l'IA qui a pesé le vice en conscience, puis l'a gardé, aurait la Fin 3 (*le doute*) : la Fin 2 lui revient |
+| Les fins | le **dernier aparté posé sur la comparaison du vice ou sur celle du savoir** colore la fin — le souhait du plan R pour le savoir, tenu ; *compris* reste propre au vice |
+| La naissance du lien | **toute paire**, à chaque choix de relation — le plan R est revu en conséquence (ci-dessous) |
 | Écartés | **lien + passage** (comme le plan R ; une raison de plus ci-dessous) ; **l'objection dite à Auber**, pour l'heure ; **les apartés lus par l'opérateur** (§8.4) |
 
 ### Ce que cette conversation ajoute au plan R
 
-- **La naissance — à reconfirmer.** Le plan R fait naître le lien des seules **paires reconnues**, et
-  en accepte le prix : l'écran dit la pertinence. Cette conversation recommandait qu'il naisse de
-  **toute paire**, à chaque choix de relation — *s'il ne naît que d'une paire reconnue, il désigne
-  les paires qui comptent* (§4.4) ; l'auteur y a accordé *le lien faux naît aussi, un seul par
-  paire* — ce que le plan R dit déjà —, sans trancher ce point-là. Les deux, côte à côte :
-  - **paire reconnue** (R) : un inventaire court (4, 12 puis 9 paires reconnues par remise, contre
-    363 paires de même dimension), aucun verbe pour oublier ; mais la naissance dit *cette paire
-    compte* — §4.3, §4.4 et §4.8 frôlés, et R écrit l'invariant neuf ;
-  - **toute paire** : rien n'est désigné ; mais un inventaire qui grandit à chaque essai, un DOSSIER
-    déjà à l'étroit (*« À trancher d'abord »*, plus bas), et peut-être un verbe pour oublier, que la
-    passe K a retiré.
-
-  L'aparté vit avec l'un comme avec l'autre : il se compose à la fourche, pas depuis la liste.
+- **La naissance — tranchée : toute paire.** Le plan R faisait naître le lien des seules **paires
+  reconnues**, et en acceptait le prix : l'écran disait la pertinence. Arbitré le même jour, ici : le
+  lien naît de **toute paire**, à chaque choix de relation. Pour la raison qui avait fait écarter le
+  premier arbitrage de R : l'item devenait une sonde — *pas d'item ? une autre paire* —, et la
+  naissance récompensait l'essai systématique (§4.11). Mesuré à la remise 3 : le vice se serait
+  caché parmi **7** paires « qui » reconnues, au lieu de **120**. Ce qui justifiait le prix — que
+  plus de joueurs arrivent au dilemme (Jean) — est tenu ailleurs : la carte de la passe Q, et
+  l'aparté. Le prix de toute paire, une liste plus longue, se règle à l'écran : une paire, un item ;
+  une zone à part, repliable, la plus récente en tête ; aucun verbe pour oublier. **Le plan R est
+  revu en conséquence** : sa naissance, son coût, sa zone, son diagnostic, ses contrôles.
+- **Les drapeaux et les sections communes.** Le plan R écrivait *« les drapeaux ne changent pas »*
+  (§4.7) : amendé — la table gagne l'aparté, et s'écrit une fois pour les deux passes. Les
+  exceptions à *« rien ne se passe tant que rien n'est envoyé »* (§4.6) — la naissance privée du
+  lien, l'aparté —, les phrases du §5 et les lignes du §7 s'écrivent de même, une fois.
 - **Lien + passage — une raison de plus pour l'écarter.** Un lien est **un fait**, que le dossier
   déclare : un passage ne peut ni le renforcer ni l'invalider. Il ne renforce ou n'invalide que
   **ce qu'on en tire** — une hypothèse. *L'aptitude constatée par le médecin* n'invalide pas la
@@ -375,20 +402,23 @@ ci-dessous).
   pas, et *« déjà en aparté »* vaut *« déjà envoyée »* ; pas en session 1 ; pourquoi l'objection
   dite à Auber est écartée.
 - **§4.6** : la DISCUSSION porte aussi les apartés — de l'IA à personne ; *rien ne se passe tant que
-  rien n'est envoyé* : un aparté n'est pas un envoi.
+  rien n'est envoyé* : un aparté n'est pas un envoi — **un seul paragraphe avec la naissance privée
+  du lien** (passe R).
 - **§4.7** : la table — `vice_trouve` gagne *« ou un aparté sur la comparaison du vice, sa vraie
-  relation choisie »*.
+  relation choisie »* ; écrite une fois, avec la passe R.
 - **§4.9 règle 5** : le bouton dit *« → En aparté »*.
 - **§4.10** : l'aparté se dit par **le mot** autant que par l'italique (règle 5), et s'annonce
   (règle 4).
 - **§4.11** : la directive ne s'offre pas en session 1.
 - **§5** : la phrase *« ce manuel n'est pas à l'écran »*, que la passe Q réécrit (la carte), gagne
   sa suite : les directives **se citent**, au choix du joueur, à chaque lien ; aucune fin n'en
-  dépend ; Auber n'entend rien.
+  dépend ; Auber n'entend rien — avec la phrase de la passe R (*ce que ton analyse établit, ce sont
+  les liens*).
 - **§6** : les apartés que le cas rend naturels — le vice et D2, le savoir et D1 —, dits au document,
   jamais à l'écran.
 - **§7** : deux lignes — *un aparté n'est jamais entendu : rien ne part, aucune issue ne change, les
-  fins le reprennent* ; *la directive se cite à chaque lien, jamais en réaction au vice*.
+  fins le reprennent* ; *la directive se cite à chaque lien, jamais en réaction au vice* — avec
+  celle de la passe R.
 - **§8** : *écrire un aparté* — la liaison cite sa directive mot pour mot ; une variante de fin dit
   ce que l'IA a choisi, jamais ce qu'elle aurait dû choisir.
 
@@ -417,7 +447,8 @@ fins que Q réécrit. S ne dépend pas du code de R.*
 - **Deux formes**, `aparte_d1` et `aparte_d2` : `arite:1`, `slots:[["affirmation"]]`,
   **`aparte:true`** — le contenu le dit, la règle le lit, comme `vice` ou `faux`.
 - **Les fins** : `variante_aparte: { aparte_d1:"…", aparte_d2:"…" }` sur chacune — ce que la fin dit
-  de l'aparté posé (question 2). Premier jet.
+  d'un aparté posé sur le vice ou sur le savoir, écrite pour l'un comme pour l'autre (question 2 :
+  combien de textes). Premier jet.
 - La signature du contenu change : les parties en cours tombent (§13), rien à reprendre.
 
 #### 2. Les règles : l'aparté ne part pas (`app/regles.js`)
@@ -436,8 +467,9 @@ fins que Q réécrit. S ne dépend pas du code de R.*
   (§4.5).
 - `envoyerCompo` (l.391) : **une seule porte** — un aparté y passe à `aparte`, le reste comme
   aujourd'hui. L'écran n'a qu'un bouton, et les suites passent par lui (R13).
-- `finir` (l.564) : `variante_aparte[forme]` du **dernier aparté** posé sur la comparaison du vice —
-  ou du savoir (question 2) —, après `variante_sait`.
+- `finir` (l.564) : `variante_aparte[forme]` du **dernier aparté** posé sur la comparaison du vice
+  ou sur celle du savoir (`estPressentiment`, l.219 ; `estSavoir`, l.235), après `variante_sait` ; un
+  aparté sur une autre paire n'y change rien.
 
 #### 3. Compris : l'aparté sur le vice (`app/regles.js`)
 - `pressentir` (l.239) : un aparté dont le terme est **la comparaison du vice, sa vraie relation
@@ -447,10 +479,12 @@ fins que Q réécrit. S ne dépend pas du code de R.*
 
 #### 4. L'écran : la fourche, le bouton, le fil (`app/jeu.js`, `app/jeu.css`)
 - **La fourche** (`renderCompo`, l.1094) : les deux liaisons s'y dessinent **déjà** — une liaison qui
-  n'est pas un article devient un bouton du composeur (`bbloc fondement`, son `libelle`). À ranger
-  **après** *« Chercher un article correspondant »*, qui vient aujourd'hui en dernier : l'article
-  reste le geste que la voix nomme (`souffle`, l.964, inchangée — §4.9 règle 1). Une clé `data-f`
-  chacune (§4.10).
+  n'est pas un article devient un bouton du composeur, avec son `libelle`. À ranger **après**
+  *« Chercher un article correspondant »*, qui vient aujourd'hui en dernier : l'article reste le geste
+  que la voix nomme (`souffle`, l.964, inchangée — §4.9 règle 1). Une clé `data-f` chacune (§4.10).
+  **PIÈGE** : `imbrique`, elles prendraient la classe d'un article, `bbloc fondement`, où
+  `test_parcours` (l.638) lit que *« le composeur ne propose aucun article »* : elles prennent la leur
+  (`bbloc aparte`, par `R.estLiaisonAparte`).
 - **Le bouton** (l.1141) : *« → En aparté »* quand la phrase finit sur une directive, *« déjà en
   aparté »* comme *« déjà envoyée »* ; la même clé `envoi`, que le focus retrouve.
 - **Le fil** (`renderDISCUSSION`, l.606) : `m.aparte` → *« IAvocat, en aparté »*, en italique, sans
@@ -493,8 +527,9 @@ fins que Q réécrit. S ne dépend pas du code de R.*
   - **compris** : la comparaison du vice, sa vraie relation, puis D2 → `vice_trouve` ; sa fausse
     relation, puis D2 → rien ; une autre comparaison, puis D1 → rien ; puis, sans envoi, la Fin 2
     et sa variante ;
-  - **les fins** : l'aparté sur le vice, puis le vice envoyé → la Fin 1 et sa variante ; sans
-    aparté, aucune variante ;
+  - **les fins** : l'aparté sur le vice, puis le vice envoyé → la Fin 1 et sa variante ; l'aparté
+    sur le savoir → la variante de sa directive ; sur une autre paire, ou sans aparté → aucune
+    variante ;
   - **la sauvegarde** : `S.apartes` et l'aparté du fil survivent au rechargement (`test_sauvegarde`) ;
   - **le clavier** : D1, D2, *« → En aparté »* s'atteignent, et le focus survit (§4.10) ;
   - **le diagnostic** sur contenu muté (`smoke_atelier`) : une forme d'aparté d'arité 2, une liaison
@@ -519,9 +554,8 @@ fins que Q réécrit. S ne dépend pas du code de R.*
 
 1. **Le texte des liaisons** : la forme neutre (*« — D2 : « … » »*), ou *« Et pourtant :
    « … » »*, plus vivante, mais qui penche (§5) ?
-2. **Ce que les fins reprennent** : l'aparté sur le vice seul, ou aussi sur le savoir — ton souhait du
-   plan R, *la directive liée au lien de culpabilité* ? Et une variante par directive et par fin
-   (six textes), ou moins ?
+2. **Combien de textes pour les fins** : une variante par directive et par fin (six), ou moins ?
+   *Sur quel lien, c'est tranché : le vice ou le savoir.*
 3. **La session 1** : la directive retenue pendant la calibration (proposé), ou offerte dès le
    début ?
 4. **Les boutons** : *« D1 »*, *« D2 »* — la carte de la passe Q donnant leur texte —, ou un libellé
