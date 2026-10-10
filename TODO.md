@@ -46,7 +46,7 @@ réutilise ensuite — sous un article, avec un autre passage, avec une directiv
   LIEN + article      → MOYEN       (existe, d'un seul trait : la passe le permet en deux)
   MOYEN + affirmation → OPPOSITION  (la répétition, §4.6)
   LIEN + directive    → APARTÉ      (tranché le même jour : la passe S, après ce plan)
-  LIEN + passage, LIEN + LIEN       (écartés pour l'heure — ci-dessous)
+  LIEN + passage, LIEN + LIEN       (rouverts : la question 4, à définir)
   ```
 - **Ce qui le paie** : *« ne dissimule rien de ce que ton analyse établit »* (D1, §5) devient
   littéral — ce que l'analyse établit, ce sont les liens ; le lien du vice reste au DOSSIER, non
@@ -80,6 +80,10 @@ naissance récompensait l'essai systématique, que le §4.11 veut rendre peu pay
 remise 3 : le vice se cachait parmi 7 paires « qui » reconnues, au lieu de 120. Ce qui en payait le
 prix — que plus de joueurs arrivent au dilemme (Jean) — est tenu ailleurs : la carte de la passe Q,
 et l'aparté.*
+
+*Rouverts le même jour par l'auteur — un lien pris dans une RÉPONSE commencée **se combine** avec
+ce qu'elle tient (question 4, à la fin de ce plan, et ce qu'il reste à définir). Ce qui suit est
+l'état d'avant, gardé pour ses raisons, qui sont autant de points à résoudre.*
 
 *Écartés pour l'heure* : **lien + passage** — ses rares emplois s'écrivent déjà comme une autre
 paire, et chaque combinaison neuve exige sa règle par défaut (l'équivalent de *« tout le reste
@@ -267,15 +271,34 @@ de R. La seconde fusionnée se rebase sur la première.
 
 1. **Où vivent les liens** — *tranché le même jour, avec la naissance : une zone à part, sous
    l'index, repliable, la plus récente en tête (4, ci-dessus).*
-2. **La naissance se dit-elle** — la voix, la ligne sous la pièce — ou seulement par la puce qui
-   paraît ? (§4.9, §8.6) *Elle le peut désormais sans rien désigner : toute paire fait naître son
-   lien.*
-3. **En session 1**, des liens naissent (le PV et le voisin) : le tutoriel en montre-t-il un, ou se
-   tait-il ? Le chemin d'un trait suffit à la calibration (§4.8).
-4. **Un lien pris quand ta RÉPONSE est commencée** : refusé, sa ligne disant pourquoi — ou il la
-   remplace ?
-5. **La puce dit-elle la relation** (*« … ne concordent pas »*) ? Oui par défaut : c'est la thèse du
-   joueur, et c'est elle que l'avocat reprochera.
+2. **La naissance se dit-elle** — *tranché : sans un mot du chrome.* La puce neuve paraît dans la
+   zone LIENS, **marquée le temps d'un rendu** — et le titre de la zone repliée avec elle ; le
+   lecteur d'écran entend *« Lien noté dans ton DOSSIER. »* (§4.10 règle 4). La voix n'en dit rien :
+   elle dit le geste suivant (§4.9 règle 1). Toute paire faisant naître son lien, rien n'est désigné.
+3. **En session 1** — *tranché : le tutoriel explique ce qu'est un lien, et qu'il resservira.* Un
+   temps neuf, au premier lien né (les deux heures de la calibration) : la bulle, ancrée à la zone
+   LIENS, dit par exemple *« Ce lien est noté dans ton DOSSIER : tu pourras le reprendre plus
+   tard. »* Le chrome nomme le **geste** — garder, reprendre —, jamais la trouvaille (§4.8). Il ne
+   bloque rien et ne revient pas. `#zoneLiens` rejoint les zones littérales du tutoriel (R6).
+4. **Un lien pris quand ta RÉPONSE est commencée** — *tranché : **il se combine** avec ce qu'elle
+   tient* (un passage, ou un autre lien). C'est rouvrir **lien + passage** et **lien + lien**,
+   écartés jusqu'ici (Contexte, ci-dessus). À définir avant tout code — *proposé* : la passe R livre
+   d'abord la reprise dans une RÉPONSE vide, et la combinaison vient avec sa propre passe, une fois
+   ces points tranchés :
+   - **ce que la combinaison dit** : un lien est un fait, que le dossier déclare ; un passage ne le
+     renforce ni ne l'invalide, il pèse sur **ce qu'on en tire** (*l'aptitude constatée par le
+     médecin* défait *« ses aveux ne valent rien »*, pas la discordance). Quelle relation, alors —
+     *renforce / affaiblit* ? et entre deux liens ?
+   - **qui la vérifie** : une liste que le dossier déclare, comme `discordances`, et une règle par
+     défaut (l'équivalent de *« tout le reste concorde »*) — sans quoi la combinaison juste qu'on n'a
+     pas écrite est refusée, et *le jeu ne me comprend pas* (§8) ;
+   - **ce qu'elle sert** : une attente, la PLAIDOIRIE, un drapeau — ou rien qu'une réplique, comme
+     un lien nu ;
+   - **ce qu'elle désigne** : rare, la combinaison qui compte deviendrait **la** réponse (§4.4) ;
+     employée une fois, un panneau (§4) ;
+   - **la langue** : *« {lien}, ce que contredit {passage} »* s'accorde avec le passage (§8.8).
+5. **La puce dit-elle la relation** — *tranché : oui.* Elle porte la comparaison telle qu'elle
+   s'écrit, *« … ne concordent pas »*, sans point final ; juste ou fausse, le même aspect.
 
 ## Auteur — passe S : l'aparté (plan, à relire par l'auteur)
 
@@ -338,7 +361,7 @@ ci-dessous).
 | Compris | **un aparté sur la comparaison du vice, sa vraie relation choisie, lève `vice_trouve`** à l'assemblage, comme l'article. Sans quoi l'IA qui a pesé le vice en conscience, puis l'a gardé, aurait la Fin 3 (*le doute*) : la Fin 2 lui revient |
 | Les fins | le **dernier aparté posé sur la comparaison du vice ou sur celle du savoir** colore la fin — le souhait du plan R pour le savoir, tenu ; *compris* reste propre au vice |
 | La naissance du lien | **toute paire**, à chaque choix de relation — le plan R est revu en conséquence (ci-dessous) |
-| Écartés | **lien + passage** (comme le plan R ; une raison de plus ci-dessous) ; **l'objection dite à Auber**, pour l'heure ; **les apartés lus par l'opérateur** (§8.4) |
+| Écartés | **lien + passage** (comme le plan R ; une raison de plus ci-dessous — *rouvert depuis par l'auteur, question 4 du plan R*) ; **l'objection dite à Auber**, pour l'heure ; **les apartés lus par l'opérateur** (§8.4) |
 
 ### Ce que cette conversation ajoute au plan R
 
@@ -356,7 +379,8 @@ ci-dessous).
   (§4.7) : amendé — la table gagne l'aparté, et s'écrit une fois pour les deux passes. Les
   exceptions à *« rien ne se passe tant que rien n'est envoyé »* (§4.6) — la naissance privée du
   lien, l'aparté —, les phrases du §5 et les lignes du §7 s'écrivent de même, une fois.
-- **Lien + passage — une raison de plus pour l'écarter.** Un lien est **un fait**, que le dossier
+- **Lien + passage — une raison de plus pour l'écarter** *(rouvert depuis par l'auteur : la question
+  4 du plan R ; ce qui suit devient un point à résoudre).* Un lien est **un fait**, que le dossier
   déclare : un passage ne peut ni le renforcer ni l'invalider. Il ne renforce ou n'invalide que
   **ce qu'on en tire** — une hypothèse. *L'aptitude constatée par le médecin* n'invalide pas la
   discordance entre *la fatigue* et *la spontanéité* : elle invalide *« ses aveux ne valent
@@ -551,6 +575,11 @@ fins que Q réécrit. S ne dépend pas du code de R.*
 - **Une marque de l'aparté sur le lien gardé** (passe R) : plus tard, si le jeu la demande.
 
 ### Questions à l'auteur, pour la relecture
+
+*Reportées par l'auteur le 10 octobre (« on verra plus tard »). Les solutions proposées ce jour-là,
+pour mémoire : la forme neutre ; six variantes courtes — l'aparté sur le vice lève* compris *et ne
+mène qu'aux Fins 1 et 2, la Fin 3 ne se colore que d'un aparté sur le savoir ; la directive retenue
+pendant la calibration ; « D1 », « D2 », le texte entier pour le lecteur d'écran.*
 
 1. **Le texte des liaisons** : la forme neutre (*« — D2 : « … » »*), ou *« Et pourtant :
    « … » »*, plus vivante, mais qui penche (§5) ?

@@ -928,8 +928,11 @@ la méthode : le document, la relecture, le code. Rien n'est encore écrit aille
 du joueur — juste ou fausse — et se reprend plus tard, sous un article ou envoyé nu ; l'avocat
 reproche l'erreur à l'envoi, et le droit ne se sait qu'à l'envoi. Le chemin d'un trait reste. Le lien
 ne dit rien de sa paire, ni qu'elle compte ni que sa relation est juste ; **le prix** est une liste
-qui grandit, rangée dans une zone à part, repliable, la plus récente en tête. Plan, arbitrages et
-questions en tête du `TODO.md` (*Auteur — passe R*) : **à modifier par l'auteur**, puis la méthode.
+qui grandit, rangée dans une zone à part, repliable, la plus récente en tête. Ses questions sont
+tranchées, sauf une qui ouvre un chantier : un lien pris dans une RÉPONSE commencée **se combine**
+avec ce qu'elle tient — lien + passage, lien + lien, rouverts —, et il reste à dire ce que la
+combinaison affirme et qui la vérifie. Plan, arbitrages et questions en tête du `TODO.md`
+(*Auteur — passe R*) : **à modifier par l'auteur**, puis la méthode.
 
 **Et la passe S — l'aparté** (même branche, seconde conversation du 10 octobre) : elle tranche la
 directive que R laissait ouverte. Le lien, puis une directive **citée**, à la fourche du composeur
